@@ -21,7 +21,7 @@ maintainer:         gazdovsky@gmail.com
 -- category:
 extra-source-files: CHANGELOG.md
 
-executable hello-copilot
+executable reacthome-firmware
     main-is:          Main.hs
 
     -- Modules included in this executable, other than Main.
@@ -32,7 +32,6 @@ executable hello-copilot
 
     build-depends:    base ^>=4.16.3.0
                     , ivory
-                    , ivory-artifact
                     , ivory-backend-c
     hs-source-dirs:   app
     default-language: Haskell2010
