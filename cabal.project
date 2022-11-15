@@ -3,17 +3,17 @@ packages: *.cabal
 source-repository-package
     type:     git
     location: https://github.com/gev/ivory.git
-    tag:      889e24d7970369872e6a9410a61a3c2cdb47e473
+    tag:      f589cff438427340ff8b76ee8b291028980e41ea
     subdir:   ivory
 
 source-repository-package
     type:     git
     location: https://github.com/gev/ivory.git
-    tag:      889e24d7970369872e6a9410a61a3c2cdb47e473
+    tag:      f589cff438427340ff8b76ee8b291028980e41ea
     subdir:   ivory-backend-c
 
 source-repository-package
     type:     git
     location: https://github.com/gev/ivory.git
-    tag:      889e24d7970369872e6a9410a61a3c2cdb47e473
+    tag:      f589cff438427340ff8b76ee8b291028980e41ea
     subdir:   ivory-artifact
