@@ -4,41 +4,24 @@
 
 import Ivory.Compile.C.CmdlineFrontend
 import Ivory.Language
-
-printf :: Def ('[IString, Uint32] :-> ())
-printf = importProc "printf" "stdio.h"
-
-put :: Uint32 -> Ivory eff ()
-put = call_ printf "%u\n"
-
-fibLoop :: Def ('[Ix 1000] :-> Uint32)
-fibLoop = proc "fib_loop" $ \n -> body $ do
-  a <- local (ival 0)
-  b <- local (ival 1)
-  n `times` \_ -> do
-    a' <- deref a
-    b' <- deref b
-    store a b'
-    store b (a' + b')
-  result <- deref a
-  ret result
+import Support.Device.GD32F3x0.RCU
+import Ivory.Language.Syntax.Concrete.ParseAST
+import Ivory.Language.Proc
 
 main' :: Def ('[] :-> Sint32)
 main' = proc "main" $ body $ do
-  a <- call fibLoop 10
-  put a
+  enablePeriphClock RCU_GPIOA
   ret 0
 
-fibTutorialModule :: Module
-fibTutorialModule = package "fib_tutorial" $ do
-  incl fibLoop
+blinkModule :: Module
+blinkModule = package "blink" $ do
+  depend rcuModule
   incl main'
-  incl printf
 
 main :: IO ()
 main =
   runCompiler
-    [fibTutorialModule]
+    [blinkModule, rcuModule]
     []
     initialOpts
       { outDir = Just "./build",
