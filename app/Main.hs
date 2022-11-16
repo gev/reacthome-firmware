@@ -4,8 +4,7 @@
 
 import           Ivory.Compile.C.CmdlineFrontend
 import           Ivory.Language
-import           Ivory.Language.Proc
-import           Ivory.Language.Syntax.Concrete.ParseAST
+import           Shake
 import           Support.Device.GD32F3x0
 
 main' :: Def ('[] :-> Sint32)
@@ -29,4 +28,6 @@ compileBlink =
       }
 
 main :: IO ()
-main = compileBlink
+main = do
+  compileBlink
+  shake

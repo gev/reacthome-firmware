@@ -1,3 +1,9 @@
 {
-  "haskell.formattingProvider": "stylish-haskell"
+  "haskell.formattingProvider": "stylish-haskell",
+  "files.associations": {
+    "blink.h": "c",
+    "rcu_gd32f3x0.h": "c",
+    "gd32f3x0_rcu.h": "c",
+    "ivory.h": "c"
+  }
 }

@@ -25,12 +25,14 @@ executable reacthome-firmware
     main-is:          Main.hs
 
     -- Modules included in this executable, other than Main.
-    other-modules:    Support.Device.GD32F3x0
+    other-modules:    Shake
+                    , Support.Device.GD32F3x0
                     , Support.Device.GD32F3x0.RCU
 
     build-depends:    base ^>=4.16.3.0
                     , ivory
                     , ivory-backend-c
+                    , shake
 
     hs-source-dirs:   app
                     , src
