@@ -13,8 +13,8 @@ version:            0.1.0.0
 
 -- The license under which the package is released.
 -- license:
-author:             Evgeny Gazdovsky
-maintainer:         gazdovsky@gmail.com
+author:               Evgeny Gazdovsky
+maintainer:           gazdovsky@gmail.com
 
 -- A copyright notice.
 -- copyright:
