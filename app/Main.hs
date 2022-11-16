@@ -1,12 +1,12 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeOperators     #-}
 
-import Ivory.Compile.C.CmdlineFrontend
-import Ivory.Language
-import Support.Device.GD32F3x0.RCU
-import Ivory.Language.Syntax.Concrete.ParseAST
-import Ivory.Language.Proc
+import           Ivory.Compile.C.CmdlineFrontend
+import           Ivory.Language
+import           Ivory.Language.Proc
+import           Ivory.Language.Syntax.Concrete.ParseAST
+import           Support.Device.GD32F3x0.RCU
 
 main' :: Def ('[] :-> Sint32)
 main' = proc "main" $ body $ do
