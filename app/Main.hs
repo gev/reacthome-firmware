@@ -1,8 +1,15 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 import Ivory.Compile.C.CmdlineFrontend
 import Ivory.Language
+
+printf :: Def ('[IString, Uint32] :-> ())
+printf = importProc "printf" "stdio.h"
+
+put :: Uint32 -> Ivory eff ()
+put = call_ printf "%u\n"
 
 fibLoop :: Def ('[Ix 1000] :-> Uint32)
 fibLoop = proc "fib_loop" $ \n -> body $ do
@@ -18,13 +25,15 @@ fibLoop = proc "fib_loop" $ \n -> body $ do
 
 main' :: Def ('[] :-> Sint32)
 main' = proc "main" $ body $ do
-  call_ fibLoop 10
+  a <- call fibLoop 10
+  put a
   ret 0
 
 fibTutorialModule :: Module
 fibTutorialModule = package "fib_tutorial" $ do
   incl fibLoop
   incl main'
+  incl printf
 
 main :: IO ()
 main =
