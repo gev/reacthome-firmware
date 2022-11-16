@@ -6,7 +6,7 @@ import           Ivory.Compile.C.CmdlineFrontend
 import           Ivory.Language
 import           Ivory.Language.Proc
 import           Ivory.Language.Syntax.Concrete.ParseAST
-import           Support.Device.GD32F3x0.RCU
+import           Support.Device.GD32F3x0
 
 main' :: Def ('[] :-> Sint32)
 main' = proc "main" $ body $ do
@@ -18,12 +18,15 @@ blinkModule = package "blink" $ do
   depend rcuModule
   incl main'
 
-main :: IO ()
-main =
+compileBlink :: IO ()
+compileBlink =
   runCompiler
     [blinkModule, rcuModule]
     []
     initialOpts
-      { outDir = Just "./build",
-        constFold = True
+      { outDir = Just "./build"
+      , constFold = True
       }
+
+main :: IO ()
+main = compileBlink
