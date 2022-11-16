@@ -14,13 +14,13 @@ main' = proc "main" $ body $ do
 
 blinkModule :: Module
 blinkModule = package "blink" $ do
-  depend rcuModule
+  inclRCU
   incl main'
 
 compileBlink :: IO ()
 compileBlink =
   runCompiler
-    [blinkModule, rcuModule]
+    [blinkModule]
     []
     initialOpts
       { outDir = Just "./build"
