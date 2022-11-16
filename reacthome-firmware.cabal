@@ -25,7 +25,8 @@ executable reacthome-firmware
     main-is:          Main.hs
 
     -- Modules included in this executable, other than Main.
-    -- other-modules:
+    other-modules:    Support.Device.GD32F3x0
+                    , Support.Device.GD32F3x0.RCU
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions: 
@@ -34,4 +35,5 @@ executable reacthome-firmware
                     , ivory
                     , ivory-backend-c
     hs-source-dirs:   app
+                    , src
     default-language: Haskell2010
