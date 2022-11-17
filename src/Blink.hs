@@ -18,7 +18,6 @@ nop = proc "nop" $ body retVoid
 delay :: Def ('[Ix 1_000_000_000] :-> ())
 delay = proc "delay" $ \n -> body $ do
   n `times` const (call_ nop)
-  retVoid
 
 main :: Def ('[] :-> Sint32)
 main = proc "main" $ body $ do
