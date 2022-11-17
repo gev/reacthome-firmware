@@ -1,5 +1,5 @@
 module Support.Device.GD32F3x0
-  ( RCU_GPIO(..)
+  ( RCU_PERIPH(..)
   , enablePeriphClock
   , inclRCU
   ) where
