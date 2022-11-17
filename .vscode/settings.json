@@ -4,6 +4,7 @@
     "blink.h": "c",
     "rcu_gd32f3x0.h": "c",
     "gd32f3x0_rcu.h": "c",
-    "ivory.h": "c"
+    "ivory.h": "c",
+    "gd32f3x0_gpio.h": "c"
   }
 }
