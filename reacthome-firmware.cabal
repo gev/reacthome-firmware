@@ -28,6 +28,7 @@ executable reacthome-firmware
     other-modules:    Blink
                     , Shake
                     , Support.Device.GD32F3x0
+                    , Support.Device.GD32F3x0.GPIO
                     , Support.Device.GD32F3x0.RCU
 
     build-depends:    base ^>=4.16.3.0
