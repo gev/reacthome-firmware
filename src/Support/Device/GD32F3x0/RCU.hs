@@ -14,45 +14,14 @@ import           Ivory.Language.Proc
 import           Ivory.Language.Syntax
 
 data RCU_PERIPH
-  -- AHB peripherals
-  = RCU_DMA
-  | RCU_CRC
-  | RCU_GPIOA
-  | RCU_GPIOB
-  | RCU_GPIOC
-  | RCU_GPIOD
-  | RCU_GPIOF
-  | RCU_TSI
-  --  APB2 peripherals
-  | RCU_CFGCMP
-  | RCU_ADC
-  | RCU_TIMER0
-  | RCU_SPI0
-  | RCU_USART0
-  | RCU_TIMER14
-  | RCU_TIMER15
-  | RCU_TIMER16
-  --  APB1 peripherals
-  | RCU_TIMER1
-  | RCU_TIMER2
-  | RCU_TIMER13
-  | RCU_WWDGT
-  | RCU_SPI1
-  | RCU_USART1
-  | RCU_I2C0
-  | RCU_I2C1
-  | RCU_PMU
-  | RCU_RTC
-  -- RCU_ADDAPB1EN
-  | RCU_CTC
-  deriving (Show, Enum)
+  = RCU_GPIOA deriving (Show, Enum, Bounded)
 
 enablePeriphClock :: RCU_PERIPH -> Ivory eff ()
 enablePeriphClock = call_ rcuPeriphClockEnable . extConst
 
 inclRCU :: ModuleM ()
 inclRCU = do
-  traverse_ (inclSym . extPeriph) [RCU_DMA .. RCU_CTC]
+  traverse_ (inclSym . extPeriph) [minBound .. maxBound]
   incl rcuPeriphClockEnable
 
 rcuPeriphClockEnable :: Def ('[Uint32] :-> ())
