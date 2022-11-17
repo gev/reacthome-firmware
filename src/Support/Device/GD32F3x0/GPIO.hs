@@ -37,7 +37,7 @@ data GPIO_PUPD
   deriving (Show, Enum, Bounded)
 
 data GPIO_SPEED
-  = GPIO_SPEED_50MHZ
+  = GPIO_OSPEED_50MHZ
   deriving (Show, Enum, Bounded)
 
 data GPIO_OTYPE
@@ -71,6 +71,7 @@ inclGPIO = do
   traverse_ (inclSym . extGPIO_PUPD) [minBound .. maxBound]
   traverse_ (inclSym . extGPIO_OTYPE) [minBound .. maxBound]
   traverse_ (inclSym . extGPIO_SPEED) [minBound .. maxBound]
+  traverse_ (inclSym . extGPIO_PIN) [minBound .. maxBound]
   incl gpioModeSet
   incl gpioOutputOptionsSet
   incl gpioBitReset
@@ -102,6 +103,9 @@ extGPIO_OTYPE = extConst
 
 extGPIO_SPEED :: GPIO_SPEED -> Uint32
 extGPIO_SPEED = extConst
+
+extGPIO_PIN :: GPIO_PIN -> Uint32
+extGPIO_PIN = extConst
 
 extConst :: (Show a, IvoryExpr e) => a -> e
 extConst = (`extern` headerFile) . show

@@ -10,6 +10,7 @@ module Support.Device.GD32F3x0
   , setOutputOptions
   , setBit
   , resetBit
+  , inclGPIO
   , enablePeriphClock
   , inclRCU
   ) where
