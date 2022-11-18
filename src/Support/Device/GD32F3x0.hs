@@ -1,5 +1,5 @@
 module Support.Device.GD32F3x0
-  ( GPIO        (..)
+  ( GPIO_PERIPH (..)
   , GPIO_MODE   (..)
   , GPIO_PUPD   (..)
   , GPIO_OTYPE  (..)

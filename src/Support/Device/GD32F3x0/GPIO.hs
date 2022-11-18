@@ -2,7 +2,7 @@
 {-# LANGUAGE TypeOperators #-}
 
 module Support.Device.GD32F3x0.GPIO
-  ( GPIO        (..)
+  ( GPIO_PERIPH (..)
   , GPIO_MODE   (..)
   , GPIO_PUPD   (..)
   , GPIO_OTYPE  (..)
@@ -23,7 +23,7 @@ import           Ivory.Language.Module
 import           Ivory.Language.Proc
 import           Ivory.Language.Syntax
 
-data GPIO
+data GPIO_PERIPH
   = GPIOA
   deriving (Show, Enum, Bounded)
 
@@ -48,19 +48,19 @@ data GPIO_PIN
   = GPIO_PIN_15
   deriving (Show, Enum, Bounded)
 
-setMode :: GPIO -> GPIO_MODE -> GPIO_PUPD -> GPIO_PIN -> Ivory eff ()
+setMode :: GPIO_PERIPH -> GPIO_MODE -> GPIO_PUPD -> GPIO_PIN -> Ivory eff ()
 setMode gpio mode pupd pin =
   call_ gpioModeSet (extConst gpio) (extConst mode) (extConst pupd) (extConst pin)
 
-setOutputOptions :: GPIO -> GPIO_OTYPE -> GPIO_SPEED -> GPIO_PIN -> Ivory eff ()
+setOutputOptions :: GPIO_PERIPH -> GPIO_OTYPE -> GPIO_SPEED -> GPIO_PIN -> Ivory eff ()
 setOutputOptions gpio otype speed pin =
   call_ gpioOutputOptionsSet (extConst gpio) (extConst otype) (extConst speed) (extConst pin)
 
-setBit :: GPIO -> GPIO_PIN -> Ivory eff ()
+setBit :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff ()
 setBit gpio pin =
   call_ gpioBitSet (extConst gpio) (extConst pin)
 
-resetBit :: GPIO -> GPIO_PIN -> Ivory eff ()
+resetBit :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff ()
 resetBit gpio pin =
   call_ gpioBitReset (extConst gpio) (extConst pin)
 
@@ -89,7 +89,7 @@ gpioBitSet = extProc "gpio_bit_set"
 gpioBitReset :: Def ('[Uint32, Uint32] :-> ())
 gpioBitReset = extProc "gpio_bit_reset"
 
-extGPIO :: GPIO -> Uint32
+extGPIO :: GPIO_PERIPH -> Uint32
 extGPIO = extConst
 
 extGPIO_MODE :: GPIO_MODE -> Uint32
