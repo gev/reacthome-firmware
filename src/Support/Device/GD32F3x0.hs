@@ -5,12 +5,13 @@ module Support.Device.GD32F3x0
   , GPIO_OTYPE  (..)
   , GPIO_SPEED  (..)
   , GPIO_PIN    (..)
-  , RCU_PERIPH  (..)
   , setMode
   , setOutputOptions
   , setBit
   , resetBit
   , inclGPIO
+
+  , RCU_PERIPH  (..)
   , enablePeriphClock
   , inclRCU
   ) where
