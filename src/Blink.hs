@@ -7,7 +7,8 @@ module Blink (compileBlink) where
 
 import           Ivory.Compile.C.CmdlineFrontend
 import           Ivory.Language
-import           Support.Device.GD32F3x0         as GD
+import           Support.Device.GD32F3x0.GPIO    as GPIO
+import           Support.Device.GD32F3x0.RCU
 
 
 compileBlink :: IO ()
@@ -41,7 +42,7 @@ main = proc "main" $ body $ do
                     GPIO_OSPEED_50MHZ
                     GPIO_PIN_15
   forever $ do
-    GD.setBit GPIOA GPIO_PIN_15
+    GPIO.setBit GPIOA GPIO_PIN_15
     call_ delay 10_000_000
     resetBit GPIOA GPIO_PIN_15
     call_ delay 10_000_000
