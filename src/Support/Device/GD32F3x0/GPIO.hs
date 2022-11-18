@@ -26,53 +26,38 @@ import           Ivory.Language.Syntax
 import           Ivory.Language.Uint   (Uint32 (Uint32))
 import           Support.Ivory
 
+
 data GPIO_PERIPH
   = GPIOA
   deriving (Show, Enum, Bounded)
+instance ExtConst GPIO_PERIPH Uint32
 
 data GPIO_MODE
   = GPIO_MODE_INPUT
   | GPIO_MODE_OUTPUT
   deriving (Show, Enum, Bounded)
+instance ExtConst GPIO_MODE Uint32
 
 data GPIO_PUPD
   = GPIO_PUPD_NONE
   deriving (Show, Enum, Bounded)
+instance ExtConst GPIO_PUPD Uint32
 
 data GPIO_SPEED
   = GPIO_OSPEED_50MHZ
   deriving (Show, Enum, Bounded)
+instance ExtConst GPIO_SPEED Uint32
 
 data GPIO_OTYPE
   = GPIO_OTYPE_PP
   deriving (Show, Enum, Bounded)
+instance ExtConst GPIO_OTYPE Uint32
 
 data GPIO_PIN
   = GPIO_PIN_15
   deriving (Show, Enum, Bounded)
-
-instance ExtConst GPIO_PERIPH Uint32
-instance ExtConst GPIO_MODE Uint32
-instance ExtConst GPIO_OTYPE Uint32
-instance ExtConst GPIO_PUPD Uint32
-instance ExtConst GPIO_SPEED Uint32
 instance ExtConst GPIO_PIN Uint32
 
-setMode :: GPIO_PERIPH -> GPIO_MODE -> GPIO_PUPD -> GPIO_PIN -> Ivory eff ()
-setMode gpio mode pupd pin =
-  call_ gpioModeSet (extConst gpio) (extConst mode) (extConst pupd) (extConst pin)
-
-setOutputOptions :: GPIO_PERIPH -> GPIO_OTYPE -> GPIO_SPEED -> GPIO_PIN -> Ivory eff ()
-setOutputOptions gpio otype speed pin =
-  call_ gpioOutputOptionsSet (extConst gpio) (extConst otype) (extConst speed) (extConst pin)
-
-setBit :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff ()
-setBit gpio pin =
-  call_ gpioBitSet (extConst gpio) (extConst pin)
-
-resetBit :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff ()
-resetBit gpio pin =
-  call_ gpioBitReset (extConst gpio) (extConst pin)
 
 inclGPIO :: ModuleM ()
 inclGPIO = do
@@ -87,17 +72,38 @@ inclGPIO = do
   incl gpioBitReset
   incl gpioBitSet
 
+
+setMode :: GPIO_PERIPH -> GPIO_MODE -> GPIO_PUPD -> GPIO_PIN -> Ivory eff ()
+setMode gpio mode pupd pin =
+  call_ gpioModeSet (extConst gpio) (extConst mode) (extConst pupd) (extConst pin)
+
 gpioModeSet :: Def ('[Uint32, Uint32, Uint32, Uint32] :-> ())
 gpioModeSet = extProc "gpio_mode_set"
+
+
+setOutputOptions :: GPIO_PERIPH -> GPIO_OTYPE -> GPIO_SPEED -> GPIO_PIN -> Ivory eff ()
+setOutputOptions gpio otype speed pin =
+  call_ gpioOutputOptionsSet (extConst gpio) (extConst otype) (extConst speed) (extConst pin)
 
 gpioOutputOptionsSet :: Def ('[Uint32, Uint32, Uint32, Uint32] :-> ())
 gpioOutputOptionsSet = extProc "gpio_output_options_set"
 
+
+setBit :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff ()
+setBit gpio pin =
+  call_ gpioBitSet (extConst gpio) (extConst pin)
+
 gpioBitSet :: Def ('[Uint32, Uint32] :-> ())
 gpioBitSet = extProc "gpio_bit_set"
 
+
+resetBit :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff ()
+resetBit gpio pin =
+  call_ gpioBitReset (extConst gpio) (extConst pin)
+
 gpioBitReset :: Def ('[Uint32, Uint32] :-> ())
 gpioBitReset = extProc "gpio_bit_reset"
+
 
 extConst :: ExtConst a e => a -> e
 extConst = extConstFrom hFile
