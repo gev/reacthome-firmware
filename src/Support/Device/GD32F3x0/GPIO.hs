@@ -23,8 +23,9 @@ import           Ivory.Language        (Def, Ivory, IvoryExpr, Proc ((:->)),
 import           Ivory.Language.Module
 import           Ivory.Language.Proc
 import           Ivory.Language.Syntax
-import           Ivory.Language.Uint   (Uint32 (Uint32))
 import           Support.Ivory
+
+(extConst, extProc) = include "gd32f3x0_gpio.h"
 
 
 data GPIO_PERIPH
@@ -103,13 +104,3 @@ resetBit gpio pin =
 
 gpioBitReset :: Def ('[Uint32, Uint32] :-> ())
 gpioBitReset = extProc "gpio_bit_reset"
-
-
-extConst :: ExtConst a e => a -> e
-extConst = extConstFrom hFile
-
-extProc :: ProcType t => Sym -> Def t
-extProc = extProcFrom hFile
-
-hFile :: HeaderFile
-hFile = "gd32f3x0_gpio.h"

@@ -1,3 +1,4 @@
+{-# LANGUAGE ImpredicativeTypes    #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 module Support.Ivory where
 
@@ -23,3 +24,5 @@ class (Bounded a, Enum a, Show a, IvoryExpr e) => ExtConst a e where
   inclConst :: Ext a e -> ModuleDef
   inclConst c = traverse_ (inclSym . c) [minBound .. maxBound]
 
+include :: HeaderFile -> (ExtConst a e => Ext a e, ProcType t => Sym -> Def t)
+include h = (extConstFrom h, extProcFrom h)

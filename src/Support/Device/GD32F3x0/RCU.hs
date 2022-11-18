@@ -15,6 +15,7 @@ import           Ivory.Language.Proc
 import           Ivory.Language.Syntax
 import           Support.Ivory
 
+(extConst, extProc) = include "gd32f3x0_rcu.h"
 
 data RCU_PERIPH
   = RCU_GPIOA
@@ -33,13 +34,3 @@ enablePeriphClock = call_ rcuPeriphClockEnable . extConst
 
 rcuPeriphClockEnable :: Def ('[Uint32] :-> ())
 rcuPeriphClockEnable = extProc "rcu_periph_clock_enable"
-
-
-extConst :: ExtConst c e => c -> e
-extConst = extConstFrom hFile
-
-extProc :: ProcType t => Sym -> Def t
-extProc = extProcFrom hFile
-
-hFile :: HeaderFile
-hFile = "gd32f3x0_rcu.h"
