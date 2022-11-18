@@ -1,5 +1,6 @@
-{-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeOperators         #-}
 
 module Support.Device.GD32F3x0.RCU
   ( RCU_PERIPH(..)
@@ -12,31 +13,30 @@ import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Language.Proc
 import           Ivory.Language.Syntax
+import           Support.Ivory
 
 data RCU_PERIPH
-  = RCU_GPIOA 
+  = RCU_GPIOA
   deriving (Show, Enum, Bounded)
+
+instance ExtConst RCU_PERIPH Uint32
 
 enablePeriphClock :: RCU_PERIPH -> Ivory eff ()
 enablePeriphClock = call_ rcuPeriphClockEnable . extConst
 
 inclRCU :: ModuleM ()
 inclRCU = do
-  traverse_ (inclSym . extPeriph) [minBound .. maxBound]
+  inclConst (extConst :: Ext RCU_PERIPH Uint32)
   incl rcuPeriphClockEnable
 
 rcuPeriphClockEnable :: Def ('[Uint32] :-> ())
 rcuPeriphClockEnable = extProc "rcu_periph_clock_enable"
 
-extPeriph :: RCU_PERIPH -> Uint32
-extPeriph = extConst
-
-extConst :: (Show a, IvoryExpr e) => a -> e
-extConst = (`extern` headerFile) . show
+extConst :: ExtConst c e => c -> e
+extConst = extConstFrom hFile
 
 extProc :: ProcType t => Sym -> Def t
-extProc = (`importProc` headerFile)
+extProc = extProcFrom hFile
 
-headerFile :: String
-headerFile = "gd32f3x0_rcu.h"
-
+hFile :: HeaderFile
+hFile = "gd32f3x0_rcu.h"

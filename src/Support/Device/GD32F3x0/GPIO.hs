@@ -1,5 +1,6 @@
-{-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeOperators         #-}
 
 module Support.Device.GD32F3x0.GPIO
   ( GPIO_PERIPH (..)
@@ -22,6 +23,8 @@ import           Ivory.Language        (Def, Ivory, IvoryExpr, Proc ((:->)),
 import           Ivory.Language.Module
 import           Ivory.Language.Proc
 import           Ivory.Language.Syntax
+import           Ivory.Language.Uint   (Uint32 (Uint32))
+import           Support.Ivory
 
 data GPIO_PERIPH
   = GPIOA
@@ -48,6 +51,13 @@ data GPIO_PIN
   = GPIO_PIN_15
   deriving (Show, Enum, Bounded)
 
+instance ExtConst GPIO_PERIPH Uint32
+instance ExtConst GPIO_MODE Uint32
+instance ExtConst GPIO_OTYPE Uint32
+instance ExtConst GPIO_PUPD Uint32
+instance ExtConst GPIO_SPEED Uint32
+instance ExtConst GPIO_PIN Uint32
+
 setMode :: GPIO_PERIPH -> GPIO_MODE -> GPIO_PUPD -> GPIO_PIN -> Ivory eff ()
 setMode gpio mode pupd pin =
   call_ gpioModeSet (extConst gpio) (extConst mode) (extConst pupd) (extConst pin)
@@ -66,12 +76,12 @@ resetBit gpio pin =
 
 inclGPIO :: ModuleM ()
 inclGPIO = do
-  traverse_ (inclSym . extGPIO) [minBound .. maxBound]
-  traverse_ (inclSym . extGPIO_MODE) [minBound .. maxBound]
-  traverse_ (inclSym . extGPIO_PUPD) [minBound .. maxBound]
-  traverse_ (inclSym . extGPIO_OTYPE) [minBound .. maxBound]
-  traverse_ (inclSym . extGPIO_SPEED) [minBound .. maxBound]
-  traverse_ (inclSym . extGPIO_PIN) [minBound .. maxBound]
+  inclConst (extConst :: Ext GPIO_PERIPH Uint32)
+  inclConst (extConst :: Ext GPIO_MODE Uint32)
+  inclConst (extConst :: Ext GPIO_PUPD Uint32)
+  inclConst (extConst :: Ext GPIO_OTYPE Uint32)
+  inclConst (extConst :: Ext GPIO_SPEED Uint32)
+  inclConst (extConst :: Ext GPIO_PIN Uint32)
   incl gpioModeSet
   incl gpioOutputOptionsSet
   incl gpioBitReset
@@ -89,30 +99,11 @@ gpioBitSet = extProc "gpio_bit_set"
 gpioBitReset :: Def ('[Uint32, Uint32] :-> ())
 gpioBitReset = extProc "gpio_bit_reset"
 
-extGPIO :: GPIO_PERIPH -> Uint32
-extGPIO = extConst
-
-extGPIO_MODE :: GPIO_MODE -> Uint32
-extGPIO_MODE = extConst
-
-extGPIO_PUPD :: GPIO_PUPD -> Uint32
-extGPIO_PUPD = extConst
-
-extGPIO_OTYPE :: GPIO_OTYPE -> Uint32
-extGPIO_OTYPE = extConst
-
-extGPIO_SPEED :: GPIO_SPEED -> Uint32
-extGPIO_SPEED = extConst
-
-extGPIO_PIN :: GPIO_PIN -> Uint32
-extGPIO_PIN = extConst
-
-extConst :: (Show a, IvoryExpr e) => a -> e
-extConst = (`extern` headerFile) . show
+extConst :: ExtConst a e => a -> e
+extConst = extConstFrom hFile
 
 extProc :: ProcType t => Sym -> Def t
-extProc = (`importProc` headerFile)
+extProc = extProcFrom hFile
 
-headerFile :: String
-headerFile = "gd32f3x0_gpio.h"
-
+hFile :: HeaderFile
+hFile = "gd32f3x0_gpio.h"
