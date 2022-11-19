@@ -1,36 +1,35 @@
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeOperators         #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use camelCase" #-}
 
 module Support.Device.GD32F3x0.RCU
   ( RCU_PERIPH(..)
   , enablePeriphClock
   , inclRCU
   ) where
-
-import           Data.Foldable
 import           Ivory.Language
 import           Ivory.Language.Module
-import           Ivory.Language.Proc
-import           Ivory.Language.Syntax
 import           Support.Ivory
 
-(extConst, extProc) = include "gd32f3x0_rcu.h"
+(cast, fun) = include "gd32f3x0_rcu.h"
 
 data RCU_PERIPH
   = RCU_GPIOA
+  | RCU_TIMER2
   deriving (Show, Enum, Bounded)
-instance ExtConst RCU_PERIPH Uint32
+instance ExtCast RCU_PERIPH Uint32
 
 
 inclRCU :: ModuleM ()
 inclRCU = do
-  inclConst (extConst :: Ext RCU_PERIPH Uint32)
-  incl rcuPeriphClockEnable
+  inclDef (cast :: Cast RCU_PERIPH Uint32)
+  incl rcu_periph_clock_enable
 
 
 enablePeriphClock :: RCU_PERIPH -> Ivory eff ()
-enablePeriphClock = call_ rcuPeriphClockEnable . extConst
+enablePeriphClock = call_ rcu_periph_clock_enable . cast
 
-rcuPeriphClockEnable :: Def ('[Uint32] :-> ())
-rcuPeriphClockEnable = extProc "rcu_periph_clock_enable"
+rcu_periph_clock_enable :: Def ('[Uint32] :-> ())
+rcu_periph_clock_enable = fun "rcu_periph_clock_enable"
