@@ -5,9 +5,10 @@
 
 module USART (compileUSART) where
 
+import           Control.Monad
 import           Ivory.Compile.C.CmdlineFrontend
-import           Ivory.Language
-import           Ivory.Stdlib
+import           Ivory.Language                  as I
+import           Ivory.Stdlib                    as I
 import           Support.Device.GD32F3x0.GPIO
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.USART
@@ -67,13 +68,9 @@ main = proc "main" $ body $ do
   receiveConfigUSART USART1 USART_RECEIVE_ENABLE
   transmitConfigUSART USART1 USART_TRANSMIT_ENABLE
   enableUSART USART1
-  forever $ do
+  I.forever $ do
     flag <- getFlag USART1 USART_FLAG_RBNE
-    when flag
-      (do
-        a <- receiveData USART1
-        transmitData USART1 a
-      )
+    I.when flag $ transmitData USART1 =<< receiveData USART1
 
 
   ret 0
