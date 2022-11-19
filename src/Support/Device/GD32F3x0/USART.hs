@@ -14,6 +14,7 @@ module Support.Device.GD32F3x0.USART
   , deinitUSART
   , wordLengthUSART
   , stopBitSetUSART
+  , parityConfigUSART
   , baudrateSetUSART
   , receiveConfigUSART
   , transmitConfigUSART
@@ -164,15 +165,15 @@ usart_flag_get = fun "usart_flag_get"
 
 
 receiveData :: USART_PERIPH -> Ivory eff Uint16
-receiveData = call usart_data_receive . def 
+receiveData = call usart_data_receive . def
 
 usart_data_receive :: Def ('[Uint32] :-> Uint16)
 usart_data_receive = fun "usart_data_receive"
 
 
-transmitData :: USART_PERIPH -> Uint32 -> Ivory eff ()
+transmitData :: USART_PERIPH -> Uint16 -> Ivory eff ()
 transmitData = call_ usart_data_transmit . def
 
-usart_data_transmit :: Def ('[Uint32, Uint32] :-> ())
+usart_data_transmit :: Def ('[Uint32, Uint16] :-> ())
 usart_data_transmit = fun "usart_data_transmit"
 
