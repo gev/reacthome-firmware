@@ -67,14 +67,12 @@ main = proc "main" $ body $ do
   receiveConfigUSART USART1 USART_RECEIVE_ENABLE
   transmitConfigUSART USART1 USART_TRANSMIT_ENABLE
   enableUSART USART1
-  a <- local (ival 0)
   forever $ do
     flag <- getFlag USART1 USART_FLAG_RBNE
     when flag
       (do
-        store a $ receiveData USART1
-        v <- deref a
-        transmitData USART1 v
+        a <- receiveData USART1
+        transmitData USART1 a
       )
 
 
