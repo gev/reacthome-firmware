@@ -11,10 +11,12 @@ module Support.Device.GD32F3x0.GPIO
   , GPIO_OTYPE  (..)
   , GPIO_SPEED  (..)
   , GPIO_PIN    (..)
+  , GPIO_AF     (..)
   , setMode
   , setOutputOptions
   , setBit
   , resetBit
+  , setAF
   , inclGPIO
   ) where
 
@@ -52,11 +54,17 @@ data GPIO_OTYPE
 instance ExtDef GPIO_OTYPE Uint32
 
 data GPIO_PIN
-  = GPIO_PIN_4
+  = GPIO_PIN_2
+  | GPIO_PIN_3
+  | GPIO_PIN_4
   | GPIO_PIN_15
   deriving (Show, Enum, Bounded)
 instance ExtDef GPIO_PIN Uint32
 
+data GPIO_AF 
+  = GPIO_AF_1 
+  deriving (Show, Enum, Bounded)
+instance ExtDef GPIO_AF Uint32
 
 inclGPIO :: ModuleM ()
 inclGPIO = do
@@ -70,6 +78,7 @@ inclGPIO = do
   incl gpio_output_options_set
   incl gpio_bit_set
   incl gpio_bit_reset
+  incl gpio_af_set
 
 
 setMode :: GPIO_PERIPH -> GPIO_MODE -> GPIO_PUPD -> GPIO_PIN -> Ivory eff ()
@@ -102,3 +111,11 @@ resetBit gpio pin =
 
 gpio_bit_reset :: Def ('[Uint32, Uint32] :-> ())
 gpio_bit_reset = fun "gpio_bit_reset"
+
+
+setAF :: GPIO_PERIPH -> GPIO_AF -> GPIO_PIN -> Ivory eff ()
+setAF gpio af pin = 
+  call_ gpio_af_set (def gpio) (def af) (def pin)
+
+gpio_af_set :: Def ('[Uint32, Uint32, Uint32] :-> ())
+gpio_af_set = fun "gpio_af_set"
