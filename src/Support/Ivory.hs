@@ -17,7 +17,7 @@ type Cast a e = a -> e
 funFrom :: ProcType t => HeaderFile -> Sym -> Def t
 funFrom = flip importProc
 
-class (Bounded a, Enum a, Show a, IvoryExpr e) => ExtCast a e where
+class (Bounded a, Enum a, Show a, IvoryExpr e) => ExtDef a e where
   defFrom :: HeaderFile -> a -> e
   defFrom h = (`extern` h) . show
 
@@ -25,7 +25,7 @@ class (Bounded a, Enum a, Show a, IvoryExpr e) => ExtCast a e where
   inclDef c = traverse_ (inclSym . c) [minBound .. maxBound]
 
 include :: HeaderFile
-        -> ( ExtCast a e => Cast a e
+        -> ( ExtDef a e => Cast a e
            , ProcType t => Sym -> Def t
            )
 include h = (defFrom h, funFrom h)

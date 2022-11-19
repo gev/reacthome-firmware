@@ -16,7 +16,7 @@ import           Support.Ivory
 data IRQn
   = TIMER2_IRQn
   deriving (Show, Enum, Bounded)
-instance ExtCast IRQn Uint8
+instance ExtDef IRQn Uint8
 
 
 inclG :: ModuleM ()

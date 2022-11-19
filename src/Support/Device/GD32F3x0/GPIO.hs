@@ -28,34 +28,34 @@ import           Support.Ivory
 data GPIO_PERIPH
   = GPIOA
   deriving (Show, Enum, Bounded)
-instance ExtCast GPIO_PERIPH Uint32
+instance ExtDef GPIO_PERIPH Uint32
 
 data GPIO_MODE
   = GPIO_MODE_INPUT
   | GPIO_MODE_OUTPUT
   deriving (Show, Enum, Bounded)
-instance ExtCast GPIO_MODE Uint32
+instance ExtDef GPIO_MODE Uint32
 
 data GPIO_PUPD
   = GPIO_PUPD_NONE
   deriving (Show, Enum, Bounded)
-instance ExtCast GPIO_PUPD Uint32
+instance ExtDef GPIO_PUPD Uint32
 
 data GPIO_SPEED
   = GPIO_OSPEED_50MHZ
   deriving (Show, Enum, Bounded)
-instance ExtCast GPIO_SPEED Uint32
+instance ExtDef GPIO_SPEED Uint32
 
 data GPIO_OTYPE
   = GPIO_OTYPE_PP
   deriving (Show, Enum, Bounded)
-instance ExtCast GPIO_OTYPE Uint32
+instance ExtDef GPIO_OTYPE Uint32
 
 data GPIO_PIN
   = GPIO_PIN_4
   | GPIO_PIN_15
   deriving (Show, Enum, Bounded)
-instance ExtCast GPIO_PIN Uint32
+instance ExtDef GPIO_PIN Uint32
 
 
 inclGPIO :: ModuleM ()

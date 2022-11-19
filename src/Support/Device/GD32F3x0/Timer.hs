@@ -39,28 +39,28 @@ data TIMER_PERIPH
   | TIMER_1
   | TIMER_2
   deriving (Show, Enum, Bounded)
-instance ExtCast TIMER_PERIPH Uint32
+instance ExtDef TIMER_PERIPH Uint32
 
 data TIMER_ALIGNE_MODE
   = TIMER_COUNTER_EDGE
   deriving (Show, Enum, Bounded)
-instance ExtCast TIMER_ALIGNE_MODE Uint16
+instance ExtDef TIMER_ALIGNE_MODE Uint16
 
 data TIMER_COUNTER_DIRECTION
   = TIMER_COUNTER_UP
   | TIMER_COUNTER_DOWN
   deriving (Show, Enum, Bounded)
-instance ExtCast TIMER_COUNTER_DIRECTION Uint16
+instance ExtDef TIMER_COUNTER_DIRECTION Uint16
 
 data TIMER_INT
   = TIMER_UP
   deriving (Show, Enum, Bounded)
-instance ExtCast TIMER_INT Uint32
+instance ExtDef TIMER_INT Uint32
 
 data TIMER_INT_FLAG
   = TIMER_FLAG_UP
   deriving (Show, Enum, Bounded)
-instance ExtCast TIMER_INT_FLAG Uint32
+instance ExtDef TIMER_INT_FLAG Uint32
 
 
 inclTimer :: ModuleM ()

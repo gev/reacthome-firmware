@@ -19,7 +19,7 @@ data RCU_PERIPH
   = RCU_GPIOA
   | RCU_TIMER2
   deriving (Show, Enum, Bounded)
-instance ExtCast RCU_PERIPH Uint32
+instance ExtDef RCU_PERIPH Uint32
 
 
 inclRCU :: ModuleM ()
