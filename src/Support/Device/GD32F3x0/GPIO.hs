@@ -35,11 +35,14 @@ instance ExtDef GPIO_PERIPH Uint32
 data GPIO_MODE
   = GPIO_MODE_INPUT
   | GPIO_MODE_OUTPUT
+  | GPIO_MODE_AF
   deriving (Show, Enum, Bounded)
 instance ExtDef GPIO_MODE Uint32
 
 data GPIO_PUPD
   = GPIO_PUPD_NONE
+  | GPIO_PUPD_PULLUP
+  | GPIO_PUPD_PULLDOWN
   deriving (Show, Enum, Bounded)
 instance ExtDef GPIO_PUPD Uint32
 
@@ -74,6 +77,7 @@ inclGPIO = do
   inclDef (def :: Cast GPIO_OTYPE Uint32)
   inclDef (def :: Cast GPIO_SPEED Uint32)
   inclDef (def :: Cast GPIO_PIN Uint32)
+  inclDef (def :: Cast GPIO_AF Uint32)
   incl gpio_mode_set
   incl gpio_output_options_set
   incl gpio_bit_set
