@@ -10,7 +10,7 @@ import           Ivory.Language.Proc
 import           Ivory.Language.Syntax
 import           Support.Ivory
 
-(cast, _) = include "gd32f3x0.h"
+(def, _) = include "gd32f3x0.h"
 
 
 data IRQn
@@ -21,4 +21,4 @@ instance ExtDef IRQn Uint8
 
 inclG :: ModuleM ()
 inclG = do
-  inclDef (cast :: Cast IRQn Uint8)
+  inclDef (def :: Cast IRQn Uint8)

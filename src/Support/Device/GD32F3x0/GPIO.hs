@@ -22,7 +22,7 @@ import           Ivory.Language        (Def, Ivory, Proc ((:->)), Uint32, call_)
 import           Ivory.Language.Module
 import           Support.Ivory
 
-(cast, fun) = include "gd32f3x0_gpio.h"
+(def, fun) = include "gd32f3x0_gpio.h"
 
 
 data GPIO_PERIPH
@@ -60,12 +60,12 @@ instance ExtDef GPIO_PIN Uint32
 
 inclGPIO :: ModuleM ()
 inclGPIO = do
-  inclDef (cast :: Cast GPIO_PERIPH Uint32)
-  inclDef (cast :: Cast GPIO_MODE Uint32)
-  inclDef (cast :: Cast GPIO_PUPD Uint32)
-  inclDef (cast :: Cast GPIO_OTYPE Uint32)
-  inclDef (cast :: Cast GPIO_SPEED Uint32)
-  inclDef (cast :: Cast GPIO_PIN Uint32)
+  inclDef (def :: Cast GPIO_PERIPH Uint32)
+  inclDef (def :: Cast GPIO_MODE Uint32)
+  inclDef (def :: Cast GPIO_PUPD Uint32)
+  inclDef (def :: Cast GPIO_OTYPE Uint32)
+  inclDef (def :: Cast GPIO_SPEED Uint32)
+  inclDef (def :: Cast GPIO_PIN Uint32)
   incl gpio_mode_set
   incl gpio_output_options_set
   incl gpio_bit_set
@@ -74,7 +74,7 @@ inclGPIO = do
 
 setMode :: GPIO_PERIPH -> GPIO_MODE -> GPIO_PUPD -> GPIO_PIN -> Ivory eff ()
 setMode gpio mode pupd pin =
-  call_ gpio_mode_set (cast gpio) (cast mode) (cast pupd) (cast pin)
+  call_ gpio_mode_set (def gpio) (def mode) (def pupd) (def pin)
 
 gpio_mode_set :: Def ('[Uint32, Uint32, Uint32, Uint32] :-> ())
 gpio_mode_set = fun "gpio_mode_set"
@@ -82,7 +82,7 @@ gpio_mode_set = fun "gpio_mode_set"
 
 setOutputOptions :: GPIO_PERIPH -> GPIO_OTYPE -> GPIO_SPEED -> GPIO_PIN -> Ivory eff ()
 setOutputOptions gpio otype speed pin =
-  call_ gpio_output_options_set (cast gpio) (cast otype) (cast speed) (cast pin)
+  call_ gpio_output_options_set (def gpio) (def otype) (def speed) (def pin)
 
 gpio_output_options_set :: Def ('[Uint32, Uint32, Uint32, Uint32] :-> ())
 gpio_output_options_set = fun "gpio_output_options_set"
@@ -90,7 +90,7 @@ gpio_output_options_set = fun "gpio_output_options_set"
 
 setBit :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff ()
 setBit gpio pin =
-  call_ gpio_bit_set (cast gpio) (cast pin)
+  call_ gpio_bit_set (def gpio) (def pin)
 
 gpio_bit_set :: Def ('[Uint32, Uint32] :-> ())
 gpio_bit_set = fun "gpio_bit_set"
@@ -98,7 +98,7 @@ gpio_bit_set = fun "gpio_bit_set"
 
 resetBit :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff ()
 resetBit gpio pin =
-  call_ gpio_bit_reset (cast gpio) (cast pin)
+  call_ gpio_bit_reset (def gpio) (def pin)
 
 gpio_bit_reset :: Def ('[Uint32, Uint32] :-> ())
 gpio_bit_reset = fun "gpio_bit_reset"

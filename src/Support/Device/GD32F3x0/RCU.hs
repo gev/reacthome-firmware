@@ -13,7 +13,7 @@ import           Ivory.Language
 import           Ivory.Language.Module
 import           Support.Ivory
 
-(cast, fun) = include "gd32f3x0_rcu.h"
+(def, fun) = include "gd32f3x0_rcu.h"
 
 data RCU_PERIPH
   = RCU_GPIOA
@@ -24,12 +24,12 @@ instance ExtDef RCU_PERIPH Uint32
 
 inclRCU :: ModuleM ()
 inclRCU = do
-  inclDef (cast :: Cast RCU_PERIPH Uint32)
+  inclDef (def :: Cast RCU_PERIPH Uint32)
   incl rcu_periph_clock_enable
 
 
 enablePeriphClock :: RCU_PERIPH -> Ivory eff ()
-enablePeriphClock = call_ rcu_periph_clock_enable . cast
+enablePeriphClock = call_ rcu_periph_clock_enable . def
 
 rcu_periph_clock_enable :: Def ('[Uint32] :-> ())
 rcu_periph_clock_enable = fun "rcu_periph_clock_enable"

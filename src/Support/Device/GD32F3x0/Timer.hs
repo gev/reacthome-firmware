@@ -21,7 +21,7 @@ import           Ivory.Language.Module
 import           Ivory.Language.Syntax
 import           Support.Ivory
 
-(cast, fun) = include "gd32f3x0_timer.h"
+(def, fun) = include "gd32f3x0_timer.h"
 
 {--
 typedef struct {
@@ -65,9 +65,9 @@ instance ExtDef TIMER_INT_FLAG Uint32
 
 inclTimer :: ModuleM ()
 inclTimer = do
-  inclDef (cast :: Cast TIMER_PERIPH Uint32)
-  inclDef (cast :: Cast TIMER_ALIGNE_MODE Uint16)
-  inclDef (cast :: Cast TIMER_COUNTER_DIRECTION Uint16)
+  inclDef (def :: Cast TIMER_PERIPH Uint32)
+  inclDef (def :: Cast TIMER_ALIGNE_MODE Uint16)
+  inclDef (def :: Cast TIMER_COUNTER_DIRECTION Uint16)
   -- incl timer_parameter_struct
   incl timer_deinit
   incl timer_enable
@@ -78,28 +78,28 @@ inclTimer = do
 
 
 deinitTimer :: TIMER_PERIPH -> Ivory eff ()
-deinitTimer = call_ timer_deinit . cast
+deinitTimer = call_ timer_deinit . def
 
 timer_deinit :: Def ('[Uint32] :-> ())
 timer_deinit = fun "timer_deinit"
 
 
 enableTimer :: TIMER_PERIPH -> Ivory eff ()
-enableTimer = call_ timer_enable . cast
+enableTimer = call_ timer_enable . def
 
 timer_enable :: Def ('[Uint32] :-> ())
 timer_enable = fun "timer_enable"
 
 
 enableTimerInterrupt :: TIMER_PERIPH -> TIMER_INT -> Ivory eff ()
-enableTimerInterrupt t i = call_ timer_interrupt_enable (cast t) (cast i)
+enableTimerInterrupt t i = call_ timer_interrupt_enable (def t) (def i)
 
 timer_interrupt_enable :: Def ('[Uint32, Uint32] :-> ())
 timer_interrupt_enable = fun "timer_interrupt_enable"
 
 
 clearTimerInterruptFlag :: TIMER_PERIPH -> TIMER_INT_FLAG -> Ivory eff ()
-clearTimerInterruptFlag t i = call_ timer_interrupt_flag_clear (cast t) (cast i)
+clearTimerInterruptFlag t i = call_ timer_interrupt_flag_clear (def t) (def i)
 
 timer_interrupt_flag_clear :: Def ('[Uint32, Uint32] :-> ())
 timer_interrupt_flag_clear = fun "timer_interrupt_flag_clear"
