@@ -12,12 +12,12 @@ module Support.Device.GD32F3x0.USART
   , USART_TX_CFG      (..)
   , USART_FLAG        (..)
   , deinitUSART
-  , wordLengthUSART
-  , stopBitSetUSART
-  , parityConfigUSART
-  , baudrateSetUSART
-  , receiveConfigUSART
-  , transmitConfigUSART
+  , setWordLength
+  , setStopBit
+  , configParity
+  , setBaudrate
+  , configReceive
+  , configTransmit
   , enableUSART
   , getFlag
   , receiveData
@@ -101,48 +101,48 @@ usart_deinit :: Def ('[Uint32] :-> ())
 usart_deinit = fun "usart_deinit"
 
 
-wordLengthUSART :: USART_PERIPH -> USART_WORD_LENGHT -> Ivory eff ()
-wordLengthUSART usart length =
+setWordLength :: USART_PERIPH -> USART_WORD_LENGHT -> Ivory eff ()
+setWordLength usart length =
   call_ usart_word_length_set (def usart) (def length)
 
 usart_word_length_set :: Def ('[Uint32, Uint32] :-> ())
 usart_word_length_set = fun "usart_word_length_set"
 
 
-stopBitSetUSART :: USART_PERIPH -> USART_STOP_BIT -> Ivory eff ()
-stopBitSetUSART usart stopBit =
+setStopBit :: USART_PERIPH -> USART_STOP_BIT -> Ivory eff ()
+setStopBit usart stopBit =
   call_ usart_stop_bit_set (def usart) (def stopBit)
 
 usart_stop_bit_set :: Def ('[Uint32, Uint32] :-> ())
 usart_stop_bit_set = fun "usart_stop_bit_set"
 
 
-parityConfigUSART :: USART_PERIPH -> USART_PARITY_CFG -> Ivory eff ()
-parityConfigUSART usart parity =
+configParity :: USART_PERIPH -> USART_PARITY_CFG -> Ivory eff ()
+configParity usart parity =
   call_ usart_parity_config (def usart) (def parity)
 
 usart_parity_config :: Def ('[Uint32, Uint32] :-> ())
 usart_parity_config = fun "usart_parity_config"
 
 
-baudrateSetUSART :: USART_PERIPH -> Uint32 -> Ivory eff ()
-baudrateSetUSART usart =
+setBaudrate :: USART_PERIPH -> Uint32 -> Ivory eff ()
+setBaudrate usart =
   call_ usart_baudrate_set (def usart)
 
 usart_baudrate_set :: Def ('[Uint32, Uint32] :-> ())
 usart_baudrate_set = fun "usart_baudrate_set"
 
 
-receiveConfigUSART :: USART_PERIPH -> USART_RX_CFG -> Ivory eff ()
-receiveConfigUSART usart rxconfig =
+configReceive :: USART_PERIPH -> USART_RX_CFG -> Ivory eff ()
+configReceive usart rxconfig =
   call_ usart_receive_config (def usart) (def rxconfig)
 
 usart_receive_config :: Def ('[Uint32, Uint32] :-> ())
 usart_receive_config = fun "usart_receive_config"
 
 
-transmitConfigUSART :: USART_PERIPH -> USART_TX_CFG -> Ivory eff ()
-transmitConfigUSART usart txconfig =
+configTransmit :: USART_PERIPH -> USART_TX_CFG -> Ivory eff ()
+configTransmit usart txconfig =
   call_ usart_transmit_config (def usart) (def txconfig)
 
 usart_transmit_config :: Def ('[Uint32, Uint32] :-> ())

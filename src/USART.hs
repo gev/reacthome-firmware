@@ -37,35 +37,19 @@ main = proc "main" $ body $ do
   enablePeriphClock RCU_GPIOA
   enablePeriphClock RCU_USART1
 
-  setAF GPIOA
-        GPIO_AF_1
-        GPIO_PIN_2
-  setAF GPIOA
-        GPIO_AF_1
-        GPIO_PIN_3
-  setMode GPIOA
-          GPIO_MODE_AF
-          GPIO_PUPD_PULLUP
-          GPIO_PIN_2
-  setOutputOptions  GPIOA
-                    GPIO_OTYPE_PP
-                    GPIO_OSPEED_50MHZ
-                    GPIO_PIN_2
-  setMode GPIOA
-          GPIO_MODE_AF
-          GPIO_PUPD_PULLUP
-          GPIO_PIN_3
-  setOutputOptions  GPIOA
-                    GPIO_OTYPE_PP
-                    GPIO_OSPEED_50MHZ
-                    GPIO_PIN_3
+  setAF GPIOA GPIO_AF_1 GPIO_PIN_2
+  setAF GPIOA GPIO_AF_1 GPIO_PIN_3
+  setMode GPIOA GPIO_MODE_AF GPIO_PUPD_PULLUP GPIO_PIN_2
+  setOutputOptions GPIOA GPIO_OTYPE_PP GPIO_OSPEED_50MHZ GPIO_PIN_2
+  setMode GPIOA GPIO_MODE_AF GPIO_PUPD_PULLUP GPIO_PIN_3
+  setOutputOptions GPIOA GPIO_OTYPE_PP GPIO_OSPEED_50MHZ GPIO_PIN_3
   deinitUSART USART1
-  wordLengthUSART USART1 USART_WL_8BIT
-  stopBitSetUSART USART1 USART_STB_1BIT
-  parityConfigUSART USART1 USART_PM_NONE
-  baudrateSetUSART USART1 1_000_000
-  receiveConfigUSART USART1 USART_RECEIVE_ENABLE
-  transmitConfigUSART USART1 USART_TRANSMIT_ENABLE
+  setWordLength USART1 USART_WL_8BIT
+  setStopBit USART1 USART_STB_1BIT
+  configParity USART1 USART_PM_NONE
+  setBaudrate USART1 1_000_000
+  configReceive USART1 USART_RECEIVE_ENABLE
+  configTransmit USART1 USART_TRANSMIT_ENABLE
   enableUSART USART1
   forever $ do
     flag <- getFlag USART1 USART_FLAG_RBNE
