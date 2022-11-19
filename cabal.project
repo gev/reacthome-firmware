@@ -11,3 +11,9 @@ source-repository-package
     location: https://github.com/gev/ivory.git
     tag:      f589cff438427340ff8b76ee8b291028980e41ea
     subdir:   ivory-backend-c
+
+source-repository-package
+    type:     git
+    location: https://github.com/gev/ivory.git
+    tag:      f589cff438427340ff8b76ee8b291028980e41ea
+    subdir:   ivory-stdlib
