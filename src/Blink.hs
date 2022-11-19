@@ -33,14 +33,8 @@ blinkModule = package "blink" $ do
 main :: Def ('[] :-> Sint32)
 main = proc "main" $ body $ do
   enablePeriphClock RCU_GPIOA
-  setMode GPIOA
-          GPIO_MODE_OUTPUT
-          GPIO_PUPD_NONE
-          GPIO_PIN_15
-  setOutputOptions  GPIOA
-                    GPIO_OTYPE_PP
-                    GPIO_OSPEED_50MHZ
-                    GPIO_PIN_15
+  setMode           GPIOA GPIO_MODE_OUTPUT GPIO_PUPD_NONE GPIO_PIN_15
+  setOutputOptions  GPIOA GPIO_OTYPE_PP GPIO_OSPEED_50MHZ GPIO_PIN_15
   forever $ do
     GPIO.setBit GPIOA GPIO_PIN_15
     call_ delay 10_000_000
