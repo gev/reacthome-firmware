@@ -17,7 +17,8 @@ import           Support.Ivory
 
 data RCU_PERIPH
   = RCU_GPIOA
-  | RCU_TIMER2
+  | RCU_TIMER2 
+  | RCU_USART1
   deriving (Show, Enum, Bounded)
 instance ExtDef RCU_PERIPH Uint32
 

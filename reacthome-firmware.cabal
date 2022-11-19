@@ -33,6 +33,7 @@ executable reacthome-firmware
                     , Support.Device.GD32F3x0.RCU
                     , Support.Device.GD32F3x0.Misc
                     , Support.Device.GD32F3x0.Timer
+                    , Support.Device.GD32F3x0.USART
 
     build-depends:    base ^>=4.16.3.0
                     , ivory
