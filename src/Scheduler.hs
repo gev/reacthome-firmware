@@ -19,8 +19,8 @@ compileScheduler = runCompiler
     , constFold = True
     }
 
-handle :: TIMER_PERIPH -> Ivory eff ()
-handle timer = do
+handle :: TIMER_PERIPH -> Def ('[] ':-> ())
+handle = makeTimerHandler $ \timer -> do
     flag <- getTimerInterruptFlag timer TIMER_INT_FLAG_UP
     when flag $ clearTimerInterruptFlag timer TIMER_INT_FLAG_UP
 
@@ -31,7 +31,7 @@ schedulerModule = package "scheduler" $ do
   inclMisc
   inclTimer
   incl main
-  incl $ handleTimer TIMER2 handle
+  incl $ handle TIMER2
 
 
 main :: Def ('[] :-> Sint32)

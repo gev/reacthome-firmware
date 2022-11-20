@@ -22,7 +22,7 @@ module Support.Device.GD32F3x0.Timer
   , clearTimerInterruptFlag
   , defaultTimerParam
   , initTimer
-  , handleTimer
+  , makeTimerHandler
   , inclTimer
   ) where
 
@@ -180,7 +180,7 @@ defaultTimerParam = TIMER_PARAM 0
                                 65535
                                 0
 
-handleTimer :: TIMER_PERIPH
-            -> (TIMER_PERIPH -> (forall s . Ivory (ProcEffects s ()) ()))
+makeTimerHandler :: (TIMER_PERIPH -> (forall s . Ivory (ProcEffects s ()) ()))
+            -> TIMER_PERIPH
             -> Def ('[] :-> ())
-handleTimer t b = proc (show t <> "_IRQHandler") $ body $ b t
+makeTimerHandler b t = proc (show t <> "_IRQHandler") $ body $ b t
