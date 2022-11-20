@@ -29,11 +29,18 @@ usartModule = package "usart" $ do
   inclGPIO
   inclUSART
   incl main
-
+  incl initialize
+  incl loop
 
 
 main :: Def ('[] :-> Sint32)
 main = proc "main" $ body $ do
+  call_ initialize
+  call_ loop
+  ret 0
+
+initialize :: Def('[] :-> ())
+initialize = proc "initialize" $ body $ do
   enablePeriphClock RCU_GPIOA
   setAF             GPIOA   GPIO_AF_1                           GPIO_PIN_2
   setMode           GPIOA   GPIO_MODE_AF    GPIO_PUPD_PULLUP    GPIO_PIN_2
@@ -50,6 +57,9 @@ main = proc "main" $ body $ do
   configReceive     USART1  USART_RECEIVE_ENABLE
   configTransmit    USART1  USART_TRANSMIT_ENABLE
   enableUSART       USART1
+
+loop :: Def('[] :-> ())
+loop = proc "loop" $ body $ do
   forever $ do
     isDataRecived <- getFlag USART1 USART_FLAG_RBNE
     when isDataRecived $ do
@@ -58,4 +68,3 @@ main = proc "main" $ body $ do
         isBusy <- getFlag USART1 USART_FLAG_TBE
         unless isBusy breakOut
         transmitData USART1 b
-  ret 0

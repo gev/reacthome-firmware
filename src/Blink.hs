@@ -42,7 +42,6 @@ main = proc "main" $ body $ do
     call_ delay 10_000_000
   ret 0
 
-
 delay :: Def ('[Ix 1_000_000_000] :-> ())
 delay = proc "delay" $ \n -> body $ do
   n `times` const (call_ nop)
