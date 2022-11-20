@@ -19,7 +19,12 @@ compileScheduler = runCompiler
     , constFold = True
     }
 
-
+timerParam = defaultTimerParam  { prescaler         = Just 8399
+                                , period            = Just 9
+                                , alignedMode       = Just TIMER_COUNTER_EDGE
+                                , counterDirection  = Just TIMER_COUNTER_UP
+                                , clockDivision     = Just TIMER_CKDIV_DIV1
+                                }
 
 schedulerModule :: Module
 schedulerModule = package "scheduler" $ do
@@ -27,6 +32,7 @@ schedulerModule = package "scheduler" $ do
   inclRCU
   inclMisc
   inclTimer
+  incl $ initTimer TIMER2 timerParam
   incl handleTimer2
   incl main
 
@@ -36,7 +42,7 @@ main = proc "main" $ body $ do
   enableIrqNvic           TIMER2_IRQn 0 0
   enablePeriphClock       RCU_TIMER2
   deinitTimer             TIMER2
-
+  call_ $ initTimer       TIMER2 timerParam
   clearTimerInterruptFlag TIMER2 TIMER_INT_FLAG_UP
   enableTimerInterrupt    TIMER2 TIMER_INT_UP
   enableTimer             TIMER2
