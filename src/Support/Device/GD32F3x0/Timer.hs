@@ -2,7 +2,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE QuasiQuotes           #-}
 {-# LANGUAGE TypeOperators         #-}
-
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
 
@@ -15,6 +14,7 @@ module Support.Device.GD32F3x0.Timer
   , deinitTimer
   , enableTimer
   , enableTimerInterrupt
+  , getTimerInterruptFlag
   , clearTimerInterruptFlag
   , inclTimer
   ) where
@@ -29,9 +29,9 @@ import           Support.Ivory
 
 
 data TIMER_PERIPH
-  = TIMER_0
-  | TIMER_1
-  | TIMER_2
+  = TIMER0
+  | TIMER1
+  | TIMER2
   deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_PERIPH Uint32
 
@@ -47,12 +47,12 @@ data TIMER_COUNTER_DIRECTION
 instance ExtDef TIMER_COUNTER_DIRECTION Uint16
 
 data TIMER_INT
-  = TIMER_UP
+  = TIMER_INT_UP
   deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_INT Uint32
 
 data TIMER_INT_FLAG
-  = TIMER_FLAG_UP
+  = TIMER_INT_FLAG_UP
   deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_INT_FLAG Uint32
 
@@ -62,10 +62,15 @@ inclTimer = do
   inclDef (def :: Cast TIMER_PERIPH Uint32)
   inclDef (def :: Cast TIMER_ALIGNE_MODE Uint16)
   inclDef (def :: Cast TIMER_COUNTER_DIRECTION Uint16)
+  inclDef (def :: Cast TIMER_INT Uint32)
+  inclDef (def :: Cast TIMER_INT_FLAG Uint32)
   incl timer_struct_para_init
+  incl timer_interrupt_flag_get
+  incl timer_interrupt_flag_clear
+  incl timer_interrupt_enable
   incl timer_deinit
   incl timer_enable
-  defStruct timer_parameter_struct
+  -- defStruct timer_parameter_struct
 
 
 deinitTimer :: TIMER_PERIPH -> Ivory eff ()
@@ -89,6 +94,14 @@ timer_interrupt_enable :: Def ('[Uint32, Uint32] :-> ())
 timer_interrupt_enable = fun "timer_interrupt_enable"
 
 
+getTimerInterruptFlag :: TIMER_PERIPH -> TIMER_INT_FLAG -> Ivory eff IBool
+getTimerInterruptFlag t i =
+  call timer_interrupt_flag_get (def t) (def i)
+
+timer_interrupt_flag_get :: Def ('[Uint32, Uint32] :-> IBool)
+timer_interrupt_flag_get = fun "timer_interrupt_flag_get"
+
+
 clearTimerInterruptFlag :: TIMER_PERIPH -> TIMER_INT_FLAG -> Ivory eff ()
 clearTimerInterruptFlag t i = call_ timer_interrupt_flag_clear (def t) (def i)
 
@@ -99,7 +112,11 @@ timer_interrupt_flag_clear = fun "timer_interrupt_flag_clear"
 timer_struct_para_init :: Def ('[Ref s (Stored ())] :-> ())
 timer_struct_para_init = fun "timer_struct_para_init"
 
-timer_parameter_struct = Proxy :: Proxy "timer_parameter_struct"
+-- timer_parameter_struct = Proxy :: Proxy "timer_parameter_struct"
+-- timer_parameter_struct :: ASymbol "timer_parameter_struct"
+
+-- timer_parameter_struct :: StructDef "timer_parameter_struct"
+
 [ivory|
   struct timer_parameter_struct
     { prescaler         :: Stored Uint16

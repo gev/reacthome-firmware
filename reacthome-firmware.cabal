@@ -27,6 +27,7 @@ executable reacthome-firmware
     -- Modules included in this executable, other than Main.
     other-modules:    Blink
                     , USART
+                    , Scheduler
                     , Shake
                     , Support.Ivory
                     , Support.Device.GD32F3x0
