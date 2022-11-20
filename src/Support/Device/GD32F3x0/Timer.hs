@@ -69,12 +69,12 @@ data TIMER_CLOCK_DIVISION
 instance ExtDef TIMER_CLOCK_DIVISION Uint16
 
 data TIMER_PARAM = TIMER_PARAM
-    { prescaler         :: Maybe Uint16
-    , alignedMode       :: Maybe TIMER_ALIGNE_MODE
-    , counterDirection  :: Maybe TIMER_COUNTER_DIRECTION
-    , clockDivision     :: Maybe TIMER_CLOCK_DIVISION
-    , period            :: Maybe Uint32
-    , repetitionCounter :: Maybe Uint8
+    { prescaler         :: Uint16
+    , alignedMode       :: TIMER_ALIGNE_MODE
+    , counterDirection  :: TIMER_COUNTER_DIRECTION
+    , clockDivision     :: TIMER_CLOCK_DIVISION
+    , period            :: Uint32
+    , repetitionCounter :: Uint8
     }
 
 [ivory|
@@ -103,7 +103,7 @@ inclTimer = do
   incl timer_deinit
   incl timer_enable
   incl timer_init
-  incl timer_struct_para_init
+  incl init_timer
   defStruct (Proxy :: Proxy "timer_param")
 
 
@@ -143,27 +143,36 @@ clearTimerInterruptFlag t i = call_ timer_interrupt_flag_clear (def t) (def i)
 timer_interrupt_flag_clear :: Def ('[Uint32, Uint32] :-> ())
 timer_interrupt_flag_clear = fun "timer_interrupt_flag_clear"
 
-initTimer :: TIMER_PERIPH -> TIMER_PARAM -> Def ('[] :-> ())
-initTimer t p = proc "init_timer" $ body $ do
+initTimer :: TIMER_PERIPH -> TIMER_PARAM -> Ivory eff ()
+initTimer t p =
+  call_ init_timer (def t)
+                   (prescaler p)
+                   (def . alignedMode $ p)
+                   (def . counterDirection $ p)
+                   (def . clockDivision $ p)
+                   (period p)
+                   (repetitionCounter p)
+
+
+init_timer :: Def ('[Uint32, Uint16, Uint16, Uint16, Uint16, Uint32, Uint8] :-> ())
+init_timer = proc "init_timer" $ \t f1 f2 f3 f4 f5 f6 -> body $ do
       r <- local (istruct [])
-      call_ timer_struct_para_init r
-      let go ref get cast | isJust v  = store (r ~> ref) . cast . fromJust $ v
-                          | otherwise = pure  ()
-                          where v = get p
-      go prescaler_ prescaler id
-      go aligned_mode alignedMode def
-      go counter_direction counterDirection def
-      go clock_division clockDivision def
-      go period_  period id
-      go repetition_counter repetitionCounter id
-      call_ timer_init (def t) r
+      store (r ~> prescaler_) f1
+      store (r ~> aligned_mode) f2
+      store (r ~> counter_direction) f3
+      store (r ~> clock_division) f4
+      store (r ~> period_) f5
+      store (r ~> repetition_counter) f6
+      call_ timer_init t r
 
 
 timer_init :: Def ('[Uint32, Ref s ('Struct "timer_param")] :-> ())
 timer_init = fun "timer_init"
 
-timer_struct_para_init :: Def ('[Ref s ('Struct "timer_param")] :-> ())
-timer_struct_para_init = fun "timer_struct_para_init"
-
 defaultTimerParam :: TIMER_PARAM
-defaultTimerParam = TIMER_PARAM Nothing Nothing Nothing Nothing Nothing Nothing
+defaultTimerParam = TIMER_PARAM 0
+                                TIMER_COUNTER_EDGE
+                                TIMER_COUNTER_UP
+                                TIMER_CKDIV_DIV1
+                                65535
+                                0
