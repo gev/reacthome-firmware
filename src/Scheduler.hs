@@ -19,14 +19,19 @@ compileScheduler = runCompiler
     , constFold = True
     }
 
+handle :: TIMER_PERIPH -> Ivory eff ()
+handle timer = do
+    flag <- getTimerInterruptFlag timer TIMER_INT_FLAG_UP
+    when flag $ clearTimerInterruptFlag timer TIMER_INT_FLAG_UP
+
 schedulerModule :: Module
 schedulerModule = package "scheduler" $ do
   inclG
   inclRCU
   inclMisc
   inclTimer
-  incl handleTimer2
   incl main
+  incl $ handleTimer TIMER2 handle
 
 
 main :: Def ('[] :-> Sint32)
@@ -41,8 +46,3 @@ main = proc "main" $ body $ do
   enableTimerInterrupt    TIMER2  TIMER_INT_UP
   enableTimer             TIMER2
   ret 0
-
-handleTimer2 :: Def ('[] :-> ())
-handleTimer2 = proc "TIMER2_IRQHandler" $ body $ do
-  flag <- getTimerInterruptFlag TIMER2 TIMER_INT_FLAG_UP
-  when flag $ clearTimerInterruptFlag TIMER2 TIMER_INT_FLAG_UP

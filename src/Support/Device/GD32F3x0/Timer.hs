@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE QuasiQuotes           #-}
+{-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE TypeOperators         #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
@@ -21,13 +22,14 @@ module Support.Device.GD32F3x0.Timer
   , clearTimerInterruptFlag
   , defaultTimerParam
   , initTimer
+  , handleTimer
   , inclTimer
   ) where
 
 import           Data.Maybe
 import           Ivory.Language
 import           Ivory.Language.Module
-import           Ivory.Language.Uint   (Uint16 (Uint16))
+import           Ivory.Language.Uint
 import           Support.Ivory
 
 (def, fun) = include "gd32f3x0_timer.h"
@@ -176,3 +178,8 @@ defaultTimerParam = TIMER_PARAM 0
                                 TIMER_CKDIV_DIV1
                                 65535
                                 0
+
+handleTimer :: TIMER_PERIPH
+            -> (TIMER_PERIPH -> (forall s . Ivory (ProcEffects s ()) ()))
+            -> Def ('[] :-> ())
+handleTimer t b = proc (show t <> "_IRQHandler") $ body $ b t
