@@ -26,6 +26,7 @@ module Support.Device.GD32F3x0.Timer
   , inclTimer
   ) where
 
+import           Data.Function         ((&))
 import           Data.Maybe
 import           Ivory.Language
 import           Ivory.Language.Module
@@ -147,13 +148,13 @@ timer_interrupt_flag_clear = fun "timer_interrupt_flag_clear"
 
 initTimer :: TIMER_PERIPH -> TIMER_PARAM -> Ivory eff ()
 initTimer t p =
-  call_ init_timer (def t)
-                   (prescaler p)
-                   (def . alignedMode $ p)
-                   (def . counterDirection $ p)
-                   (def . clockDivision $ p)
-                   (period p)
-                   (repetitionCounter p)
+  call_ init_timer (t & def)
+                   (p & prescaler)
+                   (p & alignedMode & def)
+                   (p & counterDirection & def)
+                   (p & clockDivision & def)
+                   (p & period)
+                   (p & repetitionCounter)
 
 
 init_timer :: Def ('[Uint32, Uint16, Uint16, Uint16, Uint16, Uint32, Uint8] :-> ())
