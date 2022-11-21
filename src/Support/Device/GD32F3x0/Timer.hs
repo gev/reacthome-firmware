@@ -20,7 +20,7 @@ module Support.Device.GD32F3x0.Timer
   , enableTimerInterrupt
   , getTimerInterruptFlag
   , clearTimerInterruptFlag
-  , defaultTimerParam
+  , timerParam
   , initTimer
   , makeTimerHandler
   , inclTimer
@@ -172,8 +172,8 @@ init_timer = proc "init_timer" $ \t f1 f2 f3 f4 f5 f6 -> body $ do
 timer_init :: Def ('[Uint32, Ref s ('Struct "timer_param")] :-> ())
 timer_init = fun "timer_init"
 
-defaultTimerParam :: TIMER_PARAM
-defaultTimerParam = TIMER_PARAM 0
+timerParam :: TIMER_PARAM
+timerParam = TIMER_PARAM 0
                                 TIMER_COUNTER_EDGE
                                 TIMER_COUNTER_UP
                                 TIMER_CKDIV_DIV1

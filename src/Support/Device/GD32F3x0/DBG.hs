@@ -21,7 +21,7 @@ inclDBG = do
 
 
 getID :: Ivory eff Uint32
-getID = 
+getID =
   call dbg_id_get
 
 dbg_id_get :: Def ('[] :-> Uint32)

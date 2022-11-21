@@ -39,9 +39,9 @@ main = proc "main" $ body $ do
   enableIrqNvic           TIMER2_IRQn 0 0
   enablePeriphClock       RCU_TIMER2
   deinitTimer             TIMER2
-  initTimer               TIMER2  defaultTimerParam { prescaler = 8399
-                                                    , period    = 9
-                                                    }
+  initTimer               TIMER2  timerParam  { prescaler = 8399
+                                              , period    = 9
+                                              }
   clearTimerInterruptFlag TIMER2  TIMER_INT_FLAG_UP
   enableTimerInterrupt    TIMER2  TIMER_INT_UP
   enableTimer             TIMER2
