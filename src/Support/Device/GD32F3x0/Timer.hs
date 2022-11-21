@@ -173,14 +173,14 @@ timer_init :: Def ('[Uint32, Ref s ('Struct "timer_param")] :-> ())
 timer_init = fun "timer_init"
 
 timerParam :: TIMER_PARAM
-timerParam = TIMER_PARAM 0
-                                TIMER_COUNTER_EDGE
-                                TIMER_COUNTER_UP
-                                TIMER_CKDIV_DIV1
-                                65535
-                                0
+timerParam = TIMER_PARAM  0
+                          TIMER_COUNTER_EDGE
+                          TIMER_COUNTER_UP
+                          TIMER_CKDIV_DIV1
+                          65535
+                          0
 
 makeTimerHandler :: (TIMER_PERIPH -> (forall s . Ivory (ProcEffects s ()) ()))
-            -> TIMER_PERIPH
-            -> Def ('[] :-> ())
+                 -> TIMER_PERIPH
+                 -> Def ('[] :-> ())
 makeTimerHandler b t = proc (show t <> "_IRQHandler") $ body $ b t

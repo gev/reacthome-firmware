@@ -24,6 +24,7 @@ handle = makeTimerHandler $ \timer -> do
     flag <- getTimerInterruptFlag timer TIMER_INT_FLAG_UP
     when flag $ clearTimerInterruptFlag timer TIMER_INT_FLAG_UP
 
+
 schedulerModule :: Module
 schedulerModule = package "scheduler" $ do
   inclG
