@@ -16,7 +16,7 @@ compileBlink = runCompiler
   [blinkModule]
   []
   initialOpts
-    { outDir = Just "./c/firmware"
+    { outDir = Just "./firmware"
     , constFold = True
     }
 

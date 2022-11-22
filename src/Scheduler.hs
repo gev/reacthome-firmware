@@ -15,7 +15,7 @@ compileScheduler = runCompiler
   [schedulerModule]
   []
   initialOpts
-    { outDir = Just "./c/firmware"
+    { outDir = Just "./firmware"
     , constFold = True
     }
 
