@@ -5,6 +5,7 @@
 
 module Blink (compileBlink) where
 
+import           Control.Monad                   (replicateM_)
 import           Ivory.Compile.C.CmdlineFrontend
 import           Ivory.Language
 import           Support.Device.GD32F3x0.GPIO    as GPIO
@@ -26,6 +27,7 @@ blinkModule = package "blink" $ do
   inclRCU
   inclGPIO
   incl main
+  incl __NOP
 
 
 main :: Def ('[] :-> Sint32)
