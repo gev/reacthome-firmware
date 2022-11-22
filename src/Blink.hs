@@ -26,8 +26,6 @@ blinkModule = package "blink" $ do
   inclRCU
   inclGPIO
   incl main
-  incl delay
-  incl nop
 
 
 main :: Def ('[] :-> Sint32)
@@ -37,14 +35,10 @@ main = proc "main" $ body $ do
   setOutputOptions  GPIOA GPIO_OTYPE_PP GPIO_OSPEED_50MHZ GPIO_PIN_15
   forever $ do
     GPIO.setBit GPIOA GPIO_PIN_15
-    call_ delay 10_000_000
+    delay 10_000_000
     resetBit GPIOA GPIO_PIN_15
-    call_ delay 10_000_000
+    delay 10_000_000
   ret 0
 
-delay :: Def ('[Ix 1_000_000_000] :-> ())
-delay = proc "delay" $ \n -> body $ do
-  n `times` const (call_ nop)
-
-nop :: Def ('[] :-> ())
-nop = proc "nop" $ body retVoid
+delay :: Ix 1_000_000_000 -> Ivory eff ()
+delay n = n `times` pure
