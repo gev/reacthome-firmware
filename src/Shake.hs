@@ -62,12 +62,12 @@ shake = shakeArgs shakeOptions{shakeFiles="build"} $ do
         putInfo "Cleaning files in build"
         removeFilesAfter "build" ["//*"]
 
-    "build/firmware/*.elf" %> \out -> do
+    "build//*.elf" %> \out -> do
         let o = out -<.> "o"
         cs <- getDirectoryFiles "support" ["//*.c"]
         need ["build/support" </> c -<.> "o" | c <- cs]
         need [o]
-        cmd_ cc ldflags ld o "-lc" "-o" [out -<.> "elf"]
+        cmd_ cc ldflags ld o "-lc" "-o" out
 
     "build//*.o" %> \out -> do
         let c = dropDirectory1 out -<.> "c"
