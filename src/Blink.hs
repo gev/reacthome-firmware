@@ -5,9 +5,9 @@
 
 module Blink (compileBlink) where
 
-import           Control.Monad                   (replicateM_)
 import           Ivory.Compile.C.CmdlineFrontend
 import           Ivory.Language
+import           Support.CMSIS.CoreCM4
 import           Support.Device.GD32F3x0.GPIO    as GPIO
 import           Support.Device.GD32F3x0.RCU
 
@@ -26,8 +26,8 @@ blinkModule :: Module
 blinkModule = package "blink" $ do
   inclRCU
   inclGPIO
+  inclCoreCM4
   incl main
-  incl __NOP
 
 
 main :: Def ('[] :-> Sint32)
@@ -35,6 +35,7 @@ main = proc "main" $ body $ do
   enablePeriphClock RCU_GPIOA
   setMode           GPIOA GPIO_MODE_OUTPUT GPIO_PUPD_NONE GPIO_PIN_15
   setOutputOptions  GPIOA GPIO_OTYPE_PP GPIO_OSPEED_50MHZ GPIO_PIN_15
+  nop 10
   forever $ do
     GPIO.setBit GPIOA GPIO_PIN_15
     delay 10_000_000
