@@ -7,21 +7,24 @@ import           Development.Shake.Util
 
 
 shake :: IO ()
-shake = shakeArgs shakeOptions{shakeFiles="_build"} $ do
-    want ["_build/run" <.> exe]
+shake = shakeArgs shakeOptions{shakeFiles="build"} $ do
+    want ["build/blink.hex"]
 
     phony "clean" $ do
-        putInfo "Cleaning files in _build"
-        removeFilesAfter "_build" ["//*"]
+        putInfo "Cleaning files in build"
+        removeFilesAfter "build" ["//*"]
 
-    "_build/run" <.> exe %> \out -> do
-        cs <- getDirectoryFiles "" ["//*.c"]
-        let os = ["_build" </> c -<.> "o" | c <- cs]
+    "build/blink.hex" %> \out -> do
+        cs <- getDirectoryFiles "c" ["//*.c"]
+        let os = ["build" </> c -<.> "o" | c <- cs]
         need os
-        cmd_ "gcc -o" [out] os
+        -- cmd_ "arm-none-eabi-gcc -o" [out] os
 
-    "_build//*.o" %> \out -> do
-        let c = dropDirectory1 $ out -<.> "c"
+    "build//*.o" %> \out -> do
+        let c = "c" </> (dropDirectory1 $ out -<.> "c")
         let m = out -<.> "m"
-        cmd_ "gcc -c" [c] "-o" [out] "-MMD -MF" [m]
+        cmd_ "arm-none-eabi-gcc -c" [c] "-o" [out] "-MMD -MF" [m]
+             "-DGD32F330"
+             "-Ibuild -Ic/support/CMSIS/inc/ -Ic/support/device/gd32f3x0/inc -Ic/support/device/gd32f3x0/peripherals/inc/"
+             "-mthumb -mcpu=cortex-m4 -mfloat-abi=soft -fno-builtin -fno-strict-aliasing -fdata-sections -fms-extensions -ffunction-sections -Og"
         neededMakefileDependencies m

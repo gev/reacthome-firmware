@@ -18,7 +18,7 @@ compileUSART = runCompiler
   [usartModule]
   []
   initialOpts
-    { outDir = Just "./build"
+    { outDir = Just "./c/firmware"
     , constFold = True
     }
 
