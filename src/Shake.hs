@@ -53,21 +53,26 @@ ld = "-Tsupport/device/gd32f3x0/gd32f3x0.ld"
 
 shake :: IO ()
 shake = shakeArgs shakeOptions{shakeFiles="build"} $ do
-    want [ "build/firmware/blink.elf"
-         , "build/firmware/scheduler.elf"
-         , "build/firmware/usart.elf"
+    want [ "build/firmware/blink.hex"
+         , "build/firmware/scheduler.hex"
+         , "build/firmware/usart.hex"
          ]
 
     phony "clean" $ do
         putInfo "Cleaning files in build"
         removeFilesAfter "build" ["//*"]
 
+    "build//*.hex" %> \out -> do
+        let elf = out -<.> "elf"
+        need [elf]
+        cmd_ oc "-O ihex" elf out
+
     "build//*.elf" %> \out -> do
         let o = out -<.> "o"
         cs <- getDirectoryFiles "support" ["//*.c"]
-        need ["build/support" </> c -<.> "o" | c <- cs]
-        need [o]
-        cmd_ cc ldflags ld o "-lc" "-o" out
+        let os = o : ["build/support" </> c -<.> "o" | c <- cs]
+        need os
+        cmd_ cc ldflags ld os "-lc" "-o" out
 
     "build//*.o" %> \out -> do
         let c = dropDirectory1 out -<.> "c"
