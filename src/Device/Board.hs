@@ -1,10 +1,11 @@
 module Device.Board where
 
 import           Device.GPIO
+import           Device.Pin
 
-data Pin = Pin Int [GPIO]
 
-newtype Board = Board [Pin]
+newtype Board = Board [Pin GPIO]
+
 
 bottom :: Board
 bottom = Board

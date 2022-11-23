@@ -33,6 +33,7 @@ executable reacthome-firmware
                     , Device.Board
                     , Device.GPIO
                     , Device.MCU
+                    , Device.Pin
                     , Ivory.Support
                     , Ivory.Support.Device.GD32F3x0
                     , Support.CMSIS.CoreCM4
