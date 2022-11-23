@@ -20,4 +20,3 @@ main = build
   , (usart, "usart")
   , (scheduler, "scheduler")
   ]
-
