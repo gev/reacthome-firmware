@@ -3,28 +3,18 @@
 {-# LANGUAGE OverloadedStrings  #-}
 {-# LANGUAGE TypeOperators      #-}
 
-module USART (compileUSART) where
+module USART (usart) where
 
-import           Ivory.Compile.C.CmdlineFrontend
 import           Ivory.Language
+import           Ivory.Language.Module
 import           Ivory.Stdlib
 import           Support.Device.GD32F3x0.GPIO
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.USART
 
 
-compileUSART :: IO ()
-compileUSART = runCompiler
-  [usartModule]
-  []
-  initialOpts
-    { outDir = Just "./firmware"
-    , constFold = True
-    }
-
-
-usartModule :: Module
-usartModule = package "usart" $ do
+usart :: ModuleM ()
+usart = do
   inclRCU
   inclGPIO
   inclUSART

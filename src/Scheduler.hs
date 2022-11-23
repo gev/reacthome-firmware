@@ -1,23 +1,14 @@
 {-# LANGUAGE DataKinds     #-}
 {-# LANGUAGE TypeOperators #-}
-module Scheduler where
+module Scheduler (scheduler) where
 
-import           Ivory.Compile.C.CmdlineFrontend
 import           Ivory.Language
+import           Ivory.Language.Module
 import           Ivory.Stdlib
 import           Support.Device.GD32F3x0
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.Timer
-
-compileScheduler :: IO ()
-compileScheduler = runCompiler
-  [schedulerModule]
-  []
-  initialOpts
-    { outDir = Just "./firmware"
-    , constFold = True
-    }
 
 handle :: TIMER_PERIPH -> Def ('[] ':-> ())
 handle = makeTimerHandler $ \timer -> do
@@ -25,8 +16,8 @@ handle = makeTimerHandler $ \timer -> do
     when flag $ clearTimerInterruptFlag timer TIMER_INT_FLAG_UP
 
 
-schedulerModule :: Module
-schedulerModule = package "scheduler" $ do
+scheduler :: ModuleM ()
+scheduler = do
   inclG
   inclRCU
   inclMisc

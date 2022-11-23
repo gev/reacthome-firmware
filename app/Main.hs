@@ -1,12 +1,23 @@
 module Main where
-import           Blink     (compileBlink)
-import           Scheduler (compileScheduler)
-import           Shake     (shake)
-import           USART     (compileUSART)
+
+import           Control.Monad
+import           Firmware
+import           Ivory.Language
+import           Shake
+
+
+import           Blink
+import           Scheduler
+import           USART
+
+
+build :: (ModuleDef, String) -> IO ()
+build  (m, n) = compile m n >> shake n
 
 main :: IO ()
-main = do
-  compileBlink
-  compileUSART
-  compileScheduler
-  shake
+main = mapM_ build
+  [ (blink, "blink")
+  , (usart, "usart")
+  , (scheduler, "scheduler")
+  ]
+

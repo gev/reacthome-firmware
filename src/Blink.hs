@@ -3,27 +3,17 @@
 {-# LANGUAGE OverloadedStrings  #-}
 {-# LANGUAGE TypeOperators      #-}
 
-module Blink (compileBlink) where
+module Blink (blink) where
 
-import           Ivory.Compile.C.CmdlineFrontend
 import           Ivory.Language
+import           Ivory.Language.Module
 import           Support.CMSIS.CoreCM4
-import           Support.Device.GD32F3x0.GPIO    as GPIO
+import           Support.Device.GD32F3x0.GPIO as GPIO
 import           Support.Device.GD32F3x0.RCU
 
 
-compileBlink :: IO ()
-compileBlink = runCompiler
-  [blinkModule]
-  []
-  initialOpts
-    { outDir = Just "./firmware"
-    , constFold = True
-    }
-
-
-blinkModule :: Module
-blinkModule = package "blink" $ do
+blink :: ModuleM ()
+blink = do
   inclRCU
   inclGPIO
   inclCoreCM4

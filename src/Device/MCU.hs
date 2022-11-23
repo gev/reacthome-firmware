@@ -1,4 +1,4 @@
-module Device.MCU
+module Device.MCU where
 
-data MCU 
+data MCU
   = GD32F3x0
