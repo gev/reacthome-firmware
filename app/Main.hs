@@ -11,11 +11,11 @@ import           Scheduler
 import           USART
 
 
-build :: (ModuleDef, String) -> IO ()
-build  (m, n) = compile m n >> shake n
+build :: [(ModuleDef, String)] -> IO ()
+build  ms = mapM_ compile ms >> shake (snd <$> ms)
 
 main :: IO ()
-main = mapM_ build
+main = build
   [ (blink, "blink")
   , (usart, "usart")
   , (scheduler, "scheduler")

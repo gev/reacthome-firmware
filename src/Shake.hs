@@ -52,9 +52,9 @@ ld :: String
 ld = "-Tsupport/device/gd32f3x0/gd32f3x0.ld"
 
 
-shake :: String -> IO ()
-shake name = shakeArgs shakeOptions{shakeFiles="build"} $ do
-    want ["build/firmware" </> name <.> "hex"]
+shake :: [String] -> IO ()
+shake ns = shakeArgs shakeOptions{shakeFiles="build"} $ do
+    want $ ["build/firmware" </> n <.> "hex" | n <- ns]
 
     phony "clean" $ do
         putInfo "Cleaning files in build"
