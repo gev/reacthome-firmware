@@ -8,9 +8,11 @@ module Support.CMSIS.CoreCM4
 import           Control.Monad
 import           Ivory.Language
 import           Ivory.Language.Module
-import           Support.Ivory
+import           Ivory.Language.Proc
+import           Ivory.Language.Syntax
+import           Ivory.Support
+import           Ivory.Support.Device.GD32F3x0
 
-(_, fun) = include "core_cm4.h"
 
 
 inclCoreCM4 :: ModuleM ()

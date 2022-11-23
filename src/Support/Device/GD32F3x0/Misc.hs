@@ -9,11 +9,9 @@ module Support.Device.GD32F3x0.Misc
 
 import           Ivory.Language
 import           Ivory.Language.Module
+import           Ivory.Support
+import           Ivory.Support.Device.GD32F3x0
 import           Support.Device.GD32F3x0
-import           Support.Ivory
-
-(def, _) = include "gd32f3x0.h"
-(_, fun) = include "gd32f3x0_misc.h"
 
 
 inclMisc :: ModuleM ()

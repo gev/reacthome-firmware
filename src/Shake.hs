@@ -15,6 +15,7 @@ oc ="arm-none-eabi-objcopy"
 defs :: [String]
 defs =
     [ "-DGD32F330"
+    , "-DUSE_STDPERIPH_DRIVER"
     ]
 incs :: [String]
 

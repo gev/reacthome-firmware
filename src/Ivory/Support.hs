@@ -1,6 +1,6 @@
 {-# LANGUAGE ImpredicativeTypes    #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-module Support.Ivory where
+module Ivory.Support where
 
 import           Data.Foldable
 import           Ivory.Language

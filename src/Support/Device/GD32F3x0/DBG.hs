@@ -11,9 +11,9 @@ module Support.Device.GD32F3x0.DBG
 
 import           Ivory.Language
 import           Ivory.Language.Module
-import           Support.Ivory
+import           Ivory.Support
+import           Ivory.Support.Device.GD32F3x0
 
-(_, fun) = include "gd32f3x0_dbg.h"
 
 inclDBG :: ModuleM ()
 inclDBG = do

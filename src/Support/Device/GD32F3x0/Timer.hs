@@ -26,14 +26,13 @@ module Support.Device.GD32F3x0.Timer
   , inclTimer
   ) where
 
-import           Data.Function         ((&))
+import           Data.Function                 ((&))
 import           Data.Maybe
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Language.Uint
-import           Support.Ivory
-
-(def, fun) = include "gd32f3x0_timer.h"
+import           Ivory.Support
+import           Ivory.Support.Device.GD32F3x0
 
 
 data TIMER_PERIPH

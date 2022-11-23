@@ -8,9 +8,8 @@ import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Language.Proc
 import           Ivory.Language.Syntax
-import           Support.Ivory
-
-(def, _) = include "gd32f3x0.h"
+import           Ivory.Support
+import           Ivory.Support.Device.GD32F3x0
 
 
 data IRQn

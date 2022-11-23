@@ -29,6 +29,8 @@ executable reacthome-firmware
                     , USART
                     , Scheduler
                     , Shake
+                    , Ivory.Support
+                    , Ivory.Support.Device.GD32F3x0
                     , Support.CMSIS.CoreCM4
                     , Support.Device.GD32F3x0
                     , Support.Device.GD32F3x0.GPIO
@@ -37,7 +39,6 @@ executable reacthome-firmware
                     , Support.Device.GD32F3x0.Timer
                     , Support.Device.GD32F3x0.USART
                     , Support.Device.GD32F3x0.DBG
-                    , Support.Ivory
 
     build-depends:    base ^>=4.16.3.0
                     , ivory

@@ -20,11 +20,11 @@ module Support.Device.GD32F3x0.GPIO
   , inclGPIO
   ) where
 
-import           Ivory.Language        (Def, Ivory, Proc ((:->)), Uint32, call_)
+import           Ivory.Language                (Def, Ivory, Proc ((:->)),
+                                                Uint32, call_)
 import           Ivory.Language.Module
-import           Support.Ivory
-
-(def, fun) = include "gd32f3x0_gpio.h"
+import           Ivory.Support
+import           Ivory.Support.Device.GD32F3x0
 
 
 data GPIO_PERIPH
@@ -64,8 +64,8 @@ data GPIO_PIN
   deriving (Show, Enum, Bounded)
 instance ExtDef GPIO_PIN Uint32
 
-data GPIO_AF 
-  = GPIO_AF_1 
+data GPIO_AF
+  = GPIO_AF_1
   deriving (Show, Enum, Bounded)
 instance ExtDef GPIO_AF Uint32
 
@@ -118,7 +118,7 @@ gpio_bit_reset = fun "gpio_bit_reset"
 
 
 setAF :: GPIO_PERIPH -> GPIO_AF -> GPIO_PIN -> Ivory eff ()
-setAF gpio af pin = 
+setAF gpio af pin =
   call_ gpio_af_set (def gpio) (def af) (def pin)
 
 gpio_af_set :: Def ('[Uint32, Uint32, Uint32] :-> ())
