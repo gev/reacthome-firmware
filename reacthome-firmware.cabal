@@ -29,6 +29,7 @@ executable reacthome-firmware
                     , USART
                     , Scheduler
                     , Shake
+                    , Device.MCU
                     , Ivory.Support
                     , Ivory.Support.Device.GD32F3x0
                     , Support.CMSIS.CoreCM4
