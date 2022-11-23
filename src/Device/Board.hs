@@ -3,12 +3,16 @@ module Device.Board where
 import           Device.GPIO
 import           Device.Pin
 
+type Alter = [Pin GPIO]
 
-newtype Board = Board [Pin GPIO]
+data Board
+  = Main    Alter
+  | Bottom  Alter
+  | Top     Alter
 
 
 bottom :: Board
-bottom = Board
+bottom = Bottom
   [ Pin 1   [ IO  1 IN  ,IO  1 OUT  ,UART 1 TX    ]    ,Pin 11   [ IO  2 IN  ,IO  2 OUT  ,UART 1 RE_DE ]
   , Pin 2   [ IO  3 IN  ,IO  3 OUT  ,UART 2 RE_DE ]    ,Pin 12   [ IO  4 IN  ,IO  4 OUT  ,UART 1 RX    ]
   , Pin 3   [ IO  5 IN  ,IO  5 OUT  ,UART 2 RX    ]    ,Pin 13   [ IO  6 IN  ,IO  6 OUT  ,UART 2 TX    ]
@@ -19,7 +23,7 @@ bottom = Board
   ]
 
 top :: Board
-top = Board
+top = Top
   [ Pin 1   [ IO 15 IN  ,IO 15 OUT  ,UART 5 TX    ]    ,Pin 13   [ IO 16 IN  ,IO 16 OUT  ,UART 5 RX    ]
   , Pin 2   [ IO 17 IN  ,IO 17 OUT  ,UART 6 RE_DE ]    ,Pin 14   [ IO 18 IN  ,IO 18 OUT  ,UART 5 RE_DE ]
   , Pin 3   [ IO 19 IN  ,IO 19 OUT  ,UART 6 TX    ]    ,Pin 15   [ IO 20 IN  ,IO 20 OUT  ,UART 6 RX    ]
