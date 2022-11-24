@@ -3,8 +3,8 @@ module Device.Board where
 import           Device.Board.Pin
 
 data Board
-  = Main    { pin_m1  :: Pin_m1
-            , pin_m2  :: Pin_m2
+  = Main    { pin_m1 :: Pin_m1
+            , pin_m2 :: Pin_m2
             }
 
   | Bottom  { pin_b1  :: Pin_b1
@@ -44,5 +44,3 @@ data Board
             , pin_t20 :: Pin_t20
             , pin_t21 :: Pin_t21
             }
-
-
