@@ -1,7 +1,10 @@
 module Device.Board.Pin where
 
+
+
 data Pin_m1  = LED_1
 data Pin_m2  = LED_2
+
 
 
 data Pin_b1  = IO_1_IN  | IO_1_OUT  | UART_1_TX
@@ -12,7 +15,6 @@ data Pin_b5  = IO_9_IN  | IO_9_OUT  | UART_4_TX
 data Pin_b6  = IO_11_IN | IO_11_OUT | UART_4_RE_DE
 data Pin_b7  = IO_13_IN | IO_13_OUT | I2C_1_SDA
 
-
 data Pin_b11 = IO_2_IN  | IO_2_OUT  | UART_1_RE_DE
 data Pin_b12 = IO_4_IN  | IO_4_OUT  | UART_1_RX
 data Pin_b13 = IO_6_IN  | IO_6_OUT  | UART_2_TX
@@ -20,6 +22,7 @@ data Pin_b14 = IO_8_IN  | IO_8_OUT  | UART_3_RE_DE
 data Pin_b15 = IO_10_IN | IO_10_OUT | UART_3_RX
 data Pin_b16 = IO_12_IN | IO_12_OUT | UART_4_RX
 data Pin_b17 = IO_14_IN | IO_14_OUT | I2C_1_SCL
+
 
 
 data Pin_t1  = IO_15_IN | IO_15_OUT | UART_5_TX
