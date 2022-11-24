@@ -31,9 +31,9 @@ executable reacthome-firmware
                     , Shake
                     , Firmware
                     , Device.Board
-                    , Device.GPIO
+                    , Device.Board.Pin
                     , Device.MCU
-                    , Device.Pin
+                    , Device.MCU.GD32F3x0
                     , Ivory.Support
                     , Ivory.Support.Device.GD32F3x0
                     , Support.CMSIS.CoreCM4
