@@ -2,8 +2,7 @@ module Device.Board.Pin where
 
 
 
-data Pin_m1  = LED_1
-data Pin_m2  = LED_2
+data Pin_m1  = IO_0_OUT
 
 
 
