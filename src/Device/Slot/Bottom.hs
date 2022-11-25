@@ -18,7 +18,7 @@ data Pin_16 = IO_12_IN | IO_12_OUT | UART_4_RX
 data Pin_17 = IO_14_IN | IO_14_OUT | I2C_1_SCL
 
 
-data Slot = Slot  
+data Slot = Slot
   { pin_1  :: Pin_1
   , pin_2  :: Pin_2
   , pin_3  :: Pin_3
@@ -35,24 +35,3 @@ data Slot = Slot
   , pin_16 :: Pin_16
   , pin_17 :: Pin_17
   }
-
-  | Top     { pin_t1  :: Pin_t1
-            , pin_t2  :: Pin_t2
-            , pin_t3  :: Pin_t3
-            , pin_t4  :: Pin_t4
-            , pin_t5  :: Pin_t5
-            , pin_t6  :: Pin_t6
-            , pin_t7  :: Pin_t7
-            , pin_t8  :: Pin_t8
-            , pin_t9  :: Pin_t9
-
-            , pin_t13 :: Pin_t13
-            , pin_t14 :: Pin_t14
-            , pin_t15 :: Pin_t15
-            , pin_t16 :: Pin_t16
-            , pin_t17 :: Pin_t17
-            , pin_t18 :: Pin_t18
-            , pin_t19 :: Pin_t19
-            , pin_t20 :: Pin_t20
-            , pin_t21 :: Pin_t21
-            }
