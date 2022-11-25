@@ -1,28 +1,4 @@
-module Device.Board.Pin where
-
-
-
-data Pin_m1  = IO_0_OUT
-
-
-
-data Pin_b1  = IO_1_IN  | IO_1_OUT  | UART_1_TX
-data Pin_b2  = IO_3_IN  | IO_3_OUT  | UART_2_RE_DE
-data Pin_b3  = IO_5_IN  | IO_5_OUT  | UART_2_RX
-data Pin_b4  = IO_7_IN  | IO_7_OUT  | UART_3_TX
-data Pin_b5  = IO_9_IN  | IO_9_OUT  | UART_4_TX
-data Pin_b6  = IO_11_IN | IO_11_OUT | UART_4_RE_DE
-data Pin_b7  = IO_13_IN | IO_13_OUT | I2C_1_SDA
-
-data Pin_b11 = IO_2_IN  | IO_2_OUT  | UART_1_RE_DE
-data Pin_b12 = IO_4_IN  | IO_4_OUT  | UART_1_RX
-data Pin_b13 = IO_6_IN  | IO_6_OUT  | UART_2_TX
-data Pin_b14 = IO_8_IN  | IO_8_OUT  | UART_3_RE_DE
-data Pin_b15 = IO_10_IN | IO_10_OUT | UART_3_RX
-data Pin_b16 = IO_12_IN | IO_12_OUT | UART_4_RX
-data Pin_b17 = IO_14_IN | IO_14_OUT | I2C_1_SCL
-
-
+module Device.Slot.Top where
 
 data Pin_t1  = IO_15_IN | IO_15_OUT | UART_5_TX
 data Pin_t2  = IO_17_IN | IO_17_OUT | UART_6_RE_DE
@@ -43,3 +19,25 @@ data Pin_t18 = IO_26_IN | IO_26_OUT | SPI_1_SS
 data Pin_t19 = IO_28_IN | IO_28_OUT
 data Pin_t20 = IO_30_IN | IO_30_OUT
 data Pin_t21 = IO_32_IN | IO_32_OUT
+
+data Slot = Slot
+  { pin_t1  :: Pin_t1
+  , pin_t2  :: Pin_t2
+  , pin_t3  :: Pin_t3
+  , pin_t4  :: Pin_t4
+  , pin_t5  :: Pin_t5
+  , pin_t6  :: Pin_t6
+  , pin_t7  :: Pin_t7
+  , pin_t8  :: Pin_t8
+  , pin_t9  :: Pin_t9
+
+  , pin_t13 :: Pin_t13
+  , pin_t14 :: Pin_t14
+  , pin_t15 :: Pin_t15
+  , pin_t16 :: Pin_t16
+  , pin_t17 :: Pin_t17
+  , pin_t18 :: Pin_t18
+  , pin_t19 :: Pin_t19
+  , pin_t20 :: Pin_t20
+  , pin_t21 :: Pin_t21
+  }

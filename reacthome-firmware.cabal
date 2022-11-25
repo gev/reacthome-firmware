@@ -30,10 +30,10 @@ executable reacthome-firmware
                     , Scheduler
                     , Shake
                     , Firmware
-                    , Device.Board
-                    , Device.Board.Pin
                     , Device.MCU
                     , Device.MCU.GD32F3x0
+                    , Device.Slot.Bottom
+                    , Device.Slot.Top
                     , Ivory.Support
                     , Ivory.Support.Device.GD32F3x0
                     , Support.CMSIS.CoreCM4
