@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings  #-}
 {-# LANGUAGE TypeOperators      #-}
 
-module Blink (blink) where
+module Firmware.Blink (blink) where
 
 import           Ivory.Language
 import           Ivory.Language.Module

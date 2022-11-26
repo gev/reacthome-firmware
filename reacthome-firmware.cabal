@@ -25,17 +25,21 @@ executable reacthome-firmware
     main-is:          Main.hs
 
     -- Modules included in this executable, other than Main.
-    other-modules:    Blink
-                    , USART
-                    , Scheduler
-                    , Shake
+    other-modules:    Shake
                     , Firmware
-                    , Device.MCU
-                    , Device.MCU.GD32F3x0
-                    , Device.Slot.Bottom
-                    , Device.Slot.Top
+                    , Firmware.Blink
+                    , Firmware.Relay_10
+                    , Firmware.Scheduler
+                    , Firmware.USART
+
+                    , Device.Feature
+                    , Device.GPIO
+                    , Device.MCU.GD32F3x0 
+                    , Device.Slot
+
                     , Ivory.Support
                     , Ivory.Support.Device.GD32F3x0
+
                     , Support.CMSIS.CoreCM4
                     , Support.Device.GD32F3x0
                     , Support.Device.GD32F3x0.GPIO
@@ -46,6 +50,7 @@ executable reacthome-firmware
                     , Support.Device.GD32F3x0.DBG
 
     build-depends:    base ^>=4.16.3.0
+                    , safe
                     , ivory
                     , ivory-backend-c
                     , ivory-stdlib

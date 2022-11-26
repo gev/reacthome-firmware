@@ -1,14 +1,15 @@
 module Main where
 
 import           Control.Monad
-import           Firmware
+
 import           Ivory.Language
+
 import           Shake
+import           Firmware
 
-
-import           Blink
-import           Scheduler
-import           USART
+import           Firmware.Blink
+import           Firmware.Scheduler
+import           Firmware.USART
 
 
 build :: [(ModuleDef, String)] -> IO ()

@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds     #-}
 {-# LANGUAGE TypeOperators #-}
-module Scheduler (scheduler) where
+
+module Firmware.Scheduler (scheduler) where
 
 import           Ivory.Language
 import           Ivory.Language.Module

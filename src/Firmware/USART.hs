@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings  #-}
 {-# LANGUAGE TypeOperators      #-}
 
-module USART (usart) where
+module Firmware.USART (usart) where
 
 import           Ivory.Language
 import           Ivory.Language.Module
