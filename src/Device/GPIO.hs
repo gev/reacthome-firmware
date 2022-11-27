@@ -1,7 +1,7 @@
 module Device.GPIO where
 
-data PIO a
-  = PA a | PB a
+newtype PA a = PA a
+newtype PB a = PB a
 
 data I2C a = I2C
   { scl :: a
@@ -19,13 +19,3 @@ data USART a = USART
   { rx :: a
   , tx :: a
   }
-
-data GPIO a = GPIO
-  { pio   :: [PIO   a]
-  , i2c   :: [I2C   a]
-  , spi   :: [SPI   a]
-  , usart :: [USART a]
-  }
-
-gpio :: GPIO a
-gpio = GPIO [] [] [] []
