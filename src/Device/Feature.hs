@@ -8,17 +8,17 @@ data RBUS
   = Master
   | Slave
 
-data Feature    a
-  = AO          a
-  | Button      a
-  | ButtonL Int a
-  | Dim     Dim a
-  | Doppler     a
-  | Eth         a
-  | In          a
-  | Findme      a
-  | OW          a
-  | Relay       a
-  | RBUS   RBUS a
-  | RS485       a
-  | Service     a
+data Feature          a
+  = AO          Int   a
+  | Button      Int   a
+  | ButtonL Int Int   a
+  | Dim     Dim Int   a
+  | Doppler     Int   a
+  | Eth         Int   a
+  | In          Int   a
+  | Findme      Int   a
+  | OW          Int   a
+  | Relay       Int   a
+  | RBUS   RBUS Int   a
+  | RS485       Int   a
+  | Service     Int   a
