@@ -66,8 +66,8 @@ shake ns = shakeArgs shakeOptions{shakeFiles="build"} $ do
 
     "build//*.elf" %> \out -> do
         let o = out -<.> "o"
-        cs <- getDirectoryFiles "support" ["//*.c"]
-        let os = o : ["build/support" </> c -<.> "o" | c <- cs]
+        cs <- getDirectoryFiles "support/device/gd32f3x0" ["//*.c"]
+        let os = o : ["build/support/device/gd32f3x0" </> c -<.> "o" | c <- cs]
         need os
         cmd_ cc ldflags ld os "-lc" "-o" out
 

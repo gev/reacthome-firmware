@@ -1,11 +1,20 @@
+{-# LANGUAGE FlexibleInstances #-}
+
 module Firmware.Relay_10 where
 
-import           Device.Feature
 import           Device.GPIO
 import           Device.MCU.GD32F3x0.GPIO
+import           Feature
+import           Ivory.Language.Module
 
-relay :: [Feature (GPIO MCU_GPIO)]
+relay :: Features
 relay =
-  [ RBUS Slave  1 usart_1
-  , Relay       1 out_15
+  [ Feature $ RBUS Slave  1 usart_1
+  , Feature $ Relay       1 out_15
   ]
+
+instance Prepare (RBUS (GPIO MCU_GPIO)) where
+  prepare = undefined
+
+instance Prepare (Relay (GPIO MCU_GPIO)) where
+  prepare = undefined

@@ -1,9 +1,10 @@
 module Device.MCU.GD32F3x0.GPIO
-  ( MCU_GPIO
-  , in_15
-  , out_15
-  , usart_1
-  ) where
+  -- ( MCU_GPIO
+  -- , in_15
+  -- , out_15
+  -- , usart_1
+  -- )
+  where
 
 import           Device.GPIO
 

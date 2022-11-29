@@ -1,7 +1,20 @@
-module Firmware where
+{-# LANGUAGE DataKinds     #-}
+{-# LANGUAGE TypeOperators #-}
 
+module Firmware
+  ( Firmware.compile
+  , cook
+  ) where
+
+import           Data.Foldable
+import           Feature
 import           Ivory.Compile.C.CmdlineFrontend
 import           Ivory.Language
+import           Ivory.Language.Module
+
+
+type VoidVoid = Def ('[] ':-> ())
+
 
 compile :: (ModuleDef, String) -> IO ()
 compile (m, n) = runCompiler
@@ -11,3 +24,31 @@ compile (m, n) = runCompiler
     { outDir = Just "./firmware"
     , constFold = True
     }
+
+cook :: Features -> ModuleM ()
+cook fs = do
+  let ps = (\(Feature f) -> prepare f) <$> fs
+  sequenceA_ $ dependecies =<< ps
+  inclT initialize ps
+  inclT step ps
+  let i = init' ps
+  let l = loop' ps
+  incl $ init' ps
+  incl $ loop' ps
+  incl $ main' i l
+
+init' :: [Pack] -> VoidVoid
+init' ps = proc "init" $ body $ callT_ initialize ps
+
+loop' :: [Pack] -> VoidVoid
+loop' ps = proc "loop" $ body $ forever $ callT_ step ps
+
+main' ::VoidVoid -> VoidVoid -> Def ('[] ':-> Sint32)
+main' i l = proc "main" $ body $ call_ i >> call_ l >> ret 0
+
+inclT :: (Pack -> VoidVoid) -> [Pack] -> ModuleM ()
+inclT f  = traverse_ (incl . f)
+
+callT_ :: (Pack -> VoidVoid) -> [Pack] -> Ivory eff ()
+callT_ f  = traverse_ (call_ . f)
+
