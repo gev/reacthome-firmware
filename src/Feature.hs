@@ -10,10 +10,6 @@ data Dim'
   = AC
   | DC
 
-data RBUS'
-  = Master
-  | Slave
-
 data AO      a = AO            Int   a
 data Buttonn a = Button        Int   a
 data ButtonL a = ButtonL Int   Int   a
@@ -23,8 +19,6 @@ data Eth     a = Eth           Int   a
 data In      a = In            Int   a
 data Findme  a = Findme        Int   a
 data OW      a = OW            Int   a
-data Relay   a = Relay         Int   a
-data RBUS    a = RBUS    RBUS' Int   a
 data RS485   a = RS485         Int   a
 data Service a = Service       Int   a
 

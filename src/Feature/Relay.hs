@@ -1,0 +1,10 @@
+module Feature.Relay where
+
+import           Device.GPIO
+import           Feature
+
+data Relay a = Relay Int a
+
+instance OUT o => Prepare (Relay o) where
+  prepare = undefined
+
