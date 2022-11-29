@@ -35,10 +35,12 @@ type Features  = [Feature]
 
 data Pack = Pack
   { dependecies :: [ModuleM ()]
-  , initialize  :: Def ('[] ':-> ())
-  , step        :: Def ('[] ':-> ())
+  , initialize  :: Def ('[] :-> ())
+  , step        :: Def ('[] :-> ())
   }
 
 class Prepare f where
   prepare :: f -> Pack
 
+instance Prepare Feature where
+  prepare (Feature f) = prepare f

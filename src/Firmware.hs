@@ -27,7 +27,7 @@ compile (m, n) = runCompiler
 
 cook :: Features -> ModuleM ()
 cook fs = do
-  let ps = (\(Feature f) -> prepare f) <$> fs
+  let ps = prepare <$> fs
   sequenceA_ $ dependecies =<< ps
   inclT initialize ps
   inclT step ps
@@ -37,18 +37,17 @@ cook fs = do
   incl $ loop' ps
   incl $ main' i l
 
-init' :: [Pack] -> VoidVoid
+init' :: [Pack] -> Def ('[] ':-> ())
 init' ps = proc "init" $ body $ callT_ initialize ps
 
-loop' :: [Pack] -> VoidVoid
+loop' :: [Pack] -> Def ('[] ':-> ())
 loop' ps = proc "loop" $ body $ forever $ callT_ step ps
 
-main' ::VoidVoid -> VoidVoid -> Def ('[] ':-> Sint32)
+main' ::Def ('[] ':-> ()) -> Def ('[] ':-> ()) -> Def ('[] ':-> Sint32)
 main' i l = proc "main" $ body $ call_ i >> call_ l >> ret 0
 
-inclT :: (Pack -> VoidVoid) -> [Pack] -> ModuleM ()
+inclT :: (Pack -> Def ('[] ':-> ())) -> [Pack] -> ModuleM ()
 inclT f  = traverse_ (incl . f)
 
-callT_ :: (Pack -> VoidVoid) -> [Pack] -> Ivory eff ()
+callT_ :: (Pack -> Def ('[] ':-> ())) -> [Pack] -> Ivory eff ()
 callT_ f  = traverse_ (call_ . f)
-
