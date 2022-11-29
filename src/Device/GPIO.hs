@@ -1,19 +1,21 @@
 module Device.GPIO where
 
-data GPIO  a
-  = IN     a
-  | OUT    a
-  | I2C
-    { scl :: a
-    , sda :: a
-    }
-  | SPI
-    { sckl :: a
-    , miso :: a
-    , mosi :: a
-    , ss   :: a
-    }
-  | UART
-    { rx :: a
-    , tx :: a
-    }
+import           Ivory.Language
+import           Ivory.Language.Module
+
+class GPIO a where
+  dependecies :: a -> [ModuleM ()]
+  initialize :: a -> Ivory eff ()
+
+class GPIO a => IN a where
+  getBit :: a -> Ivory eff IBool
+
+class GPIO a => OUT a where
+  resetBit :: a -> Ivory eff ()
+  setBit :: a -> Ivory eff ()
+
+class GPIO a => USART a
+
+class GPIO a => I2C a
+
+class GPIO a => SPI a

@@ -2,7 +2,7 @@
 
 module Firmware.Relay_10 where
 
-import           Device.GPIO
+import           Device.GPIO              as D
 import           Device.MCU.GD32F3x0.GPIO
 import           Feature
 import           Ivory.Language.Module
@@ -13,8 +13,8 @@ relay =
   , Feature $ Relay       1 out_15
   ]
 
-instance Prepare (RBUS (GPIO MCU_GPIO)) where
+instance D.USART u => Prepare (RBUS u) where
   prepare = undefined
 
-instance Prepare (Relay (GPIO MCU_GPIO)) where
+instance D.OUT o => Prepare (Relay o) where
   prepare = undefined
