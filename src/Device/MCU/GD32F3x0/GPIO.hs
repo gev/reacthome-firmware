@@ -63,8 +63,8 @@ instance D.GPIO OUT where
     setOutputOptions  gpio GPIO_OTYPE_PP GPIO_OSPEED_50MHZ pin
 
 instance D.OUT OUT where
-  setBit    (OUT (PORT rcu gpio pin (MF mode))) = S.setBit gpio pin
-  resetBit  (OUT (PORT rcu gpio pin (MF mode))) = S.resetBit gpio pin
+  set    (OUT (PORT rcu gpio pin (MF mode))) = S.setBit gpio pin
+  reset  (OUT (PORT rcu gpio pin (MF mode))) = S.resetBit gpio pin
 
 
 instance D.GPIO USART where
