@@ -9,7 +9,7 @@ module Feature.Blink where
 import           Device.GPIO           as GPIO
 import           Feature
 import           Ivory.Language
-import           Ivory.Language.Module (ModuleM)
+import           Ivory.Language.Module
 
 
 data Blink a = Blink Int a
