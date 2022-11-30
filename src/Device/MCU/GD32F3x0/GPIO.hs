@@ -1,3 +1,4 @@
+{-# LANGUAGE NamedFieldPuns #-}
 module Device.MCU.GD32F3x0.GPIO
   -- ( MCU_GPIO
   -- , in_15
@@ -57,14 +58,14 @@ pa_15 = pa GPIO_PIN_15
 
 instance D.GPIO OUT where
   dependecies = const [inclRCU, inclGPIO]
-  initialize (OUT (PORT rcu gpio pin (MF mode))) = do
+  initialize (OUT (PORT {rcu, gpio, pin, mode = (MF mode)})) = do
     enablePeriphClock rcu
     setMode           gpio mode GPIO_PUPD_NONE pin
     setOutputOptions  gpio GPIO_OTYPE_PP GPIO_OSPEED_50MHZ pin
 
 instance D.OUT OUT where
-  set    (OUT (PORT rcu gpio pin (MF mode))) = S.setBit gpio pin
-  reset  (OUT (PORT rcu gpio pin (MF mode))) = S.resetBit gpio pin
+  set    (OUT (PORT {gpio, pin})) = S.setBit gpio pin
+  reset  (OUT (PORT {gpio, pin})) = S.resetBit gpio pin
 
 
 instance D.GPIO USART where
