@@ -3,22 +3,35 @@ module Device.GD32F3x0.USART where
 
 import           Device.GD32F3x0.GPIO
 import qualified Interface                     as I
-import qualified Interface.GPIO                as I
+import qualified Interface.USART               as I
 import           Support.Device.GD32F3x0.GPIO  as S
 import           Support.Device.GD32F3x0.RCU   as S
 import           Support.Device.GD32F3x0.USART as S
 
 
-data USART = USART USART_PERIPH RCU_PERIPH PORT PORT
+data USART = USART
+  { usart :: USART_PERIPH
+  , rcu   :: RCU_PERIPH
+  , rx    :: PORT
+  , tx    :: PORT
+  }
 
-usart_1 = usart USART1 RCU_USART1 pa_2 pa_3 GPIO_AF_1
-
-usart :: USART_PERIPH -> RCU_PERIPH -> (MODE -> PORT) -> (MODE -> PORT) -> GPIO_AF -> USART
-usart u r rx tx m  = USART u r  (rx $ AF m) (tx $ AF m)
+usart_1 = USART USART1
+                RCU_USART1
+                (pa_2 $ AF GPIO_AF_1)
+                (pa_3 $ AF GPIO_AF_1)
 
 
 instance I.Interface USART where
-  dependecies = undefined
-  initialize = undefined
+  dependecies = const $ inclUSART : dependecies'
+  initialize (USART usart rcu rx tx) = do
+    initialize' rx
+    initialize' tx
+    enablePeriphClock rcu
+    deinitUSART     usart
+    configReceive   usart USART_RECEIVE_ENABLE
+    configTransmit  usart USART_TRANSMIT_ENABLE
+    enableUSART     usart
+
 
 instance I.USART USART

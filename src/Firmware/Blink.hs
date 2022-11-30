@@ -1,6 +1,6 @@
 module Firmware.Blink (blink) where
 
-import           Device.GD32F3x0.OUT
+import           Device.GD32F3x0.GPIO
 import           Feature
 import           Feature.Blink
 

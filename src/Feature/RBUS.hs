@@ -3,7 +3,7 @@
 module Feature.RBUS where
 
 import           Feature
-import           Interface.GPIO
+import           Interface.USART
 
 data RBUS a = (USART a) => RBUS RBUS' Int a
 
