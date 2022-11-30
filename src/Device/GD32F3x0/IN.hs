@@ -1,7 +1,7 @@
 module Device.GD32F3x0.IN where
 
 import           Device.GD32F3x0.GPIO
-import qualified Interface               as I
+import qualified Interface                    as I
 import qualified Interface.GPIO               as I
 import           Support.Device.GD32F3x0.GPIO as S
 

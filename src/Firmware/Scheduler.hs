@@ -11,7 +11,7 @@ import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.Timer
 
-handle :: TIMER_PERIPH -> Def ('[] ':-> ())
+handle :: TIMER_PERIPH -> Def ('[] :-> ())
 handle = makeTimerHandler $ \timer -> do
     flag <- getTimerInterruptFlag timer TIMER_INT_FLAG_UP
     when flag $ clearTimerInterruptFlag timer TIMER_INT_FLAG_UP

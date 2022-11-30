@@ -34,17 +34,17 @@ cook fs = do
   incl $ loop' ps
   incl $ main' i l
 
-init' :: [Pack] -> Def ('[] ':-> ())
+init' :: [Pack] -> Def ('[] :-> ())
 init' ps = proc "init" $ body $ callT_ initialize ps
 
-loop' :: [Pack] -> Def ('[] ':-> ())
+loop' :: [Pack] -> Def ('[] :-> ())
 loop' ps = proc "loop" $ body $ forever $ callT_ step ps
 
-main' ::Def ('[] ':-> ()) -> Def ('[] ':-> ()) -> Def ('[] ':-> Sint32)
+main' ::Def ('[] :-> ()) -> Def ('[] :-> ()) -> Def ('[] :-> Sint32)
 main' i l = proc "main" $ body $ call_ i >> call_ l >> ret 0
 
-inclT :: (Pack -> Def ('[] ':-> ())) -> [Pack] -> ModuleM ()
+inclT :: (Pack -> Def ('[] :-> ())) -> [Pack] -> ModuleM ()
 inclT f  = traverse_ (incl . f)
 
-callT_ :: (Pack -> Def ('[] ':-> ())) -> [Pack] -> Ivory eff ()
+callT_ :: (Pack -> Def ('[] :-> ())) -> [Pack] -> Ivory eff ()
 callT_ f  = traverse_ (call_ . f)
