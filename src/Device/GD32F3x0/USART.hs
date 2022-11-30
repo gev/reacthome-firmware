@@ -1,7 +1,8 @@
-module Device.MCU.GD32F3x0.USART where
+module Device.GD32F3x0.USART where
 
-import qualified Device.GPIO                   as D
+
 import           Device.MCU.GD32F3x0.GPIO
+import qualified Interface.GPIO                as I
 import           Support.Device.GD32F3x0.GPIO  as S
 import           Support.Device.GD32F3x0.RCU   as S
 import           Support.Device.GD32F3x0.USART as S
@@ -15,8 +16,8 @@ usart :: USART_PERIPH -> RCU_PERIPH -> (MODE -> PORT) -> (MODE -> PORT) -> GPIO_
 usart u r rx tx m  = USART u r  (rx $ AF m) (tx $ AF m)
 
 
-instance D.GPIO USART where
+instance I.GPIO USART where
   dependecies = undefined
   initialize = undefined
 
-instance D.USART USART
+instance I.USART USART

@@ -1,7 +1,7 @@
 module Feature.RBUS where
 
-import           Device.GPIO
 import           Feature
+import           Interface.GPIO
 
 data RBUS a = RBUS RBUS' Int a
 

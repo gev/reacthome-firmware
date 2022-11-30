@@ -1,4 +1,4 @@
-module Device.GPIO where
+module Interface.GPIO where
 
 import           Ivory.Language
 import           Ivory.Language.Module

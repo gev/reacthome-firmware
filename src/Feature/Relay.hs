@@ -1,7 +1,7 @@
 module Feature.Relay where
 
-import           Device.GPIO
 import           Feature
+import           Interface.GPIO
 
 data Relay a = Relay Int a
 

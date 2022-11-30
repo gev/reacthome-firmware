@@ -38,12 +38,12 @@ executable reacthome-firmware
                     , Firmware.Scheduler
                     , Firmware.USART
 
-                    , Device.GPIO
-                    , Device.MCU.GD32F3x0.GPIO
-                    , Device.MCU.GD32F3x0.IN
-                    , Device.MCU.GD32F3x0.OUT
-                    , Device.MCU.GD32F3x0.USART
-                    , Device.Slot
+                    , Interface.GPIO
+
+                    , Device.GD32F3x0.GPIO
+                    , Device.GD32F3x0.IN
+                    , Device.GD32F3x0.OUT
+                    , Device.GD32F3x0.USART
 
                     , Ivory.Support
                     , Ivory.Support.Device.GD32F3x0

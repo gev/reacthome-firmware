@@ -6,8 +6,8 @@
 module Feature.Blink where
 
 
-import           Device.GPIO           as GPIO
 import           Feature
+import           Interface.GPIO        as I
 import           Ivory.Language
 import           Ivory.Language.Module
 
@@ -16,14 +16,14 @@ data Blink a = Blink Int a
 
 instance OUT b => Prepare (Blink b) where
   prepare (Blink n out) =
-     Pack (GPIO.dependecies out)
+     Pack (I.dependecies out)
           (prepare' n out)
           (step' n out)
 
 prepare' :: OUT b => Int -> b -> Def ('[] :-> ())
 prepare' n out =
   proc ("blink_" <> show n <> "_init") $ body $
-    GPIO.initialize out
+    I.initialize out
 
 step' :: OUT b => Int -> b -> Def ('[] :-> ())
 step' n out =

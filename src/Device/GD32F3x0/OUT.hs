@@ -1,9 +1,9 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
-module Device.MCU.GD32F3x0.OUT where
+module Device.GD32F3x0.OUT where
 
-import qualified Device.GPIO                  as D
 import           Device.MCU.GD32F3x0.GPIO
+import qualified Interface.GPIO               as I
 import           Support.Device.GD32F3x0.GPIO as S
 
 
@@ -15,10 +15,10 @@ output :: (MODE -> PORT) -> OUT
 output = OUT . io GPIO_MODE_OUTPUT
 
 
-instance D.GPIO OUT where
+instance I.GPIO OUT where
   dependecies = dependecies'
   initialize (OUT p) = initialize' p
 
-instance D.OUT OUT where
+instance I.OUT OUT where
   set   (OUT (PORT {gpio, pin})) = S.setBit gpio pin
   reset (OUT (PORT {gpio, pin})) = S.resetBit gpio pin

@@ -1,6 +1,7 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
-module Device.MCU.GD32F3x0.GPIO where
+
+module Device.GD32F3x0.GPIO where
 
 import           Ivory.Language
 import           Ivory.Language.Module
