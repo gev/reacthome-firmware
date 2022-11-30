@@ -1,11 +1,6 @@
 {-# LANGUAGE NamedFieldPuns #-}
-module Device.MCU.GD32F3x0.GPIO
-  -- ( MCU_GPIO
-  -- , in_15
-  -- , out_15
-  -- , usart_1
-  -- )
-  where
+
+module Device.MCU.GD32F3x0.GPIO where
 
 import qualified Device.GPIO                   as D
 
@@ -64,8 +59,8 @@ instance D.GPIO OUT where
     setOutputOptions  gpio GPIO_OTYPE_PP GPIO_OSPEED_50MHZ pin
 
 instance D.OUT OUT where
-  set    (OUT (PORT {gpio, pin})) = S.setBit gpio pin
-  reset  (OUT (PORT {gpio, pin})) = S.resetBit gpio pin
+  set   (OUT (PORT {gpio, pin})) = S.setBit gpio pin
+  reset (OUT (PORT {gpio, pin})) = S.resetBit gpio pin
 
 
 instance D.GPIO USART where
