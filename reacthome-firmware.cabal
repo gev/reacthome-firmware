@@ -40,6 +40,9 @@ executable reacthome-firmware
 
                     , Device.GPIO
                     , Device.MCU.GD32F3x0.GPIO
+                    , Device.MCU.GD32F3x0.IN
+                    , Device.MCU.GD32F3x0.OUT
+                    , Device.MCU.GD32F3x0.USART
                     , Device.Slot
 
                     , Ivory.Support

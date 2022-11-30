@@ -20,12 +20,12 @@ instance OUT b => Prepare (Blink b) where
           (prepare' n out)
           (step' n out)
 
-prepare' :: OUT b => Int -> b -> Def ('[] ':-> ())
+prepare' :: OUT b => Int -> b -> Def ('[] :-> ())
 prepare' n out =
   proc ("blink_" <> show n <> "_init") $ body $
     GPIO.initialize out
 
-step' :: OUT b => Int -> b -> Def ('[] ':-> ())
+step' :: OUT b => Int -> b -> Def ('[] :-> ())
 step' n out =
   proc ("blink_" <> show n <> "_step") $ body $ do
     set out
