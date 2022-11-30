@@ -18,4 +18,4 @@ instance D.GPIO IN where
   initialize (IN p) = initialize' p
 
 instance D.IN IN where
-  getBit = undefined
+  get = undefined

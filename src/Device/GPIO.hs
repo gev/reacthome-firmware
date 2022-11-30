@@ -8,7 +8,7 @@ class GPIO a where
   initialize :: a -> Ivory eff ()
 
 class GPIO a => IN a where
-  getBit :: a -> Ivory eff IBool
+  get :: a -> Ivory eff IBool
 
 class GPIO a => OUT a where
   reset :: a -> Ivory eff ()
