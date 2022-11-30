@@ -2,7 +2,7 @@
 
 module Device.GD32F3x0.OUT where
 
-import           Device.MCU.GD32F3x0.GPIO
+import           Device.GD32F3x0.GPIO
 import qualified Interface.GPIO               as I
 import           Support.Device.GD32F3x0.GPIO as S
 

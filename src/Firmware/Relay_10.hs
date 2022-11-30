@@ -2,8 +2,8 @@
 
 module Firmware.Relay_10 where
 
-import           Device.MCU.GD32F3x0.OUT
-import           Device.MCU.GD32F3x0.USART
+import           Device.GD32F3x0.OUT
+import           Device.GD32F3x0.USART
 import           Feature
 import           Feature.RBUS
 import           Feature.Relay
