@@ -28,9 +28,9 @@ prepare' n out =
 step' :: OUT b => Int -> b -> Def ('[] ':-> ())
 step' n out =
   proc ("blink_" <> show n <> "_step") $ body $ do
-    GPIO.setBit out
+    set out
     delay 10_000_000
-    GPIO.resetBit out
+    reset out
     delay 10_000_000
 
 delay :: Ix 1_000_000_000 -> Ivory eff ()

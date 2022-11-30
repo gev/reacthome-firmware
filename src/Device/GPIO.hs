@@ -11,8 +11,8 @@ class GPIO a => IN a where
   getBit :: a -> Ivory eff IBool
 
 class GPIO a => OUT a where
-  resetBit :: a -> Ivory eff ()
-  setBit :: a -> Ivory eff ()
+  reset :: a -> Ivory eff ()
+  set :: a -> Ivory eff ()
 
 class GPIO a => USART a
 
