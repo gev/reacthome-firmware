@@ -7,7 +7,7 @@ import           Support.Device.GD32F3x0.GPIO as S
 
 newtype IN = IN PORT
 
-in_15  = input pa_15
+in_pa_15  = input pa_15
 
 input :: (MODE -> PORT) -> IN
 input = IN . io GPIO_MODE_INPUT

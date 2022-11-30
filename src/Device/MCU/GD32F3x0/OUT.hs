@@ -9,7 +9,7 @@ import           Support.Device.GD32F3x0.GPIO as S
 
 newtype OUT = OUT PORT
 
-out_15  = output  pa_15
+out_pa_15  = output  pa_15
 
 output :: (MODE -> PORT) -> OUT
 output = OUT . io GPIO_MODE_OUTPUT

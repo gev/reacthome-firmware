@@ -7,5 +7,5 @@ import           Feature.Blink
 
 blink :: Features
 blink =
-  [ Feature $ Blink 1 out_15
+  [ Feature $ Blink 1 out_pa_15
   ]

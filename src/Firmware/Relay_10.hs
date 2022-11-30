@@ -11,5 +11,5 @@ import           Feature.Relay
 relay :: Features
 relay =
   [ Feature $ RBUS Slave  1 usart_1
-  , Feature $ Relay       1 out_15
+  , Feature $ Relay       1 out_pa_15
   ]
