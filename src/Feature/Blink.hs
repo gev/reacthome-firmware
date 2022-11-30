@@ -1,20 +1,21 @@
 {-# LANGUAGE DataKinds          #-}
 {-# LANGUAGE FlexibleInstances  #-}
+{-# LANGUAGE GADTs              #-}
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE TypeOperators      #-}
 
 module Feature.Blink where
 
-
 import           Feature
+import           Interface             as I
 import           Interface.GPIO        as I
 import           Ivory.Language
 import           Ivory.Language.Module
 
 
-data Blink a = Blink Int a
+data Blink a = (I.OUT a) => Blink Int a
 
-instance OUT b => Prepare (Blink b) where
+instance Prepare (Blink b) where
   prepare (Blink n out) =
      Pack (I.dependecies out)
           (prepare' n out)

@@ -13,9 +13,6 @@ import           Ivory.Language
 import           Ivory.Language.Module
 
 
-type VoidVoid = Def ('[] ':-> ())
-
-
 compile :: (ModuleDef, String) -> IO ()
 compile (m, n) = runCompiler
   [package n m]

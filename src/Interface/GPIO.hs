@@ -1,21 +1,18 @@
 module Interface.GPIO where
 
+import Interface
 import           Ivory.Language
 import           Ivory.Language.Module
 
-class GPIO a where
-  dependecies :: a -> [ModuleM ()]
-  initialize :: a -> Ivory eff ()
-
-class GPIO a => IN a where
+class Interface a => IN a where
   get :: a -> Ivory eff IBool
 
-class GPIO a => OUT a where
+class Interface a => OUT a where
   reset :: a -> Ivory eff ()
   set :: a -> Ivory eff ()
 
-class GPIO a => USART a
+class Interface a => USART a
 
-class GPIO a => I2C a
+class Interface a => I2C a
 
-class GPIO a => SPI a
+class Interface a => SPI a

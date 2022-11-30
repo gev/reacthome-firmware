@@ -1,10 +1,11 @@
+{-# LANGUAGE GADTs #-}
+
 module Feature.Relay where
 
 import           Feature
 import           Interface.GPIO
 
-data Relay a = Relay Int a
+data Relay a = (OUT a) => Relay Int a
 
-instance OUT o => Prepare (Relay o) where
+instance Prepare (Relay o) where
   prepare = undefined
-

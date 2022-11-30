@@ -3,6 +3,7 @@
 module Device.GD32F3x0.OUT where
 
 import           Device.GD32F3x0.GPIO
+import qualified Interface               as I
 import qualified Interface.GPIO               as I
 import           Support.Device.GD32F3x0.GPIO as S
 
@@ -15,7 +16,7 @@ output :: (MODE -> PORT) -> OUT
 output = OUT . io GPIO_MODE_OUTPUT
 
 
-instance I.GPIO OUT where
+instance I.Interface OUT where
   dependecies = dependecies'
   initialize (OUT p) = initialize' p
 
