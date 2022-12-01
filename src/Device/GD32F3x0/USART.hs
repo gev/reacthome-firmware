@@ -37,6 +37,9 @@ instance I.Interface USART where
 
 instance I.USART USART where
 
+  {-
+    TODO: Should we "deinit" USART before change a configuration?
+  -}
   setBaudrate   u     = S.setBaudrate $ usart u
   setWordLength u wl  = S.setWordLength (usart u) (coerceWordLength wl)
   setStopBit    u sb  = S.setStopBit    (usart u) (coerceStopBit sb)
