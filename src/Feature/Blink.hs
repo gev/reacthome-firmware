@@ -17,7 +17,7 @@ data Blink a = (I.OUT a) => Blink Int a
 
 instance Prepare (Blink b) where
   prepare (Blink n out) =
-     Pack (I.dependecies out)
+     Pack (I.dependencies out)
           (prepare' n out)
           (step' n out)
 

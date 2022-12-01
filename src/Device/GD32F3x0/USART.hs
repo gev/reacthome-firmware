@@ -23,7 +23,7 @@ usart_1 = USART USART1
 
 instance I.Interface USART where
 
-  dependecies = const $ inclUSART : dependecies'
+  dependencies = const $ inclUSART : dependencies'
 
   initialize (USART usart rcu rx tx) = do
     initialize' rx
@@ -39,7 +39,7 @@ instance I.USART USART where
 
   setBaudrate u = S.setBaudrate $ usart u
 
-  setWordLength u wl = S.setWordLength (usart u) (coerceWolrdLength wl)
+  setWordLength u wl = S.setWordLength (usart u) (coerceWordLength wl)
 
   setStopBit u sb = S.setStopBit (usart u) (coerceStopBit sb)
 
@@ -49,11 +49,12 @@ instance I.USART USART where
 
   transmitData u = S.transmitData $ usart u
 
+
 {-
-  TODO: add all values of word length, stopbit and pparity
+  TODO: add all values of word length, stopbit and parity
 -}
-coerceWolrdLength :: I.WordLength -> USART_WORD_LENGHT
-coerceWolrdLength I.WL_8b = USART_WL_8BIT
+coerceWordLength :: I.WordLength -> USART_WORD_LENGTH
+coerceWordLength I.WL_8b = USART_WL_8BIT
 
 coerceStopBit :: I.StopBit -> USART_STOP_BIT
 coerceStopBit I.SB_1b = USART_STB_1BIT

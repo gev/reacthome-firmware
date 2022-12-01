@@ -3,9 +3,10 @@
 {-# LANGUAGE TypeOperators         #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
+
 module Support.Device.GD32F3x0.USART
   ( USART_PERIPH      (..)
-  , USART_WORD_LENGHT (..)
+  , USART_WORD_LENGTH (..)
   , USART_STOP_BIT    (..)
   , USART_PARITY_CFG  (..)
   , USART_RX_CFG      (..)
@@ -38,10 +39,10 @@ data USART_PERIPH
   deriving (Show, Enum, Bounded)
 instance ExtDef USART_PERIPH Uint32
 
-data USART_WORD_LENGHT
+data USART_WORD_LENGTH
   = USART_WL_8BIT
   deriving (Show, Enum, Bounded)
-instance ExtDef USART_WORD_LENGHT Uint32
+instance ExtDef USART_WORD_LENGTH Uint32
 
 data USART_STOP_BIT
   = USART_STB_1BIT
@@ -74,7 +75,7 @@ instance ExtDef USART_FLAG Uint32
 inclUSART :: ModuleM ()
 inclUSART = do
   inclDef (def :: Cast USART_PERIPH Uint32)
-  inclDef (def :: Cast USART_WORD_LENGHT Uint32)
+  inclDef (def :: Cast USART_WORD_LENGTH Uint32)
   inclDef (def :: Cast USART_STOP_BIT Uint32)
   inclDef (def :: Cast USART_PARITY_CFG Uint32)
   inclDef (def :: Cast USART_RX_CFG Uint32)
@@ -100,7 +101,7 @@ usart_deinit :: Def ('[Uint32] :-> ())
 usart_deinit = fun "usart_deinit"
 
 
-setWordLength :: USART_PERIPH -> USART_WORD_LENGHT -> Ivory eff ()
+setWordLength :: USART_PERIPH -> USART_WORD_LENGTH -> Ivory eff ()
 setWordLength usart length =
   call_ usart_word_length_set (def usart) (def length)
 

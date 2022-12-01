@@ -11,13 +11,13 @@ data Dim'
   | DC
 
 data AO      a = AO            Int   a
-data Buttonn a = Button        Int   a
+data Button  a = Button        Int   a
 data ButtonL a = ButtonL Int   Int   a
 data Dim     a = Dim     Dim'  Int   a
 data Doppler a = Doppler       Int   a
 data Eth     a = Eth           Int   a
 data In      a = In            Int   a
-data Findme  a = Findme        Int   a
+data FindMe  a = FindMe        Int   a
 data OW      a = OW            Int   a
 data RS485   a = RS485         Int   a
 data Service a = Service       Int   a
@@ -28,9 +28,9 @@ data Feature where
 type Features  = [Feature]
 
 data Pack = Pack
-  { dependecies :: [ModuleM ()]
-  , initialize  :: Def ('[] :-> ())
-  , step        :: Def ('[] :-> ())
+  { dependencies :: [ModuleM ()]
+  , initialize   :: Def ('[] :-> ())
+  , step         :: Def ('[] :-> ())
   }
 
 class Prepare f where

@@ -47,11 +47,11 @@ io m p = p $ MF m
 
 
 instance I.Interface IN where
-  dependecies = const dependecies'
+  dependencies = const dependencies'
   initialize (IN p) = initialize' p
 
 instance I.Interface OUT where
-  dependecies = const dependecies'
+  dependencies = const dependencies'
   initialize (OUT p) = initialize' p
 
 
@@ -63,8 +63,8 @@ instance I.OUT OUT where
   reset (OUT (PORT {gpio, pin})) = S.resetBit gpio pin
 
 
-dependecies' :: [ModuleM ()]
-dependecies' =  [inclRCU, inclGPIO]
+dependencies' :: [ModuleM ()]
+dependencies' =  [inclRCU, inclGPIO]
 
 initialize' :: PORT -> Ivory eff ()
 initialize' (PORT {rcu, gpio, pin, mode}) = do

@@ -25,7 +25,7 @@ compile (m, n) = runCompiler
 cook :: Features -> ModuleM ()
 cook fs = do
   let ps = prepare <$> fs
-  sequenceA_ $ dependecies =<< ps
+  sequenceA_ $ dependencies =<< ps
   inclT initialize ps
   inclT step ps
   let i = init' ps
