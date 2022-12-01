@@ -40,9 +40,11 @@ executable reacthome-firmware
 
                     , Interface
                     , Interface.GPIO
+                    , Interface.Timer
                     , Interface.USART
 
                     , Device.GD32F3x0.GPIO
+                    , Device.GD32F3x0.Timer
                     , Device.GD32F3x0.USART
 
                     , Ivory.Support

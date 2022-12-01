@@ -37,17 +37,17 @@ instance I.Interface USART where
 
 instance I.USART USART where
 
-  setBaudrate u = S.setBaudrate $ usart u
+  setBaudrate   u     = S.setBaudrate $ usart u
+  setWordLength u wl  = S.setWordLength (usart u) (coerceWordLength wl)
+  setStopBit    u sb  = S.setStopBit    (usart u) (coerceStopBit sb)
+  setParity     u p   = S.configParity  (usart u) (coerceParity p)
 
-  setWordLength u wl = S.setWordLength (usart u) (coerceWordLength wl)
+  receive  u = S.receiveData  $ usart u
+  transmit u = S.transmitData $ usart u
 
-  setStopBit u sb = S.setStopBit (usart u) (coerceStopBit sb)
-
-  setParity u p = S.configParity (usart u) (coerceParity p)
-
-  receiveData u = S.receiveData $ usart u
-
-  transmitData u = S.transmitData $ usart u
+  hasReceived    u  = getFlag (usart u) USART_FLAG_RBNE
+  hasTransmitted u  = getFlag (usart u) USART_FLAG_TBE
+  canTransmit    u  = getFlag (usart u) USART_FLAG_TC
 
 
 {-
