@@ -1,12 +1,13 @@
 {-# LANGUAGE ImpredicativeTypes    #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+
 module Ivory.Support where
 
 import           Data.Foldable
 import           Ivory.Language
 import           Ivory.Language.Proc
 import           Ivory.Language.Syntax
-import           Ivory.Language.Syntax.Concrete.ParseAST (IncludeDef (inclDefLoc))
+import           Ivory.Language.Syntax.Concrete.ParseAST
 
 
 type HeaderFile = String

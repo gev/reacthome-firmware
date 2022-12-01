@@ -51,8 +51,8 @@ initialize = proc "initialize" $ body $ do
 loop :: Def('[] :-> ())
 loop = proc "loop" $ body $ do
   forever $ do
-    isDataRecived <- getFlag USART1 USART_FLAG_RBNE
-    when isDataRecived $ do
+    isDataReceived <- getFlag USART1 USART_FLAG_RBNE
+    when isDataReceived $ do
       b <- receiveData USART1
       forever $ do
         isBusy <- getFlag USART1 USART_FLAG_TBE

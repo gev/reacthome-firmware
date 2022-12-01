@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds     #-}
 {-# LANGUAGE TypeOperators #-}
+
 module Support.CMSIS.CoreCM4
   ( nop
   , inclCoreCM4

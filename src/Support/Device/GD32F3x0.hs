@@ -1,4 +1,5 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
+
 module Support.Device.GD32F3x0
   ( IRQn (..)
   , inclG
