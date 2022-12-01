@@ -48,5 +48,7 @@
     "txconfig",
     "typeclass",
     "unrecognised"
-  ]
+  ],
+  "haskell.plugin.importLens.codeLensOn": false,
+  "haskell.plugin.class.globalOn": true
 }
