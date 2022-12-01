@@ -43,6 +43,7 @@
     "Stdlib",
     "STDPERIPH",
     "struct",
+    "subdir",
     "TDFA",
     "Tsupport",
     "txconfig",
@@ -50,5 +51,7 @@
     "unrecognised"
   ],
   "haskell.plugin.importLens.codeLensOn": false,
-  "haskell.plugin.class.globalOn": true
+  "haskell.plugin.class.globalOn": true,
+  "gitlens.codeLens.enabled": false,
+  "gitlens.currentLine.enabled": false
 }
