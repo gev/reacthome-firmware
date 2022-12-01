@@ -31,6 +31,7 @@ executable reacthome-firmware
                     , Feature.Blink
                     , Feature.Relay
                     , Feature.RBUS
+                    , Feature.USART
 
                     , Firmware
                     , Firmware.Blink
