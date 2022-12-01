@@ -1,6 +1,5 @@
 module Device.GD32F3x0.USART where
 
-
 import           Device.GD32F3x0.GPIO
 import qualified Interface                     as I
 import qualified Interface.USART               as I
@@ -23,7 +22,9 @@ usart_1 = USART USART1
 
 
 instance I.Interface USART where
+
   dependecies = const $ inclUSART : dependecies'
+
   initialize (USART usart rcu rx tx) = do
     initialize' rx
     initialize' tx
@@ -34,4 +35,28 @@ instance I.Interface USART where
     enableUSART     usart
 
 
-instance I.USART USART
+instance I.USART USART where
+
+  setBaudrate u = S.setBaudrate $ usart u
+
+  setWordLength u wl = S.setWordLength (usart u) (coerceWolrdLength wl)
+
+  setStopBit u sb = S.setStopBit (usart u) (coerceStopBit sb)
+
+  setParity u p = S.configParity (usart u) (coerceParity p)
+
+  receiveData u = S.receiveData $ usart u
+
+  transmitData u = S.transmitData $ usart u
+
+{-
+  TODO: add all values of word length, stopbit and pparity
+-}
+coerceWolrdLength :: I.WordLength -> USART_WORD_LENGHT
+coerceWolrdLength I.WL_8b = USART_WL_8BIT
+
+coerceStopBit :: I.StopBit -> USART_STOP_BIT
+coerceStopBit I.SB_1b = USART_STB_1BIT
+
+coerceParity :: I.Parity -> USART_PARITY_CFG
+coerceParity I.None = USART_PM_NONE
