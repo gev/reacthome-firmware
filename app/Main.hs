@@ -19,6 +19,6 @@ build  ms = mapM_ compile ms >> shake (snd <$> ms)
 main :: IO ()
 main = build
   [ (cook blink, "blink")
-  , (usart, "usart")
+  , (cook usart, "usart")
   , (scheduler, "scheduler")
   ]
