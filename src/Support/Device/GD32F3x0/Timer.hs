@@ -179,7 +179,7 @@ timerParam = TIMER_PARAM  0
                           65535
                           0
 
-makeTimerHandler :: (TIMER_PERIPH -> (forall s . Ivory (ProcEffects s ()) ()))
-                 -> TIMER_PERIPH
+makeTimerHandler :: TIMER_PERIPH
+                 -> (TIMER_PERIPH -> (forall s. Ivory (ProcEffects s ()) ()))
                  -> Def ('[] :-> ())
-makeTimerHandler b t = proc (show t <> "_IRQHandler") $ body $ b t
+makeTimerHandler t b = proc (show t <> "_IRQHandler") $ body $ b t

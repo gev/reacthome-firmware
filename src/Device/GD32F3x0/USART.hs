@@ -45,8 +45,8 @@ instance I.USART USART where
   setStopBit    u sb  = S.setStopBit    (usart u) (coerceStopBit sb)
   setParity     u p   = S.configParity  (usart u) (coerceParity p)
 
-  receive  u = S.receiveData  $ usart u
-  transmit u = S.transmitData $ usart u
+  receive = S.receiveData . usart
+  transmit = S.transmitData . usart
 
   hasReceived    u  = getFlag (usart u) USART_FLAG_RBNE
   hasTransmitted u  = getFlag (usart u) USART_FLAG_TBE

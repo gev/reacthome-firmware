@@ -31,6 +31,7 @@ executable reacthome-firmware
                     , Feature.Blink
                     , Feature.Relay
                     , Feature.RBUS
+                    , Feature.Scheduler
                     , Feature.USART
 
                     , Firmware
@@ -40,6 +41,7 @@ executable reacthome-firmware
                     , Firmware.USART
 
                     , Interface
+                    , Interface.IRQ
                     , Interface.GPIO
                     , Interface.Timer
                     , Interface.USART

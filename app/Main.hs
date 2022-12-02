@@ -20,5 +20,5 @@ main :: IO ()
 main = build
   [ (cook blink, "blink")
   , (cook usart, "usart")
-  , (scheduler, "scheduler")
+  , (cook scheduler, "scheduler")
   ]

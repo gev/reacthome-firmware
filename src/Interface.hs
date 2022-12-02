@@ -6,4 +6,3 @@ import           Ivory.Language.Module
 class Interface a where
   dependencies  :: a -> [ModuleM ()]
   initialize    :: a -> Ivory eff ()
-
