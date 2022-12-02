@@ -15,12 +15,19 @@ data Scheduler a = I.Timer a => Scheduler Int a
 
 instance Prepare (Scheduler t) where
   prepare (Scheduler n t) =
-     Pack (I.dependencies t <> Q.dependencies t handleIRQ)
+     Pack (  defMemArea clock
+          :  I.dependencies t
+          <> Q.dependencies t (handleIRQ clock)
+          )
           (initialize' n t)
           (step' n)
+     where clock = clock' n
 
-handleIRQ :: Ivory (ProcEffects s ()) ()
-handleIRQ = retVoid
+handleIRQ :: MemArea ('Stored Uint32) -> Ivory (ProcEffects s ()) ()
+handleIRQ clock = do
+  let c = addrOf clock
+  v <- deref c
+  store c $ v + 1
 
 initialize' :: I.Timer t => Int -> t -> Def ('[] :-> ())
 initialize' n t =
@@ -29,5 +36,8 @@ initialize' n t =
     Q.initialize t
 
 step' :: Int -> Def ('[] ':-> ())
-step' n =
-  proc ("scheduler_" <> show n <> "_step") $ body retVoid
+step' n = proc ("scheduler_" <> show n <> "_step") $ body retVoid
+
+clock' :: Int -> MemArea ('Stored Uint32)
+clock' n = area ("scheduler_" <> show n <> "_clock")
+                (Just (ival 0))
