@@ -18,11 +18,11 @@ data USART a = (I.USART a) => USART Int a
 instance Prepare (USART b) where
   prepare (USART n usart) =
      Pack (I.dependencies usart)
-          (prepare' n usart)
+          (initialize' n usart)
           (step' n usart)
 
-prepare' :: I.USART u => Int -> u -> Def ('[] ':-> ())
-prepare' n usart =
+initialize' :: I.USART u => Int -> u -> Def ('[] ':-> ())
+initialize' n usart =
   proc ("usart_" <> show n <> "_init") $ body $ do
     I.initialize    usart
     I.setBaudrate   usart 1_000_000
