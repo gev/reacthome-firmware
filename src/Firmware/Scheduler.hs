@@ -1,6 +1,3 @@
-{-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE TypeOperators #-}
-
 module Firmware.Scheduler (scheduler) where
 
 import           Device.GD32F3x0.Timer
