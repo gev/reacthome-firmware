@@ -1,9 +1,8 @@
-module Firmware.USART  where
+module Formula.USART  where
 
 import           Device.GD32F3x0.USART (usart_1)
 import           Feature
 import           Feature.USART
-
 
 
 usart :: [Feature]

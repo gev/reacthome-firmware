@@ -7,10 +7,9 @@ import           Ivory.Language
 import           Firmware
 import           Shake
 
-import           Feature.Blink
-import           Firmware.Blink
-import           Firmware.Scheduler
-import           Firmware.USART
+import           Formula.Blink
+import           Formula.Scheduler
+import           Formula.USART
 
 
 build :: [(ModuleDef, String)] -> IO ()

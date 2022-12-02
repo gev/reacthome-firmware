@@ -27,7 +27,7 @@ executable reacthome-firmware
     -- Modules included in this executable, other than Main.
     other-modules:    Shake
                     , Prepare
-                    , Formula
+                    , Firmware
 
                     , Feature
                     , Feature.Blink
@@ -36,11 +36,11 @@ executable reacthome-firmware
                     , Feature.Scheduler
                     , Feature.USART
 
-                    , Firmware
-                    , Firmware.Blink
-                    , Firmware.Relay_10
-                    , Firmware.Scheduler
-                    , Firmware.USART
+                    , Formula
+                    , Formula.Blink
+                    , Formula.Relay_10
+                    , Formula.Scheduler
+                    , Formula.USART
 
                     , Interface
                     , Interface.IRQ

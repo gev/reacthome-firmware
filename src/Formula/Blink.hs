@@ -1,4 +1,4 @@
-module Firmware.Blink (blink) where
+module Formula.Blink where
 
 import           Device.GD32F3x0.GPIO
 import           Feature

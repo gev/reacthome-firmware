@@ -1,4 +1,4 @@
-module Firmware.Scheduler (scheduler) where
+module Formula.Scheduler where
 
 import           Device.GD32F3x0.Timer
 import           Feature
