@@ -18,8 +18,8 @@ data USART a = (I.USART a) => USART Int a
 instance Prepare (USART b) where
   prepare (USART n usart) =
      Pack (I.dependencies usart)
-          (initialize' n usart)
-          (step' n usart)
+          [initialize' n usart]
+          [step' n usart]
 
 initialize' :: I.USART u => Int -> u -> Def ('[] ':-> ())
 initialize' n usart =

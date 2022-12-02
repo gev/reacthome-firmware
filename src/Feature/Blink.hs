@@ -17,8 +17,8 @@ data Blink a = (I.OUT a) => Blink Int a
 instance Prepare (Blink b) where
   prepare (Blink n out) =
      Pack (I.dependencies out)
-          (initialize' n out)
-          (step' n out)
+          [initialize' n out]
+          [step' n out]
 
 initialize' :: OUT b => Int -> b -> Def ('[] :-> ())
 initialize' n out =

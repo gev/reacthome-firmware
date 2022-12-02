@@ -29,8 +29,8 @@ type Features  = [Feature]
 
 data Pack = Pack
   { dependencies :: [ModuleM ()]
-  , initialize   :: Def ('[] :-> ())
-  , step         :: Def ('[] :-> ())
+  , initialize   :: [Def ('[] :-> ())]
+  , step         :: [Def ('[] :-> ())]
   }
 
 class Prepare f where

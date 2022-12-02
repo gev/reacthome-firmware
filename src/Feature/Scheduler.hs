@@ -19,8 +19,8 @@ instance Prepare (Scheduler t) where
           :  I.dependencies t
           <> Q.dependencies t (handleIRQ clock)
           )
-          (initialize' n t)
-          (step' n)
+          [initialize' n t]
+          []
      where clock = clock' n
 
 handleIRQ :: MemArea ('Stored Uint32) -> Ivory (ProcEffects s ()) ()
@@ -34,9 +34,6 @@ initialize' n t =
   proc ("scheduler_" <> show n <> "_init") $ body $ do
     I.initialize t
     Q.initialize t
-
-step' :: Int -> Def ('[] ':-> ())
-step' n = proc ("scheduler_" <> show n <> "_step") $ body retVoid
 
 clock' :: Int -> MemArea ('Stored Uint32)
 clock' n = area ("scheduler_" <> show n <> "_clock")

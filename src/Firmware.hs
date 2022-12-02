@@ -26,8 +26,8 @@ cook :: Features -> ModuleM ()
 cook fs = do
   let ps = prepare <$> fs
   sequenceA_ $ dependencies =<< ps
-  inclT initialize ps
-  inclT step ps
+  mapM_ incl $ initialize =<< ps
+  mapM_ incl $ step =<< ps
   let i = init' ps
   let l = loop' ps
   incl $ init' ps
@@ -35,16 +35,10 @@ cook fs = do
   incl $ main' i l
 
 init' :: [Pack] -> Def ('[] :-> ())
-init' ps = proc "init" $ body $ callT_ initialize ps
+init' ps = proc "init" $ body $ mapM_ call_ $ initialize =<< ps
 
 loop' :: [Pack] -> Def ('[] :-> ())
-loop' ps = proc "loop" $ body $ forever $ callT_ step ps
+loop' ps = proc "loop" $ body $ forever $ mapM_ call_ $ step =<< ps
 
 main' ::Def ('[] :-> ()) -> Def ('[] :-> ()) -> Def ('[] :-> Sint32)
 main' i l = proc "main" $ body $ call_ i >> call_ l >> ret 0
-
-inclT :: (Pack -> Def ('[] :-> ())) -> [Pack] -> ModuleM ()
-inclT f  = traverse_ (incl . f)
-
-callT_ :: (Pack -> Def ('[] :-> ())) -> [Pack] -> Ivory eff ()
-callT_ f  = traverse_ (call_ . f)
