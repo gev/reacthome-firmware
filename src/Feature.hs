@@ -1,10 +1,10 @@
-{-# LANGUAGE DataKinds     #-}
 {-# LANGUAGE GADTs         #-}
-{-# LANGUAGE TypeOperators #-}
 
 module Feature where
+import           Interface.Timer       
 import           Ivory.Language
-import           Ivory.Language.Module (ModuleDef, ModuleM)
+import           Ivory.Language.Module 
+import           Prepare
 
 data Dim'
   = AC
@@ -26,15 +26,6 @@ data Feature where
   Feature :: Prepare f => f -> Feature
 
 type Features  = [Feature]
-
-data Pack = Pack
-  { dependencies :: [ModuleM ()]
-  , initialize   :: [Def ('[] :-> ())]
-  , step         :: [Def ('[] :-> ())]
-  }
-
-class Prepare f where
-  prepare :: f -> Pack
 
 instance Prepare Feature where
   prepare (Feature f) = prepare f

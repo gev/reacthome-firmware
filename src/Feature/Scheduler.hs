@@ -9,6 +9,7 @@ import qualified Interface       as I
 import           Interface.IRQ   as Q
 import           Interface.Timer as I
 import           Ivory.Language
+import           Prepare
 
 
 data Scheduler a = I.Timer a => Scheduler Int a

@@ -11,6 +11,7 @@ import qualified Interface       as I
 import qualified Interface.USART as I
 import           Ivory.Language
 import           Ivory.Stdlib
+import           Prepare
 
 
 data USART a = (I.USART a) => USART Int a

@@ -11,6 +11,7 @@ import           Feature
 import           Ivory.Compile.C.CmdlineFrontend
 import           Ivory.Language
 import           Ivory.Language.Module
+import           Prepare
 
 
 compile :: (ModuleDef, String) -> IO ()

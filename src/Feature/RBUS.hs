@@ -4,6 +4,7 @@ module Feature.RBUS where
 
 import           Feature
 import           Interface.USART
+import           Prepare
 
 data RBUS a = (USART a) => RBUS RBUS' Int a
 
