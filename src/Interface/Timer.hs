@@ -1,8 +1,7 @@
 module Interface.Timer where
 
 import           Interface
-import           Ivory.Language
-import           Ivory.Language.Module
+import           Interface.IRQ
 
 
-class Interface a => Timer a
+class (Interface t, IRQ t) => Timer t

@@ -25,6 +25,7 @@ data Timer = Timer
 
 timer_2 = Timer TIMER2 RCU_TIMER2 TIMER2_IRQn
 
+
 instance I.Interface Timer where
 
   dependencies = const [inclRCU, inclTimer]
@@ -35,8 +36,6 @@ instance I.Interface Timer where
     initTimer         timer param
     enableTimer       timer
 
-
-instance I.Timer Timer
 
 instance I.IRQ Timer where
 
@@ -60,3 +59,6 @@ handleIRQ h t = do
     flag <- getTimerInterruptFlag t TIMER_INT_FLAG_UP
     when flag $ clearTimerInterruptFlag t TIMER_INT_FLAG_UP
     h
+
+
+instance I.Timer Timer
