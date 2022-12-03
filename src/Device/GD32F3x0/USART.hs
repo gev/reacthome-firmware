@@ -3,6 +3,7 @@ module Device.GD32F3x0.USART where
 import           Device.GD32F3x0.GPIO
 import qualified Interface                     as I
 import qualified Interface.USART               as I
+import           Ivory.Language
 import           Support.Device.GD32F3x0.GPIO  as S
 import           Support.Device.GD32F3x0.RCU   as S
 import           Support.Device.GD32F3x0.USART as S
@@ -25,14 +26,16 @@ instance I.Interface USART where
 
   dependencies = const $ inclUSART : dependencies'
 
-  initialize (USART usart rcu rx tx) = do
-    initialize' rx
-    initialize' tx
-    enablePeriphClock rcu
-    deinitUSART     usart
-    configReceive   usart USART_RECEIVE_ENABLE
-    configTransmit  usart USART_TRANSMIT_ENABLE
-    enableUSART     usart
+  initialize (USART usart rcu rx tx) = [
+      proc (show usart <> "_init") $ body $ do
+        call_ $ initialize' rx
+        call_ $ initialize' tx
+        enablePeriphClock rcu
+        deinitUSART     usart
+        configReceive   usart USART_RECEIVE_ENABLE
+        configTransmit  usart USART_TRANSMIT_ENABLE
+        enableUSART     usart
+    ]
 
 
 instance I.USART USART where

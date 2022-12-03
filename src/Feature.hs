@@ -1,10 +1,13 @@
+{-# LANGUAGE DataKinds     #-}
 {-# LANGUAGE GADTs         #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Feature where
-import           Interface.Timer       
+
+import           Interface
+import           Interface.Timer
 import           Ivory.Language
-import           Ivory.Language.Module 
-import           Prepare
+import           Ivory.Language.Module
 
 data Dim'
   = AC
@@ -22,10 +25,17 @@ data OW      a = OW            Int   a
 data RS485   a = RS485         Int   a
 data Service a = Service       Int   a
 
+
 data Feature where
-  Feature :: Prepare f => f -> Feature
+  Feature :: Task t => t -> Feature
 
-type Features  = [Feature]
 
-instance Prepare Feature where
-  prepare (Feature f) = prepare f
+class Interface t => Task t where
+  step :: t -> Def ('[] :-> ())
+
+instance Interface Feature where
+  dependencies (Feature f) = dependencies f
+  initialize (Feature f) = initialize f
+
+instance Task Feature where
+  step (Feature f) = step f

@@ -3,10 +3,14 @@
 module Feature.Relay where
 
 import           Feature
+import           Interface
 import           Interface.GPIO
-import           Prepare
 
 data Relay a = (OUT a) => Relay Int a
 
-instance Prepare (Relay o) where
-  prepare = undefined
+instance Interface (Relay o) where
+  initialize = undefined
+  dependencies = undefined
+
+instance Task (Relay o) where
+  step = undefined

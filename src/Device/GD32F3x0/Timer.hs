@@ -30,20 +30,24 @@ instance I.Interface Timer where
 
   dependencies = const [inclRCU, inclTimer]
 
-  initialize (Timer {timer, rcu, param}) = do
-    enablePeriphClock rcu
-    deinitTimer       timer
-    initTimer         timer param
-    enableTimer       timer
+  initialize (Timer {timer, rcu, param}) = [
+      proc (show timer <> "_init") $ body $ do
+        enablePeriphClock rcu
+        deinitTimer       timer
+        initTimer         timer param
+        enableTimer       timer
+    ]
 
 
 instance I.IRQ Timer where
 
   dependencies t handle = [inclG, inclMisc, incl $ makeHandler (timer t) handle]
 
-  initialize t = do
-    enableIrqNvic (irq t) 0 0
-    I.enable t
+  initialize t = [
+      proc (show (timer t) <> "_irq_init") $ body $ do
+        enableIrqNvic (irq t) 0 0
+        I.enable t
+    ]
 
   enable t = enableTimerInterrupt    (timer t) TIMER_INT_UP
 

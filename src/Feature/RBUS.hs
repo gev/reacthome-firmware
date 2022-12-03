@@ -3,8 +3,8 @@
 module Feature.RBUS where
 
 import           Feature
+import           Interface
 import           Interface.USART
-import           Prepare
 
 data RBUS a = (USART a) => RBUS RBUS' Int a
 
@@ -12,5 +12,9 @@ data RBUS'
   = Master
   | Slave
 
-instance Prepare (RBUS u) where
-  prepare = undefined
+instance Interface (RBUS u) where
+  initialize = undefined
+  dependencies = undefined
+
+instance Task (RBUS u) where
+  step = undefined

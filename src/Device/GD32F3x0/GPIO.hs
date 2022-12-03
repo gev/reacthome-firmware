@@ -1,4 +1,6 @@
+{-# LANGUAGE DataKinds      #-}
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE TypeOperators  #-}
 
 module Device.GD32F3x0.GPIO where
 
@@ -48,11 +50,11 @@ io m p = p $ MF m
 
 instance I.Interface IN where
   dependencies = const dependencies'
-  initialize (IN p) = initialize' p
+  initialize (IN p) = [initialize' p]
 
 instance I.Interface OUT where
   dependencies = const dependencies'
-  initialize (OUT p) = initialize' p
+  initialize (OUT p) = [initialize' p]
 
 
 instance I.IN IN where
@@ -66,11 +68,13 @@ instance I.OUT OUT where
 dependencies' :: [ModuleM ()]
 dependencies' =  [inclRCU, inclGPIO]
 
-initialize' :: PORT -> Ivory eff ()
-initialize' (PORT {rcu, gpio, pin, mode}) = do
-  enablePeriphClock rcu
-  setOutputOptions  gpio GPIO_OTYPE_PP GPIO_OSPEED_50MHZ pin
-  case mode of
-    (MF mode) -> setMode gpio mode GPIO_PUPD_NONE pin
-    (AF mode) -> setMode gpio GPIO_MODE_AF GPIO_PUPD_NONE pin
-              >> setAF gpio mode pin
+initialize' :: PORT -> Def ('[] ':-> ())
+initialize' (PORT {rcu, gpio, pin, mode}) = 
+    proc (show gpio <> "_init") $ body $ do
+      enablePeriphClock rcu
+      setOutputOptions  gpio GPIO_OTYPE_PP GPIO_OSPEED_50MHZ pin
+      case mode of
+        (MF mode) -> setMode gpio mode GPIO_PUPD_NONE pin
+        (AF mode) -> setMode gpio GPIO_MODE_AF GPIO_PUPD_NONE pin
+                  >> setAF gpio mode pin
+  

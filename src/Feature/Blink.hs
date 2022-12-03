@@ -1,8 +1,6 @@
 {-# LANGUAGE DataKinds          #-}
-{-# LANGUAGE FlexibleInstances  #-}
 {-# LANGUAGE GADTs              #-}
 {-# LANGUAGE NumericUnderscores #-}
-{-# LANGUAGE TypeOperators      #-}
 
 module Feature.Blink where
 
@@ -10,29 +8,27 @@ import           Feature
 import           Interface      as I
 import           Interface.GPIO as I
 import           Ivory.Language
-import           Prepare
 
 
 data Blink a = (I.OUT a) => Blink Int a
 
-instance Prepare (Blink b) where
-  prepare (Blink n out) =
-     Pack (I.dependencies out)
-          [initialize' n out]
-          [step' n out]
+instance I.Interface (Blink b) where
 
-initialize' :: OUT b => Int -> b -> Def ('[] :-> ())
-initialize' n out =
-  proc ("blink_" <> show n <> "_init") $ body $
-    I.initialize out
+  dependencies (Blink _ out) = I.dependencies out
 
-step' :: OUT b => Int -> b -> Def ('[] :-> ())
-step' n out =
-  proc ("blink_" <> show n <> "_step") $ body $ do
-    set out
-    delay 10_000_000
-    reset out
-    delay 10_000_000
+  initialize (Blink n out) = I.initialize out
+
+
+
+instance Task (Blink b) where
+
+  step (Blink n out) =
+    proc ("blink_" <> show n <> "_step") $ body $ do
+      set out
+      delay 10_000_000
+      reset out
+      delay 10_000_000
+
 
 delay :: Ix 1_000_000_000 -> Ivory eff ()
 delay n = n `times` pure
