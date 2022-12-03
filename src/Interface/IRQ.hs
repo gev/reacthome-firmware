@@ -1,6 +1,4 @@
-{-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE RankNTypes    #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Interface.IRQ where
 
@@ -8,8 +6,6 @@ import           Interface
 import           Ivory.Language
 import           Ivory.Language.Module
 
-
-class IRQ a where
-  dependencies  :: a -> (forall s. Ivory (ProcEffects s ()) ()) -> [ModuleM ()]
-  initialize    :: a -> [Def ('[] :-> ())]
-  enable        :: a -> Ivory eff ()
+class Interface q => IRQ q where
+  handleIRQ :: q -> (forall s. Ivory (ProcEffects s ()) ()) -> ModuleM ()
+  enable    :: q -> Ivory eff ()

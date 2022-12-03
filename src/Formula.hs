@@ -16,7 +16,7 @@ import           Ivory.Language.Module
 import           Scheduler
 
 data Formula where
-  Formula :: Timer t
+  Formula :: Q.IRQ t
           => { systemClock :: t
              , features    :: [Feature]
              }
@@ -27,11 +27,11 @@ cook (Formula {features, systemClock}) = do
 
   let scheduler = Scheduler systemClock
 
-  let inits   = I.initialize scheduler
-            <> (I.initialize =<< features)
-
   let depends = I.dependencies scheduler
             <> (I.dependencies =<< features)
+
+  let inits   = I.initialize scheduler
+            <> (I.initialize =<< features)
 
   let steps   = step <$> features
 

@@ -5,21 +5,22 @@ module Scheduler where
 
 import           Feature
 import           Interface       as I
-import           Interface.IRQ   as Q
+import qualified Interface.IRQ   as Q
 import           Interface.Timer as I
 import           Ivory.Language
 
 
-data Scheduler a = I.Timer a => Scheduler a
+data Scheduler t = Q.IRQ t => Scheduler t
 
 instance I.Interface (Scheduler t) where
 
-  dependencies (Scheduler t) = defMemArea clock
-                             : I.dependencies t
-                            <> Q.dependencies t handleIRQ
+  dependencies (Scheduler t) = [ defMemArea clock
+                               , Q.handleIRQ t handleIRQ
+                               ]
+                              <> I.dependencies t
+
 
   initialize (Scheduler t) = I.initialize t
-                          <> Q.initialize t
 
 clock :: MemArea ('Stored Uint32)
 clock = area "scheduler_clock" (Just (ival 0))

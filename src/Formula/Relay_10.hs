@@ -11,7 +11,7 @@ import           Support.Device.GD32F3x0.Timer
 
 
 relay :: Formula
-relay = Formula { systemClock = timer_2
+relay = Formula { systemClock = timer_2_irq
                                 timerParam { prescaler = 8399
                                            , period = 9
                                            }
