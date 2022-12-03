@@ -10,16 +10,15 @@ import           Interface.Timer as I
 import           Ivory.Language
 
 
-data Scheduler a = I.Timer a => Scheduler a
+data Scheduler t = I.Timer t => Scheduler t
 
 instance I.Interface (Scheduler t) where
 
   dependencies (Scheduler t) = defMemArea clock
                              : I.dependencies t
-                            <> Q.dependencies t handleIRQ
 
-  initialize (Scheduler t) = I.initialize t
-                          <> Q.initialize t
+  initialize (Scheduler t) = Q.irq t handleIRQ
+                           : I.initialize t
 
 clock :: MemArea ('Stored Uint32)
 clock = area "scheduler_clock" (Just (ival 0))

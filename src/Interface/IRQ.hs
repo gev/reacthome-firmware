@@ -9,7 +9,6 @@ import           Ivory.Language
 import           Ivory.Language.Module
 
 
-class IRQ a where
-  dependencies  :: a -> (forall s. Ivory (ProcEffects s ()) ()) -> [ModuleM ()]
-  initialize    :: a -> [Def ('[] :-> ())]
-  enable        :: a -> Ivory eff ()
+class Interface q => IRQ q where
+  irq    :: q -> (forall s. Ivory (ProcEffects s ()) ()) -> Def ('[] :-> ())
+  enable :: q -> Ivory eff ()

@@ -28,7 +28,7 @@ timer_2 = Timer TIMER2 RCU_TIMER2 TIMER2_IRQn
 
 instance I.Interface Timer where
 
-  dependencies = const [inclRCU, inclTimer]
+  dependencies = const [inclG, inclRCU, inclTimer, inclMisc]
 
   initialize (Timer {timer, rcu, param}) = [
       proc (show timer <> "_init") $ body $ do
@@ -39,17 +39,10 @@ instance I.Interface Timer where
     ]
 
 
+
 instance I.IRQ Timer where
-
-  dependencies t handle = [inclG, inclMisc, incl $ makeHandler (timer t) handle]
-
-  initialize t = [
-      proc (show (timer t) <> "_irq_init") $ body $ do
-        enableIrqNvic (irq t) 0 0
-        I.enable t
-    ]
-
-  enable t = enableTimerInterrupt    (timer t) TIMER_INT_UP
+  irq    t = makeHandler          (timer t)
+  enable t = enableTimerInterrupt (timer t) TIMER_INT_UP
 
 makeHandler :: TIMER_PERIPH
             -> (forall s . Ivory (ProcEffects s ()) ())
