@@ -35,15 +35,19 @@ cook (Formula {features, systemClock}) = do
 
   let steps   = step <$> features
 
-  let init    = proc "init" $ body
+  let init    = proc "init"
+              $ body
               $ mapM_ call_ inits
              :: Def ('[] :-> ())
 
-  let loop    = proc "loop" $ body
-              $ forever $ mapM_ call_ steps
+  let loop    = proc "loop"
+              $ body
+              $ forever
+              $ mapM_ call_ steps
              :: Def ('[] :-> ())
 
-  let main    = proc "main" $ body
+  let main    = proc "main"
+              $ body
               $ call_ init
              >> call_ loop
              >> ret 0
