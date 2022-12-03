@@ -1,12 +1,10 @@
-{-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE InstanceSigs      #-}
 {-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE RankNTypes        #-}
-{-# LANGUAGE TypeOperators     #-}
 
 module Device.GD32F3x0.Timer where
 
+import           Device.GD32F3x0.IRQ
 import qualified Interface                     as I
 import qualified Interface.IRQ                 as Q
 import qualified Interface.Timer               as I
@@ -25,15 +23,10 @@ data Timer = Timer
   , param :: TIMER_PARAM
   }
 
-data IRQn = IRQn
-  { source :: Timer
-  , irq    :: S.IRQn
-  }
-
 timer_2 :: TIMER_PARAM -> Timer
 timer_2 = Timer TIMER2 RCU_TIMER2
 
-timer_2_irq :: TIMER_PARAM -> IRQn
+timer_2_irq :: TIMER_PARAM -> IRQn Timer
 timer_2_irq p = IRQn (timer_2 p) S.TIMER2_IRQn
 
 
@@ -50,7 +43,7 @@ instance I.Interface Timer where
     ]
 
 
-instance I.Interface IRQn where
+instance I.Interface (IRQn Timer) where
 
   dependencies (IRQn {source}) = I.dependencies source
                               <> [S.inclG,  inclMisc]
@@ -61,7 +54,7 @@ instance I.Interface IRQn where
         Q.enable q
     ]
 
-instance Q.IRQ IRQn where
+instance Q.IRQ (IRQn Timer) where
   handleIRQ (IRQn {source}) = makeHandler . timer $ source
   enable (IRQn {source}) = enableTimerInterrupt (timer source) TIMER_INT_UP
 
@@ -77,6 +70,5 @@ handleIRQ h t = do
     flag <- getTimerInterruptFlag t TIMER_INT_FLAG_UP
     when flag $ clearTimerInterruptFlag t TIMER_INT_FLAG_UP
     h
-
 
 instance I.Timer Timer
