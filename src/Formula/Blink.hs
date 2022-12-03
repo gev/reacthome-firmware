@@ -10,6 +10,9 @@ import           Support.Device.GD32F3x0.Timer
 
 blink :: Formula
 blink = Formula { systemClock = timer_2_irq
+                                {-
+                                  TODO:  use frequency instead timer params
+                                -}
                                 timerParam { prescaler = 8399
                                            , period = 9
                                            }
