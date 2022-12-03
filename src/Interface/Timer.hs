@@ -4,4 +4,4 @@ import           Interface
 import           Interface.IRQ
 
 
-class (Interface t, IRQ t) => Timer t
+class (Interface t) => Timer t

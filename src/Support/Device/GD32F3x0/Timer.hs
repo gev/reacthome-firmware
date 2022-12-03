@@ -1,8 +1,6 @@
 {-# LANGUAGE DataKinds             #-}
-{-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE QuasiQuotes           #-}
-{-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE TypeOperators         #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
@@ -22,7 +20,6 @@ module Support.Device.GD32F3x0.Timer
   , clearTimerInterruptFlag
   , timerParam
   , initTimer
-  , makeTimerHandler
   , inclTimer
   ) where
 
@@ -178,8 +175,3 @@ timerParam = TIMER_PARAM  0
                           TIMER_CKDIV_DIV1
                           65535
                           0
-
-makeTimerHandler :: TIMER_PERIPH
-                 -> (TIMER_PERIPH -> (forall s. Ivory (ProcEffects s ()) ()))
-                 -> Def ('[] :-> ())
-makeTimerHandler t b = proc (show t <> "_IRQHandler") $ body $ b t

@@ -16,7 +16,7 @@ import           Ivory.Language.Module
 import           Scheduler
 
 data Formula where
-  Formula :: Timer t
+  Formula :: Q.IRQ t
           => { systemClock :: t
              , features    :: [Feature]
              }

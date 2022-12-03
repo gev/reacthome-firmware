@@ -1,8 +1,12 @@
+{-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RankNTypes            #-}
+{-# LANGUAGE TypeOperators         #-}
 
 module Support.Device.GD32F3x0
   ( IRQn (..)
   , inclG
+  , makeIRQHandler
   ) where
 
 import           Ivory.Language
@@ -22,3 +26,8 @@ instance ExtDef IRQn Uint8
 inclG :: ModuleM ()
 inclG = do
   inclDef (def :: Cast IRQn Uint8)
+
+makeIRQHandler :: Show t => t
+               -> (t -> (forall s. Ivory (ProcEffects s ()) ()))
+               -> ModuleM ()
+makeIRQHandler t b = incl $ proc (show t <> "_IRQHandler") $ body $ b t
