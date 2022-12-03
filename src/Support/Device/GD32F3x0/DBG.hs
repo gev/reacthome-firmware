@@ -16,8 +16,7 @@ import           Ivory.Support.Device.GD32F3x0
 
 
 inclDBG :: ModuleM ()
-inclDBG = do
-  incl dbg_id_get
+inclDBG = incl dbg_id_get
 
 
 getID :: Ivory eff Uint32
