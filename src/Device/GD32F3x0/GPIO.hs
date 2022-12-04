@@ -70,7 +70,7 @@ dependencies' =  [inclRCU, inclGPIO]
 
 initialize' :: PORT -> String -> Def ('[] ':-> ())
 initialize' (PORT {rcu, gpio, pin, mode}) n =
-    proc (show gpio <> "_" <> n <>"_init") $ body $ do
+    proc (show gpio <> "_" <> show pin <> "_" <> n <>"_init") $ body $ do
       enablePeriphClock rcu
       setOutputOptions  gpio GPIO_OTYPE_PP GPIO_OSPEED_50MHZ pin
       case mode of
