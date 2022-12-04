@@ -1,3 +1,4 @@
+{-# LANGUAGE NumericUnderscores #-}
 module Device.GD32F3x0.USART where
 
 import           Device.GD32F3x0.GPIO
@@ -18,8 +19,8 @@ data USART = USART
 
 usart_1 = USART USART1
                 RCU_USART1
-                (pa_2 $ AF GPIO_AF_1)
                 (pa_3 $ AF GPIO_AF_1)
+                (pa_2 $ AF GPIO_AF_1)
 
 
 instance Interface USART where
@@ -33,6 +34,9 @@ instance Interface USART where
         deinitUSART     usart
         configReceive   usart USART_RECEIVE_ENABLE
         configTransmit  usart USART_TRANSMIT_ENABLE
+        setBaudrate     usart 1_000_000
+        setWordLength   usart USART_WL_8BIT
+        configParity    usart USART_PM_NONE
         enableUSART     usart
     ]
 
