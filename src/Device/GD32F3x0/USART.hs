@@ -1,11 +1,11 @@
 module Device.GD32F3x0.USART where
 
 import           Device.GD32F3x0.GPIO
-import qualified Interface                     as I
+import           Interface
 import qualified Interface.USART               as I
 import           Ivory.Language
-import           Support.Device.GD32F3x0.GPIO  as S
-import           Support.Device.GD32F3x0.RCU   as S
+import           Support.Device.GD32F3x0.GPIO
+import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.USART as S
 
 
@@ -22,7 +22,7 @@ usart_1 = USART USART1
                 (pa_3 $ AF GPIO_AF_1)
 
 
-instance I.Interface USART where
+instance Interface USART where
 
   dependencies = const $ inclUSART : dependencies'
 

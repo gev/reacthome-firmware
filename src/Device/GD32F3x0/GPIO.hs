@@ -4,12 +4,12 @@
 
 module Device.GD32F3x0.GPIO where
 
-import qualified Interface                    as I
+import           Interface
 import qualified Interface.GPIO               as I
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Support.Device.GD32F3x0.GPIO as S
-import           Support.Device.GD32F3x0.RCU  as S
+import           Support.Device.GD32F3x0.RCU
 
 
 newtype IN  = IN  PORT
@@ -48,11 +48,11 @@ io :: GPIO_MODE -> (MODE -> PORT) -> PORT
 io m p = p $ MF m
 
 
-instance I.Interface IN where
+instance Interface IN where
   dependencies = const dependencies'
   initialize (IN p) = [initialize' p]
 
-instance I.Interface OUT where
+instance Interface OUT where
   dependencies = const dependencies'
   initialize (OUT p) = [initialize' p]
 
@@ -69,7 +69,7 @@ dependencies' :: [ModuleM ()]
 dependencies' =  [inclRCU, inclGPIO]
 
 initialize' :: PORT -> Def ('[] ':-> ())
-initialize' (PORT {rcu, gpio, pin, mode}) = 
+initialize' (PORT {rcu, gpio, pin, mode}) =
     proc (show gpio <> "_init") $ body $ do
       enablePeriphClock rcu
       setOutputOptions  gpio GPIO_OTYPE_PP GPIO_OSPEED_50MHZ pin
@@ -77,4 +77,3 @@ initialize' (PORT {rcu, gpio, pin, mode}) =
         (MF mode) -> setMode gpio mode GPIO_PUPD_NONE pin
         (AF mode) -> setMode gpio GPIO_MODE_AF GPIO_PUPD_NONE pin
                   >> setAF gpio mode pin
-  

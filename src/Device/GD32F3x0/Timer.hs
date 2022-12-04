@@ -4,17 +4,17 @@
 
 module Device.GD32F3x0.Timer where
 
-import           Device.GD32F3x0.IRQ
-import qualified Interface                     as I
-import qualified Interface.IRQ                 as Q
+import           Device.GD32F3x0.IRQ           as D
+import           Interface
+import           Interface.IRQ                 as I
 import qualified Interface.Timer               as I
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Stdlib
-import qualified Support.Device.GD32F3x0       as S
-import           Support.Device.GD32F3x0.Misc  as S
-import           Support.Device.GD32F3x0.RCU   as S
-import           Support.Device.GD32F3x0.Timer as S
+import           Support.Device.GD32F3x0       as S
+import           Support.Device.GD32F3x0.Misc
+import           Support.Device.GD32F3x0.RCU
+import           Support.Device.GD32F3x0.Timer
 
 
 data Timer = Timer
@@ -26,11 +26,11 @@ data Timer = Timer
 timer_2 :: TIMER_PARAM -> Timer
 timer_2 = Timer TIMER2 RCU_TIMER2
 
-timer_2_irq :: TIMER_PARAM -> IRQn Timer
-timer_2_irq p = IRQn (timer_2 p) S.TIMER2_IRQn
+timer_2_irq :: TIMER_PARAM -> D.IRQ Timer
+timer_2_irq = IRQ TIMER2_IRQn . timer_2
 
 
-instance I.Interface Timer where
+instance Interface Timer where
 
   dependencies = const [inclRCU, inclTimer]
 
@@ -42,33 +42,28 @@ instance I.Interface Timer where
         enableTimer       timer
     ]
 
+instance I.Timer Timer where
 
-instance I.Interface (IRQn Timer) where
 
-  dependencies (IRQn {source}) = I.dependencies source
-                              <> [S.inclG,  inclMisc]
+instance Interface (D.IRQ Timer) where
 
-  initialize q@(IRQn {source, irq}) = I.initialize source <> [
+  dependencies (IRQ {source}) =
+    dependencies source <> [inclG,  inclMisc]
+
+  initialize q@(IRQ {source, irq}) =
+    initialize source <> [
       proc (show (timer source) <> "_irq_init") $ body $ do
         enableIrqNvic irq 0 0
-        Q.enable q
+        enable q
     ]
 
-instance Q.IRQ (IRQn Timer) where
-  handleIRQ (IRQn {source}) = makeHandler . timer $ source
-  enable (IRQn {source}) = enableTimerInterrupt (timer source) TIMER_INT_UP
+instance I.IRQ (D.IRQ Timer) where
 
-makeHandler :: TIMER_PERIPH
-            -> (forall s . Ivory (ProcEffects s ()) ())
-            -> ModuleM ()
-makeHandler t h = S.makeIRQHandler t $ handleIRQ h
+  handleIRQ (IRQ {source = (Timer {timer})}) handle =
+    makeIRQHandler timer $ do
+      flag <- getTimerInterruptFlag timer TIMER_INT_FLAG_UP
+      when flag $ clearTimerInterruptFlag timer TIMER_INT_FLAG_UP
+      handle
 
-handleIRQ :: (forall s. Ivory (ProcEffects s ()) ())
-          -> TIMER_PERIPH
-          -> (forall s. Ivory (ProcEffects s ()) ())
-handleIRQ h t = do
-    flag <- getTimerInterruptFlag t TIMER_INT_FLAG_UP
-    when flag $ clearTimerInterruptFlag t TIMER_INT_FLAG_UP
-    h
-
-instance I.Timer Timer
+  enable (IRQ {source}) =
+    enableTimerInterrupt (timer source) TIMER_INT_UP

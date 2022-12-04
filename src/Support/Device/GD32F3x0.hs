@@ -28,6 +28,6 @@ inclG = do
   inclDef (def :: Cast IRQn Uint8)
 
 makeIRQHandler :: Show t => t
-               -> (t -> (forall s. Ivory (ProcEffects s ()) ()))
+               -> (forall s. Ivory (ProcEffects s ()) ())
                -> ModuleM ()
-makeIRQHandler t b = incl $ proc (show t <> "_IRQHandler") $ body $ b t
+makeIRQHandler t b = incl $ proc (show t <> "_IRQHandler") $ body b
