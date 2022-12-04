@@ -30,5 +30,5 @@ instance Task (Blink b) where
     Step (Just 1_000) $ proc ("blink_" <> show n <> "_step") $ body $ do
       let s = addrOf $ state n
       v <- deref s
-      ifte_ v (set out) (reset out)
       store s $ iNot v
+      ifte_ v (set out) (reset out)
