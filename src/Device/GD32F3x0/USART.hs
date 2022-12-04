@@ -34,10 +34,10 @@ instance Interface USART where
         deinitUSART     usart
         configReceive   usart USART_RECEIVE_ENABLE
         configTransmit  usart USART_TRANSMIT_ENABLE
-        setBaudrate     usart 1_000_000
-        setWordLength   usart USART_WL_8BIT
-        configParity    usart USART_PM_NONE
-        enableUSART     usart
+        -- setBaudrate     usart 1_000_000
+        -- setWordLength   usart USART_WL_8BIT
+        -- configParity    usart USART_PM_NONE
+        -- enableUSART     usart
     ]
 
 
@@ -57,6 +57,7 @@ instance I.USART USART where
   hasReceived    u  = getFlag (usart u) USART_FLAG_RBNE
   hasTransmitted u  = getFlag (usart u) USART_FLAG_TBE
   canTransmit    u  = getFlag (usart u) USART_FLAG_TC
+  enable         u  = enableUSART (usart u)
 
 
 {-

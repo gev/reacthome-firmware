@@ -18,10 +18,11 @@ instance I.Interface (USART b) where
 
   initialize (USART n usart) = I.initialize usart <> [
     proc ("usart_" <> show n <> "_init") $ body $ do
-      retVoid
-      -- I.setBaudrate   usart 1_000_000
-      -- I.setWordLength usart I.WL_8b
-      -- I.setParity     usart I.None
+      -- retVoid
+      I.setBaudrate   usart 1_000_000
+      I.setWordLength usart I.WL_8b
+      I.setParity     usart I.None
+      I.enable        usart
     ]
 
 

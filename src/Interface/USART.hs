@@ -33,3 +33,5 @@ class Interface a => USART a where
   hasReceived     :: a -> Ivory eff IBool
   hasTransmitted  :: a -> Ivory eff IBool
   canTransmit     :: a -> Ivory eff IBool
+
+  enable          :: a -> Ivory eff ()
