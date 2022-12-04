@@ -50,11 +50,11 @@ io m p = p $ MF m
 
 instance Interface IN where
   dependencies = const dependencies'
-  initialize (IN p) = [initialize' p]
+  initialize (IN p) = [initialize' p "in"]
 
 instance Interface OUT where
   dependencies = const dependencies'
-  initialize (OUT p) = [initialize' p]
+  initialize (OUT p) = [initialize' p "out"]
 
 
 instance I.IN IN where
@@ -68,9 +68,9 @@ instance I.OUT OUT where
 dependencies' :: [ModuleM ()]
 dependencies' =  [inclRCU, inclGPIO]
 
-initialize' :: PORT -> Def ('[] ':-> ())
-initialize' (PORT {rcu, gpio, pin, mode}) =
-    proc (show gpio <> "_init") $ body $ do
+initialize' :: PORT -> String -> Def ('[] ':-> ())
+initialize' (PORT {rcu, gpio, pin, mode}) n =
+    proc (show gpio <> "_" <> n <>"_init") $ body $ do
       enablePeriphClock rcu
       setOutputOptions  gpio GPIO_OTYPE_PP GPIO_OSPEED_50MHZ pin
       case mode of

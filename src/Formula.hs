@@ -7,6 +7,7 @@
 module Formula where
 
 import           Data.Foldable
+import           Data.List
 import           Feature
 import           Interface             as I
 import           Interface.IRQ         as Q
