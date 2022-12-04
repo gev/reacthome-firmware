@@ -31,6 +31,6 @@ instance Task (USART b) where
       when hasReceived $ do
         b <- I.receive usart
         forever $ do
-          isBusy <- I.hasTransmitted usart
-          unless isBusy breakOut
-          I.transmit usart b
+          isTransmitted <- I.hasTransmitted usart
+          when isTransmitted breakOut
+        I.transmit usart b
