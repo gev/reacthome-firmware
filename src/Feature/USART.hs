@@ -25,8 +25,8 @@ instance I.Interface (USART b) where
 
 
 instance Task (USART b) where
-  step (USART n usart) =
-    proc ("usart_" <> show n <> "_step") $ body $ do
+  task (USART n usart) =
+    Step Nothing $ proc ("usart_" <> show n <> "_step") $ body $ do
       hasReceived <- I.hasReceived usart
       when hasReceived $ do
         b <- I.receive usart

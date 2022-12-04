@@ -25,7 +25,8 @@ data Formula where
 cook :: Formula -> ModuleM ()
 cook (Formula {features, systemClock}) = do
 
-  let scheduler = Scheduler systemClock
+
+  let scheduler = Scheduler systemClock $ task <$> features
 
   let depends = I.dependencies scheduler
             <> (I.dependencies =<< features)
@@ -33,18 +34,12 @@ cook (Formula {features, systemClock}) = do
   let inits   = I.initialize scheduler
             <> (I.initialize =<< features)
 
-  let steps   = step <$> features
-
   let init    = proc "init"
               $ body
               $ mapM_ call_ inits
              :: Def ('[] :-> ())
 
-  let loop    = proc "loop"
-              $ body
-              $ forever
-              $ mapM_ call_ steps
-             :: Def ('[] :-> ())
+  let loop    = schedule scheduler
 
   let main    = proc "main"
               $ body
@@ -55,7 +50,6 @@ cook (Formula {features, systemClock}) = do
 
   sequenceA_ depends
   mapM_ incl inits
-  mapM_ incl steps
   incl init
   incl loop
   incl main

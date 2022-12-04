@@ -13,4 +13,4 @@ instance Interface (Relay o) where
   dependencies = undefined
 
 instance Task (Relay o) where
-  step = undefined
+  task = undefined

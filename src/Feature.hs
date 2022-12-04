@@ -29,13 +29,18 @@ data Service a = Service       Int   a
 data Feature where
   Feature :: Task t => t -> Feature
 
+data Step = Step
+  { period :: Maybe Uint32
+  , step   :: Def ('[] :-> ())
+  }
+
 
 class Interface t => Task t where
-  step :: t -> Def ('[] :-> ())
+  task :: t -> Step
 
 instance Interface Feature where
   dependencies (Feature f) = dependencies f
   initialize (Feature f) = initialize f
 
 instance Task Feature where
-  step (Feature f) = step f
+  task (Feature f) = task f
