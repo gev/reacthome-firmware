@@ -48,7 +48,6 @@ schedule (Scheduler {steps}) = proc "loop" $ body $ do
     t <- deref $ addrOf clock
     zipWithM_ (run t) clocks scheduled
     mapM_ (call_ . step) immediately
-    retVoid
 
 
 run :: Uint32 -> Ref ('Stack s) ('Stored Uint32) -> Step -> Ivory eff ()
