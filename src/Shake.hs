@@ -63,6 +63,7 @@ shake ns = shakeArgs shakeOptions{shakeFiles="build"} $ do
         let elf = out -<.> "elf"
         need [elf]
         cmd_ oc "-O ihex" elf out
+        cmd_ oc "-O binary" elf (out -<.> "bin")
 
     "build//*.elf" %> \out -> do
         let o = out -<.> "o"
