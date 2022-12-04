@@ -28,7 +28,7 @@ instance Interface USART where
   dependencies = const $ inclUSART : dependencies'
 
   initialize (USART usart rcu rx tx) =
-    initialize' rx "rx" : initialize' tx "tx" : [
+    initialize' rx : initialize' tx : [
       proc (show usart <> "_init") $ body $ do
         enablePeriphClock rcu
         deinitUSART     usart
