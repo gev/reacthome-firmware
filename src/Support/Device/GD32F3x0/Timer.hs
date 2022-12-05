@@ -4,6 +4,7 @@
 {-# LANGUAGE TypeOperators         #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
+{-# LANGUAGE RankNTypes            #-}
 
 module Support.Device.GD32F3x0.Timer
   ( TIMER_PERIPH            (..)
@@ -68,22 +69,22 @@ data TIMER_CLOCK_DIVISION
 instance ExtDef TIMER_CLOCK_DIVISION Uint16
 
 data TIMER_PARAM = TIMER_PARAM
-    { prescaler         :: Uint16
-    , alignedMode       :: TIMER_ALIGNE_MODE
-    , counterDirection  :: TIMER_COUNTER_DIRECTION
-    , clockDivision     :: TIMER_CLOCK_DIVISION
-    , period            :: Uint32
-    , repetitionCounter :: Uint8
+    { timerPrescaler         :: Uint16
+    , timerAlignedMode       :: TIMER_ALIGNE_MODE
+    , timerCounterDirection  :: TIMER_COUNTER_DIRECTION
+    , timerClockDivision     :: TIMER_CLOCK_DIVISION
+    , timerPeriod            :: Uint32
+    , timerRepetitionCounter :: Uint8
     }
 
 [ivory|
-  struct timer_param
-    { prescaler_         :: Stored Uint16
-    ; aligned_mode       :: Stored Uint16
-    ; counter_direction  :: Stored Uint16
-    ; clock_division     :: Stored Uint16
-    ; period_            :: Stored Uint32
-    ; repetition_counter :: Stored Uint8
+  struct timer_parameter_struct
+    { prescaler         :: Stored Uint16
+    ; alignedmode       :: Stored Uint16
+    ; counterdirection  :: Stored Uint16
+    ; clockdivision     :: Stored Uint16
+    ; period            :: Stored Uint32
+    ; repetitioncounter :: Stored Uint8
     }
 |]
 
@@ -102,9 +103,6 @@ inclTimer = do
   incl timer_deinit
   incl timer_enable
   incl timer_init
-  incl init_timer
-  defStruct (Proxy :: Proxy "timer_param")
-
 
 
 deinitTimer :: TIMER_PERIPH -> Ivory eff ()
@@ -142,31 +140,22 @@ clearTimerInterruptFlag t i = call_ timer_interrupt_flag_clear (def t) (def i)
 timer_interrupt_flag_clear :: Def ('[Uint32, Uint32] :-> ())
 timer_interrupt_flag_clear = fun "timer_interrupt_flag_clear"
 
-initTimer :: TIMER_PERIPH -> TIMER_PARAM -> Ivory eff ()
-initTimer t p =
-  call_ init_timer (t & def)
-                   (p & prescaler)
-                   (p & alignedMode & def)
-                   (p & counterDirection & def)
-                   (p & clockDivision & def)
-                   (p & period)
-                   (p & repetitionCounter)
 
+initTimer :: TIMER_PERIPH -> TIMER_PARAM -> (forall s. Ivory (ProcEffects s ()) ())
+initTimer t p = do
+  r <- local $ istruct
+    [ prescaler         .= ival (p & timerPrescaler)
+    , alignedmode       .= ival (p & timerAlignedMode & def)
+    , counterdirection  .= ival (p & timerCounterDirection & def)
+    , clockdivision     .= ival (p & timerClockDivision & def)
+    , period            .= ival (p & timerPeriod)
+    , repetitioncounter .= ival (p & timerRepetitionCounter)
+    ]
+  call_ timer_init (def t) r
 
-init_timer :: Def ('[Uint32, Uint16, Uint16, Uint16, Uint16, Uint32, Uint8] :-> ())
-init_timer = proc "init_timer" $ \t f1 f2 f3 f4 f5 f6 -> body $ do
-      r <- local (istruct [])
-      store (r ~> prescaler_) f1
-      store (r ~> aligned_mode) f2
-      store (r ~> counter_direction) f3
-      store (r ~> clock_division) f4
-      store (r ~> period_) f5
-      store (r ~> repetition_counter) f6
-      call_ timer_init t r
-
-
-timer_init :: Def ('[Uint32, Ref s ('Struct "timer_param")] :-> ())
+timer_init :: Def ('[Uint32, Ref s ('Struct "timer_parameter_struct")] :-> ())
 timer_init = fun "timer_init"
+
 
 timerParam :: TIMER_PARAM
 timerParam = TIMER_PARAM  0
