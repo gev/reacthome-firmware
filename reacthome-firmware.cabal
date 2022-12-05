@@ -33,6 +33,7 @@ executable reacthome-firmware
                     , Feature.Blink
                     , Feature.Relay
                     , Feature.RBUS
+                    , Feature.RBUS.Slave
                     , Feature.USART
 
                     , Formula
@@ -44,6 +45,7 @@ executable reacthome-firmware
                     , Interface.GPIO
                     , Interface.Timer
                     , Interface.USART
+                    , Interface.RS485
 
                     , Device.GD32F3x0.IRQ
                     , Device.GD32F3x0.GPIO
