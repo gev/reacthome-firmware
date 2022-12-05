@@ -1,320 +1,316 @@
-;/*!
-;    \file  startup_gd32f3x0.s
-;    \brief start up file
-;
-;    \version 2017-06-06, V1.0.0, firmware for GD32F3x0
-;    \version 2019-06-01, V2.0.0, firmware for GD32F3x0
-;    \version 2020-09-30, V2.1.0, firmware for GD32F3x0
-;    \version 2022-01-06, V2.2.0, firmware for GD32F3x0
-;*/
+/**
+  ******************************************************************************
+  * @file    startup_gd32f3x0.s
+  * @author  MCU SD
+  * @version V1.0.0
+  * @date    26-Dec-2014
+  * @brief   GD32F3X0 startup code.
+  ******************************************************************************
+  */
 
-;/*
-    ;Copyright (c) 2022, GigaDevice Semiconductor Inc.
+  .syntax unified
+  .cpu cortex-m4
+  .fpu softvfp
+  .thumb
+  
+.global  g_pfnVectors
+.global  Default_Handler
 
-    ;Redistribution and use in source and binary forms, with or without modification, 
-;are permitted provided that the following conditions are met:
-
-    ;1. Redistributions of source code must retain the above copyright notice, this 
-       ;list of conditions and the following disclaimer.
-    ;2. Redistributions in binary form must reproduce the above copyright notice, 
-       ;this list of conditions and the following disclaimer in the documentation 
-       ;and/or other materials provided with the distribution.
-    ;3. Neither the name of the copyright holder nor the names of its contributors 
-       ;may be used to endorse or promote products derived from this software without 
-       ;specific prior written permission.
-
-    ;THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-;AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-;WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-;IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-;INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
-;NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
-;PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
-;WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-;ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
-;OF SUCH DAMAGE.
-;*/
-
-; <h> Stack Configuration
-;   <o> Stack Size (in Bytes) <0x0-0xFFFFFFFF:8>
-; </h>
-
-Stack_Size      EQU     0x00000400
-
-                AREA    STACK, NOINIT, READWRITE, ALIGN=3
-Stack_Mem       SPACE   Stack_Size
-__initial_sp
+/* start address of the static initialization data */
+.word  _sidata
+/* start address of the data section */ 
+.word  _sdata
+/* end address of the data section */
+.word  _edata
+/* start address of the bss section */
+.word  _sbss
+/* end address of the bss section */
+.word  _ebss
 
 
-; <h> Heap Configuration
-;   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
-; </h>
+    .section  .text.Reset_Handler
+  .weak  Reset_Handler
+  .type  Reset_Handler, %function
 
-Heap_Size       EQU     0x00000400
+Reset_Handler:
+  ldr   sp, =_estack    /* Atollic update: set stack pointer */
+  
+/* copy the data segment into ram */  
+  movs r1, #0
+  b DataInit
 
-                AREA    HEAP, NOINIT, READWRITE, ALIGN=3
-__heap_base
-Heap_Mem        SPACE   Heap_Size
-__heap_limit
+CopyData:
+  ldr r3, =_sidata
+  ldr r3, [r3, r1]
+  str r3, [r0, r1]
+  adds r1, r1, #4
+    
+DataInit:
+  ldr r0, =_sdata
+  ldr r3, =_edata
+  adds r2, r0, r1
+  cmp r2, r3
+  bcc CopyData
+  ldr r2, =_sbss
+  b Zerobss
+/* zero the bss segment */ 
+FillZerobss:
+  movs r3, #0
+  str r3, [r2], #4
+    
+Zerobss:
+  ldr r3, = _ebss
+  cmp r2, r3
+  bcc FillZerobss
+/* configure the clock */
+  bl  SystemInit
+/* start execution of the program */
+/* Call static constructors */
+#    bl __libc_init_array
+  bl main
+  bx lr
+.size Reset_Handler, .-Reset_Handler
 
-                PRESERVE8
-                THUMB
 
-;               /* reset Vector Mapped to at Address 0 */
-                AREA    RESET, DATA, READONLY
-                EXPORT  __Vectors
-                EXPORT  __Vectors_End
-                EXPORT  __Vectors_Size
 
-__Vectors       DCD     __initial_sp                      ; Top of Stack
-                DCD     Reset_Handler                     ; Reset Handler
-                DCD     NMI_Handler                       ; NMI Handler
-                DCD     HardFault_Handler                 ; Hard Fault Handler
-                DCD     MemManage_Handler                 ; MPU Fault Handler
-                DCD     BusFault_Handler                  ; Bus Fault Handler
-                DCD     UsageFault_Handler                ; Usage Fault Handler
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     SVC_Handler                       ; SVCall Handler
-                DCD     DebugMon_Handler                  ; Debug Monitor Handler
-                DCD     0                                 ; Reserved
-                DCD     PendSV_Handler                    ; PendSV Handler
-                DCD     SysTick_Handler                   ; SysTick Handler
+    .section .text.Default_Handler,"ax",%progbits
+Default_Handler:
+Infinite_Loop:
+  b Infinite_Loop
+  .size Default_Handler, .-Default_Handler
 
-;               /* external interrupts handler */
-                DCD     WWDGT_IRQHandler                  ; 16:Window Watchdog Timer
-                DCD     LVD_IRQHandler                    ; 17:LVD through EXTI Line detect
-                DCD     RTC_IRQHandler                    ; 18:RTC through EXTI Line
-                DCD     FMC_IRQHandler                    ; 19:FMC
-                DCD     RCU_CTC_IRQHandler                ; 20:RCU and CTC
-                DCD     EXTI0_1_IRQHandler                ; 21:EXTI Line 0 and EXTI Line 1
-                DCD     EXTI2_3_IRQHandler                ; 22:EXTI Line 2 and EXTI Line 3
-                DCD     EXTI4_15_IRQHandler               ; 23:EXTI Line 4 to EXTI Line 15
-                DCD     TSI_IRQHandler                    ; 24:TSI
-                DCD     DMA_Channel0_IRQHandler           ; 25:DMA Channel 0 
-                DCD     DMA_Channel1_2_IRQHandler         ; 26:DMA Channel 1 and DMA Channel 2
-                DCD     DMA_Channel3_4_IRQHandler         ; 27:DMA Channel 3 and DMA Channel 4
-                DCD     ADC_CMP_IRQHandler                ; 28:ADC and Comparator 0-1
-                DCD     TIMER0_BRK_UP_TRG_COM_IRQHandler  ; 29:TIMER0 Break,Update,Trigger and Commutation
-                DCD     TIMER0_Channel_IRQHandler         ; 30:TIMER0 Channel Capture Compare
-                DCD     TIMER1_IRQHandler                 ; 31:TIMER1
-                DCD     TIMER2_IRQHandler                 ; 32:TIMER2
-                DCD     TIMER5_DAC_IRQHandler             ; 33:TIMER5 and DAC
-                DCD     0                                 ; Reserved
-                DCD     TIMER13_IRQHandler                ; 35:TIMER13
-                DCD     TIMER14_IRQHandler                ; 36:TIMER14
-                DCD     TIMER15_IRQHandler                ; 37:TIMER15
-                DCD     TIMER16_IRQHandler                ; 38:TIMER16
-                DCD     I2C0_EV_IRQHandler                ; 39:I2C0 Event
-                DCD     I2C1_EV_IRQHandler                ; 40:I2C1 Event
-                DCD     SPI0_IRQHandler                   ; 41:SPI0
-                DCD     SPI1_IRQHandler                   ; 42:SPI1
-                DCD     USART0_IRQHandler                 ; 43:USART0
-                DCD     USART1_IRQHandler                 ; 44:USART1
-                DCD     0                                 ; Reserved
-                DCD     CEC_IRQHandler                    ; 46:CEC
-                DCD     0                                 ; Reserved
-                DCD     I2C0_ER_IRQHandler                ; 48:I2C0 Error
-                DCD     0                                 ; Reserved
-                DCD     I2C1_ER_IRQHandler                ; 50:I2C1 Error
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     USBFS_WKUP_IRQHandler             ; 58:USBFS Wakeup
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     DMA_Channel5_6_IRQHandler         ; 64:DMA Channel5 and Channel6 
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     0                                 ; Reserved
-                DCD     USBFS_IRQHandler                  ; 83:USBFS
-__Vectors_End
 
-__Vectors_Size  EQU     __Vectors_End - __Vectors
+  .section .isr_vector,"a",%progbits
+  .type g_pfnVectors, %object
+  .size g_pfnVectors, .-g_pfnVectors
 
-                AREA    |.text|, CODE, READONLY
 
-;/* reset Handler */
-Reset_Handler   PROC
-                EXPORT  Reset_Handler                     [WEAK]
-                IMPORT  SystemInit
-                IMPORT  __main
-                LDR     R0, =SystemInit
-                BLX     R0
-                LDR     R0, =__main
-                BX      R0
-                ENDP
+g_pfnVectors:
+                    .word _estack
+                    .word Reset_Handler                     /* Vector Number 1,Reset Handler */
+                    .word NMI_Handler                       /* Vector Number 2,NMI Handler */
+                    .word HardFault_Handler                 /* Vector Number 3,Hard Fault Handler */
+                    .word MemManage_Handler                 /* Vector Number 4,MPU Fault Handler */
+                    .word BusFault_Handler                  /* Vector Number 5,Bus Fault Handler */
+                    .word UsageFault_Handler                /* Vector Number 6,Usage Fault Handler */
+                    .word 0                                 /* Reserved  */
+                    .word 0                                 /* Reserved */
+                    .word 0                                 /* Reserved */
+                    .word 0                                 /* Reserved */
+                    .word SVC_Handler                       /* Vector Number 11,SVCall Handler */
+                    .word DebugMon_Handler                  /* Vector Number 12,Debug Monitor Handler */
+                    .word 0                                 /* Reserved */
+                    .word PendSV_Handler                    /* Vector Number 14,PendSV Handler */
+                    .word SysTick_Handler                   /* Vector Number 15,SysTick Handler */
 
-;/* dummy Exception Handlers */
-NMI_Handler     PROC
-                EXPORT  NMI_Handler                       [WEAK]
-                B       .
-                ENDP
-HardFault_Handler\
-                PROC
-                EXPORT  HardFault_Handler                 [WEAK]
-                B       .
-                ENDP
-MemManage_Handler\
-                PROC
-                EXPORT  MemManage_Handler                 [WEAK]
-                B       .
-                ENDP
-BusFault_Handler\
-                PROC
-                EXPORT  BusFault_Handler                  [WEAK]
-                B       .
-                ENDP
-UsageFault_Handler\
-                PROC
-                EXPORT  UsageFault_Handler                [WEAK]
-                B       .
-                ENDP
-SVC_Handler     PROC
-                EXPORT  SVC_Handler                       [WEAK]
-                B       .
-                ENDP
-DebugMon_Handler\
-                PROC
-                EXPORT  DebugMon_Handler                  [WEAK]
-                B       .
-                ENDP
-PendSV_Handler\
-                PROC
-                EXPORT  PendSV_Handler                    [WEAK]
-                B       .
-                ENDP
-SysTick_Handler\
-                PROC
-                EXPORT  SysTick_Handler                   [WEAK]
-                B       .
-                ENDP
+                    /* External Interrupts */
+                    .word WWDGT_IRQHandler                  /* Vector Number 16,Window Watchdog */
+                    .word LVD_IRQHandler                    /* Vector Number 17,LVD through EXTI Line detect */
+                    .word RTC_IRQHandler                    /* Vector Number 18,RTC through EXTI Line */
+                    .word FMC_IRQHandler                    /* Vector Number 19,FMC */
+                    .word RCU_IRQHandler                    /* Vector Number 20,RCU */
+                    .word EXTI0_1_IRQHandler                /* Vector Number 21,EXTI Line 0 and EXTI Line 1 */
+                    .word EXTI2_3_IRQHandler                /* Vector Number 22,EXTI Line 2 and EXTI Line 3 */
+                    .word EXTI4_15_IRQHandler               /* Vector Number 23,EXTI Line 4 to EXTI Line 15 */
+                    .word TSI_IRQHandler                    /* Vector Number 24,TSI */
+                    .word DMA_Channel0_IRQHandler           /* Vector Number 25,DMA Channel 0  */
+                    .word DMA_Channel1_2_IRQHandler         /* Vector Number 26,DMA Channel 1 and DMA Channel 2 */
+                    .word DMA_Channel3_4_IRQHandler         /* Vector Number 27,DMA Channel 3 and DMA Channel 4 */
+                    .word ADC_CMP_IRQHandler                /* Vector Number 28,ADC and Comparator 0-1  */
+                    .word TIMER0_BRK_UP_TRG_COM_IRQHandler  /* Vector Number 29,TIMER0 Break,Update,Trigger and Commutation */
+                    .word TIMER0_CC_IRQHandler              /* Vector Number 30,TIMER0 Capture Compare  */
+                    .word TIMER1_IRQHandler                 /* Vector Number 31,TIMER1  */
+                    .word TIMER2_IRQHandler                 /* Vector Number 32,TIMER2  */
+                    .word TIMER5_DAC_IRQHandler             /* Vector Number 33,TIMER5 and DAC */
+                    .word 0                                 /* Vector Number 34,Reserved  */
+                    .word TIMER13_IRQHandler                /* Vector Number 35,TIMER13  */
+                    .word TIMER14_IRQHandler                /* Vector Number 36,TIMER14 */
+                    .word TIMER15_IRQHandler                /* Vector Number 37,TIMER15 */
+                    .word TIMER16_IRQHandler                /* Vector Number 38,TIMER16 */
+                    .word I2C0_EV_IRQHandler                /* Vector Number 39,I2C0 Event */
+                    .word I2C1_EV_IRQHandler                /* Vector Number 40,I2C1 Event */
+                    .word SPI0_IRQHandler                   /* Vector Number 41,SPI0 */
+                    .word SPI1_IRQHandler                   /* Vector Number 42,SPI1 */
+                    .word USART0_IRQHandler                 /* Vector Number 43,USART0 */
+                    .word USART1_IRQHandler                 /* Vector Number 44,USART1 */
+                    .word 0                                 /* Vector Number 45,Reserved */
+                    .word CEC_IRQHandler                    /* Vector Number 46,CEC */
+                    .word 0                                 /* Vector Number 47,Reserved */
+                    .word I2C0_ER_IRQHandler                /* Vector Number 48,I2C0 Error */
+                    .word 0                                 /* Vector Number 49,Reserved */
+                    .word I2C1_ER_IRQHandler                /* Vector Number 50,I2C1 Error */
+                    .word I2C2_EV_IRQHandler                /* Vector Number 51,I2C2 Event */
+                    .word I2C2_ER_IRQHandler                /* Vector Number 52,I2C2 Error */
+                    .word 0                                 /* Vector Number 53,Reserved */
+                    .word 0                                 /* Vector Number 54,Reserved */
+                    .word 0                                 /* Vector Number 55,Reserved */
+                    .word 0                                 /* Vector Number 56,Reserved */
+                    .word 0                                 /* Vector Number 57,Reserved */
+                    .word USBFS_WKUP_IRQHandler             /* Vector Number 58,USBFS Wakeup */
+                    .word 0                                 /* Vector Number 59,Reserved */
+                    .word 0                                 /* Vector Number 60,Reserved */ 
+                    .word 0                                 /* Vector Number 61,Reserved */
+                    .word 0                                 /* Vector Number 62,Reserved */
+                    .word 0                                 /* Vector Number 63,Reserved */
+                    .word DMA_Channel5_6_IRQHandler         /* Vector Number 64,DMA Channel5 and Channel6  */
+                    .word 0                                 /* Vector Number 65,Reserved */
+                    .word 0                                 /* Vector Number 66,Reserved */
+                    .word SPI2_IRQHandler                   /* Vector Number 67,SPI2 */
+                    .word 0                                 /* Vector Number 68,Reserved */
+                    .word 0                                 /* Vector Number 69,Reserved */
+                    .word 0                                 /* Vector Number 70,Reserved */
+                    .word 0                                 /* Vector Number 71,Reserved */
+                    .word 0                                 /* Vector Number 72,Reserved */
+                    .word 0                                 /* Vector Number 73,Reserved */
+                    .word 0                                 /* Vector Number 74,Reserved */
+                    .word 0                                 /* Vector Number 75,Reserved */
+                    .word 0                                 /* Vector Number 76,Reserved */
+                    .word 0                                 /* Vector Number 77,Reserved */
+                    .word 0                                 /* Vector Number 78,Reserved */
+                    .word 0                                 /* Vector Number 79,Reserved */
+                    .word 0                                 /* Vector Number 80,Reserved */
+                    .word 0                                 /* Vector Number 81,Reserved */
+                    .word 0                                 /* Vector Number 82,Reserved */
+                    .word USBFS_IRQHandler                  /* Vector Number 83,USBFS */
 
-Default_Handler PROC
-;               /* external interrupts handler */
-                EXPORT  WWDGT_IRQHandler                  [WEAK]
-                EXPORT  LVD_IRQHandler                    [WEAK]
-                EXPORT  RTC_IRQHandler                    [WEAK]
-                EXPORT  FMC_IRQHandler                    [WEAK]
-                EXPORT  RCU_CTC_IRQHandler                [WEAK]
-                EXPORT  EXTI0_1_IRQHandler                [WEAK]
-                EXPORT  EXTI2_3_IRQHandler                [WEAK]
-                EXPORT  EXTI4_15_IRQHandler               [WEAK]
-                EXPORT  TSI_IRQHandler                    [WEAK]
-                EXPORT  DMA_Channel0_IRQHandler           [WEAK]
-                EXPORT  DMA_Channel1_2_IRQHandler         [WEAK]
-                EXPORT  DMA_Channel3_4_IRQHandler         [WEAK]
-                EXPORT  ADC_CMP_IRQHandler                [WEAK]
-                EXPORT  TIMER0_BRK_UP_TRG_COM_IRQHandler  [WEAK]
-                EXPORT  TIMER0_Channel_IRQHandler         [WEAK]
-                EXPORT  TIMER1_IRQHandler                 [WEAK]
-                EXPORT  TIMER2_IRQHandler                 [WEAK]
-                EXPORT  TIMER5_DAC_IRQHandler             [WEAK]
-                EXPORT  TIMER13_IRQHandler                [WEAK]
-                EXPORT  TIMER14_IRQHandler                [WEAK]
-                EXPORT  TIMER15_IRQHandler                [WEAK]
-                EXPORT  TIMER16_IRQHandler                [WEAK]
-                EXPORT  I2C0_EV_IRQHandler                [WEAK]
-                EXPORT  I2C1_EV_IRQHandler                [WEAK]
-                EXPORT  SPI0_IRQHandler                   [WEAK]
-                EXPORT  SPI1_IRQHandler                   [WEAK]
-                EXPORT  USART0_IRQHandler                 [WEAK]
-                EXPORT  USART1_IRQHandler                 [WEAK]
-                EXPORT  CEC_IRQHandler                    [WEAK]
-                EXPORT  I2C0_ER_IRQHandler                [WEAK]
-                EXPORT  I2C1_ER_IRQHandler                [WEAK]
-                EXPORT  USBFS_WKUP_IRQHandler             [WEAK]
-                EXPORT  DMA_Channel5_6_IRQHandler         [WEAK]
-                EXPORT  USBFS_IRQHandler                  [WEAK]
 
-;/* external interrupts handler */
-WWDGT_IRQHandler
-LVD_IRQHandler
-RTC_IRQHandler
-FMC_IRQHandler
-RCU_CTC_IRQHandler
-EXTI0_1_IRQHandler
-EXTI2_3_IRQHandler
-EXTI4_15_IRQHandler
-TSI_IRQHandler
-DMA_Channel0_IRQHandler
-DMA_Channel1_2_IRQHandler
-DMA_Channel3_4_IRQHandler
-ADC_CMP_IRQHandler
-TIMER0_BRK_UP_TRG_COM_IRQHandler
-TIMER0_Channel_IRQHandler
-TIMER1_IRQHandler
-TIMER2_IRQHandler
-TIMER5_DAC_IRQHandler
-TIMER13_IRQHandler
-TIMER14_IRQHandler
-TIMER15_IRQHandler
-TIMER16_IRQHandler
-I2C0_EV_IRQHandler
-I2C1_EV_IRQHandler
-SPI0_IRQHandler
-SPI1_IRQHandler
-USART0_IRQHandler
-USART1_IRQHandler
-CEC_IRQHandler
-I2C0_ER_IRQHandler
-I2C1_ER_IRQHandler
-USBFS_WKUP_IRQHandler
-DMA_Channel5_6_IRQHandler
-USBFS_IRQHandler
 
-                B       .
-                ENDP
+  .weak NMI_Handler
+  .thumb_set NMI_Handler,Default_Handler
 
-                ALIGN
+  .weak HardFault_Handler
+  .thumb_set HardFault_Handler,Default_Handler
 
-; user Initial Stack & Heap
+  .weak MemManage_Handler
+  .thumb_set MemManage_Handler,Default_Handler
 
-                IF      :DEF:__MICROLIB
+  .weak BusFault_Handler
+  .thumb_set BusFault_Handler,Default_Handler
+  
+  .weak UsageFault_Handler
+  .thumb_set UsageFault_Handler,Default_Handler
+  
+  .weak SVC_Handler
+  .thumb_set SVC_Handler,Default_Handler
+  
+  .weak DebugMon_Handler
+  .thumb_set DebugMon_Handler,Default_Handler
+  
+  .weak PendSV_Handler
+  .thumb_set PendSV_Handler,Default_Handler
 
-                EXPORT  __initial_sp
-                EXPORT  __heap_base
-                EXPORT  __heap_limit
+  .weak SysTick_Handler
+  .thumb_set SysTick_Handler,Default_Handler
 
-                ELSE
+  .weak WWDGT_IRQHandler
+  .thumb_set WWDG_IRQHandler,Default_Handler
 
-                IMPORT  __use_two_region_memory
-                EXPORT  __user_initial_stackheap
+  .weak LVD_IRQHandler
+  .thumb_set LVD_IRQHandler,Default_Handler
+  
+  .weak RTC_IRQHandler
+  .thumb_set RTC_IRQHandler,Default_Handler
+  
+  .weak FMC_IRQHandler
+  .thumb_set FMC_IRQHandler,Default_Handler
 
-__user_initial_stackheap PROC
-                LDR     R0, =  Heap_Mem
-                LDR     R1, =(Stack_Mem + Stack_Size)
-                LDR     R2, = (Heap_Mem +  Heap_Size)
-                LDR     R3, = Stack_Mem
-                BX      LR
-                ENDP
+  .weak RCU_IRQHandler
+  .thumb_set RCU_IRQHandler,Default_Handler
+  
+  .weak EXTI0_1_IRQHandler
+  .thumb_set EXTI0_1_IRQHandler,Default_Handler
 
-                ALIGN
+  .weak EXTI2_3_IRQHandler
+  .thumb_set EXTI2_3_IRQHandler,Default_Handler
 
-                ENDIF
+  .weak EXTI4_15_IRQHandler
+  .thumb_set EXTI4_15_IRQHandler,Default_Handler
 
-                END
+  .weak TSI_IRQHandler
+  .thumb_set TSI_IRQHandler,Default_Handler
+
+  .weak DMA_Channel0_IRQHandler
+  .thumb_set DMA_Channel0_IRQHandler,Default_Handler
+
+  .weak DMA_Channel1_2_IRQHandler
+  .thumb_set DMA_Channel1_2_IRQHandler,Default_Handler
+
+  .weak DMA_Channel3_4_IRQHandler
+  .thumb_set DMA_Channel3_4_IRQHandler,Default_Handler
+
+  .weak ADC_CMP_IRQHandler
+  .thumb_set ADC_CMP_IRQHandler,Default_Handler
+
+  .weak TIMER0_BRK_UP_TRG_COM_IRQHandler
+  .thumb_set TIMER0_BRK_UP_TRG_COM_IRQHandler,Default_Handler
+
+  .weak TIMER0_CC_IRQHandler
+  .thumb_set TIMER0_CC_IRQHandler,Default_Handler
+
+  .weak TIMER1_IRQHandler
+  .thumb_set TIMER1_IRQHandler,Default_Handler
+
+  .weak TIMER2_IRQHandler
+  .thumb_set TIMER2_IRQHandler,Default_Handler
+ 
+  .weak TIMER5_DAC_IRQHandler
+  .thumb_set TIMER5_DAC_IRQHandler,Default_Handler
+
+  .weak TIMER13_IRQHandler
+  .thumb_set TIMER13_IRQHandler,Default_Handler
+
+  .weak TIMER14_IRQHandler
+  .thumb_set TIMER14_IRQHandler,Default_Handler
+
+  .weak TIMER15_IRQHandler
+  .thumb_set TIMER15_IRQHandler,Default_Handler
+
+  .weak TIMER16_IRQHandler
+  .thumb_set TIMER16_IRQHandler,Default_Handler
+
+  .weak I2C0_EV_IRQHandler
+  .thumb_set I2C0_EV_IRQHandler,Default_Handler
+
+  .weak I2C1_EV_IRQHandler
+  .thumb_set I2C1_EV_IRQHandler,Default_Handler
+
+  .weak SPI0_IRQHandler
+  .thumb_set SPI0_IRQHandler,Default_Handler
+
+  .weak SPI1_IRQHandler
+  .thumb_set SPI1_IRQHandler,Default_Handler
+
+  .weak USART0_IRQHandler
+  .thumb_set USART0_IRQHandler,Default_Handler
+  
+  .weak USART1_IRQHandler
+  .thumb_set USART1_IRQHandler,Default_Handler
+  
+  .weak CEC_IRQHandler
+  .thumb_set CEC_IRQHandler,Default_Handler
+
+  .weak I2C0_ER_IRQHandler
+  .thumb_set I2C0_ER_IRQHandler,Default_Handler
+  
+  .weak I2C1_ER_IRQHandler
+  .thumb_set I2C1_ER_IRQHandler,Default_Handler
+
+  .weak I2C2_EV_IRQHandler
+  .thumb_set I2C2_EV_IRQHandler,Default_Handler
+  
+  .weak I2C2_ER_IRQHandler
+  .thumb_set I2C2_ER_IRQHandler,Default_Handler
+
+  .weak USBFS_WKUP_IRQHandler
+  .thumb_set USBFS_WKUP_IRQHandler,Default_Handler
+  
+  .weak DMA_Channel5_6_IRQHandler
+  .thumb_set DMA_Channel5_6_IRQHandler,Default_Handler
+  
+  .weak SPI2_IRQHandler
+  .thumb_set SPI2_IRQHandler,Default_Handler
+  
+  .weak USBFS_IRQHandler
+  .thumb_set USBFS_IRQHandler,Default_Handler
+
+/******************* (C) COPYRIGHT 2014 GIGADEVICE *****END OF FILE****/

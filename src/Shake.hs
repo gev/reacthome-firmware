@@ -28,12 +28,13 @@ cflags :: [String]
 cflags =
     [ "-mthumb"
     , "-mcpu=cortex-m4"
-    , "-mfloat-abi=soft"
-    , "-fno-builtin"
-    , "-fno-strict-aliasing"
+    , "-mfloat-abi=soft" --
+    , "-fno-builtin" --
+    , "-fno-strict-aliasing" --
     , "-fdata-sections"
-    , "-fms-extensions"
+    , "-fms-extensions" --
     , "-ffunction-sections"
+    , "-Wall"
     , "-Og"
     ]
 
@@ -41,9 +42,9 @@ ldflags :: [String]
 ldflags =
     [ "-mthumb"
     , "-mcpu=cortex-m4"
-    , "-mfloat-abi=soft"
+    , "-mfloat-abi=soft" --
     , "-Wl,--gc-sections"
-    , "-flto"
+    , "-flto" --
     , "-specs=nano.specs"
     ]
 
@@ -71,6 +72,7 @@ shake ns = shakeArgs shakeOptions{shakeFiles="build"} $ do
         cs <- getDirectoryFiles "support/device/gd32f3x0" ["//*.c"]
         let os = o : ["build/support/device/gd32f3x0" </> c -<.> "o" | c <- cs]
         need os
+        cmd_ cc cflags "-c" "support/device/gd32f3x0/src/startup_gd32f3x0.s" "-o" "build/support/device/gd32f3x0/src/startup_gd32f3x0.o" "-MMD -MF" "build/support/device/gd32f3x0/src/startup_gd32f3x0.m"
         cmd_ cc ldflags ld os "-lc" "-o" out
 
     "build//*.o" %> \out -> do
