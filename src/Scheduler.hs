@@ -5,8 +5,9 @@
 
 module Scheduler where
 
-import           Control.Monad   (replicateM, replicateM_, zipWithM_)
-import           Data.Maybe      (fromJust, isJust, isNothing)
+import           Control.Monad   (replicateM, zipWithM_)
+import           Data.List
+import           Data.Maybe
 import           Feature
 import           Interface       as I
 import qualified Interface.IRQ   as Q
@@ -41,8 +42,7 @@ handleIRQ = do
 
 schedule :: Scheduler -> Def ('[] :-> ())
 schedule (Scheduler {steps}) = proc "loop" $ body $ do
-  let immediately = filter (isNothing . period) steps
-  let scheduled = filter (isJust . period) steps
+  let (scheduled, immediately) = partition (isJust . period) steps
   clocks <- replicateM (length scheduled) (local (ival 0))
   forever $ do
     t <- deref $ addrOf clock
