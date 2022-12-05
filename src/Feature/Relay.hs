@@ -6,11 +6,11 @@ import           Feature
 import           Interface
 import           Interface.GPIO
 
-data Relay a = (OUT a) => Relay Int a
+data Relay = forall a. (OUT a) => Relay Int a
 
-instance Interface (Relay o) where
+instance Interface Relay where
   initialize = undefined
   dependencies = undefined
 
-instance Task (Relay o) where
+instance Task Relay where
   task = undefined

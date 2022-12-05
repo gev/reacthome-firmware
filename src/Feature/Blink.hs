@@ -10,12 +10,12 @@ import           Interface.GPIO as I
 import           Ivory.Language
 
 
-data Blink a = (I.OUT a) => Blink Int a
+data Blink = forall a. (I.OUT a) => Blink Int a
 
 state :: Int -> MemArea ('Stored IBool)
 state n = area ("blink_" <> show n <> "_state") (Just (ival false))
 
-instance I.Interface (Blink b) where
+instance I.Interface Blink where
 
   dependencies (Blink n out) =
     let s = state n
@@ -24,7 +24,7 @@ instance I.Interface (Blink b) where
   initialize (Blink _ out) = I.initialize out
 
 
-instance Task (Blink b) where
+instance Task Blink where
 
   task (Blink n out) =
     Step (Just 1_000) $ proc ("blink_" <> show n <> "_step") $ body $ do
