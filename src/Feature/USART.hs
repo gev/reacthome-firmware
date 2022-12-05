@@ -10,9 +10,9 @@ import           Ivory.Language
 import           Ivory.Stdlib
 
 
-data USART a = (I.USART a) => USART Int a
+data USART = forall a. (I.USART a) => USART Int a
 
-instance I.Interface (USART b) where
+instance I.Interface USART where
 
   dependencies (USART _ usart) = I.dependencies usart
 
@@ -26,7 +26,7 @@ instance I.Interface (USART b) where
     ]
 
 
-instance Task (USART b) where
+instance Task USART where
   task (USART n usart) =
     Step Nothing $ proc ("usart_" <> show n <> "_step") $ body $ do
       hasReceived <- I.hasReceived usart

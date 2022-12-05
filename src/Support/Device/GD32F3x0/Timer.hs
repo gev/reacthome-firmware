@@ -153,7 +153,7 @@ initTimer t p = do
     ]
   call_ timer_init (def t) r
 
-timer_init :: Def ('[Uint32, Ref s ('Struct "timer_parameter_struct")] :-> ())
+timer_init :: Def ('[Uint32, Ref s (Struct "timer_parameter_struct")] :-> ())
 timer_init = fun "timer_init"
 
 

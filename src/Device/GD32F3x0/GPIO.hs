@@ -28,13 +28,18 @@ data MODE
   | AF  GPIO_AF
 
 
+in_pa_4   = input  pa_4
 in_pa_15  = input  pa_15
+
+out_pa_4  = output  pa_4
 out_pa_15 = output pa_15
 
 pa_2  = pa GPIO_PIN_2
 pa_3  = pa GPIO_PIN_3
+pa_4  = pa GPIO_PIN_4
 pa_15 = pa GPIO_PIN_15
 
+pa :: GPIO_PIN -> MODE -> PORT
 pa = PORT RCU_GPIOA GPIOA
 
 
