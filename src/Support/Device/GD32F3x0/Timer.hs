@@ -4,7 +4,6 @@
 {-# LANGUAGE TypeOperators         #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
-{-# LANGUAGE RankNTypes            #-}
 
 module Support.Device.GD32F3x0.Timer
   ( TIMER_PERIPH            (..)
@@ -141,7 +140,7 @@ timer_interrupt_flag_clear :: Def ('[Uint32, Uint32] :-> ())
 timer_interrupt_flag_clear = fun "timer_interrupt_flag_clear"
 
 
-initTimer :: TIMER_PERIPH -> TIMER_PARAM -> (forall s. Ivory (ProcEffects s ()) ())
+initTimer :: TIMER_PERIPH -> TIMER_PARAM -> Ivory (ProcEffects s ())  ()
 initTimer t p = do
   r <- local $ istruct
     [ prescaler         .= ival (p & timerPrescaler)
