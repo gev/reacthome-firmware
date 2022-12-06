@@ -33,6 +33,6 @@ instance Task USART where
       when hasReceived $ do
         b <- I.receive usart
         forever $ do
-          isTransmitted <- I.hasTransmitted usart
-          when isTransmitted breakOut
+          canTransmit <- I.canTransmit usart
+          when canTransmit breakOut
         I.transmit usart b
