@@ -54,9 +54,9 @@ instance I.USART USART where
   receive = S.receiveData . usart
   transmit = S.transmitData . usart
 
-  hasReceived    u  =          getFlag (usart u) USART_FLAG_RBNE
-  hasTransmitted u  =          getFlag (usart u) USART_FLAG_TC
-  canTransmit    u  = iNot <$> getFlag (usart u) USART_FLAG_TBE
+  hasReceived    u  =  getFlag (usart u) USART_FLAG_RBNE
+  hasTransmitted u  =  getFlag (usart u) USART_FLAG_TC
+  canTransmit    u  =  getFlag (usart u) USART_FLAG_TBE
   enable         u  = enableUSART (usart u)
 
 
