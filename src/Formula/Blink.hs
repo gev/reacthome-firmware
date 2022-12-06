@@ -19,6 +19,7 @@ blink = Formula { systemClock = timer_2_irq
                                            , timerPeriod = 9
                                            }
                 , features = [ Feature $ Blink 1 out_pa_15
+                             , Feature $ Blink 1 out_pa_4
                              , Feature $ USART 1 usart_1
                              ]
                 }
