@@ -10,7 +10,10 @@ import           Ivory.Language
 import           Ivory.Language.Uint (Uint8 (Uint8))
 
 
-inclCRC16 = incl crc_16
+inclCRC16 = do
+  incl crc_16
+  defConstMemArea crc16_msb
+  defConstMemArea crc16_lsb
 
 
 crc16 :: Ref s ('Array 512 ('Stored Uint16)) -> Ix 512 -> Ivory eff Uint16
