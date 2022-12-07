@@ -15,6 +15,7 @@ data Blink = forall a. (I.OUT a) => Blink Int a
 state :: Int -> MemArea ('Stored IBool)
 state n = area ("blink_" <> show n <> "_state") (Just (ival false))
 
+
 instance I.Interface Blink where
 
   dependencies (Blink n out) =

@@ -47,6 +47,10 @@ executable reacthome-firmware
                     , Interface.USART
                     , Interface.RS485
 
+                    , Protocol.RBUS
+                    , Protocol.RBUS.Master
+                    , Protocol.RBUS.Slave
+
                     , Device.GD32F3x0.IRQ
                     , Device.GD32F3x0.GPIO
                     , Device.GD32F3x0.Timer
@@ -63,6 +67,8 @@ executable reacthome-firmware
                     , Support.Device.GD32F3x0.Timer
                     , Support.Device.GD32F3x0.USART
                     , Support.Device.GD32F3x0.DBG
+
+                    , Util.CRC16
 
     build-depends:    base ^>=4.16.3.0
                     , safe
