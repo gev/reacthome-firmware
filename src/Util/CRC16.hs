@@ -1,5 +1,7 @@
 {-# LANGUAGE DataKinds     #-}
 {-# LANGUAGE TypeOperators #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use for_" #-}
 
 module Util.CRC16
   ( crc16
@@ -7,7 +9,6 @@ module Util.CRC16
   ) where
 
 import           Ivory.Language
-import           Ivory.Language.Uint (Uint8 (Uint8))
 
 
 inclCRC16 = do
@@ -23,7 +24,7 @@ crc_16 :: Def ('[Ref s (Array 512 (Stored Uint16)), Ix 512] :-> Uint16)
 crc_16 = proc "crc_16" $ \a n -> body $ do
   msb' <- local $ ival 0xff
   lsb' <- local $ ival 0xff
-  times n $ \jx -> do
+  for n $ \jx -> do
     msb <- deref msb'
     lsb <- deref lsb'
     i <- deref (a ! jx)

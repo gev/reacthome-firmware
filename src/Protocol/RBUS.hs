@@ -1,59 +1,61 @@
 {-# LANGUAGE DataKinds          #-}
+{-# LANGUAGE FlexibleContexts   #-}
 {-# LANGUAGE GADTs              #-}
 {-# LANGUAGE ImpredicativeTypes #-}
 
 module Protocol.RBUS where
 
 import           Ivory.Language
+import           Ivory.Stdlib
 
+type Effect e = forall eff. Ivory (ProcEffects eff ()) e
 
-type Data  = forall s. Ref s ('CArray (Stored Uint8))
-type MAC   = forall s. Ref s ('Array 6 (Stored Uint8))
+type Data  = forall s. Effect (Ref s (Array 512 (Stored Uint8)))
+type Byte  = Effect Uint8
+
+data Fragment = Fragment
+  { array  :: Effect Data
+  , offset :: Effect Uint16
+  , length :: Effect Uint16
+  }
 
 data Packet
-  = MasterDiscovery { mac     :: MAC
-                    , address :: Uint8
-                    }
-  | MasterPing      { address :: Uint8
-                    }
-  | MasterConfirm   { address :: Uint8
-                    }
-  | MasterData      { id      :: Uint8
-                    , address :: Uint8
-                    , message :: Data
-                    , length  :: Data
-                    }
-  | SlaveDiscovery  { mac          :: MAC
-                    , deviceType   :: Uint8
-                    , versionMajor :: Uint8
-                    , versionMinor :: Uint8
-                    }
-  | SlavePing       { address :: Uint8
-                    }
-  | SlaveConfig     { address :: Uint8
-                    }
-  | SlaveData       { id      :: Uint8
-                    , address :: Uint8
-                    , message :: Data
-                    , length  :: Data
-                    }
+  = DiscoveryRequest  { mac          :: Fragment
+                      , deviceType   :: Byte
+                      , versionMajor :: Byte
+                      , versionMinor :: Byte
+                      }
+  | DiscoveryResponse { mac     :: Fragment
+                      , address :: Byte
+                      }
+  | Ping              { address :: Byte
+                      }
+  | Confirm           { address :: Byte
+                      }
+  | Data              { id      :: Byte
+                      , address :: Byte
+                      , message :: Fragment
+                      }
 
-broadcastAddress        = 0xff
+broadcastAddress          = 0xff
 
-preambleMasterDiscovery = 0xaa
-preambleMasterPing      = 0xcc
-preambleMasterConfirm   = 0xaf
-preambleMasterData      = 0xa0
+preambleDiscoveryRequest  = 0x55
+preambleDiscoveryResponse = 0xaa
 
-preambleSlaveDiscovery  = 0x55
-preambleSlavePing       = 0x33
-preambleSlaveConfirm    = 0x5f
-preambleSlaveData       = 0x50
+preambleMasterPing        = 0xcc
+preambleMasterConfirm     = 0xaf
+preambleMasterData        = 0xa0
+
+preambleSlavePing         = 0x33
+preambleSlaveConfirm      = 0x5f
+preambleSlaveData         = 0x50
 
 
-parse :: Data -> Uint16 -> Ivory eff Packet
-parse = undefined
+
+parse :: Uint8 -> Maybe Packet
+parse x = Just . Ping $ ifte (x ==? 1) (pure 1) (pure 0)
 
 
-serialize :: Packet -> Ivory eff (Data, Uint16)
-serialize = undefined
+
+serialize :: Packet -> Effect Uint8
+serialize (Ping x) = (+1) <$> x
