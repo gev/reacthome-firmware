@@ -8,8 +8,6 @@ import           Feature
 import           Interface      as I
 import           Interface.GPIO as I
 import           Ivory.Language
-import           Protocol.RBUS
-import           Util.CRC16
 
 
 data Blink = forall a. (I.OUT a) => Blink Int a
@@ -22,7 +20,7 @@ instance I.Interface Blink where
 
   dependencies (Blink n out) =
     let s = state n
-    in inclCRC16 : defMemArea s : I.dependencies out
+    in defMemArea s : I.dependencies out
 
   initialize (Blink _ out) = I.initialize out
 
