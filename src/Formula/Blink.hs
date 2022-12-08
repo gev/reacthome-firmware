@@ -15,8 +15,8 @@ blink = Formula { systemClock = timer_2_irq
                                 {-
                                   TODO:  use frequency instead timer params
                                 -}
-                                timerParam { timerPrescaler = 8399
-                                           , timerPeriod = 9
+                                timerParam { timerPrescaler = 0
+                                           , timerPeriod = 83999
                                            }
                 , features = [ Feature $ Blink 1 out_pa_15
                              , Feature $ Blink 2 out_pa_4
