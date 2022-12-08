@@ -8,12 +8,13 @@ import           Feature
 import           Interface      as I
 import           Interface.GPIO as I
 import           Ivory.Language
+import           Protocol.RBUS
 import           Util.CRC16
 
 
 data Blink = forall a. (I.OUT a) => Blink Int a
 
-state :: Int -> MemArea ('Stored IBool)
+state :: Int -> MemArea (Stored IBool)
 state n = area ("blink_" <> show n <> "_state") (Just (ival false))
 
 
