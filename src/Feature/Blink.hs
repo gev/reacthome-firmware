@@ -17,16 +17,11 @@ state n = area ("blink_" <> show n <> "_state") (Just (ival false))
 
 
 instance I.Interface Blink where
-
-  dependencies (Blink n out) =
-    let s = state n
-    in defMemArea s : I.dependencies out
-
+  dependencies (Blink n out) = defMemArea (state n) : I.dependencies out
   initialize (Blink _ out) = I.initialize out
 
 
 instance Task Blink where
-
   task (Blink n out) =
     Step (Just 1_000) $ proc ("blink_" <> show n <> "_step") $ body $ do
       let s = addrOf $ state n
