@@ -51,7 +51,11 @@ ldflags =
 ld :: String
 ld = "-Tsupport/device/gd32f3x0/gd32f3x0.ld"
 
+target :: Foldable t => [FilePath] -> t String -> [FilePath]
 target ns = concatMap $ \x -> ["build/firmware" </> n <.> x | n <- ns]
+
+source :: FilePath -> FilePath
+source = dropDirectory1 . dropExtension
 
 shake :: [String] -> IO ()
 shake ns = shakeArgs shakeOptions{shakeFiles="build"} $ do
@@ -72,22 +76,16 @@ shake ns = shakeArgs shakeOptions{shakeFiles="build"} $ do
         cmd_ oc "-O ihex" elf out
 
     "build//*.elf" %> \out -> do
-        let o = out -<.> "o"
-        cs <- getDirectoryFiles "support/device/gd32f3x0" ["//*.c"]
-        let os = o : ["build/support/device/gd32f3x0" </> c -<.> "o" | c <- cs]
+        let o = out -<.> "c" <.> "o"
+        ss <- getDirectoryFiles "support/device/gd32f3x0" ["//*.c", "//*.s"]
+        let os = o:["build/support/device/gd32f3x0" </> s <.> "o" | s <- ss]
         need os
-        need ["build/support/device/gd32f3x0/src/startup_gd32f3x0.o"]
-        let m = out -<.> "m"
         cmd_ cc ldflags ld os "-lc" "-o" out
 
-    "build/support/device/gd32f3x0/src/startup_gd32f3x0.o" %> \out -> do
-        let s = dropDirectory1 out -<.> "s"
+    "build//*.c.o" %> \out -> do
         let m = out -<.> "m"
-        cmd_ cc cflags "-c" s "-o" out "-MMD -MF" m
+        cmd_ cc cflags defs incs "-c" (source out) "-o" out "-MMD -MF" m
         neededMakefileDependencies m
 
-    "build//*.o" %> \out -> do
-        let c = dropDirectory1 out -<.> "c"
-        let m = out -<.> "m"
-        cmd_ cc cflags defs incs "-c" c "-o" out "-MMD -MF" m
-        neededMakefileDependencies m
+    "build//*.s.o" %> \out ->
+        cmd_ cc cflags defs incs "-c" (source out) "-o" out
