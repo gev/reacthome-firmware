@@ -60,6 +60,7 @@ executable reacthome-firmware
                     , Ivory.Support.Device.GD32F3x0
 
                     , Support.CMSIS.CoreCM4
+                    , Support.CMSIS.DWT
                     , Support.Device.GD32F3x0
                     , Support.Device.GD32F3x0.GPIO
                     , Support.Device.GD32F3x0.RCU
