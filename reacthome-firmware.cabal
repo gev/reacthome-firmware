@@ -53,6 +53,7 @@ executable reacthome-firmware
 
                     , Device.GD32F3x0.IRQ
                     , Device.GD32F3x0.GPIO
+                    , Device.GD32F3x0.SystemTimer
                     , Device.GD32F3x0.Timer
                     , Device.GD32F3x0.USART
 
