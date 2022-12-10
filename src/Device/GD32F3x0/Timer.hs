@@ -7,7 +7,6 @@ module Device.GD32F3x0.Timer where
 import           Device.GD32F3x0.IRQ           as D
 import           Interface
 import           Interface.IRQ                 as I
-import qualified Interface.Timer               as I
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Stdlib
@@ -41,8 +40,6 @@ instance Interface Timer where
         initTimer         timer param
         enableTimer       timer
     ]
-
-instance I.Timer Timer where
 
 
 instance Interface (D.IRQ Timer) where

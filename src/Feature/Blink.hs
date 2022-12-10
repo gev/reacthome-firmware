@@ -4,9 +4,12 @@
 
 module Feature.Blink where
 
+import           Data.Function
+import           Device.GD32F3x0.SystemTimer
 import           Feature
-import           Interface      as I
-import           Interface.GPIO as I
+import           Interface                   as I
+import           Interface.GPIO              as I
+import           Interface.Timer
 import           Ivory.Language
 
 
@@ -27,4 +30,13 @@ instance Task Blink where
       let s = addrOf $ state n
       v <- deref s
       store s $ iNot v
-      ifte_ v (set out) (reset out)
+      ifte_ v ( do
+                  set out
+                  delay systemTimer 8_400_000
+                  reset out
+              )
+              ( do
+                  reset out
+                  delay systemTimer 8_400_000
+                  set out
+              )

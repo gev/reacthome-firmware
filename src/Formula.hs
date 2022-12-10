@@ -11,13 +11,13 @@ import           Data.List
 import           Feature
 import           Interface             as I
 import           Interface.IRQ         as Q
-import           Interface.Timer
+import           Interface.Timer       as I
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Scheduler
 
 data Formula where
-  Formula :: Q.IRQ t
+  Formula :: (Q.IRQ t, I.Timer t)
           => { systemClock :: t
              , features    :: [Feature]
              }
