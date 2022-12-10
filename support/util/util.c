@@ -7,6 +7,6 @@ void delay_init(void){
 
 inline void delay_us(uint32_t time){
   uint32_t ticks = SystemCoreClock / 1000000 * time;
-  uint32_t start_tick = DWT->CYCCNT;
-  while (DWT->CYCCNT - start_tick < ticks);
+  uint32_t start_tick = read_system_clock;
+  while (read_system_clock - start_tick < ticks);
 }
