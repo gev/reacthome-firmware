@@ -17,6 +17,7 @@ import           Ivory.Support.Device.GD32F3x0
 data RCU_PERIPH
   = RCU_GPIOA
   | RCU_GPIOB
+  | RCU_TIMER1
   | RCU_TIMER2
   | RCU_USART1
   deriving (Show, Enum, Bounded)

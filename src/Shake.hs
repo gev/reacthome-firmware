@@ -76,12 +76,12 @@ shake ns = shakeArgs shakeOptions{shakeFiles="build"} $ do
         cmd_ oc "-O ihex" elf out
 
     "build//*.elf" %> \out -> do
-        let o = out -<.> "c" <.> "o"
         ss <- getDirectoryFiles "support/device/gd32f3x0" ["//*.c", "//*.s"]
         ss' <- getDirectoryFiles "support/CMSIS" ["//*.c"]
-        let os = ["build/support/device/gd32f3x0" </> s <.> "o" | s <- ss]
-        let os' = ["build/support/CMSIS" </> s <.> "o" | s <- ss']
-        need $ o:os<>os'
+        let os = out -<.> "c" <.> "o"
+               : ["build/support/device/gd32f3x0" </> s <.> "o" | s <- ss]
+              <> ["build/support/CMSIS" </> s <.> "o" | s <- ss']
+        need os
         cmd_ cc ldflags ld os "-lc" "-o" out
 
     "build//*.c.o" %> \out -> do

@@ -7,10 +7,11 @@ module Device.GD32F3x0.Timer where
 import           Device.GD32F3x0.IRQ           as D
 import           Interface
 import           Interface.IRQ                 as I
+import qualified Interface.Timer               as I
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Stdlib
-import           Support.Device.GD32F3x0       as S
+import           Support.Device.GD32F3x0
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.Timer
@@ -21,6 +22,14 @@ data Timer = Timer
   , rcu   :: RCU_PERIPH
   , param :: TIMER_PARAM
   }
+
+
+timer_1 :: TIMER_PARAM -> Timer
+timer_1 = Timer TIMER1 RCU_TIMER1
+
+timer_1_irq :: TIMER_PARAM -> D.IRQ Timer
+timer_1_irq = IRQ TIMER1_IRQn . timer_1
+
 
 timer_2 :: TIMER_PARAM -> Timer
 timer_2 = Timer TIMER2 RCU_TIMER2
@@ -40,6 +49,11 @@ instance Interface Timer where
         initTimer         timer param
         enableTimer       timer
     ]
+
+
+
+instance I.Timer Timer where
+  readCounter = readCounter . timer
 
 
 instance Interface (D.IRQ Timer) where

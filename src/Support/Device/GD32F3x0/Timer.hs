@@ -20,6 +20,7 @@ module Support.Device.GD32F3x0.Timer
   , clearTimerInterruptFlag
   , timerParam
   , initTimer
+  , readCounter
   , inclTimer
   ) where
 
@@ -102,6 +103,7 @@ inclTimer = do
   incl timer_deinit
   incl timer_enable
   incl timer_init
+  incl timer_cnt
 
 
 deinitTimer :: TIMER_PERIPH -> Ivory eff ()
@@ -154,6 +156,13 @@ initTimer t p = do
 
 timer_init :: Def ('[Uint32, Ref s (Struct "timer_parameter_struct")] :-> ())
 timer_init = fun "timer_init"
+
+
+readCounter :: TIMER_PERIPH -> Ivory eff Uint32
+readCounter t = call timer_cnt (def t)
+
+timer_cnt :: Def ('[Uint32] :-> Uint32)
+timer_cnt = fun "TIMER_CNT"
 
 
 timerParam :: TIMER_PARAM

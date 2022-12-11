@@ -5,7 +5,7 @@
 module Feature.Blink where
 
 import           Data.Function
-import           Device.GD32F3x0.SystemTimer
+import           Device.GD32F3x0.SystemClock
 import           Feature
 import           Interface                   as I
 import           Interface.GPIO              as I
@@ -32,11 +32,11 @@ instance Task Blink where
       store s $ iNot v
       ifte_ v ( do
                   set out
-                  delay systemTimer 8_400_000
+                  delay systemClock 100_000
                   reset out
               )
               ( do
                   reset out
-                  delay systemTimer 8_400_000
+                  delay systemClock 100_000
                   set out
               )

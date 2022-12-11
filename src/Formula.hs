@@ -1,5 +1,4 @@
 {-# LANGUAGE DataKinds      #-}
-{-# LANGUAGE GADTs          #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE RankNTypes     #-}
 {-# LANGUAGE TypeOperators  #-}
@@ -11,23 +10,21 @@ import           Data.List
 import           Feature
 import           Interface             as I
 import           Interface.IRQ         as Q
-import           Interface.Timer       as I
+import           Interface.SystemClock as I
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Scheduler
 
-data Formula where
-  Formula :: (Q.IRQ t, I.Timer t)
-          => { systemClock :: t
-             , features    :: [Feature]
-             }
-          -> Formula
+data Formula = Formula
+  { clock    :: SystemClock
+  , features :: [Feature]
+  }
 
 cook :: Formula -> ModuleM ()
-cook (Formula {features, systemClock}) = do
+cook (Formula {features, clock}) = do
 
 
-  let scheduler = Scheduler systemClock $ task <$> features
+  let scheduler = Scheduler clock $ task <$> features
 
   let depends = I.dependencies scheduler
             <> (I.dependencies =<< features)

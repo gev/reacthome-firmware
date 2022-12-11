@@ -24,19 +24,19 @@ data Scheduler = forall t. Q.IRQ t => Scheduler
 instance I.Interface Scheduler  where
 
   dependencies (Scheduler {timer, steps}) =
-    [defMemArea clock, Q.handleIRQ timer handleIRQ]
+    [defMemArea schedulerTimer, Q.handleIRQ timer handleIRQ]
     <> I.dependencies timer
     <> (incl . step <$> steps)
 
 
   initialize (Scheduler {timer, steps}) = I.initialize timer
 
-clock :: MemArea ('Stored Uint32)
-clock = area "scheduler_clock" (Just (ival 0))
+schedulerTimer :: MemArea ('Stored Uint32)
+schedulerTimer = area "scheduler_timer" (Just (ival 0))
 
 handleIRQ :: Ivory (ProcEffects s ()) ()
 handleIRQ = do
-  let c = addrOf clock
+  let c = addrOf schedulerTimer
   v <- deref c
   store c $ v + 1
 
@@ -45,7 +45,7 @@ schedule (Scheduler {steps}) = proc "loop" $ body $ do
   let (scheduled, immediately) = partition (isJust . period) steps
   clocks <- replicateM (length scheduled) (local (ival 0))
   forever $ do
-    t <- deref $ addrOf clock
+    t <- deref $ addrOf schedulerTimer
     zipWithM_ (run t) clocks scheduled
     mapM_ (call_ . step) immediately
 
