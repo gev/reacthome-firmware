@@ -14,7 +14,7 @@ sysTick = SysTick
 
 instance Interface SysTick where
 
-  dependencies = const [inclCoreCM4]
+  dependencies = const inclCoreCM4
 
   initialize (SysTick ticks) = [
       proc "systick_init" $ body $ sysTickConfig ticks

@@ -16,10 +16,10 @@ import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
 
 
-inclCoreCM4 :: ModuleM ()
-inclCoreCM4 = do
-  incl __NOP
-  incl sysTick_Config
+inclCoreCM4 :: [ ModuleM () ]
+inclCoreCM4 =  [ incl __NOP
+               , incl sysTick_Config
+               ]
 
 
 nop :: Int -> Ivory eff ()

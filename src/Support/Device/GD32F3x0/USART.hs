@@ -72,26 +72,26 @@ data USART_FLAG
 instance ExtDef USART_FLAG Uint32
 
 
-inclUSART :: ModuleM ()
-inclUSART = do
-  inclDef (def :: Cast USART_PERIPH Uint32)
-  inclDef (def :: Cast USART_WORD_LENGTH Uint32)
-  inclDef (def :: Cast USART_STOP_BIT Uint32)
-  inclDef (def :: Cast USART_PARITY_CFG Uint32)
-  inclDef (def :: Cast USART_RX_CFG Uint32)
-  inclDef (def :: Cast USART_TX_CFG Uint32)
-  inclDef (def :: Cast USART_FLAG Uint32)
-  incl usart_deinit
-  incl usart_word_length_set
-  incl usart_stop_bit_set
-  incl usart_parity_config
-  incl usart_baudrate_set
-  incl usart_receive_config
-  incl usart_transmit_config
-  incl usart_enable
-  incl usart_flag_get
-  incl usart_data_receive
-  incl usart_data_transmit
+inclUSART :: [ ModuleM () ]
+inclUSART =  [ inclDef (def :: Cast USART_PERIPH Uint32)
+             , inclDef (def :: Cast USART_WORD_LENGTH Uint32)
+             , inclDef (def :: Cast USART_STOP_BIT Uint32)
+             , inclDef (def :: Cast USART_PARITY_CFG Uint32)
+             , inclDef (def :: Cast USART_RX_CFG Uint32)
+             , inclDef (def :: Cast USART_TX_CFG Uint32)
+             , inclDef (def :: Cast USART_FLAG Uint32)
+             , incl usart_deinit
+             , incl usart_word_length_set
+             , incl usart_stop_bit_set
+             , incl usart_parity_config
+             , incl usart_baudrate_set
+             , incl usart_receive_config
+             , incl usart_transmit_config
+             , incl usart_enable
+             , incl usart_flag_get
+             , incl usart_data_receive
+             , incl usart_data_transmit
+             ]
 
 
 deinitUSART :: USART_PERIPH -> Ivory eff ()
@@ -176,4 +176,3 @@ transmitData = call_ usart_data_transmit . def
 
 usart_data_transmit :: Def ('[Uint32, Uint16] :-> ())
 usart_data_transmit = fun "usart_data_transmit"
-

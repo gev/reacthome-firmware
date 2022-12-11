@@ -40,7 +40,7 @@ timer_2_irq = IRQ TIMER2_IRQn . timer_2
 
 instance Interface Timer where
 
-  dependencies = const [inclRCU, inclTimer]
+  dependencies = const $ inclRCU <>inclTimer
 
   initialize (Timer {timer, rcu, param}) = [
       proc (show timer <> "_init") $ body $ do
@@ -59,7 +59,7 @@ instance I.Timer Timer where
 instance Interface (D.IRQ Timer) where
 
   dependencies (IRQ {source}) =
-    dependencies source <> [inclG,  inclMisc]
+    dependencies source <> inclG <> inclMisc
 
   initialize q@(IRQ {source, irq}) =
     initialize source <> [

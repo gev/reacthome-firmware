@@ -89,21 +89,21 @@ data TIMER_PARAM = TIMER_PARAM
 |]
 
 
-inclTimer :: ModuleM ()
-inclTimer = do
-  inclDef (def :: Cast TIMER_PERIPH Uint32)
-  inclDef (def :: Cast TIMER_ALIGNE_MODE Uint16)
-  inclDef (def :: Cast TIMER_COUNTER_DIRECTION Uint16)
-  inclDef (def :: Cast TIMER_CLOCK_DIVISION Uint16)
-  inclDef (def :: Cast TIMER_INT Uint32)
-  inclDef (def :: Cast TIMER_INT_FLAG Uint32)
-  incl timer_interrupt_flag_get
-  incl timer_interrupt_flag_clear
-  incl timer_interrupt_enable
-  incl timer_deinit
-  incl timer_enable
-  incl timer_init
-  incl timer_cnt
+inclTimer :: [ ModuleM () ]
+inclTimer =  [ inclDef (def :: Cast TIMER_PERIPH Uint32)
+             , inclDef (def :: Cast TIMER_ALIGNE_MODE Uint16)
+             , inclDef (def :: Cast TIMER_COUNTER_DIRECTION Uint16)
+             , inclDef (def :: Cast TIMER_CLOCK_DIVISION Uint16)
+             , inclDef (def :: Cast TIMER_INT Uint32)
+             , inclDef (def :: Cast TIMER_INT_FLAG Uint32)
+             , incl timer_interrupt_flag_get
+             , incl timer_interrupt_flag_clear
+             , incl timer_interrupt_enable
+             , incl timer_deinit
+             , incl timer_enable
+             , incl timer_init
+             , incl timer_cnt
+             ]
 
 
 deinitTimer :: TIMER_PERIPH -> Ivory eff ()

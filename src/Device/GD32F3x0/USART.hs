@@ -25,7 +25,7 @@ usart_1 = USART USART1
 
 instance Interface USART where
 
-  dependencies = const $ inclUSART : dependencies'
+  dependencies = const $ inclUSART <> dependencies'
 
   initialize (USART usart rcu rx tx) =
     initialize' rx : initialize' tx : [

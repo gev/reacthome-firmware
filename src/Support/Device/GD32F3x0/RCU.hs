@@ -24,10 +24,10 @@ data RCU_PERIPH
 instance ExtDef RCU_PERIPH Uint32
 
 
-inclRCU :: ModuleM ()
-inclRCU = do
-  inclDef (def :: Cast RCU_PERIPH Uint32)
-  incl rcu_periph_clock_enable
+inclRCU :: [ ModuleM () ]
+inclRCU =  [ inclDef (def :: Cast RCU_PERIPH Uint32)
+           , incl rcu_periph_clock_enable
+           ]
 
 
 enablePeriphClock :: RCU_PERIPH -> Ivory eff ()

@@ -71,7 +71,7 @@ instance I.OUT OUT where
 
 
 dependencies' :: [ModuleM ()]
-dependencies' =  [inclRCU, inclGPIO]
+dependencies' =  inclRCU <> inclGPIO
 
 initialize' :: PORT -> Def ('[] ':-> ())
 initialize' (PORT {rcu, gpio, pin, mode}) =
