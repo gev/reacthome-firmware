@@ -9,9 +9,6 @@ import           Feature.USART               (USART (USART))
 import           Formula
 
 
-{-
-    TODO:  use frequency instead timer params
--}
 blink :: Formula
 blink = Formula { clock    = systemClock
                 , features = [ Feature $ Blink 1 out_pa_15
