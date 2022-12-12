@@ -34,9 +34,13 @@ instance Task Blink where
                   set out
                   delay systemClock 100_000
                   reset out
+                  delay systemClock 100_000
+                  set out
               )
               ( do
                   reset out
                   delay systemClock 100_000
                   set out
+                  delay systemClock 100_000
+                  reset out
               )
