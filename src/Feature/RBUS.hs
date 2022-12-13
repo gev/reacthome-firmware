@@ -17,4 +17,4 @@ instance Interface (RBUS ) where
   dependencies = undefined
 
 instance Task (RBUS ) where
-  task = undefined
+  tasks = undefined

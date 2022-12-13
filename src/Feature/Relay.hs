@@ -13,4 +13,4 @@ instance Interface Relay where
   dependencies = undefined
 
 instance Task Relay where
-  task = undefined
+  tasks = undefined

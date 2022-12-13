@@ -25,22 +25,11 @@ instance I.Interface Blink where
 
 
 instance Task Blink where
-  task (Blink n out) =
+  tasks (Blink n out) = [
     Step (Just 1_000) $ proc ("blink_" <> show n <> "_step") $ body $ do
       let s = addrOf $ state n
       v <- deref s
       store s $ iNot v
-      ifte_ v ( do
-                  set out
-                  delay systemClock 100_000
-                  reset out
-                  delay systemClock 100_000
-                  set out
-              )
-              ( do
-                  reset out
-                  delay systemClock 100_000
-                  set out
-                  delay systemClock 100_000
-                  reset out
-              )
+      ifte_ v ( set out )
+              ( reset out )
+    ]

@@ -36,11 +36,11 @@ data Step = Step
 
 
 class Interface t => Task t where
-  task :: t -> Step
+  tasks :: t -> [Step]
 
 instance Interface Feature where
   dependencies (Feature f) = dependencies f
   initialize (Feature f) = initialize f
 
 instance Task Feature where
-  task (Feature f) = task f
+  tasks (Feature f) = tasks f

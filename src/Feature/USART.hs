@@ -1,11 +1,14 @@
+{-# LANGUAGE DataKinds          #-}
 {-# LANGUAGE GADTs              #-}
 {-# LANGUAGE NumericUnderscores #-}
 
 module Feature.USART  where
 
+import           Device.GD32F3x0.SystemClock
 import           Feature
-import qualified Interface       as I
-import qualified Interface.USART as I
+import qualified Interface                   as I
+import qualified Interface.Timer             as I
+import qualified Interface.USART             as I
 import           Ivory.Language
 import           Ivory.Stdlib
 
@@ -25,13 +28,30 @@ instance I.Interface USART where
     ]
 
 
+
+
 instance Task USART where
-  task (USART n usart) =
+  tasks (USART n usart) = [
     Step Nothing $ proc ("usart_" <> show n <> "_step") $ body $ do
-      hasReceived <- I.hasReceived usart
-      when hasReceived $ do
-        b <- I.receive usart
-        forever $ do
-          canTransmit <- I.canTransmit usart
-          when canTransmit breakOut
-        I.transmit usart b
+      index <- local  (ival (0 :: Sint16))
+      buff <- local $ iarray [ival 0]
+      t0 <- I.readCounter systemClock
+      forever $ do
+
+        hasReceived <- I.hasReceived usart
+        ifte_ hasReceived
+              ( do
+                  b <- I.receive usart
+                  i <- deref index
+                  let ix = toIx i :: Ix 512
+                  store (buff ! ix) b
+                  store index (i + 1)
+              )
+              breakOut
+        -- when hasReceived $ do
+
+        --   forever $ do
+        --     canTransmit <- I.canTransmit usart
+        --     when canTransmit breakOut
+        --   I.transmit usart b
+    ]

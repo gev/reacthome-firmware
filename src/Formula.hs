@@ -24,7 +24,7 @@ cook :: Formula -> ModuleM ()
 cook (Formula {features, clock}) = do
 
 
-  let scheduler = Scheduler clock $ task <$> features
+  let scheduler = Scheduler clock $ concatMap tasks features
 
   let depends = I.dependencies scheduler
             <> (I.dependencies =<< features)
