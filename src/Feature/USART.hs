@@ -1,6 +1,8 @@
 {-# LANGUAGE DataKinds          #-}
 {-# LANGUAGE GADTs              #-}
 {-# LANGUAGE NumericUnderscores #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use for_" #-}
 
 module Feature.USART  where
 
@@ -17,7 +19,9 @@ data USART = forall a. (I.USART a) => USART Int a
 
 instance I.Interface USART where
 
-  dependencies (USART _ usart) = I.dependencies usart
+  dependencies (USART _ usart) = defMemArea t0''
+                               : defMemArea index''
+                               : I.dependencies usart
 
   initialize (USART n usart) = I.initialize usart <> [
     proc ("usart_" <> show n <> "_init") $ body $ do
@@ -28,30 +32,42 @@ instance I.Interface USART where
     ]
 
 
+t0'' :: MemArea ('Stored Uint32)
+t0'' = area "t0" $ Just (ival 0)
 
+t0' :: Ref 'Global ('Stored Uint32)
+t0' = addrOf t0''
+
+
+index'' :: MemArea ('Stored Uint16)
+index'' = area "index" $ Just (ival 0)
+
+index' = addrOf index''
 
 instance Task USART where
   tasks (USART n usart) = [
     Step Nothing $ proc ("usart_" <> show n <> "_step") $ body $ do
-      index <- local  (ival (0 :: Sint16))
       buff <- local $ iarray [ival 0]
-      t0 <- I.readCounter systemClock
-      forever $ do
-
-        hasReceived <- I.hasReceived usart
-        ifte_ hasReceived
-              ( do
+      index <- deref index'
+      let ix = toIx index :: Ix 512
+      t0 <- deref t0'
+      t1 <- I.readCounter systemClock
+      store t0' t1
+      ifte_ ( t1 - t0 <? 40 )
+            ( do
+                hasReceived <- I.hasReceived usart
+                when hasReceived $ do
                   b <- I.receive usart
-                  i <- deref index
-                  let ix = toIx i :: Ix 512
                   store (buff ! ix) b
-                  store index (i + 1)
-              )
-              breakOut
-        -- when hasReceived $ do
-
-        --   forever $ do
-        --     canTransmit <- I.canTransmit usart
-        --     when canTransmit breakOut
-        --   I.transmit usart b
+                  store index' (index + 1)
+            )
+            ( do
+                for ix $ \i -> do
+                  forever $ do
+                    canTransmit <- I.canTransmit usart
+                    when canTransmit breakOut
+                  b <- deref (buff ! i)
+                  I.transmit usart b
+                store index' 0
+            )
     ]
