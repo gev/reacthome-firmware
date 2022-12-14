@@ -43,6 +43,7 @@
     "irqn",
     "istruct",
     "Isupport",
+    "ival",
     "ldflags",
     "lsbs",
     "mcpu",
