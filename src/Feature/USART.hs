@@ -54,7 +54,7 @@ instance Task USART where
       t0 <- deref $ t0' n
       t1 <- I.readCounter systemClock
       store (t0' n) t1
-      ifte_ ( t1 - t0 <? 40 )
+      ifte_ ( t1 - t0 <? 400 )
             ( do
                 hasReceived <- I.hasReceived usart
                 when hasReceived $ do
