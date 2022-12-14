@@ -1,13 +1,19 @@
 {-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE NamedFieldPuns #-}
 module Device.GD32F3x0.USART where
 
 import           Device.GD32F3x0.GPIO
+import           Device.GD32F3x0.IRQ           as D
 import           Interface
+import           Interface.IRQ                 as Q
 import qualified Interface.USART               as I
 import           Ivory.Language
 import           Support.Device.GD32F3x0.GPIO
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.USART as S
+import Support.Device.GD32F3x0
+import Support.Device.GD32F3x0.Misc
 
 
 data USART = USART
@@ -22,6 +28,7 @@ usart_1 = USART USART1
                 (pa_3 $ AF GPIO_AF_1)
                 (pa_2 $ AF GPIO_AF_1)
 
+usart_1_irq = IRQ USART1_IRQn usart_1
 
 instance Interface USART where
 
@@ -71,3 +78,33 @@ coerceStopBit I.SB_1b = USART_STB_1BIT
 
 coerceParity :: I.Parity -> USART_PARITY_CFG
 coerceParity I.None = USART_PM_NONE
+
+
+
+instance Interface (D.IRQ USART) where
+  dependencies (IRQ {source}) =
+    dependencies source <> inclG <> inclMisc
+  initialize q@(IRQ {source, irq}) =
+    initialize source <> [
+      proc (show (usart source) <> "_irq_init") $ body $ do
+        enableIrqNvic irq 0 0
+        enable q
+    ]
+
+instance Q.IRQ (D.IRQ USART) where
+  handleIRQ (IRQ {source = (USART {usart})}) = makeIRQHandler usart
+      
+  enable (IRQ {source = (USART {usart})}) = enableInterrupt usart USART_INT_RBNE
+  
+
+instance I.USART (D.IRQ USART) where
+  setBaudrate (IRQ {source}) = I.setBaudrate source
+  setWordLength (IRQ {source}) = I.setWordLength source
+  setStopBit (IRQ {source}) = I.setStopBit source
+  setParity (IRQ {source}) = I.setParity source
+  receive (IRQ {source}) = I.receive source
+  transmit (IRQ {source}) = I.transmit source
+  hasReceived (IRQ {source}) = I.hasReceived source
+  hasTransmitted (IRQ {source}) = I.hasTransmitted source
+  canTransmit (IRQ {source}) = I.canTransmit source
+  enable (IRQ {source}) = I.enable source

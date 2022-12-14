@@ -20,6 +20,7 @@ import           Ivory.Support.Device.GD32F3x0
 data IRQn
   = TIMER1_IRQn
   | TIMER2_IRQn
+  | USART1_IRQn
   deriving (Show, Enum, Bounded)
 instance ExtDef IRQn Uint8
 

@@ -12,6 +12,8 @@ module Support.Device.GD32F3x0.USART
   , USART_RX_CFG      (..)
   , USART_TX_CFG      (..)
   , USART_FLAG        (..)
+  , USART_INT         (..)
+  , USART_INT_FLAG    (..)
   , deinitUSART
   , setWordLength
   , setStopBit
@@ -23,6 +25,9 @@ module Support.Device.GD32F3x0.USART
   , getFlag
   , receiveData
   , transmitData
+  , enableInterrupt
+  , disableInterrupt
+  , getInterruptFlag
   , inclUSART
   )
 where
@@ -32,6 +37,19 @@ import           Ivory.Language.Module
 import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
 
+data USART_INT
+  = USART_INT_RBNE
+  | USART_INT_TBE
+  | USART_INT_TC
+  deriving (Show, Enum, Bounded)
+instance ExtDef USART_INT Uint32
+
+data USART_INT_FLAG
+  = USART_INT_FLAG_RBNE
+  | USART_INT_FLAG_TBE
+  | USART_INT_FLAG_TC
+  deriving (Show, Enum, Bounded)
+instance ExtDef USART_INT_FLAG Uint32
 
 data USART_PERIPH
   = USART0
@@ -80,6 +98,8 @@ inclUSART =  [ inclDef (def :: Cast USART_PERIPH Uint32)
              , inclDef (def :: Cast USART_RX_CFG Uint32)
              , inclDef (def :: Cast USART_TX_CFG Uint32)
              , inclDef (def :: Cast USART_FLAG Uint32)
+             , inclDef (def :: Cast USART_INT Uint32)
+             , inclDef (def :: Cast USART_INT_FLAG Uint32)
              , incl usart_deinit
              , incl usart_word_length_set
              , incl usart_stop_bit_set
@@ -91,6 +111,9 @@ inclUSART =  [ inclDef (def :: Cast USART_PERIPH Uint32)
              , incl usart_flag_get
              , incl usart_data_receive
              , incl usart_data_transmit
+             , incl usart_interrupt_enable
+             , incl usart_interrupt_disable
+             , incl usart_interrupt_flag_get
              ]
 
 
@@ -176,3 +199,24 @@ transmitData = call_ usart_data_transmit . def
 
 usart_data_transmit :: Def ('[Uint32, Uint16] :-> ())
 usart_data_transmit = fun "usart_data_transmit"
+
+
+enableInterrupt :: USART_PERIPH -> USART_INT -> Ivory eff ()
+enableInterrupt usart int = call_ usart_interrupt_enable (def usart) (def int)
+
+usart_interrupt_enable :: Def ('[Uint32, Uint32] :-> ())
+usart_interrupt_enable = fun "usart_interrupt_enable"
+
+
+disableInterrupt :: USART_PERIPH -> USART_INT -> Ivory eff ()
+disableInterrupt usart int = call_ usart_interrupt_disable (def usart) (def int)
+
+usart_interrupt_disable :: Def ('[Uint32, Uint32] :-> ())
+usart_interrupt_disable = fun "usart_interrupt_disable"
+
+
+getInterruptFlag :: USART_PERIPH -> USART_INT_FLAG -> Ivory eff IBool
+getInterruptFlag usart flag = call usart_interrupt_flag_get (def usart) (def flag)
+
+usart_interrupt_flag_get :: Def ('[Uint32, Uint32] :-> IBool)
+usart_interrupt_flag_get = fun "usart_interrupt_flag_get"
