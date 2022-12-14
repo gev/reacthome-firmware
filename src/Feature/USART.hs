@@ -19,8 +19,8 @@ data USART = forall a. (I.USART a) => USART Int a
 
 instance I.Interface USART where
 
-  dependencies (USART _ usart) = defMemArea t0''
-                               : defMemArea index''
+  dependencies (USART n usart) = defMemArea (t0'' n)
+                               : defMemArea (index'' n)
                                : I.dependencies usart
 
   initialize (USART n usart) = I.initialize usart <> [
@@ -32,34 +32,35 @@ instance I.Interface USART where
     ]
 
 
-t0'' :: MemArea ('Stored Uint32)
-t0'' = area "t0" $ Just (ival 0)
+t0'' :: Int -> MemArea ('Stored Uint32)
+t0'' n = area ("t0_" <> show n) $ Just (ival 0)
 
-t0' :: Ref 'Global ('Stored Uint32)
-t0' = addrOf t0''
+t0' :: Int -> Ref 'Global ('Stored Uint32)
+t0' = addrOf . t0''
 
 
-index'' :: MemArea ('Stored Uint16)
-index'' = area "index" $ Just (ival 0)
+index'' :: Int -> MemArea ('Stored Uint16)
+index'' n = area ("index_" <> show n) $ Just (ival 0)
 
-index' = addrOf index''
+index' :: Int -> Ref 'Global ('Stored Uint16)
+index' = addrOf . index''
 
 instance Task USART where
   tasks (USART n usart) = [
     Step Nothing $ proc ("usart_" <> show n <> "_step") $ body $ do
       buff <- local $ iarray [ival 0]
-      index <- deref index'
+      index <- deref $ index' n
       let ix = toIx index :: Ix 512
-      t0 <- deref t0'
+      t0 <- deref $ t0' n
       t1 <- I.readCounter systemClock
-      store t0' t1
+      store (t0' n) t1
       ifte_ ( t1 - t0 <? 40 )
             ( do
                 hasReceived <- I.hasReceived usart
                 when hasReceived $ do
                   b <- I.receive usart
                   store (buff ! ix) b
-                  store index' (index + 1)
+                  store (index' n) (index + 1)
             )
             ( do
                 for ix $ \i -> do
@@ -68,6 +69,6 @@ instance Task USART where
                     when canTransmit breakOut
                   b <- deref (buff ! i)
                   I.transmit usart b
-                store index' 0
+                store (index' n) 0
             )
     ]
