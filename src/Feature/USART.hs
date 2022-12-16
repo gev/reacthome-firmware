@@ -1,45 +1,75 @@
 {-# LANGUAGE DataKinds          #-}
 {-# LANGUAGE GADTs              #-}
 {-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE RankNTypes         #-}
+
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
-{-# LANGUAGE FlexibleContexts #-}
 
 module Feature.USART  where
 
 import           Device.GD32F3x0.SystemClock
 import           Feature
-import qualified Interface                   as I
-import qualified Interface.Timer             as I
-import qualified Interface.USART             as I
+import qualified Interface                     as I
+import qualified Interface.Timer               as I
+import qualified Interface.USART               as I
 import           Ivory.Language
 import           Ivory.Stdlib
+import qualified Support.Device.GD32F3x0.USART as S
 
 
-data USART = forall a. (I.USART a) => USART Int a
+data USART = forall a. (I.USART a) => USART Int (I.OnReceive -> a)
 
 instance I.Interface USART where
 
-  dependencies (USART n usart) = defMemArea (t0'' n)
-                               : defMemArea (buff'' n)
-                               : defMemArea (index'' n)
-                               : I.dependencies usart
-                               
+  dependencies (USART n usart) = defMemArea     (timestamp'' n)
+                               : defMemArea     (buff'' n)
+                               : defMemArea     (index'' n)
+                               : I.dependencies (usart $ onReceive n)
 
-  initialize (USART n usart) = I.initialize usart <> [
+
+  initialize (USART n usart) = I.initialize u <> [
     proc ("usart_" <> show n <> "_init") $ body $ do
-      I.setBaudrate   usart 1_000_000
-      I.setWordLength usart I.WL_8b
-      I.setParity     usart I.None
-      I.enable        usart
+      I.setBaudrate   u 1_000_000
+      I.setWordLength u I.WL_8b
+      I.setParity     u I.None
+      I.enable        u
     ]
+    where u = usart $ onReceive n
 
 
-t0'' :: Int -> MemArea (Stored Uint32)
-t0'' n = area ("t0_" <> show n) $ Just (ival 0)
+instance Task USART where
+  tasks (USART n usart) = [
+    Step Nothing $ proc ("usart_" <> show n <> "_step") $ body $ do
+      timestamp <- deref $ timestamp' n
+      t <- I.readCounter systemClock
+      when (t - timestamp >? 400) $ do
+        index <- deref $ index' n
+        let ix = toIx index
+        for ix $ \i -> do
+          forever $ do
+            canTransmit <- I.canTransmit u
+            when canTransmit breakOut
+          I.transmit u =<< deref (buff' n ! i)
+        store (index' n) 0
+    ]
+    where u = usart $ onReceive n
 
-t0' :: Int -> Ref Global (Stored Uint32)
-t0' = addrOf . t0''
+
+onReceive :: Int -> I.OnReceive
+onReceive n b = do
+    index <- deref $ index' n
+    let ix = toIx index
+    store (buff' n ! ix) b
+    store (index' n) (index + 1)
+    store (timestamp' n) =<< I.readCounter systemClock
+
+
+timestamp'' :: Int -> MemArea (Stored Uint32)
+timestamp'' n = area ("timestamp_" <> show n) $ Just (ival 0)
+
+timestamp' :: Int -> Ref Global (Stored Uint32)
+timestamp' = addrOf . timestamp''
 
 
 index'' :: Int -> MemArea (Stored Uint16)
@@ -56,40 +86,11 @@ buff' :: Int -> Ref Global (Array 512 (Stored Uint16))
 buff' = addrOf . buff''
 
 
-instance Task USART where
-  tasks (USART n usart) = [
-    Step Nothing $ proc ("usart_" <> show n <> "_step") $ body $ do
-      forever $ do
-                hasReceived <- I.hasReceived usart
-                ifte_ hasReceived 
-                      ( do
-                        index <- deref $ index' n
-                        let ix = toIx index
-                        store (buff' n ! ix) =<< I.receive usart
-                        store (index' n) (index + 1)
-                        store (t0' n) =<< I.readCounter systemClock
-                      )
-                      breakOut
-      -- forever $ do 
-      --           t1 <- I.readCounter systemClock
-      --           t0 <- deref $ t0' n
-      --           when ( t1 - t0 >? 400 ) breakOut
-      index <- deref $ index' n
-      let ix = toIx index
-      for ix $ \i -> do
-        forever $ do
-          canTransmit <- I.canTransmit usart
-          when canTransmit breakOut
-        I.transmit usart =<< deref (buff' n ! i)
-      store (index' n) 0
-
-    ]
-
 
 {-
-#include "gd32f3x0.h"                   
-#include "gd32f3x0_gpio.h"              
-#include "gd32f3x0_usart.h"               
+#include "gd32f3x0.h"
+#include "gd32f3x0_gpio.h"
+#include "gd32f3x0_usart.h"
 #include <stdint.h>
 #include <string.h>
 
@@ -125,7 +126,7 @@ void uart_init(void){
 	rcu_periph_clock_enable(RCU_USART1);
 
 	/*RE_DE*/
-	gpio_mode_set(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_4);		 
+	gpio_mode_set(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_4);
 	gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_4);
 	gpio_bit_reset(GPIOA, GPIO_PIN_4);
 

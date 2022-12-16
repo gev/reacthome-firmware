@@ -1,9 +1,12 @@
+{-# LANGUAGE RankNTypes #-}
+
 module Interface.USART where
 
 import           Interface
 import           Ivory.Language
 import           Ivory.Language.Module
 
+type OnReceive = Uint16 -> forall s. Ivory (ProcEffects s ()) ()
 
 data Parity
   = None
