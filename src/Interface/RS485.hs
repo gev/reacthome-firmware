@@ -29,7 +29,7 @@ receive (RS485 {usart, onReceive}) = I.receive $ usart onReceive
 startTransmit :: RS485 -> Ivory eff ()
 startTransmit (RS485 {rede}) = I.set rede
 
-transmit :: RS485 -> Uint16 -> Ivory eff ()
+transmit :: RS485 -> Ref r ('Array 512 ('Stored Uint16)) -> Uint16 -> Ivory (ProcEffects s ()) ()
 transmit (RS485 {usart, onReceive}) = I.transmit $ usart onReceive
 
 
@@ -44,14 +44,6 @@ setStopBit (RS485 {usart, onReceive}) = I.setStopBit $ usart onReceive
 
 setParity :: RS485 -> Parity -> Ivory eff ()
 setParity (RS485 {usart, onReceive}) = I.setParity $ usart onReceive
-hasReceived :: RS485 -> Ivory eff IBool
-hasReceived (RS485 {usart, onReceive}) = I.hasReceived $ usart onReceive
-
-hasTransmitted :: RS485 -> Ivory eff IBool
-hasTransmitted (RS485 {usart, onReceive}) = I.hasTransmitted $ usart onReceive
-
-canTransmit :: RS485 -> Ivory eff IBool
-canTransmit (RS485 {usart, onReceive}) = I.canTransmit $ usart onReceive
 
 
 instance Interface RS485 where

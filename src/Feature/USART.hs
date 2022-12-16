@@ -45,12 +45,7 @@ instance Task USART where
       t <- I.readCounter systemClock
       when (t - timestamp >? 400) $ do
         index <- deref $ index' n
-        let ix = toIx index
-        for ix $ \i -> do
-          forever $ do
-            canTransmit <- I.canTransmit u
-            when canTransmit breakOut
-          I.transmit u =<< deref (buff' n ! i)
+        I.transmit u (buff' n) index
         store (index' n) 0
     ]
     where u = usart $ onReceive n
