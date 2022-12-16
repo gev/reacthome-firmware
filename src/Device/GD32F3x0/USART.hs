@@ -42,10 +42,10 @@ instance Interface USART where
       proc (show usart <> "_init") $ body $ do
         enableIrqNvic     irq 0 0
         enablePeriphClock rcu
-        enableInterrupt usart USART_INT_RBNE
         deinitUSART     usart
         configReceive   usart USART_RECEIVE_ENABLE
         configTransmit  usart USART_TRANSMIT_ENABLE
+        enableInterrupt usart USART_INT_RBNE
         -- setBaudrate     usart 1_000_000
         -- setWordLength   usart USART_WL_8BIT
         -- configParity    usart USART_PM_NONE
