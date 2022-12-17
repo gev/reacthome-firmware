@@ -124,7 +124,7 @@ typedef enum {
 } dma_channel_enum;
 
 /* DMA initialize struct */
-typedef struct {
+typedef struct dma_parameter_struct {
     uint32_t periph_addr;                 /*!< peripheral base address */
     uint32_t periph_width;                /*!< transfer data size of peripheral */
     uint8_t periph_inc;                   /*!< peripheral increasing mode */

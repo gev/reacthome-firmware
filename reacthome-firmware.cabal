@@ -64,6 +64,7 @@ executable reacthome-firmware
 
                     , Support.CMSIS.CoreCM4
                     , Support.Device.GD32F3x0
+                    , Support.Device.GD32F3x0.DMA
                     , Support.Device.GD32F3x0.GPIO
                     , Support.Device.GD32F3x0.RCU
                     , Support.Device.GD32F3x0.Misc
