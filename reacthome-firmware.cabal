@@ -75,7 +75,8 @@ executable reacthome-firmware
                     , Util.CRC16
 
     build-depends:    base ^>=4.16.3.0
-                    , safe
+                    , mtl  
+                    -- , safe
                     , ivory
                     , ivory-backend-c
                     , ivory-stdlib

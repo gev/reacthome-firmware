@@ -1,3 +1,4 @@
+{-# LANGUAGE DataKinds  #-}
 {-# LANGUAGE RankNTypes #-}
 
 module Interface.USART where
@@ -30,11 +31,10 @@ class Interface a => USART a where
   setStopBit      :: a -> StopBit    -> Ivory eff ()
   setParity       :: a -> Parity     -> Ivory eff ()
 
-  receive         :: a           -> Ivory eff Uint16
-  transmit        :: a -> Uint16 -> Ivory eff ()
+  receive         :: a -> Ivory eff Uint16
 
-  hasReceived     :: a -> Ivory eff IBool
-  hasTransmitted  :: a -> Ivory eff IBool
-  canTransmit     :: a -> Ivory eff IBool
+  transmit        :: a -> Ref r (Array 512 (Stored Uint16))
+                       -> Uint16
+                       -> Ivory (ProcEffects s ()) ()
 
   enable          :: a -> Ivory eff ()

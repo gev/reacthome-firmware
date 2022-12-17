@@ -69,11 +69,15 @@ instance I.USART USART where
   setParity     u p   = S.configParity  (usart u) (coerceParity p)
 
   receive = S.receiveData . usart
-  transmit = S.transmitData . usart
 
-  hasReceived    u  =  getFlag (usart u) USART_FLAG_RBNE
-  hasTransmitted u  =  getFlag (usart u) USART_FLAG_TC
-  canTransmit    u  =  getFlag (usart u) USART_FLAG_TBE
+  transmit u buff n = do
+        for (toIx n) $ \ix -> do
+          forever $ do
+            tbe <- getFlag (usart u) USART_FLAG_TBE
+            when tbe breakOut
+          S.transmitData (usart u) =<< deref (buff ! ix)
+
+
   enable         u  = enableUSART (usart u)
 
 
