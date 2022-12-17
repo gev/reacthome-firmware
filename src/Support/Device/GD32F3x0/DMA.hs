@@ -1,4 +1,7 @@
+{-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE QuasiQuotes           #-}
+
 module Support.Device.GD32F3x0.DMA
 (
 
@@ -52,15 +55,15 @@ instance ExtDef DMA_PRIORITY Uint32
 
 
 data DMA_PARAM = DMA_PARAM
-    { dmaPeriphAddr       :: Uint32
-    , dmaPeriphWidth      :: DMA_PERIPH_WIDTH
-    , dmaPeriphInc        :: DMA_PERIPH_INC
-    , dmaMemoryAddr       :: Uint32
-    , dmaMemoryWidth      :: DMA_MEMORY_WIDTH
-    , dmaMemoryInc        :: DMA_MEMORY_INC
-    , dmaDirection        :: DMA_DIRECTION
-    , dmaNumber           :: Uint32
-    , dmaPriority         :: DMA_PRIORITY
+    { dmaPeriphAddr  :: Uint32
+    , dmaPeriphWidth :: DMA_PERIPH_WIDTH
+    , dmaPeriphInc   :: DMA_PERIPH_INC
+    , dmaMemoryAddr  :: Uint32
+    , dmaMemoryWidth :: DMA_MEMORY_WIDTH
+    , dmaMemoryInc   :: DMA_MEMORY_INC
+    , dmaDirection   :: DMA_DIRECTION
+    , dmaNumber      :: Uint32
+    , dmaPriority    :: DMA_PRIORITY
     }
 
 [ivory|
@@ -84,10 +87,10 @@ inclDMA =  [ inclDef (def :: Cast DMA_DIRECTION Uint32)
            , inclDef (def :: Cast DMA_PERIPH_INC Uint32)
            , inclDef (def :: Cast DMA_PERIPH_WIDTH Uint32)
            , inclDef (def :: Cast DMA_PRIORITY Uint32)
-           , incl dma_deinit
-           , incl dma_init
-           , incl dma_circulation_disable
-           , incl dma_memory_to_memory_disable
-           , incl dma_channel_enable
-           , incl dma_flag_get
+          --  , incl dma_deinit
+          --  , incl dma_init
+          --  , incl dma_circulation_disable
+          --  , incl dma_memory_to_memory_disable
+          --  , incl dma_channel_enable
+          --  , incl dma_flag_get
            ]
