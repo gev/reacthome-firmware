@@ -42,33 +42,33 @@ instance ExtDef DMA_CHANNEL Uint32
 data DMA_DIRECTION
   = DMA_PERIPHERAL_TO_MEMORY
   | DMA_MEMORY_TO_PERIPHERAL
-    deriving (Show, Enum, Bounded)
+  deriving (Show, Enum, Bounded)
 instance ExtDef DMA_DIRECTION Uint8
 
 data DMA_MEMORY_INC
   = DMA_MEMORY_INCREASE_DISABLE
   | DMA_MEMORY_INCREASE_ENABLE
-    deriving (Show, Enum, Bounded)
+  deriving (Show, Enum, Bounded)
 instance ExtDef DMA_MEMORY_INC Uint8
 
 data DMA_MEMORY_WIDTH
   = DMA_MEMORY_WIDTH_8BIT
   | DMA_MEMORY_WIDTH_16BIT
   | DMA_MEMORY_WIDTH_32BIT
-    deriving (Show, Enum, Bounded)
+  deriving (Show, Enum, Bounded)
 instance ExtDef DMA_MEMORY_WIDTH Uint32
 
 data DMA_PERIPH_INC
   = DMA_PERIPH_INCREASE_DISABLE
   | DMA_PERIPH_INCREASE_ENABLE
-    deriving (Show, Enum, Bounded)
+  deriving (Show, Enum, Bounded)
 instance ExtDef DMA_PERIPH_INC Uint8
 
 data DMA_PERIPH_WIDTH
   = DMA_PERIPHERAL_WIDTH_8BIT
   | DMA_PERIPHERAL_WIDTH_16BIT
   | DMA_PERIPHERAL_WIDTH_32BIT
-    deriving (Show, Enum, Bounded)
+  deriving (Show, Enum, Bounded)
 instance ExtDef DMA_PERIPH_WIDTH Uint32
 
 data DMA_PRIORITY
@@ -76,7 +76,7 @@ data DMA_PRIORITY
   | DMA_PRIORITY_MEDIUM
   | DMA_PRIORITY_HIGH
   | DMA_PRIORITY_ULTRA_HIGH
-    deriving (Show, Enum, Bounded)
+  deriving (Show, Enum, Bounded)
 instance ExtDef DMA_PRIORITY Uint32
 
 
