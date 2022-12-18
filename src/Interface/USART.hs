@@ -1,5 +1,6 @@
-{-# LANGUAGE DataKinds  #-}
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RankNTypes       #-}
 
 module Interface.USART where
 
@@ -7,7 +8,11 @@ import           Interface
 import           Ivory.Language
 import           Ivory.Language.Module
 
-type OnReceive = Uint16 -> forall s. Ivory (ProcEffects s ()) ()
+data HandleUSART u = HandleUSART
+  { usart     :: u
+  , onReceive :: Uint16 -> forall eff. Ivory eff ()
+  }
+
 
 data Parity
   = None
@@ -24,17 +29,17 @@ data StopBit
   | SB_1_5b
   | SB_2b
 
-class Interface a => USART a where
+class Interface (HandleUSART u) => USART u where
 
-  setBaudrate     :: a -> Uint32     -> Ivory eff ()
-  setWordLength   :: a -> WordLength -> Ivory eff ()
-  setStopBit      :: a -> StopBit    -> Ivory eff ()
-  setParity       :: a -> Parity     -> Ivory eff ()
+  setBaudrate     :: u -> Uint32     -> Ivory eff ()
+  setWordLength   :: u -> WordLength -> Ivory eff ()
+  setStopBit      :: u -> StopBit    -> Ivory eff ()
+  setParity       :: u -> Parity     -> Ivory eff ()
 
-  receive         :: a -> Ivory eff Uint16
+  receive         :: u -> Ivory eff Uint16
 
-  transmit        :: a -> Ref r (Array 512 (Stored Uint16))
+  transmit        :: u -> Ref r (Array 512 (Stored Uint16))
                        -> Uint16
                        -> Ivory (ProcEffects s ()) ()
 
-  enable          :: a -> Ivory eff ()
+  enable          :: u -> Ivory eff ()

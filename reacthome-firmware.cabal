@@ -41,7 +41,7 @@ executable reacthome-firmware
                     , Formula.Relay_10
 
                     , Interface
-                    , Interface.IRQ
+                    , Interface.Counter
                     , Interface.GPIO
                     , Interface.SystemClock
                     , Interface.Timer
@@ -52,7 +52,6 @@ executable reacthome-firmware
                     , Protocol.RBUS.Master
                     , Protocol.RBUS.Slave
 
-                    , Device.GD32F3x0.IRQ
                     , Device.GD32F3x0.GPIO
                     , Device.GD32F3x0.SysTick
                     , Device.GD32F3x0.SystemClock

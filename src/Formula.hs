@@ -9,11 +9,10 @@ import           Data.Foldable
 import           Data.List
 import           Feature
 import           Interface             as I
-import           Interface.IRQ         as Q
 import           Interface.SystemClock as I
 import           Ivory.Language
 import           Ivory.Language.Module
-import           Scheduler
+import           Scheduler             (Scheduler (Scheduler), schedule)
 
 data Formula = Formula
   { clock    :: SystemClock

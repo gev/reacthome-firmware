@@ -17,12 +17,11 @@ import           Support.Device.GD32F3x0.USART as S
 
 
 data USART = USART
-  { usart     :: USART_PERIPH
-  , rcu       :: RCU_PERIPH
-  , irq       :: IRQn
-  , rx        :: PORT
-  , tx        :: PORT
-  , onReceive :: I.OnReceive
+  { usart :: USART_PERIPH
+  , rcu   :: RCU_PERIPH
+  , irq   :: IRQn
+  , rx    :: PORT
+  , tx    :: PORT
   }
 
 usart_1 = USART USART1
@@ -31,13 +30,13 @@ usart_1 = USART USART1
                 (pa_3 $ AF GPIO_AF_1)
                 (pa_2 $ AF GPIO_AF_1)
 
-instance Interface USART where
+instance Interface (I.HandleUSART USART) where
 
-  dependencies (USART {usart, onReceive}) =
+  dependencies (I.HandleUSART {I.usart = (USART {usart}), I.onReceive}) =
       makeIRQHandler usart (handleIRQ usart onReceive)
         : inclG <> inclMisc <> inclUSART <> dependencies'
 
-  initialize (USART usart rcu irq rx tx _) =
+  initialize (I.HandleUSART {I.usart = (USART usart rcu irq rx tx)}) =
     initialize' rx : initialize' tx : [
       proc (show usart <> "_init") $ body $ do
         enableIrqNvic     irq 0 0
@@ -52,7 +51,7 @@ instance Interface USART where
         -- enableUSART     usart
     ]
 
-handleIRQ :: USART_PERIPH -> I.OnReceive -> Ivory (ProcEffects s ()) ()
+handleIRQ :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
 handleIRQ usart onReceive = do
   rbne <- getInterruptFlag usart USART_INT_FLAG_RBNE
   when rbne $ onReceive =<< S.receiveData usart

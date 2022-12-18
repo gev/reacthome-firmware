@@ -10,32 +10,30 @@ module Feature.USART  where
 
 import           Device.GD32F3x0.SystemClock
 import           Feature
-import qualified Interface                     as I
-import qualified Interface.Timer               as I
-import qualified Interface.USART               as I
+import qualified Interface                   as I
+import qualified Interface.Counter           as I
+import qualified Interface.USART             as I
 import           Ivory.Language
 import           Ivory.Stdlib
-import qualified Support.Device.GD32F3x0.USART as S
 
 
-data USART = forall a. (I.USART a) => USART Int (I.OnReceive -> a)
+data USART = forall a. (I.USART a) => USART Int a
 
 instance I.Interface USART where
 
-  dependencies (USART n usart) = defMemArea     (timestamp'' n)
-                               : defMemArea     (buff'' n)
+  dependencies (USART n usart) = defMemArea     (buff'' n)
                                : defMemArea     (index'' n)
-                               : I.dependencies (usart $ onReceive n)
+                               : defMemArea     (timestamp'' n)
+                               : I.dependencies (I.HandleUSART usart $ onReceive n)
 
 
-  initialize (USART n usart) = I.initialize u <> [
+  initialize (USART n usart) = I.initialize (I.HandleUSART usart $ onReceive n) <> [
     proc ("usart_" <> show n <> "_init") $ body $ do
-      I.setBaudrate   u 1_000_000
-      I.setWordLength u I.WL_8b
-      I.setParity     u I.None
-      I.enable        u
+      I.setBaudrate   usart 1_000_000
+      I.setWordLength usart I.WL_8b
+      I.setParity     usart I.None
+      I.enable        usart
     ]
-    where u = usart $ onReceive n
 
 
 instance Task USART where
@@ -45,13 +43,11 @@ instance Task USART where
       t <- I.readCounter systemClock
       when (t - timestamp >? 400) $ do
         index <- deref $ index' n
-        I.transmit u (buff' n) index
+        I.transmit usart (buff' n) index
         store (index' n) 0
     ]
-    where u = usart $ onReceive n
 
 
-onReceive :: Int -> I.OnReceive
 onReceive n b = do
     index <- deref $ index' n
     let ix = toIx index
@@ -130,7 +126,7 @@ int main(void)
     dma_memory_to_memory_disable(DMA_CH3);
     /* enable DMA channel1 */
     dma_channel_enable(DMA_CH3);
-    
+
 
         /* USART DMA enable for transmission and reception */
         usart_dma_transmit_config(USART1, USART_DENT_ENABLE);

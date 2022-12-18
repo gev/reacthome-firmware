@@ -1,40 +1,40 @@
 {-# LANGUAGE DataKinds      #-}
-{-# LANGUAGE GADTs          #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE TypeOperators  #-}
 
 module Scheduler where
 
-import           Control.Monad   (replicateM, zipWithM_)
+import           Control.Monad         (replicateM, zipWithM_)
 import           Data.List
 import           Data.Maybe
 import           Feature
-import           Interface       as I
-import qualified Interface.IRQ   as Q
-import           Interface.Timer as I
+import           Interface
+import           Interface.SystemClock
+import           Interface.Timer      
 import           Ivory.Language
 import           Ivory.Stdlib
 
 
-data Scheduler = forall t. Q.IRQ t => Scheduler
-  { timer :: t
+data Scheduler = Scheduler
+  { clock :: SystemClock
   , steps :: [Step]
   }
 
-instance I.Interface Scheduler  where
+instance Interface Scheduler  where
 
-  dependencies (Scheduler {timer, steps}) =
-    [defMemArea schedulerTimer, Q.handleIRQ timer handleIRQ]
-    <> I.dependencies timer
-    <> (incl . step <$> steps)
+  dependencies (Scheduler clock steps) = defMemArea schedulerTimer
+                                       : dependencies clock
+                                      <> dependencies (HandleTimer clock handleIRQ)
+                                      <> (incl . step <$> steps)
 
 
-  initialize (Scheduler {timer, steps}) = I.initialize timer
+  initialize (Scheduler {clock}) =
+    initialize clock <> initialize (HandleTimer clock handleIRQ)
 
 schedulerTimer :: MemArea ('Stored Uint32)
 schedulerTimer = area "scheduler_timer" (Just (ival 0))
 
-handleIRQ :: Ivory (ProcEffects s ()) ()
+handleIRQ :: Ivory eff ()
 handleIRQ = do
   let c = addrOf schedulerTimer
   v <- deref c

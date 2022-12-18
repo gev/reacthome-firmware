@@ -4,9 +4,8 @@
 
 module Device.GD32F3x0.Timer where
 
-import           Device.GD32F3x0.IRQ           as D
 import           Interface
-import           Interface.IRQ                 as I
+import qualified Interface.Counter             as I
 import qualified Interface.Timer               as I
 import           Ivory.Language
 import           Ivory.Language.Module
@@ -20,22 +19,18 @@ import           Support.Device.GD32F3x0.Timer
 data Timer = Timer
   { timer :: TIMER_PERIPH
   , rcu   :: RCU_PERIPH
+  , irq   :: IRQn
   , param :: TIMER_PARAM
   }
 
 
 timer_1 :: TIMER_PARAM -> Timer
-timer_1 = Timer TIMER1 RCU_TIMER1
-
-timer_1_irq :: TIMER_PARAM -> D.IRQ Timer
-timer_1_irq = IRQ TIMER1_IRQn . timer_1
-
+timer_1 = Timer TIMER1 RCU_TIMER1 TIMER1_IRQn
 
 timer_2 :: TIMER_PARAM -> Timer
-timer_2 = Timer TIMER2 RCU_TIMER2
+timer_2 = Timer TIMER2 RCU_TIMER2 TIMER2_IRQn
 
-timer_2_irq :: TIMER_PARAM -> D.IRQ Timer
-timer_2_irq = IRQ TIMER2_IRQn . timer_2
+
 
 
 instance Interface Timer where
@@ -51,30 +46,27 @@ instance Interface Timer where
     ]
 
 
-
-instance I.Timer Timer where
+instance I.Counter Timer where
   readCounter = readCounter . timer
 
 
-instance Interface (D.IRQ Timer) where
 
-  dependencies (IRQ {source}) =
-    dependencies source <> inclG <> inclMisc
 
-  initialize q@(IRQ {source, irq}) =
-    initialize source <> [
-      proc (show (timer source) <> "_irq_init") $ body $ do
+instance Interface (I.HandleTimer Timer) where
+
+  dependencies (I.HandleTimer (Timer {timer}) handle) =
+    makeIRQHandler timer (handleIRQ timer handle)
+     : inclG <> inclMisc
+
+  initialize (I.HandleTimer {I.timer = Timer {timer, irq}}) = [
+      proc (show timer <> "_irq_init") $ body $ do
         enableIrqNvic irq 0 0
-        enable q
+        enableTimerInterrupt timer TIMER_INT_UP
     ]
 
-instance I.IRQ (D.IRQ Timer) where
 
-  handleIRQ (IRQ {source = (Timer {timer})}) handle =
-    makeIRQHandler timer $ do
-      flag <- getTimerInterruptFlag timer TIMER_INT_FLAG_UP
-      when flag $ clearTimerInterruptFlag timer TIMER_INT_FLAG_UP
-      handle
-
-  enable (IRQ {source}) =
-    enableTimerInterrupt (timer source) TIMER_INT_UP
+handleIRQ :: TIMER_PERIPH -> Ivory eff () -> Ivory eff ()
+handleIRQ timer handle = do
+  flag <- getTimerInterruptFlag timer TIMER_INT_FLAG_UP
+  when flag $ clearTimerInterruptFlag timer TIMER_INT_FLAG_UP
+  handle

@@ -1,18 +1,18 @@
-{-# LANGUAGE GADTs          #-}
-{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GADTs             #-}
+{-# LANGUAGE NamedFieldPuns    #-}
 
 module Interface.SystemClock where
 
 import           Interface
-import           Interface.IRQ
-import           Interface.Timer
-
+import qualified Interface.Counter as I
+import qualified Interface.Timer   as I
 
 
 data SystemClock where
-  SystemClock :: (IRQ q, Timer t)
-              => { scheduleTimer :: q
-                 , systemTimer   :: t
+  SystemClock :: (I.Timer t, I.Counter c)
+              => { timer    :: t
+                 , counter  :: c
                  }
               -> SystemClock
 
@@ -20,21 +20,24 @@ data SystemClock where
 
 instance Interface SystemClock where
 
-  dependencies (SystemClock sch sys) =
-    dependencies sch <> dependencies sys
+  dependencies (SystemClock {counter}) = dependencies counter
 
-  initialize (SystemClock sch sys) =
-    initialize sch <> initialize sys
+  initialize (SystemClock {counter}) = initialize counter
 
 
-
-instance Timer SystemClock where
-  readCounter (SystemClock {systemTimer}) = readCounter systemTimer
+instance I.Counter SystemClock where
+  readCounter (SystemClock {counter}) = I.readCounter counter
 
 
 
-instance IRQ SystemClock where
 
-  handleIRQ (SystemClock {scheduleTimer}) = handleIRQ scheduleTimer
+instance Interface (I.HandleTimer SystemClock) where
 
-  enable (SystemClock {scheduleTimer}) = enable scheduleTimer
+  dependencies (I.HandleTimer (SystemClock {timer}) handle) =
+    dependencies (I.HandleTimer timer handle)
+
+  initialize (I.HandleTimer (SystemClock {timer}) handle) =
+    initialize (I.HandleTimer timer handle)
+
+
+instance I.Timer SystemClock

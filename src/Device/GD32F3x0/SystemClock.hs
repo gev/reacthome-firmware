@@ -11,8 +11,8 @@ import           Support.Device.GD32F3x0.Timer
 
 systemClock :: SystemClock
 systemClock = SystemClock
-  { scheduleTimer = sysTick 83_999
-  , systemTimer = timer_1 timerParam { timerPrescaler = 83
+  { timer   = sysTick 83_999
+  , counter = timer_1 timerParam { timerPrescaler = 83
                                      , timerPeriod    = 0xff_ff_ff_ff
                                      }
   }
