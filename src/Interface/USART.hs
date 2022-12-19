@@ -11,6 +11,7 @@ import           Ivory.Language.Module
 data HandleUSART u = HandleUSART
   { usart     :: u
   , onReceive :: Uint16 -> forall eff. Ivory eff ()
+  , onDrain   ::           forall eff. Ivory eff ()
   }
 
 

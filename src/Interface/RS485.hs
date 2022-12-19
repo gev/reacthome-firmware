@@ -48,8 +48,8 @@ setParity (RS485 {usart}) = I.setParity usart
 
 instance Interface (I.HandleUSART RS485) where
 
-  dependencies (I.HandleUSART (RS485 usart rede) onReceive) =
-   I.dependencies (I.HandleUSART usart onReceive) <> I.dependencies rede
+  dependencies (I.HandleUSART (RS485 usart rede) onReceive onDrain) =
+   I.dependencies (I.HandleUSART usart onReceive onDrain) <> I.dependencies rede
 
-  initialize (I.HandleUSART (RS485 usart rede) onReceive) =
-   I.initialize (I.HandleUSART usart onReceive) <> I.initialize rede
+  initialize (I.HandleUSART (RS485 usart rede) onReceive onDrain) =
+   I.initialize (I.HandleUSART usart onReceive onDrain) <> I.initialize rede

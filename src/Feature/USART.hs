@@ -12,6 +12,7 @@ import           Device.GD32F3x0.SystemClock
 import           Feature
 import qualified Interface                   as I
 import qualified Interface.Counter           as I
+import           Interface.USART             (HandleUSART)
 import qualified Interface.USART             as I
 import           Ivory.Language
 import           Ivory.Stdlib
@@ -24,10 +25,10 @@ instance I.Interface USART where
   dependencies (USART n usart) = defMemArea     (buff'' n)
                                : defMemArea     (index'' n)
                                : defMemArea     (timestamp'' n)
-                               : I.dependencies (I.HandleUSART usart $ onReceive n)
+                               : I.dependencies (I.HandleUSART usart (onReceive n) onDrain)
 
 
-  initialize (USART n usart) = I.initialize (I.HandleUSART usart $ onReceive n) <> [
+  initialize (USART n usart) = I.initialize (I.HandleUSART usart (onReceive n) onDrain) <> [
     proc ("usart_" <> show n <> "_init") $ body $ do
       I.setBaudrate   usart 1_000_000
       I.setWordLength usart I.WL_8b
@@ -54,6 +55,9 @@ onReceive n b = do
     store (buff' n ! ix) b
     store (index' n) (index + 1)
     store (timestamp' n) =<< I.readCounter systemClock
+
+onDrain :: Ivory eff ()
+onDrain = pure ()
 
 
 timestamp'' :: Int -> MemArea (Stored Uint32)

@@ -6,6 +6,7 @@ module Device.GD32F3x0.USART where
 
 import           Device.GD32F3x0.GPIO
 import           Interface
+import           Interface.USART               (HandleUSART)
 import qualified Interface.USART               as I
 import           Ivory.Language
 import           Ivory.Stdlib
@@ -32,8 +33,8 @@ usart_1 = USART USART1
 
 instance Interface (I.HandleUSART USART) where
 
-  dependencies (I.HandleUSART {I.usart = (USART {usart}), I.onReceive}) =
-      makeIRQHandler usart (handleIRQ usart onReceive)
+  dependencies (I.HandleUSART (USART {usart}) onReceive onDrain) =
+      makeIRQHandler usart (handleIRQ usart onReceive onDrain)
         : inclG <> inclMisc <> inclUSART <> dependencies'
 
   initialize (I.HandleUSART {I.usart = (USART usart rcu irq rx tx)}) =
@@ -51,10 +52,12 @@ instance Interface (I.HandleUSART USART) where
         -- enableUSART     usart
     ]
 
-handleIRQ :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
-handleIRQ usart onReceive = do
+handleIRQ :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+handleIRQ usart onReceive onDrain = do
   rbne <- getInterruptFlag usart USART_INT_FLAG_RBNE
   when rbne $ onReceive =<< S.receiveData usart
+  tc <- getInterruptFlag usart USART_INT_FLAG_TC
+  when tc onDrain
 
 
 instance I.USART USART where
