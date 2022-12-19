@@ -30,6 +30,7 @@ module Support.Device.GD32F3x0.USART
   , enableInterrupt
   , disableInterrupt
   , getInterruptFlag
+  , clearInterruptFlag
   , tdata
   , inclUSART
   )
@@ -126,6 +127,7 @@ inclUSART =  [ inclDef (def :: Cast USART_PERIPH Uint32)
              , incl usart_interrupt_disable
              , incl usart_interrupt_flag_get
              , incl usart_dma_transmit_config
+             , incl usart_interrupt_flag_clear
              , incl usart_tdata
              ]
 
@@ -247,3 +249,11 @@ tdata = call usart_tdata
 
 usart_tdata :: Def ('[Uint32] :-> Uint32)
 usart_tdata = fun "USART_TDATA"
+
+
+clearInterruptFlag :: USART_PERIPH -> USART_INT_FLAG -> Ivory eff ()
+clearInterruptFlag usart flag = call_ usart_interrupt_flag_clear (def usart) (def flag)
+
+usart_interrupt_flag_clear :: Def ('[Uint32, Uint32] :-> ())
+usart_interrupt_flag_clear = fun "usart_interrupt_flag_clear"
+
