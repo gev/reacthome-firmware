@@ -13,6 +13,7 @@ module Support.Device.GD32F3x0.DMA
 , DMA_PERIPH_INC    (..)
 , DMA_PERIPH_WIDTH  (..)
 , DMA_PRIORITY      (..)
+, DMA_PARAM         (..)
 , deinitDMA
 , initDMA
 , disableCirculationDMA
