@@ -63,7 +63,9 @@ handleIRQ usart onReceive onDrain = do
   rbne <- getInterruptFlag usart USART_INT_FLAG_RBNE
   when rbne $ onReceive =<< S.receiveData usart
   tc <- getInterruptFlag usart USART_INT_FLAG_TC
-  when tc onDrain
+  when tc $ do
+    clearInterruptFlag usart USART_INT_FLAG_TC
+    onDrain
 
 
 instance I.USART USART where
