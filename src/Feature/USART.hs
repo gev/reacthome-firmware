@@ -42,8 +42,8 @@ instance Task USART where
     Step Nothing $ proc ("usart_" <> show n <> "_step") $ body $ do
       timestamp <- deref $ timestamp' n
       t <- I.readCounter systemClock
-      when (t - timestamp >? 400) $ do
-        index <- deref $ index' n
+      index <- deref $ index' n
+      when (index >? 0 .&& t - timestamp >? 400) $ do
         I.transmit usart (buff' n) index
         store (index' n) 0
     ]
