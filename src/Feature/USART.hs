@@ -12,7 +12,6 @@ import           Device.GD32F3x0.SystemClock
 import           Feature
 import qualified Interface                   as I
 import qualified Interface.Counter           as I
-import           Interface.USART             (HandleUSART)
 import qualified Interface.USART             as I
 import           Ivory.Language
 import           Ivory.Stdlib
