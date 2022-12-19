@@ -19,7 +19,8 @@ defs =
 incs :: [String]
 
 incs =
-    [ "-Isupport/CMSIS/inc"
+    [ "-Isupport/inc"
+    , "-Isupport/CMSIS/inc"
     , "-Isupport/device/gd32f3x0/inc"
     , "-Isupport/device/gd32f3x0/peripherals/inc"
     ]

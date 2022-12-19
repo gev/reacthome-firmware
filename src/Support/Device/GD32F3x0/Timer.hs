@@ -79,12 +79,12 @@ data TIMER_PARAM = TIMER_PARAM
 
 [ivory|
   struct timer_parameter_struct
-    { prescaler         :: Stored Uint16
-    ; alignedmode       :: Stored Uint16
-    ; counterdirection  :: Stored Uint16
-    ; clockdivision     :: Stored Uint16
-    ; period            :: Stored Uint32
-    ; repetitioncounter :: Stored Uint8
+    { prescaler         :: Uint16
+    ; alignedmode       :: Uint16
+    ; counterdirection  :: Uint16
+    ; clockdivision     :: Uint16
+    ; period            :: Uint32
+    ; repetitioncounter :: Uint8
     }
 |]
 

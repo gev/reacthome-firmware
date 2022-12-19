@@ -14,6 +14,7 @@ module Support.Device.GD32F3x0.USART
   , USART_FLAG        (..)
   , USART_INT         (..)
   , USART_INT_FLAG    (..)
+  , USART_DENT        (..)
   , deinitUSART
   , setWordLength
   , setStopBit
@@ -25,9 +26,11 @@ module Support.Device.GD32F3x0.USART
   , getFlag
   , receiveData
   , transmitData
+  , transmitDMA
   , enableInterrupt
   , disableInterrupt
   , getInterruptFlag
+  , tdata
   , inclUSART
   )
 where
@@ -36,6 +39,7 @@ import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
+import           Support.Device.GD32F3x0.DMA   (DMA_CHANNEL)
 
 data USART_INT
   = USART_INT_RBNE
@@ -89,6 +93,12 @@ data USART_FLAG
   deriving (Show, Enum, Bounded)
 instance ExtDef USART_FLAG Uint32
 
+data USART_DENT
+  = USART_DENT_ENABLE
+  | USART_DENT_DISABLE
+  deriving (Show, Enum, Bounded)
+instance ExtDef USART_DENT Uint32
+
 
 inclUSART :: [ ModuleM () ]
 inclUSART =  [ inclDef (def :: Cast USART_PERIPH Uint32)
@@ -100,6 +110,7 @@ inclUSART =  [ inclDef (def :: Cast USART_PERIPH Uint32)
              , inclDef (def :: Cast USART_FLAG Uint32)
              , inclDef (def :: Cast USART_INT Uint32)
              , inclDef (def :: Cast USART_INT_FLAG Uint32)
+             , inclDef (def :: Cast USART_DENT Uint32)
              , incl usart_deinit
              , incl usart_word_length_set
              , incl usart_stop_bit_set
@@ -114,6 +125,8 @@ inclUSART =  [ inclDef (def :: Cast USART_PERIPH Uint32)
              , incl usart_interrupt_enable
              , incl usart_interrupt_disable
              , incl usart_interrupt_flag_get
+             , incl usart_dma_transmit_config
+             , incl usart_tdata
              ]
 
 
@@ -220,3 +233,17 @@ getInterruptFlag usart flag = call usart_interrupt_flag_get (def usart) (def fla
 
 usart_interrupt_flag_get :: Def ('[Uint32, Uint32] :-> IBool)
 usart_interrupt_flag_get = fun "usart_interrupt_flag_get"
+
+
+transmitDMA :: USART_PERIPH -> USART_DENT -> Ivory eff ()
+transmitDMA usart dent = call_ usart_dma_transmit_config (def usart) (def dent)
+
+usart_dma_transmit_config :: Def ('[Uint32, Uint32] :-> ())
+usart_dma_transmit_config = fun "usart_dma_transmit_config"
+
+
+tdata :: Uint32 -> Ivory eff Uint32
+tdata = call usart_tdata
+
+usart_tdata :: Def ('[Uint32] :-> Uint32)
+usart_tdata = fun "USART_TDATA"

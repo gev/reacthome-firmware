@@ -70,6 +70,7 @@ executable reacthome-firmware
                     , Support.Device.GD32F3x0.RCU
                     , Support.Device.GD32F3x0.Timer
                     , Support.Device.GD32F3x0.USART
+                    , Support.Util
 
                     , Util.CRC16
 

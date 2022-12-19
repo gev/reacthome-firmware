@@ -6,21 +6,24 @@ module Device.GD32F3x0.USART where
 
 import           Device.GD32F3x0.GPIO
 import           Interface
-import           Interface.USART               (HandleUSART)
 import qualified Interface.USART               as I
 import           Ivory.Language
 import           Ivory.Stdlib
+import           Ivory.Support.Device.GD32F3x0
 import           Support.Device.GD32F3x0
+import           Support.Device.GD32F3x0.DMA
 import           Support.Device.GD32F3x0.GPIO  (GPIO_AF (GPIO_AF_1))
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.USART as S
+import           Support.Util
 
 
 data USART = USART
   { usart :: USART_PERIPH
   , rcu   :: RCU_PERIPH
   , irq   :: IRQn
+  , dma   :: DMA_CHANNEL
   , rx    :: PORT
   , tx    :: PORT
   }
@@ -28,6 +31,7 @@ data USART = USART
 usart_1 = USART USART1
                 RCU_USART1
                 USART1_IRQn
+                DMA_CH3
                 (pa_3 $ AF GPIO_AF_1)
                 (pa_2 $ AF GPIO_AF_1)
 
@@ -35,11 +39,12 @@ instance Interface (I.HandleUSART USART) where
 
   dependencies (I.HandleUSART (USART {usart}) onReceive onDrain) =
       makeIRQHandler usart (handleIRQ usart onReceive onDrain)
-        : inclG <> inclMisc <> inclUSART <> dependencies'
+        : inclG <> inclMisc <> inclUSART <> inclDMA <> inclUtil <> dependencies'
 
-  initialize (I.HandleUSART {I.usart = (USART usart rcu irq rx tx)}) =
+  initialize (I.HandleUSART {I.usart = (USART usart rcu irq dma rx tx)}) =
     initialize' rx : initialize' tx : [
       proc (show usart <> "_init") $ body $ do
+        enablePeriphClock RCU_DMA
         enableIrqNvic     irq 0 0
         enablePeriphClock rcu
         deinitUSART     usart
@@ -73,12 +78,18 @@ instance I.USART USART where
 
   receive = S.receiveData . usart
 
-  transmit u buff n = do
-        for (toIx n) $ \ix -> do
-          forever $ do
-            tbe <- getFlag (usart u) USART_FLAG_TBE
-            when tbe breakOut
-          S.transmitData (usart u) =<< deref (buff ! ix)
+  transmit (USART {usart, dma}) buff n = do
+    deinitDMA dma
+    p <- tdata $ def usart
+    m <- castBuffRefToUint32 buff
+    initDMA dma dmaInitParam { dmaPeriphAddr = p
+                             , dmaMemoryAddr = m
+                             , dmaNumber     = n
+                             }
+    disableCirculationDMA dma
+    disableMemoryToMemoryDMA dma
+    enableChannelDMA dma
+    transmitDMA usart USART_DENT_ENABLE
 
 
   enable         u  = enableUSART (usart u)
@@ -95,3 +106,11 @@ coerceStopBit I.SB_1b = USART_STB_1BIT
 
 coerceParity :: I.Parity -> USART_PARITY_CFG
 coerceParity I.None = USART_PM_NONE
+
+dmaInitParam = dmaParam { dmaDirection = DMA_MEMORY_TO_PERIPHERAL
+                        , dmaMemoryInc = DMA_MEMORY_INCREASE_ENABLE
+                        , dmaMemoryWidth = DMA_MEMORY_WIDTH_16BIT
+                        , dmaPeriphInc = DMA_PERIPH_INCREASE_DISABLE
+                        , dmaPeriphWidth = DMA_PERIPHERAL_WIDTH_16BIT
+                        , dmaPriority = DMA_PRIORITY_ULTRA_HIGH
+                        }

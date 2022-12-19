@@ -4,6 +4,7 @@
 {-# LANGUAGE TypeOperators         #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
+{-# LANGUAGE RankNTypes            #-}
 
 module Support.Device.GD32F3x0.DMA
 ( DMA_CHANNEL       (..)
@@ -26,7 +27,6 @@ module Support.Device.GD32F3x0.DMA
 import           Data.Function                 ((&))
 import           Ivory.Language
 import           Ivory.Language.Module
-import           Ivory.Language.Uint           (Uint8 (Uint8))
 import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
 
@@ -90,26 +90,27 @@ data DMA_PARAM = DMA_PARAM
     , dmaMemoryWidth :: DMA_MEMORY_WIDTH
     , dmaMemoryInc   :: DMA_MEMORY_INC
     , dmaDirection   :: DMA_DIRECTION
-    , dmaNumber      :: Uint32
+    , dmaNumber      :: Uint16
     , dmaPriority    :: DMA_PRIORITY
     }
 
 [ivory|
   struct dma_parameter_struct
-    { periph_addr       :: Stored Uint32
-    ; periph_width      :: Stored Uint32
-    ; periph_inc        :: Stored Uint8
-    ; memory_addr       :: Stored Uint32
-    ; memory_width      :: Stored Uint32
-    ; memory_inc        :: Stored Uint8
-    ; direction         :: Stored Uint8
-    ; number            :: Stored Uint32
-    ; priority          :: Stored Uint32
+    { periph_addr    :: Uint32
+    ; periph_width   :: Uint32
+    ; periph_inc     :: Uint8
+    ; memory_addr    :: Uint32
+    ; memory_width   :: Uint32
+    ; memory_inc     :: Uint8
+    ; direction      :: Uint8
+    ; number         :: Uint16
+    ; priority       :: Uint32
     }
 |]
 
 inclDMA :: [ ModuleM () ]
-inclDMA =  [ inclDef (def :: Cast DMA_DIRECTION Uint8)
+inclDMA =  [ inclDef (def :: Cast DMA_CHANNEL Uint32)
+           , inclDef (def :: Cast DMA_DIRECTION Uint8)
            , inclDef (def :: Cast DMA_MEMORY_INC Uint8)
            , inclDef (def :: Cast DMA_MEMORY_WIDTH Uint32)
            , inclDef (def :: Cast DMA_PERIPH_INC Uint8)
