@@ -15,7 +15,6 @@ import qualified Interface.Counter           as I
 import           Interface.USART             (HandleUSART)
 import qualified Interface.USART             as I
 import           Ivory.Language
-import           Ivory.Language.Syntax       (zeroInit)
 import           Ivory.Stdlib
 
 
@@ -76,7 +75,7 @@ index' = addrOf . index''
 
 
 buff'' :: Int -> MemArea (Array 512 (Stored Uint16))
-buff'' n = area ("buff_" <> show n) $ Just izero
+buff'' n = area ("buff_" <> show n) Nothing
 
 buff' :: Int -> Ref Global (Array 512 (Stored Uint16))
 buff' = addrOf . buff''
