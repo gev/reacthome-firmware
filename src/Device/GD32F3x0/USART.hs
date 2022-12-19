@@ -46,6 +46,7 @@ instance Interface (I.HandleUSART USART) where
         configReceive   usart USART_RECEIVE_ENABLE
         configTransmit  usart USART_TRANSMIT_ENABLE
         enableInterrupt usart USART_INT_RBNE
+        enableInterrupt usart USART_INT_TC
         -- setBaudrate     usart 1_000_000
         -- setWordLength   usart USART_WL_8BIT
         -- configParity    usart USART_PM_NONE
