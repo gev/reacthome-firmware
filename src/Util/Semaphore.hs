@@ -25,6 +25,7 @@ up (Semaphore value) = do
    v <- deref a
    store a $ v + 1
 
+down :: Semaphore -> Ivory eff () -> Ivory eff ()
 down (Semaphore value) run = do
    let a = addrOf value
    v <- deref a
