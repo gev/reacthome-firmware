@@ -54,11 +54,11 @@ io m p = p $ MF m
 
 
 instance Interface IN where
-  dependencies = const dependencies'
+  include = const include'
   initialize (IN p) = [initialize' p]
 
 instance Interface OUT where
-  dependencies = const dependencies'
+  include = const include'
   initialize (OUT p) = [initialize' p]
 
 
@@ -70,8 +70,8 @@ instance I.OUT OUT where
   reset (OUT (PORT {gpio, pin})) = S.resetBit gpio pin
 
 
-dependencies' :: [ModuleM ()]
-dependencies' =  inclRCU <> inclGPIO
+include' :: ModuleM ()
+include' =  inclRCU >> inclGPIO
 
 initialize' :: PORT -> Def ('[] ':-> ())
 initialize' (PORT {rcu, gpio, pin, mode}) =

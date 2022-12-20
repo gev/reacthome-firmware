@@ -14,9 +14,8 @@ import           Ivory.Support.Device.GD32F3x0
 import           Support.Device.GD32F3x0
 
 
-inclMisc :: [ ModuleM () ]
-inclMisc =  [ incl nvic_irq_enable
-            ]
+inclMisc :: ModuleM ()
+inclMisc =  incl nvic_irq_enable
 
 
 enableIrqNvic :: IRQn -> Uint8 -> Uint8 -> Ivory eff ()

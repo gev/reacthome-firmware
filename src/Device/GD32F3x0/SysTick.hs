@@ -20,8 +20,9 @@ sysTick = SysTick
 
 instance Interface (HandleTimer SysTick) where
 
-  dependencies (HandleTimer {handle}) =
-    incl (handleIRQ handle) : inclCoreCM4
+  include (HandleTimer {handle}) =
+    inclCoreCM4 >> incl (handleIRQ handle)
+
 
   initialize (HandleTimer {timer = (SysTick ticks)}) = [
       proc "systick_init" $ body $ sysTickConfig ticks

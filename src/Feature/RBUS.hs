@@ -16,7 +16,7 @@ data RBUS'
 
 instance Interface RBUS where
   initialize = undefined
-  dependencies = undefined
+  include = undefined
 
 instance Task RBUS where
   tasks = undefined

@@ -20,7 +20,7 @@ state n = area ("blink_" <> show n <> "_state") (Just (ival false))
 
 
 instance I.Interface Blink where
-  dependencies (Blink n out) = defMemArea (state n) : I.dependencies out
+  include (Blink n out) = defMemArea (state n) >> I.include out
   initialize (Blink _ out) = I.initialize out
 
 

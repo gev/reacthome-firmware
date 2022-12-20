@@ -25,9 +25,9 @@ data IRQn
 instance ExtDef IRQn Uint8
 
 
-inclG :: [ ModuleM () ]
-inclG =  [ inclDef (def :: Cast IRQn Uint8)
-         ]
+inclG :: ModuleM ()
+inclG = inclDef (def :: Cast IRQn Uint8)
+
 
 makeIRQHandler :: Show t => t
                -> (forall s. Ivory (ProcEffects s ()) ())

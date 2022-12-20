@@ -101,35 +101,35 @@ data USART_DENT
 instance ExtDef USART_DENT Uint32
 
 
-inclUSART :: [ ModuleM () ]
-inclUSART =  [ inclDef (def :: Cast USART_PERIPH Uint32)
-             , inclDef (def :: Cast USART_WORD_LENGTH Uint32)
-             , inclDef (def :: Cast USART_STOP_BIT Uint32)
-             , inclDef (def :: Cast USART_PARITY_CFG Uint32)
-             , inclDef (def :: Cast USART_RX_CFG Uint32)
-             , inclDef (def :: Cast USART_TX_CFG Uint32)
-             , inclDef (def :: Cast USART_FLAG Uint32)
-             , inclDef (def :: Cast USART_INT Uint32)
-             , inclDef (def :: Cast USART_INT_FLAG Uint32)
-             , inclDef (def :: Cast USART_DENT Uint32)
-             , incl usart_deinit
-             , incl usart_word_length_set
-             , incl usart_stop_bit_set
-             , incl usart_parity_config
-             , incl usart_baudrate_set
-             , incl usart_receive_config
-             , incl usart_transmit_config
-             , incl usart_enable
-             , incl usart_flag_get
-             , incl usart_data_receive
-             , incl usart_data_transmit
-             , incl usart_interrupt_enable
-             , incl usart_interrupt_disable
-             , incl usart_interrupt_flag_get
-             , incl usart_dma_transmit_config
-             , incl usart_interrupt_flag_clear
-             , incl usart_tdata
-             ]
+inclUSART :: ModuleM ()
+inclUSART =  do 
+  inclDef (def :: Cast USART_PERIPH Uint32)
+  inclDef (def :: Cast USART_WORD_LENGTH Uint32)
+  inclDef (def :: Cast USART_STOP_BIT Uint32)
+  inclDef (def :: Cast USART_PARITY_CFG Uint32)
+  inclDef (def :: Cast USART_RX_CFG Uint32)
+  inclDef (def :: Cast USART_TX_CFG Uint32)
+  inclDef (def :: Cast USART_FLAG Uint32)
+  inclDef (def :: Cast USART_INT Uint32)
+  inclDef (def :: Cast USART_INT_FLAG Uint32)
+  inclDef (def :: Cast USART_DENT Uint32)
+  incl usart_deinit
+  incl usart_word_length_set
+  incl usart_stop_bit_set
+  incl usart_parity_config
+  incl usart_baudrate_set
+  incl usart_receive_config
+  incl usart_transmit_config
+  incl usart_enable
+  incl usart_flag_get
+  incl usart_data_receive
+  incl usart_data_transmit
+  incl usart_interrupt_enable
+  incl usart_interrupt_disable
+  incl usart_interrupt_flag_get
+  incl usart_dma_transmit_config
+  incl usart_interrupt_flag_clear
+  incl usart_tdata
 
 
 deinitUSART :: USART_PERIPH -> Ivory eff ()
@@ -256,4 +256,3 @@ clearInterruptFlag usart flag = call_ usart_interrupt_flag_clear (def usart) (de
 
 usart_interrupt_flag_clear :: Def ('[Uint32, Uint32] :-> ())
 usart_interrupt_flag_clear = fun "usart_interrupt_flag_clear"
-

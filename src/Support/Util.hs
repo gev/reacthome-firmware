@@ -7,8 +7,10 @@ module Support.Util
   ) where
 
 import           Ivory.Language
+import           Ivory.Language.Module
 
-inclUtil = [incl cast_to_uint32]
+inclUtil :: ModuleM ()
+inclUtil = incl cast_to_uint32
 
 castArrayToUint32 :: Ref r (CArray (Stored Uint16)) -> Ivory eff Uint32
 castArrayToUint32 = call cast_to_uint32

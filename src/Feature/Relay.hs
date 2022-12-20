@@ -10,7 +10,7 @@ data Relay = forall a. (OUT a) => Relay Int a
 
 instance Interface Relay where
   initialize = undefined
-  dependencies = undefined
+  include = undefined
 
 instance Task Relay where
   tasks = undefined

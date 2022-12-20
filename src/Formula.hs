@@ -6,10 +6,9 @@
 module Formula where
 
 import           Data.Foldable
-import           Data.List
 import           Feature
-import           Interface             as I
-import           Interface.SystemClock as I
+import           Interface
+import           Interface.SystemClock
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Scheduler             (Scheduler (Scheduler), schedule)
@@ -22,31 +21,30 @@ data Formula = Formula
 cook :: Formula -> ModuleM ()
 cook (Formula {features, clock}) = do
 
-
   let scheduler = Scheduler clock $ concatMap tasks features
 
-  let depends = I.dependencies scheduler
-            <> (I.dependencies =<< features)
+  let inits     = initialize scheduler
+                <> (initialize =<< features)
 
-  let inits   = I.initialize scheduler
-            <> (I.initialize =<< features)
+  let init      = proc "init"
+                $ body
+                $ mapM_ call_ inits
+                :: Def ('[] :-> ())
 
-  let init    = proc "init"
-              $ body
-              $ mapM_ call_ inits
-             :: Def ('[] :-> ())
+  let loop      = schedule scheduler
 
-  let loop    = schedule scheduler
+  let main      = proc "main"
+                $ body
+                $ call_ init
+               >> call_ loop
+               >> ret 0
+              :: Def ('[] :-> Sint32)
 
-  let main    = proc "main"
-              $ body
-              $ call_ init
-             >> call_ loop
-             >> ret 0
-             :: Def ('[] :-> Sint32)
+  traverse_  include features
+  traverse_  incl inits
 
-  sequenceA_ depends
-  mapM_ incl inits
+  include    scheduler
+
   incl init
   incl loop
   incl main

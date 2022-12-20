@@ -70,20 +70,20 @@ data GPIO_AF
   deriving (Show, Enum, Bounded)
 instance ExtDef GPIO_AF Uint32
 
-inclGPIO :: [ ModuleM () ]
-inclGPIO =  [ inclDef (def :: Cast GPIO_PERIPH Uint32)
-            , inclDef (def :: Cast GPIO_MODE Uint32)
-            , inclDef (def :: Cast GPIO_PUPD Uint32)
-            , inclDef (def :: Cast GPIO_OTYPE Uint32)
-            , inclDef (def :: Cast GPIO_SPEED Uint32)
-            , inclDef (def :: Cast GPIO_PIN Uint32)
-            , inclDef (def :: Cast GPIO_AF Uint32)
-            , incl gpio_mode_set
-            , incl gpio_output_options_set
-            , incl gpio_bit_set
-            , incl gpio_bit_reset
-            , incl gpio_af_set
-            ]
+inclGPIO :: ModuleM ()
+inclGPIO = do
+  inclDef (def :: Cast GPIO_PERIPH Uint32)
+  inclDef (def :: Cast GPIO_MODE Uint32)
+  inclDef (def :: Cast GPIO_PUPD Uint32)
+  inclDef (def :: Cast GPIO_OTYPE Uint32)
+  inclDef (def :: Cast GPIO_SPEED Uint32)
+  inclDef (def :: Cast GPIO_PIN Uint32)
+  inclDef (def :: Cast GPIO_AF Uint32)
+  incl gpio_mode_set
+  incl gpio_output_options_set
+  incl gpio_bit_set
+  incl gpio_bit_reset
+  incl gpio_af_set
 
 
 setMode :: GPIO_PERIPH -> GPIO_MODE -> GPIO_PUPD -> GPIO_PIN -> Ivory eff ()

@@ -35,7 +35,7 @@ timer_2 = Timer TIMER2 RCU_TIMER2 TIMER2_IRQn
 
 instance Interface Timer where
 
-  dependencies = const $ inclRCU <> inclTimer
+  include = const $ inclRCU <> inclTimer
 
   initialize (Timer {timer, rcu, param}) = [
       proc (show timer <> "_init") $ body $ do
@@ -54,9 +54,8 @@ instance I.Counter Timer where
 
 instance Interface (I.HandleTimer Timer) where
 
-  dependencies (I.HandleTimer (Timer {timer}) handle) =
-    makeIRQHandler timer (handleIRQ timer handle)
-     : inclG <> inclMisc
+  include (I.HandleTimer (Timer {timer}) handle) =
+    inclG >> inclMisc >> makeIRQHandler timer (handleIRQ timer handle)
 
   initialize (I.HandleTimer {I.timer = Timer {timer, irq}}) = [
       proc (show timer <> "_irq_init") $ body $ do

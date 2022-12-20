@@ -5,6 +5,7 @@
 module Scheduler where
 
 import           Control.Monad         (replicateM, zipWithM_)
+import           Data.Foldable         (traverse_)
 import           Data.List
 import           Data.Maybe
 import           Feature
@@ -22,10 +23,11 @@ data Scheduler = Scheduler
 
 instance Interface Scheduler  where
 
-  dependencies (Scheduler clock steps) = defMemArea schedulerTimer
-                                       : dependencies clock
-                                      <> dependencies (HandleTimer clock handleIRQ)
-                                      <> (incl . step <$> steps)
+  include (Scheduler clock steps) = do
+    defMemArea schedulerTimer
+    include clock
+    include (HandleTimer clock handleIRQ)
+    traverse_ (incl . step) steps
 
 
   initialize (Scheduler {clock}) =

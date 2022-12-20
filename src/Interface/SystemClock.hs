@@ -20,7 +20,7 @@ data SystemClock where
 
 instance Interface SystemClock where
 
-  dependencies (SystemClock {counter}) = dependencies counter
+  include (SystemClock {counter}) = include counter
 
   initialize (SystemClock {counter}) = initialize counter
 
@@ -33,8 +33,8 @@ instance I.Counter SystemClock where
 
 instance Interface (I.HandleTimer SystemClock) where
 
-  dependencies (I.HandleTimer (SystemClock {timer}) handle) =
-    dependencies (I.HandleTimer timer handle)
+  include (I.HandleTimer (SystemClock {timer}) handle) =
+    include (I.HandleTimer timer handle)
 
   initialize (I.HandleTimer (SystemClock {timer}) handle) =
     initialize (I.HandleTimer timer handle)

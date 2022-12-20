@@ -73,6 +73,7 @@ executable reacthome-firmware
                     , Support.Util
 
                     , Util.CRC16
+                    , Util.Semaphore
 
     build-depends:    base ^>=4.16.3.0
                     , mtl  

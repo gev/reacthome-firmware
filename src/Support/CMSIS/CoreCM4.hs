@@ -18,13 +18,13 @@ import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
 
 
-inclCoreCM4 :: [ ModuleM () ]
-inclCoreCM4 =  [ incl sysTick_Config
-               , incl __NOP
-               , incl __ISB
-               , incl __DSB
-               , incl __DMB
-               ]
+inclCoreCM4 :: ModuleM ()
+inclCoreCM4 = do
+  incl sysTick_Config
+  incl __NOP
+  incl __ISB
+  incl __DSB
+  incl __DMB
 
 
 

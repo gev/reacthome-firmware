@@ -37,9 +37,10 @@ usart_1 = USART USART1
 
 instance Interface (I.HandleUSART USART) where
 
-  dependencies (I.HandleUSART (USART {usart}) onReceive onDrain) =
-      makeIRQHandler usart (handleIRQ usart onReceive onDrain)
-        : inclG <> inclMisc <> inclUSART <> inclDMA <> inclUtil <> dependencies'
+  include (I.HandleUSART (USART {usart}) onReceive onDrain) =
+    inclG >> inclMisc >> inclUSART >> inclDMA >> inclUtil >> include' >>
+    makeIRQHandler usart (handleIRQ usart onReceive onDrain)
+
 
   initialize (I.HandleUSART {I.usart = (USART usart rcu irq dma rx tx)}) =
     initialize' rx : initialize' tx : [

@@ -10,7 +10,7 @@ module Feature.USART  where
 
 import           Device.GD32F3x0.SystemClock
 import           Feature
-import qualified Interface                   as I
+import           Interface
 import qualified Interface.Counter           as I
 import qualified Interface.USART             as I
 import           Ivory.Language
@@ -19,15 +19,16 @@ import           Ivory.Stdlib
 
 data USART = forall a. (I.USART a) => USART Int a
 
-instance I.Interface USART where
+instance Interface USART where
 
-  dependencies (USART n usart) = defMemArea     (buff'' n)
-                               : defMemArea     (index'' n)
-                               : defMemArea     (timestamp'' n)
-                               : I.dependencies (I.HandleUSART usart (onReceive n) onDrain)
+  include (USART n usart) = do
+    defMemArea (buff'' n)
+    defMemArea (index'' n)
+    defMemArea (timestamp'' n)
+    include     (I.HandleUSART usart (onReceive n) onDrain)
 
 
-  initialize (USART n usart) = I.initialize (I.HandleUSART usart (onReceive n) onDrain) <> [
+  initialize (USART n usart) = initialize (I.HandleUSART usart (onReceive n) onDrain) <> [
     proc ("usart_" <> show n <> "_init") $ body $ do
       I.setBaudrate   usart 1_000_000
       I.setWordLength usart I.WL_8b
@@ -40,11 +41,12 @@ instance Task USART where
   tasks (USART n usart) = [
     Step Nothing $ proc ("usart_" <> show n <> "_step") $ body $ do
       index <- deref $ index' n
-      timestamp <- deref $ timestamp' n
-      t <- I.readCounter systemClock
-      when (index >? 0 .&& t - timestamp >? 400) $ do
-        I.transmit usart (toCArray $ buff' n) index
-        store (index' n) 0
+      when (index >? 0) $ do
+        timestamp <- deref $ timestamp' n
+        t <- I.readCounter systemClock
+        when (t - timestamp >? 400) $ do
+          I.transmit usart (toCArray $ buff' n) index
+          store (index' n) 0
     ]
 
 

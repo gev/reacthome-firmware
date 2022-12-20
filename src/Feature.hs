@@ -7,7 +7,6 @@ module Feature where
 import           Interface
 import           Interface.Timer
 import           Ivory.Language
-import           Ivory.Language.Module
 
 data Dim'
   = AC
@@ -39,7 +38,7 @@ class Interface t => Task t where
   tasks :: t -> [Step]
 
 instance Interface Feature where
-  dependencies (Feature f) = dependencies f
+  include (Feature f) = include f
   initialize (Feature f) = initialize f
 
 instance Task Feature where

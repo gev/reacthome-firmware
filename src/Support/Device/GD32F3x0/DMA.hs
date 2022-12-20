@@ -108,20 +108,20 @@ data DMA_PARAM = DMA_PARAM
     }
 |]
 
-inclDMA :: [ ModuleM () ]
-inclDMA =  [ inclDef (def :: Cast DMA_CHANNEL Uint32)
-           , inclDef (def :: Cast DMA_DIRECTION Uint8)
-           , inclDef (def :: Cast DMA_MEMORY_INC Uint8)
-           , inclDef (def :: Cast DMA_MEMORY_WIDTH Uint32)
-           , inclDef (def :: Cast DMA_PERIPH_INC Uint8)
-           , inclDef (def :: Cast DMA_PERIPH_WIDTH Uint32)
-           , inclDef (def :: Cast DMA_PRIORITY Uint32)
-           , incl dma_deinit
-           , incl dma_init
-           , incl dma_circulation_disable
-           , incl dma_memory_to_memory_disable
-           , incl dma_channel_enable
-           ]
+inclDMA :: ModuleM ()
+inclDMA = do
+  inclDef (def :: Cast DMA_CHANNEL Uint32)
+  inclDef (def :: Cast DMA_DIRECTION Uint8)
+  inclDef (def :: Cast DMA_MEMORY_INC Uint8)
+  inclDef (def :: Cast DMA_MEMORY_WIDTH Uint32)
+  inclDef (def :: Cast DMA_PERIPH_INC Uint8)
+  inclDef (def :: Cast DMA_PERIPH_WIDTH Uint32)
+  inclDef (def :: Cast DMA_PRIORITY Uint32)
+  incl dma_deinit
+  incl dma_init
+  incl dma_circulation_disable
+  incl dma_memory_to_memory_disable
+  incl dma_channel_enable
 
 
 deinitDMA :: DMA_CHANNEL -> Ivory eff ()
