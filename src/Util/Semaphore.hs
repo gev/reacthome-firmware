@@ -4,7 +4,7 @@ module Util.Semaphore where
 
 import           Include
 import           Ivory.Language
-import           Ivory.Stdlib   (when)
+import           Ivory.Stdlib
 
 
 newtype Semaphore = Semaphore { value :: MemArea (Stored Uint32) }
