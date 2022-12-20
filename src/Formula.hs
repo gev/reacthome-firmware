@@ -23,13 +23,13 @@ cook (Formula {features, clock}) = do
 
   let scheduler = Scheduler clock $ concatMap tasks features
 
-  let inits     = initialize scheduler
-                <> (initialize =<< features)
+  let inits     = (initialize =<< features)
+               <>  initialize scheduler
 
   let init      = proc "init"
                 $ body
                 $ mapM_ call_ inits
-                :: Def ('[] :-> ())
+               :: Def ('[] :-> ())
 
   let loop      = schedule scheduler
 
@@ -38,12 +38,12 @@ cook (Formula {features, clock}) = do
                 $ call_ init
                >> call_ loop
                >> ret 0
-              :: Def ('[] :-> Sint32)
+               :: Def ('[] :-> Sint32)
 
-  traverse_  include features
   traverse_  incl inits
-
+  traverse_  include features
   include    scheduler
+
 
   incl init
   incl loop
