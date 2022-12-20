@@ -83,7 +83,7 @@ instance I.USART USART where
   transmit (USART {usart, dma}) buff n = do
     deinitDMA dma
     p <- tdata $ def usart
-    m <- castBuffRefToUint32 buff
+    m <- castArrayToUint32 buff
     initDMA dma dmaInitParam { dmaPeriphAddr = p
                              , dmaMemoryAddr = m
                              , dmaNumber     = n
