@@ -3,6 +3,9 @@
 
 module Support.CMSIS.CoreCM4
   ( nop
+  , isb
+  , dsb
+  , dmb
   , sysTickConfig
   , inclCoreCM4
   ) where
@@ -22,6 +25,16 @@ inclCoreCM4 =  [ incl __NOP
                ]
 
 
+
+sysTickConfig :: Uint32 -> Ivory eff ()
+sysTickConfig = call_ sysTick_Config
+
+sysTick_Config :: Def ('[Uint32] :-> ())
+sysTick_Config = fun "SysTick_Config"
+
+
+
+
 nop :: Int -> Ivory eff ()
 nop n = replicateM_ n (call_ __NOP)
 
@@ -29,8 +42,22 @@ __NOP :: Def ('[] :-> ())
 __NOP = fun "__NOP"
 
 
-sysTickConfig :: Uint32 -> Ivory eff ()
-sysTickConfig = call_ sysTick_Config
+isb :: Ivory eff ()
+isb = call_ __ISB
 
-sysTick_Config :: Def ('[Uint32] :-> ())
-sysTick_Config = fun "SysTick_Config"
+__ISB :: Def ('[] :-> ())
+__ISB = fun "__ISB"
+
+
+dsb :: Ivory eff ()
+dsb = call_ __DSB
+
+__DSB :: Def ('[] :-> ())
+__DSB = fun "__DSB"
+
+
+dmb :: Ivory eff ()
+dmb = call_ __DMB
+
+__DMB :: Def ('[] :-> ())
+__DMB = fun "__DMB"
