@@ -7,8 +7,9 @@ module Feature.Blink where
 import           Data.Function
 import           Device.GD32F3x0.SystemClock
 import           Feature
-import           Interface                   as I
-import           Interface.GPIO              as I
+import           Include
+import           Initialize
+import           Interface.GPIO as I
 import           Interface.Timer
 import           Ivory.Language
 
@@ -19,9 +20,11 @@ state :: Int -> MemArea (Stored IBool)
 state n = area ("blink_" <> show n <> "_state") (Just (ival false))
 
 
-instance I.Interface Blink where
-  include (Blink n out) = defMemArea (state n) >> I.include out
-  initialize (Blink _ out) = I.initialize out
+instance Include Blink where
+  include (Blink n out) = defMemArea (state n) >> include out
+
+instance Initialize Blink where
+  initialize (Blink _ out) = initialize out
 
 
 instance Task Blink where

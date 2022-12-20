@@ -6,7 +6,8 @@
 
 module Device.GD32F3x0.SysTick where
 
-import           Interface
+import           Include
+import           Initialize
 import           Interface.Timer
 import           Ivory.Language
 import           Ivory.Language.Module
@@ -18,12 +19,12 @@ newtype SysTick = SysTick Uint32
 sysTick = SysTick
 
 
-instance Interface (HandleTimer SysTick) where
-
+instance Include (HandleTimer SysTick) where
   include (HandleTimer {handle}) =
     inclCoreCM4 >> incl (handleIRQ handle)
 
 
+instance Initialize (HandleTimer SysTick) where
   initialize (HandleTimer {timer = (SysTick ticks)}) = [
       proc "systick_init" $ body $ sysTickConfig ticks
     ]

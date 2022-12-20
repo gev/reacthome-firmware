@@ -4,7 +4,8 @@
 
 module Feature where
 
-import           Interface
+import           Include
+import           Initialize
 import           Interface.Timer
 import           Ivory.Language
 
@@ -34,11 +35,13 @@ data Step = Step
   }
 
 
-class Interface t => Task t where
+class (Include t, Initialize t) => Task t where
   tasks :: t -> [Step]
 
-instance Interface Feature where
+instance Include Feature where
   include (Feature f) = include f
+
+instance Initialize Feature where
   initialize (Feature f) = initialize f
 
 instance Task Feature where

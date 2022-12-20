@@ -5,8 +5,9 @@
 module Device.GD32F3x0.USART where
 
 import           Device.GD32F3x0.GPIO
-import           Interface
-import qualified Interface.USART               as I
+import           Include
+import           Initialize
+import qualified Interface.USART as I
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Ivory.Support.Device.GD32F3x0
@@ -35,14 +36,14 @@ usart_1 = USART USART1
                 (pa_3 $ AF GPIO_AF_1)
                 (pa_2 $ AF GPIO_AF_1)
 
-instance Interface (I.HandleUSART USART) where
-
+instance Include (I.HandleUSART USART) where
   include (I.HandleUSART (USART {usart}) onReceive onDrain) =
     inclG >> inclMisc >> inclUSART >> inclDMA >> inclUtil >> include' >>
     makeIRQHandler usart (handleIRQ usart onReceive onDrain)
 
 
-  initialize (I.HandleUSART {I.usart = (USART usart rcu irq dma rx tx)}) =
+instance Initialize USART where
+  initialize (USART usart rcu irq dma rx tx) =
     initialize' rx : initialize' tx : [
       proc (show usart <> "_init") $ body $ do
         enablePeriphClock RCU_DMA

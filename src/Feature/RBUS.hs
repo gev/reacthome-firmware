@@ -4,7 +4,8 @@
 module Feature.RBUS where
 
 import           Feature
-import           Interface       as I
+import           Include
+import           Initialize
 import           Interface.RS485 as I
 import           Interface.USART as I
 
@@ -14,9 +15,11 @@ data RBUS'
   = Master
   | Slave
 
-instance Interface RBUS where
-  initialize = undefined
+instance Include RBUS where
   include = undefined
+
+instance Initialize RBUS where
+  initialize = undefined
 
 instance Task RBUS where
   tasks = undefined

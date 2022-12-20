@@ -4,8 +4,9 @@
 
 module Device.GD32F3x0.Timer where
 
-import           Interface
-import qualified Interface.Counter             as I
+import           Include
+import           Initialize
+import qualified Interface.Counter as I
 import qualified Interface.Timer               as I
 import           Ivory.Language
 import           Ivory.Language.Module
@@ -33,10 +34,10 @@ timer_2 = Timer TIMER2 RCU_TIMER2 TIMER2_IRQn
 
 
 
-instance Interface Timer where
-
+instance Include Timer where
   include = const $ inclRCU <> inclTimer
 
+instance Initialize Timer where
   initialize (Timer {timer, rcu, param}) = [
       proc (show timer <> "_init") $ body $ do
         enablePeriphClock rcu
@@ -52,11 +53,12 @@ instance I.Counter Timer where
 
 
 
-instance Interface (I.HandleTimer Timer) where
-
+instance Include (I.HandleTimer Timer) where
   include (I.HandleTimer (Timer {timer}) handle) =
-    inclG >> inclMisc >> makeIRQHandler timer (handleIRQ timer handle)
+    inclG >> inclMisc >>
+    makeIRQHandler timer (handleIRQ timer handle)
 
+instance Initialize (I.HandleTimer Timer) where
   initialize (I.HandleTimer {I.timer = Timer {timer, irq}}) = [
       proc (show timer <> "_irq_init") $ body $ do
         enableIrqNvic irq 0 0

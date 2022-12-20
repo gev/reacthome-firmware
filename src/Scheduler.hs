@@ -9,7 +9,8 @@ import           Data.Foldable         (traverse_)
 import           Data.List
 import           Data.Maybe
 import           Feature
-import           Interface
+import           Include
+import           Initialize
 import           Interface.SystemClock
 import           Interface.Timer
 import           Ivory.Language
@@ -21,15 +22,15 @@ data Scheduler = Scheduler
   , steps :: [Step]
   }
 
-instance Interface Scheduler  where
-
-  include (Scheduler clock steps) = do
-    defMemArea schedulerTimer
-    include clock
-    include (HandleTimer clock handleIRQ)
+instance Include Scheduler  where
+  include (Scheduler clock steps) =
+    defMemArea schedulerTimer <>
+    include clock <>
+    include (HandleTimer clock handleIRQ) <>
     traverse_ (incl . step) steps
 
 
+instance Initialize Scheduler  where
   initialize (Scheduler {clock}) =
     initialize clock <> initialize (HandleTimer clock handleIRQ)
 

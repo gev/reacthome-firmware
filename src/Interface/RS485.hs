@@ -6,7 +6,8 @@
 
 module Interface.RS485 where
 
-import           Interface       as I
+import           Include
+import           Initialize
 import           Interface.GPIO  as I
 import qualified Interface.USART as I
 import           Ivory.Language
@@ -46,10 +47,11 @@ setParity :: RS485 -> I.Parity -> Ivory eff ()
 setParity (RS485 {usart}) = I.setParity usart
 
 
-instance Interface (I.HandleUSART RS485) where
+instance Include (I.HandleUSART RS485) where
+  include (I.HandleUSART (RS485 usart rede) onReceive onDrain) = do
+   include (I.HandleUSART usart onReceive onDrain)
+   include rede
 
-  include (I.HandleUSART (RS485 usart rede) onReceive onDrain) =
-   I.include (I.HandleUSART usart onReceive onDrain) <> I.include rede
-
-  initialize (I.HandleUSART (RS485 usart rede) onReceive onDrain) =
-   I.initialize (I.HandleUSART usart onReceive onDrain) <> I.initialize rede
+instance Initialize RS485 where
+  initialize (RS485 usart rede) =
+    initialize usart <> initialize rede

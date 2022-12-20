@@ -3,7 +3,8 @@
 
 module Interface.Timer where
 
-import           Interface
+import           Include
+import           Initialize
 import           Ivory.Language
 import           Ivory.Stdlib
 
@@ -14,4 +15,4 @@ data HandleTimer t = HandleTimer
   }
 
 
-class (Interface (HandleTimer t)) => Timer t
+class (Include (HandleTimer t), Initialize (HandleTimer t)) => Timer t

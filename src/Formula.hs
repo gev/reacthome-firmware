@@ -7,7 +7,8 @@ module Formula where
 
 import           Data.Foldable
 import           Feature
-import           Interface
+import           Include
+import           Initialize
 import           Interface.SystemClock
 import           Ivory.Language
 import           Ivory.Language.Module

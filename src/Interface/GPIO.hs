@@ -1,16 +1,17 @@
 module Interface.GPIO where
 
-import           Interface
+import           Include
+import           Initialize
 import           Ivory.Language
 import           Ivory.Language.Module
 
-class Interface a => IN a where
+class (Include a, Initialize a) => IN a where
   get :: a -> Ivory eff IBool
 
-class Interface a => OUT a where
+class (Include a, Initialize a) => OUT a where
   reset :: a -> Ivory eff ()
   set :: a -> Ivory eff ()
 
-class Interface a => I2C a
+class (Include a, Initialize a) => I2C a
 
-class Interface a => SPI a
+class (Include a, Initialize a) => SPI a

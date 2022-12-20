@@ -10,7 +10,8 @@ module Feature.USART  where
 
 import           Device.GD32F3x0.SystemClock
 import           Feature
-import           Interface
+import           Include
+import           Initialize
 import qualified Interface.Counter           as I
 import qualified Interface.USART             as I
 import           Ivory.Language
@@ -19,21 +20,22 @@ import           Ivory.Stdlib
 
 data USART = forall a. (I.USART a) => USART Int a
 
-instance Interface USART where
-
+instance Include USART where
   include (USART n usart) = do
     defMemArea (buff'' n)
     defMemArea (index'' n)
     defMemArea (timestamp'' n)
-    include     (I.HandleUSART usart (onReceive n) onDrain)
+    include    (I.HandleUSART usart (onReceive n) onDrain)
 
 
-  initialize (USART n usart) = initialize (I.HandleUSART usart (onReceive n) onDrain) <> [
-    proc ("usart_" <> show n <> "_init") $ body $ do
-      I.setBaudrate   usart 1_000_000
-      I.setWordLength usart I.WL_8b
-      I.setParity     usart I.None
-      I.enable        usart
+instance Initialize USART where
+  initialize (USART n usart) =
+    initialize usart <> [
+      proc ("usart_" <> show n <> "_init") $ body $ do
+        I.setBaudrate   usart 1_000_000
+        I.setWordLength usart I.WL_8b
+        I.setParity     usart I.None
+        I.enable        usart
     ]
 
 

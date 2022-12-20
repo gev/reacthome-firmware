@@ -4,8 +4,9 @@
 
 module Device.GD32F3x0.GPIO where
 
-import           Interface
-import qualified Interface.GPIO               as I
+import           Include
+import           Initialize
+import qualified Interface.GPIO as I
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Support.Device.GD32F3x0.GPIO as S
@@ -53,12 +54,17 @@ io :: GPIO_MODE -> (MODE -> PORT) -> PORT
 io m p = p $ MF m
 
 
-instance Interface IN where
+instance Include IN where
   include = const include'
+
+instance Initialize IN where
   initialize (IN p) = [initialize' p]
 
-instance Interface OUT where
+
+instance Include OUT where
   include = const include'
+
+instance Initialize OUT where
   initialize (OUT p) = [initialize' p]
 
 

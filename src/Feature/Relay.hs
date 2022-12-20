@@ -3,14 +3,17 @@
 module Feature.Relay where
 
 import           Feature
-import           Interface
+import           Include
+import           Initialize
 import           Interface.GPIO
 
 data Relay = forall a. (OUT a) => Relay Int a
 
-instance Interface Relay where
-  initialize = undefined
+instance Include Relay where
   include = undefined
+
+instance Initialize Relay where
+  initialize = undefined
 
 instance Task Relay where
   tasks = undefined
