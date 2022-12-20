@@ -1,7 +1,4 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GADTs            #-}
-{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE DataKinds #-}
 
 module Util.Semaphore where
 
