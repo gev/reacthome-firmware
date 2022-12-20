@@ -111,10 +111,10 @@ coerceStopBit I.SB_1b = USART_STB_1BIT
 coerceParity :: I.Parity -> USART_PARITY_CFG
 coerceParity I.None = USART_PM_NONE
 
-dmaInitParam = dmaParam { dmaDirection = DMA_MEMORY_TO_PERIPHERAL
-                        , dmaMemoryInc = DMA_MEMORY_INCREASE_ENABLE
-                        , dmaMemoryWidth = DMA_MEMORY_WIDTH_16BIT
-                        , dmaPeriphInc = DMA_PERIPH_INCREASE_DISABLE
-                        , dmaPeriphWidth = DMA_PERIPHERAL_WIDTH_16BIT
-                        , dmaPriority = DMA_PRIORITY_ULTRA_HIGH
+dmaInitParam = dmaParam { dmaDirection    = DMA_MEMORY_TO_PERIPHERAL
+                        , dmaMemoryInc    = DMA_MEMORY_INCREASE_ENABLE
+                        , dmaMemoryWidth  = DMA_MEMORY_WIDTH_16BIT
+                        , dmaPeriphInc    = DMA_PERIPH_INCREASE_DISABLE
+                        , dmaPeriphWidth  = DMA_PERIPHERAL_WIDTH_16BIT
+                        , dmaPriority     = DMA_PRIORITY_ULTRA_HIGH
                         }
