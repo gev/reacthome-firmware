@@ -73,6 +73,7 @@ executable reacthome-firmware
                     , Support.Device.GD32F3x0.USART
                     , Support.Util
 
+                    , Util.Buffer
                     , Util.CRC16
                     , Util.Semaphore
 

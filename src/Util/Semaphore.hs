@@ -32,3 +32,6 @@ down (Semaphore value) run = do
    when (v >? 0) $ do
       store a $ v - 1
       run
+
+get :: Semaphore -> Ivory eff Uint32
+get (Semaphore value) = deref $ addrOf value
