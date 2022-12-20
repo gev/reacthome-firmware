@@ -1,28 +1,36 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GADTs            #-}
+{-# LANGUAGE RankNTypes       #-}
 
 module Util.Semaphore where
 
+import           Include
 import           Ivory.Language
+import           Ivory.Stdlib   (when)
 
 
-data Semaphore v where
-  Semaphore :: (IvoryInit v, IvoryZeroVal v)
-            => { value :: MemArea (Stored v)
-               }
-            -> Semaphore v
+newtype Semaphore = Semaphore { value :: MemArea (Stored Uint32) }
 
 
-semaphore :: (Show s, IvoryInit v, IvoryZeroVal v) => s -> v ->Semaphore v
-semaphore name value = Semaphore $ area ("semaphore_" <> show name)
-                                        (Just $ ival value)
+semaphore :: Show s => s -> Uint32 -> Semaphore
+semaphore name value = Semaphore
+                     $ area ("semaphore_" <> show name)
+                            (Just $ ival value)
 
--- incl :: Semaphore -> ModuleDef
--- incl (Semaphore v) = defMemArea v
 
--- s = semaphore "1" 1 :: Semaphore Uint16
+instance Include Semaphore  where
+   include (Semaphore v) = defMemArea v
 
--- dep = defMemArea s
+up :: Semaphore -> Ivory eff ()
+up (Semaphore value) = do
+   let a = addrOf value
+   v <- deref a
+   store a $ v + 1
 
--- instance MemArea (Semaphore Uint32) where
+down (Semaphore value) run = do
+   let a = addrOf value
+   v <- deref a
+   when (v >? 0) $ do
+      store a $ v - 1
+      run
