@@ -39,11 +39,11 @@ instance I.Interface USART where
 instance Task USART where
   tasks (USART n usart) = [
     Step Nothing $ proc ("usart_" <> show n <> "_step") $ body $ do
+      index <- deref $ index' n
       timestamp <- deref $ timestamp' n
       t <- I.readCounter systemClock
-      index <- deref $ index' n
       when (index >? 0 .&& t - timestamp >? 400) $ do
-        I.transmit usart (buff' n) index
+        I.transmit usart (toCArray $ buff' n) index
         store (index' n) 0
     ]
 

@@ -39,7 +39,7 @@ class Interface (HandleUSART u) => USART u where
 
   receive         :: u -> Ivory eff Uint16
 
-  transmit        :: u -> Ref r (Array 512 (Stored Uint16))
+  transmit        :: u -> Ref r (CArray (Stored Uint16))
                        -> Uint16
                        -> Ivory (ProcEffects s ()) ()
 
