@@ -10,7 +10,7 @@ import           Data.Maybe
 import           Feature
 import           Interface
 import           Interface.SystemClock
-import           Interface.Timer      
+import           Interface.Timer
 import           Ivory.Language
 import           Ivory.Stdlib
 
@@ -31,7 +31,7 @@ instance Interface Scheduler  where
   initialize (Scheduler {clock}) =
     initialize clock <> initialize (HandleTimer clock handleIRQ)
 
-schedulerTimer :: MemArea ('Stored Uint32)
+schedulerTimer :: MemArea (Stored Uint32)
 schedulerTimer = area "scheduler_timer" (Just (ival 0))
 
 handleIRQ :: Ivory eff ()

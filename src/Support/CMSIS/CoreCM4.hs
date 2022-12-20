@@ -19,8 +19,11 @@ import           Ivory.Support.Device.GD32F3x0
 
 
 inclCoreCM4 :: [ ModuleM () ]
-inclCoreCM4 =  [ incl __NOP
-               , incl sysTick_Config
+inclCoreCM4 =  [ incl sysTick_Config
+               , incl __NOP
+               , incl __ISB
+               , incl __DSB
+               , incl __DMB
                ]
 
 
