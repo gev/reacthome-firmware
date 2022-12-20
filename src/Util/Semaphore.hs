@@ -10,7 +10,7 @@ import           Ivory.Stdlib   (when)
 newtype Semaphore = Semaphore { value :: MemArea (Stored Uint32) }
 
 
-semaphore :: Show s => s -> Uint32 -> Semaphore
+semaphore :: String -> Uint32 -> Semaphore
 semaphore name value = Semaphore
                      $ area ("semaphore_" <> show name)
                             (Just $ ival value)
