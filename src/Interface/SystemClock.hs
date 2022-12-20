@@ -6,12 +6,12 @@ module Interface.SystemClock where
 
 import           Include
 import           Initialize
-import qualified Interface.Counter as I
-import qualified Interface.Timer   as I
+import           Interface.Counter
+import           Interface.Timer
 
 
 data SystemClock where
-  SystemClock :: (I.Timer t, I.Counter c)
+  SystemClock :: (Timer t, Counter c)
               => { timer    :: t
                  , counter  :: c
                  }
@@ -25,17 +25,17 @@ instance Include SystemClock where
 instance Initialize SystemClock where
   initialize (SystemClock {counter}) = initialize counter
 
-instance I.Counter SystemClock where
-  readCounter (SystemClock {counter}) = I.readCounter counter
+instance Counter SystemClock where
+  readCounter (SystemClock {counter}) = readCounter counter
 
 
 
-instance Include (I.HandleTimer SystemClock) where
-  include (I.HandleTimer (SystemClock {timer}) handle) =
-    include (I.HandleTimer timer handle)
+instance Include (HandleTimer SystemClock) where
+  include (HandleTimer (SystemClock timer _) handle) =
+    include (HandleTimer timer handle)
 
-instance Initialize (I.HandleTimer SystemClock) where
-  initialize (I.HandleTimer (SystemClock {timer}) handle) =
-    initialize (I.HandleTimer timer handle)
+instance Initialize (HandleTimer SystemClock) where
+  initialize (HandleTimer (SystemClock timer _) handle) =
+    initialize (HandleTimer timer handle)
 
-instance I.Timer SystemClock
+instance Timer SystemClock

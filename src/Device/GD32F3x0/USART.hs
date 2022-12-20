@@ -7,7 +7,7 @@ module Device.GD32F3x0.USART where
 import           Device.GD32F3x0.GPIO
 import           Include
 import           Initialize
-import qualified Interface.USART as I
+import qualified Interface.USART               as I
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Ivory.Support.Device.GD32F3x0

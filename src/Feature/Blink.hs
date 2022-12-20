@@ -9,12 +9,12 @@ import           Device.GD32F3x0.SystemClock
 import           Feature
 import           Include
 import           Initialize
-import           Interface.GPIO as I
+import           Interface.GPIO
 import           Interface.Timer
 import           Ivory.Language
 
 
-data Blink = forall a. (I.OUT a) => Blink Int a
+data Blink = forall a. (OUT a) => Blink Int a
 
 state :: Int -> MemArea (Stored IBool)
 state n = area ("blink_" <> show n <> "_state") (Just (ival false))

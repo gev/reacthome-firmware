@@ -12,7 +12,7 @@ import           Device.GD32F3x0.SystemClock
 import           Feature
 import           Include
 import           Initialize
-import qualified Interface.Counter           as I
+import           Interface.Counter           
 import qualified Interface.USART             as I
 import           Ivory.Language
 import           Ivory.Stdlib
@@ -45,7 +45,7 @@ instance Task USART where
       index <- deref $ index' n
       when (index >? 0) $ do
         timestamp <- deref $ timestamp' n
-        t <- I.readCounter systemClock
+        t <- readCounter systemClock
         when (t - timestamp >? 400) $ do
           I.transmit usart (toCArray $ buff' n) index
           store (index' n) 0
@@ -57,7 +57,7 @@ onReceive n b = do
     let ix = toIx index
     store (buff' n ! ix) b
     store (index' n) (index + 1)
-    store (timestamp' n) =<< I.readCounter systemClock
+    store (timestamp' n) =<< readCounter systemClock
 
 onDrain :: Ivory eff ()
 onDrain = pure ()

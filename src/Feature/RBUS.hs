@@ -6,10 +6,9 @@ module Feature.RBUS where
 import           Feature
 import           Include
 import           Initialize
-import           Interface.RS485 as I
-import           Interface.USART as I
+import           Interface.RS485
 
-data RBUS = RBUS RBUS' Int I.RS485
+data RBUS = RBUS RBUS' Int RS485
 
 data RBUS'
   = Master

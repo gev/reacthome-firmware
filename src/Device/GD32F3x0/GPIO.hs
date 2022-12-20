@@ -6,7 +6,7 @@ module Device.GD32F3x0.GPIO where
 
 import           Include
 import           Initialize
-import qualified Interface.GPIO as I
+import qualified Interface.GPIO               as I
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Support.Device.GD32F3x0.GPIO as S
