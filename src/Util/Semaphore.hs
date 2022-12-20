@@ -11,9 +11,9 @@ newtype Semaphore = Semaphore { value :: MemArea (Stored Uint32) }
 
 
 semaphore :: String -> Uint32 -> Semaphore
-semaphore name value = Semaphore
-                     $ area ("semaphore_" <> show name)
-                            (Just $ ival value)
+semaphore id value = Semaphore
+                   $ area ("semaphore_" <> id)
+                          (Just $ ival value)
 
 
 instance Include Semaphore  where
