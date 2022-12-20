@@ -2,11 +2,10 @@
 {-# LANGUAGE TypeOperators #-}
 
 module Support.CMSIS.CoreCM4
-  ( nop
+  ( sysTickConfig
+  , nop
   , isb
   , dsb
-  , dmb
-  , sysTickConfig
   , inclCoreCM4
   ) where
 
