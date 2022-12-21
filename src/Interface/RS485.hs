@@ -30,7 +30,7 @@ receive (RS485 {usart}) = I.receive usart
 startTransmit :: RS485 -> Ivory eff ()
 startTransmit (RS485 {rede}) = set rede
 
-transmit :: RS485 -> Ref r (CArray (Stored Uint16)) -> Uint16 -> Ivory (ProcEffects s ()) ()
+transmit :: RS485 -> Ref r (CArray (Stored Uint16)) -> Sint32 -> Ivory (ProcEffects s ()) ()
 transmit (RS485 {usart}) = I.transmit usart
 
 

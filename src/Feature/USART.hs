@@ -12,19 +12,20 @@ import           Device.GD32F3x0.SystemClock
 import           Feature
 import           Include
 import           Initialize
-import           Interface.Counter           
+import           Interface.Counter
+import           Interface.RS485             (transmit)
 import qualified Interface.USART             as I
 import           Ivory.Language
 import           Ivory.Stdlib
-
+import           Util.Buffer                 as B
 
 data USART = forall a. (I.USART a) => USART Int a
 
 instance Include USART where
   include (USART n usart) = do
-    defMemArea (buff'' n)
-    defMemArea (index'' n)
     defMemArea (timestamp'' n)
+    defMemArea (buffTx n)
+    include    (buffRx n)
     include    (I.HandleUSART usart (onReceive n) onDrain)
 
 
@@ -42,21 +43,21 @@ instance Initialize USART where
 instance Task USART where
   tasks (USART n usart) = [
     Step Nothing $ proc ("usart_" <> show n <> "_step") $ body $ do
-      index <- deref $ index' n
-      when (index >? 0) $ do
+      let rx = buffRx n
+      size <- size rx
+      when (size >? 0) $ do
         timestamp <- deref $ timestamp' n
         t <- readCounter systemClock
         when (t - timestamp >? 400) $ do
-          I.transmit usart (toCArray $ buff' n) index
-          store (index' n) 0
+          let tx = addrOf (buffTx n)
+          for size $ \ix -> B.read rx . store $ tx!ix
+          I.transmit usart (toCArray tx)
+                           (fromIx size)
     ]
 
 
 onReceive n b = do
-    index <- deref $ index' n
-    let ix = toIx index
-    store (buff' n ! ix) b
-    store (index' n) (index + 1)
+    write (buffRx n) b
     store (timestamp' n) =<< readCounter systemClock
 
 onDrain :: Ivory eff ()
@@ -70,15 +71,9 @@ timestamp' :: Int -> Ref Global (Stored Uint32)
 timestamp' = addrOf . timestamp''
 
 
-index'' :: Int -> MemArea (Stored Uint16)
-index'' n = area ("index_" <> show n) $ Just (ival 0)
-
-index' :: Int -> Ref Global (Stored Uint16)
-index' = addrOf . index''
+buffTx :: Int -> MemArea (Array 512 (Stored Uint16))
+buffTx n = area ("buffer_tx_" <> show n) Nothing
 
 
-buff'' :: Int -> MemArea (Array 512 (Stored Uint16))
-buff'' n = area ("buff_" <> show n) Nothing
-
-buff' :: Int -> Ref Global (Array 512 (Stored Uint16))
-buff' = addrOf . buff''
+buffRx :: Int -> Buffer 512 Uint16
+buffRx n = buffer $ "rx_" <> show n

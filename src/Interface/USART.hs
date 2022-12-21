@@ -41,7 +41,7 @@ class (Include (HandleUSART u), Initialize u) => USART u where
   receive         :: u -> Ivory eff Uint16
 
   transmit        :: u -> Ref r (CArray (Stored Uint16))
-                       -> Uint16
+                       -> Sint32
                        -> Ivory (ProcEffects s ()) ()
 
   enable          :: u -> Ivory eff ()
