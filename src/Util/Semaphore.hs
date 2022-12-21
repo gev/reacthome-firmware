@@ -16,9 +16,6 @@ semaphore id value = Semaphore
                           (Just $ ival value)
 
 
-instance Include Semaphore  where
-   include (Semaphore v) = defMemArea v
-
 up :: Semaphore -> Ivory eff ()
 up (Semaphore value) = do
    let a = addrOf value
@@ -35,3 +32,7 @@ down (Semaphore value) run = do
 
 get :: Semaphore -> Ivory eff Uint32
 get (Semaphore value) = deref $ addrOf value
+
+
+instance Include Semaphore  where
+   include (Semaphore v) = defMemArea v

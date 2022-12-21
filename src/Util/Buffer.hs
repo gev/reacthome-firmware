@@ -40,6 +40,7 @@ buffer id =
             , consumerS   = semaphore consumerId 0
             }
 
+
 write :: (IvoryStore t, KnownNat n)
       => Buffer n t -> t -> Ivory eff ()
 write (Buffer {array, producerIx, producerS, consumerS}) v =
@@ -50,6 +51,7 @@ write (Buffer {array, producerIx, producerS, consumerS}) v =
     store (a ! ix) v
     store pIx $ ix + 1
     up consumerS
+
 
 read :: (IvoryStore t, KnownNat n)
      => Buffer n t -> (t -> Ivory eff ()) -> Ivory eff ()
@@ -62,3 +64,12 @@ read (Buffer {array, consumerIx, consumerS, producerS}) run =
     store cIx $ ix + 1
     up producerS
     run v
+
+
+instance (KnownNat n, IvoryType t) => Include (Buffer n t) where
+  include (Buffer array producerIx producerS consumerIx consumerS) = do
+    defMemArea  array
+    defMemArea  producerIx
+    defMemArea  consumerIx
+    include     producerS
+    include     consumerS
