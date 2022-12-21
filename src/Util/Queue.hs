@@ -25,7 +25,7 @@ data Queue n t = Queue
 
 
 queue :: (KnownNat n, IvoryType t, IvoryZeroVal t)
-       => String -> Queue n t
+      => String -> Queue n t
 queue id =
   let name       = id   <> "_queue"
       producerId = name <> "_producer"
@@ -40,7 +40,7 @@ queue id =
 
 
 push :: (IvoryStore t, KnownNat n)
-      => Queue n t -> t -> Ivory eff ()
+     => Queue n t -> t -> Ivory eff ()
 push (Queue {buff, producerIx, producerS, consumerS}) v =
   down producerS $ do
     let a = addrOf buff
@@ -52,7 +52,7 @@ push (Queue {buff, producerIx, producerS, consumerS}) v =
 
 
 pop :: (IvoryStore t, KnownNat n)
-     => Queue n t -> (t -> Ivory eff ()) -> Ivory eff ()
+    => Queue n t -> (t -> Ivory eff ()) -> Ivory eff ()
 pop (Queue {buff, consumerIx, consumerS, producerS}) run =
   down consumerS $ do
     let a = addrOf buff
