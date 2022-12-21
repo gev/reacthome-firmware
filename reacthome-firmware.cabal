@@ -75,6 +75,8 @@ executable reacthome-firmware
 
                     , Util.Buffer
                     , Util.CRC16
+                    , Util.Index
+                    , Util.Queue
                     , Util.Semaphore
 
     build-depends:    base ^>=4.16.3.0

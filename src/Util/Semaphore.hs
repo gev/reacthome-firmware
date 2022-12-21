@@ -12,7 +12,7 @@ newtype Semaphore = Semaphore { value :: MemArea (Stored Uint32) }
 
 semaphore :: String -> Uint32 -> Semaphore
 semaphore id value = Semaphore
-                   $ area ("semaphore_" <> id)
+                   $ area (id <> "_semaphore")
                           (Just $ ival value)
 
 
