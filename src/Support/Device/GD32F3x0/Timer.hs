@@ -28,7 +28,6 @@ import           Data.Function                 ((&))
 import           Data.Maybe
 import           Ivory.Language
 import           Ivory.Language.Module
-import           Ivory.Language.Uint
 import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
 
