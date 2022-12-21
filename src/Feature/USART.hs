@@ -26,6 +26,7 @@ instance Include USART where
   include (USART n usart) = do
     defMemArea (timestamp'' n)
     include    (buffTx n)
+    include    (buffRx n)
     include    (queueRx n)
     include    (I.HandleUSART usart (onReceive n) onDrain)
 
@@ -51,15 +52,19 @@ instance Task USART where
         t <- readCounter systemClock
         when (t - timestamp >? 400) $ do
           let tx = addrOf (buffTx n)
-          for size $ \ix -> pop rx . store $ tx!ix
+          for size $ \ix -> pop rx $ \jx -> do
+            let rx = addrOf $ buffRx n
+            store (tx!ix) =<<deref (rx!jx)
           I.transmit usart (toCArray tx)
                            (fromIx size)
     ]
 
 
 onReceive n b = do
-    push (queueRx n) b
-    store (timestamp' n) =<< readCounter systemClock
+    push (queueRx n) $ \ix -> do
+      let rx = addrOf $ buffRx n
+      store (rx!ix) b
+      store (timestamp' n) =<< readCounter systemClock
 
 onDrain :: Ivory eff ()
 onDrain = pure ()
@@ -75,6 +80,8 @@ timestamp' = addrOf . timestamp''
 buffTx :: Int -> Buffer 512 Uint16
 buffTx n = buffer $ "usart_" <> show n <> "_tx"
 
+buffRx :: Int -> Buffer 512 Uint16
+buffRx n = buffer $ "usart_" <> show n <> "_rx"
 
-queueRx :: Int -> Queue 512 Uint16
+queueRx :: Int -> Queue 512
 queueRx n = queue $ "usart_" <> show n <> "_rx"

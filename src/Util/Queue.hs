@@ -2,6 +2,8 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE NamedFieldPuns      #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+
 
 module Util.Queue where
 
@@ -9,71 +11,62 @@ import           GHC.TypeNats
 import           Include
 import           Ivory.Language
 import           Ivory.Language.Array
+import           Ivory.Language.Proxy
 import           Ivory.Stdlib
 import           Util.Buffer
 import           Util.Index
 import           Util.Semaphore
 
 
-data Queue n t = Queue
-  { buff       :: Buffer n t
-  , producerIx :: Index  n
+data Queue n = Queue
+  { producerIx :: Index  n
   , consumerIx :: Index  n
   , producerS  :: Semaphore
   , consumerS  :: Semaphore
   }
 
 
-queue :: (KnownNat n, IvoryType t, IvoryZeroVal t)
-      => String -> Queue n t
+queue :: forall n. KnownNat n => String -> Queue n
 queue id =
   let name       = id   <> "_queue"
       producerId = name <> "_producer"
       consumerId = name <> "_consumer"
-      b = buffer name
-  in Queue { buff        = b
-           , producerIx  = index     producerId
+  in Queue { producerIx  = index     producerId
            , consumerIx  = index     consumerId
-           , producerS   = semaphore producerId $ arrayLen $ addrOf b
+           , producerS   = semaphore producerId $ fromInteger $ fromTypeNat (aNat :: NatType n)
            , consumerS   = semaphore consumerId 0
            }
 
 
-push :: (IvoryStore t, KnownNat n)
-     => Queue n t -> t -> Ivory eff ()
-push (Queue {buff, producerIx, producerS, consumerS}) v =
+push :: KnownNat n => Queue n -> (Ix n -> Ivory eff ()) -> Ivory eff ()
+push (Queue {producerIx, producerS, consumerS}) run =
   down producerS $ do
-    let a = addrOf buff
     let pIx = addrOf producerIx
     ix <- deref pIx
-    store (a ! ix) v
     store pIx $ ix + 1
     up consumerS
+    run ix
 
 
-pop :: (IvoryStore t, KnownNat n)
-    => Queue n t -> (t -> Ivory eff ()) -> Ivory eff ()
-pop (Queue {buff, consumerIx, consumerS, producerS}) run =
+pop :: KnownNat n => Queue n -> (Ix n -> Ivory eff ()) -> Ivory eff ()
+pop (Queue {consumerIx, consumerS, producerS}) run =
   down consumerS $ do
-    let a = addrOf buff
     let cIx = addrOf consumerIx
     ix <- deref cIx
-    v <- deref (a ! ix)
     store cIx $ ix + 1
     up producerS
-    run v
+    run ix
 
 
-size :: KnownNat n => Queue n t -> Ivory eff (Ix n)
+size :: KnownNat n => Queue n -> Ivory eff (Ix n)
 size (Queue {producerIx, consumerIx}) = do
   p <- deref $ addrOf producerIx
   c <- deref $ addrOf consumerIx
   pure $ p - c
 
 
-instance (KnownNat n, IvoryType t) => Include (Queue n t) where
-  include (Queue buffer producerIx consumerIx producerS consumerS) = do
-    include buffer
+instance KnownNat n => Include (Queue n) where
+  include (Queue producerIx consumerIx producerS consumerS) = do
     include producerIx
     include consumerIx
     include producerS
