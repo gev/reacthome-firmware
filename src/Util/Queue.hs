@@ -24,7 +24,6 @@ data Queue n t = Queue
   }
 
 
-
 queue :: (KnownNat n, IvoryType t, IvoryZeroVal t)
        => String -> Queue n t
 queue id =
