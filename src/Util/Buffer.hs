@@ -16,8 +16,8 @@ import           Util.Semaphore
 data Buffer n t = Buffer
   { array      :: MemArea (Array n (Stored t))
   , producerIx :: MemArea (Stored (Ix n))
-  , producerS  :: Semaphore
   , consumerIx :: MemArea (Stored (Ix n))
+  , producerS  :: Semaphore
   , consumerS  :: Semaphore
   }
 
@@ -35,8 +35,8 @@ buffer id =
       a = area name Nothing
   in Buffer { array       = a
             , producerIx  = index     producerId
-            , producerS   = semaphore producerId $ arrayLen $ addrOf a
             , consumerIx  = index     consumerId
+            , producerS   = semaphore producerId $ arrayLen $ addrOf a
             , consumerS   = semaphore consumerId 0
             }
 
@@ -67,7 +67,7 @@ read (Buffer {array, consumerIx, consumerS, producerS}) run =
 
 
 instance (KnownNat n, IvoryType t) => Include (Buffer n t) where
-  include (Buffer array producerIx producerS consumerIx consumerS) = do
+  include (Buffer array producerIx consumerIx producerS consumerS) = do
     defMemArea  array
     defMemArea  producerIx
     defMemArea  consumerIx
