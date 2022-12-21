@@ -66,6 +66,13 @@ read (Buffer {array, consumerIx, consumerS, producerS}) run =
     run v
 
 
+size :: KnownNat n => Buffer n t -> Ivory eff (Ix n)
+size (Buffer {producerIx, consumerIx}) = do
+  p <- deref $ addrOf producerIx
+  c <- deref $ addrOf consumerIx
+  pure $ p - c
+
+
 instance (KnownNat n, IvoryType t) => Include (Buffer n t) where
   include (Buffer array producerIx consumerIx producerS consumerS) = do
     defMemArea  array
