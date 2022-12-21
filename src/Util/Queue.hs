@@ -17,8 +17,8 @@ import           Util.Semaphore
 
 data Queue n t = Queue
   { buff       :: Buffer n t
-  , producerIx :: MemArea (Stored (Ix n))
-  , consumerIx :: MemArea (Stored (Ix n))
+  , producerIx :: Index  n
+  , consumerIx :: Index  n
   , producerS  :: Semaphore
   , consumerS  :: Semaphore
   }
