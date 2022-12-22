@@ -43,7 +43,7 @@ process :: (IvoryStore a, Num a)
         => MemArea ('Stored a)
         -> Semaphore
         -> Semaphore
-        -> (a -> Ivory eff a2)
+        -> (a -> Ivory eff ())
         -> Ivory eff ()
 process index s cos handle =
   down s $ do
