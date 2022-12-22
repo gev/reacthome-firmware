@@ -1,11 +1,12 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE FlexibleInstances   #-}
 {-# LANGUAGE NamedFieldPuns      #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 
-module Util.Queue where
+module Util.Data.Concurrent.Queue where
 
 import           GHC.TypeNats
 import           Include
@@ -13,9 +14,9 @@ import           Ivory.Language
 import           Ivory.Language.Array
 import           Ivory.Language.Proxy
 import           Ivory.Stdlib
-import           Util.Buffer
-import           Util.Index
-import           Util.Semaphore
+import           Util.Data.Buffer
+import           Util.Data.Concurrent.Semaphore
+import           Util.Data.Index
 
 
 data Queue n = Queue
@@ -26,7 +27,7 @@ data Queue n = Queue
   }
 
 
-queue :: forall n. KnownNat n => String -> Queue n
+queue :: forall n t. KnownNat n => String -> Queue n
 queue id =
   let name       = id   <> "_queue"
       producerId = name <> "_producer"
@@ -38,24 +39,29 @@ queue id =
            }
 
 
-push :: KnownNat n => Queue n -> (Ix n -> Ivory eff ()) -> Ivory eff ()
-push (Queue {producerIx, producerS, consumerS}) run =
-  down producerS $ do
-    let pIx = addrOf producerIx
+process :: (IvoryStore a, Num a)
+        => MemArea ('Stored a)
+        -> Semaphore
+        -> Semaphore
+        -> (a -> Ivory eff a2)
+        -> Ivory eff ()
+process index s cos handle =
+  down s $ do
+    let pIx = addrOf index
     ix <- deref pIx
+    handle ix
     store pIx $ ix + 1
-    up consumerS
-    run ix
+    up cos
+
+
+push :: KnownNat n => Queue n -> (Ix n -> Ivory eff ()) -> Ivory eff ()
+push (Queue {producerIx, producerS, consumerS}) =
+  process producerIx producerS consumerS
 
 
 pop :: KnownNat n => Queue n -> (Ix n -> Ivory eff ()) -> Ivory eff ()
-pop (Queue {consumerIx, consumerS, producerS}) run =
-  down consumerS $ do
-    let cIx = addrOf consumerIx
-    ix <- deref cIx
-    store cIx $ ix + 1
-    up producerS
-    run ix
+pop (Queue {consumerIx, consumerS, producerS}) =
+  process consumerIx consumerS producerS
 
 
 size :: KnownNat n => Queue n -> Ivory eff (Ix n)

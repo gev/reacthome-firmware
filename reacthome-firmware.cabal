@@ -73,11 +73,16 @@ executable reacthome-firmware
                     , Support.Device.GD32F3x0.USART
                     , Support.Util
 
-                    , Util.Buffer
                     , Util.CRC16
-                    , Util.Index
-                    , Util.Queue
-                    , Util.Semaphore
+                    , Util.Data.Buffer
+                    , Util.Data.DataBuffer
+                    , Util.Data.Value
+                    , Util.Data.DataValue
+                    , Util.Data.Index
+                    , Util.Data.Message
+                    , Util.Data.MessageBuffer
+                    , Util.Data.Concurrent.Semaphore
+                    , Util.Data.Concurrent.Queue
 
     build-depends:    base ^>=4.16.3.0
                     , mtl  

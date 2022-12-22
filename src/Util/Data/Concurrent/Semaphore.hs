@@ -1,6 +1,6 @@
 {-# LANGUAGE DataKinds #-}
 
-module Util.Semaphore where
+module Util.Data.Concurrent.Semaphore where
 
 import           Include
 import           Ivory.Language

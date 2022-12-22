@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE FlexibleInstances #-}
 
-module Util.Index where
+module Util.Data.Index where
 
 import           GHC.TypeNats
 import           Include
