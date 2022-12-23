@@ -24,10 +24,12 @@ import           Util.Data.Concurrent.Queue
 import           Util.Data.Value
 
 
+
 data USART = forall a. (I.USART a) => USART
   { name      :: String
   , u         :: a
   , timestamp :: Value      Uint32
+  , sizeTx    :: Value      Sint32
   , buffTx    :: Buffer 512 Uint16
   , buffRx    :: Buffer 512 Uint16
   , queueRx   :: Queue  512
@@ -38,6 +40,7 @@ usart n u = Feature $ USART
   { name      = name
   , u         = u
   , timestamp = value  ( name <> "_rx_timestamp" ) 0
+  , sizeTx    = value  ( name <> "_tx_size" ) 0
   , buffTx    = buffer $ name <> "_tx"
   , buffRx    = buffer $ name <> "_rx"
   , queueRx   = queue  $ name <> "_rx"
@@ -45,8 +48,9 @@ usart n u = Feature $ USART
 
 
 instance Include USART where
-  include (USART {u, timestamp, buffTx, buffRx, queueRx}) = do
+  include (USART {u, timestamp, sizeTx, buffTx, buffRx, queueRx}) = do
     include timestamp
+    include sizeTx
     include buffTx
     include buffRx
     include queueRx
@@ -65,18 +69,20 @@ instance Initialize USART where
 
 
 instance Task USART where
-  tasks (USART {name, u, timestamp, buffRx, buffTx, queueRx}) = [
+  tasks (USART {name, u, timestamp, sizeTx, buffRx, buffTx, queueRx}) = [
     step Nothing name $ do
-      size <- size queueRx
-      when (size >? 0) $ do
-        ts <- getValue timestamp
-        t <- readCounter systemClock
-        when (t - ts >? 400) $ do
-          for size $ \ix -> pop queueRx $
-            getItem buffRx >=> setItem buffTx ix
+      t1 <- readCounter systemClock
+      t0 <- getValue timestamp
+      when (t1 - t0 >? 400) $ do
+        size <- getValue sizeTx
+        when (size >? 0) $ do
           process buffTx $ \tx ->
-            I.transmit u (toCArray tx)
-                         (fromIx size)
+            I.transmit u (toCArray tx) size
+          setValue sizeTx 0
+      pop queueRx $ \ix -> do
+          size <- getValue sizeTx
+          getItem buffRx ix >>= setItem buffTx (toIx size)
+          setValue sizeTx $ size + 1
     ]
 
 
