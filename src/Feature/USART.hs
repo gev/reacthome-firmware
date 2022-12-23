@@ -35,7 +35,7 @@ data USART = forall a. (I.USART a) => USART
 usart n u = Feature $ USART
   { n = n
   , u = u
-  , timestamp = value  ( name n "timestamp" ) 0
+  , timestamp = value  ( name n "rx_timestamp" ) 0
   , buffTx    = buffer $ name n "tx"
   , buffRx    = buffer $ name n "rx"
   , queueRx   = queue  $ name n "rx"
