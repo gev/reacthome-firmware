@@ -24,7 +24,6 @@ import           Util.Data.Concurrent.Queue
 import           Util.Data.Value
 
 
-
 data USART = forall a. (I.USART a) => USART
   { name      :: String
   , u         :: a
@@ -36,6 +35,7 @@ data USART = forall a. (I.USART a) => USART
   }
 
 
+usart :: I.USART u => Int -> u -> Feature
 usart n u = Feature $ USART
   { name      = name
   , u         = u
@@ -54,7 +54,7 @@ instance Include USART where
     include buffTx
     include buffRx
     include queueRx
-    include $ I.HandleUSART u (onReceive timestamp queueRx buffRx) onDrain
+    include $ I.HandleUSART u (onReceive timestamp queueRx buffRx) onTransmit onDrain
 
 
 instance Initialize USART where
@@ -95,6 +95,10 @@ onReceive timestamp queueRx buffRx b = do
     push queueRx $ \ix -> do
       setValue timestamp =<< readCounter systemClock
       setItem buffRx ix b
+
+
+onTransmit :: Ivory eff ()
+onTransmit = pure ()
 
 
 onDrain :: Ivory eff ()

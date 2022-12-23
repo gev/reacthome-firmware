@@ -36,10 +36,14 @@ usart_1 = USART USART1
                 (pa_3 $ AF GPIO_AF_1)
                 (pa_2 $ AF GPIO_AF_1)
 
+
 instance Include (I.HandleUSART USART) where
-  include (I.HandleUSART (USART {usart}) onReceive onDrain) =
+  include (I.HandleUSART (USART {usart}) onReceive onTransmit onDrain) =
     inclG >> inclMisc >> inclUSART >> inclDMA >> inclUtil >> include' >>
     makeIRQHandler usart (handleIRQ usart onReceive onDrain)
+    {-
+      TODO: Add DMA IRQ handler
+    -}
 
 
 instance Initialize USART where
@@ -59,6 +63,7 @@ instance Initialize USART where
         -- configParity    usart USART_PM_NONE
         -- enableUSART     usart
     ]
+
 
 handleIRQ :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
 handleIRQ usart onReceive onDrain = do
@@ -111,6 +116,8 @@ coerceStopBit I.SB_1b = USART_STB_1BIT
 coerceParity :: I.Parity -> USART_PARITY_CFG
 coerceParity I.None = USART_PM_NONE
 
+
+dmaInitParam :: DMA_PARAM
 dmaInitParam = dmaParam { dmaDirection    = DMA_MEMORY_TO_PERIPHERAL
                         , dmaMemoryInc    = DMA_MEMORY_INCREASE_ENABLE
                         , dmaMemoryWidth  = DMA_MEMORY_WIDTH_16BIT

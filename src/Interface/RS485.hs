@@ -8,7 +8,7 @@ module Interface.RS485 where
 
 import           Include
 import           Initialize
-import           Interface.GPIO  
+import           Interface.GPIO
 import qualified Interface.USART as I
 import           Ivory.Language
 
@@ -48,8 +48,8 @@ setParity (RS485 {usart}) = I.setParity usart
 
 
 instance Include (I.HandleUSART RS485) where
-  include (I.HandleUSART (RS485 usart rede) onReceive onDrain) = do
-   include (I.HandleUSART usart onReceive onDrain)
+  include (I.HandleUSART (RS485 usart rede) onReceive onTransmit onDrain) = do
+   include (I.HandleUSART usart onReceive onTransmit onDrain)
    include rede
 
 instance Initialize RS485 where
