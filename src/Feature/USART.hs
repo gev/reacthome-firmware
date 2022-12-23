@@ -76,8 +76,8 @@ instance Task USART where
       when (t1 - t0 >? 400) $ do
         size <- getValue sizeTx
         when (size >? 0) $ do
-          process buffTx $ \tx ->
-            I.transmit u (toCArray tx) size
+          let tx = getBuffer buffTx
+          I.transmit u (toCArray tx) size
           setValue sizeTx 0
       pop queueRx $ \ix -> do
         size <- getValue sizeTx

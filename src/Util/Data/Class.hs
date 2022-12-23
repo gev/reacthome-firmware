@@ -13,7 +13,6 @@ class Include (v t) => Val v t where
 
 
 class Include (b n t) => Buff b n t where
-  setItem :: b n t -> Ix n -> t -> Ivory eff ()
-  getItem :: b n t -> Ix n -> Ivory eff t
-  process :: b n t -> (Ref Global (Array n (Stored t)) -> Ivory eff ())
-                   -> Ivory eff ()
+  setItem   :: b n t -> Ix n -> t -> Ivory eff ()
+  getItem   :: b n t -> Ix n -> Ivory eff t
+  getBuffer :: b n t -> Ref Global (Array n (Stored t))
