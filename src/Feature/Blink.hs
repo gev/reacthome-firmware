@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds          #-}
 {-# LANGUAGE GADTs              #-}
+{-# LANGUAGE NamedFieldPuns     #-}
 {-# LANGUAGE NumericUnderscores #-}
 
 module Feature.Blink where
@@ -12,27 +13,39 @@ import           Initialize
 import           Interface.GPIO
 import           Interface.Timer
 import           Ivory.Language
+import           Util.Data.Class
+import           Util.Data.Value
 
 
-data Blink = forall a. (OUT a) => Blink Int a
+data Blink = forall a. (OUT a) => Blink
+ { n     :: Int
+ , out   :: a
+ , state :: Value IBool
+ }
 
-state :: Int -> MemArea (Stored IBool)
-state n = area ("blink_" <> show n <> "_state") (Just (ival false))
 
+blink n out = Feature $ Blink
+  { n     = n
+  , out   = out
+  , state = value (name n "state") false
+  }
 
 instance Include Blink where
-  include (Blink n out) = defMemArea (state n) >> include out
+  include (Blink n out state) = include state >> include out
 
 instance Initialize Blink where
-  initialize (Blink _ out) = initialize out
+  initialize (Blink {out}) = initialize out
 
 
 instance Task Blink where
-  tasks (Blink n out) = [
-    Step (Just 1_000) $ proc ("blink_" <> show n <> "_step") $ body $ do
-      let s = addrOf $ state n
-      v <- deref s
-      store s $ iNot v
+  tasks (Blink n out state) = [
+    Step (Just 1_000) $ proc (name n "step") $ body $ do
+      v <- getValue state
+      setValue state $ iNot v
       ifte_ v ( set out )
               ( reset out )
     ]
+
+
+name :: Int -> String -> String
+name n id = "blink_" <> show n <> "_" <> id

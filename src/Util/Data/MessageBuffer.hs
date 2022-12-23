@@ -25,7 +25,7 @@ instance Include (MessageBuffer n t) where
   include (MessageBuffer b) = defMemArea b
 
 
-instance Buffer MessageBuffer n t where
-  storeItem (MessageBuffer b) ix = store $ addrOf b ! ix
-  loadItem (MessageBuffer b) ix = deref (addrOf b ! ix)
-  processBuffer (MessageBuffer b) f = f $ addrOf b
+-- instance Buffer MessageBuffer n t where
+--   storeItem (MessageBuffer b) ix = store $ addrOf b ! ix
+--   loadItem (MessageBuffer b) ix = deref (addrOf b ! ix)
+--   processBuffer (MessageBuffer b) f = f $ addrOf b

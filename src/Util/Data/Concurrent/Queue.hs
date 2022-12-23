@@ -1,7 +1,4 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE DataKinds           #-}
-{-# LANGUAGE FlexibleContexts    #-}
-{-# LANGUAGE FlexibleInstances   #-}
 {-# LANGUAGE NamedFieldPuns      #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
@@ -14,7 +11,7 @@ import           Ivory.Language
 import           Ivory.Language.Array
 import           Ivory.Language.Proxy
 import           Ivory.Stdlib
-import           Util.Data.Buffer
+import           Util.Data.Class
 import           Util.Data.Concurrent.Semaphore
 import           Util.Data.Index
 
@@ -22,8 +19,8 @@ import           Util.Data.Index
 data Queue n = Queue
   { producerIx :: Index  n
   , consumerIx :: Index  n
-  , producerS  :: Semaphore
-  , consumerS  :: Semaphore
+  , producerS  :: Semaphore Uint32
+  , consumerS  :: Semaphore Uint32
   }
 
 
@@ -39,39 +36,30 @@ queue id =
            }
 
 
-process :: (IvoryStore a, Num a)
-        => MemArea ('Stored a)
-        -> Semaphore
-        -> Semaphore
-        -> (a -> Ivory eff ())
-        -> Ivory eff ()
-process index s cos handle =
+run (Index ix) s cos handle =
   down s $ do
-    let pIx = addrOf index
-    ix <- deref pIx
-    handle ix
-    store pIx $ ix + 1
+    x <- getValue ix
+    handle x
+    setValue ix $ x + 1
     up cos
 
 
-push :: KnownNat n => Queue n -> (Ix n -> Ivory eff ()) -> Ivory eff ()
+push :: KnownNat n => Queue n -> (Ix n -> Ivory eff a) -> Ivory eff ()
 push (Queue {producerIx, producerS, consumerS}) =
-  process producerIx producerS consumerS
+  run producerIx producerS consumerS
 
 
-pop :: KnownNat n => Queue n -> (Ix n -> Ivory eff ()) -> Ivory eff ()
+pop :: KnownNat n => Queue n -> (Ix n -> Ivory eff a) -> Ivory eff ()
 pop (Queue {consumerIx, consumerS, producerS}) =
-  process consumerIx consumerS producerS
+  run consumerIx consumerS producerS
 
 
 size :: KnownNat n => Queue n -> Ivory eff (Ix n)
-size (Queue {producerIx, consumerIx}) = do
-  p <- deref $ addrOf producerIx
-  c <- deref $ addrOf consumerIx
-  pure $ p - c
+size (Queue {producerIx = (Index px), consumerIx = (Index cx)}) =
+  (-) <$> getValue px <*> getValue cx
 
 
-instance KnownNat n => Include (Queue n) where
+instance Include (Queue n) where
   include (Queue producerIx consumerIx producerS consumerS) = do
     include producerIx
     include consumerIx

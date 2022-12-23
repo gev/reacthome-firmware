@@ -1,19 +1,20 @@
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE DataKinds #-}
 
 module Util.Data.Index where
 
 import           GHC.TypeNats
 import           Include
 import           Ivory.Language
+import           Util.Data.Class
+import           Util.Data.Value
 
 
-type Index n = MemArea (Stored (Ix n))
+newtype Index n = Index { getIndex :: Value (Ix n) }
 
 
-index :: KnownNat n => String -> MemArea (Stored (Ix n))
-index id = area (id <> "_index") $ Just $ ival (toIx (0 :: Sint32))
+index :: KnownNat n => String -> Index n
+index id = Index $ value (id <> "_index") 0
 
 
-instance (KnownNat n) => Include (Index n) where
-  include = defMemArea
+instance Include (Index n) where
+  include = include . getIndex

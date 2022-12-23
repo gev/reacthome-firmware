@@ -1,38 +1,42 @@
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 module Util.Data.Concurrent.Semaphore where
 
 import           Include
 import           Ivory.Language
+import           Ivory.Language.Module
 import           Ivory.Stdlib
+import           Util.Data.Class
+import           Util.Data.Value
 
 
-newtype Semaphore = Semaphore { value :: MemArea (Stored Uint32) }
+newtype Semaphore t = Semaphore { getSemaphore :: Value t }
 
 
-semaphore :: String -> Uint32 -> Semaphore
-semaphore id value = Semaphore
-                   $ area (id <> "_semaphore")
-                          (Just $ ival value)
+semaphore :: String -> Uint32 -> Semaphore Uint32
+semaphore id = Semaphore . value (id <> "_semaphore")
 
 
-up :: Semaphore -> Ivory eff ()
-up (Semaphore value) = do
-   let a = addrOf value
-   v <- deref a
-   store a $ v + 1
+up :: (IvoryStore t, Num t)
+   => Semaphore t -> Ivory eff ()
+up s = do
+   v <- getValue s
+   setValue s $ v + 1
 
-down :: Semaphore -> Ivory eff () -> Ivory eff ()
-down (Semaphore value) run = do
-   let a = addrOf value
-   v <- deref a
+down :: (IvoryStore t, IvoryOrd t, Num t)
+     => Semaphore t -> Ivory eff () -> Ivory eff ()
+down s run = do
+   v <- getValue s
    when (v >? 0) $ do
-      store a $ v - 1
+      setValue s $ v - 1
       run
 
-get :: Semaphore -> Ivory eff Uint32
-get (Semaphore value) = deref $ addrOf value
 
+instance Include (Semaphore t) where
+   include = include . getSemaphore
 
-instance Include Semaphore  where
-   include (Semaphore v) = defMemArea v
+instance IvoryStore t => Val Semaphore t where
+  getValue = getValue . getSemaphore
+  setValue = setValue . getSemaphore
