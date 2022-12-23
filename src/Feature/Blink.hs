@@ -30,8 +30,10 @@ blink n out = Feature $ Blink
   , state = value (name n "state") false
   }
 
+
 instance Include Blink where
   include (Blink n out state) = include state >> include out
+
 
 instance Initialize Blink where
   initialize (Blink {out}) = initialize out
