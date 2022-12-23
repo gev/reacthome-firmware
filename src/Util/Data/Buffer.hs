@@ -24,7 +24,6 @@ buffer id = Buffer { defBuffer  = defMemArea a
              where a = area id Nothing
 
 
-
 instance Include (Buffer n t) where
   include = defBuffer
 
