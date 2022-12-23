@@ -102,7 +102,7 @@ instance ExtDef USART_DENT Uint32
 
 
 inclUSART :: ModuleM ()
-inclUSART =  do 
+inclUSART =  do
   inclDef (def :: Cast USART_PERIPH Uint32)
   inclDef (def :: Cast USART_WORD_LENGTH Uint32)
   inclDef (def :: Cast USART_STOP_BIT Uint32)
@@ -248,7 +248,7 @@ tdata :: Uint32 -> Ivory eff Uint32
 tdata = call usart_tdata
 
 usart_tdata :: Def ('[Uint32] :-> Uint32)
-usart_tdata = fun "USART_TDATA"
+usart_tdata = fun "(uint32_t) &USART_TDATA"
 
 
 clearInterruptFlag :: USART_PERIPH -> USART_INT_FLAG -> Ivory eff ()
