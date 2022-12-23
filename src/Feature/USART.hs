@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds          #-}
+{-# LANGUAGE FlexibleContexts   #-}
 {-# LANGUAGE GADTs              #-}
 {-# LANGUAGE NamedFieldPuns     #-}
 {-# LANGUAGE NumericUnderscores #-}
@@ -10,6 +11,7 @@ module Feature.USART  where
 import           Control.Monad               ((>=>))
 import           Device.GD32F3x0.SystemClock
 import           Feature
+import           GHC.TypeNats
 import           Include
 import           Initialize
 import           Interface.Counter
@@ -43,12 +45,12 @@ usart n u = Feature $ USART
 
 
 instance Include USART where
-  include usart@(USART {u, timestamp, buffTx, buffRx, queueRx}) = do
+  include (USART {u, timestamp, buffTx, buffRx, queueRx}) = do
     include timestamp
     include buffTx
     include buffRx
     include queueRx
-    include $ I.HandleUSART u (onReceive usart) onDrain
+    include $ I.HandleUSART u (onReceive timestamp queueRx buffRx) onDrain
 
 
 instance Initialize USART where
@@ -78,8 +80,12 @@ instance Task USART where
     ]
 
 
-onReceive :: USART -> Uint16 -> Ivory eff ()
-onReceive (USART {timestamp, queueRx, buffRx}) b = do
+onReceive :: Value  Uint32
+          -> Queue  512
+          -> Buffer 512 Uint16
+          -> Uint16
+          -> Ivory  eff ()
+onReceive timestamp queueRx buffRx b = do
     push queueRx $ \ix -> do
       setValue timestamp =<< readCounter systemClock
       setItem buffRx ix b
