@@ -23,8 +23,8 @@ import           Util.Data.Value
 
 
 data USART = forall a. (I.USART a) => USART
-  { n         :: Int
-    , u       :: a
+  { name      :: String
+  , u         :: a
   , timestamp :: Value      Uint32
   , buffTx    :: Buffer 512 Uint16
   , buffRx    :: Buffer 512 Uint16
@@ -33,13 +33,13 @@ data USART = forall a. (I.USART a) => USART
 
 
 usart n u = Feature $ USART
-  { n = n
-  , u = u
-  , timestamp = value  ( name n "rx_timestamp" ) 0
-  , buffTx    = buffer $ name n "tx"
-  , buffRx    = buffer $ name n "rx"
-  , queueRx   = queue  $ name n "rx"
-  }
+  { name      = name
+  , u         = u
+  , timestamp = value  ( name <> "_rx_timestamp" ) 0
+  , buffTx    = buffer $ name <> "_tx"
+  , buffRx    = buffer $ name <> "_rx"
+  , queueRx   = queue  $ name <> "_rx"
+  } where name = "usart_" <> show n
 
 
 instance Include USART where
@@ -52,9 +52,9 @@ instance Include USART where
 
 
 instance Initialize USART where
-  initialize (USART {n, u}) =
+  initialize (USART {name, u}) =
     initialize u <> [
-      proc (name n "init") $ body $ do
+      proc (name <> "_init") $ body $ do
         I.setBaudrate   u 1_000_000
         I.setWordLength u I.WL_8b
         I.setParity     u I.None
@@ -63,8 +63,8 @@ instance Initialize USART where
 
 
 instance Task USART where
-  tasks (USART {n, u, timestamp, buffRx, buffTx, queueRx}) = [
-    Step Nothing $ proc (name n "step") $ body $ do
+  tasks (USART {name, u, timestamp, buffRx, buffTx, queueRx}) = [
+    step Nothing name $ do
       size <- size queueRx
       when (size >? 0) $ do
         ts <- getValue timestamp
@@ -79,7 +79,7 @@ instance Task USART where
 
 
 onReceive :: USART -> Uint16 -> Ivory eff ()
-onReceive (USART {n, timestamp, queueRx, buffRx}) b = do
+onReceive (USART {timestamp, queueRx, buffRx}) b = do
     push queueRx $ \ix -> do
       setValue timestamp =<< readCounter systemClock
       setItem buffRx ix b
@@ -87,7 +87,3 @@ onReceive (USART {n, timestamp, queueRx, buffRx}) b = do
 
 onDrain :: Ivory eff ()
 onDrain = pure ()
-
-
-name :: Int -> String -> String
-name n id = "usart_" <> show n <> "_" <> id

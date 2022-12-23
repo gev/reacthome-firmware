@@ -27,7 +27,7 @@ instance Include Scheduler  where
     defMemArea schedulerTimer <>
     include clock <>
     include (HandleTimer clock handleIRQ) <>
-    traverse_ (incl . step) steps
+    traverse_ (incl . runStep) steps
 
 
 instance Initialize Scheduler  where
@@ -50,12 +50,12 @@ schedule (Scheduler {steps}) = proc "loop" $ body $ do
   forever $ do
     t <- deref $ addrOf schedulerTimer
     zipWithM_ (run t) clocks scheduled
-    mapM_ (call_ . step) immediately
+    mapM_ (call_ . runStep) immediately
 
 
 run :: Uint32 -> Ref ('Stack s) ('Stored Uint32) -> Step -> Ivory eff ()
 run t c s = do
   v <- deref c
   when (t - v >=? fromJust (period s)) $ do
-    call_ $ step s
+    call_ $ runStep s
     store c t

@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds     #-}
 {-# LANGUAGE GADTs         #-}
+{-# LANGUAGE RankNTypes    #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Feature where
@@ -29,9 +30,20 @@ import           Ivory.Language
 data Feature where
   Feature :: Task t => t -> Feature
 
+
 data Step = Step
-  { period :: Maybe Uint32
-  , step   :: Def ('[] :-> ())
+  { period  :: Maybe Uint32
+  , runStep :: Def ('[] :-> ())
+  }
+
+
+step :: Maybe Uint32
+     -> String
+     -> (forall s. Ivory (ProcEffects s ()) ())
+     -> Step
+step p n b = Step
+  { period  = p
+  , runStep = proc (n <> "_step") $ body b
   }
 
 

@@ -18,21 +18,21 @@ import           Util.Data.Value
 
 
 data Blink = forall a. (OUT a) => Blink
- { n     :: Int
+ { name  :: String
  , out   :: a
  , state :: Value IBool
  }
 
 
 blink n out = Feature $ Blink
-  { n     = n
+  { name  = name
   , out   = out
-  , state = value (name n "state") false
-  }
+  , state = value (name <> "_state") false
+  } where name = "blink_" <> show n
 
 
 instance Include Blink where
-  include (Blink n out state) = include state >> include out
+  include (Blink {out, state}) = include state >> include out
 
 
 instance Initialize Blink where
@@ -40,14 +40,10 @@ instance Initialize Blink where
 
 
 instance Task Blink where
-  tasks (Blink n out state) = [
-    Step (Just 1_000) $ proc (name n "step") $ body $ do
+  tasks (Blink name out state) = [
+    step (Just 1_000) name $ do
       v <- getValue state
       setValue state $ iNot v
       ifte_ v ( set out )
               ( reset out )
     ]
-
-
-name :: Int -> String -> String
-name n id = "blink_" <> show n <> "_" <> id
