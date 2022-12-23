@@ -70,7 +70,7 @@ instance Initialize USART where
 
 instance Task USART where
   tasks (USART {name, u, timestamp, sizeTx, buffRx, buffTx, queueRx}) = [
-    step Nothing name $ do
+    yeld name $ do
       t1 <- readCounter systemClock
       t0 <- getValue timestamp
       when (t1 - t0 >? 400) $ do
@@ -80,9 +80,9 @@ instance Task USART where
             I.transmit u (toCArray tx) size
           setValue sizeTx 0
       pop queueRx $ \ix -> do
-          size <- getValue sizeTx
-          getItem buffRx ix >>= setItem buffTx (toIx size)
-          setValue sizeTx $ size + 1
+        size <- getValue sizeTx
+        getItem buffRx ix >>= setItem buffTx (toIx size)
+        setValue sizeTx $ size + 1
     ]
 
 

@@ -41,10 +41,23 @@ step :: Maybe Uint32
      -> String
      -> (forall s. Ivory (ProcEffects s ()) ())
      -> Step
-step p n b = Step
+step p id b = Step
   { period  = p
-  , runStep = proc (n <> "_step") $ body b
+  , runStep = proc (id <> "_step") $ body b
   }
+
+
+delay :: Uint32
+      -> String
+      -> (forall s. Ivory (ProcEffects s ()) ())
+      -> Step
+delay p = step (Just p)
+
+
+yeld :: String
+     -> (forall s. Ivory (ProcEffects s ()) ())
+     -> Step
+yeld = step Nothing
 
 
 class (Include t, Initialize t) => Task t where

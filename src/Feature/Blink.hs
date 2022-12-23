@@ -41,7 +41,7 @@ instance Initialize Blink where
 
 instance Task Blink where
   tasks (Blink name out state) = [
-    step (Just 1_000) name $ do
+    delay 1_000 name $ do
       v <- getValue state
       setValue state $ iNot v
       ifte_ v ( set out )
