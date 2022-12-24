@@ -15,11 +15,16 @@ module Support.Device.GD32F3x0.DMA
 , DMA_PERIPH_WIDTH  (..)
 , DMA_PRIORITY      (..)
 , DMA_PARAM         (..)
+, DMA_INT           (..)
+, DMA_INT_FLAG      (..)
 , deinitDMA
 , initDMA
 , disableCirculationDMA
 , disableMemoryToMemoryDMA
 , enableChannelDMA
+, enableInterruptDMA
+, getInterruptFlagDMA
+, clearInterruptFlagDMA
 , dmaParam
 , inclDMA
 ) where
@@ -81,6 +86,16 @@ data DMA_PRIORITY
   deriving (Show, Enum, Bounded)
 instance ExtDef DMA_PRIORITY Uint32
 
+data DMA_INT_FLAG
+  = DMA_INT_FLAG_FTF
+  | DMA_INT_FLAG_G
+  deriving (Show, Enum, Bounded)
+instance ExtDef DMA_INT_FLAG Uint32
+
+data DMA_INT
+  = DMA_INT_FTF
+  deriving (Show, Enum, Bounded)
+instance ExtDef DMA_INT Uint32
 
 data DMA_PARAM = DMA_PARAM
     { dmaPeriphAddr  :: Uint32
@@ -117,11 +132,16 @@ inclDMA = do
   inclDef (def :: Cast DMA_PERIPH_INC Uint8)
   inclDef (def :: Cast DMA_PERIPH_WIDTH Uint32)
   inclDef (def :: Cast DMA_PRIORITY Uint32)
+  inclDef (def :: Cast DMA_INT Uint32)
+  inclDef (def :: Cast DMA_INT_FLAG Uint32)
   incl dma_deinit
   incl dma_init
   incl dma_circulation_disable
   incl dma_memory_to_memory_disable
   incl dma_channel_enable
+  incl dma_interrupt_enable
+  incl dma_interrupt_flag_get
+  incl dma_interrupt_flag_clear
 
 
 deinitDMA :: DMA_CHANNEL -> Ivory eff ()
@@ -169,6 +189,27 @@ enableChannelDMA = call_ dma_channel_enable . def
 
 dma_channel_enable :: Def ('[Uint32] :-> ())
 dma_channel_enable = fun "dma_channel_enable"
+
+
+enableInterruptDMA :: DMA_CHANNEL -> DMA_INT -> Ivory eff ()
+enableInterruptDMA c i = call_ dma_interrupt_enable (def c) (def i)
+
+dma_interrupt_enable :: Def ('[Uint32, Uint32] :-> ())
+dma_interrupt_enable = fun "dma_interrupt_enable"
+
+
+getInterruptFlagDMA :: DMA_CHANNEL -> DMA_INT_FLAG -> Ivory eff IBool
+getInterruptFlagDMA c f = call dma_interrupt_flag_get (def c) (def f)
+
+dma_interrupt_flag_get :: Def ('[Uint32, Uint32] :-> IBool)
+dma_interrupt_flag_get = fun "dma_interrupt_flag_get"
+
+
+clearInterruptFlagDMA :: DMA_CHANNEL -> DMA_INT_FLAG -> Ivory eff ()
+clearInterruptFlagDMA c f = call_ dma_interrupt_flag_clear (def c) (def f)
+
+dma_interrupt_flag_clear :: Def ('[Uint32, Uint32] :-> ())
+dma_interrupt_flag_clear = fun "dma_interrupt_flag_clear"
 
 
 dmaParam :: DMA_PARAM
