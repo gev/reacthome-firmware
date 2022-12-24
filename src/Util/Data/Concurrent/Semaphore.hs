@@ -21,13 +21,13 @@ semaphore id = Semaphore . value (id <> "_semaphore")
 
 up :: (IvoryStore t, Num t)
    => Semaphore t -> Ivory eff ()
-up s = do
+up (Semaphore s) = do
    v <- getValue s
    setValue s $ v + 1
 
 down :: (IvoryStore t, IvoryOrd t, Num t)
      => Semaphore t -> Ivory eff () -> Ivory eff ()
-down s run = do
+down (Semaphore s) run = do
    v <- getValue s
    when (v >? 0) $ do
       setValue s $ v - 1
@@ -36,7 +36,3 @@ down s run = do
 
 instance Include (Semaphore t) where
    include = include . getSemaphore
-
-instance IvoryStore t => Val Semaphore t where
-  getValue = getValue . getSemaphore
-  setValue = setValue . getSemaphore
