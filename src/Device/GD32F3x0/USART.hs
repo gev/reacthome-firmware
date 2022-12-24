@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE RankNTypes        #-}
+{-# LANGUAGE NumericUnderscores #-}
 
 module Device.GD32F3x0.USART where
 
@@ -56,12 +57,12 @@ instance Initialize USART where
         deinitUSART     usart
         configReceive   usart USART_RECEIVE_ENABLE
         configTransmit  usart USART_TRANSMIT_ENABLE
+        -- enableInterrupt usart USART_INT_TC
+        setBaudrate     usart 1_000_000
+        setWordLength   usart USART_WL_8BIT
+        configParity    usart USART_PM_NONE
         enableInterrupt usart USART_INT_RBNE
-        enableInterrupt usart USART_INT_TC
-        -- setBaudrate     usart 1_000_000
-        -- setWordLength   usart USART_WL_8BIT
-        -- configParity    usart USART_PM_NONE
-        -- enableUSART     usart
+        enableUSART     usart
     ]
 
 
