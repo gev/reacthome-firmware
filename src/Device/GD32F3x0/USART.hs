@@ -1,11 +1,14 @@
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE NamedFieldPuns    #-}
-{-# LANGUAGE RankNTypes        #-}
+{-# LANGUAGE DataKinds          #-}
+{-# LANGUAGE FlexibleInstances  #-}
+{-# LANGUAGE NamedFieldPuns     #-}
 {-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE RankNTypes         #-}
+{-# LANGUAGE TypeOperators      #-}
 
 module Device.GD32F3x0.USART where
 
 import           Device.GD32F3x0.GPIO
+import           Feature.USART                 (onTransmit)
 import           Include
 import           Initialize
 import qualified Interface.USART               as I
@@ -22,42 +25,51 @@ import           Support.Util
 
 
 data USART = USART
-  { usart :: USART_PERIPH
-  , rcu   :: RCU_PERIPH
-  , irq   :: IRQn
-  , dma   :: DMA_CHANNEL
-  , rx    :: PORT
-  , tx    :: PORT
+  { usart    :: USART_PERIPH
+  , rcu      :: RCU_PERIPH
+  , usartIRQ :: IRQn
+  , dma      :: DMA_CHANNEL
+  , dmaIRQ   :: IRQn
+  , rx       :: PORT
+  , tx       :: PORT
   }
 
 usart_1 = USART USART1
                 RCU_USART1
                 USART1_IRQn
                 DMA_CH3
+                DMA_Channel3_4_IRQn
                 (pa_3 $ AF GPIO_AF_1)
                 (pa_2 $ AF GPIO_AF_1)
 
 
 instance Include (I.HandleUSART USART) where
-  include (I.HandleUSART (USART {usart}) onReceive onTransmit onDrain) =
+  include (I.HandleUSART (USART {usart, dma}) onReceive onTransmit onDrain) =
     inclG >> inclMisc >> inclUSART >> inclDMA >> inclUtil >> include' >>
-    makeIRQHandler usart (handleIRQ usart onReceive onDrain)
+    makeIRQHandler usart (handleIRQ usart onReceive onDrain) >>
     {-
       TODO: Add DMA IRQ handler
     -}
+    incl (dmaIRQHandler dma usart)
 
+
+dmaIRQHandler :: DMA_CHANNEL -> USART_PERIPH -> Def ('[] ':-> ())
+dmaIRQHandler dma usart = proc "DMA_Channel3_4_IRQHandle" $ body $ do
+  disableInterrupt usart USART_INT_RBNE
+  enableInterrupt  usart USART_INT_TC
+  onTransmit
 
 instance Initialize USART where
-  initialize (USART usart rcu irq dma rx tx) =
+  initialize (USART usart rcu usartIRQ dma dmaIRQ rx tx) =
     initialize' rx : initialize' tx : [
       proc (show usart <> "_init") $ body $ do
         enablePeriphClock RCU_DMA
-        enableIrqNvic     irq 0 0
+        enableIrqNvic     usartIRQ 0 0
+        enableIrqNvic     dmaIRQ   0 0
         enablePeriphClock rcu
         deinitUSART     usart
         configReceive   usart USART_RECEIVE_ENABLE
         configTransmit  usart USART_TRANSMIT_ENABLE
-        -- enableInterrupt usart USART_INT_TC
         setBaudrate     usart 1_000_000
         setWordLength   usart USART_WL_8BIT
         configParity    usart USART_PM_NONE
@@ -73,6 +85,8 @@ handleIRQ usart onReceive onDrain = do
   tc <- getInterruptFlag usart USART_INT_FLAG_TC
   when tc $ do
     clearInterruptFlag usart USART_INT_FLAG_TC
+    disableInterrupt usart USART_INT_TC
+    enableInterrupt  usart USART_INT_RBNE
     onDrain
 
 
@@ -98,6 +112,7 @@ instance I.USART USART where
                              }
     disableCirculationDMA dma
     disableMemoryToMemoryDMA dma
+    enableInterruptDMA dma DMA_INT_FTF
     enableChannelDMA dma
     transmitDMA usart USART_DENT_ENABLE
 

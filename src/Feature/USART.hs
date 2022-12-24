@@ -8,23 +8,23 @@
 
 module Feature.USART  where
 
-import           Control.Monad               ((>=>))
+import           Control.Monad                 ((>=>))
 import           Device.GD32F3x0.SystemClock
 import           Feature
 import           GHC.TypeNats
 import           Include
 import           Initialize
 import           Interface.Counter
-import qualified Interface.USART             as I
+import qualified Interface.USART               as I
 import           Ivory.Language
 import           Ivory.Stdlib
+import           Support.CMSIS.CoreCM4
+import           Support.Device.GD32F3x0.GPIO  as G
+import           Support.Device.GD32F3x0.USART
 import           Util.Data.Buffer
 import           Util.Data.Class
 import           Util.Data.Concurrent.Queue
 import           Util.Data.Value
-import Support.Device.GD32F3x0.USART
-import           Support.Device.GD32F3x0.GPIO  as G
-import Support.CMSIS.CoreCM4
 
 
 
@@ -87,7 +87,7 @@ instance Task USART where
       when (t1 - t0 >? 400) $ do
         size <- getValue sizeTx
         when (size >? 0) $ do
-          G.resetBit GPIOA GPIO_PIN_4
+          -- G.resetBit GPIOA GPIO_PIN_4
           setValue sizeTx 0
           -- setValue lockTx true
           let tx = getBuffer buffTx
@@ -109,7 +109,8 @@ onReceive timestamp queueRx buffRx b = do
 
 
 onTransmit :: Ivory eff ()
-onTransmit = pure ()
+onTransmit =
+  G.resetBit GPIOA GPIO_PIN_4
 
 
 onDrain :: Ivory eff ()
