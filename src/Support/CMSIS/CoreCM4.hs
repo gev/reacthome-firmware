@@ -6,6 +6,7 @@ module Support.CMSIS.CoreCM4
   , nop
   , isb
   , dsb
+  , dmb
   , inclCoreCM4
   ) where
 
