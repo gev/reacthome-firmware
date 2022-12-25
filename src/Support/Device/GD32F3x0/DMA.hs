@@ -7,7 +7,8 @@
 {-# LANGUAGE RankNTypes            #-}
 
 module Support.Device.GD32F3x0.DMA
-( DMA_CHANNEL       (..)
+( DMA_CHANNEL_IRQ   (..)
+, DMA_CHANNEL       (..)
 , DMA_DIRECTION     (..)
 , DMA_MEMORY_INC    (..)
 , DMA_MEMORY_WIDTH  (..)
@@ -34,6 +35,10 @@ import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
+
+data DMA_CHANNEL_IRQ
+  = DMA_Channel3_4
+  deriving Show
 
 data DMA_CHANNEL
   = DMA_CH0
