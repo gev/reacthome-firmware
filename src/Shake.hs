@@ -35,8 +35,8 @@ cflags =
     , "-fdata-sections"
     , "-fms-extensions" --
     , "-ffunction-sections"
-    -- , "-Wall"
-    , "-Os"
+    , "-Wall"
+    , "-O0"
     ]
 
 ldflags :: [String]
