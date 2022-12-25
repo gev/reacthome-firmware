@@ -46,9 +46,6 @@ instance Include (I.HandleUSART USART) where
   include (I.HandleUSART (USART {usart, dma}) onReceive onTransmit onDrain) =
     inclG >> inclMisc >> inclUSART >> inclDMA >> inclUtil >> include' >>
     makeIRQHandler usart (handleIRQ usart onReceive onDrain) >>
-    {-
-      TODO: Add DMA IRQ handler
-    -}
     incl (dmaIRQHandler dma usart onTransmit)
 
 
@@ -61,6 +58,7 @@ dmaIRQHandler dma usart onTransmit = proc "DMA_Channel3_4_IRQHandler" $ body $ d
     --disableInterrupt usart USART_INT_RBNE
     --enableInterrupt  usart USART_INT_TC
     onTransmit
+
 
 instance Initialize USART where
   initialize (USART usart rcu usartIRQ dma dmaIRQ rx tx) =
@@ -78,7 +76,6 @@ instance Initialize USART where
         configParity    usart USART_PM_NONE
         enableInterrupt usart USART_INT_RBNE
         enableUSART     usart
-        enableInterruptDMA dma DMA_INT_FTF
     ]
 
 
@@ -116,9 +113,9 @@ instance I.USART USART where
                              }
     disableCirculationDMA dma
     disableMemoryToMemoryDMA dma
-    --enableInterruptDMA dma DMA_INT_FTF
-    enableChannelDMA dma
     transmitDMA usart USART_DENT_ENABLE
+    enableInterruptDMA dma DMA_INT_FTF
+    enableChannelDMA dma
 
 
   enable         u  = enableUSART (usart u)
