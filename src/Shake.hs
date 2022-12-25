@@ -89,8 +89,8 @@ shake ns = shakeArgs shakeOptions{shakeFiles="build"} $ do
     "build//*.c.o" %> \out -> do
         let m = out -<.> "m"
         let s = out -<.> "asm"
+        cmd_ cc cflags defs incs "-c" (source out) "-S" "-o" s
         cmd_ cc cflags defs incs "-c" (source out) "-o" out "-MMD -MF" m
-        cmd_ cc cflags defs incs "-c" (source out) "-S" "-o" s "-MMD -MF" m
         neededMakefileDependencies m
 
     "build//*.s.o" %> \out ->
