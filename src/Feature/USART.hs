@@ -61,7 +61,7 @@ instance Include USART where
     include buffTx
     include buffRx
     include queueRx
-    include $ I.HandleUSART u (onReceive timestamp queueRx buffRx) onTransmit onDrain
+    include $ I.HandleUSART u (onReceive timestamp queueRx buffRx) (onTransmit lockTx) onDrain
     inclGPIO
     inclUSART
     inclCoreCM4
@@ -84,18 +84,21 @@ instance Task USART where
     yeld name $ do
       t0 <- getValue timestamp
       t1 <- readCounter systemClock
-      when (t1 - t0 >? 400) $ do
+      when (t1 - t0 >? 40) $ do
         size <- getValue sizeTx
         when (size >? 0) $ do
-          -- G.resetBit GPIOA GPIO_PIN_4
+          G.setBit GPIOA GPIO_PIN_4
           setValue sizeTx 0
-          -- setValue lockTx true
+          setValue lockTx true
           let tx = getBuffer buffTx
           I.transmit u (toCArray tx) size
       pop queueRx $ \ix -> do
         size <- getValue sizeTx
         getItem buffRx ix >>= setItem buffTx (toIx size)
         setValue sizeTx $ size + 1
+      -- l <- getValue lockTx
+      -- when (iNot l) $
+        -- G.resetBit GPIOA GPIO_PIN_4
 
     ]
 
@@ -105,13 +108,15 @@ onReceive timestamp queueRx buffRx b = do
     push queueRx $ \ix -> do
       setItem buffRx ix b
       setValue timestamp =<< readCounter systemClock
-      G.setBit GPIOA GPIO_PIN_4
 
 
-onTransmit :: Ivory eff ()
-onTransmit =
-  G.resetBit GPIOA GPIO_PIN_4
+
+onTransmit lockTx =
+  pure()
+  -- setValue lockTx false
 
 
 onDrain :: Ivory eff ()
-onDrain = pure ()
+onDrain =
+  G.resetBit GPIOA GPIO_PIN_4
+  --  pure ()

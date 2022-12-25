@@ -21,6 +21,7 @@ import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.USART as S
 import           Support.Util
+import           Support.Device.GD32F3x0.GPIO as G
 
 
 data USART = USART
@@ -44,7 +45,7 @@ usart_1 = USART USART1
 
 instance Include (I.HandleUSART USART) where
   include (I.HandleUSART (USART {usart, dma}) onReceive onTransmit onDrain) =
-    inclG >> inclMisc >> inclUSART >> inclDMA >> inclUtil >> include' >>
+    inclGPIO >> inclG >> inclMisc >> inclUSART >> inclDMA >> inclUtil >> include' >>
     makeIRQHandler usart (handleIRQ usart onReceive onDrain) >>
     incl (dmaIRQHandler dma usart onTransmit)
 
@@ -55,8 +56,8 @@ dmaIRQHandler dma usart onTransmit = proc "DMA_Channel3_4_IRQHandler" $ body $ d
   f <- getInterruptFlagDMA dma DMA_INT_FLAG_FTF
   when f $ do
     clearInterruptFlagDMA dma DMA_INT_FLAG_G
-    --disableInterrupt usart USART_INT_RBNE
-    --enableInterrupt  usart USART_INT_TC
+    disableInterrupt usart USART_INT_RBNE
+    enableInterrupt  usart USART_INT_TC
     onTransmit
 
 
@@ -65,7 +66,7 @@ instance Initialize USART where
     initialize' rx : initialize' tx : [
       proc (show usart <> "_init") $ body $ do
         enablePeriphClock RCU_DMA
-        enableIrqNvic     usartIRQ 0 0
+        enableIrqNvic     usartIRQ 1 0
         enableIrqNvic     dmaIRQ   0 0
         enablePeriphClock rcu
         deinitUSART     usart
@@ -86,8 +87,8 @@ handleIRQ usart onReceive onDrain = do
   tc <- getInterruptFlag usart USART_INT_FLAG_TC
   when tc $ do
     clearInterruptFlag usart USART_INT_FLAG_TC
-    --disableInterrupt usart USART_INT_TC
-    --enableInterrupt  usart USART_INT_RBNE
+    disableInterrupt usart USART_INT_TC
+    enableInterrupt  usart USART_INT_RBNE
     onDrain
 
 
