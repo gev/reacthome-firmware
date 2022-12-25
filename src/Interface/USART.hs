@@ -9,6 +9,7 @@ import           Initialize
 import           Ivory.Language
 import           Ivory.Language.Module
 
+
 data HandleUSART u = HandleUSART
   { usart      :: u
   , onReceive  :: Uint16 -> forall eff. Ivory eff ()
@@ -38,8 +39,6 @@ class (Include (HandleUSART u), Initialize u) => USART u where
   setWordLength   :: u -> WordLength -> Ivory eff ()
   setStopBit      :: u -> StopBit    -> Ivory eff ()
   setParity       :: u -> Parity     -> Ivory eff ()
-
-  receive         :: u -> Ivory eff Uint16
 
   transmit        :: u -> Ref r (CArray (Stored Uint16))
                        -> Sint32

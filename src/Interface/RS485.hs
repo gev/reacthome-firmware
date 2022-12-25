@@ -21,18 +21,18 @@ data RS485 where
         -> RS485
 
 
-startReceive :: RS485 -> Ivory eff ()
-startReceive (RS485 {rede}) = reset rede
+data HandleRS485 r = HandleRS485
+  { re         :: r
+  , onReceive  :: Uint16 -> forall eff. Ivory eff ()
+  , onTransmit ::           forall eff. Ivory eff ()
+  }
 
-receive :: RS485 -> Ivory eff Uint16
-receive (RS485 {usart}) = I.receive usart
-
-startTransmit :: RS485 -> Ivory eff ()
-startTransmit (RS485 {rede}) = set rede
-
-transmit :: RS485 -> Ref r (CArray (Stored Uint16)) -> Sint32 -> Ivory (ProcEffects s ()) ()
-transmit (RS485 {usart}) = I.transmit usart
-
+transmit :: RS485
+         -> Ref r (CArray (Stored Uint16))
+         -> Sint32
+         -> Ivory (ProcEffects s ()) ()
+transmit (RS485 {usart, rede}) buffer length =
+  set rede >> I.transmit usart buffer length
 
 setBaudrate :: RS485 -> Uint32 -> Ivory eff ()
 setBaudrate (RS485 {usart}) = I.setBaudrate usart
@@ -47,10 +47,17 @@ setParity :: RS485 -> I.Parity -> Ivory eff ()
 setParity (RS485 {usart}) = I.setParity usart
 
 
-instance Include (I.HandleUSART RS485) where
-  include (I.HandleUSART (RS485 usart rede) onReceive onTransmit onDrain) = do
-   include (I.HandleUSART usart onReceive onTransmit onDrain)
-   include rede
+instance Include (HandleRS485 RS485) where
+  include (HandleRS485 (RS485 usart rede) onReceive onTransmit) = do
+    include $ I.HandleUSART usart onReceive onTransmit (onDrain rede)
+    include rede
+
+
+onDrain :: OUT o => o -> Ivory eff ()
+onDrain = reset
+
+
+
 
 instance Initialize RS485 where
   initialize (RS485 usart rede) =
