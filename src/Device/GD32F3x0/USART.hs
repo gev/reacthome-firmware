@@ -8,7 +8,6 @@
 module Device.GD32F3x0.USART where
 
 import           Device.GD32F3x0.GPIO
-import           Feature.USART                 (onTransmit)
 import           Include
 import           Initialize
 import qualified Interface.USART               as I
