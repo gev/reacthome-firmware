@@ -24,8 +24,8 @@ cook (Formula {features, clock}) = do
 
   let scheduler = Scheduler clock $ concatMap tasks features
 
-  let inits     = (initialize =<< features)
-               <>  initialize scheduler
+  let inits     = initialize scheduler
+               <> (initialize =<< features)
 
   let init      = proc "init"
                 $ body
