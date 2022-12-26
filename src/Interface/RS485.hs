@@ -61,4 +61,4 @@ onDrain = reset
 
 instance Initialize RS485 where
   initialize (RS485 usart rede) =
-    initialize usart <> initialize rede
+    initialize rede <> initialize usart
