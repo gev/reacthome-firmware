@@ -13,6 +13,6 @@ systemClock :: SystemClock
 systemClock = SystemClock
   { timer   = sysTick 83_999
   , counter = timer_1 timerParam { timerPrescaler = 83
-                                     , timerPeriod    = 0xff_ff_ff_ff
-                                     }
+                                 , timerPeriod    = 0xff_ff_ff_ff
+                                 }
   }
