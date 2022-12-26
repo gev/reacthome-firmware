@@ -24,6 +24,7 @@ data Blink = forall a. (OUT a) => Blink
  }
 
 
+blink :: OUT o => Int -> o -> Feature
 blink n out = Feature $ Blink
   { name  = name
   , out   = out
