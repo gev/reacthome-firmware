@@ -32,7 +32,8 @@ instance Include Scheduler  where
 
 instance Initialize Scheduler  where
   initialize (Scheduler {clock}) =
-    initialize clock <> initialize (HandleTimer clock handleIRQ)
+    initialize (HandleTimer clock handleIRQ) <>
+    initialize clock
 
 schedulerTimer :: MemArea (Stored Uint32)
 schedulerTimer = area "scheduler_timer" (Just (ival 0))
