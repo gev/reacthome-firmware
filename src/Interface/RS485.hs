@@ -49,8 +49,8 @@ setParity (RS485 {usart}) = I.setParity usart
 
 instance Include (HandleRS485 RS485) where
   include (HandleRS485 (RS485 usart rede) onReceive onTransmit) = do
-    include $ I.HandleUSART usart onReceive onTransmit (onDrain rede)
     include rede
+    include $ I.HandleUSART usart onReceive onTransmit (onDrain rede)
 
 
 onDrain :: OUT o => o -> Ivory eff ()
