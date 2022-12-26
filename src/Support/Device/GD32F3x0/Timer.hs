@@ -21,6 +21,7 @@ module Support.Device.GD32F3x0.Timer
   , timerParam
   , initTimer
   , readCounter
+  , configPrimaryOutput
   , inclTimer
   ) where
 
@@ -103,6 +104,7 @@ inclTimer = do
   incl timer_enable
   incl timer_init
   incl timer_cnt
+  incl timer_primary_output_config
 
 
 deinitTimer :: TIMER_PERIPH -> Ivory eff ()
@@ -162,6 +164,13 @@ readCounter t = call timer_cnt (def t)
 
 timer_cnt :: Def ('[Uint32] :-> Uint32)
 timer_cnt = fun "TIMER_CNT"
+
+
+configPrimaryOutput :: TIMER_PERIPH -> IBool -> Ivory eff ()
+configPrimaryOutput t = call_ timer_primary_output_config (def t)
+
+timer_primary_output_config :: Def ('[Uint32, IBool] :-> ())
+timer_primary_output_config = fun "timer_primary_output_config"
 
 
 timerParam :: TIMER_PARAM
