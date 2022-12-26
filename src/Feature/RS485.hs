@@ -65,19 +65,21 @@ instance Initialize RS485 where
 instance Task RS485 where
   tasks (RS485 {name, rs, timestamp, sizeTx, buffRx, buffTx, queueRx, lockTx}) = [
     yeld name $ do
-      t0 <- getValue timestamp
-      t1 <- readCounter systemClock
-      when (t1 - t0 >? 40) $ do
-        size <- getValue sizeTx
-        when (size >? 0) $ do
-          setValue sizeTx 0
-          -- setValue lockTx true
-          let tx = getBuffer buffTx
-          I.transmit rs (toCArray tx) size
-      pop queueRx $ \ix -> do
-        size <- getValue sizeTx
-        getItem buffRx ix >>= setItem buffTx (toIx size)
-        setValue sizeTx $ size + 1
+      l <- getValue lockTx
+      when (iNot l) $ do
+        t0 <- getValue timestamp
+        t1 <- readCounter systemClock
+        when (t1 - t0 >? 40) $ do
+          size <- getValue sizeTx
+          when (size >? 0) $ do
+            setValue sizeTx 0
+            setValue lockTx true
+            let tx = getBuffer buffTx
+            I.transmit rs (toCArray tx) size
+        pop queueRx $ \ix -> do
+          size <- getValue sizeTx
+          getItem buffRx ix >>= setItem buffTx (toIx size)
+          setValue sizeTx $ size + 1
     ]
 
 
@@ -88,5 +90,5 @@ onReceive timestamp queueRx buffRx b = do
 
 
 onTransmit lockTx =
-  pure()
-  -- setValue lockTx false
+  -- pure()
+  setValue lockTx false
