@@ -40,11 +40,10 @@ instance Include Timer where
 instance Initialize Timer where
   initialize (Timer {timer, rcu, param}) = [
       proc (show timer <> "_init") $ body $ do
-        enablePeriphClock     rcu
-        deinitTimer           timer
-        initTimer             timer param
-        configPrimaryOutput   timer false
-        enableTimer           timer
+        enablePeriphClock rcu
+        deinitTimer       timer
+        initTimer         timer param
+        enableTimer       timer
     ]
 
 
