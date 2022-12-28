@@ -32,10 +32,9 @@ timer_2 :: TIMER_PARAM -> Timer
 timer_2 = Timer TIMER2 RCU_TIMER2 TIMER2_IRQn
 
 
-
-
 instance Include Timer where
   include = const $ inclRCU <> inclTimer
+
 
 instance Initialize Timer where
   initialize (Timer {timer, rcu, param}) = [
@@ -51,12 +50,11 @@ instance I.Counter Timer where
   readCounter = readCounter . timer
 
 
-
-
 instance Include (I.HandleTimer Timer) where
   include (I.HandleTimer (Timer {timer}) handle) =
     inclG >> inclMisc >>
     makeIRQHandler timer (handleIRQ timer handle)
+
 
 instance Initialize (I.HandleTimer Timer) where
   initialize (I.HandleTimer {I.timer = Timer {timer, irq}}) = [
