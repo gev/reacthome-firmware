@@ -9,6 +9,9 @@ import           Interface.GPIO
 
 data Relay = forall a. (OUT a) => Relay Int a
 
+relay :: OUT a => Int -> a -> Feature
+relay n = Feature . Relay n
+
 instance Include Relay where
   include = undefined
 
