@@ -36,7 +36,6 @@ executable reacthome-firmware
                     , Feature.Relay
                     , Feature.RBUS
                     , Feature.RBUS.Slave
-                    , Feature.RS485
 
                     , Formula
                     , Formula.Blink
