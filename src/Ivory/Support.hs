@@ -7,7 +7,6 @@ import           Data.Foldable
 import           Ivory.Language
 import           Ivory.Language.Proc
 import           Ivory.Language.Syntax
-import           Ivory.Language.Syntax.Concrete.ParseAST
 
 
 type HeaderFile = String
