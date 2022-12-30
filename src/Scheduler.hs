@@ -18,45 +18,45 @@ import           Ivory.Stdlib
 
 
 data Scheduler = Scheduler
-  { clock :: SystemClock
-  , steps :: [Step]
-  }
+    { clock :: SystemClock
+    , steps :: [Step]
+    }
 
-instance Include Scheduler  where
-  include (Scheduler clock steps) =
-    defMemArea schedulerTimer <>
-    include clock <>
-    include (HandleTimer clock handleIRQ) <>
-    traverse_ (incl . runStep) steps
+instance Include Scheduler    where
+    include (Scheduler clock steps) =
+        defMemArea schedulerTimer <>
+        include clock <>
+        include (HandleTimer clock handleIRQ) <>
+        traverse_ (incl . runStep) steps
 
 
-instance Initialize Scheduler  where
-  initialize (Scheduler {clock}) =
-    initialize (HandleTimer clock handleIRQ) <>
-    initialize clock
+instance Initialize Scheduler    where
+    initialize (Scheduler {clock}) =
+        initialize (HandleTimer clock handleIRQ) <>
+        initialize clock
 
 schedulerTimer :: MemArea (Stored Uint32)
 schedulerTimer = area "scheduler_timer" (Just (ival 0))
 
 handleIRQ :: Ivory eff ()
 handleIRQ = do
-  let c = addrOf schedulerTimer
-  v <- deref c
-  store c $ v + 1
+    let c = addrOf schedulerTimer
+    v <- deref c
+    store c $ v + 1
 
 schedule :: Scheduler -> Def ('[] :-> ())
 schedule (Scheduler {steps}) = proc "loop" $ body $ do
-  let (scheduled, immediately) = partition (isJust . period) steps
-  clocks <- replicateM (length scheduled) (local (ival 0))
-  forever $ do
-    t <- deref $ addrOf schedulerTimer
-    zipWithM_ (run t) clocks scheduled
-    mapM_ (call_ . runStep) immediately
+    let (scheduled, immediately) = partition (isJust . period) steps
+    clocks <- replicateM (length scheduled) (local (ival 0))
+    forever $ do
+        t <- deref $ addrOf schedulerTimer
+        zipWithM_ (run t) clocks scheduled
+        mapM_ (call_ . runStep) immediately
 
 
 run :: Uint32 -> Ref ('Stack s) ('Stored Uint32) -> Step -> Ivory eff ()
 run t c s = do
-  v <- deref c
-  when (t - v >=? fromJust (period s)) $ do
-    call_ $ runStep s
-    store c t
+    v <- deref c
+    when (t - v >=? fromJust (period s)) $ do
+        call_ $ runStep s
+        store c t

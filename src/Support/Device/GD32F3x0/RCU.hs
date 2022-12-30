@@ -5,30 +5,31 @@
 {-# HLINT ignore "Use camelCase" #-}
 
 module Support.Device.GD32F3x0.RCU
-  ( RCU_PERIPH(..)
-  , enablePeriphClock
-  , inclRCU
-  ) where
+    ( RCU_PERIPH(..)
+    , enablePeriphClock
+    , inclRCU
+    ) where
+
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
 
 data RCU_PERIPH
-  = RCU_DMA
-  | RCU_GPIOA
-  | RCU_GPIOB
-  | RCU_TIMER1
-  | RCU_TIMER2
-  | RCU_USART1
-  deriving (Show, Enum, Bounded)
+    = RCU_DMA
+    | RCU_GPIOA
+    | RCU_GPIOB
+    | RCU_TIMER1
+    | RCU_TIMER2
+    | RCU_USART1
+    deriving (Show, Enum, Bounded)
 instance ExtDef RCU_PERIPH Uint32
 
 
 inclRCU :: ModuleM ()
-inclRCU =  do
-  inclDef (def :: Cast RCU_PERIPH Uint32)
-  incl rcu_periph_clock_enable
+inclRCU =    do
+    inclDef (def :: Cast RCU_PERIPH Uint32)
+    incl rcu_periph_clock_enable
 
 
 enablePeriphClock :: RCU_PERIPH -> Ivory eff ()

@@ -17,4 +17,4 @@ index id = Index $ value (id <> "_index") 0
 
 
 instance Include (Index n) where
-  include = include . getIndex
+    include = include . getIndex

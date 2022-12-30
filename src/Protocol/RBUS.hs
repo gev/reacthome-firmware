@@ -10,32 +10,32 @@ import           Ivory.Stdlib
 
 type Effect e = forall eff. Ivory (ProcEffects eff ()) e
 
-type Data  = forall s. Effect (Ref s (Array 512 (Stored Uint8)))
-type Byte  = Effect Uint8
+type Data    = forall s. Effect (Ref s (Array 512 (Stored Uint8)))
+type Byte    = Effect Uint8
 
 data Fragment = Fragment
-  { array  :: Effect Data
-  , offset :: Effect Uint16
-  , length :: Effect Uint16
-  }
+    { array  :: Effect Data
+    , offset :: Effect Uint16
+    , length :: Effect Uint16
+    }
 
 data Packet
-  = DiscoveryRequest  { mac          :: Fragment
-                      , deviceType   :: Byte
-                      , versionMajor :: Byte
-                      , versionMinor :: Byte
-                      }
-  | DiscoveryResponse { mac     :: Fragment
-                      , address :: Byte
-                      }
-  | Ping              { address :: Byte
-                      }
-  | Confirm           { address :: Byte
-                      }
-  | Data              { id      :: Byte
-                      , address :: Byte
-                      , message :: Fragment
-                      }
+    = DiscoveryRequest  { mac          :: Fragment
+                        , deviceType   :: Byte
+                        , versionMajor :: Byte
+                        , versionMinor :: Byte
+                        }
+    | DiscoveryResponse { mac     :: Fragment
+                        , address :: Byte
+                        }
+    | Ping              { address :: Byte
+                        }
+    | Confirm           { address :: Byte
+                        }
+    | Data              { id      :: Byte
+                        , address :: Byte
+                        , message :: Fragment
+                        }
 
 broadcastAddress          = 0xff
 

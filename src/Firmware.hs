@@ -9,9 +9,9 @@ import           Ivory.Language.Module
 
 compile :: (ModuleDef, String) -> IO ()
 compile (m, n) = runCompiler
-  [package n m]
-  []
-  initialOpts
-    { outDir = Just "./firmware"
-    , constFold = True
-    }
+    [package n m]
+    []
+    initialOpts
+        { outDir = Just "./firmware"
+        , constFold = True
+        }

@@ -18,21 +18,21 @@ newtype IN  = IN  PORT
 newtype OUT = OUT PORT
 
 data PORT = PORT
-  { rcu  :: RCU_PERIPH
-  , gpio :: GPIO_PERIPH
-  , pin  :: GPIO_PIN
-  , mode :: MODE
-  }
+    { rcu  :: RCU_PERIPH
+    , gpio :: GPIO_PERIPH
+    , pin  :: GPIO_PIN
+    , mode :: MODE
+    }
 
 data MODE
-  = MF  GPIO_MODE
-  | AF  GPIO_AF
+    = MF GPIO_MODE
+    | AF GPIO_AF
 
 
-in_pa_4   = input  pa_4
-in_pa_15  = input  pa_15
+in_pa_4   = input pa_4
+in_pa_15  = input pa_15
 
-out_pa_4  = output  pa_4
+out_pa_4  = output pa_4
 out_pa_15 = output pa_15
 
 pa_2  = pa GPIO_PIN_2
@@ -55,36 +55,36 @@ io m p = p $ MF m
 
 
 instance Include IN where
-  include = const include'
+    include = const include'
 
 instance Initialize IN where
-  initialize (IN p) = [initialize' p]
+    initialize (IN p) = [initialize' p]
 
 
 instance Include OUT where
-  include = const include'
+    include = const include'
 
 instance Initialize OUT where
-  initialize (OUT p) = [initialize' p]
+    initialize (OUT p) = [initialize' p]
 
 
 instance I.IN IN where
-  get = undefined
+    get = undefined
 
 instance I.OUT OUT where
-  set   (OUT (PORT {gpio, pin})) = S.setBit gpio pin
-  reset (OUT (PORT {gpio, pin})) = S.resetBit gpio pin
+    set   (OUT (PORT {gpio, pin})) = S.setBit gpio pin
+    reset (OUT (PORT {gpio, pin})) = S.resetBit gpio pin
 
 
 include' :: ModuleM ()
-include' =  inclRCU >> inclGPIO
+include' =    inclRCU >> inclGPIO
 
 initialize' :: PORT -> Def ('[] ':-> ())
 initialize' (PORT {rcu, gpio, pin, mode}) =
-    proc (show gpio <> "_" <> show pin <>"_init") $ body $ do
-      enablePeriphClock rcu
-      setOutputOptions  gpio GPIO_OTYPE_PP GPIO_OSPEED_50MHZ pin
-      case mode of
-        (MF mode) -> setMode gpio mode GPIO_PUPD_NONE pin
-        (AF mode) -> setMode gpio GPIO_MODE_AF GPIO_PUPD_NONE pin
-                  >> setAF gpio mode pin
+        proc (show gpio <> "_" <> show pin <>"_init") $ body $ do
+            enablePeriphClock rcu
+            setOutputOptions gpio GPIO_OTYPE_PP GPIO_OSPEED_50MHZ pin
+            case mode of
+                (MF mode) -> setMode gpio mode GPIO_PUPD_NONE pin
+                (AF mode) -> setMode gpio GPIO_MODE_AF GPIO_PUPD_NONE pin
+                          >> setAF gpio mode pin

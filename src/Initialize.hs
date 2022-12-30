@@ -8,4 +8,4 @@ import           Ivory.Language.Module
 
 
 class Initialize a where
-  initialize :: a -> [Def ('[] :-> ())]
+    initialize :: a -> [Def ('[] :-> ())]

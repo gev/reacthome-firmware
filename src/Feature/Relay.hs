@@ -13,10 +13,10 @@ relay :: OUT a => Int -> a -> Feature
 relay n = Feature . Relay n
 
 instance Include Relay where
-  include = undefined
+    include = undefined
 
 instance Initialize Relay where
-  initialize = undefined
+    initialize = undefined
 
 instance Task Relay where
-  tasks = undefined
+    tasks = undefined

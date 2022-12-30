@@ -4,9 +4,9 @@
 {-# HLINT ignore "Use camelCase" #-}
 
 module Support.Util
-  ( castArrayToUint32
-  , inclUtil
-  ) where
+    ( castArrayToUint32
+    , inclUtil
+    ) where
 
 import           Ivory.Language
 import           Ivory.Language.Module

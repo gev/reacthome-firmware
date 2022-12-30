@@ -10,9 +10,9 @@ import           Ivory.Stdlib
 
 
 data HandleTimer t = HandleTimer
-  { timer  :: t
-  , handle :: forall eff. Ivory eff ()
-  }
+    { timer  :: t
+    , handle :: forall eff. Ivory eff ()
+    }
 
 
 class (Include (HandleTimer t), Initialize (HandleTimer t)) => Timer t
