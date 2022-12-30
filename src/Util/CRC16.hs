@@ -4,40 +4,39 @@
 {-# HLINT ignore "Use for_" #-}
 
 module Util.CRC16
-    ( crc16
-    , inclCRC16
+    ( initCRC16
+    , digestCRC16
     ) where
 
+import           GHC.TypeNats
 import           Ivory.Language
+import           Ivory.Language.Module
 
 
+inclCRC16 :: ModuleM ()
 inclCRC16 = do
-    incl crc_16
+    incl crc_16_digest
     defConstMemArea crc16_msb
     defConstMemArea crc16_lsb
 
 
-crc16 :: Ref s ('Array 512 ('Stored Uint16)) -> Ix 512 -> Ivory eff Uint16
-crc16 = call crc_16
+initCRC16 :: Init ('Stored Uint16)
+initCRC16 = ival 0xffff
 
-crc_16 :: Def ('[Ref s (Array 512 (Stored Uint16)), Ix 512] :-> Uint16)
-crc_16 = proc "crc_16" $ \a n -> body $ do
-    msb' <- local $ ival 0xff
-    lsb' <- local $ ival 0xff
-    for n $ \jx -> do
-        msb <- deref msb'
-        lsb <- deref lsb'
-        i <- deref (a ! jx)
-        let ix = toIx $ msb .^ i
-        m <- deref (crc16_msb' ! ix)
-        l <- deref (crc16_lsb' ! ix)
-        store msb' (lsb .^ m)
-        store lsb' l
-    msb <- deref msb'
-    lsb <- deref lsb'
-    ret $ lsb `iShiftL` 8 .| msb
+digestCRC16 :: Uint16 -> Uint16 -> Ivory eff Uint16
+digestCRC16 = call crc_16_digest
+
+crc_16_digest :: Def ('[Uint16, Uint16] ':-> Uint16)
+crc_16_digest = proc "crc_16_digest" $ \d i -> body $ do
+    let msb = d `iShiftR` 8
+    let lsb = d .& 0xff
+    let ix = toIx $ msb .^ i
+    m <- deref $ crc16_msb' ! ix
+    l <- deref $ crc16_lsb' ! ix
+    ret $ lsb .^ m `iShiftL` 8 .| l
 
 
+crc16_msb' :: ConstRef 'Global ('Array 256 ('Stored Uint16))
 crc16_msb' = addrOf crc16_msb
 
 crc16_msb :: ConstMemArea ('Array 256 (Stored Uint16))
@@ -61,6 +60,7 @@ crc16_msb = constArea "crc16_msb" $ iarray $ map ival [
     ]
 
 
+crc16_lsb' :: ConstRef 'Global ('Array 256 ('Stored Uint16))
 crc16_lsb' = addrOf crc16_lsb
 
 crc16_lsb :: ConstMemArea ('Array 256 (Stored Uint16))
