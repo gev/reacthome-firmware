@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds           #-}
+{-# LANGUAGE KindSignatures      #-}
 {-# LANGUAGE NamedFieldPuns      #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
@@ -16,15 +17,15 @@ import           Util.Data.Concurrent.Semaphore
 import           Util.Data.Index
 
 
-data Queue n = Queue
-    { producerIx :: Index n
-    , consumerIx :: Index n
+data Queue (n :: Nat) = Queue
+    { producerIx :: Index Uint16
+    , consumerIx :: Index Uint16
     , producerS  :: Semaphore Uint32
     , consumerS  :: Semaphore Uint32
     }
 
 
-queue :: forall n t. KnownNat n => String -> Queue n
+queue :: forall n. KnownNat n => String -> Queue n
 queue id =
     let name       = id   <> "_queue"
         producerId = name <> "_producer"
@@ -44,17 +45,17 @@ run (Index ix) s cos handle =
         up cos
 
 
-push :: KnownNat n => Queue n -> (Ix n -> Ivory eff a) -> Ivory eff ()
+push :: Queue n -> (Uint16 -> Ivory eff a) -> Ivory eff ()
 push (Queue {producerIx, producerS, consumerS}) =
     run producerIx producerS consumerS
 
 
-pop :: KnownNat n => Queue n -> (Ix n -> Ivory eff a) -> Ivory eff ()
+pop :: Queue n -> (Uint16 -> Ivory eff a) -> Ivory eff ()
 pop (Queue {consumerIx, consumerS, producerS}) =
     run consumerIx consumerS producerS
 
 
-size :: KnownNat n => Queue n -> Ivory eff (Ix n)
+size :: Queue n -> Ivory eff Uint16
 size (Queue {producerIx = (Index px), consumerIx = (Index cx)}) =
     (-) <$> getValue px <*> getValue cx
 

@@ -9,6 +9,7 @@ module Feature.RBUS    where
 
 import           Device.GD32F3x0.SystemClock
 import           Feature
+import           GHC.TypeNats
 import           Include
 import           Initialize
 import           Interface.Counter           (readCounter)
@@ -69,9 +70,9 @@ instance Task RBUS where
             yeld (name <> "_rx") $ do
                 l <- getValue lockTx
                 when (iNot l) $ do
-                    pop queueRx $ \ix -> do
+                    pop queueRx $ \i -> do
                         size <- getValue sizeTx
-                        getItem buffRx ix >>= setItem buffTx (toIx size)
+                        getItem buffRx (toIx i) >>= setItem buffTx (toIx size)
                         setValue sizeTx $ size + 1
 
         , delay 1 (name <> "_tx") $ do
@@ -89,11 +90,20 @@ instance Task RBUS where
         ]
 
 
+onReceive :: KnownNat n
+          => Value Uint32
+          -> Queue n
+          -> Buffer n Uint16
+          -> Uint16
+          -> Ivory eff ()
 onReceive timestamp queueRx buffRx b = do
-        push queueRx $ \ix -> do
-            setItem buffRx ix b
+        push queueRx $ \i -> do
+            setItem buffRx (toIx i) b
             setValue timestamp =<< readCounter systemClock
 
 
+onTransmit :: Val v IBool
+           => v IBool
+           -> Ivory eff ()
 onTransmit lockTx =
     setValue lockTx false
