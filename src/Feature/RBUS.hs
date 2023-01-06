@@ -97,7 +97,7 @@ txTask (RBUS {rs, msgStartBuff, msgSizeBuff, msgQueue, msgBuff, txBuff, txLock})
             start <- getItem msgStartBuff ix
             size <- getItem msgSizeBuff ix
             for (toIx size) $ \dx -> do
-                let sx = toIx $ fromIx dx + safeCast start
+                let sx = toIx $ safeCast start + fromIx dx
                 setItem txBuff dx =<< getItem msgBuff sx
             let buff = toCArray $ getBuffer txBuff
             transmit rs buff size
