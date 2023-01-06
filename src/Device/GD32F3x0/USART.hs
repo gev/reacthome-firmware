@@ -80,7 +80,7 @@ instance Initialize USART where
             proc (show usart <> "_init") $ body $ do
                 enablePeriphClock   RCU_DMA
                 enableIrqNvic       usartIRQ 0 0
-                enableIrqNvic       dmaIRQn    1 0
+                enableIrqNvic       dmaIRQn  1 0
                 enablePeriphClock   rcu
                 deinitUSART         usart
                 configReceive       usart USART_RECEIVE_ENABLE
