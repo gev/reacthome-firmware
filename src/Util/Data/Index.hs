@@ -1,4 +1,6 @@
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 module Util.Data.Index where
 
@@ -18,3 +20,7 @@ index id = Index $ value (id <> "_index") 0
 
 instance Include (Index t)  where
     include = include . getIndex
+
+instance IvoryStore t => Val Index t where
+  setValue = setValue . getIndex
+  getValue = getValue . getIndex
