@@ -29,7 +29,7 @@ data HandleRS485 r = HandleRS485
 
 transmit :: RS485
                  -> Ref r (CArray (Stored Uint16))
-                 -> Sint32
+                 -> Uint16
                  -> Ivory (ProcEffects s ()) ()
 transmit (RS485 {usart, rede}) buffer length =
     set rede >> I.transmit usart buffer length

@@ -1,12 +1,17 @@
-{-# LANGUAGE DataKinds  #-}
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE DataKinds   #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Util.Data.Message where
 
 import           Ivory.Language
 
 
-data Message t l = Message
- { msgData :: forall r. Ref r (Array l (Stored t))
- , msgSize :: Ix l
- }
+type Message = Struct "message_struct"
+
+
+[ivory|
+    struct message_struct
+        { msgData :: Uint16
+        ; msgSize :: Uint16
+        }
+|]

@@ -20,7 +20,7 @@ data Buffer n t = Buffer
 buffer :: (IvoryZeroVal t, IvoryInit t, KnownNat n) => String -> Buffer n t
 buffer id = Buffer { defBuffer  = defMemArea a
                    , addrBuffer = addrOf a
-                   } where a    = area id Nothing
+                   } where a    = area (id <> "_buffer") Nothing
 
 
 instance Include (Buffer n t) where

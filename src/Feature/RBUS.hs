@@ -24,40 +24,66 @@ import           Util.Data.Value
 
 
 data RBUS = RBUS
-    { name      :: String
-    , rs        :: RS485
-    , timestamp :: Value      Uint32
-    , sizeTx    :: Value      Sint32
-    , lockTx    :: Value      IBool
-    , buffTx    :: Buffer 512 Uint16
-    , buffRx    :: Buffer 512 Uint16
-    , queueRx   :: Queue  512
+    { name         :: String
+    , rs           :: RS485
+    , timestamp    :: Value      Uint32
+    , rxBuff       :: Buffer  64 Uint16
+    , rxQueue      :: Queue   64
+    , msgStartBuff :: Buffer  16 Uint16
+    , msgSizeBuff  :: Buffer  16 Uint16
+    , msgQueue     :: Queue   16
+    , msgStart     :: Value      Uint16
+    , msgSize      :: Value      Uint16
+    , msgBuff      :: Buffer 512 Uint16
+    , txBuff       :: Buffer 256 Uint16
+    , txLock       :: Value      IBool
     }
 
 
 rbus :: Int -> RS485 -> Feature
 rbus n rs = Feature $ RBUS
-    { name      = name
-    , rs        = rs
-    , timestamp = value  (name <> "_rx_timestamp") 0
-    , sizeTx    = value  (name <> "_tx_size") 0
-    , lockTx    = value  (name <> "_tx_lock") false
-    , buffTx    = buffer (name <> "_tx")
-    , buffRx    = buffer (name <> "_rx")
-    , queueRx   = queue  (name <> "_rx")
-    } where name = "usart_" <> show n
+    { name         = name
+    , rs           = rs
+    , timestamp    = value  (name <> "_rx_timestamp") 0
+    , rxBuff       = buffer (name <> "_rx")
+    , rxQueue      = queue  (name <> "_rx")
+    , msgStartBuff = buffer (name <> "_msg_start")
+    , msgSizeBuff  = buffer (name <> "_msg_size")
+    , msgQueue     = queue  (name <> "_msg")
+    , msgStart     = value  (name <> "_msg_start") 0
+    , msgSize      = value  (name <> "_msg_size") 0
+    , msgBuff      = buffer (name <> "_msg_buffer")
+    , txLock       = value  (name <> "_tx_lock") false
+    , txBuff       = buffer (name <> "_tx")
+    } where name = "rbus_" <> show n
 
 
 instance Include RBUS where
-    include (RBUS {rs, timestamp, sizeTx, lockTx, buffTx, buffRx, queueRx}) = do
-        include timestamp
-        include sizeTx
-        include lockTx
-        include buffTx
-        include buffRx
-        include queueRx
-        include $ HandleRS485 rs (onReceive timestamp queueRx buffRx)
-                                 (onTransmit lockTx)
+    include (RBUS { rs
+                  , timestamp
+                  , rxBuff
+                  , rxQueue
+                  , msgStartBuff
+                  , msgSizeBuff
+                  , msgQueue
+                  , msgStart
+                  , msgSize
+                  , msgBuff
+                  , txLock
+                  , txBuff
+                  }) = do include timestamp
+                          include rxBuff
+                          include rxQueue
+                          include msgStartBuff
+                          include msgSizeBuff
+                          include msgQueue
+                          include msgStart
+                          include msgSize
+                          include msgBuff
+                          include txLock
+                          include txBuff
+                          include $ HandleRS485 rs (onReceive timestamp rxQueue rxBuff)
+                                                   (onTransmit txLock)
 
 
 instance Initialize RBUS where
@@ -65,28 +91,51 @@ instance Initialize RBUS where
 
 
 instance Task RBUS where
-    tasks (RBUS {name, rs, timestamp, sizeTx, buffRx, buffTx, queueRx, lockTx}) =
-        [
-            yeld (name <> "_rx") $ do
-                l <- getValue lockTx
-                when (iNot l) $ do
-                    pop queueRx $ \i -> do
-                        size <- getValue sizeTx
-                        getItem buffRx (toIx i) >>= setItem buffTx (toIx size)
-                        setValue sizeTx $ size + 1
+    tasks (RBUS { name
+                , rs
+                , timestamp
+                , rxBuff
+                , rxQueue
+                , msgStartBuff
+                , msgSizeBuff
+                , msgQueue
+                , msgStart
+                , msgSize
+                , msgBuff
+                , txBuff
+                , txLock
+                }) =
+        [ yeld (name <> "_rx") $ do
+            pop rxQueue $ \i -> do
+                setItem msgBuff (toIx i) =<< getItem rxBuff (toIx i)
+                size <- getValue msgSize
+                when (size ==? 0) $
+                    setValue msgStart i
+                setValue msgSize $ size + 1
+            t0 <- getValue timestamp
+            t1 <- readCounter systemClock
+            when (t1 - t0 >? 40) $ do
+                size <- getValue msgSize
+                when (size >? 0) $ do
+                    push msgQueue $ \i -> do
+                        let ix = toIx i
+                        start <- getValue msgStart
+                        setItem msgStartBuff ix start
+                        setItem msgSizeBuff ix size
+                        setValue msgSize 0
 
         , delay 1 (name <> "_tx") $ do
-                l <- getValue lockTx
-                when (iNot l) $ do
-                    t0 <- getValue timestamp
-                    t1 <- readCounter systemClock
-                    when (t1 - t0 >? 40) $ do
-                        size <- getValue sizeTx
-                        when (size >? 0) $ do
-                            setValue sizeTx 0
-                            setValue lockTx true
-                            let tx = getBuffer buffTx
-                            transmit rs (toCArray tx) size
+            locked <- getValue txLock
+            when (iNot locked) $ do
+                pop msgQueue $ \i -> do
+                    let ix = toIx i
+                    start <- getItem msgStartBuff ix
+                    size <- getItem msgSizeBuff ix
+                    for (toIx size) $ \ix ->
+                        setItem txBuff ix =<< getItem msgBuff (toIx $ fromIx ix + safeCast start)
+                    let tx = getBuffer txBuff
+                    transmit rs (toCArray tx) size
+                    setValue txLock true
         ]
 
 
@@ -96,14 +145,14 @@ onReceive :: KnownNat n
           -> Buffer n Uint16
           -> Uint16
           -> Ivory eff ()
-onReceive timestamp queueRx buffRx b = do
-        push queueRx $ \i -> do
-            setItem buffRx (toIx i) b
+onReceive timestamp rxQueue rxBuff value = do
+        push rxQueue $ \i -> do
+            setItem rxBuff (toIx i) value
             setValue timestamp =<< readCounter systemClock
 
 
 onTransmit :: Val v IBool
            => v IBool
            -> Ivory eff ()
-onTransmit lockTx =
-    setValue lockTx false
+onTransmit txLock =
+    setValue txLock false

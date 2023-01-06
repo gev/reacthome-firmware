@@ -110,7 +110,7 @@ data DMA_PARAM = DMA_PARAM
         , dmaMemoryWidth :: DMA_MEMORY_WIDTH
         , dmaMemoryInc   :: DMA_MEMORY_INC
         , dmaDirection   :: DMA_DIRECTION
-        , dmaNumber      :: Sint32
+        , dmaNumber      :: Uint16
         , dmaPriority    :: DMA_PRIORITY
         }
 
@@ -123,7 +123,7 @@ data DMA_PARAM = DMA_PARAM
         ; memory_width   :: Uint32
         ; memory_inc     :: Uint8
         ; direction      :: Uint8
-        ; number         :: Sint32
+        ; number         :: Uint16
         ; priority       :: Uint32
         }
 |]
