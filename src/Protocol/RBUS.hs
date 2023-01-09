@@ -5,37 +5,14 @@
 
 module Protocol.RBUS where
 
+import           Include
 import           Ivory.Language
 import           Ivory.Stdlib
+import           Util.CRC16
+import           Util.Data.Class
+import           Util.Data.Record
+import           Util.Data.Value
 
-type Effect e = forall eff. Ivory (ProcEffects eff ()) e
-
-type Data    = forall s. Effect (Ref s (Array 512 (Stored Uint8)))
-type Byte    = Effect Uint8
-
-data Fragment = Fragment
-    { array  :: Effect Data
-    , offset :: Effect Uint16
-    , length :: Effect Uint16
-    }
-
-data Packet
-    = DiscoveryRequest  { mac          :: Fragment
-                        , deviceType   :: Byte
-                        , versionMajor :: Byte
-                        , versionMinor :: Byte
-                        }
-    | DiscoveryResponse { mac     :: Fragment
-                        , address :: Byte
-                        }
-    | Ping              { address :: Byte
-                        }
-    | Confirm           { address :: Byte
-                        }
-    | Data              { id      :: Byte
-                        , address :: Byte
-                        , message :: Fragment
-                        }
 
 broadcastAddress          = 0xff
 
@@ -51,11 +28,24 @@ preambleSlaveConfirm      = 0x5f
 preambleSlaveData         = 0x50
 
 
+data RBUS' = RBUS'
+    { state :: Value Uint32
+    , crc   :: Record CRC16
+    }
 
-parse :: Uint8 -> Maybe Packet
-parse x = Just . Ping $ ifte (x ==? 1) (pure 1) (pure 0)
+rbus' name = RBUS'
+    { state = value  (name <> "_state") 0
+    , crc   = record (name <> "_crc") initCRC16
+    }
 
+instance Include RBUS' where
+  include (RBUS' state crc) =
+    include state >> include crc
 
+x = rbus' "slave"
 
-serialize :: Packet -> Effect Uint8
-serialize (Ping x) = (+1) <$> x
+c =  crc x
+
+a = c <| msb $ 0
+
+b = c |> msb
