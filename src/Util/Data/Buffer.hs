@@ -28,6 +28,4 @@ instance Include (Buffer n t) where
 
 
 instance (KnownNat n, IvoryStore t) => Buff Buffer n t where
-    setItem b ix = store (addrBuffer b ! ix)
-    getItem b ix = deref (addrBuffer b ! ix)
     getBuffer    = addrBuffer
