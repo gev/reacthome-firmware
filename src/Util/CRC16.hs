@@ -3,17 +3,23 @@
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
+{-# LANGUAGE RankNTypes    #-}
 
 module Util.CRC16
-    ( initCRC16
+    ( CRC16
+    , initCRC16
     , digestCRC16
     , updateCRC16
+    , msb, lsb
     ) where
 
 import           Data.Coerce           (coerce)
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Language.Module
+import           Ivory.Language.Syntax (Struct)
+
+type CRC16 = "crc16_struct"
 
 [ivory|
     struct crc16_struct {
@@ -30,10 +36,10 @@ inclCRC16 = do
     defConstMemArea crc16_lsb
 
 
-initCRC16 :: Init ('Struct "crc16_struct")
-initCRC16 = istruct [ msb .= ival 0xff
-                    , lsb .= ival 0xff
-                    ]
+initCRC16 :: [InitStruct "crc16_struct"]
+initCRC16 =  [ msb .= ival 0xff
+             , lsb .= ival 0xff
+             ]
 
 updateCRC16 :: Ref s ('Struct "crc16_struct") -> Uint8 -> Ivory eff ()
 updateCRC16 = call_ crc_16_update
