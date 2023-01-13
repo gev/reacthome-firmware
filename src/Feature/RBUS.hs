@@ -125,7 +125,7 @@ split (RBUS {timestamp, msgSizeBuff, msgQueue, msgSize, msgBuff}) = do
     ms <- getValue msgSize
     t0 <- getValue timestamp
     t1 <- readCounter systemClock
-    when (ms ==? size msgBuff .||
+    when (ms ==? getSize msgBuff .||
          (ms >? 0 .&& t1 - t0 >? 40)) $ do
         push msgQueue $ \i -> do
             setItem msgSizeBuff (toIx i) ms

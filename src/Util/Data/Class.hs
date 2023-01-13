@@ -20,11 +20,11 @@ class (Include (b n t), KnownNat n,  IvoryStore t, IvoryType t) => Buff b n t wh
     getBuffer :: b n t -> Ref Global (Array n (Stored t))
     setItem   :: b n t -> Ix n -> t -> Ivory eff ()
     getItem   :: b n t -> Ix n -> Ivory eff t
-    size      :: Num len => b n t -> len
+    getSize   :: Num len => b n t -> len
 
     setItem b ix = store (getBuffer b ! ix)
     getItem b ix = deref (getBuffer b ! ix)
-    size         = arrayLen . getBuffer
+    getSize      = arrayLen . getBuffer
 
 
 class (IvoryStruct s, Include (r s)) => Rec r (s :: Symbol) where
