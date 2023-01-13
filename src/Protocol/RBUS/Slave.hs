@@ -58,6 +58,7 @@ slave name mac handle = Slave
 
 instance Include (Slave n) where
     include (Slave {address, state, index, phase, size, buff, crc}) = do
+        inclCRC16
         include address
         include state
         include phase

@@ -12,6 +12,7 @@ module Util.CRC16
     , digestCRC16
     , updateCRC16
     , msb, lsb
+    , inclCRC16
     ) where
 
 import           Data.Coerce           (coerce)
@@ -39,15 +40,15 @@ inclCRC16 = do
     defConstMemArea crc16_lsb
 
 
-initCRC16 :: [InitStruct "crc16_struct"]
+initCRC16 :: [InitStruct CRC16]
 initCRC16 =  [ msb .= ival initCRC
              , lsb .= ival initCRC
              ]
 
-updateCRC16 :: Ref s ('Struct "crc16_struct") -> Uint8 -> Ivory eff ()
+updateCRC16 :: Ref s ('Struct CRC16) -> Uint8 -> Ivory eff ()
 updateCRC16 = call_ crc_16_update
 
-crc_16_update :: Def ('[Ref s ('Struct "crc16_struct"), Uint8] ':-> ())
+crc_16_update :: Def ('[Ref s ('Struct CRC16), Uint8] ':-> ())
 crc_16_update = proc "crc_16_update" $ \d i -> body $ do
     msb' <- deref $ d ~> msb
     lsb' <- deref $ d ~> lsb
@@ -58,20 +59,20 @@ crc_16_update = proc "crc_16_update" $ \d i -> body $ do
     store (d ~> lsb) l
 
 
-digestCRC16 :: Ref s ('Struct "crc16_struct") -> Ivory eff Uint16
+digestCRC16 :: Ref s ('Struct CRC16) -> Ivory eff Uint16
 digestCRC16 = call crc_16_digest
 
-crc_16_digest :: Def ('[Ref s ('Struct "crc16_struct")] ':-> Uint16)
+crc_16_digest :: Def ('[Ref s ('Struct CRC16)] ':-> Uint16)
 crc_16_digest = proc "crc_16_digest" $ \d -> body $ do
     m <- deref $ d ~> msb
     l <- deref $ d ~> lsb
     ret $ safeCast m `iShiftL` 8 .| safeCast l
 
 
-crc16_msb' :: ConstRef 'Global ('Array 256 ('Stored Uint8))
+crc16_msb' :: ConstRef Global (Array 256 (Stored Uint8))
 crc16_msb' = addrOf crc16_msb
 
-crc16_msb :: ConstMemArea ('Array 256 (Stored Uint8))
+crc16_msb :: ConstMemArea (Array 256 (Stored Uint8))
 crc16_msb = constArea "crc16_msb" $ iarray $ map ival [
         0x00,0xC1,0x81,0x40,0x01,0xC0,0x80,0x41,0x01,0xC0,0x80,0x41,0x00,0xC1,0x81,0x40,
         0x01,0xC0,0x80,0x41,0x00,0xC1,0x81,0x40,0x00,0xC1,0x81,0x40,0x01,0xC0,0x80,0x41,
@@ -92,10 +93,10 @@ crc16_msb = constArea "crc16_msb" $ iarray $ map ival [
     ]
 
 
-crc16_lsb' :: ConstRef 'Global ('Array 256 ('Stored Uint8))
+crc16_lsb' :: ConstRef Global (Array 256 (Stored Uint8))
 crc16_lsb' = addrOf crc16_lsb
 
-crc16_lsb :: ConstMemArea ('Array 256 (Stored Uint8))
+crc16_lsb :: ConstMemArea (Array 256 (Stored Uint8))
 crc16_lsb = constArea "crc16_lsb" $ iarray $ map ival [
         0x00,0xC0,0xC1,0x01,0xC3,0x03,0x02,0xC2,0xC6,0x06,0x07,0xC7,0x05,0xC5,0xC4,0x04,
         0xCC,0x0C,0x0D,0xCD,0x0F,0xCF,0xCE,0x0E,0x0A,0xCA,0xCB,0x0B,0xC9,0x09,0x08,0xC8,
