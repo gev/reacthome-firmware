@@ -7,6 +7,7 @@
 
 module Util.CRC16
     ( CRC16
+    , initCRC
     , initCRC16
     , digestCRC16
     , updateCRC16
@@ -20,6 +21,8 @@ import           Ivory.Language.Module
 import           Ivory.Language.Syntax (Struct)
 
 type CRC16 = "crc16_struct"
+
+initCRC = 0xff :: Uint8
 
 [ivory|
     struct crc16_struct {
@@ -37,8 +40,8 @@ inclCRC16 = do
 
 
 initCRC16 :: [InitStruct "crc16_struct"]
-initCRC16 =  [ msb .= ival 0xff
-             , lsb .= ival 0xff
+initCRC16 =  [ msb .= ival initCRC
+             , lsb .= ival initCRC
              ]
 
 updateCRC16 :: Ref s ('Struct "crc16_struct") -> Uint8 -> Ivory eff ()

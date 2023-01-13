@@ -1,51 +1,50 @@
-{-# LANGUAGE DataKinds          #-}
-{-# LANGUAGE FlexibleContexts   #-}
-{-# LANGUAGE GADTs              #-}
-{-# LANGUAGE ImpredicativeTypes #-}
-
+{-# LANGUAGE DataKinds #-}
 module Protocol.RBUS where
 
-import           Include
 import           Ivory.Language
-import           Ivory.Stdlib
+import           Ivory.Language.Uint (Uint8 (Uint8))
 import           Util.CRC16
+import           Util.Data.Buffer
 import           Util.Data.Class
 import           Util.Data.Record
-import           Util.Data.Value
 
 
-broadcastAddress          = 0xff
-
-preambleDiscoveryRequest  = 0x55
-preambleDiscoveryResponse = 0xaa
-
-preambleMasterPing        = 0xcc
-preambleMasterConfirm     = 0xaf
-preambleMasterData        = 0xa0
-
-preambleSlavePing         = 0x33
-preambleSlaveConfirm      = 0x5f
-preambleSlaveData         = 0x50
+type Mac = Buffer 6 Uint8
 
 
-data RBUS' = RBUS'
-    { state :: Value Uint32
-    , crc   :: Record CRC16
+data Preamble = Preamble
+    { discovery :: Uint8
+    , ping      :: Uint8
+    , confirm   :: Uint8
+    , message   :: Uint8
     }
 
-rbus' name = RBUS'
-    { state = value  (name <> "_state") 0
-    , crc   = record (name <> "_crc") initCRC16
-    }
+preambleMaster = Preamble { discovery = 0xaa
+                          , ping      = 0xcc
+                          , confirm   = 0xaf
+                          , message   = 0xa0
+                          }
 
-instance Include RBUS' where
-  include (RBUS' state crc) =
-    include state >> include crc
+preambleSlave  = Preamble { discovery = 0x55
+                          , ping      = 0x33
+                          , confirm   = 0x5f
+                          , message   = 0x50
+                          }
 
-x = rbus' "slave"
 
-c =  crc x
+broadcastAddress    = 0xff :: Uint8
 
-a = c <| msb $ 0
+readyToReceive      = 0x00 :: Uint8
+receivingDiscovery  = 0x01 :: Uint8
+receivingPing       = 0x02 :: Uint8
+receivingConfirm    = 0x03 :: Uint8
+receivingMessage    = 0x04 :: Uint8
 
-b = c |> msb
+waitingAddress      = 0x00 :: Uint8
+waitingSize         = 0x01 :: Uint8
+waitingData         = 0x02 :: Uint8
+waitingMsbCRC       = 0x03 :: Uint8
+waitingLsbCRC       = 0x04 :: Uint8
+
+updateCRC :: Record CRC16 -> Uint8 -> Ivory eff ()
+updateCRC = updateCRC16 . getRecord
