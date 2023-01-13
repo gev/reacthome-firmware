@@ -1,8 +1,8 @@
-{-# LANGUAGE DataKinds          #-}
-{-# LANGUAGE FlexibleContexts   #-}
-{-# LANGUAGE GADTs              #-}
-{-# LANGUAGE ImpredicativeTypes #-}
-{-# LANGUAGE NamedFieldPuns     #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs            #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RankNTypes       #-}
 
 module Protocol.RBUS.Slave where
 
@@ -27,7 +27,7 @@ data Slave n = Slave
     , size    :: Value Uint8
     , buff    :: Buffer n Uint8
     , crc     :: Record CRC16
-    , handle  :: forall eff. Buffer n Uint8 -> Ivory eff ()
+    , handle  :: Buffer n Uint8 -> forall eff. Ivory eff ()
     }
 
 
@@ -41,7 +41,7 @@ txPreamble = preambleSlave
 slave :: KnownNat n
       => String
       -> Mac
-      -> (forall eff. Buffer n Uint8 -> Ivory eff ())
+      -> (Buffer n Uint8 -> forall eff. Ivory eff ())
       -> Slave n
 slave name mac handle = Slave
     { mac     = mac
@@ -207,20 +207,3 @@ receiveLsbCRC (Slave {state, crc}) complete v = do
     b <- crc |> lsb
     when (b ==? v) complete
     setValue state readyToReceive
-
-
-
-go :: a -> b -> (a, b)
-go = (,)
-
-
-runReceive :: (Val v a, IvoryEq a)
-           => (r -> v a)
-           -> [(a, r -> Uint8 -> Ivory eff ())]
-           -> r
-           -> Uint8
-           -> Ivory eff ()
-runReceive f hs r v = do
-    p <- getValue . f $ r
-    let go (w, h) = w ==? p ==> h r v
-    cond_ $ map go hs

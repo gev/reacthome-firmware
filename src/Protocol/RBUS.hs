@@ -3,6 +3,7 @@ module Protocol.RBUS where
 
 import           Ivory.Language
 import           Ivory.Language.Uint (Uint8 (Uint8))
+import           Ivory.Stdlib
 import           Util.CRC16
 import           Util.Data.Buffer
 import           Util.Data.Class
@@ -48,3 +49,19 @@ waitingLsbCRC       = 0x04 :: Uint8
 
 updateCRC :: Record CRC16 -> Uint8 -> Ivory eff ()
 updateCRC = updateCRC16 . getRecord
+
+
+go :: a -> b -> (a, b)
+go = (,)
+
+
+runReceive :: (Val v a, IvoryEq a)
+           => (r -> v a)
+           -> [(a, r -> Uint8 -> Ivory eff ())]
+           -> r
+           -> Uint8
+           -> Ivory eff ()
+runReceive f hs r v = do
+    p <- getValue . f $ r
+    let go (w, h) = w ==? p ==> h r v
+    cond_ $ map go hs
