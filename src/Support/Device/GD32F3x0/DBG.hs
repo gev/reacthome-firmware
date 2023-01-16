@@ -5,9 +5,9 @@
 {-# HLINT ignore "Use camelCase" #-}
 
 module Support.Device.GD32F3x0.DBG
-  ( getID
-  , inclDBG
-  ) where
+    ( getID
+    , inclDBG
+    ) where
 
 import           Ivory.Language
 import           Ivory.Language.Module

@@ -5,4 +5,4 @@ import           Ivory.Language.Module
 
 
 class Include a where
-  include :: a -> ModuleM ()
+    include :: a -> ModuleM ()

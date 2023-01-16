@@ -20,14 +20,14 @@ sysTick = SysTick
 
 
 instance Include (HandleTimer SysTick) where
-  include (HandleTimer {handle}) =
-    inclCoreCM4 >> incl (handleIRQ handle)
+    include (HandleTimer {handle}) =
+        inclCoreCM4 >> incl (handleIRQ handle)
 
 
 instance Initialize (HandleTimer SysTick) where
-  initialize (HandleTimer {timer = (SysTick ticks)}) = [
-      proc "systick_init" $ body $ sysTickConfig ticks
-    ]
+    initialize (HandleTimer {timer = (SysTick ticks)}) = [
+            proc "systick_init" $ body $ sysTickConfig ticks
+        ]
 
 handleIRQ :: (forall eff. Ivory eff ()) -> Def('[] :-> ())
 handleIRQ handle = proc "SysTick_Handler" $ body handle

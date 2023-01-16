@@ -36,7 +36,6 @@ executable reacthome-firmware
                     , Feature.Relay
                     , Feature.RBUS
                     , Feature.RBUS.Slave
-                    , Feature.RS485
 
                     , Formula
                     , Formula.Blink
@@ -78,8 +77,7 @@ executable reacthome-firmware
                     , Util.Data.Buffer
                     , Util.Data.Value
                     , Util.Data.Index
-                    , Util.Data.Message
-                    , Util.Data.MessageBuffer
+                    , Util.Data.Record
                     , Util.Data.Concurrent.Semaphore
                     , Util.Data.Concurrent.Queue
 

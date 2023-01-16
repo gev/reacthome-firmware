@@ -2,13 +2,13 @@
 {-# LANGUAGE TypeOperators #-}
 
 module Support.CMSIS.CoreCM4
-  ( sysTickConfig
-  , nop
-  , isb
-  , dsb
-  , dmb
-  , inclCoreCM4
-  ) where
+    ( sysTickConfig
+    , nop
+    , isb
+    , dsb
+    , dmb
+    , inclCoreCM4
+    ) where
 
 import           Control.Monad
 import           Ivory.Language
@@ -21,11 +21,11 @@ import           Ivory.Support.Device.GD32F3x0
 
 inclCoreCM4 :: ModuleM ()
 inclCoreCM4 = do
-  incl sysTick_Config
-  incl __NOP
-  incl __ISB
-  incl __DSB
-  incl __DMB
+    incl sysTick_Config
+    incl __NOP
+    incl __ISB
+    incl __DSB
+    incl __DMB
 
 
 
@@ -34,7 +34,6 @@ sysTickConfig = call_ sysTick_Config
 
 sysTick_Config :: Def ('[Uint32] :-> ())
 sysTick_Config = fun "SysTick_Config"
-
 
 
 

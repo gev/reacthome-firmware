@@ -14,25 +14,25 @@ import           Ivory.Language
 
 
 data RS485 where
-  RS485 :: (I.USART u, OUT o)
-        => { usart :: u
-           , rede  :: o
-           }
-        -> RS485
+    RS485 :: (I.USART u, OUT o)
+          => { usart :: u
+             , rede  :: o
+             }
+            -> RS485
 
 
 data HandleRS485 r = HandleRS485
-  { re         :: r
-  , onReceive  :: Uint16 -> forall eff. Ivory eff ()
-  , onTransmit ::           forall eff. Ivory eff ()
-  }
+    { re         :: r
+    , onReceive  :: Uint16 -> forall eff. Ivory eff ()
+    , onTransmit :: forall eff. Ivory eff ()
+    }
 
 transmit :: RS485
-         -> Ref r (CArray (Stored Uint16))
-         -> Sint32
-         -> Ivory (ProcEffects s ()) ()
+                 -> Ref r (CArray (Stored Uint16))
+                 -> Uint16
+                 -> Ivory (ProcEffects s ()) ()
 transmit (RS485 {usart, rede}) buffer length =
-  set rede >> I.transmit usart buffer length
+    set rede >> I.transmit usart buffer length
 
 setBaudrate :: RS485 -> Uint32 -> Ivory eff ()
 setBaudrate (RS485 {usart}) = I.setBaudrate usart
@@ -48,11 +48,11 @@ setParity (RS485 {usart}) = I.setParity usart
 
 
 instance Include (HandleRS485 RS485) where
-  include (HandleRS485 (RS485 usart rede) onReceive onTransmit) = do
-    include rede
-    include $ I.HandleUSART usart onReceive onTransmit (reset rede)
+    include (HandleRS485 (RS485 usart rede) onReceive onTransmit) = do
+        include rede
+        include $ I.HandleUSART usart onReceive onTransmit (reset rede)
 
 
 instance Initialize RS485 where
-  initialize (RS485 usart rede) =
-    initialize rede <> initialize usart
+    initialize (RS485 usart rede) =
+        initialize rede <> initialize usart

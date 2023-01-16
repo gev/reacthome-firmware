@@ -12,23 +12,20 @@ import           Util.Data.Class
 
 
 data Buffer n t = Buffer
-  { defBuffer  :: ModuleM ()
-  , addrBuffer :: Ref Global (Array n (Stored t))
-  }
+    { defBuffer  :: ModuleM ()
+    , addrBuffer :: Ref Global (Array n (Stored t))
+    }
 
 
 buffer :: (IvoryZeroVal t, IvoryInit t, KnownNat n) => String -> Buffer n t
 buffer id = Buffer { defBuffer  = defMemArea a
                    , addrBuffer = addrOf a
-                   }
-             where a = area id Nothing
+                   } where a    = area (id <> "_buffer") Nothing
 
 
 instance Include (Buffer n t) where
-  include = defBuffer
+    include = defBuffer
 
 
 instance (KnownNat n, IvoryStore t) => Buff Buffer n t where
-  setItem b ix  = store (addrBuffer b ! ix)
-  getItem b ix  = deref (addrBuffer b ! ix)
-  getBuffer     = addrBuffer
+    getBuffer    = addrBuffer

@@ -3,9 +3,9 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
 module Support.Device.GD32F3x0.Misc
-  ( enableIrqNvic
-  , inclMisc
-  ) where
+    ( enableIrqNvic
+    , inclMisc
+    ) where
 
 import           Ivory.Language
 import           Ivory.Language.Module
@@ -15,7 +15,7 @@ import           Support.Device.GD32F3x0
 
 
 inclMisc :: ModuleM ()
-inclMisc =  incl nvic_irq_enable
+inclMisc =    incl nvic_irq_enable
 
 
 enableIrqNvic :: IRQn -> Uint8 -> Uint8 -> Ivory eff ()

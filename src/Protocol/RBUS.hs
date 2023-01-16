@@ -1,61 +1,67 @@
-{-# LANGUAGE DataKinds          #-}
-{-# LANGUAGE FlexibleContexts   #-}
-{-# LANGUAGE GADTs              #-}
-{-# LANGUAGE ImpredicativeTypes #-}
-
+{-# LANGUAGE DataKinds #-}
 module Protocol.RBUS where
 
 import           Ivory.Language
+import           Ivory.Language.Uint (Uint8 (Uint8))
 import           Ivory.Stdlib
-
-type Effect e = forall eff. Ivory (ProcEffects eff ()) e
-
-type Data  = forall s. Effect (Ref s (Array 512 (Stored Uint8)))
-type Byte  = Effect Uint8
-
-data Fragment = Fragment
-  { array  :: Effect Data
-  , offset :: Effect Uint16
-  , length :: Effect Uint16
-  }
-
-data Packet
-  = DiscoveryRequest  { mac          :: Fragment
-                      , deviceType   :: Byte
-                      , versionMajor :: Byte
-                      , versionMinor :: Byte
-                      }
-  | DiscoveryResponse { mac     :: Fragment
-                      , address :: Byte
-                      }
-  | Ping              { address :: Byte
-                      }
-  | Confirm           { address :: Byte
-                      }
-  | Data              { id      :: Byte
-                      , address :: Byte
-                      , message :: Fragment
-                      }
-
-broadcastAddress          = 0xff
-
-preambleDiscoveryRequest  = 0x55
-preambleDiscoveryResponse = 0xaa
-
-preambleMasterPing        = 0xcc
-preambleMasterConfirm     = 0xaf
-preambleMasterData        = 0xa0
-
-preambleSlavePing         = 0x33
-preambleSlaveConfirm      = 0x5f
-preambleSlaveData         = 0x50
+import           Util.CRC16
+import           Util.Data.Buffer
+import           Util.Data.Class
+import           Util.Data.Record
 
 
-
-parse :: Uint8 -> Maybe Packet
-parse x = Just . Ping $ ifte (x ==? 1) (pure 1) (pure 0)
+type Mac = Buffer 6 Uint8
 
 
+data Preamble = Preamble
+    { discovery :: Uint8
+    , ping      :: Uint8
+    , confirm   :: Uint8
+    , message   :: Uint8
+    }
 
-serialize :: Packet -> Effect Uint8
-serialize (Ping x) = (+1) <$> x
+preambleMaster = Preamble { discovery = 0xaa
+                          , ping      = 0xcc
+                          , confirm   = 0xaf
+                          , message   = 0xa0
+                          }
+
+preambleSlave  = Preamble { discovery = 0x55
+                          , ping      = 0x33
+                          , confirm   = 0x5f
+                          , message   = 0x50
+                          }
+
+
+broadcastAddress    = 0xff :: Uint8
+
+readyToReceive      = 0x00 :: Uint8
+receivingDiscovery  = 0x01 :: Uint8
+receivingPing       = 0x02 :: Uint8
+receivingConfirm    = 0x03 :: Uint8
+receivingMessage    = 0x04 :: Uint8
+
+waitingAddress      = 0x00 :: Uint8
+waitingSize         = 0x01 :: Uint8
+waitingData         = 0x02 :: Uint8
+waitingMsbCRC       = 0x03 :: Uint8
+waitingLsbCRC       = 0x04 :: Uint8
+
+updateCRC :: Record CRC16 -> Uint8 -> Ivory eff ()
+updateCRC = updateCRC16 . getRecord
+
+
+go :: a -> b -> (a, b)
+go = (,)
+
+
+runReceive :: (Val v a, IvoryEq a)
+           => (r -> v a)
+           -> [(a, r -> Uint8 -> Ivory eff ())]
+           -> r
+           -> Uint8
+           -> Ivory eff ()
+runReceive f hs r v = do
+    p <- getValue . f $ r
+    let go (w, h) = w ==? p ==> h r v
+    cond_ $ map go hs

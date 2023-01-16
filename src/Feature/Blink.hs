@@ -26,25 +26,25 @@ data Blink = forall a. (OUT a) => Blink
 
 blink :: OUT o => Int -> o -> Feature
 blink n out = Feature $ Blink
-  { name  = name
-  , out   = out
-  , state = value (name <> "_state") false
-  } where name = "blink_" <> show n
+    { name  = name
+    , out   = out
+    , state = value (name <> "_state") false
+    } where name = "blink_" <> show n
 
 
 instance Include Blink where
-  include (Blink {out, state}) = include state >> include out
+    include (Blink {out, state}) = include state >> include out
 
 
 instance Initialize Blink where
-  initialize (Blink {out}) = initialize out
+    initialize (Blink {out}) = initialize out
 
 
 instance Task Blink where
-  tasks (Blink name out state) = [
-    delay 1_000 name $ do
-      v <- getValue state
-      setValue state $ iNot v
-      ifte_ v ( set out )
-              ( reset out )
-    ]
+    tasks (Blink name out state) = [
+        delay 1_000 name $ do
+            v <- getValue state
+            setValue state $ iNot v
+            ifte_ v (set   out)
+                    (reset out)
+        ]
