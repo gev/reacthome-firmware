@@ -3,6 +3,7 @@
 {-# LANGUAGE GADTs             #-}
 {-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE RankNTypes        #-}
+{-# LANGUAGE TypeOperators     #-}
 
 module Interface.RS485 where
 
@@ -15,7 +16,8 @@ import           Ivory.Language
 
 data RS485 where
     RS485 :: (I.USART u, OUT o)
-          => { usart :: u
+          => { n     :: Int
+             , usart :: u
              , rede  :: o
              }
             -> RS485
@@ -48,11 +50,14 @@ setParity (RS485 {usart}) = I.setParity usart
 
 
 instance Include (HandleRS485 RS485) where
-    include (HandleRS485 (RS485 usart rede) onReceive onTransmit) = do
+    include (HandleRS485 (RS485 {usart, rede}) onReceive onTransmit) = do
         include rede
         include $ I.HandleUSART usart onReceive onTransmit (reset rede)
 
 
 instance Initialize RS485 where
-    initialize (RS485 usart rede) =
-        initialize rede <> initialize usart
+    initialize (RS485 {n, usart, rede}) =
+        initR : initialize rede <> initialize usart
+        where initR =
+                proc ("rs485_" <> show n <> "_init") $ body
+                                                     $ reset rede

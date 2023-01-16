@@ -12,6 +12,6 @@ import           Interface.RS485
 blink :: Formula
 blink = Formula { clock = systemClock
                 , features = [ F.blink 1 out_pa_15
-                             , rbus    1 $ RS485 usart_1 out_pa_4
+                             , rbus    1 $ RS485 1 usart_1 out_pa_4
                              ]
                 }

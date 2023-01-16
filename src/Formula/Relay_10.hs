@@ -11,7 +11,7 @@ import           Interface.RS485
 
 relay :: Formula
 relay = Formula { clock    = systemClock
-                , features = [ rbus    1 $ RS485 usart_1 out_pa_4
+                , features = [ rbus    1 $ RS485 1 usart_1 out_pa_4
                              , F.relay 1 out_pa_15
                              ]
                 }
