@@ -60,6 +60,7 @@ executable reacthome-firmware
 
                     , Ivory.Support
                     , Ivory.Support.Device.GD32F3x0
+                    , Ivory.Support.Device.GD32F4xx
 
                     , Support.CMSIS.CoreCM4
                     , Support.Device.GD32F3x0
@@ -70,6 +71,11 @@ executable reacthome-firmware
                     , Support.Device.GD32F3x0.RCU
                     , Support.Device.GD32F3x0.Timer
                     , Support.Device.GD32F3x0.USART
+                    , Support.Device.GD32F4xx
+                    , Support.Device.GD32F4xx.DBG
+                    , Support.Device.GD32F4xx.DMA
+                    , Support.Device.GD32F4xx.GPIO
+                    , Support.Device.GD32F4xx.RCU
                     , Support.Util
 
                     , Util.CRC16
