@@ -3,9 +3,13 @@
 {-# LANGUAGE GADTs            #-}
 {-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RankNTypes       #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use for_" #-}
 
 module Protocol.RBUS.Slave where
 
+import           Control.Monad    ((<=<))
+import           Data.Foldable
 import           GHC.TypeNats
 import           Include
 import           Ivory.Language
@@ -16,18 +20,23 @@ import           Util.Data.Buffer
 import           Util.Data.Class
 import           Util.Data.Record
 import           Util.Data.Value
+import           Util.Version
+
 
 
 data Slave n = Slave
-    { mac     :: Buffer 6 Uint8
-    , address :: Value Uint8
-    , state   :: Value Uint8
-    , phase   :: Value Uint8
-    , index   :: Value Uint8
-    , size    :: Value Uint8
-    , buff    :: Buffer n Uint8
-    , crc     :: Record CRC16
-    , handle  :: Buffer n Uint8 -> forall eff. Ivory eff ()
+    { mac      :: Buffer 6 Uint8
+    , hwType   :: Value Uint8
+    , version  :: Record Version
+    , address  :: Value Uint8
+    , state    :: Value Uint8
+    , phase    :: Value Uint8
+    , index    :: Value Uint8
+    , size     :: Value Uint8
+    , buff     :: Buffer n Uint8
+    , crc      :: Record CRC16
+    , handle   :: Buffer n Uint8 -> forall eff. Ivory eff ()
+    , transmit :: Uint8 -> forall s. Ivory (AllowBreak (ProcEffects s ())) ()
     }
 
 
@@ -41,18 +50,24 @@ txPreamble = preambleSlave
 slave :: KnownNat n
       => String
       -> Mac
+      -> Value Uint8
+      -> Record Version
       -> (Buffer n Uint8 -> forall eff. Ivory eff ())
+      -> (Uint8 -> forall s. Ivory (AllowBreak(ProcEffects s ())) ())
       -> Slave n
-slave name mac handle = Slave
-    { mac     = mac
-    , address = value  (name <> "_address") broadcastAddress
-    , state   = value  (name <> "_state") readyToReceive
-    , phase   = value  (name <> "_phase") waitingAddress
-    , index   = value  (name <> "_index") 0
-    , size    = value  (name <> "_size") 0
-    , buff    = buffer (name <> "_message")
-    , crc     = record (name <> "_crc") initCRC16
-    , handle  = handle
+slave name mac hwType version handle transmit = Slave
+    { mac      = mac
+    , hwType   = hwType
+    , version  = version
+    , address  = value  (name <> "_address") broadcastAddress
+    , state    = value  (name <> "_state") readyToReceive
+    , phase    = value  (name <> "_phase") waitingAddress
+    , index    = value  (name <> "_index") 0
+    , size     = value  (name <> "_size") 0
+    , buff     = buffer (name <> "_message")
+    , crc      = record (name <> "_crc") initCRC16
+    , handle   = handle
+    , transmit = transmit
     }
 
 
@@ -207,3 +222,51 @@ receiveLsbCRC (Slave {state, crc}) complete v = do
     b <- crc |> lsb
     when (b ==? v) complete
     setValue state readyToReceive
+
+
+transmitDiscovery :: Slave n -> Ivory (AllowBreak (ProcEffects s ())) ()
+transmitDiscovery s@(Slave {mac, hwType, version, transmit}) = do
+    crc16 <- local $ istruct initCRC16
+    let t v = updateCRC16 crc16 v >> transmit v
+    t $  discovery txPreamble
+    for (getSize mac) $ t <=< getItem mac
+    t =<< getValue hwType
+    t =<< version |> major
+    t =<< version |> minor
+    transmit =<< deref (crc16~>msb)
+    transmit =<< deref (crc16~>lsb)
+
+
+transmitPing :: Slave n -> Ivory (AllowBreak (ProcEffects s ())) ()
+transmitPing (Slave {address, transmit}) = do
+    crc16 <- local $ istruct initCRC16
+    let t v = updateCRC16 crc16 v >> transmit v
+    t $ ping txPreamble
+    t =<< getValue address
+    transmit =<< deref (crc16~>msb)
+    transmit =<< deref (crc16~>lsb)
+
+
+transmitConfirm :: Slave n -> Ivory (AllowBreak (ProcEffects s ())) ()
+transmitConfirm (Slave {address, transmit}) = do
+    crc16 <- local $ istruct initCRC16
+    let t v = updateCRC16 crc16 v >> transmit v
+    t $ confirm txPreamble
+    t =<< getValue address
+    transmit =<< deref (crc16~>msb)
+    transmit =<< deref (crc16~>lsb)
+
+
+transmitMessage :: Slave n
+                -> (Ix 255 -> Ivory (AllowBreak (ProcEffects s ())) Uint8)
+                -> Ix 255
+                -> Ivory (AllowBreak (ProcEffects s ())) ()
+transmitMessage (Slave{address, transmit}) get n = do
+    crc16 <- local $ istruct initCRC16
+    let t v = updateCRC16 crc16 v >> transmit v
+    t $ message txPreamble
+    t =<< getValue address
+    for n $ t <=< get
+    transmit =<< deref (crc16~>msb)
+    transmit =<< deref (crc16~>lsb)
+
