@@ -36,7 +36,7 @@ data Slave n = Slave
     , buff     :: Buffer n Uint8
     , crc      :: Record CRC16
     , handle   :: Buffer n Uint8 -> forall eff. Ivory eff ()
-    , transmit :: Uint8 -> forall s. Ivory (AllowBreak (ProcEffects s ())) ()
+    , transmit :: Uint8 -> forall eff. Ivory eff ()
     }
 
 
@@ -53,7 +53,7 @@ slave :: KnownNat n
       -> Value Uint8
       -> Record Version
       -> (Buffer n Uint8 -> forall eff. Ivory eff ())
-      -> (Uint8 -> forall s. Ivory (AllowBreak(ProcEffects s ())) ())
+      -> (Uint8 -> forall eff. Ivory eff ())
       -> Slave n
 slave name mac hwType version handle transmit = Slave
     { mac      = mac
@@ -237,7 +237,7 @@ transmitDiscovery s@(Slave {mac, hwType, version, transmit}) = do
     transmit =<< deref (crc16~>lsb)
 
 
-transmitPing :: Slave n -> Ivory (AllowBreak (ProcEffects s ())) ()
+transmitPing :: Slave n -> Ivory (ProcEffects s ()) ()
 transmitPing (Slave {address, transmit}) = do
     crc16 <- local $ istruct initCRC16
     let t v = updateCRC16 crc16 v >> transmit v
@@ -247,7 +247,7 @@ transmitPing (Slave {address, transmit}) = do
     transmit =<< deref (crc16~>lsb)
 
 
-transmitConfirm :: Slave n -> Ivory (AllowBreak (ProcEffects s ())) ()
+transmitConfirm :: Slave n -> Ivory (ProcEffects s ()) ()
 transmitConfirm (Slave {address, transmit}) = do
     crc16 <- local $ istruct initCRC16
     let t v = updateCRC16 crc16 v >> transmit v
@@ -258,7 +258,7 @@ transmitConfirm (Slave {address, transmit}) = do
 
 
 transmitMessage :: Slave n
-                -> (Ix 255 -> Ivory (AllowBreak (ProcEffects s ())) Uint8)
+                -> (Ix 255 -> forall eff. Ivory eff Uint8)
                 -> Ix 255
                 -> Ivory (AllowBreak (ProcEffects s ())) ()
 transmitMessage (Slave{address, transmit}) get n = do
@@ -269,4 +269,3 @@ transmitMessage (Slave{address, transmit}) get n = do
     for n $ t <=< get
     transmit =<< deref (crc16~>msb)
     transmit =<< deref (crc16~>lsb)
-
