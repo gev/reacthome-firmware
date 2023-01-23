@@ -9,7 +9,6 @@
 module Protocol.RBUS.Slave where
 
 import           Control.Monad    ((<=<))
-import           Data.Foldable
 import           GHC.TypeNats
 import           Include
 import           Ivory.Language
