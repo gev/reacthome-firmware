@@ -223,48 +223,44 @@ receiveLsbCRC (Slave {state, crc}) complete v = do
     setValue state readyToReceive
 
 
-transmitDiscovery :: Slave n -> Ivory (AllowBreak (ProcEffects s ())) ()
-transmitDiscovery s@(Slave {mac, hwType, version, transmit}) = do
-    crc16 <- local $ istruct initCRC16
-    let t v = updateCRC16 crc16 v >> transmit v
-    t $  discovery txPreamble
-    for (getSize mac) $ t <=< getItem mac
-    t =<< getValue hwType
-    t =<< version |> major
-    t =<< version |> minor
-    transmit =<< deref (crc16~>msb)
-    transmit =<< deref (crc16~>lsb)
+
+transmitDiscovery :: Slave n -> Ivory (AllowBreak (AllocEffects s)) ()
+transmitDiscovery s@(Slave {mac, hwType, version}) =
+    transmit' s $ \t -> do
+        t $  discovery txPreamble
+        for (getSize mac) $ t <=< getItem mac
+        t =<< getValue hwType
+        t =<< version |> major
+        t =<< version |> minor
 
 
-transmitPing :: Slave n -> Ivory (ProcEffects s ()) ()
-transmitPing (Slave {address, transmit}) = do
-    crc16 <- local $ istruct initCRC16
-    let t v = updateCRC16 crc16 v >> transmit v
-    t $ ping txPreamble
-    t =<< getValue address
-    transmit =<< deref (crc16~>msb)
-    transmit =<< deref (crc16~>lsb)
+transmitPing :: Slave n -> Ivory (AllowBreak(AllocEffects s)) ()
+transmitPing s@(Slave {address}) =
+    transmit' s $ \t -> do
+        t $ ping txPreamble
+        t =<< getValue address
 
 
-transmitConfirm :: Slave n -> Ivory (ProcEffects s ()) ()
-transmitConfirm (Slave {address, transmit}) = do
-    crc16 <- local $ istruct initCRC16
-    let t v = updateCRC16 crc16 v >> transmit v
-    t $ confirm txPreamble
-    t =<< getValue address
-    transmit =<< deref (crc16~>msb)
-    transmit =<< deref (crc16~>lsb)
+transmitConfirm :: Slave n -> Ivory (AllowBreak(AllocEffects s)) ()
+transmitConfirm s@(Slave {address}) =
+    transmit' s $ \t -> do
+        t $ confirm txPreamble
+        t =<< getValue address
 
 
 transmitMessage :: Slave n
                 -> (Ix 255 -> forall eff. Ivory eff Uint8)
                 -> Ix 255
-                -> Ivory (AllowBreak (ProcEffects s ())) ()
-transmitMessage (Slave{address, transmit}) get n = do
+                -> Ivory (AllowBreak (AllocEffects s)) ()
+transmitMessage s@(Slave{address}) get n =
+    transmit' s $ \t -> do
+        t $ message txPreamble
+        t =<< getValue address
+        for n $ t <=< get
+
+
+transmit' (Slave {transmit}) go = do
     crc16 <- local $ istruct initCRC16
-    let t v = updateCRC16 crc16 v >> transmit v
-    t $ message txPreamble
-    t =<< getValue address
-    for n $ t <=< get
+    go $ \v -> updateCRC16 crc16 v >> transmit v
     transmit =<< deref (crc16~>msb)
     transmit =<< deref (crc16~>lsb)
