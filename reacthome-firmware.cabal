@@ -79,6 +79,7 @@ executable reacthome-firmware
                     , Support.Util
 
                     , Util.CRC16
+                    , Util.Version
                     , Util.Data.Class
                     , Util.Data.Buffer
                     , Util.Data.Value
