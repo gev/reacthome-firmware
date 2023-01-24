@@ -125,8 +125,8 @@ initPing (Slave {name, address, buffPing}) =
 calcCRC16 :: KnownNat n => Buffer n Uint8 -> Ivory (ProcEffects s ()) ()
 calcCRC16 buff = do
     let size = getSize buff :: Sint32
-    let s_2 = toIx $ size - 2 
-    let s_1 = toIx $ size - 1 
+    let s_2 = toIx $ size - 2
+    let s_1 = toIx $ size - 1
     crc <- local $ istruct initCRC16
     for s_2 $ updateCRC16 crc <=< getItem buff
     setItem buff s_2 =<< deref (crc ~> msb)
@@ -189,7 +189,7 @@ receiveDiscoveryAddress (Slave {phase, buff, crc}) v = do
 
 receiveDiscoveryLsbCRC :: KnownNat n => Slave n -> Uint8 -> Ivory eff ()
 receiveDiscoveryLsbCRC s@(Slave {address, buff}) =
-    receiveLsbCRC s $ do 
+    receiveLsbCRC s $ do
         setValue address =<< getItem buff 0
         call_ $ initConf s
         call_ $ initPing s
@@ -282,16 +282,13 @@ transmitDiscovery :: Slave n -> Ivory (AllocEffects s) ()
 transmitDiscovery (Slave {buffDisc, transmit}) =
     transmit' buffDisc transmit
 
-
 transmitPing :: Slave n -> Ivory (AllowBreak(AllocEffects s)) ()
 transmitPing (Slave {buffPing, transmit}) =
     transmit' buffPing transmit
 
-
 transmitConfirm :: Slave n -> Ivory (AllowBreak(AllocEffects s)) ()
 transmitConfirm (Slave {buffConf, transmit}) =
     transmit' buffConf transmit
-
 
 transmitMessage :: KnownNat m
                 => Slave n
@@ -308,7 +305,9 @@ transmitMessage (Slave{address, transmit}) get n = do
     transmit =<< deref (crc16~>msb)
     transmit =<< deref (crc16~>lsb)
 
-
-transmit' buff transmit = 
+transmit' :: KnownNat n
+          => Buffer n Uint8
+          -> (Uint8 -> Ivory (AllowBreak eff) ())
+          -> Ivory eff ()
+transmit' buff transmit =
     arrayMap $ transmit <=< getItem buff
-    
