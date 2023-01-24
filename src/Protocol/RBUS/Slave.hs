@@ -5,12 +5,14 @@
 {-# LANGUAGE RankNTypes       #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
+{-# LANGUAGE TypeOperators    #-}
 
 module Protocol.RBUS.Slave where
 
 import           Control.Monad    ((<=<))
 import           GHC.TypeNats
 import           Include
+import           Initialize
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Protocol.RBUS
@@ -24,7 +26,8 @@ import           Util.Version
 
 
 data Slave n = Slave
-    { mac      :: Buffer 6 Uint8
+    { name     :: String
+    , mac      :: Buffer 6 Uint8
     , hwType   :: Value Uint8
     , version  :: Record Version
     , address  :: Value Uint8
@@ -32,7 +35,10 @@ data Slave n = Slave
     , phase    :: Value Uint8
     , index    :: Value Uint8
     , size     :: Value Uint8
-    , buff     :: Buffer n Uint8
+    , buff     :: Buffer n  Uint8
+    , buffConf :: Buffer 4  Uint8
+    , buffPing :: Buffer 4  Uint8
+    , buffDisc :: Buffer 12 Uint8
     , crc      :: Record CRC16
     , handle   :: Buffer n Uint8 -> forall eff. Ivory eff ()
     , transmit :: Uint8 -> forall eff. Ivory eff ()
@@ -55,23 +61,27 @@ slave :: KnownNat n
       -> (Uint8 -> forall eff. Ivory eff ())
       -> Slave n
 slave name mac hwType version handle transmit = Slave
-    { mac      = mac
+    { name     = name
+    , mac      = mac
     , hwType   = hwType
     , version  = version
-    , address  = value  (name <> "_address") broadcastAddress
-    , state    = value  (name <> "_state") readyToReceive
-    , phase    = value  (name <> "_phase") waitingAddress
-    , index    = value  (name <> "_index") 0
-    , size     = value  (name <> "_size") 0
-    , buff     = buffer (name <> "_message")
-    , crc      = record (name <> "_crc") initCRC16
+    , address  = value        (name <> "_address") broadcastAddress
+    , state    = value        (name <> "_state") readyToReceive
+    , phase    = value        (name <> "_phase") waitingAddress
+    , index    = value        (name <> "_index") 0
+    , size     = value        (name <> "_size") 0
+    , buff     = buffer       (name <> "_message")
+    , buffConf = buffer       (name <> "_confirm_tx")
+    , buffPing = buffer       (name <> "_ping_tx")
+    , buffDisc = buffer       (name <> "_disc_tx")
+    , crc      = record       (name <> "_crc") initCRC16
     , handle   = handle
     , transmit = transmit
     }
 
 
 instance Include (Slave n) where
-    include (Slave {address, state, index, phase, size, buff, crc}) = do
+    include (Slave {address, state, index, phase, size, buff, buffConf, buffPing, buffDisc, crc}) = do
         inclCRC16
         include address
         include state
@@ -79,10 +89,51 @@ instance Include (Slave n) where
         include index
         include size
         include buff
+        include buffConf
+        include buffPing
+        include buffDisc
         include crc
 
 
-receiveData :: KnownNat n => Slave n -> Uint8 -> Ivory eff ()
+instance Initialize (Slave n) where
+    initialize s = ($ s) <$> [initDisc, initConf, initPing]
+
+initDisc :: Slave n -> Def('[] :-> ())
+initDisc (Slave {name, mac, hwType, version, buffDisc}) =
+    proc (name <> "_init_disc_tx") $ body $ do
+        setItem buffDisc 0 $ discovery txPreamble
+        arrayCopy (getBuffer buffDisc) (getBuffer mac) 1 (getSize mac)
+        setItem buffDisc 8 =<< getValue hwType
+        setItem buffDisc 9 =<< version |> major
+        setItem buffDisc 10 =<< version |> minor
+        calcCRC16 buffDisc
+
+initConf :: Slave n -> Def('[] :-> ())
+initConf (Slave {name, address, buffConf}) =
+    proc (name <> "_init_conf_tx") $ body $ do
+        setItem buffConf 0 $ confirm txPreamble
+        setItem buffConf 1 =<< getValue address
+        calcCRC16 buffConf
+
+initPing :: Slave n -> Def('[] :-> ())
+initPing (Slave {name, address, buffPing}) =
+    proc (name <> "_init_ping_tx") $ body $ do
+        setItem buffPing 0 $ ping txPreamble
+        setItem buffPing 1 =<< getValue address
+        calcCRC16 buffPing
+
+calcCRC16 :: KnownNat n => Buffer n Uint8 -> Ivory (ProcEffects s ()) ()
+calcCRC16 buff = do
+    let size = getSize buff :: Sint32
+    let s_2 = toIx $ size - 2 
+    let s_1 = toIx $ size - 1 
+    crc <- local $ istruct initCRC16
+    for s_2 $ updateCRC16 crc <=< getItem buff
+    setItem buff s_2 =<< deref (crc ~> msb)
+    setItem buff s_1 =<< deref (crc ~> lsb)
+
+
+receiveData :: KnownNat n => Slave n -> Uint8 -> Ivory (AllocEffects s) ()
 receiveData = runReceive state
     [ go readyToReceive     receivePreamble
     , go receivingMessage   receiveMessage
@@ -110,7 +161,7 @@ receivePreamble (Slave {state, phase, index, size, crc}) v =
 
 
 
-receiveDiscovery :: KnownNat n => Slave n -> Uint8 -> Ivory eff ()
+receiveDiscovery :: KnownNat n => Slave n -> Uint8 -> Ivory (AllocEffects s) ()
 receiveDiscovery = runReceive phase
     [ go waitingData    receiveDiscoveryMac
     , go waitingAddress receiveDiscoveryAddress
@@ -137,12 +188,15 @@ receiveDiscoveryAddress (Slave {phase, buff, crc}) v = do
     setValue phase waitingMsbCRC
 
 receiveDiscoveryLsbCRC :: KnownNat n => Slave n -> Uint8 -> Ivory eff ()
-receiveDiscoveryLsbCRC r@(Slave {address, buff}) =
-    receiveLsbCRC r $ setValue address =<< getItem buff 0
+receiveDiscoveryLsbCRC s@(Slave {address, buff}) =
+    receiveLsbCRC s $ do 
+        setValue address =<< getItem buff 0
+        call_ $ initConf s
+        call_ $ initPing s
 
 
 
-receivePing :: KnownNat n => Slave n -> Uint8 -> Ivory eff ()
+receivePing :: KnownNat n => Slave n -> Uint8 -> Ivory (AllocEffects s) ()
 receivePing = runReceive phase
     [ go waitingAddress $ receiveAddress waitingMsbCRC
     , go waitingMsbCRC    receiveMsbCRC
@@ -155,7 +209,7 @@ receivePingLsbCRC r@(Slave {address}) =
 
 
 
-receiveConfirm :: KnownNat n => Slave n -> Uint8 -> Ivory eff ()
+receiveConfirm :: KnownNat n => Slave n -> Uint8 -> Ivory (AllocEffects s) ()
 receiveConfirm = runReceive phase
     [ go waitingAddress $ receiveAddress waitingMsbCRC
     , go waitingMsbCRC    receiveMsbCRC
@@ -168,7 +222,7 @@ receiveConfirmLsbCRC r =
 
 
 
-receiveMessage :: KnownNat n => Slave n -> Uint8 -> Ivory eff ()
+receiveMessage :: KnownNat n => Slave n -> Uint8 -> Ivory (AllocEffects s) ()
 receiveMessage = runReceive phase
     [ go waitingAddress $ receiveAddress waitingSize
     , go waitingSize      receiveMessageSize
@@ -224,28 +278,19 @@ receiveLsbCRC (Slave {state, crc}) complete v = do
 
 
 
-transmitDiscovery :: Slave n -> Ivory (AllowBreak (AllocEffects s)) ()
-transmitDiscovery s@(Slave {mac, hwType, version}) =
-    transmit' s $ \t -> do
-        t $  discovery txPreamble
-        arrayMap $ t <=< getItem mac
-        t =<< getValue hwType
-        t =<< version |> major
-        t =<< version |> minor
+transmitDiscovery :: Slave n -> Ivory (AllocEffects s) ()
+transmitDiscovery (Slave {buffDisc, transmit}) =
+    transmit' buffDisc transmit
 
 
 transmitPing :: Slave n -> Ivory (AllowBreak(AllocEffects s)) ()
-transmitPing s@(Slave {address}) =
-    transmit' s $ \t -> do
-        t $ ping txPreamble
-        t =<< getValue address
+transmitPing (Slave {buffPing, transmit}) =
+    transmit' buffPing transmit
 
 
 transmitConfirm :: Slave n -> Ivory (AllowBreak(AllocEffects s)) ()
-transmitConfirm s@(Slave {address}) =
-    transmit' s $ \t -> do
-        t $ confirm txPreamble
-        t =<< getValue address
+transmitConfirm (Slave {buffConf, transmit}) =
+    transmit' buffConf transmit
 
 
 transmitMessage :: KnownNat m
@@ -253,16 +298,17 @@ transmitMessage :: KnownNat m
                 -> (Ix m -> forall eff. Ivory eff Uint8)
                 -> Ix m
                 -> Ivory (AllowBreak (AllocEffects s)) ()
-transmitMessage s@(Slave{address}) get n =
-    transmit' s $ \t -> do
-        t $ message txPreamble
-        t =<< getValue address
-        t $ castDefault (fromIx n)
-        for n $ t <=< get
-
-
-transmit' (Slave {transmit}) go = do
+transmitMessage (Slave{address, transmit}) get n = do
     crc16 <- local $ istruct initCRC16
-    go $ \v -> updateCRC16 crc16 v >> transmit v
+    let t v = updateCRC16 crc16 v >> transmit v
+    t $ message txPreamble
+    t =<< getValue address
+    t $ castDefault (fromIx n)
+    for n $ t <=< get
     transmit =<< deref (crc16~>msb)
     transmit =<< deref (crc16~>lsb)
+
+
+transmit' buff transmit = 
+    arrayMap $ transmit <=< getItem buff
+    
