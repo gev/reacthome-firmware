@@ -57,11 +57,11 @@ go = (,)
 
 runReceive :: (Val v a, IvoryEq a)
            => (r -> v a)
-           -> [(a, r -> Uint8 -> Ivory eff ())]
+           -> [(a, r -> Uint8 -> Ivory (AllocEffects s) ())]
            -> r
            -> Uint8
-           -> Ivory eff ()
+           -> Ivory (AllocEffects s) ()
 runReceive f hs r v = do
     p <- getValue . f $ r
     let go (w, h) = w ==? p ==> h r v
-    cond_ $ map go hs
+    cond_ $ go <$> hs
