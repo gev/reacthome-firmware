@@ -228,7 +228,7 @@ transmitDiscovery :: Slave n -> Ivory (AllowBreak (AllocEffects s)) ()
 transmitDiscovery s@(Slave {mac, hwType, version}) =
     transmit' s $ \t -> do
         t $  discovery txPreamble
-        for (getSize mac) $ t <=< getItem mac
+        arrayMap $ t <=< getItem mac
         t =<< getValue hwType
         t =<< version |> major
         t =<< version |> minor
@@ -248,14 +248,16 @@ transmitConfirm s@(Slave {address}) =
         t =<< getValue address
 
 
-transmitMessage :: Slave n
-                -> (Ix 255 -> forall eff. Ivory eff Uint8)
-                -> Ix 255
+transmitMessage :: KnownNat m
+                => Slave n
+                -> (Ix m -> forall eff. Ivory eff Uint8)
+                -> Ix m
                 -> Ivory (AllowBreak (AllocEffects s)) ()
 transmitMessage s@(Slave{address}) get n =
     transmit' s $ \t -> do
         t $ message txPreamble
         t =<< getValue address
+        t $ castDefault (fromIx n)
         for n $ t <=< get
 
 
