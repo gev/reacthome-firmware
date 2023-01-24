@@ -27,19 +27,19 @@ import           Util.Version
 
 data Slave n = Slave
     { name     :: String
-    , mac      :: Buffer 6 Uint8
-    , hwType   :: Value Uint8
-    , version  :: Record Version
-    , address  :: Value Uint8
-    , state    :: Value Uint8
-    , phase    :: Value Uint8
-    , index    :: Value Uint8
-    , size     :: Value Uint8
-    , buff     :: Buffer n  Uint8
-    , buffConf :: Buffer 4  Uint8
-    , buffPing :: Buffer 4  Uint8
+    , mac      :: Buffer 6  Uint8
+    , hwType   :: Value     Uint8
+    , version  :: Record    Version
+    , address  :: Value     Uint8
+    , state    :: Value     Uint8
+    , phase    :: Value     Uint8
+    , index    :: Value     Uint8
+    , size     :: Value     Uint8
+    , buff     :: Buffer  n Uint8
+    , buffConf :: Buffer  4 Uint8
+    , buffPing :: Buffer  4 Uint8
     , buffDisc :: Buffer 12 Uint8
-    , crc      :: Record CRC16
+    , crc      :: Record    CRC16
     , handle   :: Buffer n Uint8 -> forall eff. Ivory eff ()
     , transmit :: Uint8 -> forall eff. Ivory eff ()
     }
