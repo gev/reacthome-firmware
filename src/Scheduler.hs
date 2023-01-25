@@ -29,7 +29,7 @@ scheduler :: SystemClock -> [Step] -> Scheduler
 scheduler clock steps =  Scheduler
     { clock = clock
     , steps = steps
-    , time  = value "scheduler_timer" 0
+    , time  = value "scheduler_time" 0
     }
 
 
