@@ -12,7 +12,7 @@ import           Initialize
 import           Interface.SystemClock
 import           Ivory.Language
 import           Ivory.Language.Module
-import           Scheduler             (Scheduler (Scheduler), schedule)
+import           Scheduler             (schedule, scheduler)
 
 data Formula = Formula
     { clock    :: SystemClock
@@ -22,9 +22,9 @@ data Formula = Formula
 cook :: Formula -> ModuleM ()
 cook (Formula {features, clock}) = do
 
-    let scheduler = Scheduler clock $ concatMap tasks features
+    let sch       = scheduler clock $ concatMap tasks features
 
-    let inits     = initialize scheduler
+    let inits     = initialize sch
                   <> (initialize =<< features)
 
     let init      = proc "init"
@@ -32,7 +32,7 @@ cook (Formula {features, clock}) = do
                   $ mapM_ call_ inits
                  :: Def ('[] :-> ())
 
-    let loop      = schedule scheduler
+    let loop      = schedule sch
 
     let main      = proc "main"
                   $ body
@@ -43,7 +43,7 @@ cook (Formula {features, clock}) = do
 
     traverse_    incl inits
     traverse_    include features
-    include      scheduler
+    include      sch
 
 
     incl init
