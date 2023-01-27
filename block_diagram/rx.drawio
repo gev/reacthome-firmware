@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="zalHJotZlLk-_PNGRZr0" name="Page-1">
-        <mxGraphModel dx="1668" dy="1190" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="587" dy="480" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -335,60 +335,60 @@
                         <Array as="points"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="178" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="177" target="106">
+                <mxCell id="178" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="177" target="106" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="177" value="&lt;span style=&quot;&quot;&gt;blink_1_step&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;shadow=0;" vertex="1" parent="1">
+                <mxCell id="177" value="&lt;span style=&quot;&quot;&gt;blink_1_step&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;shadow=0;" parent="1" vertex="1">
                     <mxGeometry x="2014" y="300" width="120" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="183" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="180" target="124">
+                <mxCell id="183" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="180" target="124" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="180" value="&lt;span style=&quot;color: rgb(255, 255, 255);&quot;&gt;rbus_1_tx_step&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;shadow=0;" vertex="1" parent="1">
+                <mxCell id="180" value="&lt;span style=&quot;color: rgb(255, 255, 255);&quot;&gt;rbus_1_tx_step&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;shadow=0;" parent="1" vertex="1">
                     <mxGeometry x="2830" y="10" width="120" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="184" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="181" target="152">
+                <mxCell id="184" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="181" target="152" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="181" value="&lt;span style=&quot;color: rgb(255, 255, 255);&quot;&gt;rbus_1_rx_step&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;shadow=0;" vertex="1" parent="1">
+                <mxCell id="181" value="&lt;span style=&quot;color: rgb(255, 255, 255);&quot;&gt;rbus_1_rx_step&lt;/span&gt;" style="ellipse;whiteSpace=wrap;html=1;shadow=0;" parent="1" vertex="1">
                     <mxGeometry x="3680" y="20" width="120" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="192" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="182" target="191">
+                <mxCell id="192" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="182" target="191" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="182" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;span style=&quot;color: #dcdcaa;&quot;&gt;USART1_IRQHandler&lt;/span&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shadow=0;" vertex="1" parent="1">
+                <mxCell id="182" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;span style=&quot;color: #dcdcaa;&quot;&gt;USART1_IRQHandler&lt;/span&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shadow=0;" parent="1" vertex="1">
                     <mxGeometry x="4448" y="48" width="160" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="188" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="185" target="74">
+                <mxCell id="188" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="185" target="74" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="1210" y="280" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="185" value="local0 = 0&lt;br&gt;local2 = 0" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;" vertex="1" parent="1">
+                <mxCell id="185" value="local0 = 0&lt;br&gt;local2 = 0" style="rounded=0;whiteSpace=wrap;html=1;shadow=0;" parent="1" vertex="1">
                     <mxGeometry x="1145" y="180" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="187" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="186" target="185">
+                <mxCell id="187" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="186" target="185" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="186" value="loop" style="ellipse;whiteSpace=wrap;html=1;shadow=0;" vertex="1" parent="1">
+                <mxCell id="186" value="loop" style="ellipse;whiteSpace=wrap;html=1;shadow=0;" parent="1" vertex="1">
                     <mxGeometry x="1145" y="110" width="120" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="212" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="189" target="211">
+                <mxCell id="212" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="189" target="211" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="189" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;span style=&quot;color: #dcdcaa;&quot;&gt;USART1_IRQHandler&lt;/span&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shadow=0;" vertex="1" parent="1">
+                <mxCell id="189" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;span style=&quot;color: #dcdcaa;&quot;&gt;USART1_IRQHandler&lt;/span&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;shadow=0;" parent="1" vertex="1">
                     <mxGeometry x="5330" y="60" width="160" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="198" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="191" target="193">
+                <mxCell id="198" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="191" target="193" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="191" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_r0&lt;/span&gt; = &lt;span style=&quot;color: #dcdcaa;&quot;&gt;usart_interrupt_flag_get&lt;/span&gt;(&lt;span style=&quot;color: #4fc1ff;&quot;&gt;RBNE&lt;/span&gt;);&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="191" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_r0&lt;/span&gt; = &lt;span style=&quot;color: #dcdcaa;&quot;&gt;usart_interrupt_flag_get&lt;/span&gt;(&lt;span style=&quot;color: #4fc1ff;&quot;&gt;RBNE&lt;/span&gt;);&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="4373" y="118" width="310" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="195" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="193" target="194">
+                <mxCell id="195" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="193" target="194" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="203" style="edgeStyle=none;sketch=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="193">
+                <mxCell id="203" style="edgeStyle=none;sketch=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="193" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="4528" y="768" as="targetPoint"/>
                         <Array as="points">
@@ -398,19 +398,19 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="193" value="if (n_r0)" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="193" value="if (n_r0)" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="4443" y="200.25" width="170" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="199" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="194" target="196">
+                <mxCell id="199" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="194" target="196" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="194" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;div&gt;&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_r1&lt;/span&gt; = &lt;span style=&quot;color: #dcdcaa;&quot;&gt;usart_data_receive&lt;/span&gt;(&lt;span style=&quot;color: #569cd6;&quot;&gt;USART1&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(156, 220, 254);&quot;&gt;n_deref2&lt;/span&gt; = &lt;span style=&quot;color: rgb(156, 220, 254);&quot;&gt;rbus_1_rx_queue_producer_semaphore&lt;/span&gt;;&lt;/div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="194" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;div&gt;&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_r1&lt;/span&gt; = &lt;span style=&quot;color: #dcdcaa;&quot;&gt;usart_data_receive&lt;/span&gt;(&lt;span style=&quot;color: #569cd6;&quot;&gt;USART1&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: rgb(156, 220, 254);&quot;&gt;n_deref2&lt;/span&gt; = &lt;span style=&quot;color: rgb(156, 220, 254);&quot;&gt;rbus_1_rx_queue_producer_semaphore&lt;/span&gt;;&lt;/div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="4353" y="315.25" width="350" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="200" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="196" target="197">
+                <mxCell id="200" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="196" target="197" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="202" style="edgeStyle=none;sketch=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="196">
+                <mxCell id="202" style="edgeStyle=none;sketch=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="196" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="4528" y="768" as="targetPoint"/>
                         <Array as="points">
@@ -420,27 +420,27 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="196" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;span style=&quot;color: #c586c0;&quot;&gt;if&lt;/span&gt; (&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_deref2&lt;/span&gt; &amp;gt; &lt;span style=&quot;color: #b5cea8;&quot;&gt;0&lt;/span&gt;)&lt;/div&gt;" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="196" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;span style=&quot;color: #c586c0;&quot;&gt;if&lt;/span&gt; (&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_deref2&lt;/span&gt; &amp;gt; &lt;span style=&quot;color: #b5cea8;&quot;&gt;0&lt;/span&gt;)&lt;/div&gt;" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="4405.5" y="390.75" width="245" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="201" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="197">
+                <mxCell id="201" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="197" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="4527.666666666667" y="768" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="197" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;div&gt;&lt;span style=&quot;color: #9cdcfe;&quot;&gt;rbus_1_rx_queue_producer_semaphore&lt;/span&gt; = (&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_deref2&lt;/span&gt; -&amp;nbsp;&lt;span style=&quot;color: #b5cea8;&quot;&gt;1&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;            &lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_deref3&lt;/span&gt; = &lt;span style=&quot;color: #9cdcfe;&quot;&gt;rbus_1_rx_queue_producer_index&lt;/span&gt;;&lt;/div&gt;&lt;div&gt;            &lt;/div&gt;&lt;div&gt;            &lt;span style=&quot;color: #9cdcfe;&quot;&gt;rbus_1_rx_buffer&lt;/span&gt;[&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_deref3&lt;/span&gt; % &lt;span style=&quot;color: #b5cea8;&quot;&gt;64&lt;/span&gt;] = &lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_r1&lt;/span&gt;;&lt;/div&gt;&lt;div&gt;            &lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_r4&lt;/span&gt; = &lt;span style=&quot;color: #569cd6;&quot;&gt;TIMER_CNT&lt;/span&gt;(&lt;span style=&quot;color: #569cd6;&quot;&gt;TIMER1&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;            &lt;/div&gt;&lt;div&gt;            &lt;span style=&quot;color: #9cdcfe;&quot;&gt;rbus_1_rx_timestamp&lt;/span&gt; = &lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_r4&lt;/span&gt;;&lt;/div&gt;&lt;div&gt;            &lt;span style=&quot;color: #9cdcfe;&quot;&gt;rbus_1_rx_queue_producer_index&lt;/span&gt; =&amp;nbsp;(&lt;span style=&quot;color: #b5cea8;&quot;&gt;1&lt;/span&gt;&amp;nbsp;+ &lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_deref3&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;            &lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_deref5&lt;/span&gt; = &lt;span style=&quot;color: #9cdcfe;&quot;&gt;rbus_1_rx_queue_consumer_semaphore&lt;/span&gt;;&lt;/div&gt;&lt;div&gt;            &lt;/div&gt;&lt;div&gt;            &lt;span style=&quot;color: #9cdcfe;&quot;&gt;rbus_1_rx_queue_consumer_semaphore&lt;/span&gt; = (&lt;span style=&quot;color: #b5cea8;&quot;&gt;1&lt;/span&gt;&amp;nbsp;+ &lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_deref5&lt;/span&gt;);&lt;/div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="197" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;div&gt;&lt;span style=&quot;color: #9cdcfe;&quot;&gt;rbus_1_rx_queue_producer_semaphore&lt;/span&gt; = (&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_deref2&lt;/span&gt; -&amp;nbsp;&lt;span style=&quot;color: #b5cea8;&quot;&gt;1&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;            &lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_deref3&lt;/span&gt; = &lt;span style=&quot;color: #9cdcfe;&quot;&gt;rbus_1_rx_queue_producer_index&lt;/span&gt;;&lt;/div&gt;&lt;div&gt;            &lt;/div&gt;&lt;div&gt;            &lt;span style=&quot;color: #9cdcfe;&quot;&gt;rbus_1_rx_buffer&lt;/span&gt;[&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_deref3&lt;/span&gt; % &lt;span style=&quot;color: #b5cea8;&quot;&gt;64&lt;/span&gt;] = &lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_r1&lt;/span&gt;;&lt;/div&gt;&lt;div&gt;            &lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_r4&lt;/span&gt; = &lt;span style=&quot;color: #569cd6;&quot;&gt;TIMER_CNT&lt;/span&gt;(&lt;span style=&quot;color: #569cd6;&quot;&gt;TIMER1&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;            &lt;/div&gt;&lt;div&gt;            &lt;span style=&quot;color: #9cdcfe;&quot;&gt;rbus_1_rx_timestamp&lt;/span&gt; = &lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_r4&lt;/span&gt;;&lt;/div&gt;&lt;div&gt;            &lt;span style=&quot;color: #9cdcfe;&quot;&gt;rbus_1_rx_queue_producer_index&lt;/span&gt; =&amp;nbsp;(&lt;span style=&quot;color: #b5cea8;&quot;&gt;1&lt;/span&gt;&amp;nbsp;+ &lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_deref3&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;            &lt;/div&gt;&lt;div&gt;&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_deref5&lt;/span&gt; = &lt;span style=&quot;color: #9cdcfe;&quot;&gt;rbus_1_rx_queue_consumer_semaphore&lt;/span&gt;;&lt;/div&gt;&lt;div&gt;            &lt;/div&gt;&lt;div&gt;            &lt;span style=&quot;color: #9cdcfe;&quot;&gt;rbus_1_rx_queue_consumer_semaphore&lt;/span&gt; = (&lt;span style=&quot;color: #b5cea8;&quot;&gt;1&lt;/span&gt;&amp;nbsp;+ &lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_deref5&lt;/span&gt;);&lt;/div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="4308" y="495.75" width="440" height="170" as="geometry"/>
                 </mxCell>
-                <mxCell id="206" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="204" target="205">
+                <mxCell id="206" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="204" target="205" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="204" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_r6&lt;/span&gt; = &lt;span style=&quot;color: #dcdcaa;&quot;&gt;usart_interrupt_flag_get&lt;/span&gt;(&lt;span style=&quot;color: #4fc1ff;&quot;&gt;FLAG_TC&lt;/span&gt;);&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="204" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_r6&lt;/span&gt; = &lt;span style=&quot;color: #dcdcaa;&quot;&gt;usart_interrupt_flag_get&lt;/span&gt;(&lt;span style=&quot;color: #4fc1ff;&quot;&gt;FLAG_TC&lt;/span&gt;);&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="4358" y="768" width="340" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="208" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="205" target="207">
+                <mxCell id="208" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="205" target="207" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="210" style="edgeStyle=none;sketch=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="205">
+                <mxCell id="210" style="edgeStyle=none;sketch=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="205" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="4529" y="1114.9999999999998" as="targetPoint"/>
                         <Array as="points">
@@ -450,27 +450,27 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="205" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;span style=&quot;color: #c586c0;&quot;&gt;if&lt;/span&gt; (&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_r6&lt;/span&gt;)&lt;/div&gt;" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="205" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;span style=&quot;color: #c586c0;&quot;&gt;if&lt;/span&gt; (&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_r6&lt;/span&gt;)&lt;/div&gt;" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="4423" y="838" width="210" height="70" as="geometry"/>
                 </mxCell>
-                <mxCell id="209" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="207">
+                <mxCell id="209" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="207" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="4528.384615384615" y="1114.9999999999998" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="207" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;div&gt;&lt;span style=&quot;color: #dcdcaa;&quot;&gt;usart_interrupt_flag_clear&lt;/span&gt;(&lt;span style=&quot;color: #569cd6;&quot;&gt;USART1&lt;/span&gt;, &lt;span style=&quot;color: #4fc1ff;&quot;&gt;USART_INT_FLAG_TC&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;        &lt;span style=&quot;color: #dcdcaa;&quot;&gt;usart_interrupt_disable&lt;/span&gt;(&lt;span style=&quot;color: #569cd6;&quot;&gt;USART1&lt;/span&gt;, &lt;span style=&quot;color: #4fc1ff;&quot;&gt;USART_INT_TC&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;        &lt;span style=&quot;color: #dcdcaa;&quot;&gt;usart_interrupt_enable&lt;/span&gt;(&lt;span style=&quot;color: #569cd6;&quot;&gt;USART1&lt;/span&gt;, &lt;span style=&quot;color: #4fc1ff;&quot;&gt;USART_INT_RBNE&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;        &lt;span style=&quot;color: #dcdcaa;&quot;&gt;gpio_bit_reset&lt;/span&gt;(&lt;span style=&quot;color: #569cd6;&quot;&gt;GPIOA&lt;/span&gt;, &lt;span style=&quot;color: #569cd6;&quot;&gt;GPIO_PIN_4&lt;/span&gt;);&lt;/div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="207" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;div&gt;&lt;span style=&quot;color: #dcdcaa;&quot;&gt;usart_interrupt_flag_clear&lt;/span&gt;(&lt;span style=&quot;color: #569cd6;&quot;&gt;USART1&lt;/span&gt;, &lt;span style=&quot;color: #4fc1ff;&quot;&gt;USART_INT_FLAG_TC&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;        &lt;span style=&quot;color: #dcdcaa;&quot;&gt;usart_interrupt_disable&lt;/span&gt;(&lt;span style=&quot;color: #569cd6;&quot;&gt;USART1&lt;/span&gt;, &lt;span style=&quot;color: #4fc1ff;&quot;&gt;USART_INT_TC&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;        &lt;span style=&quot;color: #dcdcaa;&quot;&gt;usart_interrupt_enable&lt;/span&gt;(&lt;span style=&quot;color: #569cd6;&quot;&gt;USART1&lt;/span&gt;, &lt;span style=&quot;color: #4fc1ff;&quot;&gt;USART_INT_RBNE&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;        &lt;span style=&quot;color: #dcdcaa;&quot;&gt;gpio_bit_reset&lt;/span&gt;(&lt;span style=&quot;color: #569cd6;&quot;&gt;GPIOA&lt;/span&gt;, &lt;span style=&quot;color: #569cd6;&quot;&gt;GPIO_PIN_4&lt;/span&gt;);&lt;/div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="4328" y="928" width="400" height="110" as="geometry"/>
                 </mxCell>
-                <mxCell id="214" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="211" target="213">
+                <mxCell id="214" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="211" target="213" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="211" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_r0&lt;/span&gt; = &lt;span style=&quot;color: #dcdcaa;&quot;&gt;dma_interrupt_flag_get&lt;/span&gt;(&lt;span style=&quot;color: #4fc1ff;&quot;&gt;DMA_CH3&lt;/span&gt;, &lt;span style=&quot;color: #569cd6;&quot;&gt;DMA_INT_FLAG_FTF&lt;/span&gt;);&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="211" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;span style=&quot;color: #9cdcfe;&quot;&gt;n_r0&lt;/span&gt; = &lt;span style=&quot;color: #dcdcaa;&quot;&gt;dma_interrupt_flag_get&lt;/span&gt;(&lt;span style=&quot;color: #4fc1ff;&quot;&gt;DMA_CH3&lt;/span&gt;, &lt;span style=&quot;color: #569cd6;&quot;&gt;DMA_INT_FLAG_FTF&lt;/span&gt;);&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="5170" y="140" width="480" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="216" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="213" target="215">
+                <mxCell id="216" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="213" target="215" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="218" style="edgeStyle=none;sketch=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="213">
+                <mxCell id="218" style="edgeStyle=none;sketch=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="213" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="5410" y="590" as="targetPoint"/>
                         <Array as="points">
@@ -480,16 +480,25 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="213" value="if(n_r0)" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="213" value="if(n_r0)" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="5305" y="240" width="210" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="217" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="215">
+                <mxCell id="217" style="edgeStyle=none;sketch=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" parent="1" source="215" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="5409.5" y="590" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="215" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;div&gt; &lt;span style=&quot;color: #dcdcaa;&quot;&gt;dma_interrupt_flag_clear&lt;/span&gt;(&lt;span style=&quot;color: #4fc1ff;&quot;&gt;DMA_CH3&lt;/span&gt;, &lt;span style=&quot;color: #569cd6;&quot;&gt;DMA_INT_FLAG_G&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;        &lt;span style=&quot;color: #dcdcaa;&quot;&gt;usart_interrupt_disable&lt;/span&gt;(&lt;span style=&quot;color: #569cd6;&quot;&gt;USART1&lt;/span&gt;, &lt;span style=&quot;color: #4fc1ff;&quot;&gt;USART_INT_RBNE&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;        &lt;span style=&quot;color: #dcdcaa;&quot;&gt;usart_interrupt_enable&lt;/span&gt;(&lt;span style=&quot;color: #569cd6;&quot;&gt;USART1&lt;/span&gt;, &lt;span style=&quot;color: #4fc1ff;&quot;&gt;USART_INT_TC&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;        &lt;span style=&quot;color: #9cdcfe;&quot;&gt;rbus_1_tx_lock&lt;/span&gt; = &lt;span style=&quot;color: #569cd6;&quot;&gt;false&lt;/span&gt;;&lt;/div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="215" value="&lt;div style=&quot;color: rgb(212, 212, 212); background-color: rgb(30, 30, 30); font-family: &amp;quot;Fira Code&amp;quot;, Menlo, Monaco, &amp;quot;Courier New&amp;quot;, monospace; line-height: 18px;&quot;&gt;&lt;div&gt; &lt;span style=&quot;color: #dcdcaa;&quot;&gt;dma_interrupt_flag_clear&lt;/span&gt;(&lt;span style=&quot;color: #4fc1ff;&quot;&gt;DMA_CH3&lt;/span&gt;, &lt;span style=&quot;color: #569cd6;&quot;&gt;DMA_INT_FLAG_G&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;        &lt;span style=&quot;color: #dcdcaa;&quot;&gt;usart_interrupt_disable&lt;/span&gt;(&lt;span style=&quot;color: #569cd6;&quot;&gt;USART1&lt;/span&gt;, &lt;span style=&quot;color: #4fc1ff;&quot;&gt;USART_INT_RBNE&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;        &lt;span style=&quot;color: #dcdcaa;&quot;&gt;usart_interrupt_enable&lt;/span&gt;(&lt;span style=&quot;color: #569cd6;&quot;&gt;USART1&lt;/span&gt;, &lt;span style=&quot;color: #4fc1ff;&quot;&gt;USART_INT_TC&lt;/span&gt;);&lt;/div&gt;&lt;div&gt;        &lt;span style=&quot;color: #9cdcfe;&quot;&gt;rbus_1_tx_lock&lt;/span&gt; = &lt;span style=&quot;color: #569cd6;&quot;&gt;false&lt;/span&gt;;&lt;/div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="5205" y="370" width="410" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="219" value="" style="ellipse;whiteSpace=wrap;html=1;sketch=1;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=20;fillColor=#a20025;strokeColor=#6F0000;fontColor=#ffffff;" vertex="1" parent="1">
+                    <mxGeometry x="60" y="130" width="630" height="400" as="geometry"/>
+                </mxCell>
+                <mxCell id="220" value="Text" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;sketch=1;hachureGap=4;jiggle=2;curveFitting=1;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=20;" vertex="1" parent="1">
+                    <mxGeometry x="280" y="240" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="221" value="Это разве в main?" style="text;html=1;strokeColor=#A50040;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;hachureGap=4;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=20;fontColor=#ffffff;" vertex="1" parent="1">
+                    <mxGeometry x="50" y="240" width="170" height="92" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
