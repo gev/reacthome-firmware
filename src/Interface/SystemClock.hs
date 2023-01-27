@@ -37,7 +37,7 @@ instance Include SystemClock where
 
 instance Initialize SystemClock where
     initialize (SystemClock {timer, counter, time}) =
-        initialize counter >>
+        initialize counter <>
         initialize (HandleTimer timer $ handle time)
 
 handle :: Value Uint32 -> Ivory eff ()
