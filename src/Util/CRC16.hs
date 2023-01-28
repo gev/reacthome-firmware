@@ -36,6 +36,7 @@ inclCRC16 :: ModuleM ()
 inclCRC16 = do
     incl crc_16_digest
     incl crc_16_update
+    defStruct (Proxy :: Proxy CRC16)
     defConstMemArea crc16_msb
     defConstMemArea crc16_lsb
 
@@ -49,14 +50,14 @@ updateCRC16 :: Ref s ('Struct CRC16) -> Uint8 -> Ivory eff ()
 updateCRC16 = call_ crc_16_update
 
 crc_16_update :: Def ('[Ref s ('Struct CRC16), Uint8] ':-> ())
-crc_16_update = proc "crc_16_update" $ \d i -> body $ do
-    msb' <- deref $ d ~> msb
-    lsb' <- deref $ d ~> lsb
-    let ix = toIx $ msb' .^ i
+crc_16_update = proc "crc_16_update" $ \c v -> body $ do
+    msb' <- deref $ c ~> msb
+    lsb' <- deref $ c ~> lsb
+    let ix = toIx $ msb' .^ v
     m <- deref (crc16_msb' ! ix)
     l <- deref (crc16_lsb' ! ix)
-    store (d ~> msb) (lsb' .^ m)
-    store (d ~> lsb) l
+    store (c ~> msb) (lsb' .^ m)
+    store (c ~> lsb) l
 
 
 digestCRC16 :: Ref s ('Struct CRC16) -> Ivory eff Uint16
