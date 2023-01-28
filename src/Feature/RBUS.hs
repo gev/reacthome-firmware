@@ -7,6 +7,7 @@
 
 module Feature.RBUS    where
 
+import           Data.Data                   (cast)
 import           Device.GD32F3x0.SystemClock
 import           Feature
 import           GHC.IO.BufferedIO           (readBuf)
@@ -18,9 +19,10 @@ import           Interface.RS485             (HandleRS485 (HandleRS485), RS485,
                                               transmit)
 import           Ivory.Language
 import           Ivory.Stdlib
+import           Util.CRC16
 import           Util.Data.Buffer
 import           Util.Data.Class
-import           Util.Data.Concurrent.Queue  (Queue, pop, push, queue)
+import           Util.Data.Concurrent.Queue  (Queue, pop, push, queue, size)
 import           Util.Data.Index             (Index, index)
 import           Util.Data.Value
 
@@ -59,7 +61,8 @@ rbus n rs = Feature $ RBUS
 
 
 instance Include RBUS where
-    include r = do include $ timestamp       r
+    include r = do inclCRC16
+                   include $ timestamp       r
                    include $ rxBuff          r
                    include $ rxQueue         r
                    include $ msgSizeBuff     r
@@ -92,12 +95,22 @@ txTask (RBUS {rs, msgIndex, msgSizeBuff, msgQueue, msgBuff, txBuff, txLock}) = d
     when (iNot locked) $ do
         pop msgQueue $ \i -> do
             size <- getItem msgSizeBuff (toIx i)
-            for (toIx size) $ \dx -> do
+            let s = toIx size
+            let s_1 = toIx $ size + 1
+            let s_2 = toIx $ size - 2
+            crc <- local $ istruct initCRC16
+            for s $ \dx -> do
                 sx <- getValue msgIndex
-                setItem txBuff dx =<< getItem msgBuff sx
+                v <- getItem msgBuff sx
+                when (dx <? s_2) $ updateCRC16 crc $ castDefault v
+                setItem txBuff dx v
                 setValue msgIndex $ sx + 1
+            m <- deref (crc ~> msb)
+            l <- deref (crc ~> lsb)
+            setItem txBuff s $ safeCast m
+            setItem txBuff s_1 $ safeCast l
             let buff = toCArray $ getBuffer txBuff
-            transmit rs buff size
+            transmit rs buff (size + 2)
             setValue txLock true
 
 
