@@ -6,7 +6,6 @@
 module Feature.Blink where
 
 import           Data.Function
-import           Device.GD32F3x0.SystemClock
 import           Feature
 import           Include
 import           Initialize
