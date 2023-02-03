@@ -31,9 +31,11 @@ executable reacthome-firmware
                     , Scheduler
                     , Shake
 
+                    , Endpoint.Relay
+
                     , Feature
                     , Feature.Blink
-                    , Feature.Relay
+                    , Feature.Relays
                     , Feature.RBUS
                     , Feature.RBUS.Slave
 
