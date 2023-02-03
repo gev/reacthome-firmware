@@ -1,7 +1,5 @@
-{-# LANGUAGE DataKinds          #-}
-{-# LANGUAGE GADTs              #-}
-{-# LANGUAGE NamedFieldPuns     #-}
-{-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE GADTs          #-}
+{-# LANGUAGE NamedFieldPuns #-}
 
 module Endpoint.Relay where
 
@@ -38,7 +36,7 @@ turnOff (Relay {state}) = setValue state false
 apply :: Relay -> Ivory eff ()
 apply (Relay out state) = do
     s <- getValue state
-    ifte_ s (set   out) 
+    ifte_ s (set   out)
             (reset out)
 
 
