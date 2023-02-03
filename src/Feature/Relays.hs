@@ -10,18 +10,15 @@ import           Initialize
 import           Interface.GPIO
 import           Ivory.Language
 import           Util.Data.Value
--- data Relay = forall a. (OUT a) => Relay Int a
 
--- relay :: OUT a => Int -> a -> Feature
--- relay n = Feature . Relay n
 
 newtype Relays = Relays
     { getRelays :: [Relay]
     }
 
-relays :: [Relay] -> Feature
-relays rs = Feature $ Relays
-    { getRelays = rs
+relays :: OUT o => [o] -> Feature
+relays os = Feature $ Relays
+    { getRelays = zipWith relay [1..] os
     }
 
 instance Include Relays where
