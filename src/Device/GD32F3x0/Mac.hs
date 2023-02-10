@@ -12,10 +12,7 @@ import           Util.Data.Class
 
 systemMac :: Mac 6 Uint8
 systemMac = mac inclDBG $ \buff -> do
-    id <- bytes <$> getID
-    setItem buff 0 0x01
-    setItem buff 1 0x4a
-    setItem buff 2 $ head id
-    setItem buff 3 $ id !! 1
-    setItem buff 4 $ id !! 2
-    setItem buff 5 $ id !! 3
+    id <- getID
+    zipWithM_ (setItem buff)
+              [0, 1, 2, 3, 4, 5]
+            $ [0x01, 0x4a] <> bytes id
