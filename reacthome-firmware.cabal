@@ -45,6 +45,7 @@ executable reacthome-firmware
 
                     , Interface.Counter
                     , Interface.GPIO
+                    , Interface.Mac
                     , Interface.SystemClock
                     , Interface.Timer
                     , Interface.USART
@@ -54,7 +55,9 @@ executable reacthome-firmware
                     , Protocol.RBUS.Master
                     , Protocol.RBUS.Slave
 
+                    , Device.GD32F3x0
                     , Device.GD32F3x0.GPIO
+                    , Device.GD32F3x0.Mac
                     , Device.GD32F3x0.SysTick
                     , Device.GD32F3x0.SystemClock
                     , Device.GD32F3x0.Timer
@@ -80,6 +83,7 @@ executable reacthome-firmware
                     , Support.Device.GD32F4xx.RCU
                     , Support.Util
 
+                    , Util
                     , Util.CRC16
                     , Util.Version
                     , Util.Data.Class
