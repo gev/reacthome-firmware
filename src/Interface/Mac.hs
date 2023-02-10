@@ -31,7 +31,7 @@ mac include initialize = Mac
 
 
 instance Include (Mac n t) where
-    include = includeMac >> include . buff
+    include (Mac {includeMac, buff}) = includeMac >> include buff
 
 
 instance Initialize (Mac n t) where
