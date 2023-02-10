@@ -3,15 +3,15 @@
 module Device.GD32F3x0.Mac where
 
 
-import           Interface.Mac               as I
+import           Interface.Mac
 import           Ivory.Language
 import           Support.Device.GD32F3x0.DBG
 import           Util
 import           Util.Data.Class
 
 
-mac :: Mac 6 Uint8
-mac = I.mac inclDBG $ \buff -> do
+systemMac :: Mac 6 Uint8
+systemMac = mac inclDBG $ \buff -> do
     id <- getID
     let
     setItem buff 0 0x01

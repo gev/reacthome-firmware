@@ -1,7 +1,6 @@
-{-# LANGUAGE DataKinds      #-}
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE RankNTypes     #-}
-{-# LANGUAGE TypeOperators  #-}
+{-# LANGUAGE DataKinds     #-}
+{-# LANGUAGE RankNTypes    #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Formula where
 
@@ -9,23 +8,26 @@ import           Data.Foldable
 import           Feature
 import           Include
 import           Initialize
+import           Interface.Mac
 import           Interface.SystemClock
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Scheduler             (schedule, scheduler)
 
 data Formula = Formula
-    { clock    :: SystemClock
+    { mac      :: Mac 6 Uint8
+    , clock    :: SystemClock
     , features :: [Feature]
     }
 
 cook :: Formula -> ModuleM ()
-cook (Formula {features, clock}) = do
+cook (Formula mac clock features) = do
 
     let sch       = scheduler clock $ concatMap tasks features
 
     let inits     = initialize sch
-                  <> (initialize =<< features)
+                 <> initialize mac
+                 <> (initialize =<< features)
 
     let init      = proc "init"
                   $ body
@@ -44,6 +46,7 @@ cook (Formula {features, clock}) = do
     traverse_    incl inits
     traverse_    include features
     include      sch
+    include      mac
 
 
     incl init
