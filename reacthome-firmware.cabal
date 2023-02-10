@@ -83,7 +83,7 @@ executable reacthome-firmware
                     , Support.Device.GD32F4xx.RCU
                     , Support.Util
 
-                    , Util
+                    , Util.ByteSplit
                     , Util.CRC16
                     , Util.Version
                     , Util.Data.Class
