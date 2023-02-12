@@ -1,10 +1,7 @@
 module Formula.Relay6 where
 
 import           Data.Function   ((&))
-import           Device.GD32F3x0 (GD32F3x0, gd32ffx0, out_pa_0, out_pa_1,
-                                  out_pa_15, out_pa_4, out_pa_5, out_pa_6,
-                                  out_pa_7, out_pb_0, usart_1)
-import qualified Device.GD32F3x0 as G
+import           Device.GD32F3x0
 import           Feature.RBUS
 import           Feature.Relays
 import           Formula

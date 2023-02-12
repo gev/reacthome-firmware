@@ -1,9 +1,7 @@
 module Formula.Blink where
 
 import           Data.Function   ((&))
-import           Device.GD32F3x0 (GD32F3x0, gd32ffx0, out_pa_15, out_pa_4,
-                                  usart_1)
-import qualified Device.GD32F3x0 as G
+import           Device.GD32F3x0
 import           Feature.Blink   as F
 import           Feature.RBUS
 import           Formula
