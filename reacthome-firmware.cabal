@@ -46,6 +46,7 @@ executable reacthome-firmware
                     , Interface.Counter
                     , Interface.GPIO
                     , Interface.Mac
+                    , Interface.MCU
                     , Interface.SystemClock
                     , Interface.Timer
                     , Interface.USART
