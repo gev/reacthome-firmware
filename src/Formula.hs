@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds     #-}
+{-# LANGUAGE GADTs         #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Formula where
@@ -12,12 +13,13 @@ import           Ivory.Language
 import           Ivory.Language.Module
 import           Scheduler             (schedule, scheduler)
 
-data Formula mcu = Formula
-    { mcu      :: mcu
-    , features :: [Feature]
-    }
+data Formula where
+    Formula :: MCU mcu
+           => { mcu      :: mcu
+              , features :: [Feature]
+              } -> Formula
 
-cook :: MCU mcu => Formula mcu -> ModuleM ()
+cook :: Formula -> ModuleM ()
 cook (Formula mcu features) = do
 
     let sch       = scheduler (systemClock mcu) $ concatMap tasks features

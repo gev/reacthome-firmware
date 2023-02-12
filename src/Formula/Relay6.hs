@@ -8,8 +8,8 @@ import           Formula
 import           Interface.RS485
 
 
-relay6 :: Formula GD32F3x0
-relay6 = Formula { mcu = gd32ffx0
+relay6 :: Formula
+relay6 = Formula { mcu      = gd32ffx0
                  , features = [ rbus   1 $ RS485 1 (gd32ffx0 & usart_1)
                                                    (gd32ffx0 & out_pa_4)
                               , relays [ gd32ffx0 & out_pb_0
