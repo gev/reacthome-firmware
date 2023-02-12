@@ -3,13 +3,13 @@
 {-# LANGUAGE GADTs             #-}
 {-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE RankNTypes        #-}
-{-# LANGUAGE TypeOperators     #-}
 
 module Interface.RS485 where
 
 import           Include
 import           Initialize
 import           Interface.GPIO
+import           Interface.MCU
 import qualified Interface.USART as I
 import           Ivory.Language
 
@@ -28,6 +28,20 @@ data HandleRS485 r = HandleRS485
     , onReceive  :: Uint16 -> forall eff. Ivory eff ()
     , onTransmit :: forall eff. Ivory eff ()
     }
+
+
+rs485 :: (I.USART u, OUT o, MCU mcu)
+      => Int
+      -> (mcu -> u)
+      -> (mcu -> o)
+      -> mcu
+      -> RS485
+rs485 n usart rede mcu = RS485
+    { n     = n
+    , usart = usart mcu
+    , rede  = rede  mcu
+    }
+
 
 transmit :: RS485
          -> Ref r (CArray (Stored Uint16))

@@ -8,6 +8,7 @@ import           Feature
 import           Include
 import           Initialize
 import           Interface.GPIO
+import           Interface.MCU   (MCU)
 import           Ivory.Language
 import           Util.Data.Value
 
@@ -16,9 +17,9 @@ newtype Relays = Relays
     { getRelays :: [Relay]
     }
 
-relays :: OUT o => [o] -> Feature
-relays os = Feature $ Relays
-    { getRelays = zipWith relay [1..] os
+relays :: (MCU mcu, OUT o) => [mcu -> o] -> mcu -> Feature
+relays os mcu = Feature $ Relays
+    { getRelays = zipWith relay [1..] $ ($ mcu) <$> os
     }
 
 

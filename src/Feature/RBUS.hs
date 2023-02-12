@@ -15,6 +15,7 @@ import           GHC.TypeNats
 import           Include
 import           Initialize
 import           Interface.Counter           (readCounter)
+import           Interface.MCU               (MCU)
 import           Interface.RS485             (HandleRS485 (HandleRS485), RS485,
                                               transmit)
 import           Ivory.Language
@@ -43,10 +44,10 @@ data RBUS = RBUS
     }
 
 
-rbus :: Int -> RS485 -> Feature
-rbus n rs = Feature $ RBUS
+rbus :: MCU mcu => Int -> (mcu -> RS485) -> mcu -> Feature
+rbus n rs mcu = Feature $ RBUS
     { name          = name
-    , rs            = rs
+    , rs            = rs mcu
     , timestamp     = value  (name <> "_rx_timestamp") 0
     , rxBuff        = buffer (name <> "_rx")
     , rxQueue       = queue  (name <> "_rx")

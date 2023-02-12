@@ -16,17 +16,18 @@ import           Scheduler             (schedule, scheduler)
 data Formula where
     Formula :: MCU mcu
            => { mcu      :: mcu
-              , features :: [Feature]
+              , features :: [mcu -> Feature]
               } -> Formula
 
 cook :: Formula -> ModuleM ()
 cook (Formula mcu features) = do
 
-    let sch       = scheduler (systemClock mcu) $ concatMap tasks features
+    let fts       = ($ mcu) <$> features
+    let sch       = scheduler (systemClock mcu) $ concatMap tasks fts
 
     let inits     = initialize sch
                  <> initialize (mac mcu)
-                 <> (initialize =<< features)
+                 <> (initialize =<< fts)
 
     let init      = proc "init"
                   $ body
@@ -43,7 +44,7 @@ cook (Formula mcu features) = do
                  :: Def ('[] :-> Sint32)
 
     traverse_    incl inits
-    traverse_    include features
+    traverse_    include fts
     include      sch
     include      (mac mcu)
 

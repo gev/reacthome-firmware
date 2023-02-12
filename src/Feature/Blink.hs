@@ -10,23 +10,24 @@ import           Feature
 import           Include
 import           Initialize
 import           Interface.GPIO
+import           Interface.MCU
 import           Interface.Timer
 import           Ivory.Language
 import           Util.Data.Class
 import           Util.Data.Value
 
 
-data Blink = forall o. (OUT o) => Blink
+data Blink = forall o. OUT o => Blink
  { name  :: String
  , out   :: o
  , state :: Value IBool
  }
 
 
-blink :: OUT o => Int -> o -> Feature
-blink n out = Feature $ Blink
+blink :: (MCU mcu, OUT o) => Int -> (mcu -> o) -> mcu -> Feature
+blink n out mcu = Feature $ Blink
     { name  = name
-    , out   = out
+    , out   = out mcu
     , state = value (name <> "_state") false
     } where name = "blink_" <> show n
 
