@@ -13,6 +13,7 @@ import           Control.Monad    ((<=<))
 import           GHC.TypeNats
 import           Include
 import           Initialize
+import           Interface.Mac    (Mac)
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Protocol.RBUS

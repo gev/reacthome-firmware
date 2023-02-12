@@ -15,14 +15,17 @@ import           Util.Data.Buffer
 import           Util.Data.Class
 
 
-data Mac n t = Mac
+type Mac = Mac' 6 Uint8
+
+
+data Mac' n t = Mac
     { includeMac    :: ModuleM ()
     , initializeMac :: Buffer n t -> forall eff. Ivory eff ()
     , buff          :: Buffer n t
     }
 
 
-mac :: ModuleM () -> (Buffer 6 Uint8 -> forall eff. Ivory eff ()) -> Mac 6 Uint8
+mac :: ModuleM () -> (Buffer 6 Uint8 -> forall eff. Ivory eff ()) -> Mac
 mac include initialize = Mac
     { includeMac    = include
     , initializeMac = initialize
@@ -30,13 +33,13 @@ mac include initialize = Mac
     }
 
 
-instance Include (Mac n t) where
+instance Include (Mac' n t) where
     include (Mac {includeMac, buff}) = includeMac >> include buff
 
 
-instance Initialize (Mac n t) where
+instance Initialize (Mac' n t) where
     initialize (Mac {initializeMac, buff})= [proc "mac_init" $ body $ initializeMac buff]
 
 
-instance (IvoryStore t, KnownNat n) => Buff Mac n t where
+instance (IvoryStore t, KnownNat n) => Buff Mac' n t where
   getBuffer = getBuffer . buff

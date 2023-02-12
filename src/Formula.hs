@@ -15,7 +15,7 @@ import           Ivory.Language.Module
 import           Scheduler             (schedule, scheduler)
 
 data Formula = Formula
-    { mac      :: Mac 6 Uint8
+    { mac      :: Mac
     , clock    :: SystemClock
     , features :: [Feature]
     }
