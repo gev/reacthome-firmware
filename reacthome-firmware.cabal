@@ -63,6 +63,8 @@ executable reacthome-firmware
                     , Device.GD32F3x0.Timer
                     , Device.GD32F3x0.USART
 
+                    , Device.GD32F4xx
+
                     , Ivory.Support
                     , Ivory.Support.Device.GD32F3x0
                     , Ivory.Support.Device.GD32F4xx

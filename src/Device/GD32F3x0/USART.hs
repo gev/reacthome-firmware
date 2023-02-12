@@ -15,7 +15,6 @@ import           Ivory.Stdlib
 import           Ivory.Support.Device.GD32F3x0
 import           Support.Device.GD32F3x0
 import           Support.Device.GD32F3x0.DMA
-import           Support.Device.GD32F3x0.GPIO  (GPIO_AF (GPIO_AF_1))
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.USART as S
@@ -32,16 +31,6 @@ data USART = USART
     , rx       :: G.PORT
     , tx       :: G.PORT
     }
-
-usart_1 = USART USART1
-                RCU_USART1
-                USART1_IRQn
-                DMA_CH3
-                DMA_Channel3_4_IRQn
-                DMA_Channel3_4
-                (G.pa_3 $ G.AF GPIO_AF_1)
-                (G.pa_2 $ G.AF GPIO_AF_1)
-
 
 
 instance Include (I.HandleUSART USART) where

@@ -1,19 +1,16 @@
 module Formula.Blink where
 
-import           Device.GD32F3x0.GPIO
-import           Device.GD32F3x0.Mac
-import           Device.GD32F3x0.SystemClock
-import           Device.GD32F3x0.USART       (usart_1)
-import           Feature.Blink               as F
+import           Data.Function   ((&))
+import           Device.GD32F3x0 (gd32ffx0, out_pa_15, out_pa_4, usart_1)
+import qualified Device.GD32F3x0 as G
+import           Feature.Blink   as F
 import           Feature.RBUS
 import           Formula
 import           Interface.RS485
 
-
 blink :: Formula
-blink = Formula { mac       = systemMac
-                , clock     = systemClock
-                , features  = [ F.blink 1 out_pa_15
-                              , rbus    1 $ RS485 1 usart_1 out_pa_4
+blink = Formula { mac       = gd32ffx0 & G.mac
+                , clock     = gd32ffx0 & G.clock
+                , features  = [ F.blink 1 $ gd32ffx0 & out_pa_15
                               ]
                 }

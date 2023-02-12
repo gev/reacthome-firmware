@@ -16,9 +16,9 @@ import           Util.Data.Class
 import           Util.Data.Value
 
 
-data Blink = forall a. (OUT a) => Blink
+data Blink = forall o. (OUT o) => Blink
  { name  :: String
- , out   :: a
+ , out   :: o
  , state :: Value IBool
  }
 

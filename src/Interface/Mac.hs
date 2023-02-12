@@ -37,7 +37,7 @@ instance Include (Mac' n t) where
     include (Mac {includeMac, buff}) = includeMac >> include buff
 
 
-instance Initialize (Mac' n t) where
+instance Initialize Mac where
     initialize (Mac {initializeMac, buff})= [proc "mac_init" $ body $ initializeMac buff]
 
 
