@@ -8,7 +8,7 @@ import           Formula
 import           Interface.RS485
 
 blink :: Formula
-blink = Formula { mcu       = gd32ffx0
+blink = Formula { mcu       = gd32f3x0
                 , features  = [ F.blink 1 out_pa_15
                               ]
                 }

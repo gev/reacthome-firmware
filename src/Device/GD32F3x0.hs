@@ -88,7 +88,7 @@ data GD32F3x0 = GD32F3x0
     }
 
 
-gd32ffx0 = GD32F3x0
+gd32f3x0 = GD32F3x0
     { usart_1   = USART USART1
                         RCU_USART1
                         USART1_IRQn
