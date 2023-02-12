@@ -1,8 +1,8 @@
 {-# LANGUAGE DataKinds #-}
 module Protocol.RBUS where
 
+import           Interface.Mac    as I
 import           Ivory.Language
-import           Ivory.Language.Uint (Uint8 (Uint8))
 import           Ivory.Stdlib
 import           Util.CRC16
 import           Util.Data.Buffer
@@ -10,7 +10,7 @@ import           Util.Data.Class
 import           Util.Data.Record
 
 
-type Mac = Buffer 6 Uint8
+type Mac = I.Mac 6 Uint8
 
 
 data Preamble = Preamble

@@ -27,7 +27,7 @@ import           Util.Version
 
 data Slave n = Slave
     { name     :: String
-    , mac      :: Buffer 6  Uint8
+    , mac      :: Mac
     , typeID   :: Value     Uint8
     , version  :: Record    Version
     , address  :: Value     Uint8
