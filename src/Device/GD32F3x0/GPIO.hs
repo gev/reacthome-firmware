@@ -69,7 +69,7 @@ pa :: GPIO_PIN -> MODE -> PORT
 pa = PORT RCU_GPIOA GPIOA
 
 pb :: GPIO_PIN -> MODE -> PORT
-pb = PORT RCU_GPIOA GPIOA
+pb = PORT RCU_GPIOB GPIOB
 
 
 input :: (MODE -> PORT) -> IN
