@@ -24,7 +24,7 @@ data Formula where
 cook :: Formula -> ModuleM ()
 cook (Formula mcu features) = do
 
-    let fts       = ($ mcu) . runReader <$> features
+    let fts       = (`runReader` mcu) <$> features
     let sch       = scheduler (systemClock mcu) $ concatMap tasks fts
 
     let inits     = initialize sch
