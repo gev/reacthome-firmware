@@ -7,30 +7,31 @@
 
 module Feature.RBUS    where
 
-import           Data.Data                   (cast)
-import           Device.GD32F3x0.SystemClock
+import           Data.Data                  (cast)
 import           Feature
-import           GHC.IO.BufferedIO           (readBuf)
+import           GHC.IO.BufferedIO          (readBuf)
 import           GHC.TypeNats
 import           Include
 import           Initialize
-import           Interface.Counter           (readCounter)
-import           Interface.MCU               (MCU)
-import           Interface.RS485             (HandleRS485 (HandleRS485), RS485,
-                                              transmit)
+import           Interface.Counter          (readCounter)
+import           Interface.MCU
+import           Interface.RS485            (HandleRS485 (HandleRS485), RS485,
+                                             transmit)
+import           Interface.SystemClock      (SystemClock)
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Util.CRC16
 import           Util.Data.Buffer
 import           Util.Data.Class
-import           Util.Data.Concurrent.Queue  (Queue, pop, push, queue, size)
-import           Util.Data.Index             (Index, index)
+import           Util.Data.Concurrent.Queue (Queue, pop, push, queue, size)
+import           Util.Data.Index            (Index, index)
 import           Util.Data.Value
 
 
 data RBUS = RBUS
     { name        :: String
     , rs          :: RS485
+    , clock       :: SystemClock
     , timestamp   :: Value      Uint32
     , rxBuff      :: Buffer  64 Uint16
     , rxQueue     :: Queue   64
@@ -48,6 +49,7 @@ rbus :: MCU mcu => Int -> (mcu -> RS485) -> mcu -> Feature
 rbus n rs mcu = Feature $ RBUS
     { name          = name
     , rs            = rs mcu
+    , clock         = systemClock mcu
     , timestamp     = value  (name <> "_rx_timestamp") 0
     , rxBuff        = buffer (name <> "_rx")
     , rxQueue       = queue  (name <> "_rx")
@@ -116,10 +118,10 @@ txTask (RBUS {rs, msgIndex, msgSizeBuff, msgQueue, msgBuff, txBuff, txLock}) = d
 
 
 rxHandle :: RBUS -> Uint16 -> Ivory eff ()
-rxHandle (RBUS {timestamp, rxBuff, rxQueue}) value = do
+rxHandle (RBUS {clock, timestamp, rxBuff, rxQueue}) value = do
     push rxQueue $ \i -> do
         setItem rxBuff (toIx i) value
-        setValue timestamp =<< readCounter systemClock
+        setValue timestamp =<< readCounter clock
 
 
 rxTask :: RBUS -> Ivory eff ()
@@ -135,10 +137,10 @@ rxData (RBUS {rxBuff, rxQueue, msgSize, msgIndex, msgBuff}) = do
 
 
 split :: RBUS -> Ivory eff ()
-split (RBUS {timestamp, msgSizeBuff, msgQueue, msgSize, msgBuff}) = do
+split (RBUS {clock, timestamp, msgSizeBuff, msgQueue, msgSize, msgBuff}) = do
     ms <- getValue msgSize
     t0 <- getValue timestamp
-    t1 <- readCounter systemClock
+    t1 <- readCounter clock
     when (ms ==? getSize msgBuff .||
          (ms >? 0 .&& t1 - t0 >? 40)) $ do
         push msgQueue $ \i -> do
