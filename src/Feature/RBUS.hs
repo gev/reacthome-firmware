@@ -7,6 +7,7 @@
 
 module Feature.RBUS    where
 
+import           Control.Monad.Reader       (Reader, ask, runReader)
 import           Data.Data                  (cast)
 import           Feature
 import           GHC.IO.BufferedIO          (readBuf)
@@ -45,22 +46,24 @@ data RBUS = RBUS
     }
 
 
-rbus :: MCU mcu => Int -> (mcu -> RS485) -> mcu -> Feature
-rbus n rs mcu = Feature $ RBUS
-    { name          = name
-    , rs            = rs mcu
-    , clock         = systemClock mcu
-    , timestamp     = value  (name <> "_rx_timestamp") 0
-    , rxBuff        = buffer (name <> "_rx")
-    , rxQueue       = queue  (name <> "_rx")
-    , msgSizeBuff   = buffer (name <> "_msg_size")
-    , msgQueue      = queue  (name <> "_msg")
-    , msgSize       = value  (name <> "_msg_size") 0
-    , msgBuff       = buffer (name <> "_msg_buffer")
-    , msgIndex      = index  (name <> "_msg_index")
-    , txLock        = value  (name <> "_tx_lock") false
-    , txBuff        = buffer (name <> "_tx")
-    } where name = "rbus_" <> show n
+rbus :: MCU mcu => Int -> Reader mcu RS485 -> Reader mcu Feature
+rbus n rs = do
+    mcu <- ask
+    pure . Feature $ RBUS { name          = name
+                          , rs            = runReader rs mcu
+                          , clock         = systemClock  mcu
+                          , timestamp     = value  (name <> "_rx_timestamp") 0
+                          , rxBuff        = buffer (name <> "_rx")
+                          , rxQueue       = queue  (name <> "_rx")
+                          , msgSizeBuff   = buffer (name <> "_msg_size")
+                          , msgQueue      = queue  (name <> "_msg")
+                          , msgSize       = value  (name <> "_msg_size") 0
+                          , msgBuff       = buffer (name <> "_msg_buffer")
+                          , msgIndex      = index  (name <> "_msg_index")
+                          , txLock        = value  (name <> "_tx_lock") false
+                          , txBuff        = buffer (name <> "_tx")
+                          }
+    where name = "rbus_" <> show n
 
 
 instance Include RBUS where

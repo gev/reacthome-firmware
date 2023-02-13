@@ -4,6 +4,7 @@
 
 module Formula where
 
+import           Control.Monad.Reader  (Reader, runReader)
 import           Data.Foldable
 import           Feature
 import           Include
@@ -13,16 +14,17 @@ import           Ivory.Language
 import           Ivory.Language.Module
 import           Scheduler             (schedule, scheduler)
 
+
 data Formula where
     Formula :: MCU mcu
            => { mcu      :: mcu
-              , features :: [mcu -> Feature]
+              , features :: [Reader mcu Feature]
               } -> Formula
 
 cook :: Formula -> ModuleM ()
 cook (Formula mcu features) = do
 
-    let fts       = ($ mcu) <$> features
+    let fts       = ($ mcu) . runReader <$> features
     let sch       = scheduler (systemClock mcu) $ concatMap tasks fts
 
     let inits     = initialize sch

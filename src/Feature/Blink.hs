@@ -5,6 +5,7 @@
 
 module Feature.Blink where
 
+import           Control.Monad.Reader
 import           Data.Function
 import           Feature
 import           Include
@@ -16,7 +17,6 @@ import           Ivory.Language
 import           Util.Data.Class
 import           Util.Data.Value
 
-
 data Blink = forall o. OUT o => Blink
  { name  :: String
  , out   :: o
@@ -24,12 +24,15 @@ data Blink = forall o. OUT o => Blink
  }
 
 
-blink :: (MCU mcu, OUT o) => Int -> (mcu -> o) -> mcu -> Feature
-blink n out mcu = Feature $ Blink
-    { name  = name
-    , out   = out mcu
-    , state = value (name <> "_state") false
-    } where name = "blink_" <> show n
+blink :: (MCU mcu, OUT o) => Int -> (mcu -> o) -> Reader mcu Feature
+blink n out = do
+    mcu <- ask
+    pure $ Feature $ Blink { name  = name
+                           , out   = out mcu
+                           , state = value (name <> "_state") false
+                           }
+    where name = "blink_" <> show n
+
 
 
 instance Include Blink where

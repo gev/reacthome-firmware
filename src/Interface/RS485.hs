@@ -6,11 +6,12 @@
 
 module Interface.RS485 where
 
+import           Control.Monad.Reader
 import           Include
 import           Initialize
 import           Interface.GPIO
 import           Interface.MCU
-import qualified Interface.USART as I
+import qualified Interface.USART      as I
 import           Ivory.Language
 
 
@@ -34,13 +35,13 @@ rs485 :: (I.USART u, OUT o, MCU mcu)
       => Int
       -> (mcu -> u)
       -> (mcu -> o)
-      -> mcu
-      -> RS485
-rs485 n usart rede mcu = RS485
-    { n     = n
-    , usart = usart mcu
-    , rede  = rede  mcu
-    }
+      -> Reader mcu RS485
+rs485 n usart rede = do
+    mcu <- ask
+    pure $ RS485 { n     = n
+                 , usart = usart mcu
+                 , rede  = rede  mcu
+                 }
 
 
 transmit :: RS485
