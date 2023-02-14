@@ -30,35 +30,39 @@ data Formula where
 cook :: Formula -> ModuleM ()
 cook (Formula model (major, minor) mcu features) = do
 
-    let fts    = (`runReader` mcu) <$> features
-    let tsk    = concatMap tasks fts
-    let sch    = scheduler (systemClock mcu) tsk
+    let model'   = value "model" model
+    let mac'     = mac mcu "mac"
+    let version' = V.version "version" major minor
 
-    let inits  = initialize (mac mcu)
-              <> initialize sch
-              <> (initialize =<< fts)
+    let fts      = (`runReader` mcu) <$> features
+    let tsk      = concatMap tasks fts
+    let sch      = scheduler (systemClock mcu) tsk
 
-    let init   = proc "init"
-               $ body
-               $ mapM_ call_ inits
-              :: Def ('[] :-> ())
+    let inits    = initialize mac'
+                <> initialize sch
+                <> (initialize =<< fts)
 
-    let loop   = schedule sch
+    let init     = proc "init"
+                 $ body
+                 $ mapM_ call_ inits
+                :: Def ('[] :-> ())
 
-    let main   = proc "main"
-               $ body
-               $ call_ init
-              >> call_ loop
-              >> ret 0
-              :: Def ('[] :-> Sint32)
+    let loop     = schedule sch
 
-    include   (value "model" model)
-    include   (V.version major minor)
-    include   (mac mcu)
-    traverse_ incl inits
-    include   sch
-    traverse_ include fts
-    traverse_ (incl . runStep) tsk
-    incl      init
-    incl      loop
-    incl      main
+    let main     = proc "main"
+                 $ body
+                 $ call_ init
+                >> call_ loop
+                >> ret 0
+                :: Def ('[] :-> Sint32)
+
+    include     model'
+    include     version'
+    include     mac'
+    traverse_   incl inits
+    include     sch
+    traverse_   include fts
+    traverse_   (incl . runStep) tsk
+    incl        init
+    incl        loop
+    incl        main

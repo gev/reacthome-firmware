@@ -35,8 +35,8 @@ newtype Version' v = Version (Record v)
 
 
 
-version :: Uint8 -> Uint8 -> Version
-version maj min = Version $ record "version" [ major .= ival maj
+version :: String -> Uint8 -> Uint8 -> Version
+version name maj min = Version $ record name [ major .= ival maj
                                              , minor .= ival min
                                              ]
 

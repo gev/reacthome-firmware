@@ -19,26 +19,33 @@ type Mac = Mac' 6 Uint8
 
 
 data Mac' n t = Mac
-    { includeMac    :: ModuleM ()
+    { name          :: String
+    , includeMac    :: ModuleM ()
     , initializeMac :: Buffer n t -> forall eff. Ivory eff ()
     , buff          :: Buffer n t
     }
 
 
-mac :: ModuleM () -> (Buffer 6 Uint8 -> forall eff. Ivory eff ()) -> Mac
-mac include initialize = Mac
-    { includeMac    = include
+mac :: ModuleM ()
+    -> (Buffer 6 Uint8 -> forall eff. Ivory eff ())
+    -> String
+    -> Mac
+mac include initialize name = Mac
+    { name          = name
+    , includeMac    = include
     , initializeMac = initialize
-    , buff          = buffer "mac"
+    , buff          = buffer name
     }
 
 
 instance Include (Mac' n t) where
-    include (Mac {includeMac, buff}) = includeMac >> include buff
+    include (Mac {includeMac, buff}) =
+        includeMac >> include buff
 
 
-instance Initialize Mac where
-    initialize (Mac {initializeMac, buff})= [proc "mac_init" $ body $ initializeMac buff]
+instance Initialize (Mac' n t) where
+    initialize (Mac {name, initializeMac, buff}) =
+        [proc (name <> "_init") $ body $ initializeMac buff]
 
 
 instance (IvoryStore t, KnownNat n) => Buff Mac' n t where
