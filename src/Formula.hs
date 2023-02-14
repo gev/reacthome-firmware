@@ -12,20 +12,23 @@ import           Initialize
 import           Interface.MCU
 import           Ivory.Language
 import           Ivory.Language.Module
+import           Protocol.RBUS.Slave   (Slave (model))
 import           Scheduler             (schedule, scheduler)
 import           Util.Data.Record
+import           Util.Data.Value
 import qualified Util.Version          as V
 
 
 data Formula where
     Formula :: MCU mcu
-           => { version  :: (Uint8, Uint8)
+           => { model    :: Uint8
+              , version  :: (Uint8, Uint8)
               , mcu      :: mcu
               , features :: [Reader mcu Feature]
               } -> Formula
 
 cook :: Formula -> ModuleM ()
-cook (Formula (major, minor) mcu features) = do
+cook (Formula model (major, minor) mcu features) = do
 
     let fts    = (`runReader` mcu) <$> features
     let tsk    = concatMap tasks fts
@@ -49,6 +52,7 @@ cook (Formula (major, minor) mcu features) = do
               >> ret 0
               :: Def ('[] :-> Sint32)
 
+    include   (value "model" model)
     include   (V.version major minor)
     include   (mac mcu)
     traverse_ incl inits

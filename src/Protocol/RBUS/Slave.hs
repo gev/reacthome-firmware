@@ -29,7 +29,7 @@ import           Util.Version     (Version, major, minor)
 data Slave n = Slave
     { name     :: String
     , mac      :: Mac
-    , typeID   :: Value     Uint8
+    , model    :: Value     Uint8
     , version  :: Version
     , address  :: Value     Uint8
     , state    :: Value     Uint8
@@ -61,10 +61,10 @@ slave :: KnownNat n
       -> (Buffer n Uint8 -> forall eff. Ivory eff ())
       -> (Uint8 -> forall eff. Ivory eff ())
       -> Slave n
-slave name mac typeID version handle transmit = Slave
+slave name mac model version handle transmit = Slave
     { name     = name
     , mac      = mac
-    , typeID   = typeID
+    , model    = model
     , version  = version
     , address  = value        (name <> "_address") broadcastAddress
     , state    = value        (name <> "_state") readyToReceive
@@ -100,11 +100,11 @@ instance Initialize (Slave n) where
     initialize s = ($ s) <$> [initDisc, initConf, initPing]
 
 initDisc :: Slave n -> Def('[] :-> ())
-initDisc (Slave {name, mac, typeID, version, buffDisc}) =
+initDisc (Slave {name, mac, model, version, buffDisc}) =
     proc (name <> "_init_disc_tx") $ body $ do
         setItem buffDisc 0 $ discovery txPreamble
         arrayCopy (getBuffer buffDisc) (getBuffer mac) 1 (getSize mac)
-        setItem buffDisc 8 =<< getValue typeID
+        setItem buffDisc 8 =<< getValue model
         setItem buffDisc 9 =<< version |> major
         setItem buffDisc 10 =<< version |> minor
         calcCRC16 buffDisc
