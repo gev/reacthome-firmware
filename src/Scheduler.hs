@@ -33,8 +33,8 @@ scheduler clock steps =  Scheduler
 
 
 instance Include Scheduler where
-    include (Scheduler {clock, steps}) =
-        include clock >> traverse_ (incl . runStep) steps
+    include (Scheduler {clock}) =
+        include clock
 
 instance Initialize Scheduler where
     initialize (Scheduler {clock}) = initialize clock

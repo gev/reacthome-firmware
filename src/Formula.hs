@@ -28,10 +28,11 @@ cook :: Formula -> ModuleM ()
 cook (Formula (major, minor) mcu features) = do
 
     let fts    = (`runReader` mcu) <$> features
-    let sch    = scheduler (systemClock mcu) $ concatMap tasks fts
+    let tsk    = concatMap tasks fts
+    let sch    = scheduler (systemClock mcu) tsk
 
-    let inits  = initialize sch
-              <> initialize (mac mcu)
+    let inits  = initialize (mac mcu)
+              <> initialize sch
               <> (initialize =<< fts)
 
     let init   = proc "init"
@@ -50,11 +51,10 @@ cook (Formula (major, minor) mcu features) = do
 
     include   (V.version major minor)
     include   (mac mcu)
-    include   sch
-
     traverse_ incl inits
+    include   sch
     traverse_ include fts
-
-    incl init
-    incl loop
-    incl main
+    traverse_ (incl . runStep) tsk
+    incl      init
+    incl      loop
+    incl      main
