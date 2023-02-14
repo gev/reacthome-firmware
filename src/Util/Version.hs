@@ -23,7 +23,7 @@ type Version = Version' VersionStruct
 type VersionStruct = "version_struct"
 
 
-newtype Version' v = Version {getVersion :: Record v}
+newtype Version' v = Version (Record v)
 
 
 [ivory|
@@ -43,8 +43,10 @@ version maj min = Version $ record "version" [ major .= ival maj
 
 
 instance Include (Version' VersionStruct) where
-    include = include . getVersion
+    include (Version v) = do
+        defStruct (Proxy :: Proxy VersionStruct)
+        include v
 
 
 instance Rec Version' VersionStruct where
-    getRecord = getRecord . getVersion
+    getRecord (Version v) = getRecord v
