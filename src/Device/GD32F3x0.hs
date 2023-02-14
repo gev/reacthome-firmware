@@ -1,7 +1,7 @@
 module Device.GD32F3x0 where
 
 import           Device.GD32F3x0.GPIO
-import           Device.GD32F3x0.Mac           (systemMac)
+import           Device.GD32F3x0.Mac           (makeMac)
 import           Device.GD32F3x0.SystemClock   as G
 import           Device.GD32F3x0.SysTick
 import           Device.GD32F3x0.Timer
@@ -170,5 +170,5 @@ gd32f3x0 = GD32F3x0
 
 
 instance MCU GD32F3x0 where
-    mac         _ = systemMac
+    mac         _ = makeMac
     systemClock _ = G.systemClock

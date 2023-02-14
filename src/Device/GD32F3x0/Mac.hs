@@ -11,8 +11,8 @@ import           Support.Device.GD32F3x0.DBG
 import           Util.ByteSplit
 import           Util.Data.Class
 
-systemMac :: String -> Mac
-systemMac = mac inclDBG $ \buff -> do
+makeMac :: String -> Mac'
+makeMac = mac inclDBG $ \buff -> do
     id <- getID
     zipWithM_ (setItem buff)
               (iterate (+1) 0)
