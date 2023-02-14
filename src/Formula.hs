@@ -48,11 +48,11 @@ cook (Formula version mcu features) = do
                  >> ret 0
                  :: Def ('[] :-> Sint32)
 
+    include      version
+    include      (mac mcu)
+    include      sch
     traverse_    incl inits
     traverse_    include fts
-    include      sch
-    include      (mac mcu)
-    include      version
 
 
     incl init
