@@ -22,7 +22,7 @@ import           Util.Data.Buffer
 import           Util.Data.Class
 import           Util.Data.Record
 import           Util.Data.Value
-import           Util.Version
+import           Util.Version     (Version, major, minor)
 
 
 
@@ -30,7 +30,7 @@ data Slave n = Slave
     { name     :: String
     , mac      :: Mac
     , typeID   :: Value     Uint8
-    , version  :: Record    Version
+    , version  :: Version
     , address  :: Value     Uint8
     , state    :: Value     Uint8
     , phase    :: Value     Uint8
@@ -57,7 +57,7 @@ slave :: KnownNat n
       => String
       -> Mac
       -> Value Uint8
-      -> Record Version
+      -> Version
       -> (Buffer n Uint8 -> forall eff. Ivory eff ())
       -> (Uint8 -> forall eff. Ivory eff ())
       -> Slave n

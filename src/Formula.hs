@@ -13,16 +13,19 @@ import           Interface.MCU
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Scheduler             (schedule, scheduler)
+import           Util.Data.Record
+import           Util.Version
 
 
 data Formula where
     Formula :: MCU mcu
-           => { mcu      :: mcu
+           => { version  :: Version
+              , mcu      :: mcu
               , features :: [Reader mcu Feature]
               } -> Formula
 
 cook :: Formula -> ModuleM ()
-cook (Formula mcu features) = do
+cook (Formula version mcu features) = do
 
     let fts       = (`runReader` mcu) <$> features
     let sch       = scheduler (systemClock mcu) $ concatMap tasks fts
@@ -49,6 +52,7 @@ cook (Formula mcu features) = do
     traverse_    include fts
     include      sch
     include      (mac mcu)
+    include      version
 
 
     incl init
