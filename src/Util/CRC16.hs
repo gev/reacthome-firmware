@@ -3,7 +3,6 @@
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
-{-# LANGUAGE RankNTypes    #-}
 
 module Util.CRC16
     ( CRC16
@@ -15,11 +14,10 @@ module Util.CRC16
     , inclCRC16
     ) where
 
-import           Data.Coerce           (coerce)
-import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Language.Syntax (Struct)
+
 
 type CRC16 = "crc16_struct"
 
