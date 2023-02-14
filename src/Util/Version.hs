@@ -17,13 +17,10 @@ import           Util.Data.Record
 
 
 
-type Version = Version' VersionStruct
+type Version = "version_struct"
 
 
-type VersionStruct = "version_struct"
-
-
-newtype Version' v = Version (Record v)
+newtype Version' = Version {getVersion :: Record Version}
 
 
 [ivory|
@@ -35,18 +32,14 @@ newtype Version' v = Version (Record v)
 
 
 
-version :: String -> Uint8 -> Uint8 -> Version
+version :: String -> Uint8 -> Uint8 -> Version'
 version name maj min = Version $ record name [ major .= ival maj
                                              , minor .= ival min
                                              ]
 
 
 
-instance Include (Version' VersionStruct) where
+instance Include Version' where
     include (Version v) = do
-        defStruct (Proxy :: Proxy VersionStruct)
+        defStruct (Proxy :: Proxy Version)
         include v
-
-
-instance Rec Version' VersionStruct where
-    getRecord (Version v) = getRecord v

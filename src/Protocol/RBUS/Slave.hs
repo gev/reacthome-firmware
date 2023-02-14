@@ -30,7 +30,7 @@ data Slave n = Slave
     { name     :: String
     , mac      :: Mac
     , model    :: Value     Uint8
-    , version  :: Version
+    , version  :: Record    Version
     , address  :: Value     Uint8
     , state    :: Value     Uint8
     , phase    :: Value     Uint8
@@ -57,7 +57,7 @@ slave :: KnownNat n
       => String
       -> Mac
       -> Value Uint8
-      -> Version
+      -> Record Version
       -> (Buffer n Uint8 -> forall eff. Ivory eff ())
       -> (Uint8 -> forall eff. Ivory eff ())
       -> Slave n
