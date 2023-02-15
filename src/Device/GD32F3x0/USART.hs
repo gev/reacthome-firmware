@@ -6,9 +6,9 @@
 
 module Device.GD32F3x0.USART where
 
+import           Core.Include
+import           Core.Initialize
 import qualified Device.GD32F3x0.GPIO          as G
-import           Include
-import           Initialize
 import qualified Interface.USART               as I
 import           Ivory.Language
 import           Ivory.Stdlib

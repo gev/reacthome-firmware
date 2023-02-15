@@ -3,7 +3,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE QuasiQuotes           #-}
 
-module Util.Version
+module Core.Version
     ( Version
     , version
     , getVersion
@@ -11,9 +11,9 @@ module Util.Version
     , minor
     ) where
 
+import           Core.Include
 import           Data.Class
 import           Data.Record
-import           Include
 import           Ivory.Language
 
 

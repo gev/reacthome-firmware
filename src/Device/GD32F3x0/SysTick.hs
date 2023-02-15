@@ -6,8 +6,8 @@
 
 module Device.GD32F3x0.SysTick where
 
-import           Include
-import           Initialize
+import           Core.Include
+import           Core.Initialize
 import           Interface.Timer
 import           Ivory.Language
 import           Ivory.Language.Module

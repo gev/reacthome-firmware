@@ -1,15 +1,12 @@
 module Main where
 
 import           Control.Monad
-
-import           Ivory.Language
-
-import           Firmware
-import           Shake
-
-import           Formula
+import           Core.Firmware
+import           Core.Formula
+import           Core.Shake
 import           Formula.Blink
 import           Formula.Relay6
+import           Ivory.Language
 
 
 build :: [(ModuleDef, String)] -> IO ()

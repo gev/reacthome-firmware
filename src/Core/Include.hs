@@ -1,4 +1,4 @@
-module Include where
+module Core.Include where
 
 import           Ivory.Language
 import           Ivory.Language.Module

@@ -4,10 +4,10 @@
 
 module Data.Value where
 
-import           Include
+import           Core.Include
+import           Data.Class
 import           Ivory.Language
 import           Ivory.Language.Module
-import           Data.Class
 
 
 data Value t = Value

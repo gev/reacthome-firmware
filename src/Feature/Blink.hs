@@ -6,13 +6,13 @@
 module Feature.Blink where
 
 import           Control.Monad.Reader
+import           Core.Domain
+import           Core.Feature
+import           Core.Include
+import           Core.Initialize
 import           Data.Class
 import           Data.Function
 import           Data.Value
-import           Domain
-import           Feature
-import           Include
-import           Initialize
 import           Interface.GPIO
 import           Interface.MCU
 import           Interface.Timer

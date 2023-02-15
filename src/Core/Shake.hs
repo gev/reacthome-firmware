@@ -1,4 +1,4 @@
-module Shake (Shake.shake) where
+module Core.Shake (Core.Shake.shake) where
 
 import           Development.Shake
 import           Development.Shake.FilePath

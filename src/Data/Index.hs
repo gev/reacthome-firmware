@@ -4,11 +4,11 @@
 
 module Data.Index where
 
-import           GHC.TypeNats
-import           Include
-import           Ivory.Language
+import           Core.Include
 import           Data.Class
 import           Data.Value
+import           GHC.TypeNats
+import           Ivory.Language
 
 
 newtype Index t = Index { getIndex :: Value t }

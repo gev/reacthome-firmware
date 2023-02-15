@@ -8,18 +8,18 @@
 module Feature.RBUS    where
 
 import           Control.Monad.Reader  (Reader, asks, runReader)
+import           Core.Domain
+import           Core.Feature
+import           Core.Include
+import           Core.Initialize
 import           Data.Buffer
 import           Data.Class
 import           Data.Concurrent.Queue (Queue, pop, push, queue, size)
 import           Data.Data             (cast)
 import           Data.Index            (Index, index)
 import           Data.Value
-import           Domain
-import           Feature
 import           GHC.IO.BufferedIO     (readBuf)
 import           GHC.TypeNats
-import           Include
-import           Initialize
 import           Interface.Counter     (readCounter)
 import           Interface.MCU
 import           Interface.RS485       (HandleRS485 (HandleRS485), RS485,

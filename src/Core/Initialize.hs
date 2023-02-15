@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds     #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Initialize where
+module Core.Initialize where
 
 import           Ivory.Language
 import           Ivory.Language.Module

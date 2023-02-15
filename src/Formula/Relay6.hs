@@ -1,10 +1,10 @@
 module Formula.Relay6 where
 
+import           Core.Formula
 import           Data.Function   ((&))
 import           Device.GD32F3x0
 import           Feature.RBUS
 import           Feature.Relays
-import           Formula
 import           Interface.RS485
 
 relay6 :: Formula

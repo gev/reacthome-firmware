@@ -2,22 +2,22 @@
 {-# LANGUAGE GADTs         #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Formula where
+module Core.Formula where
 
 import           Control.Monad.Reader  (Reader, runReader)
+import           Core.Domain
+import qualified Core.Domain           as D
+import           Core.Feature
+import           Core.Include
+import           Core.Initialize
+import           Core.Scheduler        (schedule, scheduler)
 import           Data.Foldable
 import           Data.Record
 import           Data.Value
-import           Domain
-import qualified Domain                as D
-import           Feature
-import           Include
-import           Initialize
 import           Interface.MCU
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Protocol.RBUS.Slave   (Slave (model))
-import           Scheduler             (schedule, scheduler)
 
 
 data Formula where

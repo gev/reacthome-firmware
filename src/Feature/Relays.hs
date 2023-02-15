@@ -3,14 +3,14 @@
 module Feature.Relays where
 
 import           Control.Monad.Reader
+import           Core.Domain
+import           Core.Feature
+import           Core.Include
+import           Core.Initialize
 import           Data.Foldable
 import           Data.Value
-import           Domain
 import           Endpoint.Group
 import           Endpoint.Relay
-import           Feature
-import           Include
-import           Initialize
 import           Interface.GPIO
 import           Interface.MCU        (MCU)
 import           Ivory.Language

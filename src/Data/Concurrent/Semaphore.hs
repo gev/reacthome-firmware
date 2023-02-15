@@ -4,12 +4,12 @@
 
 module Data.Concurrent.Semaphore where
 
-import           Include
+import           Core.Include
+import           Data.Class
+import           Data.Value
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Stdlib
-import           Data.Class
-import           Data.Value
 
 
 newtype Semaphore t = Semaphore { getSemaphore :: Value t }

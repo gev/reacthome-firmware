@@ -4,8 +4,8 @@
 
 module Interface.USART where
 
-import           Include
-import           Initialize
+import           Core.Include
+import           Core.Initialize
 import           Ivory.Language
 import           Ivory.Language.Module
 

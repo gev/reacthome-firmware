@@ -3,10 +3,10 @@
 {-# LANGUAGE RankNTypes    #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Feature where
+module Core.Feature where
 
-import           Include
-import           Initialize
+import           Core.Include
+import           Core.Initialize
 import           Interface.Timer
 import           Ivory.Language
 

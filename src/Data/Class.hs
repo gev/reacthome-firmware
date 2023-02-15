@@ -4,9 +4,9 @@
 
 module Data.Class where
 
+import           Core.Include
 import           GHC.Base
 import           GHC.TypeNats
-import           Include
 import           Ivory.Language
 import           Ivory.Language.Pointer
 

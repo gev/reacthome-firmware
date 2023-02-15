@@ -4,11 +4,11 @@
 
 module Data.Buffer where
 
+import           Core.Include
+import           Data.Class
 import           GHC.TypeNats
-import           Include
 import           Ivory.Language
 import           Ivory.Language.Module
-import           Data.Class
 
 
 data Buffer n t = Buffer

@@ -3,8 +3,8 @@
 
 module Interface.Timer where
 
-import           Include
-import           Initialize
+import           Core.Include
+import           Core.Initialize
 import           Ivory.Language
 import           Ivory.Stdlib
 

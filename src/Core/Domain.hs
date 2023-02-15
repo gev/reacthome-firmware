@@ -1,18 +1,18 @@
 {-# LANGUAGE DataKinds      #-}
 {-# LANGUAGE NamedFieldPuns #-}
 
-module Domain where
+module Core.Domain where
 
+import           Core.Include
+import           Core.Initialize
+import qualified Core.Version          as V
 import           Data.Buffer
 import           Data.Record
 import           Data.Value
-import           Include
-import           Initialize
 import qualified Interface.Mac         as M
 import qualified Interface.MCU         as I
 import           Interface.SystemClock
 import           Ivory.Language
-import qualified Util.Version          as V
 
 
 data Domain mcu = Domain

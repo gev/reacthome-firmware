@@ -5,11 +5,11 @@
 
 module Data.Record where
 
-import           Include
+import           Core.Include
+import           Data.Class
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Language.Pointer
-import           Data.Class
 
 
 data Record t = Record

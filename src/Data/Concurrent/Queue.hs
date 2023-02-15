@@ -6,15 +6,15 @@
 
 module Data.Concurrent.Queue where
 
+import           Core.Include
+import           Data.Class
+import           Data.Concurrent.Semaphore
+import           Data.Index
 import           GHC.TypeNats
-import           Include
 import           Ivory.Language
 import           Ivory.Language.Array
 import           Ivory.Language.Proxy
 import           Ivory.Stdlib
-import           Data.Class
-import           Data.Concurrent.Semaphore
-import           Data.Index
 
 
 data Queue (n :: Nat) = Queue

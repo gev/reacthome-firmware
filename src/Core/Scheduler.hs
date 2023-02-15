@@ -2,17 +2,17 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE TypeOperators  #-}
 
-module Scheduler where
+module Core.Scheduler where
 
 import           Control.Monad         (replicateM, zipWithM_)
+import           Core.Feature
+import           Core.Include
+import           Core.Initialize
 import           Data.Class
 import           Data.Foldable         (traverse_)
 import           Data.List
 import           Data.Maybe
 import           Data.Value
-import           Feature
-import           Include
-import           Initialize
 import           Interface.SystemClock
 import           Interface.Timer
 import           Ivory.Language

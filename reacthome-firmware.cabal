@@ -25,11 +25,15 @@ executable reacthome-firmware
     main-is:          Main.hs
 
     -- Modules included in this executable, other than Main.
-    other-modules:    Include
-                    , Initialize
-                    , Firmware
-                    , Scheduler
-                    , Shake
+    other-modules:    Core.Domain
+                    , Core.Feature                    
+                    , Core.Firmware
+                    , Core.Formula
+                    , Core.Include
+                    , Core.Initialize
+                    , Core.Scheduler
+                    , Core.Shake
+                    , Core.Version
 
                     , Data.Class
                     , Data.Buffer
@@ -42,13 +46,11 @@ executable reacthome-firmware
                     , Endpoint.Relay
                     , Endpoint.Group
 
-                    , Feature
                     , Feature.Blink
                     , Feature.Relays
                     , Feature.RBUS
                     , Feature.RBUS.Slave
 
-                    , Formula
                     , Formula.Blink
                     , Formula.Relay6
 
@@ -75,8 +77,6 @@ executable reacthome-firmware
 
                     , Device.GD32F4xx
 
-                    , Domain
-
                     , Ivory.Support
                     , Ivory.Support.Device.GD32F3x0
                     , Ivory.Support.Device.GD32F4xx
@@ -99,7 +99,6 @@ executable reacthome-firmware
 
                     , Util.ByteSplit
                     , Util.CRC16
-                    , Util.Version
 
     build-depends:    base ^>=4.16.4.0
                     , mtl  

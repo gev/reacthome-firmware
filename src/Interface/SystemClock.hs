@@ -4,10 +4,10 @@
 
 module Interface.SystemClock where
 
+import           Core.Include
+import           Core.Initialize
 import           Data.Class
 import           Data.Value
-import           Include
-import           Initialize
 import           Interface.Counter (Counter (readCounter))
 import           Interface.Timer   (HandleTimer (HandleTimer), Timer)
 import           Ivory.Language

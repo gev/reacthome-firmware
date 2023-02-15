@@ -4,8 +4,8 @@
 
 module Device.GD32F3x0.Timer where
 
-import           Include
-import           Initialize
+import           Core.Include
+import           Core.Initialize
 import qualified Interface.Counter             as I
 import qualified Interface.Timer               as I
 import           Ivory.Language

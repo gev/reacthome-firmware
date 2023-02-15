@@ -1,7 +1,7 @@
-module Firmware where
+module Core.Firmware where
 
+import           Core.Feature
 import           Data.Foldable
-import           Feature
 import           Ivory.Compile.C.CmdlineFrontend
 import           Ivory.Language
 import           Ivory.Language.Module

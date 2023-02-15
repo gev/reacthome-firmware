@@ -6,11 +6,11 @@
 
 module Interface.Mac (Mac, mac) where
 
+import           Core.Include
+import           Core.Initialize
 import           Data.Buffer
 import           Data.Class
 import           GHC.TypeNats
-import           Include
-import           Initialize
 import           Ivory.Language
 import           Ivory.Language.Module
 
