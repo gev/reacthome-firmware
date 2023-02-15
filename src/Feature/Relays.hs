@@ -5,6 +5,7 @@ module Feature.Relays where
 import           Control.Monad.Reader
 import           Data.Foldable
 import           Endpoint.Relay
+import           Endpoint.Group
 import           Feature
 import           Include
 import           Initialize

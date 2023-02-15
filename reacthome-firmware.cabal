@@ -32,6 +32,7 @@ executable reacthome-firmware
                     , Shake
 
                     , Endpoint.Relay
+                    , Endpoint.Group
 
                     , Feature
                     , Feature.Blink
