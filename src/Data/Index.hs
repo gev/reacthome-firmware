@@ -2,13 +2,13 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Util.Data.Index where
+module Data.Index where
 
 import           GHC.TypeNats
 import           Include
 import           Ivory.Language
-import           Util.Data.Class
-import           Util.Data.Value
+import           Data.Class
+import           Data.Value
 
 
 newtype Index t = Index { getIndex :: Value t }

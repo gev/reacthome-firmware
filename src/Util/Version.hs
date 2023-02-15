@@ -11,10 +11,10 @@ module Util.Version
     , minor
     ) where
 
+import           Data.Class
+import           Data.Record
 import           Include
 import           Ivory.Language
-import           Util.Data.Class
-import           Util.Data.Record
 
 
 

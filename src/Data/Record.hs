@@ -3,13 +3,13 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes            #-}
 
-module Util.Data.Record where
+module Data.Record where
 
 import           Include
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Language.Pointer
-import           Util.Data.Class
+import           Data.Class
 
 
 data Record t = Record

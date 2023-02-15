@@ -4,12 +4,12 @@ module Device.GD32F3x0.Mac where
 
 
 import           Control.Monad
+import           Data.Class
 import           GHC.TypeNats
 import           Interface.Mac
 import           Ivory.Language
 import           Support.Device.GD32F3x0.DBG
 import           Util.ByteSplit
-import           Util.Data.Class
 
 makeMac :: String -> Mac
 makeMac = mac inclDBG $ \buff -> do

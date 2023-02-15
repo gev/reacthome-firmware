@@ -9,20 +9,20 @@
 
 module Protocol.RBUS.Slave where
 
-import           Control.Monad    ((<=<))
+import           Control.Monad  ((<=<))
+import           Data.Buffer
+import           Data.Class
+import           Data.Record
+import           Data.Value
 import           GHC.TypeNats
 import           Include
 import           Initialize
-import           Interface.Mac    (Mac)
+import           Interface.Mac  (Mac)
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Protocol.RBUS
 import           Util.CRC16
-import           Util.Data.Buffer
-import           Util.Data.Class
-import           Util.Data.Record
-import           Util.Data.Value
-import           Util.Version     (Version, getVersion, major, minor)
+import           Util.Version   (Version, getVersion, major, minor)
 
 
 

@@ -6,7 +6,9 @@
 module Feature.Blink where
 
 import           Control.Monad.Reader
+import           Data.Class
 import           Data.Function
+import           Data.Value
 import           Domain
 import           Feature
 import           Include
@@ -15,8 +17,6 @@ import           Interface.GPIO
 import           Interface.MCU
 import           Interface.Timer
 import           Ivory.Language
-import           Util.Data.Class
-import           Util.Data.Value
 
 data Blink = forall o. OUT o => Blink
  { name  :: String

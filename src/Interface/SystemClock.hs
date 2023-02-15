@@ -4,13 +4,13 @@
 
 module Interface.SystemClock where
 
+import           Data.Class
+import           Data.Value
 import           Include
 import           Initialize
 import           Interface.Counter (Counter (readCounter))
 import           Interface.Timer   (HandleTimer (HandleTimer), Timer)
 import           Ivory.Language
-import           Util.Data.Class
-import           Util.Data.Value
 
 
 

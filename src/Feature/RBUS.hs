@@ -7,27 +7,27 @@
 
 module Feature.RBUS    where
 
-import           Control.Monad.Reader       (Reader, asks, runReader)
-import           Data.Data                  (cast)
+import           Control.Monad.Reader  (Reader, asks, runReader)
+import           Data.Buffer
+import           Data.Class
+import           Data.Concurrent.Queue (Queue, pop, push, queue, size)
+import           Data.Data             (cast)
+import           Data.Index            (Index, index)
+import           Data.Value
 import           Domain
 import           Feature
-import           GHC.IO.BufferedIO          (readBuf)
+import           GHC.IO.BufferedIO     (readBuf)
 import           GHC.TypeNats
 import           Include
 import           Initialize
-import           Interface.Counter          (readCounter)
+import           Interface.Counter     (readCounter)
 import           Interface.MCU
-import           Interface.RS485            (HandleRS485 (HandleRS485), RS485,
-                                             transmit)
-import           Interface.SystemClock      (SystemClock)
+import           Interface.RS485       (HandleRS485 (HandleRS485), RS485,
+                                        transmit)
+import           Interface.SystemClock (SystemClock)
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Util.CRC16
-import           Util.Data.Buffer
-import           Util.Data.Class
-import           Util.Data.Concurrent.Queue (Queue, pop, push, queue, size)
-import           Util.Data.Index            (Index, index)
-import           Util.Data.Value
 
 
 data RBUS = RBUS

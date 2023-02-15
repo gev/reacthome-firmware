@@ -3,14 +3,14 @@
 
 module Endpoint.Relay where
 
+import           Data.Class
 import           Data.Function
+import           Data.Value
 import           Include
 import           Initialize
 import           Interface.GPIO
 import           Interface.Timer
 import           Ivory.Language
-import           Util.Data.Class
-import           Util.Data.Value
 
 
 data Relay = forall a. (OUT a) => Relay

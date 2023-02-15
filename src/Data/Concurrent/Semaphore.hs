@@ -2,14 +2,14 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Util.Data.Concurrent.Semaphore where
+module Data.Concurrent.Semaphore where
 
 import           Include
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Stdlib
-import           Util.Data.Class
-import           Util.Data.Value
+import           Data.Class
+import           Data.Value
 
 
 newtype Semaphore t = Semaphore { getSemaphore :: Value t }

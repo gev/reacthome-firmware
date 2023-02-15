@@ -4,6 +4,7 @@ module Feature.Relays where
 
 import           Control.Monad.Reader
 import           Data.Foldable
+import           Data.Value
 import           Domain
 import           Endpoint.Group
 import           Endpoint.Relay
@@ -13,7 +14,6 @@ import           Initialize
 import           Interface.GPIO
 import           Interface.MCU        (MCU)
 import           Ivory.Language
-import           Util.Data.Value
 
 
 newtype Relays = Relays

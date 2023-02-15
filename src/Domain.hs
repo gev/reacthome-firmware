@@ -3,15 +3,15 @@
 
 module Domain where
 
+import           Data.Buffer
+import           Data.Record
+import           Data.Value
 import           Include
 import           Initialize
 import qualified Interface.Mac         as M
 import qualified Interface.MCU         as I
 import           Interface.SystemClock
 import           Ivory.Language
-import           Util.Data.Buffer
-import           Util.Data.Record
-import           Util.Data.Value
 import qualified Util.Version          as V
 
 

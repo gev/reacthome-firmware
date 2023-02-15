@@ -2,12 +2,12 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Util.Data.Value where
+module Data.Value where
 
 import           Include
 import           Ivory.Language
 import           Ivory.Language.Module
-import           Util.Data.Class
+import           Data.Class
 
 
 data Value t = Value

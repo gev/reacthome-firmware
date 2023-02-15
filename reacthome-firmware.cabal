@@ -31,6 +31,14 @@ executable reacthome-firmware
                     , Scheduler
                     , Shake
 
+                    , Data.Class
+                    , Data.Buffer
+                    , Data.Value
+                    , Data.Index
+                    , Data.Record
+                    , Data.Concurrent.Semaphore
+                    , Data.Concurrent.Queue
+
                     , Endpoint.Relay
                     , Endpoint.Group
 
@@ -92,13 +100,6 @@ executable reacthome-firmware
                     , Util.ByteSplit
                     , Util.CRC16
                     , Util.Version
-                    , Util.Data.Class
-                    , Util.Data.Buffer
-                    , Util.Data.Value
-                    , Util.Data.Index
-                    , Util.Data.Record
-                    , Util.Data.Concurrent.Semaphore
-                    , Util.Data.Concurrent.Queue
 
     build-depends:    base ^>=4.16.4.0
                     , mtl  

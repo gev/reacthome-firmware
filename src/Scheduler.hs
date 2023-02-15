@@ -5,9 +5,11 @@
 module Scheduler where
 
 import           Control.Monad         (replicateM, zipWithM_)
+import           Data.Class
 import           Data.Foldable         (traverse_)
 import           Data.List
 import           Data.Maybe
+import           Data.Value
 import           Feature
 import           Include
 import           Initialize
@@ -15,8 +17,6 @@ import           Interface.SystemClock
 import           Interface.Timer
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Util.Data.Class
-import           Util.Data.Value
 
 
 data Scheduler = Scheduler

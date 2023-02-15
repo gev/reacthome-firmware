@@ -2,13 +2,13 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Util.Data.Buffer where
+module Data.Buffer where
 
 import           GHC.TypeNats
 import           Include
 import           Ivory.Language
 import           Ivory.Language.Module
-import           Util.Data.Class
+import           Data.Class
 
 
 data Buffer n t = Buffer

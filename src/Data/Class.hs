@@ -2,7 +2,7 @@
 {-# LANGUAGE KindSignatures        #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Util.Data.Class where
+module Data.Class where
 
 import           GHC.Base
 import           GHC.TypeNats

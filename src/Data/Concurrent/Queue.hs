@@ -4,7 +4,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 
-module Util.Data.Concurrent.Queue where
+module Data.Concurrent.Queue where
 
 import           GHC.TypeNats
 import           Include
@@ -12,9 +12,9 @@ import           Ivory.Language
 import           Ivory.Language.Array
 import           Ivory.Language.Proxy
 import           Ivory.Stdlib
-import           Util.Data.Class
-import           Util.Data.Concurrent.Semaphore
-import           Util.Data.Index
+import           Data.Class
+import           Data.Concurrent.Semaphore
+import           Data.Index
 
 
 data Queue (n :: Nat) = Queue

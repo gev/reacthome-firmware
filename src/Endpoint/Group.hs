@@ -1,9 +1,9 @@
 module Endpoint.Group where
 
+import           Data.Class
+import           Data.Value
 import           Include
 import           Initialize
-import           Util.Data.Class
-import           Util.Data.Value
 import           Ivory.Language
 
 

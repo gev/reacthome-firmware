@@ -6,6 +6,8 @@ module Formula where
 
 import           Control.Monad.Reader  (Reader, runReader)
 import           Data.Foldable
+import           Data.Record
+import           Data.Value
 import           Domain
 import qualified Domain                as D
 import           Feature
@@ -16,8 +18,6 @@ import           Ivory.Language
 import           Ivory.Language.Module
 import           Protocol.RBUS.Slave   (Slave (model))
 import           Scheduler             (schedule, scheduler)
-import           Util.Data.Record
-import           Util.Data.Value
 
 
 data Formula where

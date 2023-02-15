@@ -6,13 +6,13 @@
 
 module Interface.Mac (Mac, mac) where
 
+import           Data.Buffer
+import           Data.Class
 import           GHC.TypeNats
 import           Include
 import           Initialize
 import           Ivory.Language
 import           Ivory.Language.Module
-import           Util.Data.Buffer
-import           Util.Data.Class
 
 
 data Mac = Mac

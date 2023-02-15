@@ -1,12 +1,12 @@
 {-# LANGUAGE DataKinds #-}
 module Protocol.RBUS where
 
+import           Data.Buffer
+import           Data.Class
+import           Data.Record
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Util.CRC16
-import           Util.Data.Buffer
-import           Util.Data.Class
-import           Util.Data.Record
 
 
 
