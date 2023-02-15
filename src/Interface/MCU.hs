@@ -4,5 +4,5 @@ import           Interface.Mac
 import           Interface.SystemClock
 
 class MCU mcu where
-    mac         :: mcu -> String -> Mac'
+    mac         :: mcu -> String -> Mac
     systemClock :: mcu -> SystemClock

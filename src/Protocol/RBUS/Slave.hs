@@ -28,7 +28,7 @@ import           Util.Version     (Version, major, minor)
 
 data Slave n = Slave
     { name     :: String
-    , mac      :: Mac
+    , mac      :: Buffer  6 Uint8
     , model    :: Value     Uint8
     , version  :: Record    Version
     , address  :: Value     Uint8
@@ -55,7 +55,7 @@ txPreamble = preambleSlave
 
 slave :: KnownNat n
       => String
-      -> Mac
+      -> Buffer 6 Uint8
       -> Value Uint8
       -> Record Version
       -> (Buffer n Uint8 -> forall eff. Ivory eff ())
