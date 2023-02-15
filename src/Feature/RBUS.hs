@@ -7,8 +7,9 @@
 
 module Feature.RBUS    where
 
-import           Control.Monad.Reader       (Reader, ask, runReader)
+import           Control.Monad.Reader       (Reader, asks, runReader)
 import           Data.Data                  (cast)
+import           Domain
 import           Feature
 import           GHC.IO.BufferedIO          (readBuf)
 import           GHC.TypeNats
@@ -46,9 +47,9 @@ data RBUS = RBUS
     }
 
 
-rbus :: MCU mcu => Int -> Reader mcu RS485 -> Reader mcu Feature
+rbus :: MCU mcu => Int -> Reader mcu RS485 -> Reader (Domain mcu) Feature
 rbus n rs = do
-    mcu <- ask
+    mcu <- asks mcu
     pure . Feature $ RBUS { name          = name
                           , rs            = runReader rs mcu
                           , clock         = systemClock  mcu

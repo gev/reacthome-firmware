@@ -6,6 +6,8 @@ module Formula where
 
 import           Control.Monad.Reader  (Reader, runReader)
 import           Data.Foldable
+import           Domain
+import qualified Domain                as D
 import           Feature
 import           Include
 import           Initialize
@@ -16,29 +18,26 @@ import           Protocol.RBUS.Slave   (Slave (model))
 import           Scheduler             (schedule, scheduler)
 import           Util.Data.Record
 import           Util.Data.Value
-import qualified Util.Version          as V
 
 
 data Formula where
     Formula :: MCU mcu
-           => { model    :: Uint8
-              , version  :: (Uint8, Uint8)
-              , mcu      :: mcu
-              , features :: [Reader mcu Feature]
-              } -> Formula
+            => { model    :: Uint8
+               , version  :: (Uint8, Uint8)
+               , mcu      :: mcu
+               , features :: [Reader (Domain mcu) Feature]
+               } -> Formula
 
 cook :: Formula -> ModuleM ()
-cook (Formula model (major, minor) mcu features) = do
+cook (Formula model version mcu features) = do
 
-    let model'   = value "model" model
-    let mac'     = mac mcu "mac"
-    let version' = V.version "version" major minor
+    let domain   = D.domain model version mcu
 
-    let fts      = (`runReader` mcu) <$> features
+    let fts      = (`runReader` domain) <$> features
     let tsk      = concatMap tasks fts
     let sch      = scheduler (systemClock mcu) tsk
 
-    let inits    = initialize mac'
+    let inits    = initialize domain
                 <> initialize sch
                 <> (initialize =<< fts)
 
@@ -56,9 +55,7 @@ cook (Formula model (major, minor) mcu features) = do
                 >> ret 0
                 :: Def ('[] :-> Sint32)
 
-    include     model'
-    include     version'
-    include     mac'
+    include     domain
     traverse_   incl inits
     include     sch
     traverse_   include fts

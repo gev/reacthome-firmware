@@ -15,6 +15,7 @@ import           Support.Device.GD32F3x0.GPIO
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.USART
 
+
 data GD32F3x0 = GD32F3x0
     { usart_1   :: USART
 

@@ -22,7 +22,7 @@ import           Util.Data.Buffer
 import           Util.Data.Class
 import           Util.Data.Record
 import           Util.Data.Value
-import           Util.Version     (Version, major, minor)
+import           Util.Version     (Version, getVersion, major, minor)
 
 
 
@@ -30,7 +30,7 @@ data Slave n = Slave
     { name     :: String
     , mac      :: Buffer  6 Uint8
     , model    :: Value     Uint8
-    , version  :: Record    Version
+    , version  :: Version
     , address  :: Value     Uint8
     , state    :: Value     Uint8
     , phase    :: Value     Uint8
@@ -57,7 +57,7 @@ slave :: KnownNat n
       => String
       -> Buffer 6 Uint8
       -> Value Uint8
-      -> Record Version
+      -> Version
       -> (Buffer n Uint8 -> forall eff. Ivory eff ())
       -> (Uint8 -> forall eff. Ivory eff ())
       -> Slave n
@@ -105,8 +105,8 @@ initDisc (Slave {name, mac, model, version, buffDisc}) =
         setItem buffDisc 0 $ discovery txPreamble
         arrayCopy (getBuffer buffDisc) (getBuffer mac) 1 (getSize mac)
         setItem buffDisc 8 =<< getValue model
-        setItem buffDisc 9 =<< version |> major
-        setItem buffDisc 10 =<< version |> minor
+        setItem buffDisc 9 =<< (getVersion version) |> major
+        setItem buffDisc 10 =<< (getVersion version) |> minor
         calcCRC16 buffDisc
 
 initConf :: Slave n -> Def('[] :-> ())

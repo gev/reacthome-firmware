@@ -6,6 +6,7 @@
 module Util.Version
     ( Version
     , version
+    , getVersion
     , major
     , minor
     ) where
@@ -17,10 +18,10 @@ import           Util.Data.Record
 
 
 
-type Version = "version_struct"
+type VersionStruct = "version_struct"
 
 
-newtype Version' = Version {getVersion :: Record Version}
+newtype Version = Version {getVersion :: Record VersionStruct}
 
 
 [ivory|
@@ -32,14 +33,14 @@ newtype Version' = Version {getVersion :: Record Version}
 
 
 
-version :: String -> Uint8 -> Uint8 -> Version'
+version :: String -> Uint8 -> Uint8 -> Version
 version name maj min = Version $ record name [ major .= ival maj
                                              , minor .= ival min
                                              ]
 
 
 
-instance Include Version' where
+instance Include Version where
     include (Version v) = do
-        defStruct (Proxy :: Proxy Version)
+        defStruct (Proxy :: Proxy VersionStruct)
         include v

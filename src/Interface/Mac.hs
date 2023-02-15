@@ -4,7 +4,7 @@
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RankNTypes            #-}
 
-module Interface.Mac (Mac, Mac, mac) where
+module Interface.Mac (Mac, mac) where
 
 import           GHC.TypeNats
 import           Include

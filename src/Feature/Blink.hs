@@ -7,6 +7,7 @@ module Feature.Blink where
 
 import           Control.Monad.Reader
 import           Data.Function
+import           Domain
 import           Feature
 import           Include
 import           Initialize
@@ -24,9 +25,9 @@ data Blink = forall o. OUT o => Blink
  }
 
 
-blink :: (MCU mcu, OUT o) => Int -> (mcu -> o) -> Reader mcu Feature
+blink :: (MCU mcu, OUT o) => Int -> (mcu -> o) -> Reader (Domain mcu) Feature
 blink n out = do
-    mcu <- ask
+    mcu <- asks mcu
     pure $ Feature $ Blink { name  = name
                            , out   = out mcu
                            , state = value (name <> "_state") false

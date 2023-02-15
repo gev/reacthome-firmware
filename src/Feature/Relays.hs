@@ -4,8 +4,9 @@ module Feature.Relays where
 
 import           Control.Monad.Reader
 import           Data.Foldable
-import           Endpoint.Relay
+import           Domain
 import           Endpoint.Group
+import           Endpoint.Relay
 import           Feature
 import           Include
 import           Initialize
@@ -19,9 +20,10 @@ newtype Relays = Relays
     { getRelays :: [Relay]
     }
 
-relays :: (MCU mcu, OUT o) => [mcu -> o] -> Reader mcu Feature
+relays :: (MCU mcu, OUT o) => [mcu -> o] -> Reader (Domain mcu) Feature
 relays outs = do
-    os <- mapM asks outs
+    mcu <- asks mcu
+    let os = ($ mcu) <$> outs
     pure . Feature $ Relays { getRelays = zipWith relay [1..] os
                             }
 
