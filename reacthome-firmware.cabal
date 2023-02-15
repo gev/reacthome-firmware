@@ -67,6 +67,8 @@ executable reacthome-firmware
 
                     , Device.GD32F4xx
 
+                    , Domain
+
                     , Ivory.Support
                     , Ivory.Support.Device.GD32F3x0
                     , Ivory.Support.Device.GD32F4xx
