@@ -109,6 +109,7 @@ executable reacthome-firmware
                     , shake
 
     hs-source-dirs:   app
+                    , formula
                     , src
 
     -- LANGUAGE extensions used by modules in this package.
