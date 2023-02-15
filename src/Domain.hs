@@ -14,6 +14,4 @@ data Domain mcu = Domain
     { model   :: Uint8
     , version :: Record Version
     , mcu     :: mcu
-    , clock   :: SystemClock
-    , mac     :: Buffer 6 Uint8
     }
