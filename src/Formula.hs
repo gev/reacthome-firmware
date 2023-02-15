@@ -12,45 +12,57 @@ import           Initialize
 import           Interface.MCU
 import           Ivory.Language
 import           Ivory.Language.Module
+import           Protocol.RBUS.Slave   (Slave (model))
 import           Scheduler             (schedule, scheduler)
+import           Util.Data.Record
+import           Util.Data.Value
+import qualified Util.Version          as V
 
 
 data Formula where
     Formula :: MCU mcu
-           => { mcu      :: mcu
+           => { model    :: Uint8
+              , version  :: (Uint8, Uint8)
+              , mcu      :: mcu
               , features :: [Reader mcu Feature]
               } -> Formula
 
 cook :: Formula -> ModuleM ()
-cook (Formula mcu features) = do
+cook (Formula model (major, minor) mcu features) = do
 
-    let fts       = (`runReader` mcu) <$> features
-    let sch       = scheduler (systemClock mcu) $ concatMap tasks fts
+    let model'   = value "model" model
+    let mac'     = mac mcu "mac"
+    let version' = V.version "version" major minor
 
-    let inits     = initialize sch
-                 <> initialize (mac mcu)
-                 <> (initialize =<< fts)
+    let fts      = (`runReader` mcu) <$> features
+    let tsk      = concatMap tasks fts
+    let sch      = scheduler (systemClock mcu) tsk
 
-    let init      = proc "init"
-                  $ body
-                  $ mapM_ call_ inits
-                 :: Def ('[] :-> ())
+    let inits    = initialize mac'
+                <> initialize sch
+                <> (initialize =<< fts)
 
-    let loop      = schedule sch
+    let init     = proc "init"
+                 $ body
+                 $ mapM_ call_ inits
+                :: Def ('[] :-> ())
 
-    let main      = proc "main"
-                  $ body
-                  $ call_ init
-                 >> call_ loop
-                 >> ret 0
-                 :: Def ('[] :-> Sint32)
+    let loop     = schedule sch
 
-    traverse_    incl inits
-    traverse_    include fts
-    include      sch
-    include      (mac mcu)
+    let main     = proc "main"
+                 $ body
+                 $ call_ init
+                >> call_ loop
+                >> ret 0
+                :: Def ('[] :-> Sint32)
 
-
-    incl init
-    incl loop
-    incl main
+    include     model'
+    include     version'
+    include     mac'
+    traverse_   incl inits
+    include     sch
+    traverse_   include fts
+    traverse_   (incl . runStep) tsk
+    incl        init
+    incl        loop
+    incl        main
