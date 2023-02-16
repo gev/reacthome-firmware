@@ -8,7 +8,7 @@ import           Feature.Relays
 import           Interface.RS485
 
 relay6 :: Formula
-relay6 = Formula { model     = 0xa0
+relay6 = Formula { model    = 0xa0
                  , version  = (2, 1)
                  , mcu      = gd32f3x0
                  , features = [ rbus   1 $ rs485 1 usart_1 out_pa_4
