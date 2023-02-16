@@ -1,7 +1,6 @@
 module Formula.Relay6 where
 
 import           Core.Formula
-import           Data.Function   ((&))
 import           Device.GD32F3x0
 import           Feature.RBUS
 import           Feature.Relays

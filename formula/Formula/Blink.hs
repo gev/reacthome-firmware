@@ -1,11 +1,9 @@
 module Formula.Blink where
 
 import           Core.Formula
-import           Data.Function   ((&))
 import           Device.GD32F3x0
 import           Feature.Blink   as F
-import           Feature.RBUS
-import           Interface.RS485
+
 
 blink :: Formula
 blink = Formula { model     = 0xff
