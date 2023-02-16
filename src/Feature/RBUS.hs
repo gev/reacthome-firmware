@@ -21,18 +21,21 @@ import           Data.Value
 import           GHC.IO.BufferedIO     (readBuf)
 import           GHC.TypeNats
 import           Interface.Counter     (readCounter)
-import           Interface.MCU
+import           Interface.Mac         (Mac (getMac))
+import           Interface.MCU         (MCU (systemClock))
 import           Interface.RS485       (HandleRS485 (HandleRS485), RS485,
                                         transmit)
 import           Interface.SystemClock (SystemClock)
 import           Ivory.Language
 import           Ivory.Stdlib
+import           Protocol.RBUS.Slave   (Slave, slave)
 import           Util.CRC16
 
 
 data RBUS = RBUS
     { name        :: String
     , rs          :: RS485
+    , protocol    :: Slave   256
     , clock       :: SystemClock
     , timestamp   :: Value      Uint32
     , rxBuff      :: Buffer  64 Uint16
@@ -49,9 +52,15 @@ data RBUS = RBUS
 
 rbus :: MCU mcu => Int -> Reader mcu RS485 -> Reader (Domain mcu) Feature
 rbus n rs = do
-    mcu <- asks mcu
+    model       <- asks model
+    version     <- asks version
+    mac         <- asks mac
+    mcu         <- asks mcu
+    let handle   = undefined
+    let transmit = undefined
     pure . Feature $ RBUS { name          = name
                           , rs            = runReader rs mcu
+                          , protocol      = slave name (getMac mac) model version handle transmit
                           , clock         = systemClock  mcu
                           , timestamp     = value  (name <> "_rx_timestamp") 0
                           , rxBuff        = buffer (name <> "_rx")
@@ -64,7 +73,7 @@ rbus n rs = do
                           , txLock        = value  (name <> "_tx_lock") false
                           , txBuff        = buffer (name <> "_tx")
                           }
-    where name = "rbus_" <> show n
+    where name = "rbus_slave_" <> show n
 
 
 instance Include RBUS where
@@ -80,10 +89,11 @@ instance Include RBUS where
                    include $ txLock          r
                    include $ txBuff          r
                    include $ HandleRS485 (rs r) (rxHandle r) (txHandle r)
+                   include $ protocol        r
 
 
 instance Initialize RBUS where
-    initialize  = initialize . rs
+    initialize (RBUS {rs, protocol}) = initialize rs <> initialize protocol
 
 
 instance Task RBUS where

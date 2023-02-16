@@ -61,7 +61,7 @@ slave :: KnownNat n
       -> (Buffer n Uint8 -> forall eff. Ivory eff ())
       -> (Uint8 -> forall eff. Ivory eff ())
       -> Slave n
-slave name mac model version handle transmit = Slave
+slave n mac model version handle transmit = Slave
     { name     = name
     , mac      = mac
     , model    = model
@@ -78,7 +78,7 @@ slave name mac model version handle transmit = Slave
     , crc      = record       (name <> "_crc") initCRC16
     , handle   = handle
     , transmit = transmit
-    }
+    } where name = "protocol_" <> n
 
 
 instance Include (Slave n) where
