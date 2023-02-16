@@ -1,3 +1,5 @@
+{-# LANGUAGE NamedFieldPuns #-}
+
 module Endpoint.Group where
 
 import           Core.Include
