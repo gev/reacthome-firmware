@@ -20,11 +20,26 @@ group n = Group
   { enabled   = value (name <> "enabled")   false
   , timestamp = value (name <> "timestamp") 0
   , delay     = value (name <> "delay")     0
-  } where name = "group_" <> show n
+  }
+  where name = "group_" <> show n
 
--- group_enable n = undefined
+enableGroup :: Group -> Ivory eff ()
+enableGroup (Group {enabled}) =  setValue enabled true
 
--- group_disable n = undefined
+disableGroup :: Group -> Ivory eff ()
+disableGroup (Group {enabled}) =  setValue enabled false
+
+setTimestamp :: Group -> Uint32 -> Ivory eff ()
+setTimestamp (Group{timestamp}) = setValue timestamp
+
+getTimestamp :: Group -> Ivory eff Uint32
+getTimestamp (Group{timestamp}) = getValue timestamp
+
+setDelay :: Group -> Uint32 -> Ivory eff ()
+setDelay (Group{delay}) = setValue delay
+
 
 instance Include Group where
-  include (Group {enabled, timestamp, delay}) = include enabled >> include timestamp >> include delay
+  include (Group {enabled, timestamp, delay}) =
+    include enabled >> include timestamp >> include delay
+
