@@ -9,7 +9,6 @@ import           Core.Include
 import           Core.Initialize
 import           Data.Foldable
 import           Data.Value
-import           Endpoint.Group
 import           Endpoint.Relay
 import           Interface.GPIO
 import           Interface.MCU        (MCU)
