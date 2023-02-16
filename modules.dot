@@ -1,11 +1,6 @@
 digraph G {
 size="6,4";
 ratio="fill";
-u15[label="Firmware",style="filled",fillcolor="#bbffbb",penwidth="0"];
-u19[label="Include",style="filled",fillcolor="#bbffbb",penwidth="0"];
-u20[label="Initialize",style="filled",fillcolor="#bbffbb",penwidth="0"];
-u35[label="Scheduler",style="filled",fillcolor="#bbffbb",penwidth="0"];
-u36[label="Shake",style="filled",fillcolor="#bbffbb",penwidth="0"];
 subgraph cluster_0 {
 label=".";
 color="#0000000F";
@@ -20,383 +15,420 @@ u0[label="Main",style="filled",fillcolor="#bbbbff",penwidth="0"];
 
 }
 subgraph cluster_2 {
-label="Device";
+label="Core";
 color="#0000000F";
 style="filled";
-u1[label="GD32F4xx",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u3[label="Include",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u4[label="Scheduler",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u5[label="Firmware",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u6[label="Initialize",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u7[label="Formula",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u8[label="Domain",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u9[label="Version",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u10[label="Feature",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u11[label="Shake",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+
+}
 subgraph cluster_3 {
-label="GD32F3x0";
+label="Data";
 color="#0000000F";
 style="filled";
-u8[label="GD32F3x0",style="filled,bold",fillcolor="#ffbbbb"];
-u2[label="GPIO",style="filled",fillcolor="#bbffff",penwidth="0"];
-u3[label="Mac",style="filled",fillcolor="#bbffff",penwidth="0"];
-u4[label="SysTick",style="filled",fillcolor="#bbffff",penwidth="0"];
-u5[label="SystemClock",style="filled",fillcolor="#bbffff",penwidth="0"];
-u6[label="USART",style="filled",fillcolor="#bbffff",penwidth="0"];
-u7[label="Timer",style="filled",fillcolor="#bbffff",penwidth="0"];
-
-}
-
-}
+u12[label="Record",style="filled",fillcolor="#bbffff",penwidth="0"];
+u13[label="Class",style="filled",fillcolor="#bbffff",penwidth="0"];
+u14[label="Buffer",style="filled",fillcolor="#bbffff",penwidth="0"];
+u15[label="Value",style="filled",fillcolor="#bbffff",penwidth="0"];
+u16[label="Index",style="filled",fillcolor="#bbffff",penwidth="0"];
 subgraph cluster_4 {
-label="Endpoint";
+label="Concurrent";
 color="#0000000F";
 style="filled";
-u9[label="Relay",style="filled",fillcolor="#ffbbff",penwidth="0"];
+u17[label="Queue",style="filled",fillcolor="#ffbbff",penwidth="0"];
+u18[label="Semaphore",style="filled",fillcolor="#ffbbff",penwidth="0"];
+
+}
 
 }
 subgraph cluster_5 {
-label="Feature";
+label="Device";
 color="#0000000F";
 style="filled";
-u14[label="Feature",style="filled,bold",fillcolor="#bbffbb"];
-u12[label="Relays",style="filled",fillcolor="#77ff77",penwidth="0"];
-u13[label="Blink",style="filled",fillcolor="#77ff77",penwidth="0"];
+u19[label="GD32F4xx",style="filled",fillcolor="#77ff77",penwidth="0"];
 subgraph cluster_6 {
-label="RBUS";
+label="GD32F3x0";
 color="#0000000F";
 style="filled";
-u11[label="RBUS",style="filled,bold",fillcolor="#77ff77"];
-u10[label="Slave",style="filled",fillcolor="#ffff77",penwidth="0"];
+u26[label="GD32F3x0",style="filled,bold",fillcolor="#77ff77"];
+u20[label="GPIO",style="filled",fillcolor="#ffff77",penwidth="0"];
+u21[label="Mac",style="filled",fillcolor="#ffff77",penwidth="0"];
+u22[label="SysTick",style="filled",fillcolor="#ffff77",penwidth="0"];
+u23[label="SystemClock",style="filled",fillcolor="#ffff77",penwidth="0"];
+u24[label="USART",style="filled",fillcolor="#ffff77",penwidth="0"];
+u25[label="Timer",style="filled",fillcolor="#ffff77",penwidth="0"];
 
 }
 
 }
 subgraph cluster_7 {
-label="Formula";
+label="Endpoint";
 color="#0000000F";
 style="filled";
-u18[label="Formula",style="filled,bold",fillcolor="#bbffbb"];
-u16[label="Relay6",style="filled",fillcolor="#7777ff",penwidth="0"];
-u17[label="Blink",style="filled",fillcolor="#7777ff",penwidth="0"];
+u27[label="Group",style="filled",fillcolor="#7777ff",penwidth="0"];
+u28[label="Relay",style="filled",fillcolor="#7777ff",penwidth="0"];
 
 }
 subgraph cluster_8 {
-label="Interface";
+label="Feature";
 color="#0000000F";
 style="filled";
-u21[label="MCU",style="filled",fillcolor="#ff7777",penwidth="0"];
-u22[label="GPIO",style="filled",fillcolor="#ff7777",penwidth="0"];
-u23[label="Mac",style="filled",fillcolor="#ff7777",penwidth="0"];
-u24[label="Counter",style="filled",fillcolor="#ff7777",penwidth="0"];
-u25[label="RS485",style="filled",fillcolor="#ff7777",penwidth="0"];
-u26[label="SystemClock",style="filled",fillcolor="#ff7777",penwidth="0"];
-u27[label="USART",style="filled",fillcolor="#ff7777",penwidth="0"];
-u28[label="Timer",style="filled",fillcolor="#ff7777",penwidth="0"];
-
-}
+u31[label="Relays",style="filled",fillcolor="#ff7777",penwidth="0"];
+u32[label="Blink",style="filled",fillcolor="#ff7777",penwidth="0"];
 subgraph cluster_9 {
-label="Ivory";
-color="#0000000F";
-style="filled";
-subgraph cluster_10 {
-label="Support";
-color="#0000000F";
-style="filled";
-u31[label="Support",style="filled,bold",fillcolor="#77ffff"];
-subgraph cluster_11 {
-label="Device";
-color="#0000000F";
-style="filled";
-u29[label="GD32F4xx",style="filled",fillcolor="#33ff33",penwidth="0"];
-u30[label="GD32F3x0",style="filled",fillcolor="#33ff33",penwidth="0"];
-
-}
-
-}
-
-}
-subgraph cluster_12 {
-label="Protocol";
-color="#0000000F";
-style="filled";
-subgraph cluster_13 {
 label="RBUS";
 color="#0000000F";
 style="filled";
-u34[label="RBUS",style="filled,bold",fillcolor="#bbff77"];
-u32[label="Slave",style="filled",fillcolor="#3333ff",penwidth="0"];
-u33[label="Master",style="filled",fillcolor="#3333ff",penwidth="0"];
+u30[label="RBUS",style="filled,bold",fillcolor="#ff7777"];
+u29[label="Slave",style="filled",fillcolor="#77ffff",penwidth="0"];
 
 }
 
 }
-subgraph cluster_14 {
+subgraph cluster_10 {
+label="Formula";
+color="#0000000F";
+style="filled";
+u1[label="Relay6",style="filled",fillcolor="#ff77ff",penwidth="0"];
+u2[label="Blink",style="filled",fillcolor="#ff77ff",penwidth="0"];
+
+}
+subgraph cluster_11 {
+label="Interface";
+color="#0000000F";
+style="filled";
+u33[label="MCU",style="filled",fillcolor="#33ff33",penwidth="0"];
+u34[label="GPIO",style="filled",fillcolor="#33ff33",penwidth="0"];
+u35[label="Mac",style="filled",fillcolor="#33ff33",penwidth="0"];
+u36[label="Counter",style="filled",fillcolor="#33ff33",penwidth="0"];
+u37[label="RS485",style="filled",fillcolor="#33ff33",penwidth="0"];
+u38[label="SystemClock",style="filled",fillcolor="#33ff33",penwidth="0"];
+u39[label="USART",style="filled",fillcolor="#33ff33",penwidth="0"];
+u40[label="Timer",style="filled",fillcolor="#33ff33",penwidth="0"];
+
+}
+subgraph cluster_12 {
+label="Ivory";
+color="#0000000F";
+style="filled";
+subgraph cluster_13 {
 label="Support";
 color="#0000000F";
 style="filled";
-u51[label="Util",style="filled",fillcolor="#ff3333",penwidth="0"];
-subgraph cluster_15 {
-label="CMSIS";
-color="#0000000F";
-style="filled";
-u37[label="CoreCM4",style="filled",fillcolor="#77bbff",penwidth="0"];
-
-}
-subgraph cluster_16 {
+u43[label="Support",style="filled,bold",fillcolor="#bbff77"];
+subgraph cluster_14 {
 label="Device";
 color="#0000000F";
 style="filled";
+u41[label="GD32F4xx",style="filled",fillcolor="#ff3333",penwidth="0"];
+u42[label="GD32F3x0",style="filled",fillcolor="#ff3333",penwidth="0"];
+
+}
+
+}
+
+}
+subgraph cluster_15 {
+label="Protocol";
+color="#0000000F";
+style="filled";
+subgraph cluster_16 {
+label="RBUS";
+color="#0000000F";
+style="filled";
+u46[label="RBUS",style="filled,bold",fillcolor="#77bbff"];
+u44[label="Slave",style="filled",fillcolor="#ff77bb",penwidth="0"];
+u45[label="Master",style="filled",fillcolor="#ff77bb",penwidth="0"];
+
+}
+
+}
 subgraph cluster_17 {
-label="GD32F3x0";
+label="Support";
 color="#0000000F";
 style="filled";
-u50[label="GD32F3x0",style="filled,bold",fillcolor="#ff77bb"];
-u43[label="GPIO",style="filled",fillcolor="#33bb77",penwidth="0"];
-u44[label="RCU",style="filled",fillcolor="#33bb77",penwidth="0"];
-u45[label="Misc",style="filled",fillcolor="#33bb77",penwidth="0"];
-u46[label="DMA",style="filled",fillcolor="#33bb77",penwidth="0"];
-u47[label="USART",style="filled",fillcolor="#33bb77",penwidth="0"];
-u48[label="Timer",style="filled",fillcolor="#33bb77",penwidth="0"];
-u49[label="DBG",style="filled",fillcolor="#33bb77",penwidth="0"];
-
-}
+u61[label="Util",style="filled",fillcolor="#33bb77",penwidth="0"];
 subgraph cluster_18 {
-label="GD32F4xx";
+label="CMSIS";
 color="#0000000F";
 style="filled";
-u38[label="GD32F4xx",style="filled,bold",fillcolor="#ff77bb"];
-u39[label="GPIO",style="filled",fillcolor="#ffff33",penwidth="0"];
-u40[label="RCU",style="filled",fillcolor="#ffff33",penwidth="0"];
-u41[label="DMA",style="filled",fillcolor="#ffff33",penwidth="0"];
-u42[label="DBG",style="filled",fillcolor="#ffff33",penwidth="0"];
-
-}
-
-}
+u47[label="CoreCM4",style="filled",fillcolor="#ffff33",penwidth="0"];
 
 }
 subgraph cluster_19 {
+label="Device";
+color="#0000000F";
+style="filled";
+subgraph cluster_20 {
+label="GD32F3x0";
+color="#0000000F";
+style="filled";
+u60[label="GD32F3x0",style="filled,bold",fillcolor="#7733bb"];
+u53[label="GPIO",style="filled",fillcolor="#bb7733",penwidth="0"];
+u54[label="RCU",style="filled",fillcolor="#bb7733",penwidth="0"];
+u55[label="Misc",style="filled",fillcolor="#bb7733",penwidth="0"];
+u56[label="DMA",style="filled",fillcolor="#bb7733",penwidth="0"];
+u57[label="USART",style="filled",fillcolor="#bb7733",penwidth="0"];
+u58[label="Timer",style="filled",fillcolor="#bb7733",penwidth="0"];
+u59[label="DBG",style="filled",fillcolor="#bb7733",penwidth="0"];
+
+}
+subgraph cluster_21 {
+label="GD32F4xx";
+color="#0000000F";
+style="filled";
+u48[label="GD32F4xx",style="filled,bold",fillcolor="#7733bb"];
+u49[label="GPIO",style="filled",fillcolor="#33ffff",penwidth="0"];
+u50[label="RCU",style="filled",fillcolor="#33ffff",penwidth="0"];
+u51[label="DMA",style="filled",fillcolor="#33ffff",penwidth="0"];
+u52[label="DBG",style="filled",fillcolor="#33ffff",penwidth="0"];
+
+}
+
+}
+
+}
+subgraph cluster_22 {
 label="Util";
 color="#0000000F";
 style="filled";
-u52[label="Version",style="filled",fillcolor="#7733bb",penwidth="0"];
-u53[label="ByteSplit",style="filled",fillcolor="#7733bb",penwidth="0"];
-u61[label="CRC16",style="filled",fillcolor="#7733bb",penwidth="0"];
-subgraph cluster_20 {
-label="Data";
-color="#0000000F";
-style="filled";
-u54[label="Record",style="filled",fillcolor="#bb7733",penwidth="0"];
-u55[label="Class",style="filled",fillcolor="#bb7733",penwidth="0"];
-u56[label="Buffer",style="filled",fillcolor="#bb7733",penwidth="0"];
-u57[label="Value",style="filled",fillcolor="#bb7733",penwidth="0"];
-u58[label="Index",style="filled",fillcolor="#bb7733",penwidth="0"];
-subgraph cluster_21 {
-label="Concurrent";
-color="#0000000F";
-style="filled";
-u59[label="Queue",style="filled",fillcolor="#33ffff",penwidth="0"];
-u60[label="Semaphore",style="filled",fillcolor="#33ffff",penwidth="0"];
+u62[label="ByteSplit",style="filled",fillcolor="#ff33ff",penwidth="0"];
+u63[label="CRC16",style="filled",fillcolor="#ff33ff",penwidth="0"];
 
 }
-
-}
-
-}
-u0 -> u15;
-u0 -> u16;
-u0 -> u17;
-u0 -> u18;
-u0 -> u36;
-u2 -> u19;
-u2 -> u20;
-u2 -> u22;
-u2 -> u43;
-u2 -> u44;
-u3 -> u23;
-u3 -> u49;
-u3 -> u53;
-u3 -> u55;
-u4 -> u19;
-u4 -> u20;
-u4 -> u28;
-u4 -> u37;
-u5 -> u4;
-u5 -> u7;
-u5 -> u26;
-u5 -> u48;
-u6 -> u2;
-u6 -> u19;
-u6 -> u20;
-u6 -> u27;
-u6 -> u30;
-u6 -> u44;
-u6 -> u45;
-u6 -> u46;
-u6 -> u47;
-u6 -> u50;
-u6 -> u51;
-u7 -> u19;
-u7 -> u20;
-u7 -> u24;
-u7 -> u28;
+u0 -> u1;
+u0 -> u2;
+u0 -> u5;
+u0 -> u7;
+u0 -> u11;
+u1 -> u7;
+u1 -> u26;
+u1 -> u30;
+u1 -> u31;
+u1 -> u37;
+u2 -> u7;
+u2 -> u26;
+u2 -> u30;
+u2 -> u32;
+u2 -> u37;
+u4 -> u3;
+u4 -> u6;
+u4 -> u10;
+u4 -> u13;
+u4 -> u15;
+u4 -> u38;
+u4 -> u40;
+u5 -> u10;
+u7 -> u3;
+u7 -> u4;
+u7 -> u6;
+u7 -> u8;
+u7 -> u10;
+u7 -> u12;
+u7 -> u15;
+u7 -> u33;
 u7 -> u44;
-u7 -> u45;
-u7 -> u48;
-u7 -> u50;
-u8 -> u2;
 u8 -> u3;
-u8 -> u4;
-u8 -> u5;
 u8 -> u6;
-u8 -> u7;
-u8 -> u21;
-u8 -> u23;
-u8 -> u26;
-u8 -> u43;
-u8 -> u44;
-u8 -> u46;
-u8 -> u47;
-u8 -> u50;
-u9 -> u19;
-u9 -> u20;
-u9 -> u22;
-u9 -> u28;
-u9 -> u55;
-u9 -> u57;
-u11 -> u14;
-u11 -> u19;
-u11 -> u20;
-u11 -> u21;
-u11 -> u24;
-u11 -> u25;
-u11 -> u26;
-u11 -> u55;
-u11 -> u56;
-u11 -> u57;
-u11 -> u58;
-u11 -> u59;
-u11 -> u61;
-u12 -> u9;
-u12 -> u14;
-u12 -> u19;
-u12 -> u20;
-u12 -> u21;
-u12 -> u22;
-u12 -> u57;
-u13 -> u14;
-u13 -> u19;
-u13 -> u20;
-u13 -> u21;
-u13 -> u22;
-u13 -> u28;
-u13 -> u55;
-u13 -> u57;
-u14 -> u19;
-u14 -> u20;
-u14 -> u28;
-u15 -> u14;
-u16 -> u8;
-u16 -> u11;
-u16 -> u12;
-u16 -> u18;
-u16 -> u25;
-u17 -> u8;
-u17 -> u11;
+u8 -> u9;
+u8 -> u12;
+u8 -> u14;
+u8 -> u15;
+u8 -> u33;
+u8 -> u35;
+u8 -> u38;
+u9 -> u3;
+u9 -> u12;
+u9 -> u13;
+u10 -> u3;
+u10 -> u6;
+u10 -> u40;
+u12 -> u3;
+u12 -> u13;
+u13 -> u3;
+u14 -> u3;
+u14 -> u13;
+u15 -> u3;
+u15 -> u13;
+u16 -> u3;
+u16 -> u13;
+u16 -> u15;
+u17 -> u3;
 u17 -> u13;
+u17 -> u16;
 u17 -> u18;
-u17 -> u25;
-u18 -> u14;
-u18 -> u19;
-u18 -> u20;
-u18 -> u21;
-u18 -> u35;
-u21 -> u23;
-u21 -> u26;
-u22 -> u19;
-u22 -> u20;
-u23 -> u19;
-u23 -> u20;
-u23 -> u55;
-u23 -> u56;
-u24 -> u19;
+u18 -> u3;
+u18 -> u13;
+u18 -> u15;
+u20 -> u3;
+u20 -> u6;
+u20 -> u34;
+u20 -> u53;
+u20 -> u54;
+u21 -> u13;
+u21 -> u35;
+u21 -> u59;
+u21 -> u62;
+u22 -> u3;
+u22 -> u6;
+u22 -> u40;
+u22 -> u47;
+u23 -> u22;
+u23 -> u25;
+u23 -> u38;
+u23 -> u58;
+u24 -> u3;
+u24 -> u6;
 u24 -> u20;
-u25 -> u19;
-u25 -> u20;
-u25 -> u21;
-u25 -> u22;
-u25 -> u27;
-u26 -> u19;
+u24 -> u39;
+u24 -> u42;
+u24 -> u54;
+u24 -> u55;
+u24 -> u56;
+u24 -> u57;
+u24 -> u60;
+u24 -> u61;
+u25 -> u3;
+u25 -> u6;
+u25 -> u36;
+u25 -> u40;
+u25 -> u54;
+u25 -> u55;
+u25 -> u58;
+u25 -> u60;
 u26 -> u20;
+u26 -> u21;
+u26 -> u22;
+u26 -> u23;
 u26 -> u24;
-u26 -> u28;
-u26 -> u55;
+u26 -> u25;
+u26 -> u33;
+u26 -> u35;
+u26 -> u38;
+u26 -> u53;
+u26 -> u54;
+u26 -> u56;
 u26 -> u57;
-u27 -> u19;
-u27 -> u20;
-u28 -> u19;
-u28 -> u20;
-u29 -> u31;
-u30 -> u31;
-u32 -> u19;
-u32 -> u20;
-u32 -> u23;
+u26 -> u60;
+u27 -> u3;
+u27 -> u6;
+u27 -> u13;
+u27 -> u15;
+u28 -> u3;
+u28 -> u6;
+u28 -> u13;
+u28 -> u15;
+u28 -> u34;
+u28 -> u40;
+u30 -> u3;
+u30 -> u6;
+u30 -> u8;
+u30 -> u10;
+u30 -> u13;
+u30 -> u14;
+u30 -> u15;
+u30 -> u16;
+u30 -> u17;
+u30 -> u33;
+u30 -> u36;
+u30 -> u37;
+u30 -> u38;
+u30 -> u63;
+u31 -> u3;
+u31 -> u6;
+u31 -> u8;
+u31 -> u10;
+u31 -> u15;
+u31 -> u27;
+u31 -> u28;
+u31 -> u33;
+u31 -> u34;
+u32 -> u3;
+u32 -> u6;
+u32 -> u8;
+u32 -> u10;
+u32 -> u13;
+u32 -> u15;
+u32 -> u33;
 u32 -> u34;
-u32 -> u52;
-u32 -> u54;
-u32 -> u55;
-u32 -> u56;
-u32 -> u57;
-u32 -> u61;
-u34 -> u54;
-u34 -> u55;
-u34 -> u56;
-u34 -> u61;
+u32 -> u40;
+u33 -> u35;
+u33 -> u38;
+u34 -> u3;
+u34 -> u6;
+u35 -> u3;
+u35 -> u6;
+u35 -> u13;
 u35 -> u14;
-u35 -> u19;
-u35 -> u20;
-u35 -> u26;
-u35 -> u28;
-u35 -> u55;
-u35 -> u57;
-u37 -> u30;
-u37 -> u31;
-u38 -> u29;
-u38 -> u31;
-u39 -> u29;
-u39 -> u31;
-u40 -> u29;
-u40 -> u31;
-u41 -> u29;
-u41 -> u31;
-u42 -> u29;
-u42 -> u31;
-u43 -> u30;
-u43 -> u31;
-u44 -> u30;
-u44 -> u31;
-u45 -> u30;
-u45 -> u31;
-u45 -> u50;
-u46 -> u30;
-u46 -> u31;
-u47 -> u30;
-u47 -> u31;
-u47 -> u46;
-u48 -> u30;
-u48 -> u31;
-u49 -> u30;
-u49 -> u31;
-u50 -> u30;
-u50 -> u31;
-u54 -> u19;
-u54 -> u55;
-u55 -> u19;
-u56 -> u19;
-u56 -> u55;
-u57 -> u19;
-u57 -> u55;
-u58 -> u19;
-u58 -> u55;
-u58 -> u57;
-u59 -> u19;
-u59 -> u55;
-u59 -> u58;
-u59 -> u60;
-u60 -> u19;
-u60 -> u55;
-u60 -> u57;
+u36 -> u3;
+u36 -> u6;
+u37 -> u3;
+u37 -> u6;
+u37 -> u33;
+u37 -> u34;
+u37 -> u39;
+u38 -> u3;
+u38 -> u6;
+u38 -> u13;
+u38 -> u15;
+u38 -> u36;
+u38 -> u40;
+u39 -> u3;
+u39 -> u6;
+u40 -> u3;
+u40 -> u6;
+u41 -> u43;
+u42 -> u43;
+u44 -> u3;
+u44 -> u6;
+u44 -> u9;
+u44 -> u12;
+u44 -> u13;
+u44 -> u14;
+u44 -> u15;
+u44 -> u35;
+u44 -> u46;
+u44 -> u63;
+u46 -> u12;
+u46 -> u13;
+u46 -> u14;
+u46 -> u63;
+u47 -> u42;
+u47 -> u43;
+u48 -> u41;
+u48 -> u43;
+u49 -> u41;
+u49 -> u43;
+u50 -> u41;
+u50 -> u43;
+u51 -> u41;
+u51 -> u43;
+u52 -> u41;
+u52 -> u43;
+u53 -> u42;
+u53 -> u43;
+u54 -> u42;
+u54 -> u43;
+u55 -> u42;
+u55 -> u43;
+u55 -> u60;
+u56 -> u42;
+u56 -> u43;
+u57 -> u42;
+u57 -> u43;
+u57 -> u56;
+u58 -> u42;
+u58 -> u43;
+u59 -> u42;
+u59 -> u43;
+u60 -> u42;
+u60 -> u43;
 
 }
