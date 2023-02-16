@@ -12,7 +12,7 @@ module Protocol.RBUS.Slave where
 import           Control.Monad   ((<=<))
 import           Core.Include
 import           Core.Initialize
-import           Core.Version    (Version, getVersion, major, minor)
+import           Core.Version    (Version, major, minor)
 import           Data.Buffer
 import           Data.Class
 import           Data.Record
@@ -61,7 +61,7 @@ slave :: KnownNat n
       -> (Buffer n Uint8 -> forall eff. Ivory eff ())
       -> (Uint8 -> forall eff. Ivory eff ())
       -> Slave n
-slave name mac model version handle transmit = Slave
+slave n mac model version handle transmit = Slave
     { name     = name
     , mac      = mac
     , model    = model
@@ -78,7 +78,7 @@ slave name mac model version handle transmit = Slave
     , crc      = record       (name <> "_crc") initCRC16
     , handle   = handle
     , transmit = transmit
-    }
+    } where name = "protocol_" <> n
 
 
 instance Include (Slave n) where
@@ -105,8 +105,8 @@ initDisc (Slave {name, mac, model, version, buffDisc}) =
         setItem buffDisc 0 $ discovery txPreamble
         arrayCopy (getBuffer buffDisc) (getBuffer mac) 1 (getSize mac)
         setItem buffDisc 8 =<< getValue model
-        setItem buffDisc 9 =<< (getVersion version) |> major
-        setItem buffDisc 10 =<< (getVersion version) |> minor
+        setItem buffDisc 9 =<< version |> major
+        setItem buffDisc 10 =<< version |> minor
         calcCRC16 buffDisc
 
 initConf :: Slave n -> Def('[] :-> ())

@@ -72,7 +72,7 @@ instance Include (HandleRS485 RS485) where
 
 instance Initialize RS485 where
     initialize (RS485 {n, usart, rede}) =
-        initR : initialize rede <> initialize usart
+        initialize rede <> initialize usart <> [initR]
         where initR =
                 proc ("rs485_" <> show n <> "_init") $ body
                                                      $ reset rede

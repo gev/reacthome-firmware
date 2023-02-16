@@ -6,7 +6,6 @@
 module Core.Version
     ( Version
     , version
-    , getVersion
     , major
     , minor
     ) where
@@ -21,7 +20,9 @@ import           Ivory.Language
 type VersionStruct = "version_struct"
 
 
-newtype Version = Version {getVersion :: Record VersionStruct}
+type Version = Version' VersionStruct
+
+newtype Version' v = Version {getVersion :: Record v}
 
 
 [ivory|
@@ -40,7 +41,11 @@ version name maj min = Version $ record name [ major .= ival maj
 
 
 
-instance Include Version where
+instance Include (Version' v) where
     include (Version v) = do
         defStruct (Proxy :: Proxy VersionStruct)
         include v
+
+
+instance IvoryStruct v => Rec Version' v where
+  getRecord = getRecord . getVersion
