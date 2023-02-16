@@ -7,7 +7,7 @@ import           Data.Value
 import           Ivory.Language
 
 
-data Group = forall a. => Group
+data Group = Group
   { enabled   :: Value IBool
   , timestamp :: Value Uint32
   , delay     :: Value Uint32
