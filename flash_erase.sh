@@ -1,1 +1,0 @@
-JLinkExe ip tunnel:801031640::jlink-europe.segger.com -Device GD32F330K8 -If SWD -Speed 1000 jlink/EraseMCU.jlink
