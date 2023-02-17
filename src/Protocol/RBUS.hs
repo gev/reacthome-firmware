@@ -54,10 +54,10 @@ go = (,)
 
 runReceive :: (Val v a, IvoryEq a)
            => (r -> v a)
-           -> [(a, r -> Uint8 -> Ivory (AllocEffects s) ())]
+           -> [(a, r -> Uint8 -> Ivory (ProcEffects s ()) ())]
            -> r
            -> Uint8
-           -> Ivory (AllocEffects s) ()
+           -> Ivory (ProcEffects s ()) ()
 runReceive f hs r v = do
     p <- getValue . f $ r
     let go (w, h) = w ==? p ==> h r v

@@ -42,7 +42,6 @@ data Slave n = Slave
     , buffDisc :: Buffer 12 Uint8
     , crc      :: Record    CRC16
     , handle   :: Buffer n Uint8 -> forall eff. Ivory eff ()
-    , transmit :: Uint8 -> forall eff. Ivory eff ()
     }
 
 
@@ -59,9 +58,8 @@ slave :: KnownNat n
       -> Value Uint8
       -> Version
       -> (Buffer n Uint8 -> forall eff. Ivory eff ())
-      -> (Uint8 -> forall eff. Ivory eff ())
       -> Slave n
-slave n mac model version handle transmit = Slave
+slave n mac model version handle = Slave
     { name     = name
     , mac      = mac
     , model    = model
@@ -77,7 +75,6 @@ slave n mac model version handle transmit = Slave
     , buffDisc = buffer       (name <> "_disc_tx")
     , crc      = record       (name <> "_crc") initCRC16
     , handle   = handle
-    , transmit = transmit
     } where name = "protocol_" <> n
 
 
@@ -104,9 +101,9 @@ initDisc (Slave {name, mac, model, version, buffDisc}) =
     proc (name <> "_init_disc_tx") $ body $ do
         setItem buffDisc 0 $ discovery txPreamble
         arrayCopy (getBuffer buffDisc) (getBuffer mac) 1 (getSize mac)
-        setItem buffDisc 8 =<< getValue model
-        setItem buffDisc 9 =<< version |> major
-        setItem buffDisc 10 =<< version |> minor
+        setItem buffDisc 7 =<< getValue model
+        setItem buffDisc 8 =<< version |> major
+        setItem buffDisc 9 =<< version |> minor
         calcCRC16 buffDisc
 
 initConf :: Slave n -> Def('[] :-> ())
@@ -125,7 +122,7 @@ initPing (Slave {name, address, buffPing}) =
 
 calcCRC16 :: KnownNat n => Buffer n Uint8 -> Ivory (ProcEffects s ()) ()
 calcCRC16 buff = do
-    let size = getSize buff :: Sint32
+    let size = getSize buff :: Uint16
     let s_2 = toIx $ size - 2
     let s_1 = toIx $ size - 1
     crc <- local $ istruct initCRC16
@@ -134,8 +131,8 @@ calcCRC16 buff = do
     setItem buff s_1 =<< deref (crc ~> lsb)
 
 
-receiveData :: KnownNat n => Slave n -> Uint8 -> Ivory (AllocEffects s) ()
-receiveData = runReceive state
+receive :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
+receive = runReceive state
     [ go readyToReceive     receivePreamble
     , go receivingMessage   receiveMessage
     , go receivingConfirm   receiveConfirm
@@ -162,7 +159,7 @@ receivePreamble (Slave {state, phase, index, size, crc}) v =
 
 
 
-receiveDiscovery :: KnownNat n => Slave n -> Uint8 -> Ivory (AllocEffects s) ()
+receiveDiscovery :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receiveDiscovery = runReceive phase
     [ go waitingData    receiveDiscoveryMac
     , go waitingAddress receiveDiscoveryAddress
@@ -176,6 +173,7 @@ receiveDiscoveryMac (Slave {mac, index, state, phase, crc}) v = do
     m <- getItem mac $ toIx i
     ifte_ (v ==? m)
           (do setValue index $ i + 1
+              i <- getValue index
               updateCRC crc v
               when (i ==? getSize mac)
                    (setValue phase waitingAddress)
@@ -189,7 +187,7 @@ receiveDiscoveryAddress (Slave {phase, buff, crc}) v = do
     setValue phase waitingMsbCRC
 
 receiveDiscoveryLsbCRC :: KnownNat n => Slave n -> Uint8 -> Ivory eff ()
-receiveDiscoveryLsbCRC s@(Slave {address, buff}) =
+receiveDiscoveryLsbCRC s@(Slave {address, buff}) = do
     receiveLsbCRC s $ do
         setValue address =<< getItem buff 0
         call_ $ initConf s
@@ -197,7 +195,7 @@ receiveDiscoveryLsbCRC s@(Slave {address, buff}) =
 
 
 
-receivePing :: KnownNat n => Slave n -> Uint8 -> Ivory (AllocEffects s) ()
+receivePing :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receivePing = runReceive phase
     [ go waitingAddress $ receiveAddress waitingMsbCRC
     , go waitingMsbCRC    receiveMsbCRC
@@ -210,7 +208,7 @@ receivePingLsbCRC r@(Slave {address}) =
 
 
 
-receiveConfirm :: KnownNat n => Slave n -> Uint8 -> Ivory (AllocEffects s) ()
+receiveConfirm :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receiveConfirm = runReceive phase
     [ go waitingAddress $ receiveAddress waitingMsbCRC
     , go waitingMsbCRC    receiveMsbCRC
@@ -219,11 +217,11 @@ receiveConfirm = runReceive phase
 
 receiveConfirmLsbCRC :: Slave n -> Uint8 -> Ivory eff ()
 receiveConfirmLsbCRC r =
-    receiveLsbCRC r undefined
+    receiveLsbCRC r $ pure ()
 
 
 
-receiveMessage :: KnownNat n => Slave n -> Uint8 -> Ivory (AllocEffects s) ()
+receiveMessage :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receiveMessage = runReceive phase
     [ go waitingAddress $ receiveAddress waitingSize
     , go waitingSize      receiveMessageSize
@@ -264,7 +262,6 @@ receiveAddress p (Slave {address, state, phase, crc}) v = do
 
 receiveMsbCRC :: Slave n -> Uint8 -> Ivory eff ()
 receiveMsbCRC (Slave {state, phase, crc}) v = do
-    updateCRC crc v
     b <- crc |> msb
     ifte_ (b ==? v)
           (setValue phase waitingLsbCRC)
@@ -272,31 +269,18 @@ receiveMsbCRC (Slave {state, phase, crc}) v = do
 
 receiveLsbCRC :: Slave n -> Ivory eff () -> Uint8 -> Ivory eff ()
 receiveLsbCRC (Slave {state, crc}) complete v = do
-    updateCRC crc v
     b <- crc |> lsb
     when (b ==? v) complete
     setValue state readyToReceive
 
 
-
-transmitDiscovery :: Slave n -> Ivory (AllocEffects s) ()
-transmitDiscovery (Slave {buffDisc, transmit}) =
-    transmit' buffDisc transmit
-
-transmitPing :: Slave n -> Ivory (AllowBreak(AllocEffects s)) ()
-transmitPing (Slave {buffPing, transmit}) =
-    transmit' buffPing transmit
-
-transmitConfirm :: Slave n -> Ivory (AllowBreak(AllocEffects s)) ()
-transmitConfirm (Slave {buffConf, transmit}) =
-    transmit' buffConf transmit
-
 transmitMessage :: KnownNat m
                 => Slave n
                 -> (Ix m -> forall eff. Ivory eff Uint8)
                 -> Ix m
+                -> (Uint8 -> forall eff. Ivory eff ())
                 -> Ivory (AllowBreak (AllocEffects s)) ()
-transmitMessage (Slave{address, transmit}) get n = do
+transmitMessage (Slave{address}) get n transmit = do
     crc16 <- local $ istruct initCRC16
     let t v = updateCRC16 crc16 v >> transmit v
     t $ message txPreamble
@@ -306,9 +290,8 @@ transmitMessage (Slave{address, transmit}) get n = do
     transmit =<< deref (crc16~>msb)
     transmit =<< deref (crc16~>lsb)
 
-transmit' :: KnownNat n
-          => Buffer n Uint8
-          -> (Uint8 -> Ivory (AllowBreak eff) ())
-          -> Ivory eff ()
-transmit' buff transmit =
-    arrayMap $ transmit <=< getItem buff
+
+hasAddress :: Slave n -> Ivory eff IBool
+hasAddress (Slave {address}) = do
+    a <- getValue address
+    pure $ a /=? broadcastAddress

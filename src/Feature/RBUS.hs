@@ -20,24 +20,21 @@ import           Data.Index            (Index, index)
 import           Data.Value
 import           GHC.IO.BufferedIO     (readBuf)
 import           GHC.TypeNats
-import           Interface.Counter     (readCounter)
 import           Interface.Mac         (Mac (getMac))
-import           Interface.MCU         (MCU (systemClock))
-import           Interface.RS485       (HandleRS485 (HandleRS485), RS485,
-                                        transmit)
-import           Interface.SystemClock (SystemClock)
+import           Interface.MCU         (MCU)
+import           Interface.RS485       as RS (HandleRS485 (HandleRS485), RS485,
+                                              transmit)
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Protocol.RBUS.Slave   (Slave, slave)
-import           Util.CRC16
+import           Protocol.RBUS.Slave   (Slave, buffDisc, buffPing, hasAddress,
+                                        receive, slave)
+import qualified Protocol.RBUS.Slave   as RS
 
 
 data RBUS = RBUS
     { name        :: String
     , rs          :: RS485
     , protocol    :: Slave   256
-    , clock       :: SystemClock
-    , timestamp   :: Value      Uint32
     , rxBuff      :: Buffer  64 Uint16
     , rxQueue     :: Queue   64
     , msgSize     :: Value      Uint16
@@ -56,30 +53,26 @@ rbus n rs = do
     version     <- asks version
     mac         <- asks mac
     mcu         <- asks mcu
-    let handle   = undefined
-    let transmit = undefined
-    pure . Feature $ RBUS { name          = name
-                          , rs            = runReader rs mcu
-                          , protocol      = slave name (getMac mac) model version handle transmit
-                          , clock         = systemClock  mcu
-                          , timestamp     = value  (name <> "_rx_timestamp") 0
-                          , rxBuff        = buffer (name <> "_rx")
-                          , rxQueue       = queue  (name <> "_rx")
-                          , msgSizeBuff   = buffer (name <> "_msg_size")
-                          , msgQueue      = queue  (name <> "_msg")
-                          , msgSize       = value  (name <> "_msg_size") 0
-                          , msgBuff       = buffer (name <> "_msg_buffer")
-                          , msgIndex      = index  (name <> "_msg_index")
-                          , txLock        = value  (name <> "_tx_lock") false
-                          , txBuff        = buffer (name <> "_tx")
-                          }
+    let handle   _ = pure ()
+    let rbus     = RBUS { name          = name
+                        , rs            = runReader rs mcu
+                        , protocol      = slave name (getMac mac) model version handle
+                        , rxBuff        = buffer (name <> "_rx")
+                        , rxQueue       = queue  (name <> "_rx")
+                        , msgSizeBuff   = buffer (name <> "_msg_size")
+                        , msgQueue      = queue  (name <> "_msg")
+                        , msgSize       = value  (name <> "_msg_size") 0
+                        , msgBuff       = buffer (name <> "_msg_buffer")
+                        , msgIndex      = index  (name <> "_msg_index")
+                        , txLock        = value  (name <> "_tx_lock") false
+                        , txBuff        = buffer (name <> "_tx")
+                        }
+    pure $ Feature rbus
     where name = "rbus_slave_" <> show n
 
 
 instance Include RBUS where
-    include r = do inclCRC16
-                   include $ timestamp       r
-                   include $ rxBuff          r
+    include r = do include $ rxBuff          r
                    include $ rxQueue         r
                    include $ msgSizeBuff     r
                    include $ msgQueue        r
@@ -97,8 +90,9 @@ instance Initialize RBUS where
 
 
 instance Task RBUS where
-    tasks r = [ yeld    (name r <> "_rx") $ rxTask r
-              , delay 1 (name r <> "_tx") $ txTask r
+    tasks r = [ yeld       (name r <> "_rx"  ) $ rxTask r
+            --   , delay 10   (name r <> "_tx"  ) $ txTask r
+              , delay 1000 (name r <> "_ping") $ pingTask r
               ]
 
 
@@ -112,51 +106,59 @@ txTask (RBUS {rs, msgIndex, msgSizeBuff, msgQueue, msgBuff, txBuff, txLock}) = d
     when (iNot locked) $ do
         pop msgQueue $ \i -> do
             size <- getItem msgSizeBuff (toIx i)
-            let s = toIx size
-            let s_1 = toIx $ size + 1
-            let s_2 = toIx $ size - 2
-            crc <- local $ istruct initCRC16
-            for s $ \dx -> do
+            for (toIx size) $ \dx -> do
                 sx <- getValue msgIndex
                 v <- getItem msgBuff sx
-                when (dx <? s_2) $ updateCRC16 crc $ castDefault v
                 setItem txBuff dx v
                 setValue msgIndex $ sx + 1
-            m <- deref (crc ~> msb)
-            l <- deref (crc ~> lsb)
-            setItem txBuff s $ safeCast m
-            setItem txBuff s_1 $ safeCast l
             let buff = toCArray $ getBuffer txBuff
             transmit rs buff (size + 2)
             setValue txLock true
 
 
+
+
 rxHandle :: RBUS -> Uint16 -> Ivory eff ()
-rxHandle (RBUS {clock, timestamp, rxBuff, rxQueue}) value = do
+rxHandle (RBUS {rxBuff, rxQueue}) value = do
     push rxQueue $ \i -> do
         setItem rxBuff (toIx i) value
-        setValue timestamp =<< readCounter clock
 
 
-rxTask :: RBUS -> Ivory eff ()
-rxTask r = rxData r >> split r
-
-
-rxData :: RBUS -> Ivory eff ()
-rxData (RBUS {rxBuff, rxQueue, msgSize, msgIndex, msgBuff}) = do
+rxTask :: RBUS -> Ivory (ProcEffects s ()) ()
+rxTask (RBUS {rs, protocol, rxBuff, rxQueue, txBuff}) =
     pop rxQueue $ \i -> do
-        setItem msgBuff (toIx i) =<< getItem rxBuff (toIx i)
-        ms <- getValue msgSize
-        setValue msgSize $ ms + 1
+        v <- getItem rxBuff (toIx i)
+        receive protocol $ castDefault v
 
 
-split :: RBUS -> Ivory eff ()
-split (RBUS {clock, timestamp, msgSizeBuff, msgQueue, msgSize, msgBuff}) = do
-    ms <- getValue msgSize
-    t0 <- getValue timestamp
-    t1 <- readCounter clock
-    when (ms ==? getSize msgBuff .||
-         (ms >? 0 .&& t1 - t0 >? 40)) $ do
-        push msgQueue $ \i -> do
-            setItem msgSizeBuff (toIx i) ms
-            setValue msgSize 0
+
+pingTask :: RBUS -> Ivory (ProcEffects s ()) ()
+pingTask r@(RBUS {protocol}) = do
+    shouldPing <- hasAddress protocol
+    ifte_ shouldPing
+          (transmitPing r)
+          (transmitDiscovery r)
+
+transmitPing :: RBUS -> Ivory (ProcEffects s ()) ()
+transmitPing (RBUS {protocol, rs, txBuff, txLock}) = do
+    locked <- getValue txLock
+    when (iNot locked) $ do
+        let buff = buffPing protocol
+        arrayMap $ \ix -> do
+            v <- getItem buff (toIx . fromIx $ ix)
+            setItem txBuff ix $ safeCast v
+        let array = toCArray $ getBuffer txBuff
+        transmit rs array $ getSize buff
+        setValue txLock true
+
+transmitDiscovery :: RBUS -> Ivory (ProcEffects s ()) ()
+transmitDiscovery (RBUS {protocol, rs, txBuff, txLock}) = do
+    locked <- getValue txLock
+    when (iNot locked) $ do
+        let buff = buffDisc protocol
+        arrayMap $ \ix -> do
+            v <- getItem buff (toIx . fromIx $ ix)
+            setItem txBuff ix $ safeCast v
+        let array = toCArray $ getBuffer txBuff
+        transmit rs array $ getSize buff
+        setValue txLock true
