@@ -3,10 +3,12 @@
 module Feature.Relays where
 
 import           Control.Monad.Reader
+import           Core.Controller
 import           Core.Domain
 import           Core.Feature
 import           Core.Include
 import           Core.Initialize
+import           Core.Task
 import           Data.Foldable
 import           Data.Value
 import           Endpoint.Relay
@@ -37,3 +39,5 @@ instance Task Relays where
     tasks (Relays rs) = [
             delay 10 "relays" $ traverse_ apply rs
         ]
+
+instance Controller Relays

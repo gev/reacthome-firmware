@@ -6,10 +6,12 @@
 module Feature.Blink where
 
 import           Control.Monad.Reader
+import           Core.Controller
 import           Core.Domain
 import           Core.Feature
 import           Core.Include
 import           Core.Initialize
+import           Core.Task
 import           Data.Class
 import           Data.Function
 import           Data.Value
@@ -52,3 +54,6 @@ instance Task Blink where
             ifte_ v (set   out)
                     (reset out)
         ]
+
+
+instance Controller Blink

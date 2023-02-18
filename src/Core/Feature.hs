@@ -1,24 +1,20 @@
-{-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE GADTs         #-}
-{-# LANGUAGE RankNTypes    #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds  #-}
+{-# LANGUAGE GADTs      #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Core.Feature where
 
+import           Core.Controller
 import           Core.Include
 import           Core.Initialize
+import           Core.Task
 import           Interface.Timer
 import           Ivory.Language
 
 
 data Feature where
-    Feature :: Task t => t -> Feature
+    Feature :: (Task f, Controller f) => f -> Feature
 
-
-data Step = Step
-    { period  :: Maybe Uint32
-    , runStep :: Def ('[] :-> ())
-    }
 
 
 step :: Maybe Uint32
@@ -44,8 +40,6 @@ yeld :: String
 yeld = step Nothing
 
 
-class (Include t, Initialize t) => Task t where
-    tasks :: t -> [Step]
 
 instance Include Feature where
     include (Feature f) = include f

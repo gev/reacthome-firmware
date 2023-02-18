@@ -8,10 +8,12 @@
 module Feature.RBUS    where
 
 import           Control.Monad.Reader  (Reader, asks, runReader)
+import           Core.Controller
 import           Core.Domain
 import           Core.Feature
 import           Core.Include
 import           Core.Initialize
+import           Core.Task
 import           Data.Buffer
 import           Data.Class
 import           Data.Concurrent.Queue (Queue, pop, push, queue, size)
@@ -162,3 +164,6 @@ transmitDiscovery (RBUS {protocol, rs, txBuff, txLock}) = do
         let array = toCArray $ getBuffer txBuff
         transmit rs array $ getSize buff
         setValue txLock true
+
+
+instance Controller RBUS

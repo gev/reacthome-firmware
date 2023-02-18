@@ -25,7 +25,8 @@ executable reacthome-firmware
     main-is:          Main.hs
 
     -- Modules included in this executable, other than Main.
-    other-modules:    Core.Domain
+    other-modules:    Core.Controller
+                    , Core.Domain
                     , Core.Feature                    
                     , Core.Firmware
                     , Core.Formula
@@ -33,6 +34,8 @@ executable reacthome-firmware
                     , Core.Initialize
                     , Core.Scheduler
                     , Core.Shake
+                    , Core.Task
+                    , Core.Transport
                     , Core.Version
 
                     , Data.Class

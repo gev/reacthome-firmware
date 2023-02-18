@@ -11,6 +11,7 @@ import           Core.Feature
 import           Core.Include
 import           Core.Initialize
 import           Core.Scheduler        (schedule, scheduler)
+import           Core.Task
 import           Data.Foldable
 import           Data.Record
 import           Data.Value
