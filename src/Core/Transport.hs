@@ -1,4 +1,5 @@
 module Core.Transport where
 
+import           Core.Task
 
-class Transport t
+class Task t => Transport t
