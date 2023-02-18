@@ -5,22 +5,20 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
 
-module Feature.RBUS    where
+module Transport.RBUS    where
 
 import           Control.Monad.Reader  (Reader, asks, runReader)
-import           Core.Controller
 import           Core.Domain
 import           Core.Feature
 import           Core.Include
 import           Core.Initialize
 import           Core.Task
+import           Core.Transport
 import           Data.Buffer
 import           Data.Class
 import           Data.Concurrent.Queue (Queue, pop, push, queue, size)
-import           Data.Data             (cast)
 import           Data.Index            (Index, index)
 import           Data.Value
-import           GHC.IO.BufferedIO     (readBuf)
 import           GHC.TypeNats
 import           Interface.Mac         (Mac (getMac))
 import           Interface.MCU         (MCU)
@@ -49,8 +47,8 @@ data RBUS = RBUS
     }
 
 
-rbus :: MCU mcu => Int -> Reader mcu RS485 -> Reader (Domain mcu) Feature
-rbus n rs = do
+rbus :: MCU mcu => Reader mcu RS485 -> Reader (Domain mcu) RBUS
+rbus rs = do
     model       <- asks model
     version     <- asks version
     mac         <- asks mac
@@ -69,8 +67,8 @@ rbus n rs = do
                         , txLock        = value  (name <> "_tx_lock") false
                         , txBuff        = buffer (name <> "_tx")
                         }
-    pure $ Feature rbus
-    where name = "rbus_slave_" <> show n
+    pure rbus
+    where name = "rbus_slave"
 
 
 instance Include RBUS where
@@ -166,4 +164,4 @@ transmitDiscovery (RBUS {protocol, rs, txBuff, txLock}) = do
         setValue txLock true
 
 
-instance Controller RBUS
+instance Transport RBUS

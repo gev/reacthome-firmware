@@ -51,8 +51,6 @@ executable reacthome-firmware
 
                     , Feature.Blink
                     , Feature.Relays
-                    , Feature.RBUS
-                    , Feature.RBUS.Slave
 
                     , Formula.Blink
                     , Formula.Relay6
@@ -69,6 +67,8 @@ executable reacthome-firmware
                     , Protocol.RBUS
                     , Protocol.RBUS.Master
                     , Protocol.RBUS.Slave
+
+                    , Transport.RBUS
 
                     , Device.GD32F3x0
                     , Device.GD32F3x0.GPIO

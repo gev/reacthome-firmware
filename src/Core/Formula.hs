@@ -12,6 +12,7 @@ import           Core.Include
 import           Core.Initialize
 import           Core.Scheduler        (schedule, scheduler)
 import           Core.Task
+import           Core.Transport
 import           Data.Foldable
 import           Data.Record
 import           Data.Value
@@ -22,15 +23,16 @@ import           Protocol.RBUS.Slave   (Slave (model))
 
 
 data Formula where
-    Formula :: MCU mcu
-            => { model    :: Uint8
-               , version  :: (Uint8, Uint8)
-               , mcu      :: mcu
-               , features :: [Reader (Domain mcu) Feature]
+    Formula :: (MCU mcu, Transport t)
+            => { model     :: Uint8
+               , version   :: (Uint8, Uint8)
+               , mcu       :: mcu
+               , transport :: Reader (Domain mcu) t
+               , features  :: [Reader (Domain mcu) Feature]
                } -> Formula
 
 cook :: Formula -> ModuleM ()
-cook (Formula model version mcu features) = do
+cook (Formula model version mcu transport features) = do
 
     let domain   = D.domain model version mcu
 
