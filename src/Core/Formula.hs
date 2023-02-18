@@ -36,12 +36,14 @@ cook (Formula model version mcu transport features) = do
 
     let domain   = D.domain model version mcu
 
+    let trp      = runReader transport domain
     let fts      = (`runReader` domain) <$> features
-    let tsk      = concatMap tasks fts
+    let tsk      = tasks trp <> concatMap tasks fts
     let sch      = scheduler (systemClock mcu) tsk
 
     let inits    = initialize domain
                 <> initialize sch
+                <> initialize trp
                 <> (initialize =<< fts)
 
     let init     = proc "init"
@@ -61,6 +63,7 @@ cook (Formula model version mcu transport features) = do
     include     domain
     traverse_   incl inits
     include     sch
+    include     trp
     traverse_   include fts
     traverse_   (incl . runStep) tsk
     incl        init
