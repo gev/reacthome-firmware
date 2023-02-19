@@ -8,6 +8,7 @@
 module Transport.RBUS    where
 
 import           Control.Monad.Reader  (Reader, asks, runReader)
+import           Core.Dispatcher       (makeDispatcher)
 import           Core.Domain
 import           Core.Feature
 import           Core.Include
@@ -53,7 +54,8 @@ rbus rs = do
     version     <- asks version
     mac         <- asks mac
     mcu         <- asks mcu
-    let handle   _ = pure ()
+    features    <- asks features
+    let handle   = makeDispatcher features
     let rbus     = RBUS { name          = name
                         , rs            = runReader rs mcu
                         , protocol      = slave name (getMac mac) model version handle

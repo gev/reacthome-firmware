@@ -41,7 +41,7 @@ data Slave n = Slave
     , buffPing :: Buffer  4 Uint8
     , buffDisc :: Buffer 12 Uint8
     , crc      :: Record    CRC16
-    , handle   :: Buffer n Uint8 -> forall eff. Ivory eff ()
+    , handle   :: Buffer n Uint8 -> Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
 
 
@@ -57,7 +57,7 @@ slave :: KnownNat n
       -> Buffer 6 Uint8
       -> Value Uint8
       -> Version
-      -> (Buffer n Uint8 -> forall eff. Ivory eff ())
+      -> (Buffer n Uint8 -> Uint8 -> forall s. Ivory (ProcEffects s ()) ())
       -> Slave n
 slave n mac model version handle = Slave
     { name     = name
@@ -247,9 +247,10 @@ receiveMessageData (Slave {phase, index, size, buff, crc}) v = do
     when (i ==? s)
          (setValue phase waitingMsbCRC)
 
-receiveMessageLsbCRC :: Slave n -> Uint8 -> Ivory eff ()
-receiveMessageLsbCRC r@(Slave {buff, handle}) =
-    receiveLsbCRC r $ handle buff
+receiveMessageLsbCRC :: Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
+receiveMessageLsbCRC r@(Slave {buff, size, handle}) v = do
+    s <- getValue size
+    receiveLsbCRC r (handle buff s) v
 
 
 

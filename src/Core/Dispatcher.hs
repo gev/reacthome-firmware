@@ -1,3 +1,5 @@
+{-# LANGUAGE RankNTypes #-}
+
 module Core.Dispatcher where
 
 import           Core.Controller
@@ -7,7 +9,7 @@ import           Ivory.Stdlib
 
 makeDispatcher :: Controller c
                => [c]
-               -> Buffer l t -> n -> Ivory (ProcEffects s ()) ()
+               -> Buffer l t -> n -> forall s. Ivory (ProcEffects s ()) ()
 makeDispatcher controllers buff n = cond_ conditions
     where
         conditions = concatMap run handlers
