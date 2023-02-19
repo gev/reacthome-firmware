@@ -21,7 +21,7 @@ newtype Relays = Relays
     { getRelays :: [Relay]
     }
 
-relays :: (MCU mcu, OUT o) => [mcu -> o] -> Reader (Domain mcu) Feature
+relays :: (MCU mcu, OUT o) => [mcu -> o] -> Reader (Domain mcu t) Feature
 relays outs = do
     mcu <- asks mcu
     let os = ($ mcu) <$> outs

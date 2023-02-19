@@ -47,7 +47,7 @@ data RBUS = RBUS
     }
 
 
-rbus :: MCU mcu => Reader mcu RS485 -> Reader (Domain mcu) RBUS
+rbus :: MCU mcu => Reader mcu RS485 -> Reader (Domain mcu t) RBUS
 rbus rs = do
     model       <- asks model
     version     <- asks version

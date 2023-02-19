@@ -27,7 +27,7 @@ data Blink = forall o. OUT o => Blink
  }
 
 
-blink :: (MCU mcu, OUT o) => Int -> (mcu -> o) -> Reader (Domain mcu) Feature
+blink :: (MCU mcu, OUT o) => Int -> (mcu -> o) -> Reader (Domain mcu t) Feature
 blink n out = do
     mcu <- asks mcu
     pure $ Feature $ Blink { name  = name

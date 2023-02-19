@@ -27,45 +27,41 @@ data Formula where
             => { model     :: Uint8
                , version   :: (Uint8, Uint8)
                , mcu       :: mcu
-               , transport :: Reader (Domain mcu) t
-               , features  :: [Reader (Domain mcu) Feature]
+               , transport :: Reader (Domain mcu t) t
+               , features  :: [Reader (Domain mcu t) Feature]
                } -> Formula
 
 cook :: Formula -> ModuleM ()
 cook (Formula model version mcu transport features) = do
-
-    let domain   = D.domain model version mcu
-
-    let trp      = runReader transport domain
-    let fts      = (`runReader` domain) <$> features
-    let tsk      = tasks trp <> concatMap tasks fts
-    let sch      = scheduler (systemClock mcu) tsk
-
-    let inits    = initialize domain
-                <> initialize sch
-                <> initialize trp
-                <> (initialize =<< fts)
-
-    let init     = proc "init"
-                 $ body
-                 $ mapM_ call_ inits
-                :: Def ('[] :-> ())
-
-    let loop     = schedule sch
-
-    let main     = proc "main"
-                 $ body
-                 $ call_ init
-                >> call_ loop
-                >> ret 0
-                :: Def ('[] :-> Sint32)
-
     include     domain
     traverse_   incl inits
     include     sch
-    include     trp
     traverse_   include fts
     traverse_   (incl . runStep) tsk
     incl        init
     incl        loop
     incl        main
+
+    where domain   = D.domain model version mcu trp
+          trp      = runReader transport domain
+          fts      = (`runReader` domain) <$> features
+          tsk      = tasks trp <> concatMap tasks fts
+          sch      = scheduler (systemClock mcu) tsk
+
+          inits    = initialize domain
+                  <> initialize sch
+                  <> (initialize =<< fts)
+
+          init     = proc "init"
+                   $ body
+                   $ mapM_ call_ inits
+                  :: Def ('[] :-> ())
+
+          loop    = schedule sch
+
+          main    = proc "main"
+                  $ body
+                  $ call_ init
+                 >> call_ loop
+                 >> ret 0
+                 :: Def ('[] :-> Sint32)
