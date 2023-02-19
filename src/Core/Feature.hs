@@ -6,7 +6,6 @@ import           Core.Controller
 import           Core.Include
 import           Core.Initialize
 import           Core.Task
-import           Interface.Timer
 import           Ivory.Language
 
 
@@ -22,3 +21,6 @@ instance Initialize Feature where
 
 instance Task Feature where
     tasks (Feature f) = tasks f
+
+instance Controller Feature where
+    handle (Feature f) = handle f
