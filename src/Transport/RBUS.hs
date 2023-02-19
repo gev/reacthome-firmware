@@ -117,7 +117,7 @@ txTask (RBUS {rs, msgIndex, msgSizeBuff, msgQueue, msgBuff, txBuff, txLock}) = d
                 setItem txBuff dx v
                 setValue msgIndex $ sx + 1
             let buff = toCArray $ getBuffer txBuff
-            transmit rs buff (size + 2)
+            RS.transmit rs buff (size + 2)
             setValue txLock true
 
 
@@ -153,7 +153,7 @@ transmitPing (RBUS {protocol, rs, txBuff, txLock}) = do
             v <- getItem buff (toIx . fromIx $ ix)
             setItem txBuff ix $ safeCast v
         let array = toCArray $ getBuffer txBuff
-        transmit rs array $ getSize buff
+        RS.transmit rs array $ getSize buff
         setValue txLock true
 
 transmitDiscovery :: RBUS -> Ivory (ProcEffects s ()) ()
@@ -165,8 +165,9 @@ transmitDiscovery (RBUS {protocol, rs, txBuff, txLock}) = do
             v <- getItem buff (toIx . fromIx $ ix)
             setItem txBuff ix $ safeCast v
         let array = toCArray $ getBuffer txBuff
-        transmit rs array $ getSize buff
+        RS.transmit rs array $ getSize buff
         setValue txLock true
 
 
-instance Transport RBUS
+instance Transport RBUS where
+  transmit = undefined
