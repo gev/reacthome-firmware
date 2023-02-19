@@ -1,9 +1,8 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GADTs            #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE TypeOperators    #-}
+{-# LANGUAGE DataKinds      #-}
+{-# LANGUAGE GADTs          #-}
+{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE RankNTypes     #-}
+{-# LANGUAGE TypeOperators  #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
 
@@ -277,17 +276,18 @@ receiveLsbCRC (Slave {state, crc}) complete v = do
 
 transmitMessage :: KnownNat l
                 => Slave n
-                -> (Ix l -> forall eff. Ivory eff Uint8)
-                -> Ix l
+                -> Buffer l Uint8
                 -> (Uint8 -> forall eff. Ivory eff ())
-                -> Ivory (AllowBreak (AllocEffects s)) ()
-transmitMessage (Slave{address}) get l transmit = do
+                -> Ivory (ProcEffects s ()) ()
+transmitMessage (Slave{address}) src transmit = do
     crc <- local $ istruct initCRC16
-    let t v = updateCRC16 crc v >> transmit v
+    let t :: Uint8 -> Ivory eff ()
+        t v = updateCRC16 crc v >> transmit v
     t $ message txPreamble
     t =<< getValue address
+    let l = getSize src
     t $ castDefault (fromIx l)
-    for l $ t <=< get
+    for l $ t <=< getItem src
     transmit =<< deref (crc~>msb)
     transmit =<< deref (crc~>lsb)
 

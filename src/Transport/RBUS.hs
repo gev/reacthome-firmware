@@ -1,7 +1,6 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GADTs            #-}
-{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE DataKinds      #-}
+{-# LANGUAGE GADTs          #-}
+{-# LANGUAGE NamedFieldPuns #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
 
@@ -28,14 +27,14 @@ import           Interface.RS485       as RS (HandleRS485 (HandleRS485), RS485,
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Protocol.RBUS.Slave   (Slave, buffDisc, buffPing, hasAddress,
-                                        receive, slave)
+                                        receive, slave, transmitMessage)
 import qualified Protocol.RBUS.Slave   as RS
 
 
 data RBUS = RBUS
     { name        :: String
     , rs          :: RS485
-    , protocol    :: Slave   256
+    , protocol    :: Slave   255
     , rxBuff      :: Buffer  64 Uint16
     , rxQueue     :: Queue   64
     , msgSize     :: Value      Uint16
@@ -43,7 +42,7 @@ data RBUS = RBUS
     , msgQueue    :: Queue   32
     , msgIndex    :: Index      (Ix 512)
     , msgBuff     :: Buffer 512 Uint16
-    , txBuff      :: Buffer 256 Uint16
+    , txBuff      :: Buffer 255 Uint16
     , txLock      :: Value      IBool
     }
 
@@ -170,4 +169,17 @@ transmitDiscovery (RBUS {protocol, rs, txBuff, txLock}) = do
 
 
 instance Transport RBUS where
-  transmit = undefined
+  transmit (RBUS {rs, protocol, txBuff, txLock}) buff = do
+    locked <- getValue txLock
+    when (iNot locked) $ do
+        i <- local $ ival (0 :: Uint8)
+        let go :: Uint8 -> Ivory eff ()
+            go v = do
+                i' <- deref i
+                let ix = toIx i'
+                setItem txBuff ix (safeCast v)
+                store i (i' + 1)
+        transmitMessage protocol buff go
+        let array = toCArray $ getBuffer txBuff
+        RS.transmit rs array $ getSize buff
+        setValue txLock true

@@ -1,9 +1,11 @@
+{-# LANGUAGE MultiParamTypeClasses #-}
 module Core.Transport where
 
 import           Core.Task
 import           Data.Buffer
+import           GHC.TypeNats
 import           Ivory.Language
 
 
 class Task t => Transport t where
-    transmit :: t -> Buffer l v -> n -> Ivory eff ()
+    transmit :: KnownNat l => t -> Buffer l Uint8 -> Ivory (ProcEffects s ()) ()
