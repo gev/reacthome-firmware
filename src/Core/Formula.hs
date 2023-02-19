@@ -6,7 +6,6 @@ module Core.Formula where
 
 import           Control.Monad.Reader  (Reader, runReader)
 import           Core.Domain
-import qualified Core.Domain           as D
 import           Core.Feature
 import           Core.Include
 import           Core.Initialize
@@ -33,7 +32,8 @@ data Formula where
 
 cook :: Formula -> ModuleM ()
 cook (Formula model version mcu transport features) = do
-    include     domain
+
+    include     dmn
     traverse_   incl inits
     include     sch
     traverse_   include fts
@@ -42,26 +42,16 @@ cook (Formula model version mcu transport features) = do
     incl        loop
     incl        main
 
-    where domain   = D.domain model version mcu trp
-          trp      = runReader transport domain
-          fts      = (`runReader` domain) <$> features
-          tsk      = tasks trp <> concatMap tasks fts
-          sch      = scheduler (systemClock mcu) tsk
+    where dmn    = domain model version mcu trp
+          trp    = runReader transport dmn
+          fts    = (`runReader` dmn) <$> features
+          tsk    = tasks trp <> concatMap tasks fts
+          sch    = scheduler (systemClock mcu) tsk
+          loop   = schedule sch
+          inits  = initialize dmn <> initialize sch <> (initialize =<< fts)
 
-          inits    = initialize domain
-                  <> initialize sch
-                  <> (initialize =<< fts)
+          init  :: Def ('[] :-> ())
+          init   = proc "init" $ body $ mapM_ call_ inits
 
-          init     = proc "init"
-                   $ body
-                   $ mapM_ call_ inits
-                  :: Def ('[] :-> ())
-
-          loop    = schedule sch
-
-          main    = proc "main"
-                  $ body
-                  $ call_ init
-                 >> call_ loop
-                 >> ret 0
-                 :: Def ('[] :-> Sint32)
+          main  :: Def ('[] :-> Sint32)
+          main   = proc "main" $ body $ call_ init >> call_ loop >> ret 0
