@@ -42,7 +42,7 @@ cook (Formula model version mcu transport features) = do
     incl        loop
     incl        main
 
-    where domain'    = domain model version mcu transport'
+    where domain'    = domain model version mcu transport' features'
           transport' = runReader transport domain'
           features'  = (`runReader` domain') <$> features
           tasks'     = tasks transport' <> concatMap tasks features'

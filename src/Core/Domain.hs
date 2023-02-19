@@ -3,6 +3,7 @@
 
 module Core.Domain where
 
+import           Core.Feature
 import           Core.Include
 import           Core.Initialize
 import           Core.Transport
@@ -21,16 +22,24 @@ data Domain mcu t = Domain
     , mac       :: M.Mac
     , mcu       :: mcu
     , transport :: t
+    , features  :: [Feature]
     }
 
 
-domain :: I.MCU mcu => Uint8 -> (Uint8, Uint8) -> mcu -> t -> Domain mcu t
-domain model (major, minor) mcu transport = Domain
+domain :: I.MCU mcu
+       => Uint8
+       -> (Uint8, Uint8)
+       -> mcu
+       -> t
+       -> [Feature]
+       -> Domain mcu t
+domain model (major, minor) mcu transport features = Domain
     { model     = value "model" model
     , version   = V.version "version" major minor
     , mac       = I.mac mcu "mac"
     , mcu       = mcu
     , transport = transport
+    , features  = features
     }
 
 
