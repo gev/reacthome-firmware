@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds      #-}
+{-# LANGUAGE GADTs          #-}
 {-# LANGUAGE NamedFieldPuns #-}
 
 module Core.Domain where
@@ -16,17 +17,18 @@ import qualified Interface.MCU         as I
 import           Interface.SystemClock
 import           Ivory.Language
 
-data Domain mcu t = Domain
-    { model     :: Value  Uint8
-    , version   :: V.Version
-    , mac       :: M.Mac
-    , mcu       :: mcu
-    , transport :: t
-    , features  :: [Feature]
-    }
+data Domain mcu t where
+     Domain :: (I.MCU mcu, Transport t)
+            => { model     :: Value  Uint8
+               , version   :: V.Version
+               , mac       :: M.Mac
+               , mcu       :: mcu
+               , transport :: t
+               , features  :: [Feature]
+               } -> Domain mcu t
 
 
-domain :: I.MCU mcu
+domain :: (I.MCU mcu, Transport t)
        => Uint8
        -> (Uint8, Uint8)
        -> mcu
@@ -44,7 +46,7 @@ domain model (major, minor) mcu transport features = Domain
 
 
 
-instance Transport t => Include (Domain mcu t) where
+instance Include (Domain mcu t) where
     include (Domain {model, version, mac, transport}) = do
         include model
         include version
@@ -52,6 +54,6 @@ instance Transport t => Include (Domain mcu t) where
         include transport
 
 
-instance Transport t => Initialize (Domain mcu t) where
+instance Initialize (Domain mcu t) where
     initialize (Domain {mac, transport}) =
         initialize mac <> initialize transport
