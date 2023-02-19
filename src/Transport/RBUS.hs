@@ -56,7 +56,7 @@ rbus rs = do
     mcu         <- asks mcu
     features    <- asks features
     {--
-        ToDo: move dispatcher outside
+        TODO: move dispatcher outside
     --}
     let handle   = makeDispatcher features
     let rbus     = RBUS { name          = name
