@@ -275,21 +275,21 @@ receiveLsbCRC (Slave {state, crc}) complete v = do
     setValue state readyToReceive
 
 
-transmitMessage :: KnownNat m
+transmitMessage :: KnownNat l
                 => Slave n
-                -> (Ix m -> forall eff. Ivory eff Uint8)
-                -> Ix m
+                -> (Ix l -> forall eff. Ivory eff Uint8)
+                -> Ix l
                 -> (Uint8 -> forall eff. Ivory eff ())
                 -> Ivory (AllowBreak (AllocEffects s)) ()
-transmitMessage (Slave{address}) get n transmit = do
-    crc16 <- local $ istruct initCRC16
-    let t v = updateCRC16 crc16 v >> transmit v
+transmitMessage (Slave{address}) get l transmit = do
+    crc <- local $ istruct initCRC16
+    let t v = updateCRC16 crc v >> transmit v
     t $ message txPreamble
     t =<< getValue address
-    t $ castDefault (fromIx n)
-    for n $ t <=< get
-    transmit =<< deref (crc16~>msb)
-    transmit =<< deref (crc16~>lsb)
+    t $ castDefault (fromIx l)
+    for l $ t <=< get
+    transmit =<< deref (crc~>msb)
+    transmit =<< deref (crc~>lsb)
 
 
 hasAddress :: Slave n -> Ivory eff IBool
