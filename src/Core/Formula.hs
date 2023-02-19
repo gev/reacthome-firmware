@@ -33,25 +33,25 @@ data Formula where
 cook :: Formula -> ModuleM ()
 cook (Formula model version mcu transport features) = do
 
-    include     dmn
+    include     domain'
     traverse_   incl inits
-    include     sch
-    traverse_   include fts
-    traverse_   (incl . runStep) tsk
+    include     scheduler'
+    traverse_   include features'
+    traverse_   (incl . runStep) tasks'
     incl        init
     incl        loop
     incl        main
 
-    where dmn    = domain model version mcu trp
-          trp    = runReader transport dmn
-          fts    = (`runReader` dmn) <$> features
-          tsk    = tasks trp <> concatMap tasks fts
-          sch    = scheduler (systemClock mcu) tsk
-          loop   = schedule sch
-          inits  = initialize dmn <> initialize sch <> (initialize =<< fts)
+    where domain'    = domain model version mcu transport'
+          transport' = runReader transport domain'
+          features'  = (`runReader` domain') <$> features
+          tasks'     = tasks transport' <> concatMap tasks features'
+          scheduler' = scheduler (systemClock mcu) tasks'
+          inits      = initialize domain' <> initialize scheduler' <> (initialize =<< features')
+          loop       = schedule scheduler'
 
-          init  :: Def ('[] :-> ())
-          init   = proc "init" $ body $ mapM_ call_ inits
+          init :: Def ('[] :-> ())
+          init = proc "init" $ body $ mapM_ call_ inits
 
-          main  :: Def ('[] :-> Sint32)
-          main   = proc "main" $ body $ call_ init >> call_ loop >> ret 0
+          main :: Def ('[] :-> Sint32)
+          main = proc "main" $ body $ call_ init >> call_ loop >> ret 0
