@@ -6,5 +6,5 @@ import           Ivory.Stdlib
 
 
 class Controller c where
-    handle :: c -> Buffer n t -> [Cond (ProcEffects s ()) ()]
-    handle _ _ = []
+    handle :: c -> Buffer n t -> m -> [Cond (ProcEffects s ()) ()]
+    handle _ _ _ = []
