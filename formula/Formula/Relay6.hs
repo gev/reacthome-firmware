@@ -7,8 +7,8 @@ import           Interface.RS485
 import           Transport.RBUS
 
 relay6 :: Formula
-relay6 = Formula { model    = 0xa0
-                 , version  = (2, 1)
+relay6 = Formula { model    = 0xae
+                 , version  = (3, 0)
                  , mcu      = gd32f3x0
                  , transport = rbus $ rs485 1 usart_1 out_pa_4
                  , features = [ relays [ out_pb_0
