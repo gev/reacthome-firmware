@@ -1,6 +1,7 @@
-{-# LANGUAGE DataKinds  #-}
-{-# LANGUAGE GADTs      #-}
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE DataKinds      #-}
+{-# LANGUAGE GADTs          #-}
+{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE RankNTypes     #-}
 
 module Feature.Relays where
 
@@ -11,6 +12,7 @@ import           Core.Feature
 import           Core.Include
 import           Core.Initialize
 import           Core.Task
+import qualified Core.Transport       as T
 import           Data.Buffer
 import           Data.Class
 import           Data.Foldable
@@ -22,16 +24,18 @@ import           Interface.MCU        (MCU)
 import           Ivory.Language
 import           Ivory.Stdlib
 
-
-newtype Relays = Relays
+data Relays = Relays
     { getRelays :: [Relay]
+    , transmit  :: forall s n. (KnownNat n) => Buffer n Uint8 -> Ivory (ProcEffects s ()) ()
     }
 
-relays :: (MCU mcu, OUT o) => [mcu -> o] -> Reader (Domain mcu t) Feature
+relays :: (MCU mcu, OUT o, T.Transport t) => [mcu -> o] -> Reader (Domain mcu t) Feature
 relays outs = do
-    mcu <- asks mcu
+    mcu       <- asks mcu
+    transport <- asks transport
     let os = ($ mcu) <$> outs
     pure . Feature $ Relays { getRelays = zipWith relay [1..] os
+                            , transmit  = T.transmit transport
                             }
 
 
@@ -42,17 +46,17 @@ instance Initialize Relays where
     initialize = concatMap initialize . getRelays
 
 instance Task Relays where
-    tasks (Relays rs) = [
-            delay 10 "relays" $ traverse_ manage rs
+    tasks (Relays {getRelays}) = [
+            delay 10 "relays" $ traverse_ manage getRelays
         ]
 
 
 instance Controller Relays where
-    handle (Relays rs) buff size = do
+    handle (Relays rs transmit) buff size = do
         action <- getItem buff 0
         index  <- getItem buff 1
         state  <- getItem buff 2
-        let go f r i = index ==? fromIntegral i ==> f r
+        let go f r i = index ==? fromIntegral i ==> f r >> transmit (payload r)
         let run f = cond_ (zipWith (go f) rs [1..])
         pure [ action ==? 1 ==> run turnOn
              , action ==? 0 ==> run turnOff
