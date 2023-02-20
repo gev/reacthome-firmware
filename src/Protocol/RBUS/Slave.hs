@@ -225,12 +225,18 @@ receiveConfirmLsbCRC r =
 
 receiveMessage :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receiveMessage = runReceive phase
-    [ go waitingAddress $ receiveAddress waitingSize
+    [ go waitingAddress $ receiveAddress waitingTid
+    , go waitingTid       receiveMessageTid
     , go waitingSize      receiveMessageSize
     , go waitingData      receiveMessageData
     , go waitingMsbCRC    receiveMsbCRC
     , go waitingLsbCRC    receiveMessageLsbCRC
     ]
+
+receiveMessageTid :: Slave n -> Uint8 -> Ivory eff ()
+receiveMessageTid (Slave {phase, crc}) v = do
+    updateCRC crc v
+    setValue phase waitingSize
 
 receiveMessageSize :: Slave n -> Uint8 -> Ivory eff ()
 receiveMessageSize (Slave {phase, index, size, crc}) v = do
@@ -246,6 +252,7 @@ receiveMessageData (Slave {phase, index, size, buff, crc}) v = do
     setItem buff (toIx i) v
     setValue index $ i + 1
     updateCRC crc v
+    i <- getValue index
     when (i ==? s)
          (setValue phase waitingMsbCRC)
 
