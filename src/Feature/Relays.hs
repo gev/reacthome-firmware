@@ -58,6 +58,7 @@ instance Controller Relays where
         state  <- getItem buff 2
         let go f r i = index ==? fromIntegral i ==> f r >> transmit (payload r)
         let run f = cond_ (zipWith (go f) rs [1..])
-        pure [ action ==? 1 ==> run turnOn
-             , action ==? 0 ==> run turnOff
+        pure [ action ==? 0 ==> cond_ [ state ==? 1 ==> run turnOn
+                                      , state ==? 0 ==> run turnOff
+                                      ]
              ]
