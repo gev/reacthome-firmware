@@ -39,10 +39,11 @@ receivingConfirm    = 0x03 :: Uint8
 receivingMessage    = 0x04 :: Uint8
 
 waitingAddress      = 0x00 :: Uint8
-waitingSize         = 0x01 :: Uint8
-waitingData         = 0x02 :: Uint8
-waitingMsbCRC       = 0x03 :: Uint8
-waitingLsbCRC       = 0x04 :: Uint8
+waitingTid          = 0x01 :: Uint8
+waitingSize         = 0x02 :: Uint8
+waitingData         = 0x03 :: Uint8
+waitingMsbCRC       = 0x04 :: Uint8
+waitingLsbCRC       = 0x05 :: Uint8
 
 updateCRC :: Record CRC16 -> Uint8 -> Ivory eff ()
 updateCRC = updateCRC16 . getRecord
