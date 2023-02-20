@@ -172,14 +172,14 @@ instance Transport RBUS where
   transmit (RBUS {rs, protocol, txBuff, txLock}) buff = do
     locked <- getValue txLock
     when (iNot locked) $ do
-        i <- local $ ival (0 :: Uint8)
+        size <- local $ ival 0
         let go :: Uint8 -> Ivory eff ()
             go v = do
-                i' <- deref i
-                let ix = toIx i'
+                i <- deref size
+                let ix = toIx i
                 setItem txBuff ix (safeCast v)
-                store i (i' + 1)
+                store size $ i + 1
         transmitMessage protocol buff go
         let array = toCArray $ getBuffer txBuff
-        RS.transmit rs array $ getSize buff
+        RS.transmit rs array =<< deref size
         setValue txLock true
