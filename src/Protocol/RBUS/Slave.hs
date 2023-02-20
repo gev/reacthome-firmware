@@ -291,9 +291,8 @@ transmitMessage (Slave{address, tid}) payload transmit = do
     id <- getValue tid
     t id
     setValue tid $ id + 1
-    let l = getSize payload
-    t $ castDefault (fromIx l)
-    for l $ t <=< getItem payload
+    t $ getSize payload
+    arrayMap $ t <=< getItem payload
     transmit =<< deref (crc~>msb)
     transmit =<< deref (crc~>lsb)
 
