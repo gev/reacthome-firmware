@@ -80,7 +80,7 @@ slave n mac model version handle = Slave
 
 
 instance Include (Slave n) where
-    include (Slave {address, state, index, phase, size, buff, buffConf, buffPing, buffDisc, crc}) = do
+    include (Slave {address, state, index, phase, size, buff, buffConf, buffPing, buffDisc, tid, crc}) = do
         inclCRC16
         include address
         include state
@@ -91,6 +91,7 @@ instance Include (Slave n) where
         include buffConf
         include buffPing
         include buffDisc
+        include tid
         include crc
 
 
