@@ -39,6 +39,7 @@ data Slave n = Slave
     , buffConf :: Buffer  4 Uint8
     , buffPing :: Buffer  4 Uint8
     , buffDisc :: Buffer 12 Uint8
+    , tid      :: Value     Uint8
     , crc      :: Record    CRC16
     , handle   :: Buffer n Uint8 -> Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
@@ -63,16 +64,17 @@ slave n mac model version handle = Slave
     , mac      = mac
     , model    = model
     , version  = version
-    , address  = value        (name <> "_address") broadcastAddress
-    , state    = value        (name <> "_state") readyToReceive
-    , phase    = value        (name <> "_phase") waitingAddress
-    , index    = value        (name <> "_index") 0
-    , size     = value        (name <> "_size") 0
-    , buff     = buffer       (name <> "_message")
-    , buffConf = buffer       (name <> "_confirm_tx")
-    , buffPing = buffer       (name <> "_ping_tx")
-    , buffDisc = buffer       (name <> "_disc_tx")
-    , crc      = record       (name <> "_crc") initCRC16
+    , address  = value      (name <> "_address")      broadcastAddress
+    , state    = value      (name <> "_state")        readyToReceive
+    , phase    = value      (name <> "_phase")        waitingAddress
+    , index    = value      (name <> "_index")        0
+    , size     = value      (name <> "_size")         0
+    , buff     = buffer     (name <> "_message")
+    , buffConf = buffer     (name <> "_confirm_tx")
+    , buffPing = buffer     (name <> "_ping_tx")
+    , buffDisc = buffer     (name <> "_disc_tx")
+    , tid      = value      (name <> "_tid")          0
+    , crc      = record     (name <> "_crc")          initCRC16
     , handle   = handle
     } where name = "protocol_" <> n
 
@@ -279,15 +281,18 @@ transmitMessage :: KnownNat l
                 -> Buffer l Uint8
                 -> (Uint8 -> forall eff. Ivory eff ())
                 -> Ivory (ProcEffects s ()) ()
-transmitMessage (Slave{address}) src transmit = do
+transmitMessage (Slave{address, tid}) payload transmit = do
     crc <- local $ istruct initCRC16
     let t :: Uint8 -> Ivory eff ()
         t v = updateCRC16 crc v >> transmit v
     t $ message txPreamble
     t =<< getValue address
-    let l = getSize src
+    id <- getValue tid
+    t id
+    setValue tid $ id + 1
+    let l = getSize payload
     t $ castDefault (fromIx l)
-    for l $ t <=< getItem src
+    for l $ t <=< getItem payload
     transmit =<< deref (crc~>msb)
     transmit =<< deref (crc~>lsb)
 
