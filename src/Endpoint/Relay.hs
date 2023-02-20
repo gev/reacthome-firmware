@@ -33,8 +33,8 @@ turnOn (Relay {state}) = setValue state true
 turnOff :: Relay -> Ivory eff ()
 turnOff (Relay {state}) = setValue state false
 
-apply :: Relay -> Ivory eff ()
-apply (Relay out state) = do
+manage :: Relay -> Ivory eff ()
+manage (Relay out state) = do
     s <- getValue state
     ifte_ s (set   out)
             (reset out)
