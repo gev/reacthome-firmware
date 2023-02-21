@@ -21,6 +21,9 @@ data IRQn
     | TIMER2_IRQn
     | USART1_IRQn
     | DMA_Channel3_4_IRQn
+    | EXTI0_1_IRQn
+    | EXTI2_3_IRQn
+    | EXTI4_15_IRQn
     deriving (Show, Enum, Bounded)
 instance ExtDef IRQn Uint8
 

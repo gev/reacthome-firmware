@@ -94,6 +94,8 @@ executable reacthome-firmware
                     , Support.Device.GD32F3x0.RCU
                     , Support.Device.GD32F3x0.Timer
                     , Support.Device.GD32F3x0.USART
+                    , Support.Device.GD32F3x0.EXTI
+                    , Support.Device.GD32F3x0.SYSCFG
                     , Support.Device.GD32F4xx
                     , Support.Device.GD32F4xx.DBG
                     , Support.Device.GD32F4xx.DMA

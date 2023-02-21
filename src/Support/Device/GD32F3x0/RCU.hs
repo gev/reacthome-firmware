@@ -22,6 +22,7 @@ data RCU_PERIPH
     | RCU_TIMER1
     | RCU_TIMER2
     | RCU_USART1
+    | RCU_CFGCMP
     deriving (Show, Enum, Bounded)
 instance ExtDef RCU_PERIPH Uint32
 
