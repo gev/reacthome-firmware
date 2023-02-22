@@ -1,8 +1,10 @@
-{-# LANGUAGE DataKinds      #-}
-{-# LANGUAGE GADTs          #-}
-{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE GADTs            #-}
+{-# LANGUAGE NamedFieldPuns   #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RankNTypes       #-}
 
 module Transport.RBUS    where
 
@@ -20,14 +22,18 @@ import           Data.Concurrent.Queue (Queue, pop, push, queue, size)
 import           Data.Index            (Index, index)
 import           Data.Value
 import           GHC.TypeNats
+import qualified Interface.Counter     as I
 import           Interface.Mac         (Mac (getMac))
-import           Interface.MCU         (MCU)
+import           Interface.MCU         (MCU (systemClock))
 import           Interface.RS485       as RS (HandleRS485 (HandleRS485), RS485,
                                               transmit)
+import qualified Interface.SystemClock as I
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Protocol.RBUS.Slave   (Slave, buffDisc, buffPing, hasAddress,
-                                        receive, slave, transmitMessage)
+                                        receive, slave, transmitConfirm,
+                                        transmitDiscovery, transmitMessage,
+                                        transmitPing)
 import qualified Protocol.RBUS.Slave   as RS
 
 
@@ -54,13 +60,14 @@ rbus rs = do
     mac         <- asks mac
     mcu         <- asks mcu
     features    <- asks features
+    let clock    = systemClock mcu
     {--
         TODO: move dispatcher outside
     --}
-    let handle   = makeDispatcher features
+    let dispatch = makeDispatcher features
     let rbus     = RBUS { name          = name
                         , rs            = runReader rs mcu
-                        , protocol      = slave name (getMac mac) model version handle
+                        , protocol      = slave name (getMac mac) model version $ handle clock dispatch rbus
                         , rxBuff        = buffer (name <> "_rx")
                         , rxQueue       = queue  (name <> "_rx")
                         , msgSizeBuff   = buffer (name <> "_msg_size")
@@ -73,6 +80,10 @@ rbus rs = do
                         }
     pure rbus
     where name = "rbus_slave"
+          handle clock dispatch rbus buff n = do
+            confirm rbus
+            I.delay clock 100
+            dispatch buff n
 
 
 instance Include RBUS where
@@ -140,36 +151,30 @@ pingTask :: RBUS -> Ivory (ProcEffects s ()) ()
 pingTask r@(RBUS {protocol}) = do
     shouldPing <- hasAddress protocol
     ifte_ shouldPing
-          (transmitPing r)
-          (transmitDiscovery r)
-
-transmitPing :: RBUS -> Ivory (ProcEffects s ()) ()
-transmitPing (RBUS {protocol, rs, txBuff, txLock}) = do
-    locked <- getValue txLock
-    when (iNot locked) $ do
-        let buff = buffPing protocol
-        arrayMap $ \ix -> do
-            v <- getItem buff (toIx . fromIx $ ix)
-            setItem txBuff ix $ safeCast v
-        let array = toCArray $ getBuffer txBuff
-        RS.transmit rs array $ getSize buff
-        setValue txLock true
-
-transmitDiscovery :: RBUS -> Ivory (ProcEffects s ()) ()
-transmitDiscovery (RBUS {protocol, rs, txBuff, txLock}) = do
-    locked <- getValue txLock
-    when (iNot locked) $ do
-        let buff = buffDisc protocol
-        arrayMap $ \ix -> do
-            v <- getItem buff (toIx . fromIx $ ix)
-            setItem txBuff ix $ safeCast v
-        let array = toCArray $ getBuffer txBuff
-        RS.transmit rs array $ getSize buff
-        setValue txLock true
+          (ping r)
+          (discovery r)
 
 
-instance Transport RBUS where
-  transmit (RBUS {rs, protocol, txBuff, txLock}) buff = do
+
+ping :: RBUS -> Ivory (ProcEffects s ()) ()
+ping = toRS transmitPing
+
+
+
+discovery :: RBUS -> Ivory (ProcEffects s ()) ()
+discovery = toRS transmitDiscovery
+
+
+
+confirm :: RBUS -> Ivory (ProcEffects s ()) ()
+confirm = toRS transmitConfirm
+
+
+
+toRS :: (Slave 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) a)
+     -> RBUS
+     -> Ivory (ProcEffects s ()) ()
+toRS transmit (RBUS {rs, protocol, txBuff, txLock}) = do
     locked <- getValue txLock
     when (iNot locked) $ do
         size <- local $ ival 0
@@ -179,7 +184,12 @@ instance Transport RBUS where
                 let ix = toIx i
                 setItem txBuff ix (safeCast v)
                 store size $ i + 1
-        transmitMessage protocol buff go
+        transmit protocol go
         let array = toCArray $ getBuffer txBuff
         RS.transmit rs array =<< deref size
         setValue txLock true
+
+
+
+instance Transport RBUS where
+  transmit r buff = toRS (transmitMessage buff) r
