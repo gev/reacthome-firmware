@@ -127,18 +127,19 @@ txTask (RBUS {rs, msgOffset, msgSize, msgTTL, msgQueue, msgBuff, txBuff, txLock}
         peek msgQueue $ \i -> do
             let ix = toIx i
             ttl <- getItem msgTTL ix
-            when (ttl >? 0)
-                 (do size <- getItem msgSize ix
-                     for (toIx size) $ \dx -> do
-                         sx <- getValue msgOffset
-                         v <- getItem msgBuff $ toIx sx
-                         setItem txBuff dx v
-                         setValue msgOffset $ sx + 1
-                     setItem msgTTL ix $ ttl - 1
-                     let buff = toCArray $ getBuffer txBuff
-                     RS.transmit rs buff size
-                     setValue txLock true
-                 )
+            ifte_ (ttl >? 0)
+                  (do size <- getItem msgSize ix
+                      for (toIx size) $ \dx -> do
+                          sx <- getValue msgOffset
+                          v <- getItem msgBuff $ toIx sx
+                          setItem txBuff dx v
+                          setValue msgOffset $ sx + 1
+                      setItem msgTTL ix $ ttl - 1
+                      let buff = toCArray $ getBuffer txBuff
+                      RS.transmit rs buff size
+                      setValue txLock true
+                  )
+                  (remove msgQueue)
 
 
 
