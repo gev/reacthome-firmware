@@ -29,6 +29,7 @@ preambleSlave  = Preamble { discovery = 0x55
                           , message   = 0x50
                           }
 
+messageTTL          = 16   :: Uint8
 
 broadcastAddress    = 0xff :: Uint8
 

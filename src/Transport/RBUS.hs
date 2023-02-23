@@ -31,6 +31,7 @@ import           Interface.RS485       as RS (HandleRS485 (HandleRS485), RS485,
 import qualified Interface.SystemClock as I
 import           Ivory.Language
 import           Ivory.Stdlib
+import           Protocol.RBUS         (messageTTL)
 import           Protocol.RBUS.Slave   (Slave, buffDisc, buffPing, hasAddress,
                                         receive, slave, transmitConfirm,
                                         transmitDiscovery, transmitMessage,
@@ -39,18 +40,18 @@ import qualified Protocol.RBUS.Slave   as RS
 
 
 data RBUS = RBUS
-    { name        :: String
-    , rs          :: RS485
-    , protocol    :: Slave   255
-    , rxBuff      :: Buffer  64 Uint16
-    , rxQueue     :: Queue   64
-    , msgSize     :: Value      Uint16
-    , msgSizeBuff :: Buffer  32 Uint16
-    , msgQueue    :: Queue   32
-    , msgOffset   :: Value      Uint16
-    , msgBuff     :: Buffer 512 Uint16
-    , txBuff      :: Buffer 255 Uint16
-    , txLock      :: Value      IBool
+    { name      :: String
+    , rs        :: RS485
+    , protocol  :: Slave   255
+    , rxBuff    :: Buffer  64 Uint16
+    , rxQueue   :: Queue   64
+    , msgSize   :: Buffer  32 Uint16
+    , msgTTL    :: Buffer  32 Uint8
+    , msgQueue  :: Queue   32
+    , msgBuff   :: Buffer 512 Uint16
+    , msgOffset :: Value      Uint16
+    , txBuff    :: Buffer 255 Uint16
+    , txLock    :: Value      IBool
     }
 
 
@@ -71,13 +72,13 @@ rbus rs = do
                         , protocol      = slave name (getMac mac) model version (onMessage clock dispatch rbus) (onConfirm rbus)
                         , rxBuff        = buffer (name <> "_rx")
                         , rxQueue       = queue  (name <> "_rx")
-                        , msgSizeBuff   = buffer (name <> "_msg_size")
+                        , msgSize       = buffer (name <> "_msg_size")
+                        , msgTTL        = buffer (name <> "_msg_ttl")
                         , msgQueue      = queue  (name <> "_msg")
-                        , msgSize       = value  (name <> "_msg_size") 0
                         , msgBuff       = buffer (name <> "_msg_buffer")
                         , msgOffset     = value  (name <> "_msg_offset") 0
-                        , txLock        = value  (name <> "_tx_lock") false
                         , txBuff        = buffer (name <> "_tx")
+                        , txLock        = value  (name <> "_tx_lock") false
                         }
     pure rbus
     where name = "rbus_slave"
@@ -93,13 +94,13 @@ rbus rs = do
 instance Include RBUS where
     include r = do include $ rxBuff          r
                    include $ rxQueue         r
-                   include $ msgSizeBuff     r
-                   include $ msgQueue        r
                    include $ msgSize         r
-                   include $ msgOffset        r
+                   include $ msgTTL          r
+                   include $ msgQueue        r
                    include $ msgBuff         r
-                   include $ txLock          r
+                   include $ msgOffset       r
                    include $ txBuff          r
+                   include $ txLock          r
                    include $ HandleRS485 (rs r) (rxHandle r) (txHandle r)
                    include $ protocol        r
 
@@ -120,19 +121,24 @@ txHandle (RBUS {txLock}) = setValue txLock false
 
 
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()
-txTask (RBUS {rs, msgOffset, msgSizeBuff, msgQueue, msgBuff, txBuff, txLock}) = do
+txTask (RBUS {rs, msgOffset, msgSize, msgTTL, msgQueue, msgBuff, txBuff, txLock}) = do
     locked <- getValue txLock
     when (iNot locked) $ do
         peek msgQueue $ \i -> do
-            size <- getItem msgSizeBuff (toIx i)
-            for (toIx size) $ \dx -> do
-                sx <- getValue msgOffset
-                v <- getItem msgBuff $ toIx sx
-                setItem txBuff dx v
-                setValue msgOffset $ sx + 1
-            let buff = toCArray $ getBuffer txBuff
-            RS.transmit rs buff size
-            setValue txLock true
+            let ix = toIx i
+            ttl <- getItem msgTTL ix
+            when (ttl >? 0)
+                 (do size <- getItem msgSize ix
+                     for (toIx size) $ \dx -> do
+                         sx <- getValue msgOffset
+                         v <- getItem msgBuff $ toIx sx
+                         setItem txBuff dx v
+                         setValue msgOffset $ sx + 1
+                     setItem msgTTL ix $ ttl - 1
+                     let buff = toCArray $ getBuffer txBuff
+                     RS.transmit rs buff size
+                     setValue txLock true
+                 )
 
 
 
@@ -191,7 +197,7 @@ toRS transmit (RBUS {rs, protocol, txBuff, txLock}) = do
 
 
 instance Transport RBUS where
-    transmit (RBUS {protocol, msgQueue, msgBuff, msgSizeBuff, msgOffset}) buff = do
+    transmit (RBUS {protocol, msgQueue, msgBuff, msgSize, msgTTL, msgOffset}) buff = do
         push msgQueue $ \i -> do
             size <- local $ ival 0
             offset <- getValue msgOffset
@@ -202,4 +208,6 @@ instance Transport RBUS where
                     setItem msgBuff ix $ safeCast v
                     store size $ i + 1
             transmitMessage buff protocol go
-            setItem msgSizeBuff (toIx i) =<< deref size
+            let ix = toIx i
+            setItem msgSize ix =<< deref size
+            setItem msgTTL ix messageTTL
