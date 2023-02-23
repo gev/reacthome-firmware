@@ -25,6 +25,7 @@ up (Semaphore s) = do
     v <- getValue s
     setValue s $ v + 1
 
+
 down :: (IvoryStore t, IvoryOrd t, Num t)
      => Semaphore t -> Ivory eff () -> Ivory eff ()
 down (Semaphore s) run = do
@@ -32,6 +33,14 @@ down (Semaphore s) run = do
     when (v >? 0) $ do
         setValue s $ v - 1
         run
+
+
+check :: (IvoryStore t, IvoryOrd t, Num t)
+      => Semaphore t -> Ivory eff () -> Ivory eff ()
+check (Semaphore s) run = do
+    v <- getValue s
+    when (v >? 0) run
+
 
 
 instance Include (Semaphore t) where
