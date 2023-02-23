@@ -18,7 +18,8 @@ import           Core.Task
 import           Core.Transport
 import           Data.Buffer
 import           Data.Class
-import           Data.Concurrent.Queue (Queue, pop, push, queue, size)
+import           Data.Concurrent.Queue (Queue, peek, pop, push, queue, remove,
+                                        size)
 import           Data.Index            (Index, index)
 import           Data.Value
 import           GHC.TypeNats
@@ -46,7 +47,7 @@ data RBUS = RBUS
     , msgSize     :: Value      Uint16
     , msgSizeBuff :: Buffer  32 Uint16
     , msgQueue    :: Queue   32
-    , msgIndex    :: Index      (Ix 512)
+    , msgOffset   :: Value      Uint16
     , msgBuff     :: Buffer 512 Uint16
     , txBuff      :: Buffer 255 Uint16
     , txLock      :: Value      IBool
@@ -67,23 +68,26 @@ rbus rs = do
     let dispatch = makeDispatcher features
     let rbus     = RBUS { name          = name
                         , rs            = runReader rs mcu
-                        , protocol      = slave name (getMac mac) model version $ handle clock dispatch rbus
+                        , protocol      = slave name (getMac mac) model version (onMessage clock dispatch rbus) (onConfirm rbus)
                         , rxBuff        = buffer (name <> "_rx")
                         , rxQueue       = queue  (name <> "_rx")
                         , msgSizeBuff   = buffer (name <> "_msg_size")
                         , msgQueue      = queue  (name <> "_msg")
                         , msgSize       = value  (name <> "_msg_size") 0
                         , msgBuff       = buffer (name <> "_msg_buffer")
-                        , msgIndex      = index  (name <> "_msg_index")
+                        , msgOffset     = value  (name <> "_msg_offset") 0
                         , txLock        = value  (name <> "_tx_lock") false
                         , txBuff        = buffer (name <> "_tx")
                         }
     pure rbus
     where name = "rbus_slave"
-          handle clock dispatch rbus buff n = do
+
+          onMessage clock dispatch rbus buff n = do
             confirm rbus
             I.delay clock 100
             dispatch buff n
+
+          onConfirm = remove . msgQueue
 
 
 instance Include RBUS where
@@ -92,7 +96,7 @@ instance Include RBUS where
                    include $ msgSizeBuff     r
                    include $ msgQueue        r
                    include $ msgSize         r
-                   include $ msgIndex        r
+                   include $ msgOffset        r
                    include $ msgBuff         r
                    include $ txLock          r
                    include $ txBuff          r
@@ -106,7 +110,7 @@ instance Initialize RBUS where
 
 instance Task RBUS where
     tasks r = [ yeld       (name r <> "_rx"  ) $ rxTask r
-            --   , delay 10   (name r <> "_tx"  ) $ txTask r
+              , delay 10   (name r <> "_tx"  ) $ txTask r
               , delay 1000 (name r <> "_ping") $ pingTask r
               ]
 
@@ -116,20 +120,19 @@ txHandle (RBUS {txLock}) = setValue txLock false
 
 
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()
-txTask (RBUS {rs, msgIndex, msgSizeBuff, msgQueue, msgBuff, txBuff, txLock}) = do
+txTask (RBUS {rs, msgOffset, msgSizeBuff, msgQueue, msgBuff, txBuff, txLock}) = do
     locked <- getValue txLock
     when (iNot locked) $ do
-        pop msgQueue $ \i -> do
+        peek msgQueue $ \i -> do
             size <- getItem msgSizeBuff (toIx i)
             for (toIx size) $ \dx -> do
-                sx <- getValue msgIndex
-                v <- getItem msgBuff sx
+                sx <- getValue msgOffset
+                v <- getItem msgBuff $ toIx sx
                 setItem txBuff dx v
-                setValue msgIndex $ sx + 1
+                setValue msgOffset $ sx + 1
             let buff = toCArray $ getBuffer txBuff
-            RS.transmit rs buff (size + 2)
+            RS.transmit rs buff size
             setValue txLock true
-
 
 
 
@@ -159,19 +162,15 @@ pingTask r@(RBUS {protocol}) = do
 ping :: RBUS -> Ivory (ProcEffects s ()) ()
 ping = toRS transmitPing
 
-
-
 discovery :: RBUS -> Ivory (ProcEffects s ()) ()
 discovery = toRS transmitDiscovery
-
-
 
 confirm :: RBUS -> Ivory (ProcEffects s ()) ()
 confirm = toRS transmitConfirm
 
 
 
-toRS :: (Slave 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) a)
+toRS :: (Slave 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) ())
      -> RBUS
      -> Ivory (ProcEffects s ()) ()
 toRS transmit (RBUS {rs, protocol, txBuff, txLock}) = do
@@ -182,7 +181,7 @@ toRS transmit (RBUS {rs, protocol, txBuff, txLock}) = do
             go v = do
                 i <- deref size
                 let ix = toIx i
-                setItem txBuff ix (safeCast v)
+                setItem txBuff ix $ safeCast v
                 store size $ i + 1
         transmit protocol go
         let array = toCArray $ getBuffer txBuff
@@ -192,4 +191,15 @@ toRS transmit (RBUS {rs, protocol, txBuff, txLock}) = do
 
 
 instance Transport RBUS where
-  transmit r buff = toRS (transmitMessage buff) r
+    transmit (RBUS {protocol, msgQueue, msgBuff, msgSizeBuff, msgOffset}) buff = do
+        push msgQueue $ \i -> do
+            size <- local $ ival 0
+            offset <- getValue msgOffset
+            let go :: Uint8 -> Ivory eff ()
+                go v = do
+                    i <- deref size
+                    let ix = toIx $ offset + i
+                    setItem msgBuff ix $ safeCast v
+                    store size $ i + 1
+            transmitMessage buff protocol go
+            setItem msgSizeBuff (toIx i) =<< deref size

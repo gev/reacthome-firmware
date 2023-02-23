@@ -26,24 +26,25 @@ import           Util.CRC16
 
 
 data Slave n = Slave
-    { name     :: String
-    , mac      :: Buffer  6 Uint8
-    , model    :: Value     Uint8
-    , version  :: Version
-    , address  :: Value     Uint8
-    , state    :: Value     Uint8
-    , phase    :: Value     Uint8
-    , index    :: Value     Uint8
-    , size     :: Value     Uint8
-    , buff     :: Buffer  n Uint8
-    , buffConf :: Buffer  4 Uint8
-    , buffPing :: Buffer  4 Uint8
-    , buffDisc :: Buffer 12 Uint8
-    , tidRx    :: Value     Sint16
-    , tidTx    :: Value     Uint8
-    , crc      :: Record    CRC16
-    , tmp      :: Value     Uint8
-    , handle   :: Buffer n Uint8 -> Uint8 -> forall s. Ivory (ProcEffects s ()) ()
+    { name      :: String
+    , mac       :: Buffer  6 Uint8
+    , model     :: Value     Uint8
+    , version   :: Version
+    , address   :: Value     Uint8
+    , state     :: Value     Uint8
+    , phase     :: Value     Uint8
+    , index     :: Value     Uint8
+    , size      :: Value     Uint8
+    , buff      :: Buffer  n Uint8
+    , buffConf  :: Buffer  4 Uint8
+    , buffPing  :: Buffer  4 Uint8
+    , buffDisc  :: Buffer 12 Uint8
+    , tidRx     :: Value     Sint16
+    , tidTx     :: Value     Uint8
+    , crc       :: Record    CRC16
+    , tmp       :: Value     Uint8
+    , onMessage :: Buffer n Uint8 -> Uint8 -> forall s. Ivory (ProcEffects s ()) ()
+    , onConfirm :: forall eff. Ivory eff ()
     }
 
 
@@ -60,8 +61,9 @@ slave :: KnownNat n
       -> Value Uint8
       -> Version
       -> (Buffer n Uint8 -> Uint8 -> forall s. Ivory (ProcEffects s ()) ())
+      -> (forall eff. Ivory eff ())
       -> Slave n
-slave n mac model version handle = Slave
+slave n mac model version onMessage onConfirm = Slave
     { name     = name
     , mac      = mac
     , model    = model
@@ -79,7 +81,8 @@ slave n mac model version handle = Slave
     , tidTx    = value      (name <> "_tid_tx")       0
     , crc      = record     (name <> "_crc")          initCRC16
     , tmp      = value      (name <> "_tmp")          0
-    , handle   = handle
+    , onMessage   = onMessage
+    , onConfirm = onConfirm
     } where name = "protocol_" <> n
 
 
@@ -226,7 +229,7 @@ receiveConfirm = runReceive phase
 
 receiveConfirmLsbCRC :: Slave n -> Uint8 -> Ivory eff ()
 receiveConfirmLsbCRC r =
-    receiveLsbCRC r $ pure ()
+    receiveLsbCRC r $ onConfirm r
 
 
 
@@ -268,10 +271,10 @@ receiveMessageData (Slave {phase, index, size, buff, crc}) v = do
          (setValue phase waitingMsbCRC)
 
 receiveMessageLsbCRC :: Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receiveMessageLsbCRC r@(Slave {buff, size, handle, tidRx, tmp}) v = do
+receiveMessageLsbCRC r@(Slave {buff, size, onMessage, tidRx, tmp}) v = do
     s <- getValue size
     let complete = do setValue tidRx . safeCast =<< getValue tmp
-                      handle buff s
+                      onMessage buff s
     receiveLsbCRC r complete v
 
 
