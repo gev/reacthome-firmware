@@ -71,6 +71,9 @@ executable reacthome-firmware
                     , Protocol.RBUS.Slave.Tx
 
                     , Transport.RBUS
+                    , Transport.RBUS.Data
+                    , Transport.RBUS.Rx
+                    , Transport.RBUS.Tx
 
                     , Device.GD32F3x0
                     , Device.GD32F3x0.GPIO
