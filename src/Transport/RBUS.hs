@@ -213,6 +213,7 @@ toRS transmit r@(RBUS {protocol, txBuff, txLock}) = do
          (rsTransmit r =<< run protocol transmit txBuff 0)
 
 
+toQueue :: KnownNat l => RBUS -> Buffer l Uint8 -> Ivory (ProcEffects s ()) ()
 toQueue (RBUS {protocol, msgQueue, msgBuff, msgSize, msgTTL, msgIndex, msgOffset}) buff = do
     push msgQueue $ \i -> do
         index <- getValue msgIndex
