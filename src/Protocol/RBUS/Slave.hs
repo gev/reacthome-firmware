@@ -43,7 +43,7 @@ data Slave n = Slave
     , tidTx         :: Value     Uint8
     , crc           :: Record    CRC16
     , tmp           :: Value     Uint8
-    , onMessage     :: Buffer n Uint8 -> Uint8 -> forall s. Ivory (ProcEffects s ()) ()
+    , onMessage     :: Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ()
     , onConfirm     :: forall eff. Ivory eff ()
     , onDiscovery   :: forall eff. Ivory eff ()
     }
@@ -61,7 +61,7 @@ slave :: KnownNat n
       -> Buffer 6 Uint8
       -> Value Uint8
       -> Version
-      -> (Buffer n Uint8 -> Uint8 -> forall s. Ivory (ProcEffects s ()) ())
+      -> (Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ())
       -> (forall eff. Ivory eff ())
       -> (forall eff. Ivory eff ())
       -> Slave n
@@ -249,13 +249,9 @@ receiveMessage = runReceive phase
 
 receiveMessageTid :: Slave n -> Uint8 -> Ivory eff ()
 receiveMessageTid (Slave {phase, crc, tidRx, tmp}) v = do
-    tid <- getValue tidRx
-    ifte_ (safeCast v /=? tid)
-          (do setValue  tmp v
-              updateCRC crc v
-              setValue phase waitingSize
-          )
-          (setValue phase readyToReceive)
+    setValue  tmp v
+    updateCRC crc v
+    setValue phase waitingSize
 
 receiveMessageSize :: Slave n -> Uint8 -> Ivory eff ()
 receiveMessageSize (Slave {phase, index, size, crc}) v = do
@@ -276,9 +272,11 @@ receiveMessageData (Slave {phase, index, size, buff, crc}) v = do
 
 receiveMessageLsbCRC :: Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receiveMessageLsbCRC r@(Slave {buff, size, onMessage, tidRx, tmp}) v = do
+    tidRx' <- getValue tidRx
+    tmp' <- getValue tmp
     s <- getValue size
-    let complete = do setValue tidRx . safeCast =<< getValue tmp
-                      onMessage buff s
+    let complete = do setValue tidRx $ safeCast tmp'
+                      onMessage buff s $ tidRx' /=? safeCast tmp'
     receiveLsbCRC r complete v
 
 

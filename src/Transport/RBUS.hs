@@ -41,7 +41,7 @@ data RBUS = RBUS
     , protocol      :: Slave   255
     , rxBuff        :: Buffer  64 Uint16
     , rxQueue       :: Queue   64
-    , msgOffset     :: Buffer  32 (Ix 512)
+    , msgOffset     :: Buffer  32 Uint16
     , msgSize       :: Buffer  32 Uint16
     , msgTTL        :: Buffer  32 Uint8
     , msgQueue      :: Queue   32
@@ -86,10 +86,10 @@ rbus rs = do
 
     where name = "rbus_slave"
 
-          onMessage dispatch (RBUS {shouldConfirm, clock, timestamp}) buff n = do
+          onMessage dispatch (RBUS {shouldConfirm, clock, timestamp}) buff n shouldHandle = do
             setValue timestamp =<< getSystemTime clock
+            when shouldHandle $ dispatch buff n
             setValue shouldConfirm true
-            dispatch buff n
 
           onDiscovery (RBUS {shouldConfirm, clock, timestamp}) = do
             setValue timestamp =<< getSystemTime clock
@@ -162,8 +162,9 @@ rxTask (RBUS {rs, protocol, rxBuff, rxQueue, txBuff}) =
 doConfirm :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
 doConfirm r@(RBUS {timestamp, shouldConfirm}) ts = do
     ts' <- getValue timestamp
-    when (ts' - ts >? 0)
+    when (ts - ts' >? 0)
          (do setValue shouldConfirm false
+             setValue timestamp ts
              confirm r
          )
 
@@ -179,7 +180,7 @@ doTransmitMessage r@(RBUS {msgOffset, msgSize, msgTTL, msgQueue, msgBuff, txBuff
                 sx     <- local $ ival offset
                 for (toIx size) $ \dx -> do
                     sx' <- deref sx
-                    v <- getItem msgBuff sx'
+                    v <- getItem msgBuff $ toIx sx'
                     store sx $ sx' + 1
                     setItem txBuff dx v
                 setItem msgTTL ix $ ttl - 1
@@ -192,14 +193,14 @@ doTransmitMessage r@(RBUS {msgOffset, msgSize, msgTTL, msgQueue, msgBuff, txBuff
 doPing :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
 doPing r@(RBUS {timestamp}) ts = do
     ts' <- getValue timestamp
-    when (ts' - ts >? 1000)
+    when (ts - ts' >? 1000)
          (setValue timestamp ts >> ping r)
 
 
 doDiscovery :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
 doDiscovery r@(RBUS {timestamp}) ts = do
     ts' <- getValue timestamp
-    when (ts' - ts >? 1000)
+    when (ts - ts' >? 1000)
          (setValue timestamp ts >> discovery r)
 
 
@@ -224,6 +225,9 @@ toRS transmit r@(RBUS {protocol, txBuff, txLock}) = do
          (rsTransmit r =<< run protocol transmit txBuff 0)
 
 
+{--
+    TODO: potential msgBuff overflow
+--}
 toQueue :: KnownNat l => RBUS -> Buffer l Uint8 -> Ivory (ProcEffects s ()) ()
 toQueue (RBUS {protocol, msgQueue, msgBuff, msgSize, msgTTL, msgIndex, msgOffset}) buff = do
     push msgQueue $ \i -> do
@@ -231,7 +235,7 @@ toQueue (RBUS {protocol, msgQueue, msgBuff, msgSize, msgTTL, msgIndex, msgOffset
         size <- run protocol (transmitMessage buff) msgBuff index
         setValue msgIndex $ index + size
         let ix = toIx i
-        setItem msgOffset ix $ toIx index
+        setItem msgOffset ix index
         setItem msgSize   ix size
         setItem msgTTL    ix messageTTL
 
