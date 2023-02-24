@@ -204,7 +204,7 @@ confirm = toRS transmitConfirm
 
 
 
-toRS :: (Slave 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) ())
+toRS :: (Slave 255 -> (Uint8 -> Ivory eff ()) -> Ivory (ProcEffects s ()) ())
      -> RBUS
      -> Ivory (ProcEffects s ()) ()
 toRS transmit r@(RBUS {protocol, txBuff, txLock}) = do
