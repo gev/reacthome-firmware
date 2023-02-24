@@ -108,6 +108,7 @@ instance KnownNat n => Include (Slave n) where
 instance Initialize (Slave n) where
     initialize s = ($ s) <$> [initDisc, initConf, initPing]
 
+
 initDisc :: Slave n -> Def('[] :-> ())
 initDisc (Slave {name, mac, model, version, buffDisc}) =
     proc (name <> "_init_disc_tx") $ body $ do
@@ -148,7 +149,6 @@ calcCRC16 buff = do
     for s_2 $ \ix -> updateCRC16 crc =<< deref (buff' ! ix)
     store (buff' ! s_2)  =<< deref (crc ~> msb)
     store (buff' ! s_1) =<< deref (crc ~> lsb)
-
 
 
 
