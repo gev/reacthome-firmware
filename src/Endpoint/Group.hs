@@ -4,7 +4,6 @@ module Endpoint.Group where
 
 import           Core.Include
 import           Core.Initialize
-import           Data.Class
 import           Data.Value
 import           Ivory.Language
 
@@ -24,22 +23,21 @@ group n = Group
   where name = "group_" <> show n
 
 enableGroup :: Group -> Ivory eff ()
-enableGroup (Group {enabled}) =  setValue enabled true
+enableGroup (Group {enabled}) = store (addrOf enabled) true
 
 disableGroup :: Group -> Ivory eff ()
-disableGroup (Group {enabled}) =  setValue enabled false
+disableGroup (Group {enabled}) =  store (addrOf enabled) false
 
 setTimestamp :: Group -> Uint32 -> Ivory eff ()
-setTimestamp (Group{timestamp}) = setValue timestamp
+setTimestamp (Group {timestamp}) = store $ addrOf timestamp
 
 getTimestamp :: Group -> Ivory eff Uint32
-getTimestamp (Group{timestamp}) = getValue timestamp
+getTimestamp (Group {timestamp}) = deref $ addrOf timestamp
 
 setDelay :: Group -> Uint32 -> Ivory eff ()
-setDelay (Group{delay}) = setValue delay
+setDelay (Group {delay}) = store $ addrOf delay
 
 
 instance Include Group where
   include (Group {enabled, timestamp, delay}) =
     include enabled >> include timestamp >> include delay
-

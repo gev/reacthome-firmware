@@ -39,7 +39,6 @@ executable reacthome-firmware
                     , Core.Transport
                     , Core.Version
 
-                    , Data.Class
                     , Data.Buffer
                     , Data.Value
                     , Data.Index

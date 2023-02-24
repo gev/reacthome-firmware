@@ -9,7 +9,6 @@ module Interface.Mac (Mac, mac, getMac) where
 import           Core.Include
 import           Core.Initialize
 import           Data.Buffer
-import           Data.Class
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Language.Module

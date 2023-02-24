@@ -6,7 +6,6 @@ module Interface.SystemClock where
 
 import           Core.Include
 import           Core.Initialize
-import           Data.Class
 import           Data.Value
 import           Interface.Counter (Counter (readCounter))
 import           Interface.Timer   (HandleTimer (HandleTimer), Timer)
@@ -42,8 +41,8 @@ instance Initialize SystemClock where
 
 handle :: Value Uint32 -> Ivory eff ()
 handle time = do
-    t <- getValue time
-    setValue time $ t + 1
+    t <- deref $ addrOf time
+    store (addrOf time) $ t + 1
 
 
 
@@ -53,4 +52,4 @@ instance Counter SystemClock where
 
 
 getSystemTime :: SystemClock -> Ivory eff Uint32
-getSystemTime = getValue . time
+getSystemTime = deref . addrOf . time

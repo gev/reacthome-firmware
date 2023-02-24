@@ -1,8 +1,9 @@
-{-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE QuasiQuotes   #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE QuasiQuotes       #-}
+{-# LANGUAGE TypeOperators     #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 module Util.CRC16
     ( CRC16
@@ -14,6 +15,8 @@ module Util.CRC16
     , inclCRC16
     ) where
 
+import           Core.Include
+import           Data.Record
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Language.Syntax (Struct)
@@ -114,3 +117,9 @@ crc16_lsb = constArea "crc16_lsb" $ iarray $ map ival [
         0x88,0x48,0x49,0x89,0x4B,0x8B,0x8A,0x4A,0x4E,0x8E,0x8F,0x4F,0x8D,0x4D,0x4C,0x8C,
         0x44,0x84,0x85,0x45,0x87,0x47,0x46,0x86,0x82,0x42,0x43,0x83,0x41,0x81,0x80,0x40
     ]
+
+
+instance Include (Record CRC16) where
+    include r = do
+        defStruct (Proxy :: Proxy CRC16)
+        defMemArea r

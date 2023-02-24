@@ -17,7 +17,6 @@ import           Core.Initialize
 import           Core.Task
 import           Core.Transport
 import           Data.Buffer
-import           Data.Class
 import           Data.Concurrent.Queue
 import           Data.Index
 import           Data.Value
@@ -87,13 +86,13 @@ rbus rs = do
     where name = "rbus_slave"
 
           onMessage dispatch (RBUS {shouldConfirm, clock, timestamp}) buff n shouldHandle = do
-            setValue timestamp =<< getSystemTime clock
+            store (addrOf timestamp) =<< getSystemTime clock
             when shouldHandle $ dispatch buff n
-            setValue shouldConfirm true
+            store (addrOf shouldConfirm) true
 
           onDiscovery (RBUS {shouldConfirm, clock, timestamp}) = do
-            setValue timestamp =<< getSystemTime clock
-            setValue shouldConfirm false
+            store (addrOf timestamp) =<< getSystemTime clock
+            store (addrOf shouldConfirm) false
 
           onConfirm = remove . msgQueue
 
@@ -126,17 +125,17 @@ instance Task RBUS where
 
 
 txHandle :: RBUS -> Ivory eff ()
-txHandle (RBUS {txLock}) = setValue txLock false
+txHandle (RBUS {txLock}) = store (addrOf txLock) false
 
 
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()
 txTask r@(RBUS {protocol, clock, txLock, shouldConfirm}) = do
-    locked <- getValue txLock
+    locked <- deref $ addrOf txLock
     when (iNot locked) $ do
         ts <- getSystemTime clock
         hasAddress' <- hasAddress protocol
         ifte_ hasAddress'
-            (do shouldConfirm' <- getValue shouldConfirm
+            (do shouldConfirm' <- deref $ addrOf shouldConfirm
                 ifte_ shouldConfirm'
                     (doConfirm r ts)
                     (doTransmitMessage r ts >> doPing r ts)
@@ -148,23 +147,23 @@ txTask r@(RBUS {protocol, clock, txLock, shouldConfirm}) = do
 rxHandle :: RBUS -> Uint16 -> Ivory eff ()
 rxHandle (RBUS {rxBuff, rxQueue}) value = do
     push rxQueue $ \i -> do
-        setItem rxBuff (toIx i) value
+        store (addrOf rxBuff ! toIx i) value
 
 
 rxTask :: RBUS -> Ivory (ProcEffects s ()) ()
 rxTask (RBUS {rs, protocol, rxBuff, rxQueue, txBuff}) =
     pop rxQueue $ \i -> do
-        v <- getItem rxBuff (toIx i)
+        v <- deref $ addrOf rxBuff ! toIx i
         receive protocol $ castDefault v
 
 
 
 doConfirm :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
 doConfirm r@(RBUS {timestamp, shouldConfirm}) ts = do
-    ts' <- getValue timestamp
+    ts' <- deref $ addrOf timestamp
     when (ts - ts' >? 0)
-         (do setValue shouldConfirm false
-             setValue timestamp ts
+         (do store (addrOf shouldConfirm) false
+             store (addrOf timestamp) ts
              confirm r
          )
 
@@ -173,18 +172,18 @@ doTransmitMessage :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
 doTransmitMessage r@(RBUS {msgOffset, msgSize, msgTTL, msgQueue, msgBuff, txBuff, timestamp}) ts = do
     peek msgQueue $ \i -> do
         let ix = toIx i
-        ttl <- getItem msgTTL ix
+        ttl <- deref $ addrOf msgTTL ! ix
         ifte_ (ttl >? 0)
-            (do offset <- getItem msgOffset ix
-                size   <- getItem msgSize ix
+            (do offset <- deref $ addrOf msgOffset ! ix
+                size   <- deref $ addrOf msgSize ! ix
                 sx     <- local $ ival offset
                 for (toIx size) $ \dx -> do
                     sx' <- deref sx
-                    v <- getItem msgBuff $ toIx sx'
+                    v <- deref $ addrOf msgBuff ! toIx sx'
                     store sx $ sx' + 1
-                    setItem txBuff dx v
-                setItem msgTTL ix $ ttl - 1
-                setValue timestamp ts
+                    store (addrOf txBuff ! dx) v
+                store (addrOf msgTTL ! ix) $ ttl - 1
+                store (addrOf timestamp) ts
                 rsTransmit r size
             )
             (remove msgQueue)
@@ -192,16 +191,18 @@ doTransmitMessage r@(RBUS {msgOffset, msgSize, msgTTL, msgQueue, msgBuff, txBuff
 
 doPing :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
 doPing r@(RBUS {timestamp}) ts = do
-    ts' <- getValue timestamp
+    let timestamp' = addrOf timestamp
+    ts' <- deref timestamp'
     when (ts - ts' >? 1000)
-         (setValue timestamp ts >> ping r)
+         (store timestamp' ts >> ping r)
 
 
 doDiscovery :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
 doDiscovery r@(RBUS {timestamp}) ts = do
-    ts' <- getValue timestamp
+    let timestamp' = addrOf timestamp
+    ts' <- deref timestamp'
     when (ts - ts' >? 1000)
-         (setValue timestamp ts >> discovery r)
+         (store timestamp' ts >> discovery r)
 
 
 
@@ -220,7 +221,7 @@ toRS :: (Slave 255 -> (Uint8 -> Ivory eff ()) -> Ivory (ProcEffects s ()) ())
      -> RBUS
      -> Ivory (ProcEffects s ()) ()
 toRS transmit r@(RBUS {protocol, txBuff, txLock}) = do
-    locked <- getValue txLock
+    locked <- deref $ addrOf txLock
     when (iNot locked)
          (rsTransmit r =<< run protocol transmit txBuff 0)
 
@@ -231,20 +232,20 @@ toRS transmit r@(RBUS {protocol, txBuff, txLock}) = do
 toQueue :: KnownNat l => RBUS -> Buffer l Uint8 -> Ivory (ProcEffects s ()) ()
 toQueue (RBUS {protocol, msgQueue, msgBuff, msgSize, msgTTL, msgIndex, msgOffset}) buff = do
     push msgQueue $ \i -> do
-        index <- getValue msgIndex
+        index <- deref $ addrOf msgIndex
         size <- run protocol (transmitMessage buff) msgBuff index
-        setValue msgIndex $ index + size
+        store (addrOf msgIndex) $ index + size
         let ix = toIx i
-        setItem msgOffset ix index
-        setItem msgSize   ix size
-        setItem msgTTL    ix messageTTL
+        store (addrOf msgOffset ! ix) index
+        store (addrOf msgSize   ! ix) size
+        store (addrOf msgTTL    ! ix) messageTTL
 
 
 rsTransmit :: RBUS -> Uint16 -> Ivory (ProcEffects s ()) ()
 rsTransmit (RBUS {rs, txBuff, txLock}) size = do
-    let array = toCArray $ getBuffer txBuff
+    let array = toCArray $ addrOf txBuff
     RS.transmit rs array size
-    setValue txLock true
+    store (addrOf txLock) true
 
 
 run :: KnownNat l
@@ -259,7 +260,7 @@ run protocol transmit buff offset = do
         go v = do
             i <- deref size
             let ix = toIx $ offset + i
-            setItem buff ix $ safeCast v
+            store (addrOf buff ! ix) $ safeCast v
             store size $ i + 1
     transmit protocol go
     deref size

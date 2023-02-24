@@ -7,7 +7,6 @@
 module Data.Concurrent.Queue where
 
 import           Core.Include
-import           Data.Class
 import           Data.Concurrent.Semaphore
 import           Data.Index
 import           GHC.TypeNats
@@ -43,39 +42,39 @@ queue id =
 push :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
 push (Queue {producerIx, producerS, consumerS}) handle =
     down producerS $ do
-        x <- getValue producerIx
+        x <- deref $ addrOf producerIx
         handle x
-        setValue producerIx $ x + 1
+        store (addrOf producerIx) $ x + 1
         up consumerS
 
 
 pop :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
 pop (Queue {consumerIx, consumerS, producerS}) handle =
     down consumerS $ do
-        x <- getValue consumerIx
+        x <- deref $ addrOf consumerIx
         handle x
-        setValue consumerIx $ x + 1
+        store (addrOf consumerIx) $ x + 1
         up producerS
 
 
 peek :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
 peek (Queue {consumerIx, consumerS}) handle = do
     check consumerS $ do
-        x <- getValue consumerIx
+        x <- deref $ addrOf consumerIx
         handle x
 
 
 remove :: Queue n -> Ivory eff ()
 remove (Queue {consumerIx, consumerS, producerS}) =
     down consumerS $ do
-        x <- getValue consumerIx
-        setValue consumerIx $ x + 1
+        x <- deref $ addrOf consumerIx
+        store (addrOf consumerIx) $ x + 1
         up producerS
 
 
 size :: Queue n -> Ivory eff Uint16
-size (Queue {producerIx = (Index px), consumerIx = (Index cx)}) =
-    (-) <$> getValue px <*> getValue cx
+size (Queue {producerIx, consumerIx}) =
+    (-) <$> deref (addrOf producerIx) <*> deref (addrOf consumerIx)
 
 
 

@@ -9,7 +9,6 @@ import           Core.Feature
 import           Core.Include
 import           Core.Initialize
 import           Core.Task
-import           Data.Class
 import           Data.Foldable         (traverse_)
 import           Data.List
 import           Data.Maybe

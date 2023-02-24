@@ -2,8 +2,8 @@
 module Protocol.RBUS where
 
 import           Data.Buffer
-import           Data.Class
 import           Data.Record
+import           Data.Value     (Value)
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Util.CRC16
@@ -47,20 +47,20 @@ waitingMsbCRC       = 0x04 :: Uint8
 waitingLsbCRC       = 0x05 :: Uint8
 
 updateCRC :: Record CRC16 -> Uint8 -> Ivory eff ()
-updateCRC = updateCRC16 . getRecord
+updateCRC = updateCRC16 . addrOf
 
 
 go :: a -> b -> (a, b)
 go = (,)
 
 
-runReceive :: (Val v a, IvoryEq a)
-           => (r -> v a)
-           -> [(a, r -> Uint8 -> Ivory (ProcEffects s ()) ())]
-           -> r
-           -> Uint8
-           -> Ivory (ProcEffects s ()) ()
+-- runReceive :: (Value a, IvoryEq a)
+--            => (r -> v a)
+--            -> [(a, r -> Uint8 -> Ivory (ProcEffects s ()) ())]
+--            -> r
+--            -> Uint8
+--            -> Ivory (ProcEffects s ()) ()
 runReceive f hs r v = do
-    p <- getValue . f $ r
+    p <- deref $ addrOf (f r)
     let go (w, h) = w ==? p ==> h r v
     cond_ $ go <$> hs

@@ -8,12 +8,10 @@
 
 module Protocol.RBUS.Slave where
 
-import           Control.Monad   ((<=<))
 import           Core.Include
 import           Core.Initialize
 import           Core.Version    (Version, major, minor)
 import           Data.Buffer
-import           Data.Class
 import           Data.Record
 import           Data.Value
 import           GHC.TypeNats
@@ -89,7 +87,7 @@ slave n mac model version onMessage onConfirm onDiscovery = Slave
     } where name = "protocol_" <> n
 
 
-instance Include (Slave n) where
+instance KnownNat n => Include (Slave n) where
     include (Slave {address, state, index, phase, size, buff, buffConf, buffPing, buffDisc, tidRx, tidTx, crc, tmp}) = do
         inclCRC16
         include tmp
@@ -114,36 +112,43 @@ instance Initialize (Slave n) where
 initDisc :: Slave n -> Def('[] :-> ())
 initDisc (Slave {name, mac, model, version, buffDisc}) =
     proc (name <> "_init_disc_tx") $ body $ do
-        setItem buffDisc 0 $ discovery txPreamble
-        arrayCopy (getBuffer buffDisc) (getBuffer mac) 1 (getSize mac)
-        setItem buffDisc 7 =<< getValue model
-        setItem buffDisc 8 =<< version |> major
-        setItem buffDisc 9 =<< version |> minor
+        let mac'         = addrOf mac
+        let model'       = addrOf model
+        let version'     = addrOf version
+        let buffDisc'    = addrOf buffDisc
+        store (buffDisc' ! 0) $ discovery txPreamble
+        arrayCopy buffDisc' mac' 1 $ arrayLen mac'
+        store (buffDisc' ! 7) =<< deref model'
+        store (buffDisc' ! 8) =<< deref (version' ~> major)
+        store (buffDisc' ! 9) =<< deref (version' ~> minor)
         calcCRC16 buffDisc
 
 initConf :: Slave n -> Def('[] :-> ())
 initConf (Slave {name, address, buffConf}) =
     proc (name <> "_init_conf_tx") $ body $ do
-        setItem buffConf 0 $ confirm txPreamble
-        setItem buffConf 1 =<< getValue address
+        let buffConf'    = addrOf buffConf
+        store (buffConf' ! 0) $ confirm txPreamble
+        store (buffConf' ! 1) =<< deref (addrOf address)
         calcCRC16 buffConf
 
 initPing :: Slave n -> Def('[] :-> ())
 initPing (Slave {name, address, buffPing}) =
     proc (name <> "_init_ping_tx") $ body $ do
-        setItem buffPing 0 $ ping txPreamble
-        setItem buffPing 1 =<< getValue address
+        let buffPing'    = addrOf buffPing
+        store (buffPing' ! 0) $ ping txPreamble
+        store (buffPing' ! 1) =<< deref (addrOf address)
         calcCRC16 buffPing
 
 calcCRC16 :: KnownNat n => Buffer n Uint8 -> Ivory (ProcEffects s ()) ()
 calcCRC16 buff = do
-    let size = getSize buff :: Uint16
-    let s_2 = toIx $ size - 2
-    let s_1 = toIx $ size - 1
+    let buff'    = addrOf buff
+    let size     = arrayLen buff' :: Uint16
+    let s_2      = toIx $ size - 2
+    let s_1      = toIx $ size - 1
     crc <- local $ istruct initCRC16
-    for s_2 $ updateCRC16 crc <=< getItem buff
-    setItem buff s_2 =<< deref (crc ~> msb)
-    setItem buff s_1 =<< deref (crc ~> lsb)
+    for s_2 $ \ix -> updateCRC16 crc =<< deref (buff' ! ix)
+    store (buff' ! s_2)  =<< deref (crc ~> msb)
+    store (buff' ! s_1) =<< deref (crc ~> lsb)
 
 
 receive :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
@@ -164,12 +169,12 @@ receivePreamble (Slave {state, phase, index, size, crc}) v =
           , go message   receivingMessage   waitingAddress
           ]
     where go f s p = v ==? f rxPreamble
-                       ==> do setValue state s
-                              setValue phase p
-                              setValue index 0
-                              setValue size  0
-                              crc <| msb $ initCRC
-                              crc <| lsb $ initCRC
+                       ==> do store (addrOf state) s
+                              store (addrOf phase) p
+                              store (addrOf index) 0
+                              store (addrOf size ) 0
+                              store (addrOf crc ~> msb) initCRC
+                              store (addrOf crc ~> lsb) initCRC
                               updateCRC crc  v
 
 
@@ -184,27 +189,29 @@ receiveDiscovery = runReceive phase
 
 receiveDiscoveryMac :: Slave n -> Uint8 -> Ivory eff ()
 receiveDiscoveryMac (Slave {mac, index, state, phase, crc}) v = do
-    i <- getValue index
-    m <- getItem mac $ toIx i
+    let mac'   = addrOf mac
+    let index' = addrOf index
+    i <- deref index'
+    m <- deref $ mac' ! toIx i
     ifte_ (v ==? m)
-          (do setValue index $ i + 1
-              i <- getValue index
+          (do store index' $ i + 1
+              i <- deref index'
               updateCRC crc v
-              when (i ==? getSize mac)
-                   (setValue phase waitingAddress)
+              when (i ==? arrayLen mac')
+                   (store (addrOf phase) waitingAddress)
           )
-          (setValue state readyToReceive)
+          (store (addrOf state) readyToReceive)
 
 receiveDiscoveryAddress :: Slave n -> Uint8 -> Ivory eff ()
 receiveDiscoveryAddress (Slave {phase, tmp, crc}) v = do
-    setValue  tmp v
+    store (addrOf tmp) v
     updateCRC crc v
-    setValue phase waitingMsbCRC
+    store (addrOf phase) waitingMsbCRC
 
 receiveDiscoveryLsbCRC :: Slave n -> Uint8 -> Ivory eff ()
 receiveDiscoveryLsbCRC s@(Slave {address, tmp, onDiscovery}) = do
     receiveLsbCRC s $ do
-        setValue address =<< getValue tmp
+        store (addrOf address) =<< deref (addrOf tmp)
         call_ $ initConf s
         call_ $ initPing s
         onDiscovery
@@ -220,7 +227,7 @@ receivePing = runReceive phase
 
 receivePingLsbCRC :: Slave n -> Uint8 -> Ivory eff ()
 receivePingLsbCRC r@(Slave {address}) =
-    receiveLsbCRC r $ setValue address broadcastAddress
+    receiveLsbCRC r $ store (addrOf address) broadcastAddress
 
 
 
@@ -249,57 +256,58 @@ receiveMessage = runReceive phase
 
 receiveMessageTid :: Slave n -> Uint8 -> Ivory eff ()
 receiveMessageTid (Slave {phase, crc, tidRx, tmp}) v = do
-    setValue  tmp v
+    store (addrOf tmp) v
     updateCRC crc v
-    setValue phase waitingSize
+    store (addrOf phase) waitingSize
 
 receiveMessageSize :: Slave n -> Uint8 -> Ivory eff ()
 receiveMessageSize (Slave {phase, index, size, crc}) v = do
-    setValue size v
+    store (addrOf size) v
     updateCRC crc v
-    setValue phase waitingData
+    store (addrOf phase) waitingData
 
 receiveMessageData :: KnownNat n => Slave n -> Uint8 -> Ivory eff ()
 receiveMessageData (Slave {phase, index, size, buff, crc}) v = do
-    i <- getValue index
-    s <- getValue size
-    setItem buff (toIx i) v
-    setValue index $ i + 1
+    let index' = addrOf index
+    i <- deref index'
+    s <- deref $ addrOf size
+    store (addrOf buff ! toIx i) v
+    store index' $ i + 1
     updateCRC crc v
-    i <- getValue index
+    i <- deref index'
     when (i ==? s)
-         (setValue phase waitingMsbCRC)
+         (store (addrOf phase) waitingMsbCRC)
 
 receiveMessageLsbCRC :: Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receiveMessageLsbCRC r@(Slave {buff, size, onMessage, tidRx, tmp}) v = do
-    tidRx' <- getValue tidRx
-    tmp' <- getValue tmp
-    s <- getValue size
-    let complete = do setValue tidRx $ safeCast tmp'
-                      onMessage buff s $ tidRx' /=? safeCast tmp'
+    tmp'   <- deref $ addrOf tmp
+    size'  <- deref $ addrOf size
+    tidRx' <- deref $ addrOf tidRx
+    let complete = do store (addrOf tidRx) $ safeCast tmp'
+                      onMessage buff size' $ tidRx' /=? safeCast tmp'
     receiveLsbCRC r complete v
 
 
 
 receiveAddress :: Uint8 -> Slave n -> Uint8 -> Ivory eff ()
 receiveAddress p (Slave {address, state, phase, crc}) v = do
-    a <- getValue address
+    a <- deref $ addrOf address
     ifte_ (v==? a .|| v ==? broadcastAddress)
-          (updateCRC crc v >> setValue phase p)
-          (setValue state readyToReceive)
+          (updateCRC crc v >> store (addrOf phase) p)
+          (store (addrOf state) readyToReceive)
 
 receiveMsbCRC :: Slave n -> Uint8 -> Ivory eff ()
 receiveMsbCRC (Slave {state, phase, crc}) v = do
-    b <- crc |> msb
+    b <- deref $ addrOf crc ~> msb
     ifte_ (b ==? v)
-          (setValue phase waitingLsbCRC)
-          (setValue state readyToReceive)
+          (store (addrOf phase) waitingLsbCRC)
+          (store (addrOf state) readyToReceive)
 
 receiveLsbCRC :: Slave n -> Ivory eff () -> Uint8 -> Ivory eff ()
 receiveLsbCRC (Slave {state, crc}) complete v = do
-    b <- crc |> lsb
+    b <- deref $ addrOf crc ~> lsb
     when (b ==? v) complete
-    setValue state readyToReceive
+    store (addrOf state) readyToReceive
 
 
 
@@ -309,18 +317,19 @@ transmitMessage :: KnownNat l
                 -> (Uint8 -> forall eff. Ivory eff ())
                 -> Ivory (ProcEffects s ()) ()
 transmitMessage payload (Slave{address, tidTx}) transmit = do
+    let payload' = addrOf payload
     crc <- local $ istruct initCRC16
-    let t :: Uint8 -> Ivory eff ()
-        t v = updateCRC16 crc v >> transmit v
-    t $ message txPreamble
-    t =<< getValue address
-    id <- getValue tidTx
-    t id
-    setValue tidTx $ id + 1
-    t $ getSize payload
-    arrayMap $ t <=< getItem payload
-    transmit =<< deref (crc~>msb)
-    transmit =<< deref (crc~>lsb)
+    let transmit' :: Uint8 -> Ivory eff ()
+        transmit' v = updateCRC16 crc v >> transmit v
+    transmit' $ message txPreamble
+    transmit' =<< deref (addrOf address)
+    id <- deref (addrOf tidTx)
+    transmit' id
+    store (addrOf tidTx) $ id + 1
+    transmit' $ arrayLen payload'
+    arrayMap $ \ix -> transmit' =<< deref (payload' ! ix)
+    transmit =<< deref (crc ~> msb)
+    transmit =<< deref (crc ~> lsb)
 
 
 
@@ -338,11 +347,11 @@ transmit' :: KnownNat n
           -> (Uint8 -> Ivory (AllowBreak eff) ())
           -> Ivory eff ()
 transmit' buff transmit =
-    arrayMap $ transmit <=< getItem buff
+    arrayMap $ \ix -> transmit =<< deref (addrOf buff ! ix)
 
 
 
 hasAddress :: Slave n -> Ivory eff IBool
 hasAddress (Slave {address}) = do
-    a <- getValue address
+    a <- deref $ addrOf address
     pure $ a /=? broadcastAddress

@@ -12,7 +12,6 @@ import           Core.Feature
 import           Core.Include
 import           Core.Initialize
 import           Core.Task
-import           Data.Class
 import           Data.Function
 import           Data.Value
 import           Interface.GPIO
@@ -49,8 +48,8 @@ instance Initialize Blink where
 instance Task Blink where
     tasks (Blink name out state) = [
         delay 1_000 name $ do
-            v <- getValue state
-            setValue state $ iNot v
+            v <- deref $ addrOf state
+            store (addrOf state) $ iNot v
             ifte_ v (set   out)
                     (reset out)
         ]

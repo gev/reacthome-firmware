@@ -4,7 +4,6 @@ module Device.GD32F3x0.Mac where
 
 
 import           Control.Monad
-import           Data.Class
 import           GHC.TypeNats
 import           Interface.Mac
 import           Ivory.Language
@@ -14,6 +13,6 @@ import           Util.ByteSplit
 makeMac :: String -> Mac
 makeMac = mac inclDBG $ \buff -> do
     id <- getID
-    zipWithM_ (setItem buff)
+    zipWithM_ (\i -> store (addrOf buff ! i))
               (iterate (+1) 0)
-            $ 0x01 : 0x4a : bytes id
+              (0x01 : 0x4a : bytes id)

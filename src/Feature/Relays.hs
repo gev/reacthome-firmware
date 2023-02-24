@@ -14,7 +14,6 @@ import           Core.Initialize
 import           Core.Task
 import qualified Core.Transport       as T
 import           Data.Buffer
-import           Data.Class
 import           Data.Foldable
 import           Data.Value
 import           Endpoint.Relay
@@ -53,9 +52,9 @@ instance Task Relays where
 
 instance Controller Relays where
     handle (Relays rs transmit) buff size = do
-        action <- getItem buff 0
-        index  <- getItem buff 1
-        state  <- getItem buff 2
+        action <- deref $ addrOf buff ! 0
+        index  <- deref $ addrOf buff ! 1
+        state  <- deref $ addrOf buff ! 2
         let go f r i = index ==? fromIntegral i ==> f r >> transmit (payload r)
         let run f = cond_ (zipWith (go f) rs [1..])
         pure [ action ==? 0 ==> cond_ [ state ==? 1 ==> run turnOn

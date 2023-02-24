@@ -1,7 +1,6 @@
-{-# LANGUAGE DataKinds             #-}
-{-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE QuasiQuotes           #-}
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE QuasiQuotes       #-}
 
 module Core.Version
     ( Version
@@ -11,7 +10,6 @@ module Core.Version
     ) where
 
 import           Core.Include
-import           Data.Class
 import           Data.Record
 import           Ivory.Language
 
@@ -20,9 +18,7 @@ import           Ivory.Language
 type VersionStruct = "version_struct"
 
 
-type Version = Version' VersionStruct
-
-newtype Version' v = Version {getVersion :: Record v}
+type Version = Record VersionStruct
 
 
 [ivory|
@@ -33,19 +29,13 @@ newtype Version' v = Version {getVersion :: Record v}
 |]
 
 
-
 version :: String -> Uint8 -> Uint8 -> Version
-version name maj min = Version $ record name [ major .= ival maj
-                                             , minor .= ival min
-                                             ]
+version name maj min = record name [ major .= ival maj
+                                   , minor .= ival min
+                                   ]
 
 
-
-instance Include (Version' v) where
-    include (Version v) = do
+instance Include Version where
+    include v = do
         defStruct (Proxy :: Proxy VersionStruct)
-        include v
-
-
-instance IvoryStruct v => Rec Version' v where
-  getRecord = getRecord . getVersion
+        defMemArea v

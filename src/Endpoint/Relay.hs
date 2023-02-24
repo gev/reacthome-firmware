@@ -7,7 +7,6 @@ module Endpoint.Relay where
 import           Core.Include
 import           Core.Initialize
 import           Data.Buffer
-import           Data.Class
 import           Data.Function
 import           Data.Value
 import           Interface.GPIO
@@ -37,15 +36,15 @@ relay n out = Relay
 
 turnOn :: Relay -> Ivory eff ()
 turnOn (Relay {state, payload}) =
-    setValue state true >> setItem payload 2 1
+    store (addrOf state) true >> store (addrOf payload ! 2) 1
 
 turnOff :: Relay -> Ivory eff ()
 turnOff (Relay {state, payload}) = do
-    setValue state false >> setItem payload 2 0
+    store (addrOf state) false >> store (addrOf payload ! 2) 0
 
 manage :: Relay -> Ivory eff ()
 manage (Relay {out, state}) = do
-    s <- getValue state
+    s <- deref $ addrOf state
     ifte_ s (set   out)
             (reset out)
 
@@ -61,12 +60,13 @@ instance Initialize Relay where
     initialize (Relay {n, name, out, payload}) =
         initialize out <> [
             proc (name <> "_payload_init") $ body $ do
-                setItem payload 0 0
-                setItem payload 1 $ fromIntegral n
-                setItem payload 2 0
-                setItem payload 3 $ fromIntegral n
-                setItem payload 4 0
-                setItem payload 5 0
-                setItem payload 6 0
-                setItem payload 7 0
+                let payload' = addrOf payload
+                store (payload' ! 0) 0
+                store (payload' ! 1) $ fromIntegral n
+                store (payload' ! 2) 0
+                store (payload' ! 3) $ fromIntegral n
+                store (payload' ! 4) 0
+                store (payload' ! 5) 0
+                store (payload' ! 6) 0
+                store (payload' ! 7) 0
         ]
