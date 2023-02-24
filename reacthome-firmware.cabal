@@ -67,6 +67,8 @@ executable reacthome-firmware
                     , Protocol.RBUS
                     , Protocol.RBUS.Master
                     , Protocol.RBUS.Slave
+                    , Protocol.RBUS.Slave.Rx
+                    , Protocol.RBUS.Slave.Tx
 
                     , Transport.RBUS
 

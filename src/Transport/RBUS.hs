@@ -8,8 +8,8 @@
 
 module Transport.RBUS    where
 
-import           Control.Monad.Reader  (Reader, asks, runReader)
-import           Core.Dispatcher       (makeDispatcher)
+import           Control.Monad.Reader   (Reader, asks, runReader)
+import           Core.Dispatcher        (makeDispatcher)
 import           Core.Domain
 import           Core.Feature
 import           Core.Include
@@ -21,16 +21,16 @@ import           Data.Concurrent.Queue
 import           Data.Index
 import           Data.Value
 import           GHC.TypeNats
-import           Interface.Mac         (Mac (getMac))
-import           Interface.MCU         (MCU (systemClock))
-import           Interface.RS485       as RS
-import           Interface.SystemClock (SystemClock, getSystemTime)
+import           Interface.Mac          (Mac (getMac))
+import           Interface.MCU          (MCU (systemClock))
+import           Interface.RS485        as RS
+import           Interface.SystemClock  (SystemClock, getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Protocol.RBUS         (messageTTL)
-import           Protocol.RBUS.Slave   (Slave, hasAddress, receive, slave,
-                                        transmitConfirm, transmitDiscovery,
-                                        transmitMessage, transmitPing)
+import           Protocol.RBUS          (messageTTL)
+import           Protocol.RBUS.Slave    (Slave, hasAddress, slave)
+import           Protocol.RBUS.Slave.Rx
+import           Protocol.RBUS.Slave.Tx
 
 
 data RBUS = RBUS
