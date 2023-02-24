@@ -26,25 +26,26 @@ import           Util.CRC16
 
 
 data Slave n = Slave
-    { name      :: String
-    , mac       :: Buffer  6 Uint8
-    , model     :: Value     Uint8
-    , version   :: Version
-    , address   :: Value     Uint8
-    , state     :: Value     Uint8
-    , phase     :: Value     Uint8
-    , index     :: Value     Uint8
-    , size      :: Value     Uint8
-    , buff      :: Buffer  n Uint8
-    , buffConf  :: Buffer  4 Uint8
-    , buffPing  :: Buffer  4 Uint8
-    , buffDisc  :: Buffer 12 Uint8
-    , tidRx     :: Value     Sint16
-    , tidTx     :: Value     Uint8
-    , crc       :: Record    CRC16
-    , tmp       :: Value     Uint8
-    , onMessage :: Buffer n Uint8 -> Uint8 -> forall s. Ivory (ProcEffects s ()) ()
-    , onConfirm :: forall eff. Ivory eff ()
+    { name          :: String
+    , mac           :: Buffer  6 Uint8
+    , model         :: Value     Uint8
+    , version       :: Version
+    , address       :: Value     Uint8
+    , state         :: Value     Uint8
+    , phase         :: Value     Uint8
+    , index         :: Value     Uint8
+    , size          :: Value     Uint8
+    , buff          :: Buffer  n Uint8
+    , buffConf      :: Buffer  4 Uint8
+    , buffPing      :: Buffer  4 Uint8
+    , buffDisc      :: Buffer 12 Uint8
+    , tidRx         :: Value     Sint16
+    , tidTx         :: Value     Uint8
+    , crc           :: Record    CRC16
+    , tmp           :: Value     Uint8
+    , onMessage     :: Buffer n Uint8 -> Uint8 -> forall s. Ivory (ProcEffects s ()) ()
+    , onConfirm     :: forall eff. Ivory eff ()
+    , onDiscovery   :: forall eff. Ivory eff ()
     }
 
 
@@ -62,27 +63,29 @@ slave :: KnownNat n
       -> Version
       -> (Buffer n Uint8 -> Uint8 -> forall s. Ivory (ProcEffects s ()) ())
       -> (forall eff. Ivory eff ())
+      -> (forall eff. Ivory eff ())
       -> Slave n
-slave n mac model version onMessage onConfirm = Slave
-    { name     = name
-    , mac      = mac
-    , model    = model
-    , version  = version
-    , address  = value      (name <> "_address")      broadcastAddress
-    , state    = value      (name <> "_state")        readyToReceive
-    , phase    = value      (name <> "_phase")        waitingAddress
-    , index    = value      (name <> "_index")        0
-    , size     = value      (name <> "_size")         0
-    , buff     = buffer     (name <> "_message")
-    , buffConf = buffer     (name <> "_confirm_tx")
-    , buffPing = buffer     (name <> "_ping_tx")
-    , buffDisc = buffer     (name <> "_disc_tx")
-    , tidRx    = value      (name <> "_tid_rx")     (-1)
-    , tidTx    = value      (name <> "_tid_tx")       0
-    , crc      = record     (name <> "_crc")          initCRC16
-    , tmp      = value      (name <> "_tmp")          0
-    , onMessage   = onMessage
-    , onConfirm = onConfirm
+slave n mac model version onMessage onConfirm onDiscovery = Slave
+    { name          = name
+    , mac           = mac
+    , model         = model
+    , version       = version
+    , address       = value      (name <> "_address")      broadcastAddress
+    , state         = value      (name <> "_state")        readyToReceive
+    , phase         = value      (name <> "_phase")        waitingAddress
+    , index         = value      (name <> "_index")        0
+    , size          = value      (name <> "_size")         0
+    , buff          = buffer     (name <> "_message")
+    , buffConf      = buffer     (name <> "_confirm_tx")
+    , buffPing      = buffer     (name <> "_ping_tx")
+    , buffDisc      = buffer     (name <> "_disc_tx")
+    , tidRx         = value      (name <> "_tid_rx")     (-1)
+    , tidTx         = value      (name <> "_tid_tx")       0
+    , crc           = record     (name <> "_crc")          initCRC16
+    , tmp           = value      (name <> "_tmp")          0
+    , onMessage     = onMessage
+    , onConfirm     = onConfirm
+    , onDiscovery   = onDiscovery
     } where name = "protocol_" <> n
 
 
@@ -199,11 +202,12 @@ receiveDiscoveryAddress (Slave {phase, tmp, crc}) v = do
     setValue phase waitingMsbCRC
 
 receiveDiscoveryLsbCRC :: Slave n -> Uint8 -> Ivory eff ()
-receiveDiscoveryLsbCRC s@(Slave {address, tmp}) = do
+receiveDiscoveryLsbCRC s@(Slave {address, tmp, onDiscovery}) = do
     receiveLsbCRC s $ do
         setValue address =<< getValue tmp
         call_ $ initConf s
         call_ $ initPing s
+        onDiscovery
 
 
 

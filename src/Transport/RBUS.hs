@@ -68,7 +68,7 @@ rbus rs = do
     let rbus     = RBUS { name          = name
                         , clock         = systemClock mcu
                         , rs            = runReader rs mcu
-                        , protocol      = slave name (getMac mac) model version (onMessage dispatch rbus) (onConfirm rbus)
+                        , protocol      = slave name (getMac mac) model version (onMessage dispatch rbus) (onConfirm rbus) (onDiscovery rbus)
                         , rxBuff        = buffer (name <> "_rx")
                         , rxQueue       = queue  (name <> "_rx")
                         , msgOffset     = buffer (name <> "_msg_offset")
@@ -83,12 +83,17 @@ rbus rs = do
                         , shouldConfirm = value  (name <> "_should_confirm") false
                         }
     pure rbus
+
     where name = "rbus_slave"
 
           onMessage dispatch (RBUS {shouldConfirm, clock, timestamp}) buff n = do
             setValue timestamp =<< getSystemTime clock
             setValue shouldConfirm true
             dispatch buff n
+
+          onDiscovery (RBUS {shouldConfirm, clock, timestamp}) = do
+            setValue timestamp =<< getSystemTime clock
+            setValue shouldConfirm false
 
           onConfirm = remove . msgQueue
 
