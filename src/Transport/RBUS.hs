@@ -125,14 +125,18 @@ txHandle (RBUS {txLock}) = setValue txLock false
 
 
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()
-txTask r@(RBUS {clock, txLock, shouldConfirm}) = do
+txTask r@(RBUS {protocol, clock, txLock, shouldConfirm}) = do
     locked <- getValue txLock
     when (iNot locked) $ do
         ts <- getSystemTime clock
-        shouldConfirm' <- getValue shouldConfirm
-        ifte_ shouldConfirm'
-              (doConfirm r ts)
-              (doTransmitMessage r ts >> doPing r ts)
+        hasAddress' <- hasAddress protocol
+        ifte_ hasAddress'
+            (do shouldConfirm' <- getValue shouldConfirm
+                ifte_ shouldConfirm'
+                    (doConfirm r ts)
+                    (doTransmitMessage r ts >> doPing r ts)
+            )
+            (doDiscovery r ts)
 
 
 
@@ -181,15 +185,17 @@ doTransmitMessage r@(RBUS {msgOffset, msgSize, msgTTL, msgQueue, msgBuff, txBuff
 
 
 doPing :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
-doPing r@(RBUS {protocol, timestamp}) ts = do
+doPing r@(RBUS {timestamp}) ts = do
     ts' <- getValue timestamp
     when (ts' - ts >? 1000)
-         (do setValue timestamp ts
-             shouldPing <- hasAddress protocol
-             ifte_ shouldPing
-                 (ping r)
-                 (discovery r)
-         )
+         (setValue timestamp ts >> ping r)
+
+
+doDiscovery :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
+doDiscovery r@(RBUS {timestamp}) ts = do
+    ts' <- getValue timestamp
+    when (ts' - ts >? 1000)
+         (setValue timestamp ts >> discovery r)
 
 
 
