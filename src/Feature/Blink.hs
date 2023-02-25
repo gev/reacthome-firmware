@@ -19,14 +19,14 @@ import           Interface.MCU
 import           Interface.Timer
 import           Ivory.Language
 
-data Blink = forall o. OUT o => Blink
+data Blink = forall o. Out o => Blink
  { name  :: String
  , out   :: o
  , state :: Value IBool
  }
 
 
-blink :: (MCU mcu, OUT o) => Int -> (mcu -> o) -> Reader (Domain mcu t) Feature
+blink :: (MCU mcu, Out o) => Int -> (mcu -> o) -> Reader (Domain mcu t) Feature
 blink n out = do
     mcu <- asks mcu
     pure $ Feature $ Blink { name  = name

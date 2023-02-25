@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds      #-}
 {-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE TypeOperators  #-}
 
 module Device.GD32F3x0.GPIO where
 
@@ -13,11 +12,11 @@ import           Support.Device.GD32F3x0.GPIO as S
 import           Support.Device.GD32F3x0.RCU
 
 
-newtype IN  = IN  PORT
+newtype In  = In  {getIn  :: Port}
 
-newtype OUT = OUT PORT
+newtype Out = Out {getOut :: Port}
 
-data PORT = PORT
+data Port = Port
     { rcu  :: RCU_PERIPH
     , gpio :: GPIO_PERIPH
     , pin  :: GPIO_PIN
@@ -65,54 +64,59 @@ pb_14 = pb GPIO_PIN_14
 pb_15 = pb GPIO_PIN_15
 
 
-pa :: GPIO_PIN -> MODE -> PORT
-pa = PORT RCU_GPIOA GPIOA
 
-pb :: GPIO_PIN -> MODE -> PORT
-pb = PORT RCU_GPIOB GPIOB
+pa :: GPIO_PIN -> MODE -> Port
+pa = Port RCU_GPIOA GPIOA
+
+pb :: GPIO_PIN -> MODE -> Port
+pb = Port RCU_GPIOB GPIOB
 
 
-input :: (MODE -> PORT) -> IN
-input = IN . io GPIO_MODE_INPUT
 
-output :: (MODE -> PORT) -> OUT
-output = OUT . io GPIO_MODE_OUTPUT
+input :: (MODE -> Port) -> In
+input = In . io GPIO_MODE_INPUT
 
-io :: GPIO_MODE -> (MODE -> PORT) -> PORT
+output :: (MODE -> Port) -> Out
+output = Out . io GPIO_MODE_OUTPUT
+
+io :: GPIO_MODE -> (MODE -> Port) -> Port
 io m p = p $ MF m
 
 
-instance Include IN where
-    include = const include'
 
-instance Initialize IN where
-    initialize (IN p) = [initialize' p]
+instance Include Port where
+    include _ = inclRCU >> inclGPIO
+
+instance Initialize Port where
+    initialize (Port {rcu, gpio, pin, mode}) = [
+            proc (show gpio <> "_" <> show pin <>"_init") $ body $ do
+                enablePeriphClock rcu
+                setOutputOptions gpio GPIO_OTYPE_PP GPIO_OSPEED_50MHZ pin
+                case mode of
+                    (MF mode) -> setMode gpio mode GPIO_PUPD_NONE pin
+                    (AF mode) -> setMode gpio GPIO_MODE_AF GPIO_PUPD_NONE pin
+                            >> setAF gpio mode pin
+        ]
 
 
-instance Include OUT where
-    include = const include'
 
-instance Initialize OUT where
-    initialize (OUT p) = [initialize' p]
+instance Include In where
+    include = include . getIn
 
+instance Initialize In where
+    initialize = initialize . getIn
 
-instance I.IN IN where
+instance I.In In where
     get = undefined
 
-instance I.OUT OUT where
-    set   (OUT (PORT {gpio, pin})) = S.setBit gpio pin
-    reset (OUT (PORT {gpio, pin})) = S.resetBit gpio pin
 
 
-include' :: ModuleM ()
-include' =    inclRCU >> inclGPIO
+instance Include Out where
+    include = include . getOut
 
-initialize' :: PORT -> Def ('[] ':-> ())
-initialize' (PORT {rcu, gpio, pin, mode}) =
-        proc (show gpio <> "_" <> show pin <>"_init") $ body $ do
-            enablePeriphClock rcu
-            setOutputOptions gpio GPIO_OTYPE_PP GPIO_OSPEED_50MHZ pin
-            case mode of
-                (MF mode) -> setMode gpio mode GPIO_PUPD_NONE pin
-                (AF mode) -> setMode gpio GPIO_MODE_AF GPIO_PUPD_NONE pin
-                          >> setAF gpio mode pin
+instance Initialize Out where
+    initialize = initialize . getOut
+
+instance I.Out Out where
+    set   (Out (Port {gpio, pin})) = S.setBit   gpio pin
+    reset (Out (Port {gpio, pin})) = S.resetBit gpio pin

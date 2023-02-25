@@ -28,7 +28,7 @@ data Relays = Relays
     , transmit  :: forall s n. (KnownNat n) => Buffer n Uint8 -> Ivory (ProcEffects s ()) ()
     }
 
-relays :: (MCU mcu, OUT o, T.Transport t) => [mcu -> o] -> Reader (Domain mcu t) Feature
+relays :: (MCU mcu, Out o, T.Transport t) => [mcu -> o] -> Reader (Domain mcu t) Feature
 relays outs = do
     mcu       <- asks mcu
     transport <- asks transport

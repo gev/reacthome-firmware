@@ -28,14 +28,14 @@ data USART = USART
     , dma      :: DMA_CHANNEL
     , dmaIRQn  :: IRQn
     , dmaIRQc  :: DMA_CHANNEL_IRQ
-    , rx       :: G.PORT
-    , tx       :: G.PORT
+    , rx       :: G.Port
+    , tx       :: G.Port
     }
 
 
 instance Include (I.HandleUSART USART) where
-    include (I.HandleUSART (USART {usart, dma, dmaIRQc}) onReceive onTransmit onDrain) =
-        inclG >> inclMisc >> inclUSART >> inclDMA >> inclUtil >> G.include' >>
+    include (I.HandleUSART (USART {usart, dma, dmaIRQc, rx, tx}) onReceive onTransmit onDrain) =
+        inclG >> inclMisc >> inclUSART >> inclDMA >> inclUtil >> include rx >> include tx >>
         makeIRQHandler usart (handleUSART usart onReceive onDrain) >>
         makeIRQHandler dmaIRQc (handleDMA dma usart onTransmit)
 
@@ -65,7 +65,7 @@ handleUSART usart onReceive onDrain = do
 
 instance Initialize USART where
     initialize (USART {usart, rcu, usartIRQ, dmaIRQn, rx, tx}) =
-        G.initialize' rx : G.initialize' tx : [
+        initialize rx <> initialize tx <> [
             proc (show usart <> "_init") $ body $ do
                 enablePeriphClock   RCU_DMA
                 enableIrqNvic       usartIRQ 0 0
