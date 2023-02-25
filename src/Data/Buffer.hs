@@ -1,19 +1,12 @@
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE FlexibleInstances #-}
-
 module Data.Buffer where
 
-import           Core.Include
+import           Data.Value
 import           GHC.TypeNats
 import           Ivory.Language
 
 
-type Buffer n t = MemArea (Array n (Stored t))
+type Buffer n t = Values n t
 
 
 buffer :: (IvoryZeroVal t, IvoryInit t, KnownNat n) => String -> Buffer n t
-buffer id = area (id <> "_buffer") Nothing
-
-
-instance (KnownNat n, IvoryType t) => Include (Buffer n t) where
-    include = defMemArea
+buffer id = values_ $ id <> "_buffer"

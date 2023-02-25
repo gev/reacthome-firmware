@@ -1,5 +1,3 @@
-{-# LANGUAGE DataKinds #-}
-
 module Data.Index where
 
 import           Data.Value

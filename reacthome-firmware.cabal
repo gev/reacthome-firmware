@@ -39,10 +39,10 @@ executable reacthome-firmware
                     , Core.Transport
                     , Core.Version
 
-                    , Data.Buffer
                     , Data.Value
-                    , Data.Index
                     , Data.Record
+                    , Data.Buffer
+                    , Data.Index
                     , Data.Concurrent.Semaphore
                     , Data.Concurrent.Queue
 
