@@ -1,7 +1,18 @@
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE DataKinds           #-}
+{-# LANGUAGE FlexibleInstances   #-}
+{-# LANGUAGE RankNTypes          #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
-module Data.Value where
+module Data.Value
+    ( Value
+    , Values
+    , value_
+    , value
+    , values_
+    , values
+    , runValues_
+    , runValues
+    ) where
 
 import           Core.Include
 import           GHC.TypeNats
@@ -27,6 +38,30 @@ values_ id = area id Nothing
 
 values :: (KnownNat n, IvoryZeroVal t, IvoryInit t) => String -> [t] -> Values n t
 values id v = area id . Just . iarray $ ival <$> v
+
+
+
+runValues_ :: forall a t. (IvoryInit t, IvoryZeroVal t)
+           => String
+           -> Int
+           -> (forall n. KnownNat n => Values n t -> a)
+           -> a
+runValues_ id = run $ values_ id
+
+runValues :: forall a t c. (IvoryInit t, IvoryZeroVal t)
+          => String
+          -> (c -> t)
+          -> [c]
+          -> (forall n. KnownNat n => Values n t -> a)
+          -> a
+runValues id h xs = run (values id $ h <$> xs) $ length xs
+
+run :: forall a t. (forall n. KnownNat n => Values n t)
+    -> Int
+    -> (forall n. KnownNat n => Values n t -> a)
+    -> a
+run v n f = go . someNatVal . fromIntegral $ n
+    where go (SomeNat (p :: Proxy p)) = f (v :: Values p t)
 
 
 
