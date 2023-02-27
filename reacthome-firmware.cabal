@@ -57,6 +57,7 @@ executable reacthome-firmware
 
                     , Interface.Counter
                     , Interface.GPIO
+                    , Interface.GPIOs
                     , Interface.Mac
                     , Interface.MCU
                     , Interface.SystemClock
@@ -77,6 +78,7 @@ executable reacthome-firmware
 
                     , Device.GD32F3x0
                     , Device.GD32F3x0.GPIO
+                    , Device.GD32F3x0.GPIOs
                     , Device.GD32F3x0.Mac
                     , Device.GD32F3x0.SysTick
                     , Device.GD32F3x0.SystemClock
@@ -112,7 +114,6 @@ executable reacthome-firmware
 
     build-depends:    base ^>=4.16.4.0
                     , mtl  
-                    -- , safe
                     , ivory
                     , ivory-backend-c
                     , ivory-stdlib
