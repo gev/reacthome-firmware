@@ -1,7 +1,6 @@
 {-# LANGUAGE DataKinds      #-}
 {-# LANGUAGE GADTs          #-}
 {-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE QuasiQuotes    #-}
 
 module Endpoint.Relay where
 
@@ -15,25 +14,17 @@ import           Interface.Timer
 import           Ivory.Language
 
 
--- [ivory|
---     struct Relay
---     {
 
---     }
--- |]
-
-
-
-data Relay = forall a. (Out a) => Relay
+data Relay = forall o. (Include o, Initialize o, Output o) => Relay
     { n       :: Int
     , name    :: String
-    , out     :: a
+    , out     :: o
     , state   :: Value IBool
     , payload :: Buffer 8 Uint8
     }
 
 
-relay :: Out o => Int -> o -> Relay
+relay :: (Output o, Include o, Initialize o) => Int -> o -> Relay
 relay n out = Relay
     { n       = n
     , name    = name

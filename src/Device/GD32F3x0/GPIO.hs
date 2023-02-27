@@ -12,9 +12,9 @@ import           Support.Device.GD32F3x0.GPIO as S
 import           Support.Device.GD32F3x0.RCU
 
 
-newtype In  = In  {getIn  :: Port}
+newtype Input  = Input  {getInput  :: Port}
 
-newtype Out = Out {getOut :: Port}
+newtype Output = Output {getOutput :: Port}
 
 data Port = Port
     { rcu  :: RCU_PERIPH
@@ -73,11 +73,11 @@ pb = Port RCU_GPIOB GPIOB
 
 
 
-input :: (MODE -> Port) -> In
-input = In . io GPIO_MODE_INPUT
+input :: (MODE -> Port) -> Input
+input = Input . io GPIO_MODE_INPUT
 
-output :: (MODE -> Port) -> Out
-output = Out . io GPIO_MODE_OUTPUT
+output :: (MODE -> Port) -> Output
+output = Output . io GPIO_MODE_OUTPUT
 
 io :: GPIO_MODE -> (MODE -> Port) -> Port
 io m p = p $ MF m
@@ -100,23 +100,23 @@ instance Initialize Port where
 
 
 
-instance Include In where
-    include = include . getIn
+instance Include Input where
+    include = include . getInput
 
-instance Initialize In where
-    initialize = initialize . getIn
+instance Initialize Input where
+    initialize = initialize . getInput
 
-instance I.In In where
+instance I.Input Input where
     get = undefined
 
 
 
-instance Include Out where
-    include = include . getOut
+instance Include Output where
+    include = include . getOutput
 
-instance Initialize Out where
-    initialize = initialize . getOut
+instance Initialize Output where
+    initialize = initialize . getOutput
 
-instance I.Out Out where
-    set   (Out (Port {gpio, pin})) = S.setBit   gpio pin
-    reset (Out (Port {gpio, pin})) = S.resetBit gpio pin
+instance I.Output Output where
+    set   (Output (Port {gpio, pin})) = S.setBit   gpio pin
+    reset (Output (Port {gpio, pin})) = S.resetBit gpio pin
