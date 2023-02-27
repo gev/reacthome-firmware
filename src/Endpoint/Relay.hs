@@ -15,7 +15,7 @@ import           Ivory.Language
 
 
 
-data Relay = forall o. (Include o, Initialize o, Output o) => Relay
+data Relay = forall o. Output o => Relay
     { n       :: Int
     , name    :: String
     , out     :: o
@@ -24,7 +24,7 @@ data Relay = forall o. (Include o, Initialize o, Output o) => Relay
     }
 
 
-relay :: (Output o, Include o, Initialize o) => Int -> o -> Relay
+relay :: Output o => Int -> o -> Relay
 relay n out = Relay
     { n       = n
     , name    = name

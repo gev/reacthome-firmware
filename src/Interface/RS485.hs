@@ -16,7 +16,7 @@ import           Ivory.Language
 
 
 data RS485 where
-    RS485 :: (I.USART u, Include o, Initialize o, Output o)
+    RS485 :: (I.USART u, Output o)
           => { n     :: Int
              , usart :: u
              , rede  :: o
@@ -31,7 +31,7 @@ data HandleRS485 r = HandleRS485
     }
 
 
-rs485 :: (I.USART u, Include o, Initialize o, Output o, MCU mcu)
+rs485 :: (I.USART u, Output o, MCU mcu)
       => Int
       -> (mcu -> u)
       -> (mcu -> o)

@@ -20,14 +20,14 @@ import           Interface.Timer
 import           Ivory.Language
 
 data Blink where
-    Blink :: (Include o, Initialize o, Output o)
+    Blink :: Output o
           => { name  :: String
              , out   :: o
              , state :: Value IBool
              } -> Blink
 
 
-blink :: (MCU mcu, Output o, Include o, Initialize o)
+blink :: (MCU mcu, Output o)
       => Int -> (mcu -> o) -> Reader (Domain mcu t) Feature
 blink n out = do
     mcu <- asks mcu
