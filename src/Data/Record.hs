@@ -21,6 +21,9 @@ import           Ivory.Language
 type Record t    = MemArea (Struct t)
 type Records n t = MemArea (Array n (Struct t))
 
+type RunRecords t a = IvoryStruct t
+                   => (forall n. KnownNat n => Records n t -> a) -> a
+
 
 
 record_ :: IvoryStruct t => String -> Record t
@@ -39,19 +42,15 @@ records id r = area id . Just . iarray $ istruct <$> r
 
 
 
-runRecords_ :: forall a t. (IvoryStruct t)
-            => String
+runRecords_ :: String
             -> Int
-            -> (forall n. KnownNat n => Records n t -> a)
-            -> a
+            -> RunRecords t a
 runRecords_ name = run $ records_ name
 
-runRecords :: forall a t c. (IvoryStruct t)
-           => String
+runRecords :: String
            -> (c -> [InitStruct t])
            -> [c]
-           -> (forall n. KnownNat n => Records n t -> a)
-           -> a
+           -> RunRecords t a
 runRecords name h xs = run (records name $ h <$> xs) $ length xs
 
 run :: forall a t. (forall n. KnownNat n => Records n t)

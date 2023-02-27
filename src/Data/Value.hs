@@ -23,6 +23,9 @@ import           Ivory.Language
 type Value  t   = MemArea (Stored t)
 type Values n t = MemArea (Array n (Stored t))
 
+type RunValues t a = (IvoryInit t, IvoryZeroVal t)
+                  => (forall n. KnownNat n => Values n t -> a) -> a
+
 
 
 value_ :: (IvoryArea t, IvoryZero t) => String -> MemArea t
@@ -41,19 +44,15 @@ values id v = area id . Just . iarray $ ival <$> v
 
 
 
-runValues_ :: forall a t. (IvoryInit t, IvoryZeroVal t)
-           => String
+runValues_ :: String
            -> Int
-           -> (forall n. KnownNat n => Values n t -> a)
-           -> a
+           -> RunValues t a
 runValues_ id = run $ values_ id
 
-runValues :: forall a t c. (IvoryInit t, IvoryZeroVal t)
-          => String
+runValues :: String
           -> (c -> t)
           -> [c]
-          -> (forall n. KnownNat n => Values n t -> a)
-          -> a
+          -> RunValues t a
 runValues id h xs = run (values id $ h <$> xs) $ length xs
 
 run :: forall a t. (forall n. KnownNat n => Values n t)
