@@ -6,6 +6,8 @@
 module Data.Record
     ( Record
     , Records
+    , ConvertRecord
+    , RunRecords
     , record_
     , record
     , records_
@@ -21,8 +23,8 @@ import           Ivory.Language
 type Record t    = MemArea (Struct t)
 type Records n t = MemArea (Array n (Struct t))
 
-type RunRecords t a = IvoryStruct t
-                   => (forall n. KnownNat n => Records n t -> a) -> a
+type ConvertRecord c t = c -> [InitStruct t]
+type RunRecords t = forall a. (forall n. KnownNat n => Records n t -> a) -> a
 
 
 
@@ -42,15 +44,17 @@ records id r = area id . Just . iarray $ istruct <$> r
 
 
 
-runRecords_ :: String
+runRecords_ :: IvoryStruct t
+            => String
             -> Int
-            -> RunRecords t a
+            -> RunRecords t
 runRecords_ name = run $ records_ name
 
-runRecords :: String
-           -> (c -> [InitStruct t])
+runRecords :: IvoryStruct t
+           => String
+           -> ConvertRecord c t
            -> [c]
-           -> RunRecords t a
+           -> RunRecords t
 runRecords name h xs = run (records name $ h <$> xs) $ length xs
 
 run :: forall a t. (forall n. KnownNat n => Records n t)
