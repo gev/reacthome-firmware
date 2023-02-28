@@ -43,19 +43,20 @@ data Outputs = Outputs
 
 inputs :: String -> [D.Input] -> Inputs
 inputs name os = Inputs
-    { getInputs  = os
+    { getInputs = os
     , runInputs = runRecords name convert $ D.getInput <$> os
     }
 
 outputs :: String -> [D.Output] -> Outputs
 outputs name os = Outputs
-    { getOutputs  = os
+    { getOutputs = os
     , runOutputs = runRecords name convert $ D.getOutput <$> os
     }
 
 convert :: ConvertRecord D.Port GPIOStruct
-convert p = [gpio .=  get D.gpio, pin .= get D.pin]
-    where get f = ival . def $ f p
+convert p = [ gpio .= ival (def $ D.gpio p)
+            , pin  .= ival (def $ D.pin  p)
+            ]
 
 
 
@@ -89,10 +90,8 @@ instance I.Outputs Outputs where
 runGPIO :: (Uint32 -> Uint32 -> Ivory eff a)
         -> RunRecords GPIOStruct
         -> (forall n. KnownNat n => Ix n) -> Ivory eff a
-runGPIO f run i = run go
-    where
-        go o = do
-            let o' = addrOf o
-            g <- deref $ o' ! i ~> gpio
-            p <- deref $ o' ! i ~> pin
-            f g p
+runGPIO f run ix = run $ \o -> do
+    let o' = addrOf o
+    gpio' <- deref (o' ! ix ~> gpio)
+    pin'  <- deref (o' ! ix ~> pin )
+    f gpio' pin'
