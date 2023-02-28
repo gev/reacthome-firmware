@@ -1,7 +1,9 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE QuasiQuotes      #-}
-{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE FlexibleContexts  #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE NamedFieldPuns    #-}
+{-# LANGUAGE QuasiQuotes       #-}
+{-# LANGUAGE RankNTypes        #-}
 
 module Device.GD32F3x0.GPIOs where
 
@@ -41,6 +43,7 @@ data Outputs = Outputs
 
 
 
+
 inputs :: String -> [D.Input] -> Inputs
 inputs name os = Inputs
     { getInputs = os
@@ -60,10 +63,17 @@ convert p = [ gpio .= ival (def $ D.gpio p)
 
 
 
-instance Include Inputs where
-    include a = do
+instance KnownNat n => Include (Records n GPIOStruct) where
+    include r = do
         defStruct (Proxy :: Proxy GPIOStruct)
-        traverse_ include $ getInputs a
+        defMemArea r
+
+
+
+instance Include Inputs where
+    include (Inputs {getInputs, runInputs}) = do
+        traverse_ include getInputs
+        runInputs include
 
 instance Initialize Inputs where
     initialize = concatMap initialize . getInputs
@@ -74,9 +84,9 @@ instance I.Inputs Inputs where
 
 
 instance Include Outputs where
-    include a = do
-        defStruct (Proxy :: Proxy GPIOStruct)
-        traverse_ include $ getOutputs a
+    include (Outputs {getOutputs, runOutputs}) = do
+        traverse_ include getOutputs
+        runOutputs include
 
 instance Initialize Outputs where
     initialize = concatMap initialize . getOutputs
