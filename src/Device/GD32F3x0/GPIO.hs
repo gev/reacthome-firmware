@@ -95,7 +95,7 @@ instance Initialize Port where
                 case mode of
                     (MF mode) -> setMode gpio mode GPIO_PUPD_NONE pin
                     (AF mode) -> setMode gpio GPIO_MODE_AF GPIO_PUPD_NONE pin
-                            >> setAF gpio mode pin
+                              >> setAF gpio mode pin
         ]
 
 
