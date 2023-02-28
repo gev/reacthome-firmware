@@ -6,7 +6,6 @@
 module Data.Record
     ( Record
     , Records
-    , ConvertRecord
     , RunRecords
     , record_
     , record
@@ -23,7 +22,6 @@ import           Ivory.Language
 type Record t    = MemArea (Struct t)
 type Records n t = MemArea (Array n (Struct t))
 
-type ConvertRecord c t = c -> [InitStruct t]
 type RunRecords t = forall a. (forall n. KnownNat n => Records n t -> a) -> a
 
 
@@ -52,7 +50,7 @@ runRecords_ name = run $ records_ name
 
 runRecords :: IvoryStruct t
            => String
-           -> ConvertRecord c t
+           -> (c -> [InitStruct t])
            -> [c]
            -> RunRecords t
 runRecords name h xs = run (records name $ h <$> xs) $ length xs
