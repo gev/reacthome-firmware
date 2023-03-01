@@ -12,9 +12,8 @@ import           Core.Feature
 import           Core.Include
 import           Core.Initialize
 import           Core.Task
-import           Data.Function
 import           Data.Value
-import           Interface.GPIO
+import           Interface.GPIO.Output
 import           Interface.MCU
 import           Interface.Timer
 import           Ivory.Language

@@ -56,8 +56,10 @@ executable reacthome-firmware
                     , Formula.Relay6
 
                     , Interface.Counter
-                    , Interface.GPIO
-                    , Interface.GPIOs
+                    , Interface.GPIO.Input
+                    , Interface.GPIO.Output
+                    , Interface.GPIOs.Inputs
+                    , Interface.GPIOs.Outputs
                     , Interface.Mac
                     , Interface.MCU
                     , Interface.SystemClock
@@ -78,7 +80,11 @@ executable reacthome-firmware
 
                     , Device.GD32F3x0
                     , Device.GD32F3x0.GPIO
+                    , Device.GD32F3x0.GPIO.Input
+                    , Device.GD32F3x0.GPIO.Output
                     , Device.GD32F3x0.GPIOs
+                    , Device.GD32F3x0.GPIOs.Inputs
+                    , Device.GD32F3x0.GPIOs.Outputs
                     , Device.GD32F3x0.Mac
                     , Device.GD32F3x0.SysTick
                     , Device.GD32F3x0.SystemClock

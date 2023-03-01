@@ -9,9 +9,9 @@ module Interface.RS485 where
 import           Control.Monad.Reader
 import           Core.Include
 import           Core.Initialize
-import           Interface.GPIO
+import           Interface.GPIO.Output
 import           Interface.MCU
-import qualified Interface.USART      as I
+import qualified Interface.USART       as I
 import           Ivory.Language
 
 

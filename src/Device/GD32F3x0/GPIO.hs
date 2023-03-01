@@ -1,20 +1,13 @@
-{-# LANGUAGE DataKinds      #-}
 {-# LANGUAGE NamedFieldPuns #-}
 
 module Device.GD32F3x0.GPIO where
 
 import           Core.Include
 import           Core.Initialize
-import qualified Interface.GPIO               as I
 import           Ivory.Language
-import           Ivory.Language.Module
-import           Support.Device.GD32F3x0.GPIO as S
+import           Support.Device.GD32F3x0.GPIO
 import           Support.Device.GD32F3x0.RCU
 
-
-newtype Input  = Input  {getInput  :: Port}
-
-newtype Output = Output {getOutput :: Port}
 
 data Port = Port
     { rcu  :: RCU_PERIPH
@@ -73,12 +66,6 @@ pb = Port RCU_GPIOB GPIOB
 
 
 
-input :: (MODE -> Port) -> Input
-input = Input . io GPIO_MODE_INPUT
-
-output :: (MODE -> Port) -> Output
-output = Output . io GPIO_MODE_OUTPUT
-
 io :: GPIO_MODE -> (MODE -> Port) -> Port
 io m p = p $ MF m
 
@@ -97,26 +84,3 @@ instance Initialize Port where
                     (AF mode) -> setMode gpio GPIO_MODE_AF GPIO_PUPD_NONE pin
                               >> setAF gpio mode pin
         ]
-
-
-
-instance Include Input where
-    include = include . getInput
-
-instance Initialize Input where
-    initialize = initialize . getInput
-
-instance I.Input Input where
-    get = undefined
-
-
-
-instance Include Output where
-    include = include . getOutput
-
-instance Initialize Output where
-    initialize = initialize . getOutput
-
-instance I.Output Output where
-    set   (Output (Port {gpio, pin})) = S.setBit   gpio pin
-    reset (Output (Port {gpio, pin})) = S.resetBit gpio pin
