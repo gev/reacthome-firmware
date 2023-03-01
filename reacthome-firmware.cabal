@@ -47,6 +47,7 @@ executable reacthome-firmware
                     , Data.Concurrent.Queue
 
                     , Endpoint.Relay
+                    , Endpoint.Relays
                     , Endpoint.Group
 
                     , Feature.Blink
