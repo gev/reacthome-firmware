@@ -6,7 +6,6 @@
 module Data.Value
     ( Value
     , Values
-    , ConvertValue
     , RunValues
     , value_
     , value
@@ -25,7 +24,6 @@ import           Ivory.Language
 type Value  t   = MemArea (Stored t)
 type Values n t = MemArea (Array n (Stored t))
 
-type ConvertValue c t = c -> t
 type RunValues t = forall a. (forall n. KnownNat n => Values n t -> a) -> a
 
 
@@ -53,8 +51,8 @@ runValues_ :: (IvoryInit t, IvoryZeroVal t)
 runValues_ id = run $ values_ id
 
 runValues :: (IvoryInit t, IvoryZeroVal t)
-          =>  String
-          -> ConvertValue c t
+          => String
+          -> (c -> t)
           -> [c]
           -> RunValues t
 runValues id h xs = run (values id $ h <$> xs) $ length xs

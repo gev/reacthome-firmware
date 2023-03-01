@@ -47,19 +47,19 @@ data Outputs = Outputs
 inputs :: String -> [D.Input] -> Inputs
 inputs name os = Inputs
     { getInputs = os
-    , runInputs = runRecords name convert $ D.getInput <$> os
+    , runInputs = runRecords name fromPort $ D.getInput <$> os
     }
 
 outputs :: String -> [D.Output] -> Outputs
 outputs name os = Outputs
     { getOutputs = os
-    , runOutputs = runRecords name convert $ D.getOutput <$> os
+    , runOutputs = runRecords name fromPort $ D.getOutput <$> os
     }
 
-convert :: ConvertRecord D.Port GPIOStruct
-convert p = [ gpio .= ival (def $ D.gpio p)
-            , pin  .= ival (def $ D.pin  p)
-            ]
+fromPort :: D.Port -> [InitStruct GPIOStruct]
+fromPort p = [ gpio .= ival (def $ D.gpio p)
+             , pin  .= ival (def $ D.pin  p)
+             ]
 
 
 
