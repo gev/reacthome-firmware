@@ -5,21 +5,21 @@
 
 module Feature.Relays where
 
-import           Control.Monad.Reader (Reader, asks)
+import           Control.Monad.Reader  (Reader, asks)
 import           Core.Controller
 import           Core.Domain
 import           Core.Feature
 import           Core.Include
 import           Core.Initialize
 import           Core.Task
-import qualified Core.Transport       as T
+import qualified Core.Transport        as T
 import           Data.Buffer
 import           Data.Foldable
 import           Data.Value
 import           Endpoint.Relay
 import           GHC.TypeNats
-import           Interface.GPIO
-import           Interface.MCU        (MCU)
+import           Interface.GPIO.Output
+import           Interface.MCU         (MCU)
 import           Ivory.Language
 import           Ivory.Stdlib
 
