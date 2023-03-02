@@ -25,7 +25,7 @@ data Outputs = Outputs
 outputs :: String -> [D.Output] -> Outputs
 outputs name os = Outputs
     { getOutputs = os
-    , runOutputs = runRecords name fromPort $ D.getOutput <$> os
+    , runOutputs = runRecordsFromList name fromPort $ D.getOutput <$> os
     }
 
 

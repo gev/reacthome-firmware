@@ -13,6 +13,7 @@ module Data.Value
     , values
     , runValues_
     , runValues
+    , runValuesFromList
     ) where
 
 import           Core.Include
@@ -52,10 +53,18 @@ runValues_ id = run $ values_ id
 
 runValues :: (IvoryInit t, IvoryZeroVal t)
           => String
-          -> (c -> t)
-          -> [c]
+          -> [t]
           -> RunValues t
-runValues id h xs = run (values id $ h <$> xs) $ length xs
+runValues id xs = run (values id xs) $ length xs
+
+runValuesFromList :: (IvoryInit t, IvoryZeroVal t)
+                  => String
+                  -> (c -> t)
+                  -> [c]
+                  -> RunValues t
+runValuesFromList id h xs = run (values id $ h <$> xs) $ length xs
+
+
 
 run :: forall a t. (forall n. KnownNat n => Values n t)
     -> Int

@@ -24,7 +24,7 @@ data Inputs = Inputs
 inputs :: String -> [D.Input] -> Inputs
 inputs name os = Inputs
     { getInputs = os
-    , runInputs = runRecords name fromPort $ D.getInput <$> os
+    , runInputs = runRecordsFromList name fromPort $ D.getInput <$> os
     }
 
 
