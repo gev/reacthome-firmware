@@ -7,12 +7,9 @@ module Endpoint.Relay where
 import           Core.Include
 import           Core.Initialize
 import           Data.Buffer
-import           Data.Function
 import           Data.Value
-import           Interface.GPIO
-import           Interface.Timer
+import           Interface.GPIO.Output
 import           Ivory.Language
-
 
 
 data Relay = forall o. Output o => Relay

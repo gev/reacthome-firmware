@@ -13,6 +13,7 @@ module Data.Record
     , records
     , runRecords_
     , runRecords
+    , runRecordsFromList
     ) where
 
 import           GHC.TypeNats
@@ -50,10 +51,18 @@ runRecords_ name = run $ records_ name
 
 runRecords :: IvoryStruct t
            => String
-           -> (c -> [InitStruct t])
-           -> [c]
+           -> [[InitStruct t]]
            -> RunRecords t
-runRecords name h xs = run (records name $ h <$> xs) $ length xs
+runRecords name xs = run (records name xs) $ length xs
+
+runRecordsFromList :: IvoryStruct t
+                  => String
+                  -> (c -> [InitStruct t])
+                  -> [c]
+                  -> RunRecords t
+runRecordsFromList name h xs = run (records name $ h <$> xs) $ length xs
+
+
 
 run :: forall a t. (forall n. KnownNat n => Records n t)
     -> Int

@@ -1,15 +1,19 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RankNTypes       #-}
+
 module Core.Controller where
 
 import           Data.Buffer
 import           GHC.TypeNats
 import           Ivory.Language
+import           Ivory.Language.Array
 import           Ivory.Stdlib
 
 
 class Controller c where
-    handle :: (KnownNat n, IvoryStore t, IvoryEq t, IvoryOrd t, Num t)
+    handle :: KnownNat l
            => c
-           -> Buffer n t
-           -> m
+           -> Buffer l Uint8
+           -> n
            -> Ivory (ProcEffects s ()) [Cond (ProcEffects s ()) ()]
     handle _ _ _ = pure []

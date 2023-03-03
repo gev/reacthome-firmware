@@ -1,17 +1,15 @@
-{-# LANGUAGE DataKinds      #-}
-{-# LANGUAGE GADTs          #-}
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE QuasiQuotes    #-}
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE QuasiQuotes       #-}
+{-# LANGUAGE RankNTypes        #-}
 
 module Endpoint.Relays where
 
 import           Core.Include
-import           Core.Initialize
-import           Data.Buffer
-import           Data.Function
-import           Data.Value
-import           Interface.GPIO
-import           Interface.Timer
+import           Data.Record
+import           Endpoint.Group (setTimestamp)
+import           Endpoint.Relay (Relay (payload))
+import           GHC.TypeNats
 import           Ivory.Language
 
 
@@ -28,55 +26,58 @@ type RelayStruct = "relay_struct"
 
 
 
-data Relays =  Relays
-    { runRelays: 
-    }
+newtype Relays = Relays {runRelays :: RunRecords RelayStruct}
+
+relays :: String -> Int -> Relays
+relays name n = Relays $ runRecords name
+                       ( replicate n [ state     .= ival false
+                                     , delay     .= ival 0
+                                     , timestamp .= ival 0
+                                     ]
+                       )
+
+getState :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff IBool
+getState = get state
 
 
-relay :: Output o => Int -> o -> Relay
-relay n out = Relay
-    { n       = n
-    , name    = name
-    , out     = out
-    , state   = value (name <> "_state") false
-    , payload = buffer (name <> "_payload")
-    } where name = "relay_" <> show n
+setState :: IBool -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+setState = set state
+
+setDelay :: Uint32 -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+setDelay = set delay
+
+setTimestamp :: Uint32 -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+setTimestamp = set timestamp
+
+turnOn :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+turnOn = setState true
+
+turnOff :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+turnOff = setState false
 
 
 
-turnOn :: Relay -> Ivory eff ()
-turnOn (Relay {state, payload}) =
-    store (addrOf state) true >> store (addrOf payload ! 2) 1
+get :: IvoryStore t
+    => Label RelayStruct (Stored t)
+    -> Relays
+    -> (forall n. KnownNat n => Ix n)
+    -> Ivory eff t
+get f rs i = runRelays rs $ \r -> deref (addrOf r ! i ~> f)
 
-turnOff :: Relay -> Ivory eff ()
-turnOff (Relay {state, payload}) = do
-    store (addrOf state) false >> store (addrOf payload ! 2) 0
-
-manage :: Relay -> Ivory eff ()
-manage (Relay {out, state}) = do
-    s <- deref $ addrOf state
-    ifte_ s (set   out)
-            (reset out)
+set :: IvoryStore t
+    => Label RelayStruct (Stored t)
+    -> t
+    -> Relays
+    -> (forall n. KnownNat n => Ix n)
+    -> Ivory eff ()
+set f v rs i = runRelays rs $ \r -> store (addrOf r ! i ~> f) v
 
 
 
-instance Include Relay where
-    include (Relay {out, state, payload}) = do
-        include out
-        include state
-        include payload
+instance KnownNat n => Include (Records n RelayStruct) where
+    include r = do
+        defStruct (Proxy :: Proxy RelayStruct)
+        defMemArea r
 
-instance Initialize Relay where
-    initialize (Relay {n, name, out, payload}) =
-        initialize out <> [
-            proc (name <> "_payload_init") $ body $ do
-                let payload' = addrOf payload
-                store (payload' ! 0) 0
-                store (payload' ! 1) $ fromIntegral n
-                store (payload' ! 2) 0
-                store (payload' ! 3) $ fromIntegral n
-                store (payload' ! 4) 0
-                store (payload' ! 5) 0
-                store (payload' ! 6) 0
-                store (payload' ! 7) 0
-        ]
+instance Include Relays where
+    include rs = runRelays rs include
