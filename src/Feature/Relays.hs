@@ -30,7 +30,8 @@ import           Ivory.Stdlib
 
 
 data Relays = forall os. Outputs os => Relays
-    { getRelays  :: E.Relays
+    { n          :: Uint8
+    , getRelays  :: E.Relays
     , getOutputs :: os
     , message    :: Buffer 8 Uint8
     , transmit   :: Buffer 8 Uint8 -> forall s. Ivory (ProcEffects s ()) ()
@@ -45,7 +46,8 @@ relays outs = do
     transport <- asks transport
     let os = ($ mcu) <$> outs
     let n = length os
-    pure . Feature $ Relays { getRelays  = E.relays "relays" n
+    pure . Feature $ Relays { n = fromIntegral n
+                            , getRelays  = E.relays "relays" n
                             , getOutputs = makeOutputs "relays_outputs" os
                             , message    = values "relay_message" [0, 0, 0, 0, 0, 0, 0, 0]
                             , transmit   = T.transmit transport
@@ -87,28 +89,43 @@ manage (Relays {getRelays, getOutputs}) = do
 instance Controller Relays where
     handle rs buff size = do
         let buff' = addrOf buff
-        action <- deref $ buff' ! 0
-        index  <- deref $ buff' ! 1
-        state  <- deref $ buff' ! 2
-        pure [ action ==? 0 ==> cond_ [ state ==? 1 ==> turnOn  rs index
-                                      , state ==? 0 ==> turnOff rs index
-                                      ]
+        pure [ size >=? 2 ==> do
+                action <- deref $ buff' ! 0
+                cond_ [action ==? 0 ==> onDo rs buff' size
+                      ]
              ]
 
+onDo :: KnownNat l
+     => Relays
+     -> Ref Global ('Array l ('Stored Uint8))
+     -> n
+     -> Ivory (ProcEffects s ()) ()
+onDo rs buff size = do
+    index  <- deref $ buff ! 1
+    -- cond_ [ size ==? 6 ==> do
+
+    --       ]
+    state  <- deref $ buff ! 2
+    cond_ [ state ==? 1 ==> turnOn  rs index
+          , state ==? 0 ==> turnOff rs index
+          ]
+
 turnOn :: Relays -> Uint8 -> Ivory (ProcEffects s ()) ()
-turnOn (Relays {getRelays, transmit, message}) i = do
-    let message' = addrOf message
-    E.turnOn getRelays $ toIx i
-    store (message' ! 1) i
-    store (message' ! 2) 1
-    store (message' ! 3) i
-    transmit message
+turnOn (Relays {n, getRelays, transmit, message}) i = do
+    when (i >=? 1 .&& i <=? n) $ do
+        let message' = addrOf message
+        E.turnOn getRelays $ toIx (i - 1)
+        store (message' ! 1) i
+        store (message' ! 2) 1
+        store (message' ! 3) i
+        transmit message
 
 turnOff :: Relays -> Uint8 -> Ivory (ProcEffects s ()) ()
-turnOff (Relays {getRelays, transmit, message}) i = do
-    let message' = addrOf message
-    E.turnOff getRelays $ toIx i
-    store (message' ! 1) i
-    store (message' ! 2) 0
-    store (message' ! 3) i
-    transmit message
+turnOff (Relays {n, getRelays, transmit, message}) i = do
+    when (i >=? 1 .&& i <=? n) $ do
+        let message' = addrOf message
+        E.turnOff getRelays $ toIx (i - 1)
+        store (message' ! 1) i
+        store (message' ! 2) 0
+        store (message' ! 3) i
+        transmit message

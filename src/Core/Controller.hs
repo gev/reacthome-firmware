@@ -14,6 +14,6 @@ class Controller c where
     handle :: KnownNat l
            => c
            -> Buffer l Uint8
-           -> n
+           -> Uint8
            -> Ivory (ProcEffects s ()) [Cond (ProcEffects s ()) ()]
     handle _ _ _ = pure []

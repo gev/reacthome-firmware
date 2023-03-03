@@ -13,7 +13,7 @@ import           Ivory.Stdlib
 makeDispatcher :: (Controller c, KnownNat l)
                => [c]
                -> Buffer l Uint8
-               -> n
+               -> Uint8
                -> forall s. Ivory (ProcEffects s ()) ()
 makeDispatcher controllers buff n = cond_ =<< conditions
     where
