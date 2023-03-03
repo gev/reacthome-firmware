@@ -51,6 +51,7 @@ executable reacthome-firmware
                     , Endpoint.Group
 
                     , Feature.Blink
+                    , Feature.Relay
                     , Feature.Relays
 
                     , Formula.Blink

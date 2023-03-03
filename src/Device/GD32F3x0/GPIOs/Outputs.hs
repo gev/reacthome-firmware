@@ -1,5 +1,6 @@
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE RankNTypes     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE RankNTypes            #-}
 
 module Device.GD32F3x0.GPIOs.Outputs where
 
@@ -22,14 +23,6 @@ data Outputs = Outputs
 
 
 
-outputs :: String -> [D.Output] -> Outputs
-outputs name os = Outputs
-    { getOutputs = os
-    , runOutputs = runRecordsFromList name fromPort $ D.getOutput <$> os
-    }
-
-
-
 instance Include Outputs where
     include (Outputs {getOutputs, runOutputs}) = do
         traverse_ include getOutputs
@@ -39,5 +32,10 @@ instance Initialize Outputs where
     initialize = concatMap initialize . getOutputs
 
 instance I.Outputs Outputs where
-  reset a = runGPIO (call_ gpio_bit_reset) $ runOutputs a
-  set a = runGPIO (call_ gpio_bit_set) $ runOutputs a
+    reset a = runGPIO (call_ gpio_bit_reset) $ runOutputs a
+    set a = runGPIO (call_ gpio_bit_set) $ runOutputs a
+
+instance I.MakeOutputs D.Output Outputs where
+    makeOutputs name os = Outputs { getOutputs = os
+                                  , runOutputs = runRecordsFromList name fromPort $ D.getOutput <$> os
+                                  }

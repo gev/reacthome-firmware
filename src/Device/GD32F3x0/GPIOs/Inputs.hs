@@ -1,5 +1,6 @@
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE RankNTypes     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE RankNTypes            #-}
 
 module Device.GD32F3x0.GPIOs.Inputs where
 
@@ -21,14 +22,6 @@ data Inputs = Inputs
 
 
 
-inputs :: String -> [D.Input] -> Inputs
-inputs name os = Inputs
-    { getInputs = os
-    , runInputs = runRecordsFromList name fromPort $ D.getInput <$> os
-    }
-
-
-
 instance Include Inputs where
     include (Inputs {getInputs, runInputs}) = do
         traverse_ include getInputs
@@ -39,3 +32,8 @@ instance Initialize Inputs where
 
 instance I.Inputs Inputs where
   get a = runGPIO undefined $ runInputs a
+
+instance I.MakeInputs D.Input Inputs where
+    makeInputs name is = Inputs { getInputs = is
+                                , runInputs = runRecordsFromList name fromPort $ D.getInput <$> is
+                                }
