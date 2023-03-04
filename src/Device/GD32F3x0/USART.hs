@@ -13,12 +13,12 @@ import qualified Interface.USART               as I
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Ivory.Support.Device.GD32F3x0
+import           Support.Cast
 import           Support.Device.GD32F3x0
 import           Support.Device.GD32F3x0.DMA
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.USART as S
-import           Support.Util
 
 
 data USART = USART
