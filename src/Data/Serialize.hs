@@ -38,7 +38,6 @@ instance SerializeLE Uint8 where
 
 
 
-
 instance Serialize Sint8 where
     pack   b i = call_ pack_sint8   b $ toIx i
     unpack b i = call  unpack_sint8 b $ toIx i
@@ -50,3 +49,43 @@ instance SerializeBE Sint8 where
 instance SerializeLE Sint8 where
     packLE   = pack
     unpackLE = unpack
+
+
+
+instance SerializeBE Uint16 where
+    packBE   b i = call_ pack_uint16_be   b $ toIx i
+    unpackBE b i = call  unpack_uint16_be b $ toIx i
+
+instance SerializeLE Uint16 where
+    packLE   b i = call_ pack_uint16_le   b $ toIx i
+    unpackLE b i = call  unpack_uint16_le b $ toIx i
+
+
+
+instance SerializeBE Sint16 where
+    packBE   b i = call_ pack_sint16_be   b $ toIx i
+    unpackBE b i = call  unpack_sint16_be b $ toIx i
+
+instance SerializeLE Sint16 where
+    packLE   b i = call_ pack_sint16_le   b $ toIx i
+    unpackLE b i = call  unpack_sint16_le b $ toIx i
+
+
+
+instance SerializeBE Uint32 where
+    packBE   b i = call_ pack_uint32_be   b $ toIx i
+    unpackBE b i = call  unpack_uint32_be b $ toIx i
+
+instance SerializeLE Uint32 where
+    packLE   b i = call_ pack_uint32_le   b $ toIx i
+    unpackLE b i = call  unpack_uint32_le b $ toIx i
+
+
+
+instance SerializeBE Sint32 where
+    packBE   b i = call_ pack_sint32_be   b $ toIx i
+    unpackBE b i = call  unpack_sint32_be b $ toIx i
+
+instance SerializeLE Sint32 where
+    packLE   b i = call_ pack_sint32_le   b $ toIx i
+    unpackLE b i = call  unpack_sint32_le b $ toIx i
