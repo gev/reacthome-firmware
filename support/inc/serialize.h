@@ -1,3 +1,6 @@
+#ifndef __SERIALIZE_H_
+#define __SERIALIZE_H_
+
 #include <stdint.h>
 
 
@@ -119,3 +122,5 @@ inline void pack_sint32_le (uint8_t *a, int32_t i, int32_t v) {
 inline int32_t unpack_sint32_le (uint8_t *a, int32_t i) {
     return (int32_t) unpack_uint32_le (a, i);
 }
+
+#endif
