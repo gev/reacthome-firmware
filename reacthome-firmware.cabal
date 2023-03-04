@@ -119,7 +119,6 @@ executable reacthome-firmware
                     , Support.Device.GD32F4xx.GPIO
                     , Support.Device.GD32F4xx.RCU
 
-                    , Util.ByteSplit
                     , Util.CRC16
 
     build-depends:    base ^>=4.16.4.0
