@@ -13,7 +13,24 @@ inclSerialize :: ModuleM ()
 inclSerialize = do
     incl pack_uint8
     incl unpack_uint8
-
+    incl pack_sint8
+    incl unpack_sint8
+    incl pack_uint16_be
+    incl unpack_uint16_be
+    incl pack_uint16_le
+    incl unpack_uint16_le
+    incl pack_sint16_be
+    incl unpack_sint16_be
+    incl pack_sint16_le
+    incl unpack_sint16_le
+    incl pack_uint32_be
+    incl unpack_uint32_be
+    incl pack_uint32_le
+    incl unpack_uint32_le
+    incl pack_sint32_be
+    incl unpack_sint32_be
+    incl pack_sint32_le
+    incl unpack_sint32_le
 
 
 pack_uint8 :: Def ('[Ref s (CArray (Stored Uint8)), Sint32, Uint8] :-> ())
