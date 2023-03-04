@@ -101,6 +101,7 @@ executable reacthome-firmware
                     , Ivory.Support.Device.GD32F4xx
 
                     , Support.Cast
+                    , Support.Serialize
                     , Support.CMSIS.CoreCM4
                     , Support.Device.GD32F3x0
                     , Support.Device.GD32F3x0.DBG
