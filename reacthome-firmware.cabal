@@ -43,6 +43,7 @@ executable reacthome-firmware
                     , Data.Record
                     , Data.Buffer
                     , Data.Index
+                    , Data.Serialize
                     , Data.Concurrent.Semaphore
                     , Data.Concurrent.Queue
 
@@ -99,6 +100,7 @@ executable reacthome-firmware
                     , Ivory.Support.Device.GD32F3x0
                     , Ivory.Support.Device.GD32F4xx
 
+                    , Support.Cast
                     , Support.CMSIS.CoreCM4
                     , Support.Device.GD32F3x0
                     , Support.Device.GD32F3x0.DBG
@@ -115,7 +117,6 @@ executable reacthome-firmware
                     , Support.Device.GD32F4xx.DMA
                     , Support.Device.GD32F4xx.GPIO
                     , Support.Device.GD32F4xx.RCU
-                    , Support.Util
 
                     , Util.ByteSplit
                     , Util.CRC16
