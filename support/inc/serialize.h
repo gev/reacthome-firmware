@@ -10,11 +10,11 @@ inline uint8_t unpack_uint8 (uint8_t *a, uint16_t i) {
 }
 
 
-inline void pack_int8 (uint8_t *a, uint16_t i, int8_t v) {
+inline void pack_sint8 (uint8_t *a, uint16_t i, int8_t v) {
     pack_uint8(a, i, (uint8_t) v);
 }
 
-inline int8_t unpack_int8 (uint8_t *a, uint16_t i) {
+inline int8_t unpack_sint8 (uint8_t *a, uint16_t i) {
     return (int8_t) unpack_uint8(a, i);
 }
 
@@ -26,7 +26,11 @@ inline void pack_uint16_be (uint8_t *a, uint16_t i, int16_t v) {
 }
 
 inline uint16_t unpack_uint16_be (uint8_t *a, uint16_t i) {
-    return (uint16_t) ((a[i] << 8) | a[i+1]);
+    uint16_t b = 0;
+    b = a[i];
+    b <<= 8;
+    b |= a[i+1];
+    return b;
 }
 
 inline void pack_uint16_le (uint8_t *a, uint16_t i, int16_t v) {
@@ -35,23 +39,27 @@ inline void pack_uint16_le (uint8_t *a, uint16_t i, int16_t v) {
 }
 
 inline uint16_t unpack_uint16_le (uint8_t *a, uint16_t i) {
-    return (uint16_t) ((a[i+1] << 8) | a[i]);
+    uint16_t b = 0;
+    b = a[i+1];
+    b <<= 8;
+    b |= a[i];
+    return b;
 }
 
 
-inline void pack_int16_be (uint8_t *a, uint16_t i, int16_t v) {
+inline void pack_sint16_be (uint8_t *a, uint16_t i, int16_t v) {
     pack_uint16_be(a, i, v);
 }
 
-inline uint16_t unpack_int16_be (uint8_t *a, uint16_t i) {
+inline uint16_t unpack_sint16_be (uint8_t *a, uint16_t i) {
     return (uint16_t) unpack_uint16_be (a, i);
 }
 
-inline void pack_int16_le (uint8_t *a, uint16_t i, int16_t v) {
+inline void pack_sint16_le (uint8_t *a, uint16_t i, int16_t v) {
     pack_uint16_le(a, i, v);
 }
 
-inline uint16_t unpack_int16_le (uint8_t *a, uint16_t i) {
+inline uint16_t unpack_sint16_le (uint8_t *a, uint16_t i) {
     return (uint16_t) unpack_uint16_le (a, i);
 }
 
@@ -65,7 +73,15 @@ inline void pack_uint32_be (uint8_t *a, uint16_t i, int32_t v) {
 }
 
 inline uint32_t unpack_uint32_be (uint8_t *a, uint16_t i) {
-    return (uint32_t) ((a[i] << 24) | (a[i+1] << 16) | (a[i+2] << 8) | a[i+3]);
+    uint32_t b = 0;
+    b = a[i];
+    b <<= 8;
+    b |= a[i+1];
+    b <<= 8;
+    b |= a[i+2];
+    b <<= 8;
+    b |= a[i+3];
+    return b;
 }
 
 inline void pack_uint32_le (uint8_t *a, uint16_t i, int32_t v) {
@@ -76,22 +92,30 @@ inline void pack_uint32_le (uint8_t *a, uint16_t i, int32_t v) {
 }
 
 inline uint32_t unpack_uint32_le (uint8_t *a, uint16_t i) {
-    return (uint32_t) ((a[i] | (a[i+1] << 8) | (a[i+2] << 16) | a[i+3] << 24));
+    uint32_t b = 0;
+    b = a[i+3];
+    b <<= 8;
+    b |= a[i+2];
+    b <<= 8;
+    b |= a[i+1];
+    b <<= 8;
+    b |= a[i];
+    return b;
 }
 
 
-inline void pack_int32_be (uint8_t *a, uint16_t i, int32_t v) {
+inline void pack_sint32_be (uint8_t *a, uint16_t i, int32_t v) {
     pack_uint32_be(a, i, v);
 }
 
-inline uint32_t unpack_int32_be (uint8_t *a, uint16_t i) {
+inline uint32_t unpack_sint32_be (uint8_t *a, uint16_t i) {
     return (uint32_t) unpack_uint32_be (a, i);
 }
 
-inline void pack_int32_le (uint8_t *a, uint16_t i, int32_t v) {
+inline void pack_sint32_le (uint8_t *a, uint16_t i, int32_t v) {
     pack_uint32_le (a, i, v);
 }
 
-inline uint32_t unpack_int32_le (uint8_t *a, uint16_t i) {
+inline uint32_t unpack_sint32_le (uint8_t *a, uint16_t i) {
     return (uint32_t) unpack_uint32_le (a, i);
 }
