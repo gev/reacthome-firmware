@@ -9,6 +9,11 @@ import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Language.Module
 
+inclSerialize :: ModuleM ()
+inclSerialize = do 
+                    incl pack_uint8
+                    incl unpack_uint8
+
 
 pack_uint8 :: KnownNat n => Def ('[Ref s (Array n (Stored Uint8)), Ix n, Uint8] :-> ())
 pack_uint8 = importProc "pack_uint8" "serialize.h"
