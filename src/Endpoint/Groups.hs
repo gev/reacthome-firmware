@@ -21,7 +21,6 @@ type GroupStruct = "group_struct"
     struct group_struct
     { enabled   :: IBool
     ; delay     :: Uint32
-    ; timestamp :: Uint32
     }
 |]
 
@@ -38,7 +37,6 @@ groups name n = Groups
     , payload   = buffer "group_message"
     } where go = [ enabled   .= ival false
                  , delay     .= ival 0
-                 , timestamp .= ival 0
                  ]
 
 
@@ -64,9 +62,6 @@ getEnabled = get enabled
 getDelay :: Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff Uint32
 getDelay = get delay
 
-getTimestamp :: Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff Uint32
-getTimestamp = get timestamp
-
 
 
 setEnabled :: IBool -> Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
@@ -74,9 +69,6 @@ setEnabled = set enabled
 
 setDelay :: Uint32 -> Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
 setDelay = set delay
-
-setTimestamp :: Uint32 -> Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
-setTimestamp = set timestamp
 
 
 
