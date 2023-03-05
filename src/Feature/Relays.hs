@@ -10,7 +10,7 @@ module Feature.Relays where
 
 import           Control.Monad.Reader    (Reader, asks)
 import           Core.Controller
-import           Core.Domain
+import qualified Core.Domain             as D
 import           Core.Feature
 import           Core.Include
 import           Core.Initialize
@@ -18,6 +18,7 @@ import           Core.Task
 import qualified Core.Transport          as T
 import           Data.Buffer
 import           Data.Serialize
+import           Data.Value
 import qualified Endpoint.Groups         as G
 import qualified Endpoint.Relays         as R
 import           GHC.TypeNats
@@ -34,6 +35,7 @@ data Relays = forall os. Outputs os => Relays
     , getRelays  :: R.Relays
     , getGroups  :: G.Groups
     , getOutputs :: os
+    , shouldInit :: Value IBool
     , transmit   :: forall n. KnownNat n
                  => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
@@ -41,16 +43,18 @@ data Relays = forall os. Outputs os => Relays
 
 
 relays :: (MakeOutputs o os, T.Transport t)
-       => [mcu -> o] -> Reader (Domain mcu t) Feature
+       => [mcu -> o] -> Reader (D.Domain mcu t) Feature
 relays outs = do
-    mcu       <- asks mcu
-    transport <- asks transport
+    mcu        <- asks D.mcu
+    transport  <- asks D.transport
+    shouldInit <- asks D.shouldInit
     let os = ($ mcu) <$> outs
     let n = length os
     pure . Feature $ Relays { n = fromIntegral n
                             , getRelays  = R.relays "relays" n
                             , getGroups  = G.groups "groups" n
                             , getOutputs = makeOutputs "relays_outputs" os
+                            , shouldInit = shouldInit
                             , transmit   = T.transmit transport
                             }
 
@@ -90,10 +94,17 @@ manage (Relays {getRelays, getOutputs}) = do
 instance Controller Relays where
     handle rs buff size = do
         let buff' = addrOf buff
+        shouldInit' <- deref . addrOf $ shouldInit rs
         pure [ size >=? 3 ==> do
                 action <- deref $ buff' ! 0
-                cond_ [ action ==? 0 ==> onDo    rs buff' size
-                      , action ==? 2 ==> onGroup rs buff' size
+                cond_ [ action ==? 0 .&& iNot shouldInit'
+                            ==> onDo rs buff' size
+
+                      , action ==? 2 .&& iNot shouldInit'
+                            ==> onGroup rs buff' size
+
+                      , action ==? 0xf2
+                            ==> onInit rs buff' size
                       ]
              ]
 
@@ -148,12 +159,12 @@ onGroup :: KnownNat l
         -> Ref Global ('Array l ('Stored Uint8))
         -> Uint8
         -> Ivory (ProcEffects s ()) ()
-onGroup gs buff size =
+onGroup rs buff size =
     when (size >=? 7) $ do
         index   <- unpack   buff 1
         enabled <- unpack   buff 2
         delay   <- unpackLE buff 3
-        runGroups (G.setState enabled delay) gs index
+        runGroups (G.setState enabled delay) rs index
 
 
 
@@ -167,3 +178,32 @@ runGroups runAction (Relays {n, getGroups, transmit}) i = do
         let i' = i - 1
         runAction getGroups (toIx i')
         transmit =<< G.message getGroups i'
+
+
+
+onInit :: KnownNat l
+        => Relays
+        -> Ref Global ('Array l ('Stored Uint8))
+        -> Uint8
+        -> Ivory (ProcEffects s ()) ()
+onInit (Relays {n, getRelays, getGroups, shouldInit}) buff size =
+    when (size >=? 2 * 5 * n + 2 * 6 * n) $ do
+        j <- local $ ival 1
+        G.runGroups getGroups $ \gs -> do
+            let gs' = addrOf gs
+            arrayMap $ \ix -> do
+                j' <- deref j
+                store (gs' ! ix ~> G.enabled) =<< unpack buff  j'
+                store (gs' ! ix ~> G.delay) =<< unpackLE buff (j' + 1)
+                store j $ j' + 5
+        j' <- deref j
+        store j $ j' + 30
+        R.runRelays getRelays $ \rs -> do
+            let state = addrOf rs
+            arrayMap $ \ix -> do
+                j' <- deref j
+                store (state ! ix ~> R.state) =<< unpack   buff  j'
+                store (state ! ix ~> R.group) =<< unpackLE buff (j' + 1)
+                store (state ! ix ~> R.delay) =<< unpackLE buff (j' + 2)
+                store j $ j' + 6
+        store (addrOf shouldInit) false

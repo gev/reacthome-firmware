@@ -23,15 +23,16 @@ import           Protocol.RBUS.Slave   (Slave (model))
 
 data Formula where
     Formula :: (MCU mcu, Transport t)
-            => { model     :: Uint8
-               , version   :: (Uint8, Uint8)
-               , mcu       :: mcu
-               , transport :: Reader (Domain mcu t) t
-               , features  :: [Reader (Domain mcu t) Feature]
+            => { model      :: Uint8
+               , version    :: (Uint8, Uint8)
+               , mcu        :: mcu
+               , shouldInit :: IBool
+               , transport  :: Reader (Domain mcu t) t
+               , features   :: [Reader (Domain mcu t) Feature]
                } -> Formula
 
 cook :: Formula -> ModuleM ()
-cook (Formula model version mcu transport features) = do
+cook (Formula model version mcu shouldInit transport features) = do
 
     include     domain'
     traverse_   incl inits
@@ -42,7 +43,7 @@ cook (Formula model version mcu transport features) = do
     incl        loop
     incl        main
 
-    where domain'    = domain model version mcu transport' features'
+    where domain'    = domain model version mcu shouldInit transport' features'
           transport' = runReader transport domain'
           features'  = (`runReader` domain') <$> features
           tasks'     = tasks transport' <> concatMap tasks features'

@@ -24,18 +24,25 @@ txHandle (RBUS {txLock}) = store (addrOf txLock) false
 
 
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()
-txTask r@(RBUS {protocol, clock, txLock, shouldConfirm}) = do
+txTask r@(RBUS {protocol, clock, txLock, shouldConfirm, shouldInit}) = do
     locked <- deref $ addrOf txLock
     when (iNot locked) $ do
         ts <- getSystemTime clock
+
         hasAddress' <- hasAddress protocol
         ifte_ hasAddress'
-            (do shouldConfirm' <- deref $ addrOf shouldConfirm
+            (do
+                shouldInit' <- deref $ addrOf shouldInit
+                when shouldInit'
+                    (doRequestInit r ts)
+
+                shouldConfirm' <- deref $ addrOf shouldConfirm
                 ifte_ shouldConfirm'
                     (doConfirm r ts)
                     (doTransmitMessage r ts >> doPing r ts)
             )
             (doDiscovery r ts)
+
 
 
 doConfirm :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
@@ -83,6 +90,13 @@ doDiscovery r@(RBUS {timestamp}) ts = do
     ts' <- deref timestamp'
     when (ts - ts' >? 1000)
          (store timestamp' ts >> discovery r)
+
+
+doRequestInit r@(RBUS {timestamp, initBuff}) ts = do
+    let timestamp' = addrOf timestamp
+    ts' <- deref timestamp'
+    when (ts - ts' >? 1000)
+         (store timestamp' ts >> toQueue r initBuff)
 
 
 

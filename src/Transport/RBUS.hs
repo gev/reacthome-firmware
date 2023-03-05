@@ -6,7 +6,7 @@ module Transport.RBUS    where
 
 import           Control.Monad.Reader  (Reader, asks, runReader)
 import           Core.Dispatcher
-import           Core.Domain
+import qualified Core.Domain           as D
 import           Core.Include
 import           Core.Initialize
 import           Core.Task
@@ -26,13 +26,14 @@ import           Transport.RBUS.Rx
 import           Transport.RBUS.Tx
 
 
-rbus :: MCU mcu => Reader mcu RS485 -> Reader (Domain mcu t) RBUS
+rbus :: MCU mcu => Reader mcu RS485 -> Reader (D.Domain mcu t) RBUS
 rbus rs = do
-    model       <- asks model
-    version     <- asks version
-    mac         <- asks mac
-    mcu         <- asks mcu
-    features    <- asks features
+    model       <- asks D.model
+    version     <- asks D.version
+    mac         <- asks D.mac
+    mcu         <- asks D.mcu
+    shouldInit  <- asks D.shouldInit
+    features    <- asks D.features
     {--
         TODO: move dispatcher outside
     --}
@@ -47,12 +48,14 @@ rbus rs = do
                         , msgSize       = buffer (name <> "_msg_size")
                         , msgTTL        = buffer (name <> "_msg_ttl")
                         , msgQueue      = queue  (name <> "_msg")
-                        , msgBuff       = buffer (name <> "_msg_buffer")
+                        , msgBuff       = buffer (name <> "_msg")
                         , msgIndex      = value  (name <> "_msg_index") 0
                         , txBuff        = buffer (name <> "_tx")
+                        , initBuff      = values (name <> "_init_request") [0xf2]
                         , txLock        = value  (name <> "_tx_lock") false
                         , timestamp     = value  (name <> "_timestamp") 0
                         , shouldConfirm = value  (name <> "_should_confirm") false
+                        , shouldInit    = shouldInit
                         }
     pure rbus
 
@@ -80,6 +83,7 @@ instance Include RBUS where
                    include $ msgBuff         r
                    include $ msgIndex        r
                    include $ txBuff          r
+                   include $ initBuff        r
                    include $ txLock          r
                    include $ timestamp       r
                    include $ shouldConfirm   r
