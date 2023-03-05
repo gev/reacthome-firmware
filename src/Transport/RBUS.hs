@@ -66,6 +66,10 @@ rbus rs = do
             when shouldHandle $ dispatch buff n
             store (addrOf shouldConfirm) true
 
+          {-
+            TODO: Should make Init request here?
+            TODO: Should reset Tx queue when address has changed?
+          -}
           onDiscovery (RBUS {shouldConfirm, clock, timestamp}) = do
             store (addrOf timestamp) =<< getSystemTime clock
             store (addrOf shouldConfirm) false

@@ -179,8 +179,9 @@ runGroups runAction (Relays {n, getGroups, transmit}) i = do
         runAction getGroups (toIx i')
         transmit =<< G.message getGroups i'
 
-
-
+{-
+    TODO: Generalize initialization
+-}
 onInit :: KnownNat l
         => Relays
         -> Ref Global ('Array l ('Stored Uint8))
@@ -203,7 +204,7 @@ onInit (Relays {n, getRelays, getGroups, shouldInit}) buff size =
             arrayMap $ \ix -> do
                 j' <- deref j
                 store (state ! ix ~> R.state) =<< unpack   buff  j'
-                store (state ! ix ~> R.group) =<< unpackLE buff (j' + 1)
+                store (state ! ix ~> R.group) =<< unpack   buff (j' + 1)
                 store (state ! ix ~> R.delay) =<< unpackLE buff (j' + 2)
                 store j $ j' + 6
         store (addrOf shouldInit) false
