@@ -15,15 +15,14 @@ import           Core.Feature
 import           Core.Include
 import           Core.Initialize
 import           Core.Task
-import           Core.Transport
 import qualified Core.Transport          as T
+import           Data.Buffer
 import qualified Endpoint.Relays         as R
 import           GHC.TypeNats
 import           Interface.GPIO.Output
 import           Interface.GPIOs.Outputs as I
 import           Interface.MCU           (MCU)
 import           Ivory.Language
-import           Ivory.Language.Array
 import           Ivory.Stdlib
 
 
@@ -32,11 +31,13 @@ data Relays = forall os. Outputs os => Relays
     { n          :: Uint8
     , getRelays  :: R.Relays
     , getOutputs :: os
+    , transmit   :: forall n. KnownNat n
+                 => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
 
 
 
-relays :: (Transport t, MakeOutputs o os)
+relays :: (MakeOutputs o os, T.Transport t)
        => [mcu -> o] -> Reader (Domain mcu t) Feature
 relays outs = do
     mcu       <- asks mcu
@@ -44,8 +45,9 @@ relays outs = do
     let os = ($ mcu) <$> outs
     let n = length os
     pure . Feature $ Relays { n = fromIntegral n
-                            , getRelays  = R.relays "relays" n transport
+                            , getRelays  = R.relays "relays" n
                             , getOutputs = makeOutputs "relays_outputs" os
+                            , transmit   = T.transmit transport
                             }
 
 
@@ -109,8 +111,8 @@ run :: (R.Relays -> (forall n. KnownNat n => Ix n) -> Ivory (ProcEffects s ()) a
     -> Relays
     -> Uint8
     -> Ivory (ProcEffects s ()) ()
-run action (Relays {n, getRelays}) i = do
+run runAction (Relays {n, getRelays, transmit}) i = do
     when (i >=? 1 .&& i <=? n) $ do
         let i' = i - 1
-        action getRelays $ toIx i'
-        R.transmit getRelays i'
+        runAction getRelays (toIx i')
+        transmit =<< R.message getRelays i'

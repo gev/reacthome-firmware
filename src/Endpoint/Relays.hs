@@ -9,12 +9,9 @@
 module Endpoint.Relays where
 
 import           Core.Include
-import qualified Core.Transport as T
 import           Data.Buffer
 import           Data.Record
 import           Data.Serialize
-import           Endpoint.Group (setTimestamp)
-import           Endpoint.Relay (Relay (payload))
 import           GHC.TypeNats
 import           Interface.MCU
 import           Ivory.Language
@@ -33,37 +30,37 @@ type RelayStruct = "relay_struct"
 
 
 
-data Relays = forall t. T.Transport t => Relays
+data Relays = Relays
     { runRelays :: RunRecords RelayStruct
-    , transport :: t
-    , message   :: Buffer 8 Uint8
+    , payload   :: Buffer 8 Uint8
     }
 
-relays :: (T.Transport t) => String -> Int -> t -> Relays
-relays name n transport = Relays
+relays :: String -> Int -> Relays
+relays name n = Relays
     { runRelays = runRecords name ( replicate n [ state     .= ival false
                                                 , delay     .= ival 0
                                                 , timestamp .= ival 0
                                                 ]
                                   )
-    , transport = transport
-    , message   = buffer "relay_message"
+    , payload   = buffer "relay_message"
     }
 
 
 
 
-transmit :: Relays -> Uint8 -> Ivory (ProcEffects s ()) ()
-transmit (Relays runRelay transport message) i =
+
+message :: Relays -> Uint8 -> Ivory eff (Buffer 8 Uint8)
+message (Relays runRelay payload) i = do
+    let payload' = addrOf payload
     runRelay $ \r -> do
         let relay = addrOf r ! toIx i
-        let message' = addrOf message
-        packBE message' 0 (0 :: Uint8)
-        packBE message' 1 $ i + 1
-        packBE message' 2 =<< deref (relay ~> state)
-        packBE message' 3 $ i + 1
-        packBE message' 4 (0 :: Uint32)
-        T.transmit transport message
+        packBE payload' 0 (0 :: Uint8)
+        packBE payload' 1 $ i + 1
+        packBE payload' 2 =<< deref (relay ~> state)
+        packBE payload' 3 $ i + 1
+        packBE payload' 4 (0 :: Uint32)
+    pure payload
+
 
 
 
@@ -111,5 +108,5 @@ instance KnownNat n => Include (Records n RelayStruct) where
         defMemArea r
 
 instance Include Relays where
-    include (Relays {runRelays, message}) =
-        runRelays include >> include message
+    include (Relays {runRelays, payload}) =
+        runRelays include >> include payload
