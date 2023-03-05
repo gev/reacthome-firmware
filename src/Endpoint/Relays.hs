@@ -13,7 +13,6 @@ import           Data.Buffer
 import           Data.Record
 import           Data.Serialize
 import           GHC.TypeNats
-import           Interface.MCU
 import           Ivory.Language
 
 
