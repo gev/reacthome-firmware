@@ -93,8 +93,8 @@ subgraph cluster_9 {
 label="Endpoint";
 color="#0000000F";
 style="filled";
-u36[label="Group",style="filled",fillcolor="#77ffff",penwidth="0"];
-u37[label="Relay",style="filled",fillcolor="#77ffff",penwidth="0"];
+u36[label="Relay",style="filled",fillcolor="#77ffff",penwidth="0"];
+u37[label="Groups",style="filled",fillcolor="#77ffff",penwidth="0"];
 u38[label="Relays",style="filled",fillcolor="#77ffff",penwidth="0"];
 
 }
@@ -339,16 +339,18 @@ u35 -> u30;
 u35 -> u31;
 u35 -> u33;
 u35 -> u42;
-u36 -> u6;
-u36 -> u18;
+u36 -> u17;
+u36 -> u50;
+u37 -> u16;
 u37 -> u17;
-u37 -> u50;
+u37 -> u22;
 u38 -> u16;
-u38 -> u36;
-u38 -> u37;
+u38 -> u17;
+u38 -> u22;
 u39 -> u9;
-u39 -> u37;
+u39 -> u36;
 u40 -> u9;
+u40 -> u37;
 u40 -> u38;
 u40 -> u46;
 u41 -> u9;
