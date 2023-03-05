@@ -1,4 +1,5 @@
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 module Data.Serialize where
 
@@ -21,6 +22,20 @@ class SerializeBE t where
 class SerializeLE t where
     packLE   :: KnownNat n => Ref s (Array n (Stored Uint8)) -> Ix n -> t -> Ivory eff ()
     unpackLE :: KnownNat n => Ref s (Array n (Stored Uint8)) -> Ix n -> Ivory eff t
+
+
+
+instance Serialize IBool where
+    pack   b i = call_ pack_bool   (toCArray b) $ fromIx i
+    unpack b i = call  unpack_bool (toCArray b) $ fromIx i
+
+instance SerializeBE IBool where
+    packBE   = pack
+    unpackBE = unpack
+
+instance SerializeLE IBool where
+    packLE   = pack
+    unpackLE = unpack
 
 
 

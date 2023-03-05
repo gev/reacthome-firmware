@@ -2,6 +2,16 @@
 #define __SERIALIZE_H_
 
 #include <stdint.h>
+#include <stdbool.h>
+
+
+static inline void pack_bool (uint8_t *a, int32_t i, bool v) {
+    a[i] = v;
+}
+
+static inline bool unpack_bool (uint8_t *a, int32_t i) {
+    return a[i];
+}
 
 
 static inline void pack_uint8 (uint8_t *a, int32_t i, uint8_t v) {

@@ -1,15 +1,22 @@
 {-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GADTs             #-}
+{-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE RankNTypes        #-}
 
 module Endpoint.Relays where
 
 import           Core.Include
+import qualified Core.Transport as T
+import           Data.Buffer
 import           Data.Record
+import           Data.Serialize
 import           Endpoint.Group (setTimestamp)
 import           Endpoint.Relay (Relay (payload))
 import           GHC.TypeNats
+import           Interface.MCU
 import           Ivory.Language
 
 
@@ -26,15 +33,39 @@ type RelayStruct = "relay_struct"
 
 
 
-newtype Relays = Relays {runRelays :: RunRecords RelayStruct}
+data Relays = forall t. T.Transport t => Relays
+    { runRelays :: RunRecords RelayStruct
+    , transport :: t
+    , message   :: Buffer 8 Uint8
+    }
 
-relays :: String -> Int -> Relays
-relays name n = Relays $ runRecords name
-                       ( replicate n [ state     .= ival false
-                                     , delay     .= ival 0
-                                     , timestamp .= ival 0
-                                     ]
-                       )
+relays :: (T.Transport t) => String -> Int -> t -> Relays
+relays name n transport = Relays
+    { runRelays = runRecords name ( replicate n [ state     .= ival false
+                                                , delay     .= ival 0
+                                                , timestamp .= ival 0
+                                                ]
+                                  )
+    , transport = transport
+    , message   = buffer "relay_message"
+    }
+
+
+
+
+transmit :: Relays -> Uint8 -> Ivory (ProcEffects s ()) ()
+transmit (Relays runRelay transport message) i =
+    runRelay $ \r -> do
+        let relay = addrOf r ! toIx i
+        let message' = addrOf message
+        packBE message' 0 (0 :: Uint8)
+        packBE message' 1 $ i + 1
+        packBE message' 2 =<< deref (relay ~> state)
+        packBE message' 3 $ i + 1
+        packBE message' 4 (0 :: Uint32)
+        T.transmit transport message
+
+
 
 getState :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff IBool
 getState = get state
@@ -80,4 +111,5 @@ instance KnownNat n => Include (Records n RelayStruct) where
         defMemArea r
 
 instance Include Relays where
-    include rs = runRelays rs include
+    include (Relays {runRelays, message}) =
+        runRelays include >> include message

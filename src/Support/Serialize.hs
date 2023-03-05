@@ -11,6 +11,8 @@ import           Ivory.Language.Module
 
 inclSerialize :: ModuleM ()
 inclSerialize = do
+    incl pack_bool
+    incl unpack_bool
     incl pack_uint8
     incl unpack_uint8
     incl pack_sint8
@@ -31,6 +33,15 @@ inclSerialize = do
     incl unpack_sint32_be
     incl pack_sint32_le
     incl unpack_sint32_le
+
+
+
+pack_bool :: Def ('[Ref s (CArray (Stored Uint8)), Sint32, IBool] :-> ())
+pack_bool = importProc "pack_bool" "serialize.h"
+
+unpack_bool :: Def ('[Ref s (CArray (Stored Uint8)), Sint32] :-> IBool)
+unpack_bool = importProc "unpack_bool" "serialize.h"
+
 
 
 pack_uint8 :: Def ('[Ref s (CArray (Stored Uint8)), Sint32, Uint8] :-> ())

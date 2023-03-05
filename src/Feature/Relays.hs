@@ -15,10 +15,9 @@ import           Core.Feature
 import           Core.Include
 import           Core.Initialize
 import           Core.Task
+import           Core.Transport
 import qualified Core.Transport          as T
-import           Data.Buffer
-import           Data.Value
-import qualified Endpoint.Relays         as E
+import qualified Endpoint.Relays         as R
 import           GHC.TypeNats
 import           Interface.GPIO.Output
 import           Interface.GPIOs.Outputs as I
@@ -31,15 +30,13 @@ import           Ivory.Stdlib
 
 data Relays = forall os. Outputs os => Relays
     { n          :: Uint8
-    , getRelays  :: E.Relays
+    , getRelays  :: R.Relays
     , getOutputs :: os
-    , message    :: Buffer 8 Uint8
-    , transmit   :: Buffer 8 Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
 
 
 
-relays :: (T.Transport t, MakeOutputs o os)
+relays :: (Transport t, MakeOutputs o os)
        => [mcu -> o] -> Reader (Domain mcu t) Feature
 relays outs = do
     mcu       <- asks mcu
@@ -47,19 +44,16 @@ relays outs = do
     let os = ($ mcu) <$> outs
     let n = length os
     pure . Feature $ Relays { n = fromIntegral n
-                            , getRelays  = E.relays "relays" n
+                            , getRelays  = R.relays "relays" n transport
                             , getOutputs = makeOutputs "relays_outputs" os
-                            , message    = values "relay_message" [0, 0, 0, 0, 0, 0, 0, 0]
-                            , transmit   = T.transmit transport
                             }
 
 
 
 instance Include Relays where
-    include (Relays {getRelays, getOutputs, message}) = do
+    include (Relays {getRelays, getOutputs}) = do
         include getRelays
         include getOutputs
-        include message
 
 
 
@@ -76,10 +70,10 @@ instance Task Relays where
 
 manage :: Relays -> Ivory eff ()
 manage (Relays {getRelays, getOutputs}) = do
-    E.runRelays getRelays $ \rs -> do
+    R.runRelays getRelays $ \rs -> do
         let rs' = addrOf rs
         arrayMap $ \ix -> do
-            isOn <- deref $ rs' ! ix ~> E.state
+            isOn <- deref $ rs' ! ix ~> R.state
             ifte_ isOn
                   (I.set getOutputs (toIx $ fromIx ix))
                   (I.reset getOutputs (toIx $ fromIx ix))
@@ -89,7 +83,7 @@ manage (Relays {getRelays, getOutputs}) = do
 instance Controller Relays where
     handle rs buff size = do
         let buff' = addrOf buff
-        pure [ size >=? 2 ==> do
+        pure [ size >=? 3 ==> do
                 action <- deref $ buff' ! 0
                 cond_ [action ==? 0 ==> onDo rs buff' size
                       ]
@@ -102,30 +96,21 @@ onDo :: KnownNat l
      -> Ivory (ProcEffects s ()) ()
 onDo rs buff size = do
     index  <- deref $ buff ! 1
-    -- cond_ [ size ==? 6 ==> do
-
-    --       ]
-    state  <- deref $ buff ! 2
-    cond_ [ state ==? 1 ==> turnOn  rs index
-          , state ==? 0 ==> turnOff rs index
+    action <- deref $ buff ! 2
+    cond_ [ action ==? 0 ==> run R.turnOff rs index
+          , action ==? 1 ==> run R.turnOn  rs index
+          , action ==? 2 ==> pure ()
+          , action ==? 3 ==> pure ()
           ]
 
-turnOn :: Relays -> Uint8 -> Ivory (ProcEffects s ()) ()
-turnOn (Relays {n, getRelays, transmit, message}) i = do
-    when (i >=? 1 .&& i <=? n) $ do
-        let message' = addrOf message
-        E.turnOn getRelays $ toIx (i - 1)
-        store (message' ! 1) i
-        store (message' ! 2) 1
-        store (message' ! 3) i
-        transmit message
 
-turnOff :: Relays -> Uint8 -> Ivory (ProcEffects s ()) ()
-turnOff (Relays {n, getRelays, transmit, message}) i = do
+
+run :: (R.Relays -> (forall n. KnownNat n => Ix n) -> Ivory (ProcEffects s ()) a)
+    -> Relays
+    -> Uint8
+    -> Ivory (ProcEffects s ()) ()
+run action (Relays {n, getRelays}) i = do
     when (i >=? 1 .&& i <=? n) $ do
-        let message' = addrOf message
-        E.turnOff getRelays $ toIx (i - 1)
-        store (message' ! 1) i
-        store (message' ! 2) 0
-        store (message' ! 3) i
-        transmit message
+        let i' = i - 1
+        action getRelays $ toIx i'
+        R.transmit getRelays i'
