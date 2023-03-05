@@ -1,7 +1,5 @@
 {-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GADTs             #-}
 {-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE RankNTypes        #-}
@@ -21,9 +19,11 @@ type RelayStruct = "relay_struct"
 
 [ivory|
     struct relay_struct
-    { state     :: IBool
-    ; delay     :: Uint32
-    ; timestamp :: Uint32
+    { state         :: IBool
+    ; defaultDelay  :: Uint32
+    ; delay         :: Uint32
+    ; timestamp     :: Uint32
+    ; group         :: Uint8
     }
 |]
 
@@ -36,14 +36,14 @@ data Relays = Relays
 
 relays :: String -> Int -> Relays
 relays name n = Relays
-    { runRelays = runRecords name ( replicate n [ state     .= ival false
-                                                , delay     .= ival 0
-                                                , timestamp .= ival 0
-                                                ]
-                                  )
+    { runRelays = runRecords name $ take n $ go <$> iterate (+1) 1
     , payload   = buffer "relay_message"
-    }
-
+    } where go i = [ state        .= ival false
+                   , defaultDelay .= ival 0
+                   , delay        .= ival 0
+                   , timestamp    .= ival 0
+                   , group        .= ival i
+                   ]
 
 
 
@@ -53,11 +53,11 @@ message (Relays runRelay payload) i = do
     let payload' = addrOf payload
     runRelay $ \r -> do
         let relay = addrOf r ! toIx i
-        packBE payload' 0 (0 :: Uint8)
-        packBE payload' 1 $ i + 1
-        packBE payload' 2 =<< deref (relay ~> state)
-        packBE payload' 3 $ i + 1
-        packBE payload' 4 (0 :: Uint32)
+        pack   payload' 0 (0 :: Uint8)
+        pack   payload' 1 $ i + 1
+        pack   payload' 2 =<< deref (relay ~> state)
+        pack   payload' 3 =<< deref (relay ~> group)
+        packLE payload' 4 =<< deref (relay ~> defaultDelay)
     pure payload
 
 
@@ -66,22 +66,49 @@ message (Relays runRelay payload) i = do
 getState :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff IBool
 getState = get state
 
+getDefaultDelay :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff Uint32
+getDefaultDelay = get defaultDelay
+
+getDelay :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff Uint32
+getDelay = get delay
+
+getTimestamp :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff Uint32
+getTimestamp = get timestamp
+
+getGroup :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff Uint8
+getGroup = get group
+
+
 
 setState :: IBool -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
 setState = set state
 
+setDefaultDelay :: Uint32 -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+setDefaultDelay = set defaultDelay
+
 setDelay :: Uint32 -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
 setDelay = set delay
+
+setGroup :: Uint8 -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+setGroup = set group
 
 setTimestamp :: Uint32 -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
 setTimestamp = set timestamp
 
-turnOn :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
-turnOn = setState true
+
 
 turnOff :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
 turnOff = setState false
 
+turnOn :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+turnOn i rs = do
+    delay <- getDefaultDelay i rs
+    turnOnDelayed delay i rs
+
+turnOnDelayed :: Uint32 -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+turnOnDelayed delay i rs = do
+    setDelay  delay i rs
+    setState  true  i rs
 
 
 get :: IvoryStore t

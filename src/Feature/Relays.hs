@@ -17,6 +17,8 @@ import           Core.Initialize
 import           Core.Task
 import qualified Core.Transport          as T
 import           Data.Buffer
+import           Data.Serialize
+import qualified Endpoint.Groups         as G
 import qualified Endpoint.Relays         as R
 import           GHC.TypeNats
 import           Interface.GPIO.Output
@@ -30,6 +32,7 @@ import           Ivory.Stdlib
 data Relays = forall os. Outputs os => Relays
     { n          :: Uint8
     , getRelays  :: R.Relays
+    , getGroups  :: G.Groups
     , getOutputs :: os
     , transmit   :: forall n. KnownNat n
                  => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
@@ -46,6 +49,7 @@ relays outs = do
     let n = length os
     pure . Feature $ Relays { n = fromIntegral n
                             , getRelays  = R.relays "relays" n
+                            , getGroups  = G.groups "groups" n
                             , getOutputs = makeOutputs "relays_outputs" os
                             , transmit   = T.transmit transport
                             }
@@ -53,9 +57,10 @@ relays outs = do
 
 
 instance Include Relays where
-    include (Relays {getRelays, getOutputs}) = do
-        include getRelays
+    include (Relays {getRelays, getGroups, getOutputs}) = do
         include getOutputs
+        include getRelays
+        include getGroups
 
 
 
@@ -87,32 +92,78 @@ instance Controller Relays where
         let buff' = addrOf buff
         pure [ size >=? 3 ==> do
                 action <- deref $ buff' ! 0
-                cond_ [action ==? 0 ==> onDo rs buff' size
+                cond_ [ action ==? 0 ==> onDo    rs buff' size
+                      , action ==? 2 ==> onGroup rs buff' size
                       ]
              ]
+
+
 
 onDo :: KnownNat l
      => Relays
      -> Ref Global ('Array l ('Stored Uint8))
-     -> n
+     -> Uint8
      -> Ivory (ProcEffects s ()) ()
 onDo rs buff size = do
     index  <- deref $ buff ! 1
     action <- deref $ buff ! 2
-    cond_ [ action ==? 0 ==> run R.turnOff rs index
-          , action ==? 1 ==> run R.turnOn  rs index
-          , action ==? 2 ==> pure ()
-          , action ==? 3 ==> pure ()
+    cond_ [ action ==? 0
+                ==> runRelays R.turnOff rs index
+
+          , action ==? 1
+                ==> ifte_
+                    (size >=? 7)
+                    (do delay <- unpackLE buff 3
+                        runRelays (R.turnOnDelayed delay) rs index
+                    )
+                    (runRelays R.turnOn rs index)
+
+          , action ==? 2 .&& size >=? 7
+                ==> do
+                    delay <- unpackLE buff 3
+                    runRelays (R.setDefaultDelay delay) rs index
+
+          , action ==? 3
+                ==> do
+                    group <- unpack buff 3
+                    runRelays (R.setGroup group) rs index
           ]
 
 
 
-run :: (R.Relays -> (forall n. KnownNat n => Ix n) -> Ivory (ProcEffects s ()) a)
+runRelays :: (R.Relays -> (forall n. KnownNat n => Ix n) -> Ivory (ProcEffects s ()) a)
     -> Relays
     -> Uint8
     -> Ivory (ProcEffects s ()) ()
-run runAction (Relays {n, getRelays, transmit}) i = do
+runRelays runAction (Relays {n, getRelays, transmit}) i = do
     when (i >=? 1 .&& i <=? n) $ do
         let i' = i - 1
         runAction getRelays (toIx i')
         transmit =<< R.message getRelays i'
+
+
+
+onGroup :: KnownNat l
+        => Relays
+        -> Ref Global ('Array l ('Stored Uint8))
+        -> Uint8
+        -> Ivory (ProcEffects s ()) ()
+onGroup gs buff size =
+    when (size >=? 7) $ do
+        index   <- unpack   buff 1
+        enabled <- unpack   buff 2
+        delay   <- unpackLE buff 3
+        runGroups (G.setState enabled delay) gs index
+
+
+
+
+runGroups :: (G.Groups -> (forall n. KnownNat n => Ix n) -> Ivory (ProcEffects s ()) a)
+    -> Relays
+    -> Uint8
+    -> Ivory (ProcEffects s ()) ()
+runGroups runAction (Relays {n, getGroups, transmit}) i = do
+    when (i >=? 1 .&& i <=? n) $ do
+        let i' = i - 1
+        runAction getGroups (toIx i')
+        transmit =<< G.message getGroups i'

@@ -49,7 +49,7 @@ executable reacthome-firmware
 
                     , Endpoint.Relay
                     , Endpoint.Relays
-                    , Endpoint.Group
+                    , Endpoint.Groups
 
                     , Feature.Blink
                     , Feature.Relay
