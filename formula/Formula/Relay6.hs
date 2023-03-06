@@ -19,6 +19,12 @@ relay6 = Formula { model      = 0xae
                                          , out_pa_0
                                          , out_pa_7
                                          , out_pa_1
+                                         , out_pb_2
+                                         , out_pa_8
+                                         , out_pa_9
+                                         , out_pa_10
+                                         , out_pa_11
+                                         , out_pa_12
                                          ]
                               ]
                  }
