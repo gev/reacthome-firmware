@@ -24,7 +24,8 @@ import qualified Endpoint.Relays         as R
 import           GHC.TypeNats
 import           Interface.GPIO.Output
 import           Interface.GPIOs.Outputs as I
-import           Interface.MCU           (MCU)
+import           Interface.MCU           (MCU, systemClock)
+import           Interface.SystemClock   (SystemClock)
 import           Ivory.Language
 import           Ivory.Stdlib
 
@@ -42,7 +43,7 @@ data Relays = forall os. Outputs os => Relays
 
 
 
-relays :: (MakeOutputs o os, T.Transport t)
+relays :: (MakeOutputs o os, T.Transport t, MCU mcu)
        => [mcu -> o] -> Reader (D.Domain mcu t) Feature
 relays outs = do
     mcu        <- asks D.mcu
@@ -51,7 +52,7 @@ relays outs = do
     let os = ($ mcu) <$> outs
     let n = length os
     pure . Feature $ Relays { n = fromIntegral n
-                            , getRelays  = R.relays "relays" n
+                            , getRelays  = R.relays "relays" n $ systemClock mcu
                             , getGroups  = G.groups "groups" n
                             , getOutputs = makeOutputs "relays_outputs" os
                             , shouldInit = shouldInit
