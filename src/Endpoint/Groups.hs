@@ -21,6 +21,7 @@ type GroupStruct = "group_struct"
     struct group_struct
     { enabled   :: IBool
     ; delay     :: Uint32
+    ; synced    :: IBool
     }
 |]
 
@@ -37,6 +38,7 @@ groups name n = Groups
     , payload   = buffer "group_message"
     } where go = [ enabled   .= ival false
                  , delay     .= ival 0
+                 , synced    .= ival true
                  ]
 
 
@@ -62,6 +64,10 @@ getEnabled = get enabled
 getDelay :: Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff Uint32
 getDelay = get delay
 
+getSynced :: Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff IBool
+getSynced = get synced
+
+
 
 
 setEnabled :: IBool -> Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
@@ -69,6 +75,9 @@ setEnabled = set enabled
 
 setDelay :: Uint32 -> Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
 setDelay = set delay
+
+setSynced :: IBool -> Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+setSynced = set synced
 
 
 
@@ -78,10 +87,12 @@ disable = setEnabled false
 enable :: Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
 enable = setEnabled true
 
+
+
 setState :: IBool -> Uint32 -> Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
 setState e d gs i = do
-    setEnabled e gs i
-    setDelay d gs i
+    setEnabled e     gs i
+    setDelay   d     gs i
 
 
 

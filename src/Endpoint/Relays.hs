@@ -11,7 +11,6 @@ import           Data.Buffer
 import           Data.Record
 import           Data.Serialize
 import           GHC.TypeNats
-import           Interface.SystemClock
 import           Ivory.Language
 
 
@@ -25,6 +24,7 @@ type RelayStruct = "relay_struct"
     ; delay         :: Uint32
     ; timestamp     :: Uint32
     ; group         :: Uint8
+    ; synced        :: IBool
     }
 |]
 
@@ -33,19 +33,18 @@ type RelayStruct = "relay_struct"
 data Relays = Relays
     { runRelays :: RunRecords RelayStruct
     , payload   :: Buffer 8 Uint8
-    , clock     :: SystemClock
     }
 
-relays :: String -> Int -> SystemClock -> Relays
-relays name n clock = Relays
+relays :: String -> Int -> Relays
+relays name n = Relays
     { runRelays = runRecords name $ take n $ go <$> iterate (+1) 1
     , payload   = buffer "relay_message"
-    , clock     = clock
     } where go i = [ state        .= ival false
                    , defaultDelay .= ival 0
                    , delay        .= ival 0
                    , timestamp    .= ival 0
                    , group        .= ival i
+                   , synced       .= ival true
                    ]
 
 
@@ -81,6 +80,9 @@ getTimestamp = get timestamp
 getGroup :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff Uint8
 getGroup = get group
 
+getSynced :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff IBool
+getSynced = get synced
+
 
 
 setState :: IBool -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
@@ -98,20 +100,21 @@ setGroup = set group
 setTimestamp :: Uint32 -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
 setTimestamp = set timestamp
 
+setSynced :: IBool -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+setSynced = set synced
+
 
 
 turnOff :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
 turnOff = setState false
 
-turnOn :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
-turnOn rs i = do
+turnOn_ :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+turnOn_ rs i = do
     delay <- getDefaultDelay rs i
-    turnOnDelayed delay rs i
-    timestamp <- getSystemTime $ clock rs
-    setTimestamp timestamp rs i
+    turnOn delay rs i
 
-turnOnDelayed :: Uint32 -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
-turnOnDelayed delay rs i = do
+turnOn :: Uint32 -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+turnOn delay rs i = do
     setDelay  delay rs i
     setState  true  rs i
 
