@@ -188,7 +188,7 @@ onInit :: KnownNat l
         -> Uint8
         -> Ivory (ProcEffects s ()) ()
 onInit (Relays {n, getRelays, getGroups, shouldInit}) buff size =
-    when (size >=? 2 * 5 * n + 2 * 6 * n) $ do
+    when (size >=? 5 * n + 6 * n) $ do
         j <- local $ ival 1
         G.runGroups getGroups $ \gs -> do
             let gs' = addrOf gs
@@ -198,7 +198,6 @@ onInit (Relays {n, getRelays, getGroups, shouldInit}) buff size =
                 store (gs' ! ix ~> G.delay) =<< unpackLE buff (j' + 1)
                 store j $ j' + 5
         j' <- deref j
-        store j $ j' + 30
         R.runRelays getRelays $ \rs -> do
             let state = addrOf rs
             arrayMap $ \ix -> do
