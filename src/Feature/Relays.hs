@@ -134,21 +134,17 @@ syncGroups (Relays {n, getGroups, transmit}) i = do
 
 
 
-
 instance Controller Relays where
     handle rs buff size = do
         let buff' = addrOf buff
         shouldInit' <- deref . addrOf $ shouldInit rs
         pure [ size >=? 3 ==> do
                 action <- deref $ buff' ! 0
-                cond_ [ action ==? 0 .&& iNot shouldInit'
-                            ==> onDo rs buff' size
-
-                      , action ==? 2 .&& iNot shouldInit'
-                            ==> onGroup rs buff' size
-
-                      , action ==? 0xf2
-                            ==> onInit rs buff' size
+                cond_ [ iNot shouldInit' ==> cond_
+                      [ action ==? 0x00  ==> onDo    rs buff' size
+                      , action ==? 0x02  ==> onGroup rs buff' size
+                      ]
+                      , action ==? 0xf2  ==> onInit  rs buff' size
                       ]
              ]
 
@@ -164,40 +160,31 @@ onDo (Relays {n, clock, getRelays}) buff size = do
     when (index >=? 1 .&& index <=? n) $ do
         let index' = index - 1
         action <- deref $ buff ! 2
-        cond_ [ action ==? 0
-                    ==> do
-                            R.turnOff         getRelays $ toIx index'
-                            R.setSynced false getRelays $ toIx index'
-
-            , action ==? 1
-                    ==> ifte_
-                        (size >=? 7)
-                        (do
+        cond_ [ action ==? 0 ==> do
+                    R.turnOff         getRelays $ toIx index'
+                    R.setSynced false getRelays $ toIx index'
+              , action ==? 1 ==> do
+                    ts <- getSystemTime clock
+                    cond_
+                        [ size >=? 7 ==> do
                             delay <- unpackLE buff 3
-                            ts    <- getSystemTime clock
                             R.turnOn delay    getRelays $ toIx index'
                             R.setTimestamp ts getRelays $ toIx index'
                             R.setSynced false getRelays $ toIx index'
-                        )
-                        (do
-                            ts    <- getSystemTime clock
+                        , true ==> do
                             R.turnOn_         getRelays $ toIx index'
                             R.setTimestamp ts getRelays $ toIx index'
                             R.setSynced false getRelays $ toIx index'
-                        )
-
-            , action ==? 2 .&& size >=? 7
-                    ==> do
-                            delay <- unpackLE buff 3
-                            R.setDefaultDelay delay getRelays $ toIx index'
-                            R.setSynced       false getRelays $ toIx index'
-
-            , action ==? 3
-                    ==> do
-                            group <- unpack buff 3
-                            R.setGroup  group getRelays $ toIx index'
-                            R.setSynced false getRelays $ toIx index'
-            ]
+                        ]
+              , action ==? 2 .&& size >=? 7 ==> do
+                    delay <- unpackLE buff 3
+                    R.setDefaultDelay delay getRelays $ toIx index'
+                    R.setSynced       false getRelays $ toIx index'
+              , action ==? 3 ==> do
+                    group <- unpack buff 3
+                    R.setGroup  group getRelays $ toIx index'
+                    R.setSynced false getRelays $ toIx index'
+              ]
 
 
 
