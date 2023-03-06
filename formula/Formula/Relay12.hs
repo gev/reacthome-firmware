@@ -1,4 +1,4 @@
-module Formula.Relay6 where
+module Formula.Relay12 where
 
 import           Core.Formula
 import           Device.GD32F3x0
@@ -7,8 +7,8 @@ import           Interface.RS485
 import           Ivory.Language
 import           Transport.RBUS
 
-relay6 :: Formula
-relay6 = Formula { model      = 0xae
+relay12 :: Formula
+relay12 = Formula { model      = 0xae
                  , version    = (3, 0)
                  , mcu        = gd32f3x0
                  , shouldInit = true

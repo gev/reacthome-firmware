@@ -56,7 +56,7 @@ executable reacthome-firmware
                     , Feature.Relays
 
                     , Formula.Blink
-                    , Formula.Relay6
+                    , Formula.Relay12
 
                     , Interface.Counter
                     , Interface.GPIO.Input
