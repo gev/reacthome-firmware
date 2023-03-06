@@ -17,6 +17,7 @@ import           Core.Initialize
 import           Core.Task
 import qualified Core.Transport          as T
 import           Data.Buffer
+import           Data.Index
 import           Data.Serialize
 import           Data.Value
 import qualified Endpoint.Groups         as G
@@ -25,7 +26,7 @@ import           GHC.TypeNats
 import           Interface.GPIO.Output
 import           Interface.GPIOs.Outputs as I
 import           Interface.MCU           (MCU, systemClock)
-import           Interface.SystemClock   (SystemClock)
+import           Interface.SystemClock   (SystemClock, getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
 
@@ -37,6 +38,8 @@ data Relays = forall os. Outputs os => Relays
     , getGroups  :: G.Groups
     , getOutputs :: os
     , shouldInit :: Value IBool
+    , clock      :: SystemClock
+    , current    :: Index Uint8
     , transmit   :: forall n. KnownNat n
                  => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
@@ -49,24 +52,27 @@ relays outs = do
     mcu        <- asks D.mcu
     transport  <- asks D.transport
     shouldInit <- asks D.shouldInit
+    let clock   = systemClock mcu
     let os = ($ mcu) <$> outs
     let n = length os
     pure . Feature $ Relays { n = fromIntegral n
-                            , getRelays  = R.relays "relays" n $ systemClock mcu
+                            , getRelays  = R.relays "relays" n clock
                             , getGroups  = G.groups "groups" n
                             , getOutputs = makeOutputs "relays_outputs" os
                             , shouldInit = shouldInit
+                            , clock      = clock
+                            , current    = index "current_relay"
                             , transmit   = T.transmit transport
                             }
 
 
 
 instance Include Relays where
-    include (Relays {getRelays, getGroups, getOutputs}) = do
+    include (Relays {getRelays, getGroups, getOutputs, current}) = do
         include getOutputs
         include getRelays
         include getGroups
-
+        include current
 
 
 instance Initialize Relays where
@@ -77,18 +83,55 @@ instance Initialize Relays where
 
 instance Task Relays where
     tasks rs = [
-            delay 10 "relays" $ manage rs
+            delay 1 "relays" $ manage rs
         ]
 
-manage :: Relays -> Ivory eff ()
-manage (Relays {getRelays, getOutputs}) = do
+manage :: Relays -> Ivory (ProcEffects s ()) ()
+manage (Relays {n, current, getRelays, getGroups, getOutputs, clock, transmit}) = do
     R.runRelays getRelays $ \rs -> do
         let rs' = addrOf rs
-        arrayMap $ \ix -> do
-            isOn <- deref $ rs' ! ix ~> R.state
-            ifte_ isOn
-                  (I.set getOutputs (toIx $ fromIx ix))
-                  (I.reset getOutputs (toIx $ fromIx ix))
+        let current' = addrOf current
+        i <- deref current'
+        isOn <- deref $ rs' ! toIx i ~> R.state
+        ifte_ isOn
+                (do
+                    I.set getOutputs $ toIx i
+                    delay <- R.getDelay getRelays $ toIx i
+                    when (delay >? 0) $ do
+                        t1 <- getSystemTime clock
+                        t0 <- R.getTimestamp getRelays $ toIx i
+                        when (t1 >=? t0 + delay ) $ do
+                            R.turnOff getRelays $ toIx i
+                            transmit =<< R.message getRelays (i .% n)
+                )
+                (do
+                    I.reset getOutputs $ toIx i
+                )
+        store current' $ i + 1
+
+
+    -- R.runRelays getRelays go
+    -- where
+    --     go :: KnownNat n => MemArea (Array n (Struct R.RelayStruct)) -> Ivory (ProcEffects s ()) ()
+    --     go rs = do
+    --         j <- local $ ival (1 :: Uint8)
+    --         let rs' = addrOf rs
+    --         step rs' j
+    --         where
+    --             step :: Ref Global (Array n (Struct R.RelayStruct))
+    --               -> Ref a ('Stored Uint8)
+    --               -> KnownNat n => Ix n
+    --               -> Ivory (AllowBreak (ProcEffects s ())) ()
+    --             step rs' j ix = do
+    --                 j' <- deref j
+    --                 isOn <- deref $ rs' ! ix ~> R.state
+    --                 ifte_ isOn
+    --                     (do
+    --                     )
+    --                     (do
+    --                         I.reset getOutputs (toIx $ fromIx ix)
+    --                     )
+    --                 store j $ j' + 1
 
 
 
