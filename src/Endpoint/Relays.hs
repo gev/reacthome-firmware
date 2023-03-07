@@ -38,16 +38,16 @@ data Relays = Relays
 
 relays :: String -> Int -> Relays
 relays name n = Relays
-    { runRelays = runRecords name $ take n $ go <$> iterate (+1) 1
+    { runRelays = runRecords name $ replicate n go
     , payload   = buffer "relay_message"
-    } where go i = [ state           .= ival false
-                   , defaultDelayOff .= ival 0
-                   , delayOff        .= ival 0
-                   , delayOn         .= ival 0
-                   , timestamp       .= ival 0
-                   , group           .= ival i
-                   , synced          .= ival true
-                   ]
+    } where go = [ state           .= ival false
+                 , defaultDelayOff .= ival 0
+                 , delayOff        .= ival 0
+                 , delayOn         .= ival 0
+                 , timestamp       .= ival 0
+                 , group           .= ival 1
+                 , synced          .= ival true
+                 ]
 
 
 
