@@ -14,8 +14,6 @@ module Data.Record
     , runRecords_
     , runRecords
     , runRecordsFromList
-    , get
-    , set
     ) where
 
 import           GHC.TypeLits   (KnownSymbol)
@@ -73,20 +71,3 @@ run :: forall a t. (forall n. KnownNat n => Records n t)
     -> a
 run r n f = go . someNatVal . fromIntegral $ n
     where go (SomeNat (p :: Proxy p)) = f (r :: Records p t)
-
-
-
-get :: (IvoryStore t, KnownNat n, KnownSymbol r, IvoryStruct r)
-    => Label r (Stored t)
-    -> Records n r
-    -> Ix n
-    -> Ivory eff t
-get f rs i = deref $ addrOf rs ! i ~> f
-
-set :: (IvoryStore t, KnownNat n, IvoryStruct r)
-    => Label r (Stored t)
-    -> Records n r
-    -> Ix n
-    -> t
-    -> (forall eff. Ivory eff ())
-set f rs i = store $ addrOf rs ! i ~> f

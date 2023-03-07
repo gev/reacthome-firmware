@@ -43,7 +43,6 @@ groups name n = Groups
 
 
 
-
 message :: Groups -> Uint8 -> Ivory eff (Buffer 7 Uint8)
 message (Groups runGroup payload) i = do
     let payload' = addrOf payload
@@ -54,28 +53,6 @@ message (Groups runGroup payload) i = do
         pack   payload' 2 =<< deref (group ~> enabled)
         packLE payload' 3 =<< deref (group ~> delay)
     pure payload
-
-
-
-getEnabled :: KnownNat n => Records n GroupStruct -> Ix n -> Ivory eff IBool
-getEnabled = get enabled
-
-getDelay :: KnownNat n => Records n GroupStruct -> Ix n -> Ivory eff Uint32
-getDelay = get delay
-
-getSynced :: KnownNat n => Records n GroupStruct -> Ix n -> Ivory eff IBool
-getSynced = get synced
-
-
-
-setEnabled :: KnownNat n => Records n GroupStruct -> Ix n -> IBool -> Ivory eff ()
-setEnabled = set enabled
-
-setDelay :: KnownNat n => Records n GroupStruct -> Ix n -> Uint32 -> Ivory eff ()
-setDelay = set delay
-
-setSynced :: KnownNat n => Records n GroupStruct -> Ix n -> IBool -> Ivory eff ()
-setSynced = set synced
 
 
 

@@ -67,52 +67,6 @@ message (Relays {runRelays, payload}) i = do
 
 
 
-getState :: KnownNat n => Records n RelayStruct -> Ix n -> Ivory eff IBool
-getState = get state
-
-getDefaultDelayOff :: KnownNat n => Records n RelayStruct -> Ix n -> Ivory eff Uint32
-getDefaultDelayOff = get defaultDelayOff
-
-getDelayOff :: KnownNat n => Records n RelayStruct -> Ix n -> Ivory eff Uint32
-getDelayOff = get delayOff
-
-getDelayOn :: KnownNat n => Records n RelayStruct -> Ix n -> Ivory eff Uint32
-getDelayOn = get delayOn
-
-getTimestamp :: KnownNat n => Records n RelayStruct -> Ix n -> Ivory eff Uint32
-getTimestamp = get timestamp
-
-getGroup :: KnownNat n => Records n RelayStruct -> Ix n -> Ivory eff Uint8
-getGroup = get group
-
-getSynced :: KnownNat n => Records n RelayStruct -> Ix n -> Ivory eff IBool
-getSynced = get synced
-
-
-
-setState :: KnownNat n => Records n RelayStruct -> Ix n -> IBool -> Ivory eff ()
-setState = set state
-
-setDefaultDelay :: KnownNat n => Records n RelayStruct -> Ix n -> Uint32 -> Ivory eff ()
-setDefaultDelay = set defaultDelayOff
-
-setDelayOff :: KnownNat n => Records n RelayStruct -> Ix n -> Uint32 -> Ivory eff ()
-setDelayOff = set delayOff
-
-setDelayOn :: KnownNat n => Records n RelayStruct -> Ix n -> Uint32 -> Ivory eff ()
-setDelayOn = set delayOn
-
-setGroup :: KnownNat n => Records n RelayStruct -> Ix n -> Uint8 -> Ivory eff ()
-setGroup = set group
-
-setTimestamp :: KnownNat n => Records n RelayStruct -> Ix n -> Uint32 -> Ivory eff ()
-setTimestamp = set timestamp
-
-setSynced :: KnownNat n => Records n RelayStruct -> Ix n -> IBool -> Ivory eff ()
-setSynced = set synced
-
-
-
 instance KnownNat n => Include (Records n RelayStruct) where
     include r = do
         defStruct (Proxy :: Proxy RelayStruct)

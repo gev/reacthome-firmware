@@ -94,30 +94,31 @@ manage :: Relays -> Ivory eff ()
 manage (Relays {getRelays, getGroups, getOutputs, clock}) = do
     R.runRelays getRelays $ \rs -> do
         arrayMap $ \ix -> do
-            isOn <- R.getState rs ix
+            let r = addrOf rs ! ix
+            isOn <- deref $ r ~> R.state
             ifte_ isOn
                     (do
                         I.set getOutputs $ toIx $ fromIx ix
-                        delay <- R.getDelayOff rs ix
+                        delay <- deref $ r ~> R.delayOff
                         when (delay >? 0) $ do
                             t1 <- getSystemTime clock
-                            t0 <- R.getTimestamp rs ix
+                            t0 <- deref $ r ~> R.timestamp
                             when (t1 >=? t0 + delay ) $ do
-                                R.setState    rs ix false
-                                R.setDelayOff rs ix 0
-                                R.setSynced   rs ix false
+                                store (r ~> R.state   ) false
+                                store (r ~> R.delayOff) 0
+                                store (r ~> R.synced  ) false
                     )
                     (do
                         I.reset getOutputs $ toIx $ fromIx ix
-                        delay <- R.getDelayOn rs ix
+                        delay <- deref $ r ~> R.delayOn
                         when (delay >? 0) $ do
                             t1 <- getSystemTime clock
-                            t0 <- R.getTimestamp rs ix
-                            when (t1 >=? t0 + delay ) $ do
-                                R.setState     rs ix true
-                                R.setDelayOn   rs ix 0
-                                R.setTimestamp rs ix t1
-                                R.setSynced    rs ix false
+                            t0 <- deref $ r ~> R.timestamp
+                            when (t1 >=? t0 + delay) $ do
+                                store (r ~> R.state    ) true
+                                store (r ~> R.delayOn  ) 0
+                                store (r ~> R.timestamp) t1
+                                store (r ~> R.synced   ) false
                     )
 
 
@@ -135,22 +136,22 @@ sync rs@(Relays {n, current}) = do
 syncRelays :: Relays -> Uint8 -> Ivory (ProcEffects s ()) ()
 syncRelays (Relays {n, getRelays, transmit}) i =
     R.runRelays getRelays $ \rs -> do
-        let ix = toIx i
-        synced <- R.getSynced rs ix
+        let r = addrOf rs ! toIx i
+        synced <- deref $ r ~> R.synced
         when (iNot synced) $ do
             transmit =<< R.message getRelays (i .% n)
-            R.setSynced rs ix true
+            store (r ~> R.synced) true
 
 
 
 syncGroups :: Relays -> Uint8 -> Ivory (ProcEffects s ()) ()
 syncGroups (Relays {n, getGroups, transmit}) i =
     G.runGroups getGroups $ \gs -> do
-        let ix = toIx i
-        synced <- G.getSynced gs ix
+        let g = addrOf gs ! toIx i
+        synced <- deref $ g ~> G.synced
         when (iNot synced) $ do
             transmit =<< G.message getGroups (i .% n)
-            G.setSynced gs ix true
+            store (g ~> G.synced) true
 
 
 
@@ -179,63 +180,66 @@ onDo (Relays {n, clock, getRelays, getGroups}) buff size = do
     index <- deref $ buff ! 1
     when (index >=? 1 .&& index <=? n) $
         R.runRelays getRelays $ \rs -> do
-            let ix = toIx $ index - 1
+            let ix = toIx (index - 1)
+            let r  = addrOf rs ! ix
             action <- deref $ buff ! 2
             cond_ [ action ==? 0 ==> do
-                        R.setState  rs ix false
-                        R.setSynced rs ix false
+                        store (r ~> R.state )  false
+                        store (r ~> R.synced) false
                   , action ==? 1 ==> do
-                        R.setTimestamp rs ix =<< getSystemTime clock
-                        shouldDelay <- syncGroup getGroups rs ix
-                        cond_ [ size >=? 7 ==> do R.setDelayOff rs ix =<< unpackLE buff 3
-                              , true       ==> do R.setDelayOff rs ix =<< R.getDefaultDelayOff rs ix
+                        store (r ~> R.timestamp) =<< getSystemTime clock
+                        shouldDelay <- syncGroup getGroups r ix
+                        cond_ [ size >=? 7 ==> do store (r ~> R.delayOff) =<< unpackLE buff 3
+                              , true       ==> do store (r ~> R.delayOff) =<< deref (r ~> R.defaultDelayOff)
                               ]
                         when (iNot shouldDelay) $ do
-                            R.setState     rs ix true
-                            R.setSynced    rs ix false
+                            store (r ~> R.state ) true
+                            store (r ~> R.synced) false
                   , action ==? 2 .&& size >=? 7 ==> do
-                        R.setDefaultDelay   rs ix =<< unpackLE buff 3
-                        R.setSynced         rs ix false
+                        store (r ~> R.defaultDelayOff) =<< unpackLE buff 3
+                        store (r ~> R.synced         ) false
                   , action ==? 3 ==> do
                         group <- unpack buff 3
-                        turnOffGroup rs ix group
-                        R.setGroup   rs ix group
-                        R.setSynced  rs ix false
+                        turnOffGroup r ix group
+                        store (r ~> R.group ) group
+                        store (r ~> R.synced) false
                   ]
+
 
 
 syncGroup :: KnownNat n
           => G.Groups
-          -> Records n R.RelayStruct
+          -> Ref a (Struct R.RelayStruct)
           -> Ix n
           -> Ivory (ProcEffects s ()) IBool
-syncGroup groups rs ix = do
-    group <- R.getGroup rs ix
-    shouldDelay <- turnOffGroup rs ix group
+syncGroup groups r ix = do
+    group <- deref $ r ~> R.group
+    shouldDelay <- turnOffGroup r ix group
     when shouldDelay $
         G.runGroups groups $ \gs -> do
-            delay <- G.getDelay gs (toIx $ group - 1)
-            R.setDelayOn rs ix $ delay + 1
+            let g = addrOf gs ! toIx (group - 1)
+            delay <- deref $ g ~> G.delay
+            store (r ~> R.delayOn) (delay + 1)
     pure shouldDelay
 
 
 turnOffGroup :: KnownNat n
-             => Records n R.RelayStruct
+             => Ref a (Struct R.RelayStruct)
              -> Ix n
              -> Uint8
              -> Ivory (ProcEffects s ()) IBool
-turnOffGroup rs ix g = do
+turnOffGroup r ix g = do
     f <- local $ ival false
     arrayMap $ \jx -> do
         when (jx /=? ix) $ do
-            group <- R.getGroup rs jx
+            group <- deref $ r ~> R.group
             when (group ==? g) $ do
-                isOn  <- R.getState   rs jx
-                delay <- R.getDelayOn rs jx
+                isOn  <- deref $ r ~> R.state
+                delay <- deref $ r ~> R.delayOn
                 when (isOn .|| delay >? 0) $ do
-                    R.setState   rs jx false
-                    R.setDelayOn rs jx 0
-                    R.setSynced  rs jx false
+                    store (r ~> R.state   ) false
+                    store (r ~> R.delayOn ) 0
+                    store (r ~> R.synced  ) false
                     store f true
     deref f
 
@@ -251,10 +255,10 @@ onGroup (Relays {n, getGroups}) buff size =
         index <- unpack buff 1
         when (index >=? 1 .&& index <=? n) $
             G.runGroups getGroups $ \gs -> do
-                let ix = toIx $ index - 1
-                G.setEnabled gs ix =<< unpack   buff 2
-                G.setDelay   gs ix =<< unpackLE buff 3
-                G.setSynced  gs ix false
+                let g = addrOf gs ! toIx (index - 1)
+                store (g ~> G.enabled) =<< unpack   buff 2
+                store (g ~> G.delay  ) =<< unpackLE buff 3
+                store (g ~> G.synced ) false
 
 
 
@@ -268,9 +272,9 @@ onInit :: KnownNat l
         -> Ivory (ProcEffects s ()) ()
 onInit rs@(Relays {n, clock, getRelays, getGroups, shouldInit}) buff size =
     when (size >=? 5 * n + 6 * n) $ do
-        j <- local $ ival 1
-        initGroups rs buff j
-        initRelays rs buff j
+        offset <- local $ ival 1
+        initGroups rs buff offset
+        initRelays rs buff offset
         store (addrOf shouldInit) false
 
 
@@ -280,13 +284,14 @@ initGroups :: KnownNat n
            -> Ref Global (Array n ('Stored Uint8))
            -> Ref s (Stored (Ix n))
            -> Ivory eff ()
-initGroups (Relays {getGroups}) buff j =
+initGroups (Relays {getGroups}) buff offset =
     G.runGroups getGroups $ \gs ->
         arrayMap $ \ix -> do
-            j' <- deref j
-            G.setEnabled      gs ix =<< unpack   buff  j'
-            G.setDelay        gs ix =<< unpackLE buff (j' + 1)
-            store j $ j' + 5
+            offset' <- deref offset
+            let g = addrOf gs ! ix
+            store (g ~> G.enabled) =<< unpack   buff  offset'
+            store (g ~> G.delay  ) =<< unpackLE buff (offset' + 1)
+            store offset $ offset' + 5
 
 
 
@@ -295,13 +300,14 @@ initRelays :: KnownNat n
            -> Ref Global (Array n ('Stored Uint8))
            -> Ref s (Stored (Ix n))
            -> Ivory eff ()
-initRelays (Relays {clock, getRelays}) buff j =
+initRelays (Relays {clock, getRelays}) buff offset =
     R.runRelays getRelays $ \rs ->
         arrayMap $ \ix -> do
-            j' <- deref j
-            R.setState        rs ix =<< unpack   buff  j'
-            R.setGroup        rs ix =<< unpack   buff (j' + 1)
-            R.setDelayOff        rs ix =<< unpackLE buff (j' + 2)
-            R.setDefaultDelay rs ix =<< unpackLE buff (j' + 2)
-            R.setTimestamp    rs ix =<< getSystemTime clock
-            store j $ j' + 6
+            offset' <- deref offset
+            let r = addrOf rs ! ix
+            store (r ~> R.state          ) =<< unpack   buff  offset'
+            store (r ~> R.group          ) =<< unpack   buff (offset' + 1)
+            store (r ~> R.delayOff       ) =<< unpackLE buff (offset' + 2)
+            store (r ~> R.defaultDelayOff) =<< unpackLE buff (offset' + 2)
+            store (r ~> R.timestamp      ) =<< getSystemTime clock
+            store offset $ offset' + 6
