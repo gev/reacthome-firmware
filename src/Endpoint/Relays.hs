@@ -51,7 +51,6 @@ relays name n = Relays
 
 
 
-
 message :: Relays -> Uint8 -> Ivory eff (Buffer 8 Uint8)
 message (Relays {runRelays, payload}) i = do
     let payload' = addrOf payload
@@ -63,7 +62,6 @@ message (Relays {runRelays, payload}) i = do
         pack   payload' 3 =<< deref (relay ~> group)
         packLE payload' 4 =<< deref (relay ~> defaultDelayOff)
     pure payload
-
 
 
 
