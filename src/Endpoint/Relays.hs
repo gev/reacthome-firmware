@@ -19,12 +19,13 @@ type RelayStruct = "relay_struct"
 
 [ivory|
     struct relay_struct
-    { state         :: IBool
-    ; defaultDelay  :: Uint32
-    ; delay         :: Uint32
-    ; timestamp     :: Uint32
-    ; group         :: Uint8
-    ; synced        :: IBool
+    { state           :: IBool
+    ; defaultDelayOff :: Uint32
+    ; delayOff        :: Uint32
+    ; delayOn         :: Uint32
+    ; timestamp       :: Uint32
+    ; group           :: Uint8
+    ; synced          :: IBool
     }
 |]
 
@@ -39,12 +40,13 @@ relays :: String -> Int -> Relays
 relays name n = Relays
     { runRelays = runRecords name $ take n $ go <$> iterate (+1) 1
     , payload   = buffer "relay_message"
-    } where go i = [ state        .= ival false
-                   , defaultDelay .= ival 0
-                   , delay        .= ival 0
-                   , timestamp    .= ival 0
-                   , group        .= ival i
-                   , synced       .= ival true
+    } where go i = [ state           .= ival false
+                   , defaultDelayOff .= ival 0
+                   , delayOff        .= ival 0
+                   , delayOn         .= ival 0
+                   , timestamp       .= ival 0
+                   , group           .= ival i
+                   , synced          .= ival true
                    ]
 
 
@@ -59,80 +61,55 @@ message (Relays {runRelays, payload}) i = do
         pack   payload' 1 $ i + 1
         pack   payload' 2 =<< deref (relay ~> state)
         pack   payload' 3 =<< deref (relay ~> group)
-        packLE payload' 4 =<< deref (relay ~> defaultDelay)
+        packLE payload' 4 =<< deref (relay ~> defaultDelayOff)
     pure payload
 
 
 
 
-getState :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff IBool
+getState :: KnownNat n => Records n RelayStruct -> Ix n -> Ivory eff IBool
 getState = get state
 
-getDefaultDelay :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff Uint32
-getDefaultDelay = get defaultDelay
+getDefaultDelayOff :: KnownNat n => Records n RelayStruct -> Ix n -> Ivory eff Uint32
+getDefaultDelayOff = get defaultDelayOff
 
-getDelay :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff Uint32
-getDelay = get delay
+getDelayOff :: KnownNat n => Records n RelayStruct -> Ix n -> Ivory eff Uint32
+getDelayOff = get delayOff
 
-getTimestamp :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff Uint32
+getDelayOn :: KnownNat n => Records n RelayStruct -> Ix n -> Ivory eff Uint32
+getDelayOn = get delayOn
+
+getTimestamp :: KnownNat n => Records n RelayStruct -> Ix n -> Ivory eff Uint32
 getTimestamp = get timestamp
 
-getGroup :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff Uint8
+getGroup :: KnownNat n => Records n RelayStruct -> Ix n -> Ivory eff Uint8
 getGroup = get group
 
-getSynced :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff IBool
+getSynced :: KnownNat n => Records n RelayStruct -> Ix n -> Ivory eff IBool
 getSynced = get synced
 
 
 
-setState :: IBool -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+setState :: KnownNat n => Records n RelayStruct -> Ix n -> IBool -> Ivory eff ()
 setState = set state
 
-setDefaultDelay :: Uint32 -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
-setDefaultDelay = set defaultDelay
+setDefaultDelay :: KnownNat n => Records n RelayStruct -> Ix n -> Uint32 -> Ivory eff ()
+setDefaultDelay = set defaultDelayOff
 
-setDelay :: Uint32 -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
-setDelay = set delay
+setDelayOff :: KnownNat n => Records n RelayStruct -> Ix n -> Uint32 -> Ivory eff ()
+setDelayOff = set delayOff
 
-setGroup :: Uint8 -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+setDelayOn :: KnownNat n => Records n RelayStruct -> Ix n -> Uint32 -> Ivory eff ()
+setDelayOn = set delayOn
+
+setGroup :: KnownNat n => Records n RelayStruct -> Ix n -> Uint8 -> Ivory eff ()
 setGroup = set group
 
-setTimestamp :: Uint32 -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+setTimestamp :: KnownNat n => Records n RelayStruct -> Ix n -> Uint32 -> Ivory eff ()
 setTimestamp = set timestamp
 
-setSynced :: IBool -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+setSynced :: KnownNat n => Records n RelayStruct -> Ix n -> IBool -> Ivory eff ()
 setSynced = set synced
-
-
-
-turnOff :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
-turnOff = setState false
-
-turnOn_ :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
-turnOn_ rs i = do
-    delay <- getDefaultDelay rs i
-    turnOn delay rs i
-
-turnOn :: Uint32 -> Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
-turnOn delay rs i = do
-    setDelay  delay rs i
-    setState  true  rs i
-
-
-get :: IvoryStore t
-    => Label RelayStruct (Stored t)
-    -> Relays
-    -> (forall n. KnownNat n => Ix n)
-    -> Ivory eff t
-get f rs i = runRelays rs $ \r -> deref (addrOf r ! i ~> f)
-
-set :: IvoryStore t
-    => Label RelayStruct (Stored t)
-    -> t
-    -> Relays
-    -> (forall n. KnownNat n => Ix n)
-    -> Ivory eff ()
-set f v rs i = runRelays rs $ \r -> store (addrOf r ! i ~> f) v
 
 
 
