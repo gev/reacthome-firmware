@@ -188,7 +188,7 @@ onDo (Relays {n, clock, getRelays, getGroups}) buff size = do
                         store (r ~> R.synced) false
                   , action ==? 1 ==> do
                         store (r ~> R.timestamp) =<< getSystemTime clock
-                        shouldDelay <- syncGroup getGroups r ix
+                        shouldDelay <- syncGroup getGroups rs ix
                         cond_ [ size >=? 7 ==> do store (r ~> R.delayOff) =<< unpackLE buff 3
                               , true       ==> do store (r ~> R.delayOff) =<< deref (r ~> R.defaultDelayOff)
                               ]
@@ -200,7 +200,7 @@ onDo (Relays {n, clock, getRelays, getGroups}) buff size = do
                         store (r ~> R.synced         ) false
                   , action ==? 3 ==> do
                         group <- unpack buff 3
-                        turnOffGroup r ix group
+                        turnOffGroup rs ix group
                         store (r ~> R.group ) group
                         store (r ~> R.synced) false
                   ]
@@ -209,12 +209,13 @@ onDo (Relays {n, clock, getRelays, getGroups}) buff size = do
 
 syncGroup :: KnownNat n
           => G.Groups
-          -> Ref a (Struct R.RelayStruct)
+          -> Records n R.RelayStruct
           -> Ix n
           -> Ivory (ProcEffects s ()) IBool
-syncGroup groups r ix = do
+syncGroup groups rs ix = do
+    let r = addrOf rs ! ix
     group <- deref $ r ~> R.group
-    shouldDelay <- turnOffGroup r ix group
+    shouldDelay <- turnOffGroup rs ix group
     when shouldDelay $
         G.runGroups groups $ \gs -> do
             let g = addrOf gs ! toIx (group - 1)
@@ -224,14 +225,15 @@ syncGroup groups r ix = do
 
 
 turnOffGroup :: KnownNat n
-             => Ref a (Struct R.RelayStruct)
+             => Records n R.RelayStruct
              -> Ix n
              -> Uint8
              -> Ivory (ProcEffects s ()) IBool
-turnOffGroup r ix g = do
+turnOffGroup rs ix g = do
     f <- local $ ival false
     arrayMap $ \jx -> do
         when (jx /=? ix) $ do
+            let r = addrOf rs ! jx
             group <- deref $ r ~> R.group
             when (group ==? g) $ do
                 isOn  <- deref $ r ~> R.state
