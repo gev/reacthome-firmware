@@ -34,7 +34,7 @@ cflags =  [ "-mthumb"
           , "-ffunction-sections"
           , "-Wall"
           -- , "-DNDEBUG"
-          , "-O0"
+          , "-O3"
           ]
 
 ldflags :: [String]
