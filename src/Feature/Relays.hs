@@ -18,20 +18,17 @@ import           Core.Task
 import qualified Core.Transport          as T
 import           Data.Buffer
 import           Data.Index
-import           Data.List               (group)
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
 import qualified Endpoint.Groups         as G
 import qualified Endpoint.Relays         as R
 import           GHC.TypeNats
-import           Interface.GPIO.Output
 import           Interface.GPIOs.Outputs as I
 import           Interface.MCU           (MCU, systemClock)
 import           Interface.SystemClock   (SystemClock, getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Transport.RBUS.Data     (RBUS (rs))
 
 
 
