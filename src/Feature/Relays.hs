@@ -95,31 +95,24 @@ manage (Relays {getRelays, getGroups, getOutputs, clock}) = do
     R.runRelays getRelays $ \rs -> do
         arrayMap $ \ix -> do
             let r = addrOf rs ! ix
+            let go :: forall eff. (forall os. Outputs os => os -> (forall n. KnownNat n => Ix n) -> Ivory eff ())
+                   -> Label R.RelayStruct ('Stored Uint32)
+                   -> Ivory eff ()
+                go setOut delay = do
+                    setOut getOutputs $ toIx $ fromIx ix
+                    delay' <- deref $ r ~> delay
+                    when (delay' >? 0) $ do
+                        t1 <- getSystemTime clock
+                        t0 <- deref $ r ~> R.timestamp
+                        when (t1 >=? t0 + delay') $ do
+                            store (r ~> delay      ) 0
+                            store (r ~> R.state    ) true
+                            store (r ~> R.timestamp) t1
+                            store (r ~> R.synced   ) false
             isOn <- deref $ r ~> R.state
             ifte_ isOn
-                    (do
-                        I.set getOutputs $ toIx $ fromIx ix
-                        delay <- deref $ r ~> R.delayOff
-                        when (delay >? 0) $ do
-                            t1 <- getSystemTime clock
-                            t0 <- deref $ r ~> R.timestamp
-                            when (t1 >=? t0 + delay ) $ do
-                                store (r ~> R.state   ) false
-                                store (r ~> R.delayOff) 0
-                                store (r ~> R.synced  ) false
-                    )
-                    (do
-                        I.reset getOutputs $ toIx $ fromIx ix
-                        delay <- deref $ r ~> R.delayOn
-                        when (delay >? 0) $ do
-                            t1 <- getSystemTime clock
-                            t0 <- deref $ r ~> R.timestamp
-                            when (t1 >=? t0 + delay) $ do
-                                store (r ~> R.state    ) true
-                                store (r ~> R.delayOn  ) 0
-                                store (r ~> R.timestamp) t1
-                                store (r ~> R.synced   ) false
-                    )
+                (go I.set R.delayOff )
+                (go I.reset R.delayOn)
 
 
 
