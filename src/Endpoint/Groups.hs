@@ -21,6 +21,7 @@ type GroupStruct = "group_struct"
     struct group_struct
     { enabled   :: IBool
     ; delay     :: Uint32
+    ; synced    :: IBool
     }
 |]
 
@@ -37,6 +38,7 @@ groups name n = Groups
     , payload   = buffer "group_message"
     } where go = [ enabled   .= ival false
                  , delay     .= ival 0
+                 , synced    .= ival true
                  ]
 
 
@@ -55,50 +57,25 @@ message (Groups runGroup payload) i = do
 
 
 
-
-getEnabled :: Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff IBool
+getEnabled :: KnownNat n => Records n GroupStruct -> Ix n -> Ivory eff IBool
 getEnabled = get enabled
 
-getDelay :: Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff Uint32
+getDelay :: KnownNat n => Records n GroupStruct -> Ix n -> Ivory eff Uint32
 getDelay = get delay
 
+getSynced :: KnownNat n => Records n GroupStruct -> Ix n -> Ivory eff IBool
+getSynced = get synced
 
 
-setEnabled :: IBool -> Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+
+setEnabled :: KnownNat n => Records n GroupStruct -> Ix n -> IBool -> Ivory eff ()
 setEnabled = set enabled
 
-setDelay :: Uint32 -> Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+setDelay :: KnownNat n => Records n GroupStruct -> Ix n -> Uint32 -> Ivory eff ()
 setDelay = set delay
 
-
-
-disable :: Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
-disable = setEnabled false
-
-enable :: Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
-enable = setEnabled true
-
-setState :: IBool -> Uint32 -> Groups -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
-setState e d gs i = do
-    setEnabled e gs i
-    setDelay d gs i
-
-
-
-get :: IvoryStore t
-    => Label GroupStruct (Stored t)
-    -> Groups
-    -> (forall n. KnownNat n => Ix n)
-    -> Ivory eff t
-get f gs i = runGroups gs $ \r -> deref (addrOf r ! i ~> f)
-
-set :: IvoryStore t
-    => Label GroupStruct (Stored t)
-    -> t
-    -> Groups
-    -> (forall n. KnownNat n => Ix n)
-    -> Ivory eff ()
-set f v gs i = runGroups gs $ \r -> store (addrOf r ! i ~> f) v
+setSynced :: KnownNat n => Records n GroupStruct -> Ix n -> IBool -> Ivory eff ()
+setSynced = set synced
 
 
 

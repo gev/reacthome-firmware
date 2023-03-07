@@ -111,7 +111,7 @@ subgraph cluster_11 {
 label="Formula";
 color="#0000000F";
 style="filled";
-u1[label="Relay6",style="filled",fillcolor="#33ff33",penwidth="0"];
+u1[label="Relay12",style="filled",fillcolor="#33ff33",penwidth="0"];
 u2[label="Blink",style="filled",fillcolor="#33ff33",penwidth="0"];
 
 }
