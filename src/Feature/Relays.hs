@@ -95,24 +95,33 @@ manage (Relays {getRelays, getGroups, getOutputs, clock}) = do
     R.runRelays getRelays $ \rs -> do
         arrayMap $ \ix -> do
             let r = addrOf rs ! ix
-            let go :: forall eff. (forall os. Outputs os => os -> (forall n. KnownNat n => Ix n) -> Ivory eff ())
-                   -> Label R.RelayStruct ('Stored Uint32)
-                   -> Ivory eff ()
-                go setOut delay = do
-                    setOut getOutputs $ toIx $ fromIx ix
-                    delay' <- deref $ r ~> delay
-                    when (delay' >? 0) $ do
-                        t1 <- getSystemTime clock
-                        t0 <- deref $ r ~> R.timestamp
-                        when (t1 >=? t0 + delay') $ do
-                            store (r ~> delay      ) 0
-                            store (r ~> R.state    ) true
-                            store (r ~> R.timestamp) t1
-                            store (r ~> R.synced   ) false
+            let run = manageRelay r getOutputs ix $ getSystemTime clock
             isOn <- deref $ r ~> R.state
             ifte_ isOn
-                (go I.set R.delayOff )
-                (go I.reset R.delayOn)
+                (run I.set   R.delayOff)
+                (run I.reset R.delayOn )
+
+
+
+manageRelay :: (KnownNat n, Outputs os)
+            => Ref Global (Struct R.RelayStruct)
+            -> os
+            -> Ix n
+            -> Ivory eff Uint32
+            -> (os -> (forall n. KnownNat n => Ix n) -> Ivory eff ())
+            -> Label R.RelayStruct ('Stored Uint32)
+            -> Ivory eff ()
+manageRelay r o ix timestamp setOut delay = do
+    setOut o $ toIx $ fromIx ix
+    delay' <- deref $ r ~> delay
+    when (delay' >? 0) $ do
+        t0 <- deref $ r ~> R.timestamp
+        t1 <- timestamp
+        when (t1 >=? t0 + delay') $ do
+            store (r ~> delay      ) 0
+            store (r ~> R.state    ) true
+            store (r ~> R.timestamp) t1
+            store (r ~> R.synced   ) false
 
 
 
