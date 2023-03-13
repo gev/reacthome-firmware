@@ -1,6 +1,5 @@
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE RankNTypes     #-}
-
+{-# LANGUAGE RankNTypes      #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Protocol.RBUS.Slave.Tx where
 import           Data.Buffer
@@ -16,7 +15,7 @@ transmitMessage :: KnownNat l
                 -> Slave n
                 -> (Uint8 -> forall eff. Ivory eff ())
                 -> Ivory (ProcEffects s ()) ()
-transmitMessage payload (Slave{address, tidTx}) transmit = do
+transmitMessage payload (Slave {..}) transmit = do
     let payload' = addrOf payload
     crc <- local $ istruct initCRC16
     let transmit' :: Uint8 -> Ivory eff ()

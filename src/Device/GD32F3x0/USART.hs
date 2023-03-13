@@ -1,8 +1,8 @@
 {-# LANGUAGE DataKinds          #-}
 {-# LANGUAGE FlexibleInstances  #-}
-{-# LANGUAGE NamedFieldPuns     #-}
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE RankNTypes         #-}
+{-# LANGUAGE RecordWildCards    #-}
 
 module Device.GD32F3x0.USART where
 
@@ -34,7 +34,7 @@ data USART = USART
 
 
 instance Include (I.HandleUSART USART) where
-    include (I.HandleUSART (USART {usart, dma, dmaIRQc, rx, tx}) onReceive onTransmit onDrain) =
+    include (I.HandleUSART (USART {..}) onReceive onTransmit onDrain) =
         inclG >> inclMisc >> inclUSART >> inclDMA >> inclUtil >> include rx >> include tx >>
         makeIRQHandler usart (handleUSART usart onReceive onDrain) >>
         makeIRQHandler dmaIRQc (handleDMA dma usart onTransmit)
@@ -64,7 +64,7 @@ handleUSART usart onReceive onDrain = do
 
 
 instance Initialize USART where
-    initialize (USART {usart, rcu, usartIRQ, dmaIRQn, rx, tx}) =
+    initialize (USART {..}) =
         initialize rx <> initialize tx <> [
             proc (show usart <> "_init") $ body $ do
                 enablePeriphClock   RCU_DMA
@@ -92,7 +92,7 @@ instance I.USART USART where
     setParity     u p  = S.configParity  (usart u) (coerceParity p)
 
 
-    transmit (USART {usart, dma}) buff n = do
+    transmit (USART {..}) buff n = do
         deinitDMA dma
         p <- tdata (def usart)
         m <- castArrayToUint32 buff

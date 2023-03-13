@@ -1,8 +1,8 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GADTs            #-}
-{-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE RecordWildCards  #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
 
@@ -67,7 +67,7 @@ relays outs = do
 
 
 instance Include Relays where
-    include (Relays {getRelays, getGroups, getOutputs, current}) = do
+    include (Relays {..}) = do
         include getOutputs
         include getRelays
         include getGroups
@@ -75,7 +75,7 @@ instance Include Relays where
 
 
 instance Initialize Relays where
-    initialize (Relays {getOutputs}) =
+    initialize (Relays {..}) =
         initialize getOutputs
 
 
@@ -88,7 +88,7 @@ instance Task Relays where
 
 
 manage :: Relays -> Ivory eff ()
-manage (Relays {getRelays, getGroups, getOutputs, clock}) = do
+manage (Relays {..}) = do
     R.runRelays getRelays $ \rs -> do
         arrayMap $ \ix -> do
             let r = addrOf rs ! ix
@@ -123,7 +123,7 @@ manageRelay r o ix timestamp setOut delay = do
 
 
 sync :: Relays -> Ivory (ProcEffects s ()) ()
-sync rs@(Relays {n, current}) = do
+sync rs@(Relays {..}) = do
     let current' = addrOf current
     i <- deref current'
     syncRelays rs i
@@ -133,7 +133,7 @@ sync rs@(Relays {n, current}) = do
 
 
 syncRelays :: Relays -> Uint8 -> Ivory (ProcEffects s ()) ()
-syncRelays (Relays {n, getRelays, transmit}) i =
+syncRelays (Relays {..}) i =
     R.runRelays getRelays $ \rs -> do
         let r = addrOf rs ! toIx i
         synced <- deref $ r ~> R.synced
@@ -144,7 +144,7 @@ syncRelays (Relays {n, getRelays, transmit}) i =
 
 
 syncGroups :: Relays -> Uint8 -> Ivory (ProcEffects s ()) ()
-syncGroups (Relays {n, getGroups, transmit}) i =
+syncGroups (Relays {..}) i =
     G.runGroups getGroups $ \gs -> do
         let g = addrOf gs ! toIx i
         synced <- deref $ g ~> G.synced
@@ -175,7 +175,7 @@ onDo :: KnownNat l
      -> Ref Global ('Array l ('Stored Uint8))
      -> Uint8
      -> Ivory (ProcEffects s ()) ()
-onDo (Relays {n, clock, getRelays, getGroups}) buff size = do
+onDo (Relays {..}) buff size = do
     index <- deref $ buff ! 1
     when (index >=? 1 .&& index <=? n) $
         R.runRelays getRelays $ \rs -> do
@@ -251,7 +251,7 @@ onGroup :: KnownNat l
         -> Ref Global ('Array l ('Stored Uint8))
         -> Uint8
         -> Ivory eff ()
-onGroup (Relays {n, getGroups}) buff size =
+onGroup (Relays {..}) buff size =
     when (size >=? 7) $ do
         index <- unpack buff 1
         when (index >=? 1 .&& index <=? n) $
@@ -271,7 +271,7 @@ onInit :: KnownNat l
         -> Ref Global ('Array l ('Stored Uint8))
         -> Uint8
         -> Ivory (ProcEffects s ()) ()
-onInit rs@(Relays {n, clock, getRelays, getGroups, shouldInit}) buff size =
+onInit rs@(Relays {..}) buff size =
     when (size >=? 5 * n + 6 * n) $ do
         offset <- local $ ival 1
         initGroups rs buff offset
@@ -285,7 +285,7 @@ initGroups :: KnownNat n
            -> Ref Global (Array n ('Stored Uint8))
            -> Ref s (Stored (Ix n))
            -> Ivory eff ()
-initGroups (Relays {getGroups}) buff offset =
+initGroups (Relays {..}) buff offset =
     G.runGroups getGroups $ \gs ->
         arrayMap $ \ix -> do
             offset' <- deref offset
@@ -301,7 +301,7 @@ initRelays :: KnownNat n
            -> Ref Global (Array n ('Stored Uint8))
            -> Ref s (Stored (Ix n))
            -> Ivory eff ()
-initRelays (Relays {clock, getRelays}) buff offset =
+initRelays (Relays {..}) buff offset =
     R.runRelays getRelays $ \rs ->
         arrayMap $ \ix -> do
             offset' <- deref offset

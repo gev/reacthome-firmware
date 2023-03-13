@@ -1,8 +1,8 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs             #-}
-{-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE RankNTypes        #-}
+{-# LANGUAGE RecordWildCards   #-}
 
 module Interface.RS485 where
 
@@ -48,30 +48,30 @@ transmit :: RS485
          -> Ref r (CArray (Stored Uint16))
          -> Uint16
          -> Ivory (ProcEffects s ()) ()
-transmit (RS485 {usart, rede}) buffer length =
+transmit (RS485 {..}) buffer length =
     set rede >> I.transmit usart buffer length
 
 setBaudrate :: RS485 -> Uint32 -> Ivory eff ()
-setBaudrate (RS485 {usart}) = I.setBaudrate usart
+setBaudrate (RS485 {..}) = I.setBaudrate usart
 
 setWordLength :: RS485 -> I.WordLength -> Ivory eff ()
-setWordLength (RS485 {usart}) = I.setWordLength usart
+setWordLength (RS485 {..}) = I.setWordLength usart
 
 setStopBit :: RS485 -> I.StopBit -> Ivory eff ()
-setStopBit (RS485 {usart}) = I.setStopBit usart
+setStopBit (RS485 {..}) = I.setStopBit usart
 
 setParity :: RS485 -> I.Parity -> Ivory eff ()
-setParity (RS485 {usart}) = I.setParity usart
+setParity (RS485 {..}) = I.setParity usart
 
 
 instance Include (HandleRS485 RS485) where
-    include (HandleRS485 (RS485 {usart, rede}) onReceive onTransmit) = do
+    include (HandleRS485 (RS485 {..}) onReceive onTransmit) = do
         include rede
         include $ I.HandleUSART usart onReceive onTransmit (reset rede)
 
 
 instance Initialize RS485 where
-    initialize (RS485 {n, usart, rede}) =
+    initialize (RS485 {..}) =
         initialize rede <> initialize usart <> [initR]
         where initR =
                 proc ("rs485_" <> show n <> "_init") $ body

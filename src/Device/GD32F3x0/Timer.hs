@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE RankNTypes        #-}
+{-# LANGUAGE RecordWildCards   #-}
 
 module Device.GD32F3x0.Timer where
 
@@ -37,7 +37,7 @@ instance Include Timer where
 
 
 instance Initialize Timer where
-    initialize (Timer {timer, rcu, param}) = [
+    initialize (Timer {..}) = [
             proc (show timer <> "_init") $ body $ do
                 enablePeriphClock rcu
                 deinitTimer       timer
@@ -51,13 +51,13 @@ instance I.Counter Timer where
 
 
 instance Include (I.HandleTimer Timer) where
-    include (I.HandleTimer (Timer {timer}) handle) =
+    include (I.HandleTimer (Timer {..}) handle) =
         inclG >> inclMisc >>
         makeIRQHandler timer (handleIRQ timer handle)
 
 
 instance Initialize (I.HandleTimer Timer) where
-    initialize (I.HandleTimer {I.timer = Timer {timer, irq}}) = [
+    initialize (I.HandleTimer {I.timer = Timer {..}}) = [
             proc (show timer <> "_irq_init") $ body $ do
                 enableIrqNvic irq 0 0
                 enableTimerInterrupt timer TIMER_INT_UP

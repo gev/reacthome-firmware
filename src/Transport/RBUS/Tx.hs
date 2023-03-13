@@ -1,6 +1,6 @@
-{-# LANGUAGE DataKinds      #-}
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE RankNTypes     #-}
+{-# LANGUAGE DataKinds       #-}
+{-# LANGUAGE RankNTypes      #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
 
@@ -20,11 +20,11 @@ import           Transport.RBUS.Data
 
 
 txHandle :: RBUS -> Ivory eff ()
-txHandle (RBUS {txLock}) = store (addrOf txLock) false
+txHandle (RBUS {..}) = store (addrOf txLock) false
 
 
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()
-txTask r@(RBUS {protocol, clock, txLock, shouldConfirm, shouldInit}) = do
+txTask r@(RBUS {..}) = do
     locked <- deref $ addrOf txLock
     when (iNot locked) $ do
         ts <- getSystemTime clock
@@ -46,7 +46,7 @@ txTask r@(RBUS {protocol, clock, txLock, shouldConfirm, shouldInit}) = do
 
 
 doConfirm :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
-doConfirm r@(RBUS {timestamp, shouldConfirm}) ts = do
+doConfirm r@(RBUS {..}) ts = do
     ts' <- deref $ addrOf timestamp
     when (ts - ts' >? 0)
          (do store (addrOf shouldConfirm) false
@@ -56,7 +56,7 @@ doConfirm r@(RBUS {timestamp, shouldConfirm}) ts = do
 
 
 doTransmitMessage :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
-doTransmitMessage r@(RBUS {msgOffset, msgSize, msgTTL, msgQueue, msgBuff, txBuff, timestamp}) ts = do
+doTransmitMessage r@(RBUS {..}) ts = do
     peek msgQueue $ \i -> do
         let ix = toIx i
         ttl <- deref $ addrOf msgTTL ! ix
@@ -77,7 +77,7 @@ doTransmitMessage r@(RBUS {msgOffset, msgSize, msgTTL, msgQueue, msgBuff, txBuff
 
 
 doPing :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
-doPing r@(RBUS {timestamp}) ts = do
+doPing r@(RBUS {..}) ts = do
     let timestamp' = addrOf timestamp
     ts' <- deref timestamp'
     when (ts - ts' >? 1000)
@@ -85,14 +85,14 @@ doPing r@(RBUS {timestamp}) ts = do
 
 
 doDiscovery :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
-doDiscovery r@(RBUS {timestamp}) ts = do
+doDiscovery r@(RBUS {..}) ts = do
     let timestamp' = addrOf timestamp
     ts' <- deref timestamp'
     when (ts - ts' >? 1000)
          (store timestamp' ts >> discovery r)
 
 
-doRequestInit r@(RBUS {timestamp, initBuff}) ts = do
+doRequestInit r@(RBUS {..}) ts = do
     let timestamp' = addrOf timestamp
     ts' <- deref timestamp'
     when (ts - ts' >? 1000)
@@ -114,7 +114,7 @@ confirm = toRS transmitConfirm
 toRS :: (Slave 255 -> (Uint8 -> Ivory eff ()) -> Ivory (ProcEffects s ()) ())
      -> RBUS
      -> Ivory (ProcEffects s ()) ()
-toRS transmit r@(RBUS {protocol, txBuff, txLock}) = do
+toRS transmit r@(RBUS {..}) = do
     locked <- deref $ addrOf txLock
     when (iNot locked)
          (rsTransmit r =<< run protocol transmit txBuff 0)
@@ -124,7 +124,7 @@ toRS transmit r@(RBUS {protocol, txBuff, txLock}) = do
     TODO: potential msgBuff overflow
 --}
 toQueue :: KnownNat l => RBUS -> Buffer l Uint8 -> Ivory (ProcEffects s ()) ()
-toQueue (RBUS {protocol, msgQueue, msgBuff, msgSize, msgTTL, msgIndex, msgOffset}) buff = do
+toQueue (RBUS {..}) buff = do
     push msgQueue $ \i -> do
         index <- deref $ addrOf msgIndex
         size <- run protocol (transmitMessage buff) msgBuff index
@@ -136,7 +136,7 @@ toQueue (RBUS {protocol, msgQueue, msgBuff, msgSize, msgTTL, msgIndex, msgOffset
 
 
 rsTransmit :: RBUS -> Uint16 -> Ivory (ProcEffects s ()) ()
-rsTransmit (RBUS {rs, txBuff, txLock}) size = do
+rsTransmit (RBUS {..}) size = do
     let array = toCArray $ addrOf txBuff
     RS.transmit rs array size
     store (addrOf txLock) true

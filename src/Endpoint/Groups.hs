@@ -1,8 +1,8 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE RankNTypes        #-}
+{-# LANGUAGE RecordWildCards   #-}
 
 module Endpoint.Groups where
 
@@ -62,5 +62,5 @@ instance KnownNat n => Include (Records n GroupStruct) where
         defMemArea r
 
 instance Include Groups where
-    include (Groups {runGroups, payload}) =
+    include (Groups {..}) =
         runGroups include >> include payload

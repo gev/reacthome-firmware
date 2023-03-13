@@ -1,8 +1,8 @@
 
-{-# LANGUAGE DataKinds      #-}
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE RankNTypes     #-}
-{-# LANGUAGE TypeOperators  #-}
+{-# LANGUAGE DataKinds       #-}
+{-# LANGUAGE RankNTypes      #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TypeOperators   #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
 
@@ -87,7 +87,7 @@ slave n mac model version onMessage onConfirm onDiscovery = Slave
 
 
 instance KnownNat n => Include (Slave n) where
-    include (Slave {address, state, index, phase, size, buff, buffConf, buffPing, buffDisc, tidRx, tidTx, crc, tmp}) = do
+    include (Slave {..}) = do
         inclCRC16
         include tmp
         include address
@@ -110,7 +110,7 @@ instance Initialize (Slave n) where
 
 
 initDisc :: Slave n -> Def('[] :-> ())
-initDisc (Slave {name, mac, model, version, buffDisc}) =
+initDisc (Slave {..}) =
     proc (name <> "_init_disc_tx") $ body $ do
         let mac'         = addrOf mac
         let model'       = addrOf model
@@ -124,7 +124,7 @@ initDisc (Slave {name, mac, model, version, buffDisc}) =
         calcCRC16 buffDisc
 
 initConf :: Slave n -> Def('[] :-> ())
-initConf (Slave {name, address, buffConf}) =
+initConf (Slave {..}) =
     proc (name <> "_init_conf_tx") $ body $ do
         let buffConf'    = addrOf buffConf
         store (buffConf' ! 0) $ confirm txPreamble
@@ -132,7 +132,7 @@ initConf (Slave {name, address, buffConf}) =
         calcCRC16 buffConf
 
 initPing :: Slave n -> Def('[] :-> ())
-initPing (Slave {name, address, buffPing}) =
+initPing (Slave {..}) =
     proc (name <> "_init_ping_tx") $ body $ do
         let buffPing'    = addrOf buffPing
         store (buffPing' ! 0) $ ping txPreamble
@@ -153,6 +153,6 @@ calcCRC16 buff = do
 
 
 hasAddress :: Slave n -> Ivory eff IBool
-hasAddress (Slave {address}) = do
+hasAddress (Slave {..}) = do
     a <- deref $ addrOf address
     pure $ a /=? broadcastAddress

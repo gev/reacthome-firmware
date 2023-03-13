@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs             #-}
-{-# LANGUAGE NamedFieldPuns    #-}
+{-# LANGUAGE RecordWildCards   #-}
 
 module Interface.SystemClock where
 
@@ -30,12 +30,12 @@ systemClock timer counter = SystemClock
 
 
 instance Include SystemClock where
-    include (SystemClock {timer, counter, time}) =
+    include (SystemClock {..}) =
         include counter >> include time >>
         include (HandleTimer timer $ handle time)
 
 instance Initialize SystemClock where
-    initialize (SystemClock {timer, counter, time}) =
+    initialize (SystemClock {..}) =
         initialize counter <>
         initialize (HandleTimer timer $ handle time)
 
@@ -47,7 +47,7 @@ handle time = do
 
 
 instance Counter SystemClock where
-    readCounter (SystemClock {counter}) = readCounter counter
+    readCounter (SystemClock {..}) = readCounter counter
 
 
 

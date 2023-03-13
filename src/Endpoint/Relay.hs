@@ -1,6 +1,6 @@
-{-# LANGUAGE DataKinds      #-}
-{-# LANGUAGE GADTs          #-}
-{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE DataKinds       #-}
+{-# LANGUAGE GADTs           #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Endpoint.Relay where
 
@@ -33,15 +33,15 @@ relay n out = Relay
 
 
 turnOn :: Relay -> Ivory eff ()
-turnOn (Relay {state, payload}) =
+turnOn (Relay {..}) =
     store (addrOf state) true >> store (addrOf payload ! 2) 1
 
 turnOff :: Relay -> Ivory eff ()
-turnOff (Relay {state, payload}) = do
+turnOff (Relay {..}) = do
     store (addrOf state) false >> store (addrOf payload ! 2) 0
 
 manage :: Relay -> Ivory eff ()
-manage (Relay {out, state}) = do
+manage (Relay {..}) = do
     s <- deref $ addrOf state
     ifte_ s (set   out)
             (reset out)
@@ -49,13 +49,13 @@ manage (Relay {out, state}) = do
 
 
 instance Include Relay where
-    include (Relay {out, state, payload}) = do
+    include (Relay {..}) = do
         include out
         include state
         include payload
 
 instance Initialize Relay where
-    initialize (Relay {n, name, out, payload}) =
+    initialize (Relay {..}) =
         initialize out <> [
             proc (name <> "_payload_init") $ body $ do
                 let payload' = addrOf payload

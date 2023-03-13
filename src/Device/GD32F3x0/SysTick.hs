@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE RankNTypes        #-}
+{-# LANGUAGE RecordWildCards   #-}
 {-# LANGUAGE TypeOperators     #-}
 
 module Device.GD32F3x0.SysTick where
@@ -20,7 +20,7 @@ sysTick = SysTick
 
 
 instance Include (HandleTimer SysTick) where
-    include (HandleTimer {handle}) =
+    include (HandleTimer {..}) =
         inclCoreCM4 >> incl (handleIRQ handle)
 
 

@@ -1,7 +1,7 @@
-{-# LANGUAGE DataKinds      #-}
-{-# LANGUAGE GADTs          #-}
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE RankNTypes     #-}
+{-# LANGUAGE DataKinds       #-}
+{-# LANGUAGE GADTs           #-}
+{-# LANGUAGE RankNTypes      #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Feature.Relay where
 
@@ -46,7 +46,7 @@ instance Initialize Relay where
     initialize = initialize . getRelay
 
 instance Task Relay where
-    tasks (Relay {getRelay}) = [
+    tasks (Relay {..}) = [
             delay 10 "relays" $ E.manage getRelay
         ]
 

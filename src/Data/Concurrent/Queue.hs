@@ -1,8 +1,7 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE KindSignatures      #-}
-{-# LANGUAGE NamedFieldPuns      #-}
+{-# LANGUAGE RecordWildCards     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-
 
 module Data.Concurrent.Queue where
 
@@ -40,7 +39,7 @@ queue id =
 
 
 push :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
-push (Queue {producerIx, producerS, consumerS}) handle =
+push (Queue {..}) handle =
     down producerS $ do
         x <- deref $ addrOf producerIx
         handle x
@@ -49,7 +48,7 @@ push (Queue {producerIx, producerS, consumerS}) handle =
 
 
 pop :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
-pop (Queue {consumerIx, consumerS, producerS}) handle =
+pop (Queue {..}) handle =
     down consumerS $ do
         x <- deref $ addrOf consumerIx
         handle x
@@ -58,14 +57,14 @@ pop (Queue {consumerIx, consumerS, producerS}) handle =
 
 
 peek :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
-peek (Queue {consumerIx, consumerS}) handle = do
+peek (Queue {..}) handle = do
     check consumerS $ do
         x <- deref $ addrOf consumerIx
         handle x
 
 
 remove :: Queue n -> Ivory eff ()
-remove (Queue {consumerIx, consumerS, producerS}) =
+remove (Queue {..}) =
     down consumerS $ do
         x <- deref $ addrOf consumerIx
         store (addrOf consumerIx) $ x + 1
@@ -73,7 +72,7 @@ remove (Queue {consumerIx, consumerS, producerS}) =
 
 
 size :: Queue n -> Ivory eff Uint16
-size (Queue {producerIx, consumerIx}) =
+size (Queue {..}) =
     (-) <$> deref (addrOf producerIx) <*> deref (addrOf consumerIx)
 
 

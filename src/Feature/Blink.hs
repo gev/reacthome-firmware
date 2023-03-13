@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds          #-}
 {-# LANGUAGE GADTs              #-}
-{-# LANGUAGE NamedFieldPuns     #-}
 {-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE RecordWildCards    #-}
 
 module Feature.Blink where
 
@@ -39,11 +39,11 @@ blink n out = do
 
 
 instance Include Blink where
-    include (Blink {out, state}) = include state >> include out
+    include (Blink {..}) = include state >> include out
 
 
 instance Initialize Blink where
-    initialize (Blink {out}) = initialize out
+    initialize (Blink {..}) = initialize out
 
 
 instance Task Blink where

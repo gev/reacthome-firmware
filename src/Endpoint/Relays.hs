@@ -1,8 +1,8 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE RankNTypes        #-}
+{-# LANGUAGE RecordWildCards   #-}
 
 module Endpoint.Relays where
 
@@ -52,7 +52,7 @@ relays name n = Relays
 
 
 message :: Relays -> Uint8 -> Ivory eff (Buffer 8 Uint8)
-message (Relays {runRelays, payload}) i = do
+message (Relays {..}) i = do
     let payload' = addrOf payload
     runRelays $ \r -> do
         let relay = addrOf r ! toIx i
@@ -71,5 +71,5 @@ instance KnownNat n => Include (Records n RelayStruct) where
         defMemArea r
 
 instance Include Relays where
-    include (Relays {runRelays, payload}) =
+    include (Relays {..}) =
         runRelays include >> include payload

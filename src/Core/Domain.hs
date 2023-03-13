@@ -1,6 +1,6 @@
-{-# LANGUAGE DataKinds      #-}
-{-# LANGUAGE GADTs          #-}
-{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE DataKinds       #-}
+{-# LANGUAGE GADTs           #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Core.Domain where
 
@@ -51,7 +51,7 @@ domain model (major, minor) mcu shouldInit transport features = Domain
 
 
 instance Include (Domain mcu t) where
-    include (Domain {model, version, mac, shouldInit, transport}) = do
+    include (Domain {..}) = do
         inclSerialize
         include model
         include version
@@ -61,5 +61,5 @@ instance Include (Domain mcu t) where
 
 
 instance Initialize (Domain mcu t) where
-    initialize (Domain {mac, transport}) =
+    initialize (Domain {..}) =
         initialize mac <> initialize transport

@@ -1,6 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RankNTypes            #-}
+{-# LANGUAGE RecordWildCards       #-}
 
 module Device.GD32F3x0.GPIOs.Inputs where
 
@@ -23,7 +23,7 @@ data Inputs = Inputs
 
 
 instance Include Inputs where
-    include (Inputs {getInputs, runInputs}) = do
+    include (Inputs {..}) = do
         traverse_ include getInputs
         runInputs include
 

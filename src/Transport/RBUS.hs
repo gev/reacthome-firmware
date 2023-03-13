@@ -1,6 +1,5 @@
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE RankNTypes     #-}
-
+{-# LANGUAGE RankNTypes      #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Transport.RBUS    where
 
@@ -61,7 +60,7 @@ rbus rs = do
 
     where name = "rbus_slave"
 
-          onMessage dispatch (RBUS {shouldConfirm, clock, timestamp}) buff n shouldHandle = do
+          onMessage dispatch (RBUS {..}) buff n shouldHandle = do
             store (addrOf timestamp) =<< getSystemTime clock
             when shouldHandle $ dispatch buff n
             store (addrOf shouldConfirm) true
@@ -70,7 +69,7 @@ rbus rs = do
             TODO: Should make Init request here?
             TODO: Should reset Tx queue when address has changed?
           -}
-          onDiscovery (RBUS {shouldConfirm, clock, timestamp}) = do
+          onDiscovery (RBUS {..}) = do
             store (addrOf timestamp) =<< getSystemTime clock
             store (addrOf shouldConfirm) false
 
@@ -96,7 +95,7 @@ instance Include RBUS where
 
 
 instance Initialize RBUS where
-    initialize (RBUS {rs, protocol}) = initialize rs <> initialize protocol
+    initialize (RBUS {..}) = initialize rs <> initialize protocol
 
 
 instance Task RBUS where

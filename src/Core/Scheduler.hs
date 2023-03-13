@@ -1,6 +1,6 @@
-{-# LANGUAGE DataKinds      #-}
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE TypeOperators  #-}
+{-# LANGUAGE DataKinds       #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TypeOperators   #-}
 
 module Core.Scheduler where
 
@@ -33,16 +33,16 @@ scheduler clock steps =  Scheduler
 
 
 instance Include Scheduler where
-    include (Scheduler {clock}) =
+    include (Scheduler {..}) =
         include clock
 
 instance Initialize Scheduler where
-    initialize (Scheduler {clock}) = initialize clock
+    initialize (Scheduler {..}) = initialize clock
 
 
 
 schedule :: Scheduler -> Def ('[] :-> ())
-schedule (Scheduler {clock, steps}) = proc "loop" $ body $ do
+schedule (Scheduler {..}) = proc "loop" $ body $ do
     let (scheduled, immediately) = partition (isJust . period) steps
     clocks <- replicateM (length scheduled) (local (ival 0))
     forever $ do

@@ -1,4 +1,4 @@
-{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Device.GD32F3x0.GPIO.Output where
 
@@ -27,5 +27,5 @@ instance Initialize Output where
     initialize = initialize . getOutput
 
 instance I.Output Output where
-    set   (Output (Port {gpio, pin})) = S.setBit   gpio pin
-    reset (Output (Port {gpio, pin})) = S.resetBit gpio pin
+    set   (Output (Port {..})) = S.setBit   gpio pin
+    reset (Output (Port {..})) = S.resetBit gpio pin

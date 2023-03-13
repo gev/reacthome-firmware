@@ -1,6 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RankNTypes            #-}
+{-# LANGUAGE RecordWildCards       #-}
 
 module Device.GD32F3x0.GPIOs.Outputs where
 
@@ -24,7 +24,7 @@ data Outputs = Outputs
 
 
 instance Include Outputs where
-    include (Outputs {getOutputs, runOutputs}) = do
+    include (Outputs {..}) = do
         traverse_ include getOutputs
         runOutputs include
 

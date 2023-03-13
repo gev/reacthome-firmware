@@ -1,4 +1,4 @@
-{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Device.GD32F3x0.GPIO where
 
@@ -75,7 +75,7 @@ instance Include Port where
     include _ = inclRCU >> inclGPIO
 
 instance Initialize Port where
-    initialize (Port {rcu, gpio, pin, mode}) = [
+    initialize (Port {..}) = [
             proc (show gpio <> "_" <> show pin <>"_init") $ body $ do
                 enablePeriphClock rcu
                 setOutputOptions gpio GPIO_OTYPE_PP GPIO_OSPEED_50MHZ pin

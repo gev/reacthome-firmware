@@ -1,5 +1,4 @@
-{-# LANGUAGE NamedFieldPuns #-}
-
+{-# LANGUAGE RecordWildCards #-}
 
 module Transport.RBUS.Rx    where
 
@@ -10,13 +9,13 @@ import           Transport.RBUS.Data
 
 
 rxHandle :: RBUS -> Uint16 -> Ivory eff ()
-rxHandle (RBUS {rxBuff, rxQueue}) value = do
+rxHandle (RBUS {..}) value = do
     push rxQueue $ \i -> do
         store (addrOf rxBuff ! toIx i) value
 
 
 rxTask :: RBUS -> Ivory (ProcEffects s ()) ()
-rxTask (RBUS {rs, protocol, rxBuff, rxQueue, txBuff}) =
+rxTask (RBUS {..}) =
     pop rxQueue $ \i -> do
         v <- deref $ addrOf rxBuff ! toIx i
         receive protocol $ castDefault v

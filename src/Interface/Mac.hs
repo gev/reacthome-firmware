@@ -1,8 +1,8 @@
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RankNTypes            #-}
+{-# LANGUAGE RecordWildCards       #-}
 
 module Interface.Mac (Mac, mac, getMac) where
 
@@ -35,10 +35,10 @@ mac include initialize name = Mac
 
 
 instance Include Mac where
-    include (Mac {includeMac, getMac}) =
+    include (Mac {..}) =
         includeMac >> include getMac
 
 
 instance Initialize Mac where
-    initialize (Mac {name, initializeMac, getMac}) =
+    initialize (Mac {..}) =
         [proc (name <> "_init") $ body $ initializeMac getMac]
