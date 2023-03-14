@@ -1,0 +1,1387 @@
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"gd32f3x0_gpio.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.gpio_deinit,"ax",%progbits
+  18              		.align	1
+  19              		.global	gpio_deinit
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	gpio_deinit:
+  25              	.LVL0:
+  26              	.LFB116:
+  27              		.file 1 "lib/GD32F3x0/Source/gd32f3x0_gpio.c"
+   1:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** /*!
+   2:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \file    gd32f3x0_gpio.c
+   3:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \brief   GPIO driver
+   4:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+   5:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \version 2017-06-06, V1.0.0, firmware for GD32F3x0
+   6:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \version 2019-06-01, V2.0.0, firmware for GD32F3x0
+   7:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \version 2020-09-30, V2.1.0, firmware for GD32F3x0
+   8:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \version 2022-01-06, V2.2.0, firmware for GD32F3x0
+   9:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** */
+  10:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+  11:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** /*
+  12:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     Copyright (c) 2022, GigaDevice Semiconductor Inc.
+  13:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+  14:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     Redistribution and use in source and binary forms, with or without modification,
+  15:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** are permitted provided that the following conditions are met:
+  16:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+  17:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     1. Redistributions of source code must retain the above copyright notice, this
+  18:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****        list of conditions and the following disclaimer.
+  19:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     2. Redistributions in binary form must reproduce the above copyright notice,
+  20:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****        this list of conditions and the following disclaimer in the documentation
+  21:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****        and/or other materials provided with the distribution.
+  22:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     3. Neither the name of the copyright holder nor the names of its contributors
+  23:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****        may be used to endorse or promote products derived from this software without
+  24:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****        specific prior written permission.
+  25:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+  26:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  27:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  28:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  29:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  30:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+  31:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 2
+
+
+  32:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+  33:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  34:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+  35:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** OF SUCH DAMAGE.
+  36:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** */
+  37:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+  38:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** #include "gd32f3x0_gpio.h"
+  39:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+  40:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** /*!
+  41:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \brief      reset GPIO port
+  42:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  gpio_periph: GPIOx(x = A,B,C,D,F)
+  43:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+  44:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIOx(x = A,B,C,D,F)
+  45:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[out] none
+  46:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \retval     none
+  47:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** */
+  48:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** void gpio_deinit(uint32_t gpio_periph)
+  49:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** {
+  28              		.loc 1 49 1 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		.loc 1 49 1 is_stmt 0 view .LVU1
+  33 0000 08B5     		push	{r3, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 8
+  36              		.cfi_offset 3, -8
+  37              		.cfi_offset 14, -4
+  50:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     switch(gpio_periph) {
+  38              		.loc 1 50 5 is_stmt 1 view .LVU2
+  39 0002 1F4B     		ldr	r3, .L11
+  40 0004 9842     		cmp	r0, r3
+  41 0006 29D0     		beq	.L2
+  42 0008 0FD9     		bls	.L10
+  43 000a 1E4B     		ldr	r3, .L11+4
+  44 000c 9842     		cmp	r0, r3
+  45 000e 2ED0     		beq	.L7
+  46 0010 03F50063 		add	r3, r3, #2048
+  47 0014 9842     		cmp	r0, r3
+  48 0016 20D1     		bne	.L1
+  51:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     case GPIOA:
+  52:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         /* reset GPIOA */
+  53:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         rcu_periph_reset_enable(RCU_GPIOARST);
+  54:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         rcu_periph_reset_disable(RCU_GPIOARST);
+  55:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         break;
+  56:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     case GPIOB:
+  57:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         /* reset GPIOB */
+  58:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         rcu_periph_reset_enable(RCU_GPIOBRST);
+  59:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         rcu_periph_reset_disable(RCU_GPIOBRST);
+  60:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         break;
+  61:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     case GPIOC:
+  62:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         /* reset GPIOC */
+  63:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         rcu_periph_reset_enable(RCU_GPIOCRST);
+  64:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         rcu_periph_reset_disable(RCU_GPIOCRST);
+  65:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         break;
+  66:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     case GPIOD:
+  67:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         /* reset GPIOD */
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 3
+
+
+  68:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         rcu_periph_reset_enable(RCU_GPIODRST);
+  69:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         rcu_periph_reset_disable(RCU_GPIODRST);
+  70:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         break;
+  71:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     case GPIOF:
+  72:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         /* reset GPIOF */
+  73:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         rcu_periph_reset_enable(RCU_GPIOFRST);
+  49              		.loc 1 73 9 view .LVU3
+  50 0018 40F61620 		movw	r0, #2582
+  51              	.LVL1:
+  52              		.loc 1 73 9 is_stmt 0 view .LVU4
+  53 001c FFF7FEFF 		bl	rcu_periph_reset_enable
+  54              	.LVL2:
+  74:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         rcu_periph_reset_disable(RCU_GPIOFRST);
+  55              		.loc 1 74 9 is_stmt 1 view .LVU5
+  56 0020 40F61620 		movw	r0, #2582
+  57 0024 FFF7FEFF 		bl	rcu_periph_reset_disable
+  58              	.LVL3:
+  75:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         break;
+  59              		.loc 1 75 9 view .LVU6
+  76:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     default:
+  77:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         break;
+  78:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     }
+  79:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** }
+  60              		.loc 1 79 1 is_stmt 0 view .LVU7
+  61 0028 17E0     		b	.L1
+  62              	.LVL4:
+  63              	.L10:
+  50:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     case GPIOA:
+  64              		.loc 1 50 5 view .LVU8
+  65 002a B0F1904F 		cmp	r0, #1207959552
+  66 002e 0CD0     		beq	.L4
+  67 0030 A3F58063 		sub	r3, r3, #1024
+  68 0034 9842     		cmp	r0, r3
+  69 0036 10D1     		bne	.L1
+  58:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         rcu_periph_reset_disable(RCU_GPIOBRST);
+  70              		.loc 1 58 9 is_stmt 1 view .LVU9
+  71 0038 40F61220 		movw	r0, #2578
+  72              	.LVL5:
+  58:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         rcu_periph_reset_disable(RCU_GPIOBRST);
+  73              		.loc 1 58 9 is_stmt 0 view .LVU10
+  74 003c FFF7FEFF 		bl	rcu_periph_reset_enable
+  75              	.LVL6:
+  59:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         break;
+  76              		.loc 1 59 9 is_stmt 1 view .LVU11
+  77 0040 40F61220 		movw	r0, #2578
+  78 0044 FFF7FEFF 		bl	rcu_periph_reset_disable
+  79              	.LVL7:
+  60:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     case GPIOC:
+  80              		.loc 1 60 9 view .LVU12
+  81 0048 07E0     		b	.L1
+  82              	.LVL8:
+  83              	.L4:
+  53:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         rcu_periph_reset_disable(RCU_GPIOARST);
+  84              		.loc 1 53 9 view .LVU13
+  85 004a 40F61120 		movw	r0, #2577
+  86              	.LVL9:
+  53:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         rcu_periph_reset_disable(RCU_GPIOARST);
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 4
+
+
+  87              		.loc 1 53 9 is_stmt 0 view .LVU14
+  88 004e FFF7FEFF 		bl	rcu_periph_reset_enable
+  89              	.LVL10:
+  54:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         break;
+  90              		.loc 1 54 9 is_stmt 1 view .LVU15
+  91 0052 40F61120 		movw	r0, #2577
+  92 0056 FFF7FEFF 		bl	rcu_periph_reset_disable
+  93              	.LVL11:
+  55:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     case GPIOB:
+  94              		.loc 1 55 9 view .LVU16
+  95              	.L1:
+  96              		.loc 1 79 1 is_stmt 0 view .LVU17
+  97 005a 08BD     		pop	{r3, pc}
+  98              	.LVL12:
+  99              	.L2:
+  63:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         rcu_periph_reset_disable(RCU_GPIOCRST);
+ 100              		.loc 1 63 9 is_stmt 1 view .LVU18
+ 101 005c 40F61320 		movw	r0, #2579
+ 102              	.LVL13:
+  63:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         rcu_periph_reset_disable(RCU_GPIOCRST);
+ 103              		.loc 1 63 9 is_stmt 0 view .LVU19
+ 104 0060 FFF7FEFF 		bl	rcu_periph_reset_enable
+ 105              	.LVL14:
+  64:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         break;
+ 106              		.loc 1 64 9 is_stmt 1 view .LVU20
+ 107 0064 40F61320 		movw	r0, #2579
+ 108 0068 FFF7FEFF 		bl	rcu_periph_reset_disable
+ 109              	.LVL15:
+  65:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     case GPIOD:
+ 110              		.loc 1 65 9 view .LVU21
+ 111 006c F5E7     		b	.L1
+ 112              	.LVL16:
+ 113              	.L7:
+  68:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         rcu_periph_reset_disable(RCU_GPIODRST);
+ 114              		.loc 1 68 9 view .LVU22
+ 115 006e 40F61420 		movw	r0, #2580
+ 116              	.LVL17:
+  68:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         rcu_periph_reset_disable(RCU_GPIODRST);
+ 117              		.loc 1 68 9 is_stmt 0 view .LVU23
+ 118 0072 FFF7FEFF 		bl	rcu_periph_reset_enable
+ 119              	.LVL18:
+  69:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         break;
+ 120              		.loc 1 69 9 is_stmt 1 view .LVU24
+ 121 0076 40F61420 		movw	r0, #2580
+ 122 007a FFF7FEFF 		bl	rcu_periph_reset_disable
+ 123              	.LVL19:
+  70:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     case GPIOF:
+ 124              		.loc 1 70 9 view .LVU25
+ 125 007e ECE7     		b	.L1
+ 126              	.L12:
+ 127              		.align	2
+ 128              	.L11:
+ 129 0080 00080048 		.word	1207961600
+ 130 0084 000C0048 		.word	1207962624
+ 131              		.cfi_endproc
+ 132              	.LFE116:
+ 134              		.section	.text.gpio_mode_set,"ax",%progbits
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 5
+
+
+ 135              		.align	1
+ 136              		.global	gpio_mode_set
+ 137              		.syntax unified
+ 138              		.thumb
+ 139              		.thumb_func
+ 141              	gpio_mode_set:
+ 142              	.LVL20:
+ 143              	.LFB117:
+  80:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+  81:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** /*!
+  82:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \brief      set GPIO mode
+  83:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  gpio_periph: GPIOx(x = A,B,C,D,F)
+  84:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+  85:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIOx(x = A,B,C,D,F)
+  86:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  mode: gpio pin mode
+  87:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+  88:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_MODE_INPUT: input mode
+  89:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_MODE_OUTPUT: output mode
+  90:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_MODE_AF: alternate function mode
+  91:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_MODE_ANALOG: analog mode
+  92:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  pull_up_down: gpio pin with pull-up or pull-down resistor
+  93:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+  94:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_PUPD_NONE: floating mode, no pull-up and pull-down resistors
+  95:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_PUPD_PULLUP: with pull-up resistor
+  96:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_PUPD_PULLDOWN:with pull-down resistor
+  97:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  pin: GPIO pin
+  98:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 one or more parameters can be selected which are shown as below:
+  99:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_PIN_x(x=0..15), GPIO_PIN_ALL
+ 100:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[out] none
+ 101:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \retval     none
+ 102:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** */
+ 103:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** void gpio_mode_set(uint32_t gpio_periph, uint32_t mode, uint32_t pull_up_down, uint32_t pin)
+ 104:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** {
+ 144              		.loc 1 104 1 view -0
+ 145              		.cfi_startproc
+ 146              		@ args = 0, pretend = 0, frame = 0
+ 147              		@ frame_needed = 0, uses_anonymous_args = 0
+ 148              		.loc 1 104 1 is_stmt 0 view .LVU27
+ 149 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 150              	.LCFI1:
+ 151              		.cfi_def_cfa_offset 20
+ 152              		.cfi_offset 4, -20
+ 153              		.cfi_offset 5, -16
+ 154              		.cfi_offset 6, -12
+ 155              		.cfi_offset 7, -8
+ 156              		.cfi_offset 14, -4
+ 105:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     uint16_t i;
+ 157              		.loc 1 105 5 is_stmt 1 view .LVU28
+ 106:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     uint32_t ctl, pupd;
+ 158              		.loc 1 106 5 view .LVU29
+ 107:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 108:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     ctl = GPIO_CTL(gpio_periph);
+ 159              		.loc 1 108 5 view .LVU30
+ 160              		.loc 1 108 9 is_stmt 0 view .LVU31
+ 161 0002 0568     		ldr	r5, [r0]
+ 162              	.LVL21:
+ 109:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     pupd = GPIO_PUD(gpio_periph);
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 6
+
+
+ 163              		.loc 1 109 5 is_stmt 1 view .LVU32
+ 164              		.loc 1 109 10 is_stmt 0 view .LVU33
+ 165 0004 C668     		ldr	r6, [r0, #12]
+ 166              	.LVL22:
+ 110:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 111:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     for(i = 0U; i < 16U; i++) {
+ 167              		.loc 1 111 5 is_stmt 1 view .LVU34
+ 168              		.loc 1 111 11 is_stmt 0 view .LVU35
+ 169 0006 4FF0000C 		mov	ip, #0
+ 170              		.loc 1 111 5 view .LVU36
+ 171 000a 03E0     		b	.L14
+ 172              	.LVL23:
+ 173              	.L15:
+ 174              		.loc 1 111 26 is_stmt 1 discriminator 2 view .LVU37
+ 175              		.loc 1 111 27 is_stmt 0 discriminator 2 view .LVU38
+ 176 000c 0CF1010C 		add	ip, ip, #1
+ 177              	.LVL24:
+ 178              		.loc 1 111 27 discriminator 2 view .LVU39
+ 179 0010 1FFA8CFC 		uxth	ip, ip
+ 180              	.LVL25:
+ 181              	.L14:
+ 182              		.loc 1 111 17 is_stmt 1 discriminator 1 view .LVU40
+ 183              		.loc 1 111 5 is_stmt 0 discriminator 1 view .LVU41
+ 184 0014 BCF10F0F 		cmp	ip, #15
+ 185 0018 18D8     		bhi	.L18
+ 112:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         if((1U << i) & pin) {
+ 186              		.loc 1 112 9 is_stmt 1 view .LVU42
+ 187              		.loc 1 112 16 is_stmt 0 view .LVU43
+ 188 001a 4FF0010E 		mov	lr, #1
+ 189 001e 0EFA0CFE 		lsl	lr, lr, ip
+ 190              		.loc 1 112 11 view .LVU44
+ 191 0022 1EEA030F 		tst	lr, r3
+ 192 0026 F1D0     		beq	.L15
+ 113:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             /* clear the specified pin mode bits */
+ 114:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             ctl &= ~GPIO_MODE_MASK(i);
+ 193              		.loc 1 114 13 is_stmt 1 view .LVU45
+ 194              		.loc 1 114 21 is_stmt 0 view .LVU46
+ 195 0028 4FEA4C04 		lsl	r4, ip, #1
+ 196 002c 4FF0030E 		mov	lr, #3
+ 197 0030 0EFA04FE 		lsl	lr, lr, r4
+ 198              		.loc 1 114 17 view .LVU47
+ 199 0034 25EA0E05 		bic	r5, r5, lr
+ 200              	.LVL26:
+ 115:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             /* set the specified pin mode bits */
+ 116:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             ctl |= GPIO_MODE_SET(i, mode);
+ 201              		.loc 1 116 13 is_stmt 1 view .LVU48
+ 202              		.loc 1 116 20 is_stmt 0 view .LVU49
+ 203 0038 01FA04F7 		lsl	r7, r1, r4
+ 204              		.loc 1 116 17 view .LVU50
+ 205 003c 3D43     		orrs	r5, r5, r7
+ 206              	.LVL27:
+ 117:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 118:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             /* clear the specified pin pupd bits */
+ 119:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             pupd &= ~GPIO_PUPD_MASK(i);
+ 207              		.loc 1 119 13 is_stmt 1 view .LVU51
+ 208              		.loc 1 119 18 is_stmt 0 view .LVU52
+ 209 003e 26EA0E0E 		bic	lr, r6, lr
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 7
+
+
+ 210              	.LVL28:
+ 120:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             /* set the specified pin pupd bits */
+ 121:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             pupd |= GPIO_PUPD_SET(i, pull_up_down);
+ 211              		.loc 1 121 13 is_stmt 1 view .LVU53
+ 212              		.loc 1 121 21 is_stmt 0 view .LVU54
+ 213 0042 02FA04F4 		lsl	r4, r2, r4
+ 214              		.loc 1 121 18 view .LVU55
+ 215 0046 44EA0E06 		orr	r6, r4, lr
+ 216              	.LVL29:
+ 217              		.loc 1 121 18 view .LVU56
+ 218 004a DFE7     		b	.L15
+ 219              	.L18:
+ 122:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         }
+ 123:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     }
+ 124:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 125:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     GPIO_CTL(gpio_periph) = ctl;
+ 220              		.loc 1 125 5 is_stmt 1 view .LVU57
+ 221              		.loc 1 125 27 is_stmt 0 view .LVU58
+ 222 004c 0560     		str	r5, [r0]
+ 126:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     GPIO_PUD(gpio_periph) = pupd;
+ 223              		.loc 1 126 5 is_stmt 1 view .LVU59
+ 224              		.loc 1 126 27 is_stmt 0 view .LVU60
+ 225 004e C660     		str	r6, [r0, #12]
+ 127:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** }
+ 226              		.loc 1 127 1 view .LVU61
+ 227 0050 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 228              		.loc 1 127 1 view .LVU62
+ 229              		.cfi_endproc
+ 230              	.LFE117:
+ 232              		.section	.text.gpio_output_options_set,"ax",%progbits
+ 233              		.align	1
+ 234              		.global	gpio_output_options_set
+ 235              		.syntax unified
+ 236              		.thumb
+ 237              		.thumb_func
+ 239              	gpio_output_options_set:
+ 240              	.LVL30:
+ 241              	.LFB118:
+ 128:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 129:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** /*!
+ 130:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \brief      set GPIO output type and speed
+ 131:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  gpio_periph: GPIOx(x = A,B,C,D,F)
+ 132:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+ 133:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIOx(x = A,B,C,D,F)
+ 134:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  otype: gpio pin output mode
+ 135:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+ 136:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_OTYPE_PP: push pull mode
+ 137:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_OTYPE_OD: open drain mode
+ 138:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  speed: gpio pin output max speed
+ 139:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+ 140:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_OSPEED_2MHZ: output max speed 2MHz
+ 141:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_OSPEED_10MHZ: output max speed 10MHz
+ 142:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_OSPEED_50MHZ: output max speed 50MHz
+ 143:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_OSPEED_MAX: GPIO very high output speed, max speed more than 50MHz
+ 144:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  pin: GPIO pin
+ 145:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 one or more parameters can be selected which are shown as below:
+ 146:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_PIN_x(x=0..15), GPIO_PIN_ALL
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 8
+
+
+ 147:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[out] none
+ 148:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \retval     none
+ 149:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** */
+ 150:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** void gpio_output_options_set(uint32_t gpio_periph, uint8_t otype, uint32_t speed, uint32_t pin)
+ 151:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** {
+ 242              		.loc 1 151 1 is_stmt 1 view -0
+ 243              		.cfi_startproc
+ 244              		@ args = 0, pretend = 0, frame = 0
+ 245              		@ frame_needed = 0, uses_anonymous_args = 0
+ 246              		.loc 1 151 1 is_stmt 0 view .LVU64
+ 247 0000 30B5     		push	{r4, r5, lr}
+ 248              	.LCFI2:
+ 249              		.cfi_def_cfa_offset 12
+ 250              		.cfi_offset 4, -12
+ 251              		.cfi_offset 5, -8
+ 252              		.cfi_offset 14, -4
+ 152:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     uint16_t i;
+ 253              		.loc 1 152 5 is_stmt 1 view .LVU65
+ 153:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     uint32_t ospeed0, ospeed1;
+ 254              		.loc 1 153 5 view .LVU66
+ 154:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 155:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     if(GPIO_OTYPE_OD == otype) {
+ 255              		.loc 1 155 5 view .LVU67
+ 256              		.loc 1 155 7 is_stmt 0 view .LVU68
+ 257 0002 0129     		cmp	r1, #1
+ 258 0004 0AD0     		beq	.L31
+ 156:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         GPIO_OMODE(gpio_periph) |= (uint32_t)pin;
+ 157:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     } else {
+ 158:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         GPIO_OMODE(gpio_periph) &= (uint32_t)(~pin);
+ 259              		.loc 1 158 9 is_stmt 1 view .LVU69
+ 260              		.loc 1 158 33 is_stmt 0 view .LVU70
+ 261 0006 4168     		ldr	r1, [r0, #4]
+ 262              	.LVL31:
+ 263              		.loc 1 158 33 view .LVU71
+ 264 0008 21EA0301 		bic	r1, r1, r3
+ 265 000c 4160     		str	r1, [r0, #4]
+ 266              	.L21:
+ 159:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     }
+ 160:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 161:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     /* get the specified pin output speed bits value */
+ 162:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     ospeed0 = GPIO_OSPD0(gpio_periph);
+ 267              		.loc 1 162 5 is_stmt 1 view .LVU72
+ 268              		.loc 1 162 13 is_stmt 0 view .LVU73
+ 269 000e 8468     		ldr	r4, [r0, #8]
+ 270              	.LVL32:
+ 163:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 164:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     if(GPIO_OSPEED_MAX == speed) {
+ 271              		.loc 1 164 5 is_stmt 1 view .LVU74
+ 272              		.loc 1 164 7 is_stmt 0 view .LVU75
+ 273 0010 4FF6FF71 		movw	r1, #65535
+ 274 0014 8A42     		cmp	r2, r1
+ 275 0016 05D0     		beq	.L32
+ 165:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         ospeed1 = GPIO_OSPD1(gpio_periph);
+ 166:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 167:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         for(i = 0U; i < 16U; i++) {
+ 168:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             if((1U << i) & pin) {
+ 169:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 /* enable very high output speed function of the pin when the corresponding OSPDy(y
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 9
+
+
+ 170:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                    is "11" (output max speed 50MHz) */
+ 171:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 ospeed0 |= GPIO_OSPEED_SET(i, 0x03);
+ 172:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 ospeed1 |= (1U << i);
+ 173:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             }
+ 174:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         }
+ 175:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         GPIO_OSPD0(gpio_periph) = ospeed0;
+ 176:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         GPIO_OSPD1(gpio_periph) = ospeed1;
+ 177:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     } else {
+ 178:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         for(i = 0U; i < 16U; i++) {
+ 276              		.loc 1 178 15 view .LVU76
+ 277 0018 0021     		movs	r1, #0
+ 278 001a 1DE0     		b	.L22
+ 279              	.LVL33:
+ 280              	.L31:
+ 156:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     } else {
+ 281              		.loc 1 156 9 is_stmt 1 view .LVU77
+ 156:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     } else {
+ 282              		.loc 1 156 33 is_stmt 0 view .LVU78
+ 283 001c 4168     		ldr	r1, [r0, #4]
+ 284              	.LVL34:
+ 156:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     } else {
+ 285              		.loc 1 156 33 view .LVU79
+ 286 001e 1943     		orrs	r1, r1, r3
+ 287 0020 4160     		str	r1, [r0, #4]
+ 288 0022 F4E7     		b	.L21
+ 289              	.LVL35:
+ 290              	.L32:
+ 165:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         ospeed1 = GPIO_OSPD1(gpio_periph);
+ 291              		.loc 1 165 9 is_stmt 1 view .LVU80
+ 165:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         ospeed1 = GPIO_OSPD1(gpio_periph);
+ 292              		.loc 1 165 17 is_stmt 0 view .LVU81
+ 293 0024 C56B     		ldr	r5, [r0, #60]
+ 294              	.LVL36:
+ 167:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             if((1U << i) & pin) {
+ 295              		.loc 1 167 9 is_stmt 1 view .LVU82
+ 167:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             if((1U << i) & pin) {
+ 296              		.loc 1 167 15 is_stmt 0 view .LVU83
+ 297 0026 0022     		movs	r2, #0
+ 298              	.LVL37:
+ 167:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             if((1U << i) & pin) {
+ 299              		.loc 1 167 9 view .LVU84
+ 300 0028 01E0     		b	.L23
+ 301              	.LVL38:
+ 302              	.L24:
+ 167:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             if((1U << i) & pin) {
+ 303              		.loc 1 167 30 is_stmt 1 discriminator 2 view .LVU85
+ 167:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             if((1U << i) & pin) {
+ 304              		.loc 1 167 31 is_stmt 0 discriminator 2 view .LVU86
+ 305 002a 0132     		adds	r2, r2, #1
+ 306              	.LVL39:
+ 167:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             if((1U << i) & pin) {
+ 307              		.loc 1 167 31 discriminator 2 view .LVU87
+ 308 002c 92B2     		uxth	r2, r2
+ 309              	.LVL40:
+ 310              	.L23:
+ 167:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             if((1U << i) & pin) {
+ 311              		.loc 1 167 21 is_stmt 1 discriminator 1 view .LVU88
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 10
+
+
+ 167:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             if((1U << i) & pin) {
+ 312              		.loc 1 167 9 is_stmt 0 discriminator 1 view .LVU89
+ 313 002e 0F2A     		cmp	r2, #15
+ 314 0030 0DD8     		bhi	.L33
+ 168:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 /* enable very high output speed function of the pin when the corresponding OSPDy(y
+ 315              		.loc 1 168 13 is_stmt 1 view .LVU90
+ 168:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 /* enable very high output speed function of the pin when the corresponding OSPDy(y
+ 316              		.loc 1 168 20 is_stmt 0 view .LVU91
+ 317 0032 0121     		movs	r1, #1
+ 318 0034 9140     		lsls	r1, r1, r2
+ 168:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 /* enable very high output speed function of the pin when the corresponding OSPDy(y
+ 319              		.loc 1 168 15 view .LVU92
+ 320 0036 1942     		tst	r1, r3
+ 321 0038 F7D0     		beq	.L24
+ 171:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 ospeed1 |= (1U << i);
+ 322              		.loc 1 171 17 is_stmt 1 view .LVU93
+ 171:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 ospeed1 |= (1U << i);
+ 323              		.loc 1 171 28 is_stmt 0 view .LVU94
+ 324 003a 4FEA420E 		lsl	lr, r2, #1
+ 325 003e 4FF0030C 		mov	ip, #3
+ 326 0042 0CFA0EFC 		lsl	ip, ip, lr
+ 171:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 ospeed1 |= (1U << i);
+ 327              		.loc 1 171 25 view .LVU95
+ 328 0046 44EA0C04 		orr	r4, r4, ip
+ 329              	.LVL41:
+ 172:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             }
+ 330              		.loc 1 172 17 is_stmt 1 view .LVU96
+ 172:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             }
+ 331              		.loc 1 172 25 is_stmt 0 view .LVU97
+ 332 004a 0D43     		orrs	r5, r5, r1
+ 333              	.LVL42:
+ 172:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             }
+ 334              		.loc 1 172 25 view .LVU98
+ 335 004c EDE7     		b	.L24
+ 336              	.L33:
+ 175:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         GPIO_OSPD1(gpio_periph) = ospeed1;
+ 337              		.loc 1 175 9 is_stmt 1 view .LVU99
+ 175:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         GPIO_OSPD1(gpio_periph) = ospeed1;
+ 338              		.loc 1 175 33 is_stmt 0 view .LVU100
+ 339 004e 8460     		str	r4, [r0, #8]
+ 176:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     } else {
+ 340              		.loc 1 176 9 is_stmt 1 view .LVU101
+ 176:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     } else {
+ 341              		.loc 1 176 33 is_stmt 0 view .LVU102
+ 342 0050 C563     		str	r5, [r0, #60]
+ 343 0052 18E0     		b	.L19
+ 344              	.LVL43:
+ 345              	.L27:
+ 346              		.loc 1 178 30 is_stmt 1 discriminator 2 view .LVU103
+ 347              		.loc 1 178 31 is_stmt 0 discriminator 2 view .LVU104
+ 348 0054 0131     		adds	r1, r1, #1
+ 349              	.LVL44:
+ 350              		.loc 1 178 31 discriminator 2 view .LVU105
+ 351 0056 89B2     		uxth	r1, r1
+ 352              	.LVL45:
+ 353              	.L22:
+ 354              		.loc 1 178 21 is_stmt 1 discriminator 1 view .LVU106
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 11
+
+
+ 355              		.loc 1 178 9 is_stmt 0 discriminator 1 view .LVU107
+ 356 0058 0F29     		cmp	r1, #15
+ 357 005a 13D8     		bhi	.L34
+ 179:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             if((1U << i) & pin) {
+ 358              		.loc 1 179 13 is_stmt 1 view .LVU108
+ 359              		.loc 1 179 20 is_stmt 0 view .LVU109
+ 360 005c 4FF0010C 		mov	ip, #1
+ 361 0060 0CFA01FC 		lsl	ip, ip, r1
+ 362              		.loc 1 179 15 view .LVU110
+ 363 0064 1CEA030F 		tst	ip, r3
+ 364 0068 F4D0     		beq	.L27
+ 180:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 /* clear the specified pin output speed bits */
+ 181:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 ospeed0 &= ~GPIO_OSPEED_MASK(i);
+ 365              		.loc 1 181 17 is_stmt 1 view .LVU111
+ 366              		.loc 1 181 29 is_stmt 0 view .LVU112
+ 367 006a 4FEA410E 		lsl	lr, r1, #1
+ 368 006e 4FF0030C 		mov	ip, #3
+ 369 0072 0CFA0EFC 		lsl	ip, ip, lr
+ 370              		.loc 1 181 25 view .LVU113
+ 371 0076 24EA0C0C 		bic	ip, r4, ip
+ 372              	.LVL46:
+ 182:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 /* set the specified pin output speed bits */
+ 183:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 ospeed0 |= GPIO_OSPEED_SET(i, speed);
+ 373              		.loc 1 183 17 is_stmt 1 view .LVU114
+ 374              		.loc 1 183 28 is_stmt 0 view .LVU115
+ 375 007a 02FA0EFE 		lsl	lr, r2, lr
+ 376              		.loc 1 183 25 view .LVU116
+ 377 007e 4EEA0C04 		orr	r4, lr, ip
+ 378              	.LVL47:
+ 379              		.loc 1 183 25 view .LVU117
+ 380 0082 E7E7     		b	.L27
+ 381              	.L34:
+ 184:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             }
+ 185:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         }
+ 186:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         GPIO_OSPD0(gpio_periph) = ospeed0;
+ 382              		.loc 1 186 9 is_stmt 1 view .LVU118
+ 383              		.loc 1 186 33 is_stmt 0 view .LVU119
+ 384 0084 8460     		str	r4, [r0, #8]
+ 385              	.LVL48:
+ 386              	.L19:
+ 187:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     }
+ 188:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** }
+ 387              		.loc 1 188 1 view .LVU120
+ 388 0086 30BD     		pop	{r4, r5, pc}
+ 389              		.loc 1 188 1 view .LVU121
+ 390              		.cfi_endproc
+ 391              	.LFE118:
+ 393              		.section	.text.gpio_bit_set,"ax",%progbits
+ 394              		.align	1
+ 395              		.global	gpio_bit_set
+ 396              		.syntax unified
+ 397              		.thumb
+ 398              		.thumb_func
+ 400              	gpio_bit_set:
+ 401              	.LVL49:
+ 402              	.LFB119:
+ 189:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 12
+
+
+ 190:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** /*!
+ 191:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \brief      set GPIO pin bit
+ 192:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  gpio_periph: GPIOx(x = A,B,C,D,F)
+ 193:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+ 194:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIOx(x = A,B,C,D,F)
+ 195:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  pin: GPIO pin
+ 196:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 one or more parameters can be selected which are shown as below:
+ 197:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_PIN_x(x=0..15), GPIO_PIN_ALL
+ 198:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[out] none
+ 199:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \retval     none
+ 200:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** */
+ 201:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** void gpio_bit_set(uint32_t gpio_periph, uint32_t pin)
+ 202:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** {
+ 403              		.loc 1 202 1 is_stmt 1 view -0
+ 404              		.cfi_startproc
+ 405              		@ args = 0, pretend = 0, frame = 0
+ 406              		@ frame_needed = 0, uses_anonymous_args = 0
+ 407              		@ link register save eliminated.
+ 203:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     GPIO_BOP(gpio_periph) = (uint32_t)pin;
+ 408              		.loc 1 203 5 view .LVU123
+ 409              		.loc 1 203 27 is_stmt 0 view .LVU124
+ 410 0000 8161     		str	r1, [r0, #24]
+ 204:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** }
+ 411              		.loc 1 204 1 view .LVU125
+ 412 0002 7047     		bx	lr
+ 413              		.cfi_endproc
+ 414              	.LFE119:
+ 416              		.section	.text.gpio_bit_reset,"ax",%progbits
+ 417              		.align	1
+ 418              		.global	gpio_bit_reset
+ 419              		.syntax unified
+ 420              		.thumb
+ 421              		.thumb_func
+ 423              	gpio_bit_reset:
+ 424              	.LVL50:
+ 425              	.LFB120:
+ 205:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 206:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** /*!
+ 207:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \brief      reset GPIO pin bit
+ 208:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  gpio_periph: GPIOx(x = A,B,C,D,F)
+ 209:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+ 210:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIOx(x = A,B,C,D,F)
+ 211:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  pin: GPIO pin
+ 212:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 one or more parameters can be selected which are shown as below:
+ 213:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_PIN_x(x=0..15), GPIO_PIN_ALL
+ 214:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[out] none
+ 215:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \retval     none
+ 216:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** */
+ 217:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** void gpio_bit_reset(uint32_t gpio_periph, uint32_t pin)
+ 218:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** {
+ 426              		.loc 1 218 1 is_stmt 1 view -0
+ 427              		.cfi_startproc
+ 428              		@ args = 0, pretend = 0, frame = 0
+ 429              		@ frame_needed = 0, uses_anonymous_args = 0
+ 430              		@ link register save eliminated.
+ 219:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     GPIO_BC(gpio_periph) = (uint32_t)pin;
+ 431              		.loc 1 219 5 view .LVU127
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 13
+
+
+ 432              		.loc 1 219 26 is_stmt 0 view .LVU128
+ 433 0000 8162     		str	r1, [r0, #40]
+ 220:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** }
+ 434              		.loc 1 220 1 view .LVU129
+ 435 0002 7047     		bx	lr
+ 436              		.cfi_endproc
+ 437              	.LFE120:
+ 439              		.section	.text.gpio_bit_write,"ax",%progbits
+ 440              		.align	1
+ 441              		.global	gpio_bit_write
+ 442              		.syntax unified
+ 443              		.thumb
+ 444              		.thumb_func
+ 446              	gpio_bit_write:
+ 447              	.LVL51:
+ 448              	.LFB121:
+ 221:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 222:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** /*!
+ 223:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \brief      write data to the specified GPIO pin
+ 224:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  gpio_periph: GPIOx(x = A,B,C,D,F)
+ 225:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+ 226:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIOx(x = A,B,C,D,F)
+ 227:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  pin: GPIO pin
+ 228:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 one or more parameters can be selected which are shown as below:
+ 229:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_PIN_x(x=0..15), GPIO_PIN_ALL
+ 230:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  bit_value: SET or RESET
+ 231:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+ 232:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        RESET: clear the port pin
+ 233:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        SET: set the port pin
+ 234:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[out] none
+ 235:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \retval     none
+ 236:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** */
+ 237:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** void gpio_bit_write(uint32_t gpio_periph, uint32_t pin, bit_status bit_value)
+ 238:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** {
+ 449              		.loc 1 238 1 is_stmt 1 view -0
+ 450              		.cfi_startproc
+ 451              		@ args = 0, pretend = 0, frame = 0
+ 452              		@ frame_needed = 0, uses_anonymous_args = 0
+ 453              		@ link register save eliminated.
+ 239:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     if(RESET != bit_value) {
+ 454              		.loc 1 239 5 view .LVU131
+ 455              		.loc 1 239 7 is_stmt 0 view .LVU132
+ 456 0000 0AB1     		cbz	r2, .L38
+ 240:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         GPIO_BOP(gpio_periph) = (uint32_t)pin;
+ 457              		.loc 1 240 9 is_stmt 1 view .LVU133
+ 458              		.loc 1 240 31 is_stmt 0 view .LVU134
+ 459 0002 8161     		str	r1, [r0, #24]
+ 460 0004 7047     		bx	lr
+ 461              	.L38:
+ 241:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     } else {
+ 242:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         GPIO_BC(gpio_periph) = (uint32_t)pin;
+ 462              		.loc 1 242 9 is_stmt 1 view .LVU135
+ 463              		.loc 1 242 30 is_stmt 0 view .LVU136
+ 464 0006 8162     		str	r1, [r0, #40]
+ 243:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     }
+ 244:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** }
+ 465              		.loc 1 244 1 view .LVU137
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 14
+
+
+ 466 0008 7047     		bx	lr
+ 467              		.cfi_endproc
+ 468              	.LFE121:
+ 470              		.section	.text.gpio_port_write,"ax",%progbits
+ 471              		.align	1
+ 472              		.global	gpio_port_write
+ 473              		.syntax unified
+ 474              		.thumb
+ 475              		.thumb_func
+ 477              	gpio_port_write:
+ 478              	.LVL52:
+ 479              	.LFB122:
+ 245:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 246:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** /*!
+ 247:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \brief      write data to the specified GPIO port
+ 248:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  gpio_periph: GPIOx(x = A,B,C,D,F)
+ 249:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+ 250:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIOx(x = A,B,C,D,F)
+ 251:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  data: specify the value to be written to the port output control register
+ 252:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[out] none
+ 253:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \retval     none
+ 254:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** */
+ 255:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** void gpio_port_write(uint32_t gpio_periph, uint16_t data)
+ 256:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** {
+ 480              		.loc 1 256 1 is_stmt 1 view -0
+ 481              		.cfi_startproc
+ 482              		@ args = 0, pretend = 0, frame = 0
+ 483              		@ frame_needed = 0, uses_anonymous_args = 0
+ 484              		@ link register save eliminated.
+ 257:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     GPIO_OCTL(gpio_periph) = (uint32_t)data;
+ 485              		.loc 1 257 5 view .LVU139
+ 486              		.loc 1 257 28 is_stmt 0 view .LVU140
+ 487 0000 4161     		str	r1, [r0, #20]
+ 258:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** }
+ 488              		.loc 1 258 1 view .LVU141
+ 489 0002 7047     		bx	lr
+ 490              		.cfi_endproc
+ 491              	.LFE122:
+ 493              		.section	.text.gpio_input_bit_get,"ax",%progbits
+ 494              		.align	1
+ 495              		.global	gpio_input_bit_get
+ 496              		.syntax unified
+ 497              		.thumb
+ 498              		.thumb_func
+ 500              	gpio_input_bit_get:
+ 501              	.LVL53:
+ 502              	.LFB123:
+ 259:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 260:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** /*!
+ 261:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \brief      get GPIO pin input status
+ 262:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  gpio_periph: GPIOx(x = A,B,C,D,F)
+ 263:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+ 264:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIOx(x = A,B,C,D,F)
+ 265:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  pin: GPIO pin
+ 266:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 one or more parameters can be selected which are shown as below:
+ 267:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_PIN_x(x=0..15), GPIO_PIN_ALL
+ 268:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[out] none
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 15
+
+
+ 269:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \retval     SET or RESET
+ 270:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** */
+ 271:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** FlagStatus gpio_input_bit_get(uint32_t gpio_periph, uint32_t pin)
+ 272:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** {
+ 503              		.loc 1 272 1 is_stmt 1 view -0
+ 504              		.cfi_startproc
+ 505              		@ args = 0, pretend = 0, frame = 0
+ 506              		@ frame_needed = 0, uses_anonymous_args = 0
+ 507              		@ link register save eliminated.
+ 273:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     if((uint32_t)RESET != (GPIO_ISTAT(gpio_periph) & (pin))) {
+ 508              		.loc 1 273 5 view .LVU143
+ 509              		.loc 1 273 28 is_stmt 0 view .LVU144
+ 510 0000 0369     		ldr	r3, [r0, #16]
+ 511              		.loc 1 273 7 view .LVU145
+ 512 0002 0B42     		tst	r3, r1
+ 513 0004 01D0     		beq	.L43
+ 274:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         return SET;
+ 514              		.loc 1 274 16 view .LVU146
+ 515 0006 0120     		movs	r0, #1
+ 516              	.LVL54:
+ 517              		.loc 1 274 16 view .LVU147
+ 518 0008 7047     		bx	lr
+ 519              	.LVL55:
+ 520              	.L43:
+ 275:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     } else {
+ 276:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         return RESET;
+ 521              		.loc 1 276 16 view .LVU148
+ 522 000a 0020     		movs	r0, #0
+ 523              	.LVL56:
+ 277:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     }
+ 278:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** }
+ 524              		.loc 1 278 1 view .LVU149
+ 525 000c 7047     		bx	lr
+ 526              		.cfi_endproc
+ 527              	.LFE123:
+ 529              		.section	.text.gpio_input_port_get,"ax",%progbits
+ 530              		.align	1
+ 531              		.global	gpio_input_port_get
+ 532              		.syntax unified
+ 533              		.thumb
+ 534              		.thumb_func
+ 536              	gpio_input_port_get:
+ 537              	.LVL57:
+ 538              	.LFB124:
+ 279:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 280:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** /*!
+ 281:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \brief      get GPIO all pins input status
+ 282:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  gpio_periph: GPIOx(x = A,B,C,D,F)
+ 283:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+ 284:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIOx(x = A,B,C,D,F)
+ 285:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[out] none
+ 286:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \retval     state of GPIO all pins
+ 287:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** */
+ 288:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** uint16_t gpio_input_port_get(uint32_t gpio_periph)
+ 289:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** {
+ 539              		.loc 1 289 1 is_stmt 1 view -0
+ 540              		.cfi_startproc
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 16
+
+
+ 541              		@ args = 0, pretend = 0, frame = 0
+ 542              		@ frame_needed = 0, uses_anonymous_args = 0
+ 543              		@ link register save eliminated.
+ 290:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     return (uint16_t)GPIO_ISTAT(gpio_periph);
+ 544              		.loc 1 290 5 view .LVU151
+ 545              		.loc 1 290 22 is_stmt 0 view .LVU152
+ 546 0000 0069     		ldr	r0, [r0, #16]
+ 547              	.LVL58:
+ 291:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** }
+ 548              		.loc 1 291 1 view .LVU153
+ 549 0002 80B2     		uxth	r0, r0
+ 550 0004 7047     		bx	lr
+ 551              		.cfi_endproc
+ 552              	.LFE124:
+ 554              		.section	.text.gpio_output_bit_get,"ax",%progbits
+ 555              		.align	1
+ 556              		.global	gpio_output_bit_get
+ 557              		.syntax unified
+ 558              		.thumb
+ 559              		.thumb_func
+ 561              	gpio_output_bit_get:
+ 562              	.LVL59:
+ 563              	.LFB125:
+ 292:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 293:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** /*!
+ 294:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \brief      get GPIO pin output status
+ 295:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  gpio_periph: GPIOx(x = A,B,C,D,F)
+ 296:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+ 297:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIOx(x = A,B,C,D,F)
+ 298:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  pin: GPIO pin
+ 299:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 one or more parameters can be selected which are shown as below:
+ 300:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_PIN_x(x=0..15), GPIO_PIN_ALL
+ 301:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[out] none
+ 302:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \retval     SET or RESET
+ 303:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** */
+ 304:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** FlagStatus gpio_output_bit_get(uint32_t gpio_periph, uint32_t pin)
+ 305:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** {
+ 564              		.loc 1 305 1 is_stmt 1 view -0
+ 565              		.cfi_startproc
+ 566              		@ args = 0, pretend = 0, frame = 0
+ 567              		@ frame_needed = 0, uses_anonymous_args = 0
+ 568              		@ link register save eliminated.
+ 306:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     if((uint32_t)RESET != (GPIO_OCTL(gpio_periph) & (pin))) {
+ 569              		.loc 1 306 5 view .LVU155
+ 570              		.loc 1 306 28 is_stmt 0 view .LVU156
+ 571 0000 4369     		ldr	r3, [r0, #20]
+ 572              		.loc 1 306 7 view .LVU157
+ 573 0002 0B42     		tst	r3, r1
+ 574 0004 01D0     		beq	.L47
+ 307:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         return SET;
+ 575              		.loc 1 307 16 view .LVU158
+ 576 0006 0120     		movs	r0, #1
+ 577              	.LVL60:
+ 578              		.loc 1 307 16 view .LVU159
+ 579 0008 7047     		bx	lr
+ 580              	.LVL61:
+ 581              	.L47:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 17
+
+
+ 308:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     } else {
+ 309:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         return RESET;
+ 582              		.loc 1 309 16 view .LVU160
+ 583 000a 0020     		movs	r0, #0
+ 584              	.LVL62:
+ 310:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     }
+ 311:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** }
+ 585              		.loc 1 311 1 view .LVU161
+ 586 000c 7047     		bx	lr
+ 587              		.cfi_endproc
+ 588              	.LFE125:
+ 590              		.section	.text.gpio_output_port_get,"ax",%progbits
+ 591              		.align	1
+ 592              		.global	gpio_output_port_get
+ 593              		.syntax unified
+ 594              		.thumb
+ 595              		.thumb_func
+ 597              	gpio_output_port_get:
+ 598              	.LVL63:
+ 599              	.LFB126:
+ 312:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 313:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** /*!
+ 314:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \brief      get GPIO all pins output status
+ 315:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  gpio_periph: GPIOx(x = A,B,C,D,F)
+ 316:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+ 317:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIOx(x = A,B,C,D,F)
+ 318:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[out] none
+ 319:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \retval     state of GPIO all pins
+ 320:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** */
+ 321:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** uint16_t gpio_output_port_get(uint32_t gpio_periph)
+ 322:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** {
+ 600              		.loc 1 322 1 is_stmt 1 view -0
+ 601              		.cfi_startproc
+ 602              		@ args = 0, pretend = 0, frame = 0
+ 603              		@ frame_needed = 0, uses_anonymous_args = 0
+ 604              		@ link register save eliminated.
+ 323:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     return (uint16_t)GPIO_OCTL(gpio_periph);
+ 605              		.loc 1 323 5 view .LVU163
+ 606              		.loc 1 323 22 is_stmt 0 view .LVU164
+ 607 0000 4069     		ldr	r0, [r0, #20]
+ 608              	.LVL64:
+ 324:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** }
+ 609              		.loc 1 324 1 view .LVU165
+ 610 0002 80B2     		uxth	r0, r0
+ 611 0004 7047     		bx	lr
+ 612              		.cfi_endproc
+ 613              	.LFE126:
+ 615              		.section	.text.gpio_af_set,"ax",%progbits
+ 616              		.align	1
+ 617              		.global	gpio_af_set
+ 618              		.syntax unified
+ 619              		.thumb
+ 620              		.thumb_func
+ 622              	gpio_af_set:
+ 623              	.LVL65:
+ 624              	.LFB127:
+ 325:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 18
+
+
+ 326:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** /*!
+ 327:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \brief      set GPIO alternate function
+ 328:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  gpio_periph: GPIOx(x = A,B,C)
+ 329:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+ 330:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIOx(x = A,B,C)
+ 331:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  alt_func_num: GPIO pin af function, please refer to specific device datasheet
+ 332:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+ 333:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_AF_0: TIMER2, TIMER13, TIMER14, TIMER16, SPI0, SPI1, I2S0, CK_OUT, USART0, C
+ 334:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                               IFRP, TSI, CTC, I2C0, I2C1, SWDIO, SWCLK
+ 335:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_AF_1: USART0, USART1, TIMER2, TIMER14, I2C0, I2C1, IFRP, CEC
+ 336:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_AF_2: TIMER0, TIMER1, TIMER15, TIMER16, I2S0
+ 337:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_AF_3: TSI, I2C0, TIMER14
+ 338:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_AF_4(port A,B only): USART1, I2C0, I2C1, TIMER13
+ 339:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_AF_5(port A,B only): TIMER15, TIMER16, USBFS, I2S0
+ 340:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_AF_6(port A,B only): CTC, SPI1
+ 341:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_AF_7(port A,B only): CMP0, CMP1
+ 342:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  pin: GPIO pin
+ 343:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 one or more parameters can be selected which are shown as below:
+ 344:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_PIN_x(x=0..15), GPIO_PIN_ALL
+ 345:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[out] none
+ 346:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \retval     none
+ 347:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** */
+ 348:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** void gpio_af_set(uint32_t gpio_periph, uint32_t alt_func_num, uint32_t pin)
+ 349:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** {
+ 625              		.loc 1 349 1 is_stmt 1 view -0
+ 626              		.cfi_startproc
+ 627              		@ args = 0, pretend = 0, frame = 0
+ 628              		@ frame_needed = 0, uses_anonymous_args = 0
+ 629              		.loc 1 349 1 is_stmt 0 view .LVU167
+ 630 0000 30B5     		push	{r4, r5, lr}
+ 631              	.LCFI3:
+ 632              		.cfi_def_cfa_offset 12
+ 633              		.cfi_offset 4, -12
+ 634              		.cfi_offset 5, -8
+ 635              		.cfi_offset 14, -4
+ 350:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     uint16_t i;
+ 636              		.loc 1 350 5 is_stmt 1 view .LVU168
+ 351:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     uint32_t afrl, afrh;
+ 637              		.loc 1 351 5 view .LVU169
+ 352:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 353:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     afrl = GPIO_AFSEL0(gpio_periph);
+ 638              		.loc 1 353 5 view .LVU170
+ 639              		.loc 1 353 10 is_stmt 0 view .LVU171
+ 640 0002 046A     		ldr	r4, [r0, #32]
+ 641              	.LVL66:
+ 354:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     afrh = GPIO_AFSEL1(gpio_periph);
+ 642              		.loc 1 354 5 is_stmt 1 view .LVU172
+ 643              		.loc 1 354 10 is_stmt 0 view .LVU173
+ 644 0004 456A     		ldr	r5, [r0, #36]
+ 645              	.LVL67:
+ 355:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 356:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     for(i = 0U; i < 8U; i++) {
+ 646              		.loc 1 356 5 is_stmt 1 view .LVU174
+ 647              		.loc 1 356 11 is_stmt 0 view .LVU175
+ 648 0006 0023     		movs	r3, #0
+ 649              		.loc 1 356 5 view .LVU176
+ 650 0008 01E0     		b	.L50
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 19
+
+
+ 651              	.LVL68:
+ 652              	.L51:
+ 653              		.loc 1 356 25 is_stmt 1 discriminator 2 view .LVU177
+ 654              		.loc 1 356 26 is_stmt 0 discriminator 2 view .LVU178
+ 655 000a 0133     		adds	r3, r3, #1
+ 656              	.LVL69:
+ 657              		.loc 1 356 26 discriminator 2 view .LVU179
+ 658 000c 9BB2     		uxth	r3, r3
+ 659              	.LVL70:
+ 660              	.L50:
+ 661              		.loc 1 356 17 is_stmt 1 discriminator 1 view .LVU180
+ 662              		.loc 1 356 5 is_stmt 0 discriminator 1 view .LVU181
+ 663 000e 072B     		cmp	r3, #7
+ 664 0010 13D8     		bhi	.L57
+ 357:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         if((1U << i) & pin) {
+ 665              		.loc 1 357 9 is_stmt 1 view .LVU182
+ 666              		.loc 1 357 16 is_stmt 0 view .LVU183
+ 667 0012 4FF0010C 		mov	ip, #1
+ 668 0016 0CFA03FC 		lsl	ip, ip, r3
+ 669              		.loc 1 357 11 view .LVU184
+ 670 001a 1CEA020F 		tst	ip, r2
+ 671 001e F4D0     		beq	.L51
+ 358:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             /* clear the specified pin alternate function bits */
+ 359:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             afrl &= ~GPIO_AFR_MASK(i);
+ 672              		.loc 1 359 13 is_stmt 1 view .LVU185
+ 673              		.loc 1 359 22 is_stmt 0 view .LVU186
+ 674 0020 4FEA830E 		lsl	lr, r3, #2
+ 675 0024 4FF00F0C 		mov	ip, #15
+ 676 0028 0CFA0EFC 		lsl	ip, ip, lr
+ 677              		.loc 1 359 18 view .LVU187
+ 678 002c 24EA0C04 		bic	r4, r4, ip
+ 679              	.LVL71:
+ 360:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             afrl |= GPIO_AFR_SET(i, alt_func_num);
+ 680              		.loc 1 360 13 is_stmt 1 view .LVU188
+ 681              		.loc 1 360 21 is_stmt 0 view .LVU189
+ 682 0030 01FA0EFE 		lsl	lr, r1, lr
+ 683              		.loc 1 360 18 view .LVU190
+ 684 0034 4EEA0404 		orr	r4, lr, r4
+ 685              	.LVL72:
+ 686              		.loc 1 360 18 view .LVU191
+ 687 0038 E7E7     		b	.L51
+ 688              	.L57:
+ 361:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         }
+ 362:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     }
+ 363:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 364:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     for(i = 8U; i < 16U; i++) {
+ 689              		.loc 1 364 11 view .LVU192
+ 690 003a 0823     		movs	r3, #8
+ 691              	.LVL73:
+ 692              		.loc 1 364 11 view .LVU193
+ 693 003c 01E0     		b	.L53
+ 694              	.LVL74:
+ 695              	.L54:
+ 696              		.loc 1 364 26 is_stmt 1 discriminator 2 view .LVU194
+ 697              		.loc 1 364 27 is_stmt 0 discriminator 2 view .LVU195
+ 698 003e 0133     		adds	r3, r3, #1
+ 699              	.LVL75:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 20
+
+
+ 700              		.loc 1 364 27 discriminator 2 view .LVU196
+ 701 0040 9BB2     		uxth	r3, r3
+ 702              	.LVL76:
+ 703              	.L53:
+ 704              		.loc 1 364 17 is_stmt 1 discriminator 1 view .LVU197
+ 705              		.loc 1 364 5 is_stmt 0 discriminator 1 view .LVU198
+ 706 0042 0F2B     		cmp	r3, #15
+ 707 0044 15D8     		bhi	.L58
+ 365:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         if((1U << i) & pin) {
+ 708              		.loc 1 365 9 is_stmt 1 view .LVU199
+ 709              		.loc 1 365 16 is_stmt 0 view .LVU200
+ 710 0046 4FF0010C 		mov	ip, #1
+ 711 004a 0CFA03FC 		lsl	ip, ip, r3
+ 712              		.loc 1 365 11 view .LVU201
+ 713 004e 1CEA020F 		tst	ip, r2
+ 714 0052 F4D0     		beq	.L54
+ 366:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             /* clear the specified pin alternate function bits */
+ 367:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             afrh &= ~GPIO_AFR_MASK(i - 8U);
+ 715              		.loc 1 367 13 is_stmt 1 view .LVU202
+ 716              		.loc 1 367 22 is_stmt 0 view .LVU203
+ 717 0054 A3F1080C 		sub	ip, r3, #8
+ 718 0058 4FEA8C0C 		lsl	ip, ip, #2
+ 719 005c 4FF00F0E 		mov	lr, #15
+ 720 0060 0EFA0CFE 		lsl	lr, lr, ip
+ 721              		.loc 1 367 18 view .LVU204
+ 722 0064 25EA0E05 		bic	r5, r5, lr
+ 723              	.LVL77:
+ 368:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****             afrh |= GPIO_AFR_SET(i - 8U, alt_func_num);
+ 724              		.loc 1 368 13 is_stmt 1 view .LVU205
+ 725              		.loc 1 368 21 is_stmt 0 view .LVU206
+ 726 0068 01FA0CFC 		lsl	ip, r1, ip
+ 727              		.loc 1 368 18 view .LVU207
+ 728 006c 4CEA0505 		orr	r5, ip, r5
+ 729              	.LVL78:
+ 730              		.loc 1 368 18 view .LVU208
+ 731 0070 E5E7     		b	.L54
+ 732              	.L58:
+ 369:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****         }
+ 370:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     }
+ 371:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 372:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     GPIO_AFSEL0(gpio_periph) = afrl;
+ 733              		.loc 1 372 5 is_stmt 1 view .LVU209
+ 734              		.loc 1 372 30 is_stmt 0 view .LVU210
+ 735 0072 0462     		str	r4, [r0, #32]
+ 373:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     GPIO_AFSEL1(gpio_periph) = afrh;
+ 736              		.loc 1 373 5 is_stmt 1 view .LVU211
+ 737              		.loc 1 373 30 is_stmt 0 view .LVU212
+ 738 0074 4562     		str	r5, [r0, #36]
+ 374:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** }
+ 739              		.loc 1 374 1 view .LVU213
+ 740 0076 30BD     		pop	{r4, r5, pc}
+ 741              		.loc 1 374 1 view .LVU214
+ 742              		.cfi_endproc
+ 743              	.LFE127:
+ 745              		.section	.text.gpio_pin_lock,"ax",%progbits
+ 746              		.align	1
+ 747              		.global	gpio_pin_lock
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 21
+
+
+ 748              		.syntax unified
+ 749              		.thumb
+ 750              		.thumb_func
+ 752              	gpio_pin_lock:
+ 753              	.LVL79:
+ 754              	.LFB128:
+ 375:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 376:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** /*!
+ 377:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \brief      lock GPIO pin bit
+ 378:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  gpio_periph: GPIOx(x = A,B)
+ 379:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+ 380:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIOx(x = A,B)
+ 381:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  pin: GPIO pin
+ 382:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 one or more parameters can be selected which are shown as below:
+ 383:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_PIN_x(x=0..15), GPIO_PIN_ALL
+ 384:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[out] none
+ 385:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \retval     none
+ 386:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** */
+ 387:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** void gpio_pin_lock(uint32_t gpio_periph, uint32_t pin)
+ 388:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** {
+ 755              		.loc 1 388 1 is_stmt 1 view -0
+ 756              		.cfi_startproc
+ 757              		@ args = 0, pretend = 0, frame = 0
+ 758              		@ frame_needed = 0, uses_anonymous_args = 0
+ 759              		@ link register save eliminated.
+ 389:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     uint32_t lock = 0x00010000U;
+ 760              		.loc 1 389 5 view .LVU216
+ 390:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     lock |= pin;
+ 761              		.loc 1 390 5 view .LVU217
+ 762              		.loc 1 390 10 is_stmt 0 view .LVU218
+ 763 0000 41F48033 		orr	r3, r1, #65536
+ 764              	.LVL80:
+ 391:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 392:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     /* lock key writing sequence: write 1->write 0->write 1->read 0->read 1 */
+ 393:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     GPIO_LOCK(gpio_periph) = (uint32_t)lock;
+ 765              		.loc 1 393 5 is_stmt 1 view .LVU219
+ 766              		.loc 1 393 28 is_stmt 0 view .LVU220
+ 767 0004 C361     		str	r3, [r0, #28]
+ 394:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     GPIO_LOCK(gpio_periph) = (uint32_t)pin;
+ 768              		.loc 1 394 5 is_stmt 1 view .LVU221
+ 769              		.loc 1 394 28 is_stmt 0 view .LVU222
+ 770 0006 C161     		str	r1, [r0, #28]
+ 395:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     GPIO_LOCK(gpio_periph) = (uint32_t)lock;
+ 771              		.loc 1 395 5 is_stmt 1 view .LVU223
+ 772              		.loc 1 395 28 is_stmt 0 view .LVU224
+ 773 0008 C361     		str	r3, [r0, #28]
+ 396:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     lock = GPIO_LOCK(gpio_periph);
+ 774              		.loc 1 396 5 is_stmt 1 view .LVU225
+ 775              		.loc 1 396 10 is_stmt 0 view .LVU226
+ 776 000a C369     		ldr	r3, [r0, #28]
+ 777              	.LVL81:
+ 397:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     lock = GPIO_LOCK(gpio_periph);
+ 778              		.loc 1 397 5 is_stmt 1 view .LVU227
+ 779              		.loc 1 397 10 is_stmt 0 view .LVU228
+ 780 000c C369     		ldr	r3, [r0, #28]
+ 398:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** }
+ 781              		.loc 1 398 1 view .LVU229
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 22
+
+
+ 782 000e 7047     		bx	lr
+ 783              		.cfi_endproc
+ 784              	.LFE128:
+ 786              		.section	.text.gpio_bit_toggle,"ax",%progbits
+ 787              		.align	1
+ 788              		.global	gpio_bit_toggle
+ 789              		.syntax unified
+ 790              		.thumb
+ 791              		.thumb_func
+ 793              	gpio_bit_toggle:
+ 794              	.LVL82:
+ 795              	.LFB129:
+ 399:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 400:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** /*!
+ 401:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \brief      toggle GPIO pin status
+ 402:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  gpio_periph: GPIOx(x = A,B,C,D,F)
+ 403:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+ 404:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIOx(x = A,B,C,D,F)
+ 405:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[in]  pin: GPIO pin
+ 406:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 one or more parameters can be selected which are shown as below:
+ 407:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIO_PIN_x(x=0..15), GPIO_PIN_ALL
+ 408:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[out] none
+ 409:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \retval     none
+ 410:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** */
+ 411:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** void gpio_bit_toggle(uint32_t gpio_periph, uint32_t pin)
+ 412:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** {
+ 796              		.loc 1 412 1 is_stmt 1 view -0
+ 797              		.cfi_startproc
+ 798              		@ args = 0, pretend = 0, frame = 0
+ 799              		@ frame_needed = 0, uses_anonymous_args = 0
+ 800              		@ link register save eliminated.
+ 413:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     GPIO_TG(gpio_periph) = (uint32_t)pin;
+ 801              		.loc 1 413 5 view .LVU231
+ 802              		.loc 1 413 26 is_stmt 0 view .LVU232
+ 803 0000 C162     		str	r1, [r0, #44]
+ 414:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** }
+ 804              		.loc 1 414 1 view .LVU233
+ 805 0002 7047     		bx	lr
+ 806              		.cfi_endproc
+ 807              	.LFE129:
+ 809              		.section	.text.gpio_port_toggle,"ax",%progbits
+ 810              		.align	1
+ 811              		.global	gpio_port_toggle
+ 812              		.syntax unified
+ 813              		.thumb
+ 814              		.thumb_func
+ 816              	gpio_port_toggle:
+ 817              	.LVL83:
+ 818              	.LFB130:
+ 415:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** 
+ 416:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** /*!
+ 417:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \brief      toggle GPIO port status
+ 418:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****                 only one parameter can be selected which is shown as below:
+ 419:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****       \arg        GPIOx(x = A,B,C,D,F)
+ 420:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \param[out] none
+ 421:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     \retval     none
+ 422:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** */
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 23
+
+
+ 423:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** void gpio_port_toggle(uint32_t gpio_periph)
+ 424:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** {
+ 819              		.loc 1 424 1 is_stmt 1 view -0
+ 820              		.cfi_startproc
+ 821              		@ args = 0, pretend = 0, frame = 0
+ 822              		@ frame_needed = 0, uses_anonymous_args = 0
+ 823              		@ link register save eliminated.
+ 425:lib/GD32F3x0/Source/gd32f3x0_gpio.c ****     GPIO_TG(gpio_periph) = 0x0000FFFFU;
+ 824              		.loc 1 425 5 view .LVU235
+ 825              		.loc 1 425 26 is_stmt 0 view .LVU236
+ 826 0000 4FF6FF73 		movw	r3, #65535
+ 827 0004 C362     		str	r3, [r0, #44]
+ 426:lib/GD32F3x0/Source/gd32f3x0_gpio.c **** }
+ 828              		.loc 1 426 1 view .LVU237
+ 829 0006 7047     		bx	lr
+ 830              		.cfi_endproc
+ 831              	.LFE130:
+ 833              		.text
+ 834              	.Letext0:
+ 835              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
+ 836              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
+ 837              		.file 4 "lib/CMSIS/GD/GD32F3x0/Include/gd32f3x0.h"
+ 838              		.file 5 "lib/GD32F3x0/Include/gd32f3x0_rcu.h"
+ 839              		.file 6 "lib/GD32F3x0/Include/gd32f3x0_gpio.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s 			page 24
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 gd32f3x0_gpio.c
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:18     .text.gpio_deinit:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:24     .text.gpio_deinit:0000000000000000 gpio_deinit
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:129    .text.gpio_deinit:0000000000000080 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:135    .text.gpio_mode_set:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:141    .text.gpio_mode_set:0000000000000000 gpio_mode_set
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:233    .text.gpio_output_options_set:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:239    .text.gpio_output_options_set:0000000000000000 gpio_output_options_set
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:394    .text.gpio_bit_set:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:400    .text.gpio_bit_set:0000000000000000 gpio_bit_set
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:417    .text.gpio_bit_reset:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:423    .text.gpio_bit_reset:0000000000000000 gpio_bit_reset
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:440    .text.gpio_bit_write:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:446    .text.gpio_bit_write:0000000000000000 gpio_bit_write
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:471    .text.gpio_port_write:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:477    .text.gpio_port_write:0000000000000000 gpio_port_write
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:494    .text.gpio_input_bit_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:500    .text.gpio_input_bit_get:0000000000000000 gpio_input_bit_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:530    .text.gpio_input_port_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:536    .text.gpio_input_port_get:0000000000000000 gpio_input_port_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:555    .text.gpio_output_bit_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:561    .text.gpio_output_bit_get:0000000000000000 gpio_output_bit_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:591    .text.gpio_output_port_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:597    .text.gpio_output_port_get:0000000000000000 gpio_output_port_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:616    .text.gpio_af_set:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:622    .text.gpio_af_set:0000000000000000 gpio_af_set
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:746    .text.gpio_pin_lock:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:752    .text.gpio_pin_lock:0000000000000000 gpio_pin_lock
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:787    .text.gpio_bit_toggle:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:793    .text.gpio_bit_toggle:0000000000000000 gpio_bit_toggle
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:810    .text.gpio_port_toggle:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccO5O1Hw.s:816    .text.gpio_port_toggle:0000000000000000 gpio_port_toggle
+
+UNDEFINED SYMBOLS
+rcu_periph_reset_enable
+rcu_periph_reset_disable

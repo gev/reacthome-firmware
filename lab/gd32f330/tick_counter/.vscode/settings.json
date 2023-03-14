@@ -1,0 +1,15 @@
+{
+    "cortex-debug.variableUseNaturalFormat": true,
+    "cSpell.words": [
+        "gpio",
+        "GPIOA",
+        "periph",
+        "PUPD",
+        "RBNE",
+        "USART"
+    ],
+    "files.associations": {
+        "core_cm4.h": "c",
+        "util.h": "c"
+    }
+}

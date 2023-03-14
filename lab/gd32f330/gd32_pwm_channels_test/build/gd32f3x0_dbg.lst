@@ -1,0 +1,374 @@
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"gd32f3x0_dbg.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.dbg_deinit,"ax",%progbits
+  18              		.align	1
+  19              		.global	dbg_deinit
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	dbg_deinit:
+  25              	.LFB116:
+  26              		.file 1 "lib/GD32F3x0/Source/gd32f3x0_dbg.c"
+   1:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** /*!
+   2:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \file    gd32f3x0_dbg.c
+   3:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \brief   DBG driver
+   4:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** 
+   5:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \version 2017-06-06, V1.0.0, firmware for GD32F3x0
+   6:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \version 2019-06-01, V2.0.0, firmware for GD32F3x0
+   7:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \version 2020-09-30, V2.1.0, firmware for GD32F3x0
+   8:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \version 2022-01-06, V2.2.0, firmware for GD32F3x0
+   9:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** */
+  10:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** 
+  11:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** /*
+  12:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     Copyright (c) 2022, GigaDevice Semiconductor Inc.
+  13:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** 
+  14:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     Redistribution and use in source and binary forms, with or without modification,
+  15:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** are permitted provided that the following conditions are met:
+  16:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** 
+  17:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     1. Redistributions of source code must retain the above copyright notice, this
+  18:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****        list of conditions and the following disclaimer.
+  19:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     2. Redistributions in binary form must reproduce the above copyright notice,
+  20:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****        this list of conditions and the following disclaimer in the documentation
+  21:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****        and/or other materials provided with the distribution.
+  22:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     3. Neither the name of the copyright holder nor the names of its contributors
+  23:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****        may be used to endorse or promote products derived from this software without
+  24:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****        specific prior written permission.
+  25:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** 
+  26:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  27:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  28:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  29:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  30:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+  31:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+  32:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s 			page 2
+
+
+  33:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  34:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+  35:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** OF SUCH DAMAGE.
+  36:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** */
+  37:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** 
+  38:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** #include "gd32f3x0_dbg.h"
+  39:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** 
+  40:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** #define DBG_RESET_VAL       ((uint32_t)0x00000000U)   /*!< DBG reset value */
+  41:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** 
+  42:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** /*!
+  43:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \brief      deinitialize the DBG
+  44:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \param[in]  none
+  45:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \param[out] none
+  46:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \retval     none
+  47:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** */
+  48:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** void dbg_deinit(void)
+  49:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** {
+  27              		.loc 1 49 1 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+  50:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     DBG_CTL0 = DBG_RESET_VAL;
+  32              		.loc 1 50 5 view .LVU1
+  33              		.loc 1 50 14 is_stmt 0 view .LVU2
+  34 0000 024B     		ldr	r3, .L2
+  35 0002 0022     		movs	r2, #0
+  36 0004 5A60     		str	r2, [r3, #4]
+  51:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     DBG_CTL1 = DBG_RESET_VAL;
+  37              		.loc 1 51 5 is_stmt 1 view .LVU3
+  38              		.loc 1 51 14 is_stmt 0 view .LVU4
+  39 0006 9A60     		str	r2, [r3, #8]
+  52:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** }
+  40              		.loc 1 52 1 view .LVU5
+  41 0008 7047     		bx	lr
+  42              	.L3:
+  43 000a 00BF     		.align	2
+  44              	.L2:
+  45 000c 002004E0 		.word	-536600576
+  46              		.cfi_endproc
+  47              	.LFE116:
+  49              		.section	.text.dbg_id_get,"ax",%progbits
+  50              		.align	1
+  51              		.global	dbg_id_get
+  52              		.syntax unified
+  53              		.thumb
+  54              		.thumb_func
+  56              	dbg_id_get:
+  57              	.LFB117:
+  53:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** 
+  54:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** /*!
+  55:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \brief      read DBG_ID code register
+  56:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \param[in]  none
+  57:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \param[out] none
+  58:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \retval     DBG_ID code
+  59:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** */
+  60:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** uint32_t dbg_id_get(void)
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s 			page 3
+
+
+  61:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** {
+  58              		.loc 1 61 1 is_stmt 1 view -0
+  59              		.cfi_startproc
+  60              		@ args = 0, pretend = 0, frame = 0
+  61              		@ frame_needed = 0, uses_anonymous_args = 0
+  62              		@ link register save eliminated.
+  62:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     return DBG_ID;
+  63              		.loc 1 62 5 view .LVU7
+  64              		.loc 1 62 12 is_stmt 0 view .LVU8
+  65 0000 014B     		ldr	r3, .L5
+  66 0002 1868     		ldr	r0, [r3]
+  63:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** }
+  67              		.loc 1 63 1 view .LVU9
+  68 0004 7047     		bx	lr
+  69              	.L6:
+  70 0006 00BF     		.align	2
+  71              	.L5:
+  72 0008 002004E0 		.word	-536600576
+  73              		.cfi_endproc
+  74              	.LFE117:
+  76              		.section	.text.dbg_low_power_enable,"ax",%progbits
+  77              		.align	1
+  78              		.global	dbg_low_power_enable
+  79              		.syntax unified
+  80              		.thumb
+  81              		.thumb_func
+  83              	dbg_low_power_enable:
+  84              	.LVL0:
+  85              	.LFB118:
+  64:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** 
+  65:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** /*!
+  66:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \brief      enable low power behavior when the mcu is in debug mode
+  67:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \param[in]  dbg_low_power:
+  68:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****                 one or more parameters can be selected which are shown as below:
+  69:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_LOW_POWER_SLEEP: keep debugger connection during sleep mode
+  70:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_LOW_POWER_DEEPSLEEP: keep debugger connection during deepsleep mode
+  71:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_LOW_POWER_STANDBY: keep debugger connection during standby mode
+  72:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \param[out] none
+  73:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \retval     none
+  74:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** */
+  75:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** void dbg_low_power_enable(uint32_t dbg_low_power)
+  76:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** {
+  86              		.loc 1 76 1 is_stmt 1 view -0
+  87              		.cfi_startproc
+  88              		@ args = 0, pretend = 0, frame = 0
+  89              		@ frame_needed = 0, uses_anonymous_args = 0
+  90              		@ link register save eliminated.
+  77:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     DBG_CTL0 |= dbg_low_power;
+  91              		.loc 1 77 5 view .LVU11
+  92              		.loc 1 77 14 is_stmt 0 view .LVU12
+  93 0000 024A     		ldr	r2, .L8
+  94 0002 5368     		ldr	r3, [r2, #4]
+  95 0004 0343     		orrs	r3, r3, r0
+  96 0006 5360     		str	r3, [r2, #4]
+  78:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** }
+  97              		.loc 1 78 1 view .LVU13
+  98 0008 7047     		bx	lr
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s 			page 4
+
+
+  99              	.L9:
+ 100 000a 00BF     		.align	2
+ 101              	.L8:
+ 102 000c 002004E0 		.word	-536600576
+ 103              		.cfi_endproc
+ 104              	.LFE118:
+ 106              		.section	.text.dbg_low_power_disable,"ax",%progbits
+ 107              		.align	1
+ 108              		.global	dbg_low_power_disable
+ 109              		.syntax unified
+ 110              		.thumb
+ 111              		.thumb_func
+ 113              	dbg_low_power_disable:
+ 114              	.LVL1:
+ 115              	.LFB119:
+  79:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** 
+  80:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** /*!
+  81:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \brief      disable low power behavior when the mcu is in debug mode
+  82:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \param[in]  dbg_low_power:
+  83:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****                 one or more parameters can be selected which are shown as below:
+  84:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_LOW_POWER_SLEEP: donot keep debugger connection during sleep mode
+  85:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_LOW_POWER_DEEPSLEEP: donot keep debugger connection during deepsleep mode
+  86:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_LOW_POWER_STANDBY: donot keep debugger connection during standby mode
+  87:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \param[out] none
+  88:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \retval     none
+  89:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** */
+  90:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** void dbg_low_power_disable(uint32_t dbg_low_power)
+  91:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** {
+ 116              		.loc 1 91 1 is_stmt 1 view -0
+ 117              		.cfi_startproc
+ 118              		@ args = 0, pretend = 0, frame = 0
+ 119              		@ frame_needed = 0, uses_anonymous_args = 0
+ 120              		@ link register save eliminated.
+  92:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     DBG_CTL0 &= ~dbg_low_power;
+ 121              		.loc 1 92 5 view .LVU15
+ 122              		.loc 1 92 14 is_stmt 0 view .LVU16
+ 123 0000 024A     		ldr	r2, .L11
+ 124 0002 5368     		ldr	r3, [r2, #4]
+ 125 0004 23EA0003 		bic	r3, r3, r0
+ 126 0008 5360     		str	r3, [r2, #4]
+  93:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** }
+ 127              		.loc 1 93 1 view .LVU17
+ 128 000a 7047     		bx	lr
+ 129              	.L12:
+ 130              		.align	2
+ 131              	.L11:
+ 132 000c 002004E0 		.word	-536600576
+ 133              		.cfi_endproc
+ 134              	.LFE119:
+ 136              		.section	.text.dbg_periph_enable,"ax",%progbits
+ 137              		.align	1
+ 138              		.global	dbg_periph_enable
+ 139              		.syntax unified
+ 140              		.thumb
+ 141              		.thumb_func
+ 143              	dbg_periph_enable:
+ 144              	.LVL2:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s 			page 5
+
+
+ 145              	.LFB120:
+  94:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** 
+  95:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** /*!
+  96:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \brief      enable peripheral behavior when the mcu is in debug mode
+  97:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \param[in]  dbg_periph: refer to dbg_periph_enum
+  98:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****                 only one parameter can be selected which are shown as below:
+  99:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_SLEEP_HOLD: keep debugger connection during sleep mode
+ 100:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_DEEPSLEEP_HOLD: keep debugger connection during deepsleep mode
+ 101:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_STANDBY_HOLD: keep debugger connection during standby mode
+ 102:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_FWDGT_HOLD: debug FWDGT kept when core is halted
+ 103:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_WWDGT_HOLD: debug WWDGT kept when core is halted
+ 104:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_TIMERx_HOLD (x=0,1,2,5,13,14,15,16,TIMER5 is only available in GD32F350, 
+ 105:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****                   TIMER1 is only available in GD32F350 and GD32F330): hold TIMERx counter when core
+ 106:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_I2Cx_HOLD (x=0,1): hold I2Cx smbus when core is halted
+ 107:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_RTC_HOLD: hold RTC calendar and wakeup counter when core is halted
+ 108:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \param[out] none
+ 109:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \retval     none
+ 110:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** */
+ 111:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** void dbg_periph_enable(dbg_periph_enum dbg_periph)
+ 112:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** {
+ 146              		.loc 1 112 1 is_stmt 1 view -0
+ 147              		.cfi_startproc
+ 148              		@ args = 0, pretend = 0, frame = 0
+ 149              		@ frame_needed = 0, uses_anonymous_args = 0
+ 150              		@ link register save eliminated.
+ 113:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     DBG_REG_VAL(dbg_periph) |= BIT(DBG_BIT_POS(dbg_periph));
+ 151              		.loc 1 113 5 view .LVU19
+ 152              		.loc 1 113 29 is_stmt 0 view .LVU20
+ 153 0000 8309     		lsrs	r3, r0, #6
+ 154 0002 03F16043 		add	r3, r3, #-536870912
+ 155 0006 03F58423 		add	r3, r3, #270336
+ 156 000a 1A68     		ldr	r2, [r3]
+ 157              		.loc 1 113 32 view .LVU21
+ 158 000c 00F01F00 		and	r0, r0, #31
+ 159              	.LVL3:
+ 160              		.loc 1 113 32 view .LVU22
+ 161 0010 0121     		movs	r1, #1
+ 162 0012 01FA00F0 		lsl	r0, r1, r0
+ 163              		.loc 1 113 29 view .LVU23
+ 164 0016 1043     		orrs	r0, r0, r2
+ 165 0018 1860     		str	r0, [r3]
+ 114:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** }
+ 166              		.loc 1 114 1 view .LVU24
+ 167 001a 7047     		bx	lr
+ 168              		.cfi_endproc
+ 169              	.LFE120:
+ 171              		.section	.text.dbg_periph_disable,"ax",%progbits
+ 172              		.align	1
+ 173              		.global	dbg_periph_disable
+ 174              		.syntax unified
+ 175              		.thumb
+ 176              		.thumb_func
+ 178              	dbg_periph_disable:
+ 179              	.LVL4:
+ 180              	.LFB121:
+ 115:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** 
+ 116:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** /*!
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s 			page 6
+
+
+ 117:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \brief      disable peripheral behavior when the mcu is in debug mode
+ 118:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \param[in]  dbg_periph: refer to dbg_periph_enum
+ 119:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****                 only one parameter can be selected which are shown as below:
+ 120:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_SLEEP_HOLD: keep debugger connection during sleep mode
+ 121:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_DEEPSLEEP_HOLD: keep debugger connection during deepsleep mode
+ 122:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_STANDBY_HOLD: keep debugger connection during standby mode
+ 123:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_FWDGT_HOLD: debug FWDGT kept when core is halted
+ 124:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_WWDGT_HOLD: debug WWDGT kept when core is halted
+ 125:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_TIMERx_HOLD (x=0,1,2,5,13,14,15,16,TIMER5 is only available in GD32F350, 
+ 126:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****                   TIMER1 is only available in GD32F350 and GD32F330): hold TIMERx counter when core
+ 127:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_I2Cx_HOLD (x=0,1): hold I2Cx smbus when core is halted
+ 128:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****       \arg        DBG_RTC_HOLD: hold RTC calendar and wakeup counter when core is halted
+ 129:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \param[out] none
+ 130:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     \retval     none
+ 131:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** */
+ 132:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** void dbg_periph_disable(dbg_periph_enum dbg_periph)
+ 133:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** {
+ 181              		.loc 1 133 1 is_stmt 1 view -0
+ 182              		.cfi_startproc
+ 183              		@ args = 0, pretend = 0, frame = 0
+ 184              		@ frame_needed = 0, uses_anonymous_args = 0
+ 185              		@ link register save eliminated.
+ 134:lib/GD32F3x0/Source/gd32f3x0_dbg.c ****     DBG_REG_VAL(dbg_periph) &= ~BIT(DBG_BIT_POS(dbg_periph));
+ 186              		.loc 1 134 5 view .LVU26
+ 187              		.loc 1 134 29 is_stmt 0 view .LVU27
+ 188 0000 8309     		lsrs	r3, r0, #6
+ 189 0002 03F16043 		add	r3, r3, #-536870912
+ 190 0006 03F58423 		add	r3, r3, #270336
+ 191 000a 1A68     		ldr	r2, [r3]
+ 192              		.loc 1 134 33 view .LVU28
+ 193 000c 00F01F00 		and	r0, r0, #31
+ 194              	.LVL5:
+ 195              		.loc 1 134 33 view .LVU29
+ 196 0010 0121     		movs	r1, #1
+ 197 0012 01FA00F0 		lsl	r0, r1, r0
+ 198              		.loc 1 134 29 view .LVU30
+ 199 0016 22EA0000 		bic	r0, r2, r0
+ 200 001a 1860     		str	r0, [r3]
+ 135:lib/GD32F3x0/Source/gd32f3x0_dbg.c **** }
+ 201              		.loc 1 135 1 view .LVU31
+ 202 001c 7047     		bx	lr
+ 203              		.cfi_endproc
+ 204              	.LFE121:
+ 206              		.text
+ 207              	.Letext0:
+ 208              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
+ 209              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
+ 210              		.file 4 "lib/GD32F3x0/Include/gd32f3x0_dbg.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s 			page 7
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 gd32f3x0_dbg.c
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s:18     .text.dbg_deinit:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s:24     .text.dbg_deinit:0000000000000000 dbg_deinit
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s:45     .text.dbg_deinit:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s:50     .text.dbg_id_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s:56     .text.dbg_id_get:0000000000000000 dbg_id_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s:72     .text.dbg_id_get:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s:77     .text.dbg_low_power_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s:83     .text.dbg_low_power_enable:0000000000000000 dbg_low_power_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s:102    .text.dbg_low_power_enable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s:107    .text.dbg_low_power_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s:113    .text.dbg_low_power_disable:0000000000000000 dbg_low_power_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s:132    .text.dbg_low_power_disable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s:137    .text.dbg_periph_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s:143    .text.dbg_periph_enable:0000000000000000 dbg_periph_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s:172    .text.dbg_periph_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccCG0i9I.s:178    .text.dbg_periph_disable:0000000000000000 dbg_periph_disable
+
+NO UNDEFINED SYMBOLS

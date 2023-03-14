@@ -1,0 +1,3639 @@
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"gd32f3x0_fmc.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.fmc_unlock,"ax",%progbits
+  18              		.align	1
+  19              		.global	fmc_unlock
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	fmc_unlock:
+  25              	.LFB116:
+  26              		.file 1 "lib/GD32F3x0/Source/gd32f3x0_fmc.c"
+   1:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+   2:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \file    gd32f3x0_fmc.c
+   3:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief   FMC driver
+   4:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+   5:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \version 2017-06-06, V1.0.0, firmware for GD32F3x0
+   6:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \version 2019-06-01, V2.0.0, firmware for GD32F3x0
+   7:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \version 2020-09-30, V2.1.0, firmware for GD32F3x0
+   8:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \version 2022-01-06, V2.2.0, firmware for GD32F3x0
+   9:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+  10:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+  11:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*
+  12:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     Copyright (c) 2022, GigaDevice Semiconductor Inc.
+  13:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+  14:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     Redistribution and use in source and binary forms, with or without modification,
+  15:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** are permitted provided that the following conditions are met:
+  16:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+  17:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     1. Redistributions of source code must retain the above copyright notice, this
+  18:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****        list of conditions and the following disclaimer.
+  19:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     2. Redistributions in binary form must reproduce the above copyright notice,
+  20:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****        this list of conditions and the following disclaimer in the documentation
+  21:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****        and/or other materials provided with the distribution.
+  22:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     3. Neither the name of the copyright holder nor the names of its contributors
+  23:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****        may be used to endorse or promote products derived from this software without
+  24:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****        specific prior written permission.
+  25:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+  26:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  27:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  28:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  29:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  30:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+  31:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+  32:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 2
+
+
+  33:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  34:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+  35:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** OF SUCH DAMAGE.
+  36:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+  37:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+  38:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** #include "gd32f3x0_fmc.h"
+  39:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+  40:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /* FMC main memory programming functions */
+  41:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+  42:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+  43:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      unlock the main FMC operation
+  44:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 it is better to used in pairs with fmc_lock
+  45:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  none
+  46:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+  47:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     none
+  48:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+  49:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** void fmc_unlock(void)
+  50:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+  27              		.loc 1 50 1 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+  51:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if((RESET != (FMC_CTL & FMC_CTL_LK))) {
+  32              		.loc 1 51 5 view .LVU1
+  33              		.loc 1 51 19 is_stmt 0 view .LVU2
+  34 0000 054B     		ldr	r3, .L3
+  35 0002 1B69     		ldr	r3, [r3, #16]
+  36              		.loc 1 51 7 view .LVU3
+  37 0004 13F0800F 		tst	r3, #128
+  38 0008 05D0     		beq	.L1
+  52:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* write the FMC key */
+  53:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_KEY = UNLOCK_KEY0;
+  39              		.loc 1 53 9 is_stmt 1 view .LVU4
+  40              		.loc 1 53 17 is_stmt 0 view .LVU5
+  41 000a 034B     		ldr	r3, .L3
+  42 000c 034A     		ldr	r2, .L3+4
+  43 000e 5A60     		str	r2, [r3, #4]
+  54:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_KEY = UNLOCK_KEY1;
+  44              		.loc 1 54 9 is_stmt 1 view .LVU6
+  45              		.loc 1 54 17 is_stmt 0 view .LVU7
+  46 0010 02F18832 		add	r2, r2, #-2004318072
+  47 0014 5A60     		str	r2, [r3, #4]
+  48              	.L1:
+  55:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+  56:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+  49              		.loc 1 56 1 view .LVU8
+  50 0016 7047     		bx	lr
+  51              	.L4:
+  52              		.align	2
+  53              	.L3:
+  54 0018 00200240 		.word	1073881088
+  55 001c 23016745 		.word	1164378403
+  56              		.cfi_endproc
+  57              	.LFE116:
+  59              		.section	.text.fmc_lock,"ax",%progbits
+  60              		.align	1
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 3
+
+
+  61              		.global	fmc_lock
+  62              		.syntax unified
+  63              		.thumb
+  64              		.thumb_func
+  66              	fmc_lock:
+  67              	.LFB117:
+  57:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+  58:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+  59:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      lock the main FMC operation
+  60:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 it is better to used in pairs with fmc_unlock after an operation
+  61:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  none
+  62:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+  63:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     none
+  64:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+  65:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** void fmc_lock(void)
+  66:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+  68              		.loc 1 66 1 is_stmt 1 view -0
+  69              		.cfi_startproc
+  70              		@ args = 0, pretend = 0, frame = 0
+  71              		@ frame_needed = 0, uses_anonymous_args = 0
+  72              		@ link register save eliminated.
+  67:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* set the LK bit*/
+  68:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FMC_CTL |= FMC_CTL_LK;
+  73              		.loc 1 68 5 view .LVU10
+  74              		.loc 1 68 13 is_stmt 0 view .LVU11
+  75 0000 024A     		ldr	r2, .L6
+  76 0002 1369     		ldr	r3, [r2, #16]
+  77 0004 43F08003 		orr	r3, r3, #128
+  78 0008 1361     		str	r3, [r2, #16]
+  69:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+  79              		.loc 1 69 1 view .LVU12
+  80 000a 7047     		bx	lr
+  81              	.L7:
+  82              		.align	2
+  83              	.L6:
+  84 000c 00200240 		.word	1073881088
+  85              		.cfi_endproc
+  86              	.LFE117:
+  88              		.section	.text.fmc_wscnt_set,"ax",%progbits
+  89              		.align	1
+  90              		.global	fmc_wscnt_set
+  91              		.syntax unified
+  92              		.thumb
+  93              		.thumb_func
+  95              	fmc_wscnt_set:
+  96              	.LVL0:
+  97              	.LFB118:
+  70:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+  71:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+  72:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      set the wait state counter value
+  73:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  wscnt: wait state counter value
+  74:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 only one parameter can be selected which is shown as below:
+  75:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        WS_WSCNT_0: 0 wait state added
+  76:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        WS_WSCNT_1: 1 wait state added
+  77:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        WS_WSCNT_2: 2 wait state added
+  78:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+  79:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     none
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 4
+
+
+  80:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+  81:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** void fmc_wscnt_set(uint8_t wscnt)
+  82:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+  98              		.loc 1 82 1 is_stmt 1 view -0
+  99              		.cfi_startproc
+ 100              		@ args = 0, pretend = 0, frame = 0
+ 101              		@ frame_needed = 0, uses_anonymous_args = 0
+ 102              		@ link register save eliminated.
+  83:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     uint32_t reg;
+ 103              		.loc 1 83 5 view .LVU14
+  84:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+  85:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     reg = FMC_WS;
+ 104              		.loc 1 85 5 view .LVU15
+ 105              		.loc 1 85 9 is_stmt 0 view .LVU16
+ 106 0000 034A     		ldr	r2, .L9
+ 107 0002 1368     		ldr	r3, [r2]
+ 108              	.LVL1:
+  86:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* set the wait state counter value */
+  87:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     reg &= ~FMC_WS_WSCNT;
+ 109              		.loc 1 87 5 is_stmt 1 view .LVU17
+ 110              		.loc 1 87 9 is_stmt 0 view .LVU18
+ 111 0004 23F00703 		bic	r3, r3, #7
+ 112              	.LVL2:
+  88:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FMC_WS = (reg | wscnt);
+ 113              		.loc 1 88 5 is_stmt 1 view .LVU19
+ 114              		.loc 1 88 19 is_stmt 0 view .LVU20
+ 115 0008 1843     		orrs	r0, r0, r3
+ 116              	.LVL3:
+ 117              		.loc 1 88 12 view .LVU21
+ 118 000a 1060     		str	r0, [r2]
+  89:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 119              		.loc 1 89 1 view .LVU22
+ 120 000c 7047     		bx	lr
+ 121              	.L10:
+ 122 000e 00BF     		.align	2
+ 123              	.L9:
+ 124 0010 00200240 		.word	1073881088
+ 125              		.cfi_endproc
+ 126              	.LFE118:
+ 128              		.section	.text.fmc_wait_state_enable,"ax",%progbits
+ 129              		.align	1
+ 130              		.global	fmc_wait_state_enable
+ 131              		.syntax unified
+ 132              		.thumb
+ 133              		.thumb_func
+ 135              	fmc_wait_state_enable:
+ 136              	.LFB119:
+  90:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+  91:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+  92:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      fmc wait state enable
+  93:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  none
+  94:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+  95:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     none
+  96:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+  97:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** void fmc_wait_state_enable(void)
+  98:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 137              		.loc 1 98 1 is_stmt 1 view -0
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 5
+
+
+ 138              		.cfi_startproc
+ 139              		@ args = 0, pretend = 0, frame = 0
+ 140              		@ frame_needed = 0, uses_anonymous_args = 0
+ 141 0000 08B5     		push	{r3, lr}
+ 142              	.LCFI0:
+ 143              		.cfi_def_cfa_offset 8
+ 144              		.cfi_offset 3, -8
+ 145              		.cfi_offset 14, -4
+  99:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* unlock the main flash */
+ 100:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_unlock();
+ 146              		.loc 1 100 5 view .LVU24
+ 147 0002 FFF7FEFF 		bl	fmc_unlock
+ 148              	.LVL4:
+ 101:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 102:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* set the WSEN bit in register FMC_WSEN */
+ 103:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FMC_WSEN |= FMC_WSEN_WSEN;
+ 149              		.loc 1 103 5 view .LVU25
+ 150              		.loc 1 103 14 is_stmt 0 view .LVU26
+ 151 0006 054A     		ldr	r2, .L13
+ 152 0008 D2F8FC30 		ldr	r3, [r2, #252]
+ 153 000c 43F00103 		orr	r3, r3, #1
+ 154 0010 C2F8FC30 		str	r3, [r2, #252]
+ 104:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 105:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* lock the main flash after operation */
+ 106:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_lock();
+ 155              		.loc 1 106 5 is_stmt 1 view .LVU27
+ 156 0014 FFF7FEFF 		bl	fmc_lock
+ 157              	.LVL5:
+ 107:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 158              		.loc 1 107 1 is_stmt 0 view .LVU28
+ 159 0018 08BD     		pop	{r3, pc}
+ 160              	.L14:
+ 161 001a 00BF     		.align	2
+ 162              	.L13:
+ 163 001c 00200240 		.word	1073881088
+ 164              		.cfi_endproc
+ 165              	.LFE119:
+ 167              		.section	.text.fmc_wait_state_disable,"ax",%progbits
+ 168              		.align	1
+ 169              		.global	fmc_wait_state_disable
+ 170              		.syntax unified
+ 171              		.thumb
+ 172              		.thumb_func
+ 174              	fmc_wait_state_disable:
+ 175              	.LFB120:
+ 108:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 109:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 110:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      fmc wait state disable
+ 111:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  none
+ 112:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 113:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     none
+ 114:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 115:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** void fmc_wait_state_disable(void)
+ 116:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 176              		.loc 1 116 1 is_stmt 1 view -0
+ 177              		.cfi_startproc
+ 178              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 6
+
+
+ 179              		@ frame_needed = 0, uses_anonymous_args = 0
+ 180 0000 08B5     		push	{r3, lr}
+ 181              	.LCFI1:
+ 182              		.cfi_def_cfa_offset 8
+ 183              		.cfi_offset 3, -8
+ 184              		.cfi_offset 14, -4
+ 117:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* unlock the main flash */
+ 118:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_unlock();
+ 185              		.loc 1 118 5 view .LVU30
+ 186 0002 FFF7FEFF 		bl	fmc_unlock
+ 187              	.LVL6:
+ 119:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 120:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* reset the WSEN bit in register FMC_WSEN */
+ 121:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FMC_WSEN &= ~FMC_WSEN_WSEN;
+ 188              		.loc 1 121 5 view .LVU31
+ 189              		.loc 1 121 14 is_stmt 0 view .LVU32
+ 190 0006 054A     		ldr	r2, .L17
+ 191 0008 D2F8FC30 		ldr	r3, [r2, #252]
+ 192 000c 23F00103 		bic	r3, r3, #1
+ 193 0010 C2F8FC30 		str	r3, [r2, #252]
+ 122:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 123:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* lock the main flash after operation */
+ 124:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_lock();
+ 194              		.loc 1 124 5 is_stmt 1 view .LVU33
+ 195 0014 FFF7FEFF 		bl	fmc_lock
+ 196              	.LVL7:
+ 125:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 197              		.loc 1 125 1 is_stmt 0 view .LVU34
+ 198 0018 08BD     		pop	{r3, pc}
+ 199              	.L18:
+ 200 001a 00BF     		.align	2
+ 201              	.L17:
+ 202 001c 00200240 		.word	1073881088
+ 203              		.cfi_endproc
+ 204              	.LFE120:
+ 206              		.section	.text.ob_unlock,"ax",%progbits
+ 207              		.align	1
+ 208              		.global	ob_unlock
+ 209              		.syntax unified
+ 210              		.thumb
+ 211              		.thumb_func
+ 213              	ob_unlock:
+ 214              	.LFB126:
+ 126:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 127:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 128:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      erase page
+ 129:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  page_address: target page start address
+ 130:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 131:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     fmc_state
+ 132:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 133:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** fmc_state_enum fmc_page_erase(uint32_t page_address)
+ 134:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 135:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 136:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 137:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(FMC_READY == fmc_state) {
+ 138:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* start page erase */
+ 139:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_PER;
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 7
+
+
+ 140:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_ADDR = page_address;
+ 141:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_START;
+ 142:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 143:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* wait for the FMC ready */
+ 144:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 145:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 146:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* reset the PER bit */
+ 147:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL &= ~FMC_CTL_PER;
+ 148:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 149:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 150:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* return the FMC state  */
+ 151:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     return fmc_state;
+ 152:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 153:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 154:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 155:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      erase whole chip
+ 156:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  none
+ 157:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 158:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     fmc_state
+ 159:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 160:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** fmc_state_enum fmc_mass_erase(void)
+ 161:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 162:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 163:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 164:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(FMC_READY == fmc_state) {
+ 165:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* start chip erase */
+ 166:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_MER;
+ 167:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_START;
+ 168:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 169:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* wait for the FMC ready */
+ 170:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 171:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 172:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* reset the MER bit */
+ 173:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL &= ~FMC_CTL_MER;
+ 174:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 175:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 176:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* return the fmc state  */
+ 177:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     return fmc_state;
+ 178:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 179:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 180:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 181:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      program a word at the corresponding address
+ 182:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  address: address to program
+ 183:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  data: word to program
+ 184:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 185:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     fmc_state
+ 186:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 187:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** fmc_state_enum fmc_word_program(uint32_t address, uint32_t data)
+ 188:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 189:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 190:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 191:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(FMC_READY == fmc_state) {
+ 192:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* set the PG bit to start program */
+ 193:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_PG;
+ 194:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 195:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         REG32(address) = data;
+ 196:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 8
+
+
+ 197:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* wait for the FMC ready */
+ 198:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 199:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 200:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* reset the PG bit */
+ 201:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL &= ~FMC_CTL_PG;
+ 202:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 203:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 204:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* return the FMC state */
+ 205:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     return fmc_state;
+ 206:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 207:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 208:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 209:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      program a half word at the corresponding address
+ 210:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  address: address to program
+ 211:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  data: word to program
+ 212:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 213:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     fmc_state
+ 214:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 215:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** fmc_state_enum fmc_halfword_program(uint32_t address, uint16_t data)
+ 216:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 217:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 218:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 219:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(FMC_READY == fmc_state) {
+ 220:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* set the PG bit to start program */
+ 221:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_PG;
+ 222:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 223:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         REG16(address) = data;
+ 224:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 225:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* wait for the FMC ready */
+ 226:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 227:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 228:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* reset the PG bit */
+ 229:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL &= ~FMC_CTL_PG;
+ 230:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 231:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 232:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* return the FMC state */
+ 233:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     return fmc_state;
+ 234:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 235:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 236:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 237:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      program a word at the corresponding address without erasing
+ 238:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  address: address to program
+ 239:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  data: word to program
+ 240:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 241:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     fmc_state
+ 242:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 243:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** fmc_state_enum fmc_word_reprogram(uint32_t address, uint32_t data)
+ 244:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 245:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 246:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FMC_WSEN |= FMC_WSEN_BPEN;
+ 247:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 248:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(FMC_READY == fmc_state) {
+ 249:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* set the PG bit to start program */
+ 250:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_PG;
+ 251:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 252:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         REG32(address) = data;
+ 253:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 9
+
+
+ 254:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* wait for the FMC ready */
+ 255:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 256:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 257:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* reset the PG bit */
+ 258:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL &= ~FMC_CTL_PG;
+ 259:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 260:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     
+ 261:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FMC_WSEN &= ~FMC_WSEN_BPEN;
+ 262:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 263:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* return the FMC state */
+ 264:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     return fmc_state;
+ 265:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 266:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 267:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /* FMC option bytes programming functions */
+ 268:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 269:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 270:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      unlock the option byte operation
+ 271:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 it is better to used in pairs with ob_lock
+ 272:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  none
+ 273:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 274:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     none
+ 275:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 276:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** void ob_unlock(void)
+ 277:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 215              		.loc 1 277 1 is_stmt 1 view -0
+ 216              		.cfi_startproc
+ 217              		@ args = 0, pretend = 0, frame = 0
+ 218              		@ frame_needed = 0, uses_anonymous_args = 0
+ 219              		@ link register save eliminated.
+ 278:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(RESET == (FMC_CTL & FMC_CTL_OBWEN)) {
+ 220              		.loc 1 278 5 view .LVU36
+ 221              		.loc 1 278 18 is_stmt 0 view .LVU37
+ 222 0000 054B     		ldr	r3, .L21
+ 223 0002 1B69     		ldr	r3, [r3, #16]
+ 224              		.loc 1 278 7 view .LVU38
+ 225 0004 13F4007F 		tst	r3, #512
+ 226 0008 05D1     		bne	.L19
+ 279:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* write the FMC key */
+ 280:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_OBKEY = UNLOCK_KEY0;
+ 227              		.loc 1 280 9 is_stmt 1 view .LVU39
+ 228              		.loc 1 280 19 is_stmt 0 view .LVU40
+ 229 000a 034B     		ldr	r3, .L21
+ 230 000c 034A     		ldr	r2, .L21+4
+ 231 000e 9A60     		str	r2, [r3, #8]
+ 281:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_OBKEY = UNLOCK_KEY1;
+ 232              		.loc 1 281 9 is_stmt 1 view .LVU41
+ 233              		.loc 1 281 19 is_stmt 0 view .LVU42
+ 234 0010 02F18832 		add	r2, r2, #-2004318072
+ 235 0014 9A60     		str	r2, [r3, #8]
+ 236              	.L19:
+ 282:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 283:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 237              		.loc 1 283 1 view .LVU43
+ 238 0016 7047     		bx	lr
+ 239              	.L22:
+ 240              		.align	2
+ 241              	.L21:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 10
+
+
+ 242 0018 00200240 		.word	1073881088
+ 243 001c 23016745 		.word	1164378403
+ 244              		.cfi_endproc
+ 245              	.LFE126:
+ 247              		.section	.text.ob_lock,"ax",%progbits
+ 248              		.align	1
+ 249              		.global	ob_lock
+ 250              		.syntax unified
+ 251              		.thumb
+ 252              		.thumb_func
+ 254              	ob_lock:
+ 255              	.LFB127:
+ 284:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 285:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 286:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      lock the option byte operation
+ 287:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 it is better to used in pairs with ob_unlock after an operation
+ 288:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  none
+ 289:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 290:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     none
+ 291:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 292:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** void ob_lock(void)
+ 293:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 256              		.loc 1 293 1 is_stmt 1 view -0
+ 257              		.cfi_startproc
+ 258              		@ args = 0, pretend = 0, frame = 0
+ 259              		@ frame_needed = 0, uses_anonymous_args = 0
+ 260              		@ link register save eliminated.
+ 294:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* reset the OBWE bit */
+ 295:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FMC_CTL &= ~FMC_CTL_OBWEN;
+ 261              		.loc 1 295 5 view .LVU45
+ 262              		.loc 1 295 13 is_stmt 0 view .LVU46
+ 263 0000 024A     		ldr	r2, .L24
+ 264 0002 1369     		ldr	r3, [r2, #16]
+ 265 0004 23F40073 		bic	r3, r3, #512
+ 266 0008 1361     		str	r3, [r2, #16]
+ 296:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 267              		.loc 1 296 1 view .LVU47
+ 268 000a 7047     		bx	lr
+ 269              	.L25:
+ 270              		.align	2
+ 271              	.L24:
+ 272 000c 00200240 		.word	1073881088
+ 273              		.cfi_endproc
+ 274              	.LFE127:
+ 276              		.section	.text.ob_reset,"ax",%progbits
+ 277              		.align	1
+ 278              		.global	ob_reset
+ 279              		.syntax unified
+ 280              		.thumb
+ 281              		.thumb_func
+ 283              	ob_reset:
+ 284              	.LFB128:
+ 297:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 298:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 299:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      reload the option byte and generate a system reset
+ 300:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  none
+ 301:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 11
+
+
+ 302:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     none
+ 303:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 304:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** void ob_reset(void)
+ 305:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 285              		.loc 1 305 1 is_stmt 1 view -0
+ 286              		.cfi_startproc
+ 287              		@ args = 0, pretend = 0, frame = 0
+ 288              		@ frame_needed = 0, uses_anonymous_args = 0
+ 289              		@ link register save eliminated.
+ 306:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* set the OBRLD bit */
+ 307:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FMC_CTL |= FMC_CTL_OBRLD;
+ 290              		.loc 1 307 5 view .LVU49
+ 291              		.loc 1 307 13 is_stmt 0 view .LVU50
+ 292 0000 024A     		ldr	r2, .L27
+ 293 0002 1369     		ldr	r3, [r2, #16]
+ 294 0004 43F40053 		orr	r3, r3, #8192
+ 295 0008 1361     		str	r3, [r2, #16]
+ 308:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 296              		.loc 1 308 1 view .LVU51
+ 297 000a 7047     		bx	lr
+ 298              	.L28:
+ 299              		.align	2
+ 300              	.L27:
+ 301 000c 00200240 		.word	1073881088
+ 302              		.cfi_endproc
+ 303              	.LFE128:
+ 305              		.section	.text.ob_user_get,"ax",%progbits
+ 306              		.align	1
+ 307              		.global	ob_user_get
+ 308              		.syntax unified
+ 309              		.thumb
+ 310              		.thumb_func
+ 312              	ob_user_get:
+ 313              	.LFB134:
+ 309:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 310:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 311:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      erase the option byte
+ 312:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 programmer must ensure FMC & option byte are both unlocked before calling this func
+ 313:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  none
+ 314:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 315:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     fmc_state
+ 316:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 317:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** fmc_state_enum ob_erase(void)
+ 318:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 319:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     uint16_t fmc_spc;
+ 320:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 321:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     uint32_t fmc_plevel = ob_obstat_plevel_get();
+ 322:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 323:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 324:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* get the original option byte security protection code */
+ 325:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(OB_OBSTAT_PLEVEL_NO == fmc_plevel) {
+ 326:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_spc = FMC_NSPC;
+ 327:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else if(OB_OBSTAT_PLEVEL_LOW == fmc_plevel) {
+ 328:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_spc = FMC_LSPC;
+ 329:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else {
+ 330:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_spc = FMC_HSPC;
+ 331:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = FMC_OB_HSPC;
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 12
+
+
+ 332:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 333:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 334:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(FMC_READY == fmc_state) {
+ 335:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* start erase the option byte */
+ 336:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_OBER;
+ 337:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_START;
+ 338:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 339:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* wait for the FMC ready */
+ 340:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 341:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 342:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         if(FMC_READY == fmc_state) {
+ 343:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* reset the OBER bit */
+ 344:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             FMC_CTL &= ~FMC_CTL_OBER;
+ 345:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 346:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* set the OBPG bit */
+ 347:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             FMC_CTL |= FMC_CTL_OBPG;
+ 348:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 349:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* restore the last get option byte security protection code */
+ 350:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             OB_SPC = fmc_spc;
+ 351:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             OB_USER = OB_USER_DEFAULT;
+ 352:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 353:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* wait for the FMC ready */
+ 354:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 355:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 356:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             if(FMC_TOERR != fmc_state) {
+ 357:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBPG bit */
+ 358:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 FMC_CTL &= ~FMC_CTL_OBPG;
+ 359:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 360:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         } else {
+ 361:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             if(FMC_TOERR != fmc_state) {
+ 362:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBPG bit */
+ 363:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 FMC_CTL &= ~FMC_CTL_OBPG;
+ 364:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 365:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         }
+ 366:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 367:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* return the FMC state */
+ 368:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     return fmc_state;
+ 369:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 370:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 371:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 372:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      enable option byte write protection(OB_WP) depending on current option byte
+ 373:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  ob_wp: write protection configuration data
+ 374:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                        setting the bit of ob_wp means enabling the corresponding sector write prote
+ 375:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 376:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     fmc_state
+ 377:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 378:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** fmc_state_enum ob_write_protection_enable(uint16_t ob_wp)
+ 379:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 380:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     uint8_t ob_wrp0, ob_wrp1;
+ 381:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_struct ob_parm;
+ 382:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 383:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_get(&ob_parm);
+ 384:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_wp   = (uint16_t)(~ob_wp);
+ 385:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_wrp0 = (uint8_t)(ob_wp & OB_LWP);
+ 386:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_wrp1 = (uint8_t)((ob_wp & OB_HWP) >> 8U);
+ 387:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 388:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(0xFFFFU == OB_WP0) {
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 13
+
+
+ 389:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         if(0xFFFFU == OB_WP1) {
+ 390:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             if(FMC_READY == fmc_state) {
+ 391:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* set the OBPG bit*/
+ 392:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 FMC_CTL |= FMC_CTL_OBPG;
+ 393:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 394:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 if(0xFFU != ob_wrp0) {
+ 395:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     OB_WP0 = ob_wrp0 ;
+ 396:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* wait for the FMC ready */
+ 397:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 398:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 399:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 400:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 if((FMC_READY == fmc_state) && (0xFFU != ob_wrp1)) {
+ 401:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     OB_WP1 = ob_wrp1 ;
+ 402:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* wait for the FMC ready */
+ 403:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 404:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 405:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 406:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 if(FMC_TOERR != fmc_state) {
+ 407:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* reset the OBPG bit */
+ 408:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     FMC_CTL &= ~FMC_CTL_OBPG;
+ 409:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 410:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 411:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         }
+ 412:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else {
+ 413:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         if(FMC_READY == fmc_state) {
+ 414:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* start erase the option byte */
+ 415:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             FMC_CTL |= FMC_CTL_OBER;
+ 416:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             FMC_CTL |= FMC_CTL_START;
+ 417:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 418:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* wait for the FMC ready */
+ 419:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 420:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 421:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             if(FMC_READY == fmc_state) {
+ 422:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 423:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBER bit */
+ 424:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 FMC_CTL &= ~FMC_CTL_OBER;
+ 425:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 426:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* enable the option bytes programming */
+ 427:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 FMC_CTL |= FMC_CTL_OBPG;
+ 428:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 429:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 ob_value_modify(OB_WP_ADDR0, ob_wp, &ob_parm);
+ 430:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* wait for the FMC ready */
+ 431:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 432:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 433:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 if(FMC_TOERR != fmc_state) {
+ 434:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* reset the OBPG bit */
+ 435:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     FMC_CTL &= ~FMC_CTL_OBPG;
+ 436:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 437:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             } else {
+ 438:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 if(FMC_TOERR != fmc_state) {
+ 439:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* reset the OBER bit */
+ 440:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     FMC_CTL &= ~FMC_CTL_OBER;
+ 441:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 442:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 443:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         }
+ 444:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 445:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* return the FMC state */
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 14
+
+
+ 446:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     return fmc_state;
+ 447:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 448:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 449:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 450:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      configure security protection
+ 451:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  ob_spc: specify security protection code
+ 452:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 only one parameter can be selected which is shown as below:
+ 453:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_NSPC: no security protection
+ 454:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_LSPC: low security protection
+ 455:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_HSPC: high security protection
+ 456:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 457:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     fmc_state
+ 458:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 459:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** fmc_state_enum ob_security_protection_config(uint8_t ob_spc)
+ 460:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 461:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 462:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 463:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_struct ob_parm;
+ 464:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_get(&ob_parm);
+ 465:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 466:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* the OB_SPC byte cannot be reprogrammed if protection level is high */
+ 467:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(OB_OBSTAT_PLEVEL_HIGH == ob_obstat_plevel_get()) {
+ 468:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = FMC_OB_HSPC;
+ 469:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 470:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 471:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(FMC_READY == fmc_state) {
+ 472:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* start erase the option byte */
+ 473:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_OBER;
+ 474:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_START;
+ 475:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 476:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* wait for the FMC ready */
+ 477:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 478:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 479:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         if(FMC_READY == fmc_state) {
+ 480:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 481:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* reset the OBER bit */
+ 482:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             FMC_CTL &= ~FMC_CTL_OBER;
+ 483:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 484:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* enable the option bytes programming */
+ 485:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             FMC_CTL |= FMC_CTL_OBPG;
+ 486:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 487:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             ob_value_modify(OB_SPC_ADDR, (uint16_t)ob_spc, &ob_parm);
+ 488:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* wait for the FMC ready */
+ 489:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 490:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 491:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             if(FMC_TOERR != fmc_state) {
+ 492:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBPG bit */
+ 493:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 FMC_CTL &= ~FMC_CTL_OBPG;
+ 494:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 495:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         } else {
+ 496:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             if(FMC_TOERR != fmc_state) {
+ 497:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBER bit */
+ 498:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 FMC_CTL &= ~FMC_CTL_OBER;
+ 499:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 500:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         }
+ 501:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 502:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* return the FMC state */
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 15
+
+
+ 503:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     return fmc_state;
+ 504:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 505:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 506:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 507:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      program the FMC user option byte depending on current option byte
+ 508:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  ob_user: user option byte
+ 509:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 one or more parameters (bitwise AND) can be selected which are shown as below:
+ 510:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        OB_FWDGT_HW: hardware free watchdog timer
+ 511:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        OB_DEEPSLEEP_RST: generate a reset instead of entering deepsleep mode
+ 512:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        OB_STDBY_RST: generate a reset instead of entering standby mode
+ 513:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        OB_BOOT1_SET_1: BOOT1 bit is 1
+ 514:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        OB_VDDA_DISABLE: disable VDDA monitor
+ 515:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        OB_SRAM_PARITY_ENABLE: enable sram parity check
+ 516:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 517:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     fmc_state
+ 518:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 519:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** fmc_state_enum ob_user_write(uint8_t ob_user)
+ 520:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 521:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* check whether FMC is ready or not */
+ 522:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 523:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_struct ob_parm;
+ 524:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_get(&ob_parm);
+ 525:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 526:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(FMC_READY == fmc_state) {
+ 527:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* start erase the option byte */
+ 528:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_OBER;
+ 529:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_START;
+ 530:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 531:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* wait for the FMC ready */
+ 532:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 533:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 534:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         if(FMC_READY == fmc_state) {
+ 535:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* reset the OBER bit */
+ 536:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             FMC_CTL &= ~FMC_CTL_OBER;
+ 537:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 538:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* set the OBPG bit */
+ 539:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             FMC_CTL |= FMC_CTL_OBPG;
+ 540:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 541:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* restore the last get option byte security protection code */
+ 542:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             ob_value_modify(OB_USER_ADDR, (uint16_t)ob_user, &ob_parm);
+ 543:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 544:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* wait for the FMC ready */
+ 545:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 546:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 547:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             if(FMC_TOERR != fmc_state) {
+ 548:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBPG bit */
+ 549:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 FMC_CTL &= ~FMC_CTL_OBPG;
+ 550:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 551:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         } else {
+ 552:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             if(FMC_TOERR != fmc_state) {
+ 553:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBPG bit */
+ 554:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 FMC_CTL &= ~FMC_CTL_OBPG;
+ 555:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 556:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         }
+ 557:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 558:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* return the FMC state */
+ 559:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     return fmc_state;
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 16
+
+
+ 560:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 561:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 562:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 563:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      program the FMC data option byte
+ 564:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  address: OB_DATA_ADDR0 or OB_DATA_ADDR1
+ 565:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 only one parameter can be selected which is shown as below:
+ 566:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        OB_DATA_ADDR0: option byte data address 0
+ 567:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        OB_DATA_ADDR1: option byte data address 1
+ 568:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  data: the byte to be programmed
+ 569:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 570:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     fmc_state
+ 571:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 572:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** fmc_state_enum ob_data_program(uint32_t address, uint8_t data)
+ 573:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 574:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 575:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_struct ob_parm;
+ 576:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_get(&ob_parm);
+ 577:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(0xFFFFU == REG16(address)) {
+ 578:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         if(FMC_READY == fmc_state) {
+ 579:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* set the OBPG bit */
+ 580:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             FMC_CTL |= FMC_CTL_OBPG;
+ 581:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 582:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             REG16(address) = data ;
+ 583:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 584:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* wait for the FMC ready */
+ 585:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 586:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 587:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             if(FMC_TOERR != fmc_state) {
+ 588:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBPG bit */
+ 589:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 FMC_CTL &= ~FMC_CTL_OBPG;
+ 590:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 591:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         }
+ 592:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else {
+ 593:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         if(FMC_READY == fmc_state) {
+ 594:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* start erase the option byte */
+ 595:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             FMC_CTL |= FMC_CTL_OBER;
+ 596:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             FMC_CTL |= FMC_CTL_START;
+ 597:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 598:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* wait for the FMC ready */
+ 599:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 600:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 601:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             if(FMC_READY == fmc_state) {
+ 602:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 603:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBER bit */
+ 604:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 FMC_CTL &= ~FMC_CTL_OBER;
+ 605:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 606:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* enable the option bytes programming */
+ 607:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 FMC_CTL |= FMC_CTL_OBPG;
+ 608:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 609:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 ob_value_modify(address, (uint16_t)data, &ob_parm);
+ 610:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* wait for the FMC ready */
+ 611:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 612:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 613:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 if(FMC_TOERR != fmc_state) {
+ 614:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* reset the OBPG bit */
+ 615:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     FMC_CTL &= ~FMC_CTL_OBPG;
+ 616:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 17
+
+
+ 617:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             } else {
+ 618:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 if(FMC_TOERR != fmc_state) {
+ 619:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* reset the OBER bit */
+ 620:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     FMC_CTL &= ~FMC_CTL_OBER;
+ 621:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 622:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 623:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         }
+ 624:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 625:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 626:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* return the FMC state */
+ 627:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     return fmc_state;
+ 628:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 629:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 630:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 631:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      get OB_USER in register FMC_OBSTAT
+ 632:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  none
+ 633:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 634:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     ob_user
+ 635:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 636:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** uint8_t ob_user_get(void)
+ 637:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 314              		.loc 1 637 1 is_stmt 1 view -0
+ 315              		.cfi_startproc
+ 316              		@ args = 0, pretend = 0, frame = 0
+ 317              		@ frame_needed = 0, uses_anonymous_args = 0
+ 318              		@ link register save eliminated.
+ 638:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     return (uint8_t)(FMC_OBSTAT >> 8U);
+ 319              		.loc 1 638 5 view .LVU53
+ 320              		.loc 1 638 22 is_stmt 0 view .LVU54
+ 321 0000 024B     		ldr	r3, .L30
+ 322 0002 D869     		ldr	r0, [r3, #28]
+ 639:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 323              		.loc 1 639 1 view .LVU55
+ 324 0004 C0F30720 		ubfx	r0, r0, #8, #8
+ 325 0008 7047     		bx	lr
+ 326              	.L31:
+ 327 000a 00BF     		.align	2
+ 328              	.L30:
+ 329 000c 00200240 		.word	1073881088
+ 330              		.cfi_endproc
+ 331              	.LFE134:
+ 333              		.section	.text.ob_data_get,"ax",%progbits
+ 334              		.align	1
+ 335              		.global	ob_data_get
+ 336              		.syntax unified
+ 337              		.thumb
+ 338              		.thumb_func
+ 340              	ob_data_get:
+ 341              	.LFB135:
+ 640:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 641:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 642:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      get OB_DATA in register FMC_OBSTAT
+ 643:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  none
+ 644:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 645:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     ob_data
+ 646:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 647:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** uint16_t ob_data_get(void)
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 18
+
+
+ 648:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 342              		.loc 1 648 1 is_stmt 1 view -0
+ 343              		.cfi_startproc
+ 344              		@ args = 0, pretend = 0, frame = 0
+ 345              		@ frame_needed = 0, uses_anonymous_args = 0
+ 346              		@ link register save eliminated.
+ 649:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     return (uint16_t)(FMC_OBSTAT >> 16U);
+ 347              		.loc 1 649 5 view .LVU57
+ 348              		.loc 1 649 23 is_stmt 0 view .LVU58
+ 349 0000 014B     		ldr	r3, .L33
+ 350 0002 D869     		ldr	r0, [r3, #28]
+ 650:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 351              		.loc 1 650 1 view .LVU59
+ 352 0004 000C     		lsrs	r0, r0, #16
+ 353 0006 7047     		bx	lr
+ 354              	.L34:
+ 355              		.align	2
+ 356              	.L33:
+ 357 0008 00200240 		.word	1073881088
+ 358              		.cfi_endproc
+ 359              	.LFE135:
+ 361              		.section	.text.ob_write_protection_get,"ax",%progbits
+ 362              		.align	1
+ 363              		.global	ob_write_protection_get
+ 364              		.syntax unified
+ 365              		.thumb
+ 366              		.thumb_func
+ 368              	ob_write_protection_get:
+ 369              	.LFB136:
+ 651:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 652:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 653:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      get the FMC option byte write protection (OB_WP) in register FMC_WP
+ 654:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  none
+ 655:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 656:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     OB_WP
+ 657:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 658:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** uint16_t ob_write_protection_get(void)
+ 659:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 370              		.loc 1 659 1 is_stmt 1 view -0
+ 371              		.cfi_startproc
+ 372              		@ args = 0, pretend = 0, frame = 0
+ 373              		@ frame_needed = 0, uses_anonymous_args = 0
+ 374              		@ link register save eliminated.
+ 660:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     return (uint16_t)(FMC_WP);
+ 375              		.loc 1 660 5 view .LVU61
+ 376              		.loc 1 660 23 is_stmt 0 view .LVU62
+ 377 0000 014B     		ldr	r3, .L36
+ 378 0002 186A     		ldr	r0, [r3, #32]
+ 661:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 379              		.loc 1 661 1 view .LVU63
+ 380 0004 80B2     		uxth	r0, r0
+ 381 0006 7047     		bx	lr
+ 382              	.L37:
+ 383              		.align	2
+ 384              	.L36:
+ 385 0008 00200240 		.word	1073881088
+ 386              		.cfi_endproc
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 19
+
+
+ 387              	.LFE136:
+ 389              		.section	.text.ob_obstat_plevel_get,"ax",%progbits
+ 390              		.align	1
+ 391              		.global	ob_obstat_plevel_get
+ 392              		.syntax unified
+ 393              		.thumb
+ 394              		.thumb_func
+ 396              	ob_obstat_plevel_get:
+ 397              	.LFB137:
+ 662:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 663:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 664:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      get the value of FMC option byte security protection level (PLEVEL) in FMC_OBSTAT r
+ 665:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  none
+ 666:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 667:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     the value of PLEVEL
+ 668:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 669:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** uint32_t ob_obstat_plevel_get(void)
+ 670:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 398              		.loc 1 670 1 is_stmt 1 view -0
+ 399              		.cfi_startproc
+ 400              		@ args = 0, pretend = 0, frame = 0
+ 401              		@ frame_needed = 0, uses_anonymous_args = 0
+ 402              		@ link register save eliminated.
+ 671:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     return (FMC_OBSTAT & (FMC_OBSTAT_PLEVEL_BIT0 | FMC_OBSTAT_PLEVEL_BIT1));
+ 403              		.loc 1 671 5 view .LVU65
+ 404              		.loc 1 671 24 is_stmt 0 view .LVU66
+ 405 0000 024B     		ldr	r3, .L39
+ 406 0002 D869     		ldr	r0, [r3, #28]
+ 672:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 407              		.loc 1 672 1 view .LVU67
+ 408 0004 00F00600 		and	r0, r0, #6
+ 409 0008 7047     		bx	lr
+ 410              	.L40:
+ 411 000a 00BF     		.align	2
+ 412              	.L39:
+ 413 000c 00200240 		.word	1073881088
+ 414              		.cfi_endproc
+ 415              	.LFE137:
+ 417              		.section	.text.fmc_interrupt_enable,"ax",%progbits
+ 418              		.align	1
+ 419              		.global	fmc_interrupt_enable
+ 420              		.syntax unified
+ 421              		.thumb
+ 422              		.thumb_func
+ 424              	fmc_interrupt_enable:
+ 425              	.LVL8:
+ 426              	.LFB138:
+ 673:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 674:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /* FMC interrupts and flags management functions */
+ 675:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 676:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      enable FMC interrupt
+ 677:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  interrupt: the FMC interrupt source
+ 678:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 one or more parameters can be selected which are shown as below:
+ 679:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_INTEN_END: FMC end of operation interrupt
+ 680:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_INTEN_ERR: FMC error interrupt
+ 681:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 682:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     none
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 20
+
+
+ 683:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 684:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** void fmc_interrupt_enable(uint32_t interrupt)
+ 685:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 427              		.loc 1 685 1 is_stmt 1 view -0
+ 428              		.cfi_startproc
+ 429              		@ args = 0, pretend = 0, frame = 0
+ 430              		@ frame_needed = 0, uses_anonymous_args = 0
+ 431              		@ link register save eliminated.
+ 686:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FMC_CTL |= interrupt;
+ 432              		.loc 1 686 5 view .LVU69
+ 433              		.loc 1 686 13 is_stmt 0 view .LVU70
+ 434 0000 024A     		ldr	r2, .L42
+ 435 0002 1369     		ldr	r3, [r2, #16]
+ 436 0004 0343     		orrs	r3, r3, r0
+ 437 0006 1361     		str	r3, [r2, #16]
+ 687:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 438              		.loc 1 687 1 view .LVU71
+ 439 0008 7047     		bx	lr
+ 440              	.L43:
+ 441 000a 00BF     		.align	2
+ 442              	.L42:
+ 443 000c 00200240 		.word	1073881088
+ 444              		.cfi_endproc
+ 445              	.LFE138:
+ 447              		.section	.text.fmc_interrupt_disable,"ax",%progbits
+ 448              		.align	1
+ 449              		.global	fmc_interrupt_disable
+ 450              		.syntax unified
+ 451              		.thumb
+ 452              		.thumb_func
+ 454              	fmc_interrupt_disable:
+ 455              	.LVL9:
+ 456              	.LFB139:
+ 688:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 689:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 690:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      disable FMC interrupt
+ 691:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  interrupt: the FMC interrupt source
+ 692:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 one or more parameters can be selected which are shown as below:
+ 693:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_INTEN_END: FMC end of operation interrupt
+ 694:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_INTEN_ERR: FMC error interrupt
+ 695:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 696:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     none
+ 697:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 698:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** void fmc_interrupt_disable(uint32_t interrupt)
+ 699:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 457              		.loc 1 699 1 is_stmt 1 view -0
+ 458              		.cfi_startproc
+ 459              		@ args = 0, pretend = 0, frame = 0
+ 460              		@ frame_needed = 0, uses_anonymous_args = 0
+ 461              		@ link register save eliminated.
+ 700:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FMC_CTL &= ~(uint32_t)interrupt;
+ 462              		.loc 1 700 5 view .LVU73
+ 463              		.loc 1 700 13 is_stmt 0 view .LVU74
+ 464 0000 024A     		ldr	r2, .L45
+ 465 0002 1369     		ldr	r3, [r2, #16]
+ 466 0004 23EA0003 		bic	r3, r3, r0
+ 467 0008 1361     		str	r3, [r2, #16]
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 21
+
+
+ 701:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 468              		.loc 1 701 1 view .LVU75
+ 469 000a 7047     		bx	lr
+ 470              	.L46:
+ 471              		.align	2
+ 472              	.L45:
+ 473 000c 00200240 		.word	1073881088
+ 474              		.cfi_endproc
+ 475              	.LFE139:
+ 477              		.section	.text.fmc_flag_get,"ax",%progbits
+ 478              		.align	1
+ 479              		.global	fmc_flag_get
+ 480              		.syntax unified
+ 481              		.thumb
+ 482              		.thumb_func
+ 484              	fmc_flag_get:
+ 485              	.LVL10:
+ 486              	.LFB140:
+ 702:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 703:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 704:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      get flag set or reset
+ 705:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  flag: check FMC flag
+ 706:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 only one parameter can be selected which is shown as below:
+ 707:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_FLAG_BUSY: FMC busy flag
+ 708:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_FLAG_PGERR: FMC programming error flag
+ 709:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_FLAG_WPERR: FMC write protection error flag
+ 710:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_FLAG_END: FMC end of programming flag
+ 711:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 712:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     FlagStatus: SET or RESET
+ 713:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 714:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** FlagStatus fmc_flag_get(uint32_t flag)
+ 715:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 487              		.loc 1 715 1 is_stmt 1 view -0
+ 488              		.cfi_startproc
+ 489              		@ args = 0, pretend = 0, frame = 0
+ 490              		@ frame_needed = 0, uses_anonymous_args = 0
+ 491              		@ link register save eliminated.
+ 716:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FlagStatus status = RESET;
+ 492              		.loc 1 716 5 view .LVU77
+ 717:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 718:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(FMC_STAT & flag) {
+ 493              		.loc 1 718 5 view .LVU78
+ 494              		.loc 1 718 8 is_stmt 0 view .LVU79
+ 495 0000 034B     		ldr	r3, .L50
+ 496 0002 DB68     		ldr	r3, [r3, #12]
+ 497              		.loc 1 718 7 view .LVU80
+ 498 0004 0342     		tst	r3, r0
+ 499 0006 01D1     		bne	.L49
+ 716:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FlagStatus status = RESET;
+ 500              		.loc 1 716 16 view .LVU81
+ 501 0008 0020     		movs	r0, #0
+ 502              	.LVL11:
+ 716:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FlagStatus status = RESET;
+ 503              		.loc 1 716 16 view .LVU82
+ 504 000a 7047     		bx	lr
+ 505              	.LVL12:
+ 506              	.L49:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 22
+
+
+ 719:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         status = SET;
+ 507              		.loc 1 719 16 view .LVU83
+ 508 000c 0120     		movs	r0, #1
+ 509              	.LVL13:
+ 720:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 721:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* return the state of corresponding FMC flag */
+ 722:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     return status;
+ 510              		.loc 1 722 5 is_stmt 1 view .LVU84
+ 723:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 511              		.loc 1 723 1 is_stmt 0 view .LVU85
+ 512 000e 7047     		bx	lr
+ 513              	.L51:
+ 514              		.align	2
+ 515              	.L50:
+ 516 0010 00200240 		.word	1073881088
+ 517              		.cfi_endproc
+ 518              	.LFE140:
+ 520              		.section	.text.fmc_flag_clear,"ax",%progbits
+ 521              		.align	1
+ 522              		.global	fmc_flag_clear
+ 523              		.syntax unified
+ 524              		.thumb
+ 525              		.thumb_func
+ 527              	fmc_flag_clear:
+ 528              	.LVL14:
+ 529              	.LFB141:
+ 724:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 725:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 726:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      clear the FMC pending flag by writing 1
+ 727:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  flag: clear FMC flag
+ 728:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 only one parameter can be selected which is shown as below:
+ 729:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_FLAG_PGERR: FMC programming error flag
+ 730:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_FLAG_WPERR: FMC write protection error flag
+ 731:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_FLAG_END: fmc end of programming flag
+ 732:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 733:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     none
+ 734:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 735:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** void fmc_flag_clear(uint32_t flag)
+ 736:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 530              		.loc 1 736 1 is_stmt 1 view -0
+ 531              		.cfi_startproc
+ 532              		@ args = 0, pretend = 0, frame = 0
+ 533              		@ frame_needed = 0, uses_anonymous_args = 0
+ 534              		@ link register save eliminated.
+ 737:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* clear the flags */
+ 738:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FMC_STAT = flag;
+ 535              		.loc 1 738 5 view .LVU87
+ 536              		.loc 1 738 14 is_stmt 0 view .LVU88
+ 537 0000 014B     		ldr	r3, .L53
+ 538 0002 D860     		str	r0, [r3, #12]
+ 739:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 539              		.loc 1 739 1 view .LVU89
+ 540 0004 7047     		bx	lr
+ 541              	.L54:
+ 542 0006 00BF     		.align	2
+ 543              	.L53:
+ 544 0008 00200240 		.word	1073881088
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 23
+
+
+ 545              		.cfi_endproc
+ 546              	.LFE141:
+ 548              		.section	.text.fmc_interrupt_flag_get,"ax",%progbits
+ 549              		.align	1
+ 550              		.global	fmc_interrupt_flag_get
+ 551              		.syntax unified
+ 552              		.thumb
+ 553              		.thumb_func
+ 555              	fmc_interrupt_flag_get:
+ 556              	.LVL15:
+ 557              	.LFB142:
+ 740:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 741:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 742:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      get flag set or reset
+ 743:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  flag: check FMC flag
+ 744:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 only one parameter can be selected which is shown as below:
+ 745:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_FLAG_PGERR: FMC programming error flag
+ 746:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_FLAG_WPERR: FMC write protection error flag
+ 747:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_FLAG_END: FMC end of programming flag
+ 748:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 749:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     FlagStatus: SET or RESET
+ 750:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 751:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** FlagStatus fmc_interrupt_flag_get(uint32_t flag)
+ 752:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 558              		.loc 1 752 1 is_stmt 1 view -0
+ 559              		.cfi_startproc
+ 560              		@ args = 0, pretend = 0, frame = 0
+ 561              		@ frame_needed = 0, uses_anonymous_args = 0
+ 562              		@ link register save eliminated.
+ 753:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FlagStatus status = RESET;
+ 563              		.loc 1 753 5 view .LVU91
+ 754:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 755:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(FMC_STAT & flag) {
+ 564              		.loc 1 755 5 view .LVU92
+ 565              		.loc 1 755 8 is_stmt 0 view .LVU93
+ 566 0000 034B     		ldr	r3, .L58
+ 567 0002 DB68     		ldr	r3, [r3, #12]
+ 568              		.loc 1 755 7 view .LVU94
+ 569 0004 0342     		tst	r3, r0
+ 570 0006 01D1     		bne	.L57
+ 753:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FlagStatus status = RESET;
+ 571              		.loc 1 753 16 view .LVU95
+ 572 0008 0020     		movs	r0, #0
+ 573              	.LVL16:
+ 753:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FlagStatus status = RESET;
+ 574              		.loc 1 753 16 view .LVU96
+ 575 000a 7047     		bx	lr
+ 576              	.LVL17:
+ 577              	.L57:
+ 756:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         status = SET;
+ 578              		.loc 1 756 16 view .LVU97
+ 579 000c 0120     		movs	r0, #1
+ 580              	.LVL18:
+ 757:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 758:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* return the state of corresponding FMC flag */
+ 759:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     return status;
+ 581              		.loc 1 759 5 is_stmt 1 view .LVU98
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 24
+
+
+ 760:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 582              		.loc 1 760 1 is_stmt 0 view .LVU99
+ 583 000e 7047     		bx	lr
+ 584              	.L59:
+ 585              		.align	2
+ 586              	.L58:
+ 587 0010 00200240 		.word	1073881088
+ 588              		.cfi_endproc
+ 589              	.LFE142:
+ 591              		.section	.text.fmc_interrupt_flag_clear,"ax",%progbits
+ 592              		.align	1
+ 593              		.global	fmc_interrupt_flag_clear
+ 594              		.syntax unified
+ 595              		.thumb
+ 596              		.thumb_func
+ 598              	fmc_interrupt_flag_clear:
+ 599              	.LVL19:
+ 600              	.LFB143:
+ 761:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 762:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 763:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      clear the FMC pending flag by writing 1
+ 764:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  flag: clear FMC flag
+ 765:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 only one parameter can be selected which is shown as below:
+ 766:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_FLAG_PGERR: FMC programming error flag
+ 767:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_FLAG_WPERR: FMC write protection error flag
+ 768:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****       \arg        FMC_FLAG_END: fmc end of programming flag
+ 769:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 770:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     none
+ 771:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 772:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** void fmc_interrupt_flag_clear(uint32_t flag)
+ 773:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 601              		.loc 1 773 1 is_stmt 1 view -0
+ 602              		.cfi_startproc
+ 603              		@ args = 0, pretend = 0, frame = 0
+ 604              		@ frame_needed = 0, uses_anonymous_args = 0
+ 605              		@ link register save eliminated.
+ 774:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* clear the flags */
+ 775:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FMC_STAT = flag;
+ 606              		.loc 1 775 5 view .LVU101
+ 607              		.loc 1 775 14 is_stmt 0 view .LVU102
+ 608 0000 014B     		ldr	r3, .L61
+ 609 0002 D860     		str	r0, [r3, #12]
+ 776:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 610              		.loc 1 776 1 view .LVU103
+ 611 0004 7047     		bx	lr
+ 612              	.L62:
+ 613 0006 00BF     		.align	2
+ 614              	.L61:
+ 615 0008 00200240 		.word	1073881088
+ 616              		.cfi_endproc
+ 617              	.LFE143:
+ 619              		.section	.text.fmc_state_get,"ax",%progbits
+ 620              		.align	1
+ 621              		.global	fmc_state_get
+ 622              		.syntax unified
+ 623              		.thumb
+ 624              		.thumb_func
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 25
+
+
+ 626              	fmc_state_get:
+ 627              	.LFB144:
+ 777:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 778:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 779:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      get the FMC state
+ 780:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  none
+ 781:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 782:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     fmc_state
+ 783:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 784:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** fmc_state_enum fmc_state_get(void)
+ 785:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 628              		.loc 1 785 1 is_stmt 1 view -0
+ 629              		.cfi_startproc
+ 630              		@ args = 0, pretend = 0, frame = 0
+ 631              		@ frame_needed = 0, uses_anonymous_args = 0
+ 632              		@ link register save eliminated.
+ 786:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = FMC_READY;
+ 633              		.loc 1 786 5 view .LVU105
+ 634              	.LVL20:
+ 787:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 788:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if((uint32_t)0x00U != (FMC_STAT & FMC_STAT_BUSY)) {
+ 635              		.loc 1 788 5 view .LVU106
+ 636              		.loc 1 788 28 is_stmt 0 view .LVU107
+ 637 0000 0B4B     		ldr	r3, .L68
+ 638 0002 DB68     		ldr	r3, [r3, #12]
+ 639              		.loc 1 788 7 view .LVU108
+ 640 0004 13F0010F 		tst	r3, #1
+ 641 0008 0BD1     		bne	.L65
+ 789:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = FMC_BUSY;
+ 790:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else {
+ 791:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         if((uint32_t)0x00U != (FMC_STAT & FMC_STAT_WPERR)) {
+ 642              		.loc 1 791 9 is_stmt 1 view .LVU109
+ 643              		.loc 1 791 32 is_stmt 0 view .LVU110
+ 644 000a 094B     		ldr	r3, .L68
+ 645 000c DB68     		ldr	r3, [r3, #12]
+ 646              		.loc 1 791 11 view .LVU111
+ 647 000e 13F0100F 		tst	r3, #16
+ 648 0012 08D1     		bne	.L66
+ 792:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             fmc_state = FMC_WPERR;
+ 793:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         } else {
+ 794:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             if((uint32_t)0x00U != (FMC_STAT & FMC_STAT_PGERR)) {
+ 649              		.loc 1 794 13 is_stmt 1 view .LVU112
+ 650              		.loc 1 794 36 is_stmt 0 view .LVU113
+ 651 0014 064B     		ldr	r3, .L68
+ 652 0016 DB68     		ldr	r3, [r3, #12]
+ 653              		.loc 1 794 15 view .LVU114
+ 654 0018 13F0040F 		tst	r3, #4
+ 655 001c 05D1     		bne	.L67
+ 786:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 656              		.loc 1 786 20 view .LVU115
+ 657 001e 0020     		movs	r0, #0
+ 658 0020 7047     		bx	lr
+ 659              	.L65:
+ 789:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = FMC_BUSY;
+ 660              		.loc 1 789 19 view .LVU116
+ 661 0022 0120     		movs	r0, #1
+ 662 0024 7047     		bx	lr
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 26
+
+
+ 663              	.L66:
+ 792:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             fmc_state = FMC_WPERR;
+ 664              		.loc 1 792 23 view .LVU117
+ 665 0026 0320     		movs	r0, #3
+ 666 0028 7047     		bx	lr
+ 667              	.L67:
+ 795:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 fmc_state = FMC_PGERR;
+ 668              		.loc 1 795 27 view .LVU118
+ 669 002a 0220     		movs	r0, #2
+ 670              	.LVL21:
+ 796:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 797:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         }
+ 798:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 799:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* return the FMC state */
+ 800:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     return fmc_state;
+ 671              		.loc 1 800 5 is_stmt 1 view .LVU119
+ 801:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 672              		.loc 1 801 1 is_stmt 0 view .LVU120
+ 673 002c 7047     		bx	lr
+ 674              	.L69:
+ 675 002e 00BF     		.align	2
+ 676              	.L68:
+ 677 0030 00200240 		.word	1073881088
+ 678              		.cfi_endproc
+ 679              	.LFE144:
+ 681              		.section	.text.fmc_ready_wait,"ax",%progbits
+ 682              		.align	1
+ 683              		.global	fmc_ready_wait
+ 684              		.syntax unified
+ 685              		.thumb
+ 686              		.thumb_func
+ 688              	fmc_ready_wait:
+ 689              	.LVL22:
+ 690              	.LFB145:
+ 802:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 803:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 804:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      check whether FMC is ready or not
+ 805:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  timeout: timeout count
+ 806:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 807:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     fmc_state
+ 808:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 809:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** fmc_state_enum fmc_ready_wait(uint32_t timeout)
+ 810:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 691              		.loc 1 810 1 is_stmt 1 view -0
+ 692              		.cfi_startproc
+ 693              		@ args = 0, pretend = 0, frame = 0
+ 694              		@ frame_needed = 0, uses_anonymous_args = 0
+ 695              		.loc 1 810 1 is_stmt 0 view .LVU122
+ 696 0000 10B5     		push	{r4, lr}
+ 697              	.LCFI2:
+ 698              		.cfi_def_cfa_offset 8
+ 699              		.cfi_offset 4, -8
+ 700              		.cfi_offset 14, -4
+ 701 0002 0446     		mov	r4, r0
+ 811:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = FMC_BUSY;
+ 702              		.loc 1 811 5 is_stmt 1 view .LVU123
+ 703              	.LVL23:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 27
+
+
+ 704              	.L72:
+ 812:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 813:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* wait for FMC ready */
+ 814:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     do {
+ 705              		.loc 1 814 5 discriminator 2 view .LVU124
+ 815:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* get FMC state */
+ 816:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = fmc_state_get();
+ 706              		.loc 1 816 9 discriminator 2 view .LVU125
+ 707              		.loc 1 816 21 is_stmt 0 discriminator 2 view .LVU126
+ 708 0004 FFF7FEFF 		bl	fmc_state_get
+ 709              	.LVL24:
+ 817:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         timeout--;
+ 710              		.loc 1 817 9 is_stmt 1 discriminator 2 view .LVU127
+ 711              		.loc 1 817 16 is_stmt 0 discriminator 2 view .LVU128
+ 712 0008 013C     		subs	r4, r4, #1
+ 713              	.LVL25:
+ 818:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } while((FMC_BUSY == fmc_state) && (0U != timeout));
+ 714              		.loc 1 818 12 is_stmt 1 discriminator 2 view .LVU129
+ 715              		.loc 1 818 5 is_stmt 0 discriminator 2 view .LVU130
+ 716 000a 0128     		cmp	r0, #1
+ 717 000c 01D1     		bne	.L71
+ 718              		.loc 1 818 37 discriminator 1 view .LVU131
+ 719 000e 002C     		cmp	r4, #0
+ 720 0010 F8D1     		bne	.L72
+ 721              	.L71:
+ 819:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 820:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(FMC_BUSY == fmc_state) {
+ 722              		.loc 1 820 5 is_stmt 1 view .LVU132
+ 723              		.loc 1 820 7 is_stmt 0 view .LVU133
+ 724 0012 0128     		cmp	r0, #1
+ 725 0014 00D0     		beq	.L76
+ 726              	.LVL26:
+ 727              	.L73:
+ 821:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = FMC_TOERR;
+ 822:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 823:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* return the FMC state */
+ 824:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     return fmc_state;
+ 728              		.loc 1 824 5 is_stmt 1 view .LVU134
+ 825:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 729              		.loc 1 825 1 is_stmt 0 view .LVU135
+ 730 0016 10BD     		pop	{r4, pc}
+ 731              	.LVL27:
+ 732              	.L76:
+ 821:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = FMC_TOERR;
+ 733              		.loc 1 821 19 view .LVU136
+ 734 0018 0420     		movs	r0, #4
+ 735              	.LVL28:
+ 821:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = FMC_TOERR;
+ 736              		.loc 1 821 19 view .LVU137
+ 737 001a FCE7     		b	.L73
+ 738              		.cfi_endproc
+ 739              	.LFE145:
+ 741              		.section	.text.fmc_page_erase,"ax",%progbits
+ 742              		.align	1
+ 743              		.global	fmc_page_erase
+ 744              		.syntax unified
+ 745              		.thumb
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 28
+
+
+ 746              		.thumb_func
+ 748              	fmc_page_erase:
+ 749              	.LVL29:
+ 750              	.LFB121:
+ 134:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 751              		.loc 1 134 1 is_stmt 1 view -0
+ 752              		.cfi_startproc
+ 753              		@ args = 0, pretend = 0, frame = 0
+ 754              		@ frame_needed = 0, uses_anonymous_args = 0
+ 134:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 755              		.loc 1 134 1 is_stmt 0 view .LVU139
+ 756 0000 38B5     		push	{r3, r4, r5, lr}
+ 757              	.LCFI3:
+ 758              		.cfi_def_cfa_offset 16
+ 759              		.cfi_offset 3, -16
+ 760              		.cfi_offset 4, -12
+ 761              		.cfi_offset 5, -8
+ 762              		.cfi_offset 14, -4
+ 763 0002 0446     		mov	r4, r0
+ 135:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 764              		.loc 1 135 5 is_stmt 1 view .LVU140
+ 135:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 765              		.loc 1 135 32 is_stmt 0 view .LVU141
+ 766 0004 4FF47020 		mov	r0, #983040
+ 767              	.LVL30:
+ 135:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 768              		.loc 1 135 32 view .LVU142
+ 769 0008 FFF7FEFF 		bl	fmc_ready_wait
+ 770              	.LVL31:
+ 137:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* start page erase */
+ 771              		.loc 1 137 5 is_stmt 1 view .LVU143
+ 137:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* start page erase */
+ 772              		.loc 1 137 7 is_stmt 0 view .LVU144
+ 773 000c 00B1     		cbz	r0, .L80
+ 774              	.L78:
+ 775              	.LVL32:
+ 151:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 776              		.loc 1 151 5 is_stmt 1 view .LVU145
+ 152:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 777              		.loc 1 152 1 is_stmt 0 view .LVU146
+ 778 000e 38BD     		pop	{r3, r4, r5, pc}
+ 779              	.LVL33:
+ 780              	.L80:
+ 139:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_ADDR = page_address;
+ 781              		.loc 1 139 9 is_stmt 1 view .LVU147
+ 139:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_ADDR = page_address;
+ 782              		.loc 1 139 17 is_stmt 0 view .LVU148
+ 783 0010 094D     		ldr	r5, .L81
+ 784 0012 2B69     		ldr	r3, [r5, #16]
+ 785 0014 43F00203 		orr	r3, r3, #2
+ 786 0018 2B61     		str	r3, [r5, #16]
+ 140:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_START;
+ 787              		.loc 1 140 9 is_stmt 1 view .LVU149
+ 140:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_START;
+ 788              		.loc 1 140 18 is_stmt 0 view .LVU150
+ 789 001a 6C61     		str	r4, [r5, #20]
+ 141:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 29
+
+
+ 790              		.loc 1 141 9 is_stmt 1 view .LVU151
+ 141:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 791              		.loc 1 141 17 is_stmt 0 view .LVU152
+ 792 001c 2B69     		ldr	r3, [r5, #16]
+ 793 001e 43F04003 		orr	r3, r3, #64
+ 794 0022 2B61     		str	r3, [r5, #16]
+ 144:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 795              		.loc 1 144 9 is_stmt 1 view .LVU153
+ 144:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 796              		.loc 1 144 21 is_stmt 0 view .LVU154
+ 797 0024 4FF47020 		mov	r0, #983040
+ 798 0028 FFF7FEFF 		bl	fmc_ready_wait
+ 799              	.LVL34:
+ 147:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 800              		.loc 1 147 9 is_stmt 1 view .LVU155
+ 147:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 801              		.loc 1 147 17 is_stmt 0 view .LVU156
+ 802 002c 2B69     		ldr	r3, [r5, #16]
+ 803 002e 23F00203 		bic	r3, r3, #2
+ 804 0032 2B61     		str	r3, [r5, #16]
+ 805 0034 EBE7     		b	.L78
+ 806              	.L82:
+ 807 0036 00BF     		.align	2
+ 808              	.L81:
+ 809 0038 00200240 		.word	1073881088
+ 810              		.cfi_endproc
+ 811              	.LFE121:
+ 813              		.section	.text.fmc_mass_erase,"ax",%progbits
+ 814              		.align	1
+ 815              		.global	fmc_mass_erase
+ 816              		.syntax unified
+ 817              		.thumb
+ 818              		.thumb_func
+ 820              	fmc_mass_erase:
+ 821              	.LFB122:
+ 161:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 822              		.loc 1 161 1 is_stmt 1 view -0
+ 823              		.cfi_startproc
+ 824              		@ args = 0, pretend = 0, frame = 0
+ 825              		@ frame_needed = 0, uses_anonymous_args = 0
+ 826 0000 10B5     		push	{r4, lr}
+ 827              	.LCFI4:
+ 828              		.cfi_def_cfa_offset 8
+ 829              		.cfi_offset 4, -8
+ 830              		.cfi_offset 14, -4
+ 162:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 831              		.loc 1 162 5 view .LVU158
+ 162:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 832              		.loc 1 162 32 is_stmt 0 view .LVU159
+ 833 0002 4FF47020 		mov	r0, #983040
+ 834 0006 FFF7FEFF 		bl	fmc_ready_wait
+ 835              	.LVL35:
+ 164:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* start chip erase */
+ 836              		.loc 1 164 5 is_stmt 1 view .LVU160
+ 164:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* start chip erase */
+ 837              		.loc 1 164 7 is_stmt 0 view .LVU161
+ 838 000a 00B1     		cbz	r0, .L86
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 30
+
+
+ 839              	.L84:
+ 840              	.LVL36:
+ 177:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 841              		.loc 1 177 5 is_stmt 1 view .LVU162
+ 178:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 842              		.loc 1 178 1 is_stmt 0 view .LVU163
+ 843 000c 10BD     		pop	{r4, pc}
+ 844              	.LVL37:
+ 845              	.L86:
+ 166:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_START;
+ 846              		.loc 1 166 9 is_stmt 1 view .LVU164
+ 166:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_START;
+ 847              		.loc 1 166 17 is_stmt 0 view .LVU165
+ 848 000e 094C     		ldr	r4, .L87
+ 849 0010 2369     		ldr	r3, [r4, #16]
+ 850 0012 43F00403 		orr	r3, r3, #4
+ 851 0016 2361     		str	r3, [r4, #16]
+ 167:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 852              		.loc 1 167 9 is_stmt 1 view .LVU166
+ 167:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 853              		.loc 1 167 17 is_stmt 0 view .LVU167
+ 854 0018 2369     		ldr	r3, [r4, #16]
+ 855 001a 43F04003 		orr	r3, r3, #64
+ 856 001e 2361     		str	r3, [r4, #16]
+ 170:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 857              		.loc 1 170 9 is_stmt 1 view .LVU168
+ 170:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 858              		.loc 1 170 21 is_stmt 0 view .LVU169
+ 859 0020 4FF47020 		mov	r0, #983040
+ 860 0024 FFF7FEFF 		bl	fmc_ready_wait
+ 861              	.LVL38:
+ 173:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 862              		.loc 1 173 9 is_stmt 1 view .LVU170
+ 173:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 863              		.loc 1 173 17 is_stmt 0 view .LVU171
+ 864 0028 2369     		ldr	r3, [r4, #16]
+ 865 002a 23F00403 		bic	r3, r3, #4
+ 866 002e 2361     		str	r3, [r4, #16]
+ 867 0030 ECE7     		b	.L84
+ 868              	.L88:
+ 869 0032 00BF     		.align	2
+ 870              	.L87:
+ 871 0034 00200240 		.word	1073881088
+ 872              		.cfi_endproc
+ 873              	.LFE122:
+ 875              		.section	.text.fmc_word_program,"ax",%progbits
+ 876              		.align	1
+ 877              		.global	fmc_word_program
+ 878              		.syntax unified
+ 879              		.thumb
+ 880              		.thumb_func
+ 882              	fmc_word_program:
+ 883              	.LVL39:
+ 884              	.LFB123:
+ 188:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 885              		.loc 1 188 1 is_stmt 1 view -0
+ 886              		.cfi_startproc
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 31
+
+
+ 887              		@ args = 0, pretend = 0, frame = 0
+ 888              		@ frame_needed = 0, uses_anonymous_args = 0
+ 188:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 889              		.loc 1 188 1 is_stmt 0 view .LVU173
+ 890 0000 70B5     		push	{r4, r5, r6, lr}
+ 891              	.LCFI5:
+ 892              		.cfi_def_cfa_offset 16
+ 893              		.cfi_offset 4, -16
+ 894              		.cfi_offset 5, -12
+ 895              		.cfi_offset 6, -8
+ 896              		.cfi_offset 14, -4
+ 897 0002 0446     		mov	r4, r0
+ 898 0004 0D46     		mov	r5, r1
+ 189:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 899              		.loc 1 189 5 is_stmt 1 view .LVU174
+ 189:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 900              		.loc 1 189 32 is_stmt 0 view .LVU175
+ 901 0006 4FF47020 		mov	r0, #983040
+ 902              	.LVL40:
+ 189:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 903              		.loc 1 189 32 view .LVU176
+ 904 000a FFF7FEFF 		bl	fmc_ready_wait
+ 905              	.LVL41:
+ 191:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* set the PG bit to start program */
+ 906              		.loc 1 191 5 is_stmt 1 view .LVU177
+ 191:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* set the PG bit to start program */
+ 907              		.loc 1 191 7 is_stmt 0 view .LVU178
+ 908 000e 00B1     		cbz	r0, .L92
+ 909              	.L90:
+ 910              	.LVL42:
+ 205:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 911              		.loc 1 205 5 is_stmt 1 view .LVU179
+ 206:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 912              		.loc 1 206 1 is_stmt 0 view .LVU180
+ 913 0010 70BD     		pop	{r4, r5, r6, pc}
+ 914              	.LVL43:
+ 915              	.L92:
+ 193:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 916              		.loc 1 193 9 is_stmt 1 view .LVU181
+ 193:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 917              		.loc 1 193 17 is_stmt 0 view .LVU182
+ 918 0012 074E     		ldr	r6, .L93
+ 919 0014 3369     		ldr	r3, [r6, #16]
+ 920 0016 43F00103 		orr	r3, r3, #1
+ 921 001a 3361     		str	r3, [r6, #16]
+ 195:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 922              		.loc 1 195 9 is_stmt 1 view .LVU183
+ 195:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 923              		.loc 1 195 24 is_stmt 0 view .LVU184
+ 924 001c 2560     		str	r5, [r4]
+ 198:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 925              		.loc 1 198 9 is_stmt 1 view .LVU185
+ 198:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 926              		.loc 1 198 21 is_stmt 0 view .LVU186
+ 927 001e 4FF47020 		mov	r0, #983040
+ 928 0022 FFF7FEFF 		bl	fmc_ready_wait
+ 929              	.LVL44:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 32
+
+
+ 201:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 930              		.loc 1 201 9 is_stmt 1 view .LVU187
+ 201:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 931              		.loc 1 201 17 is_stmt 0 view .LVU188
+ 932 0026 3369     		ldr	r3, [r6, #16]
+ 933 0028 23F00103 		bic	r3, r3, #1
+ 934 002c 3361     		str	r3, [r6, #16]
+ 935 002e EFE7     		b	.L90
+ 936              	.L94:
+ 937              		.align	2
+ 938              	.L93:
+ 939 0030 00200240 		.word	1073881088
+ 940              		.cfi_endproc
+ 941              	.LFE123:
+ 943              		.section	.text.fmc_halfword_program,"ax",%progbits
+ 944              		.align	1
+ 945              		.global	fmc_halfword_program
+ 946              		.syntax unified
+ 947              		.thumb
+ 948              		.thumb_func
+ 950              	fmc_halfword_program:
+ 951              	.LVL45:
+ 952              	.LFB124:
+ 216:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 953              		.loc 1 216 1 is_stmt 1 view -0
+ 954              		.cfi_startproc
+ 955              		@ args = 0, pretend = 0, frame = 0
+ 956              		@ frame_needed = 0, uses_anonymous_args = 0
+ 216:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 957              		.loc 1 216 1 is_stmt 0 view .LVU190
+ 958 0000 70B5     		push	{r4, r5, r6, lr}
+ 959              	.LCFI6:
+ 960              		.cfi_def_cfa_offset 16
+ 961              		.cfi_offset 4, -16
+ 962              		.cfi_offset 5, -12
+ 963              		.cfi_offset 6, -8
+ 964              		.cfi_offset 14, -4
+ 965 0002 0446     		mov	r4, r0
+ 966 0004 0D46     		mov	r5, r1
+ 217:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 967              		.loc 1 217 5 is_stmt 1 view .LVU191
+ 217:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 968              		.loc 1 217 32 is_stmt 0 view .LVU192
+ 969 0006 4FF47020 		mov	r0, #983040
+ 970              	.LVL46:
+ 217:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 971              		.loc 1 217 32 view .LVU193
+ 972 000a FFF7FEFF 		bl	fmc_ready_wait
+ 973              	.LVL47:
+ 219:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* set the PG bit to start program */
+ 974              		.loc 1 219 5 is_stmt 1 view .LVU194
+ 219:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* set the PG bit to start program */
+ 975              		.loc 1 219 7 is_stmt 0 view .LVU195
+ 976 000e 00B1     		cbz	r0, .L98
+ 977              	.L96:
+ 978              	.LVL48:
+ 233:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 33
+
+
+ 979              		.loc 1 233 5 is_stmt 1 view .LVU196
+ 234:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 980              		.loc 1 234 1 is_stmt 0 view .LVU197
+ 981 0010 70BD     		pop	{r4, r5, r6, pc}
+ 982              	.LVL49:
+ 983              	.L98:
+ 221:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 984              		.loc 1 221 9 is_stmt 1 view .LVU198
+ 221:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 985              		.loc 1 221 17 is_stmt 0 view .LVU199
+ 986 0012 074E     		ldr	r6, .L99
+ 987 0014 3369     		ldr	r3, [r6, #16]
+ 988 0016 43F00103 		orr	r3, r3, #1
+ 989 001a 3361     		str	r3, [r6, #16]
+ 223:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 990              		.loc 1 223 9 is_stmt 1 view .LVU200
+ 223:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 991              		.loc 1 223 24 is_stmt 0 view .LVU201
+ 992 001c 2580     		strh	r5, [r4]	@ movhi
+ 226:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 993              		.loc 1 226 9 is_stmt 1 view .LVU202
+ 226:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 994              		.loc 1 226 21 is_stmt 0 view .LVU203
+ 995 001e 4FF47020 		mov	r0, #983040
+ 996 0022 FFF7FEFF 		bl	fmc_ready_wait
+ 997              	.LVL50:
+ 229:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 998              		.loc 1 229 9 is_stmt 1 view .LVU204
+ 229:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 999              		.loc 1 229 17 is_stmt 0 view .LVU205
+ 1000 0026 3369     		ldr	r3, [r6, #16]
+ 1001 0028 23F00103 		bic	r3, r3, #1
+ 1002 002c 3361     		str	r3, [r6, #16]
+ 1003 002e EFE7     		b	.L96
+ 1004              	.L100:
+ 1005              		.align	2
+ 1006              	.L99:
+ 1007 0030 00200240 		.word	1073881088
+ 1008              		.cfi_endproc
+ 1009              	.LFE124:
+ 1011              		.section	.text.fmc_word_reprogram,"ax",%progbits
+ 1012              		.align	1
+ 1013              		.global	fmc_word_reprogram
+ 1014              		.syntax unified
+ 1015              		.thumb
+ 1016              		.thumb_func
+ 1018              	fmc_word_reprogram:
+ 1019              	.LVL51:
+ 1020              	.LFB125:
+ 244:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 1021              		.loc 1 244 1 is_stmt 1 view -0
+ 1022              		.cfi_startproc
+ 1023              		@ args = 0, pretend = 0, frame = 0
+ 1024              		@ frame_needed = 0, uses_anonymous_args = 0
+ 244:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 1025              		.loc 1 244 1 is_stmt 0 view .LVU207
+ 1026 0000 70B5     		push	{r4, r5, r6, lr}
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 34
+
+
+ 1027              	.LCFI7:
+ 1028              		.cfi_def_cfa_offset 16
+ 1029              		.cfi_offset 4, -16
+ 1030              		.cfi_offset 5, -12
+ 1031              		.cfi_offset 6, -8
+ 1032              		.cfi_offset 14, -4
+ 1033 0002 0646     		mov	r6, r0
+ 1034 0004 0D46     		mov	r5, r1
+ 245:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FMC_WSEN |= FMC_WSEN_BPEN;
+ 1035              		.loc 1 245 5 is_stmt 1 view .LVU208
+ 245:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FMC_WSEN |= FMC_WSEN_BPEN;
+ 1036              		.loc 1 245 32 is_stmt 0 view .LVU209
+ 1037 0006 4FF47020 		mov	r0, #983040
+ 1038              	.LVL52:
+ 245:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     FMC_WSEN |= FMC_WSEN_BPEN;
+ 1039              		.loc 1 245 32 view .LVU210
+ 1040 000a FFF7FEFF 		bl	fmc_ready_wait
+ 1041              	.LVL53:
+ 246:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1042              		.loc 1 246 5 is_stmt 1 view .LVU211
+ 246:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1043              		.loc 1 246 14 is_stmt 0 view .LVU212
+ 1044 000e 0F4C     		ldr	r4, .L105
+ 1045 0010 D4F8FC30 		ldr	r3, [r4, #252]
+ 1046 0014 43F00203 		orr	r3, r3, #2
+ 1047 0018 C4F8FC30 		str	r3, [r4, #252]
+ 248:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* set the PG bit to start program */
+ 1048              		.loc 1 248 5 is_stmt 1 view .LVU213
+ 248:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* set the PG bit to start program */
+ 1049              		.loc 1 248 7 is_stmt 0 view .LVU214
+ 1050 001c 38B1     		cbz	r0, .L104
+ 1051              	.L102:
+ 1052              	.LVL54:
+ 261:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1053              		.loc 1 261 5 is_stmt 1 view .LVU215
+ 261:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1054              		.loc 1 261 14 is_stmt 0 view .LVU216
+ 1055 001e 0B4A     		ldr	r2, .L105
+ 1056 0020 D2F8FC30 		ldr	r3, [r2, #252]
+ 1057 0024 23F00203 		bic	r3, r3, #2
+ 1058 0028 C2F8FC30 		str	r3, [r2, #252]
+ 264:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 1059              		.loc 1 264 5 is_stmt 1 view .LVU217
+ 265:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1060              		.loc 1 265 1 is_stmt 0 view .LVU218
+ 1061 002c 70BD     		pop	{r4, r5, r6, pc}
+ 1062              	.LVL55:
+ 1063              	.L104:
+ 250:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1064              		.loc 1 250 9 is_stmt 1 view .LVU219
+ 250:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1065              		.loc 1 250 17 is_stmt 0 view .LVU220
+ 1066 002e 2369     		ldr	r3, [r4, #16]
+ 1067 0030 43F00103 		orr	r3, r3, #1
+ 1068 0034 2361     		str	r3, [r4, #16]
+ 252:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1069              		.loc 1 252 9 is_stmt 1 view .LVU221
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 35
+
+
+ 252:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1070              		.loc 1 252 24 is_stmt 0 view .LVU222
+ 1071 0036 3560     		str	r5, [r6]
+ 255:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1072              		.loc 1 255 9 is_stmt 1 view .LVU223
+ 255:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1073              		.loc 1 255 21 is_stmt 0 view .LVU224
+ 1074 0038 4FF47020 		mov	r0, #983040
+ 1075 003c FFF7FEFF 		bl	fmc_ready_wait
+ 1076              	.LVL56:
+ 258:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 1077              		.loc 1 258 9 is_stmt 1 view .LVU225
+ 258:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 1078              		.loc 1 258 17 is_stmt 0 view .LVU226
+ 1079 0040 2369     		ldr	r3, [r4, #16]
+ 1080 0042 23F00103 		bic	r3, r3, #1
+ 1081 0046 2361     		str	r3, [r4, #16]
+ 1082 0048 E9E7     		b	.L102
+ 1083              	.L106:
+ 1084 004a 00BF     		.align	2
+ 1085              	.L105:
+ 1086 004c 00200240 		.word	1073881088
+ 1087              		.cfi_endproc
+ 1088              	.LFE125:
+ 1090              		.section	.text.ob_erase,"ax",%progbits
+ 1091              		.align	1
+ 1092              		.global	ob_erase
+ 1093              		.syntax unified
+ 1094              		.thumb
+ 1095              		.thumb_func
+ 1097              	ob_erase:
+ 1098              	.LFB129:
+ 318:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     uint16_t fmc_spc;
+ 1099              		.loc 1 318 1 is_stmt 1 view -0
+ 1100              		.cfi_startproc
+ 1101              		@ args = 0, pretend = 0, frame = 0
+ 1102              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1103 0000 10B5     		push	{r4, lr}
+ 1104              	.LCFI8:
+ 1105              		.cfi_def_cfa_offset 8
+ 1106              		.cfi_offset 4, -8
+ 1107              		.cfi_offset 14, -4
+ 319:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1108              		.loc 1 319 5 view .LVU228
+ 321:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 1109              		.loc 1 321 5 view .LVU229
+ 321:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 1110              		.loc 1 321 27 is_stmt 0 view .LVU230
+ 1111 0002 FFF7FEFF 		bl	ob_obstat_plevel_get
+ 1112              	.LVL57:
+ 1113 0006 0446     		mov	r4, r0
+ 1114              	.LVL58:
+ 322:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1115              		.loc 1 322 5 is_stmt 1 view .LVU231
+ 322:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1116              		.loc 1 322 32 is_stmt 0 view .LVU232
+ 1117 0008 4FF47020 		mov	r0, #983040
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 36
+
+
+ 1118              	.LVL59:
+ 322:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1119              		.loc 1 322 32 view .LVU233
+ 1120 000c FFF7FEFF 		bl	fmc_ready_wait
+ 1121              	.LVL60:
+ 325:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_spc = FMC_NSPC;
+ 1122              		.loc 1 325 5 is_stmt 1 view .LVU234
+ 325:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_spc = FMC_NSPC;
+ 1123              		.loc 1 325 7 is_stmt 0 view .LVU235
+ 1124 0010 2CB1     		cbz	r4, .L111
+ 327:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_spc = FMC_LSPC;
+ 1125              		.loc 1 327 12 is_stmt 1 view .LVU236
+ 327:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_spc = FMC_LSPC;
+ 1126              		.loc 1 327 14 is_stmt 0 view .LVU237
+ 1127 0012 022C     		cmp	r4, #2
+ 1128 0014 01D0     		beq	.L114
+ 331:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 1129              		.loc 1 331 19 view .LVU238
+ 1130 0016 0520     		movs	r0, #5
+ 1131              	.LVL61:
+ 331:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 1132              		.loc 1 331 19 view .LVU239
+ 1133 0018 03E0     		b	.L109
+ 1134              	.LVL62:
+ 1135              	.L114:
+ 328:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else {
+ 1136              		.loc 1 328 17 view .LVU240
+ 1137 001a BB24     		movs	r4, #187
+ 1138              	.LVL63:
+ 328:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else {
+ 1139              		.loc 1 328 17 view .LVU241
+ 1140 001c 00E0     		b	.L108
+ 1141              	.LVL64:
+ 1142              	.L111:
+ 326:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else if(OB_OBSTAT_PLEVEL_LOW == fmc_plevel) {
+ 1143              		.loc 1 326 17 view .LVU242
+ 1144 001e A524     		movs	r4, #165
+ 1145              	.LVL65:
+ 1146              	.L108:
+ 334:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* start erase the option byte */
+ 1147              		.loc 1 334 5 is_stmt 1 view .LVU243
+ 334:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* start erase the option byte */
+ 1148              		.loc 1 334 7 is_stmt 0 view .LVU244
+ 1149 0020 00B1     		cbz	r0, .L115
+ 1150              	.LVL66:
+ 1151              	.L109:
+ 368:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 1152              		.loc 1 368 5 is_stmt 1 view .LVU245
+ 369:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1153              		.loc 1 369 1 is_stmt 0 view .LVU246
+ 1154 0022 10BD     		pop	{r4, pc}
+ 1155              	.LVL67:
+ 1156              	.L115:
+ 336:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_START;
+ 1157              		.loc 1 336 9 is_stmt 1 view .LVU247
+ 336:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_START;
+ 1158              		.loc 1 336 17 is_stmt 0 view .LVU248
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 37
+
+
+ 1159 0024 174B     		ldr	r3, .L117
+ 1160 0026 1A69     		ldr	r2, [r3, #16]
+ 1161 0028 42F02002 		orr	r2, r2, #32
+ 1162 002c 1A61     		str	r2, [r3, #16]
+ 337:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1163              		.loc 1 337 9 is_stmt 1 view .LVU249
+ 337:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1164              		.loc 1 337 17 is_stmt 0 view .LVU250
+ 1165 002e 1A69     		ldr	r2, [r3, #16]
+ 1166 0030 42F04002 		orr	r2, r2, #64
+ 1167 0034 1A61     		str	r2, [r3, #16]
+ 340:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1168              		.loc 1 340 9 is_stmt 1 view .LVU251
+ 340:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1169              		.loc 1 340 21 is_stmt 0 view .LVU252
+ 1170 0036 4FF47020 		mov	r0, #983040
+ 1171              	.LVL68:
+ 340:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1172              		.loc 1 340 21 view .LVU253
+ 1173 003a FFF7FEFF 		bl	fmc_ready_wait
+ 1174              	.LVL69:
+ 342:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* reset the OBER bit */
+ 1175              		.loc 1 342 9 is_stmt 1 view .LVU254
+ 342:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* reset the OBER bit */
+ 1176              		.loc 1 342 11 is_stmt 0 view .LVU255
+ 1177 003e 38B1     		cbz	r0, .L116
+ 361:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBPG bit */
+ 1178              		.loc 1 361 13 is_stmt 1 view .LVU256
+ 361:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBPG bit */
+ 1179              		.loc 1 361 15 is_stmt 0 view .LVU257
+ 1180 0040 0428     		cmp	r0, #4
+ 1181 0042 EED0     		beq	.L109
+ 363:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 1182              		.loc 1 363 17 is_stmt 1 view .LVU258
+ 363:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 1183              		.loc 1 363 25 is_stmt 0 view .LVU259
+ 1184 0044 0F4A     		ldr	r2, .L117
+ 1185 0046 1369     		ldr	r3, [r2, #16]
+ 1186 0048 23F01003 		bic	r3, r3, #16
+ 1187 004c 1361     		str	r3, [r2, #16]
+ 1188 004e E8E7     		b	.L109
+ 1189              	.L116:
+ 344:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1190              		.loc 1 344 13 is_stmt 1 view .LVU260
+ 344:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1191              		.loc 1 344 21 is_stmt 0 view .LVU261
+ 1192 0050 0C4B     		ldr	r3, .L117
+ 1193 0052 1A69     		ldr	r2, [r3, #16]
+ 1194 0054 22F02002 		bic	r2, r2, #32
+ 1195 0058 1A61     		str	r2, [r3, #16]
+ 347:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1196              		.loc 1 347 13 is_stmt 1 view .LVU262
+ 347:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1197              		.loc 1 347 21 is_stmt 0 view .LVU263
+ 1198 005a 1A69     		ldr	r2, [r3, #16]
+ 1199 005c 42F01002 		orr	r2, r2, #16
+ 1200 0060 1A61     		str	r2, [r3, #16]
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 38
+
+
+ 350:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             OB_USER = OB_USER_DEFAULT;
+ 1201              		.loc 1 350 13 is_stmt 1 view .LVU264
+ 350:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             OB_USER = OB_USER_DEFAULT;
+ 1202              		.loc 1 350 20 is_stmt 0 view .LVU265
+ 1203 0062 094B     		ldr	r3, .L117+4
+ 1204 0064 1C80     		strh	r4, [r3]	@ movhi
+ 351:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1205              		.loc 1 351 13 is_stmt 1 view .LVU266
+ 351:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1206              		.loc 1 351 21 is_stmt 0 view .LVU267
+ 1207 0066 DF22     		movs	r2, #223
+ 1208 0068 5A80     		strh	r2, [r3, #2]	@ movhi
+ 354:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1209              		.loc 1 354 13 is_stmt 1 view .LVU268
+ 354:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1210              		.loc 1 354 25 is_stmt 0 view .LVU269
+ 1211 006a 4FF47020 		mov	r0, #983040
+ 1212              	.LVL70:
+ 354:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1213              		.loc 1 354 25 view .LVU270
+ 1214 006e FFF7FEFF 		bl	fmc_ready_wait
+ 1215              	.LVL71:
+ 356:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBPG bit */
+ 1216              		.loc 1 356 13 is_stmt 1 view .LVU271
+ 356:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBPG bit */
+ 1217              		.loc 1 356 15 is_stmt 0 view .LVU272
+ 1218 0072 0428     		cmp	r0, #4
+ 1219 0074 D5D0     		beq	.L109
+ 358:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 1220              		.loc 1 358 17 is_stmt 1 view .LVU273
+ 358:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 1221              		.loc 1 358 25 is_stmt 0 view .LVU274
+ 1222 0076 034A     		ldr	r2, .L117
+ 1223 0078 1369     		ldr	r3, [r2, #16]
+ 1224 007a 23F01003 		bic	r3, r3, #16
+ 1225 007e 1361     		str	r3, [r2, #16]
+ 1226 0080 CFE7     		b	.L109
+ 1227              	.L118:
+ 1228 0082 00BF     		.align	2
+ 1229              	.L117:
+ 1230 0084 00200240 		.word	1073881088
+ 1231 0088 00F8FF1F 		.word	536868864
+ 1232              		.cfi_endproc
+ 1233              	.LFE129:
+ 1235              		.section	.text.ob_parm_get,"ax",%progbits
+ 1236              		.align	1
+ 1237              		.global	ob_parm_get
+ 1238              		.syntax unified
+ 1239              		.thumb
+ 1240              		.thumb_func
+ 1242              	ob_parm_get:
+ 1243              	.LVL72:
+ 1244              	.LFB146:
+ 826:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 827:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 828:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      get current option byte value
+ 829:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  ob_parm: pointer to option byte parameter struct
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 39
+
+
+ 830:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] ob_parm: pointer to option byte parameter struct
+ 831:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     none
+ 832:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 833:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** void ob_parm_get(ob_parm_struct *ob_parm)
+ 834:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 1245              		.loc 1 834 1 is_stmt 1 view -0
+ 1246              		.cfi_startproc
+ 1247              		@ args = 0, pretend = 0, frame = 0
+ 1248              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1249              		@ link register save eliminated.
+ 835:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* get current option byte value */
+ 836:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm->spc = (uint8_t)OB_SPC;
+ 1250              		.loc 1 836 5 view .LVU276
+ 1251              		.loc 1 836 29 is_stmt 0 view .LVU277
+ 1252 0000 064B     		ldr	r3, .L120
+ 1253 0002 1A88     		ldrh	r2, [r3]
+ 1254              		.loc 1 836 18 view .LVU278
+ 1255 0004 0270     		strb	r2, [r0]
+ 837:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm->user = (uint8_t)OB_USER;
+ 1256              		.loc 1 837 5 is_stmt 1 view .LVU279
+ 1257              		.loc 1 837 30 is_stmt 0 view .LVU280
+ 1258 0006 5A88     		ldrh	r2, [r3, #2]
+ 1259              		.loc 1 837 19 view .LVU281
+ 1260 0008 4270     		strb	r2, [r0, #1]
+ 838:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm->data0 = (uint8_t)OB_DATA0;
+ 1261              		.loc 1 838 5 is_stmt 1 view .LVU282
+ 1262              		.loc 1 838 31 is_stmt 0 view .LVU283
+ 1263 000a 9A88     		ldrh	r2, [r3, #4]
+ 1264              		.loc 1 838 20 view .LVU284
+ 1265 000c 8270     		strb	r2, [r0, #2]
+ 839:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm->data1 = (uint8_t)OB_DATA1;
+ 1266              		.loc 1 839 5 is_stmt 1 view .LVU285
+ 1267              		.loc 1 839 31 is_stmt 0 view .LVU286
+ 1268 000e DA88     		ldrh	r2, [r3, #6]
+ 1269              		.loc 1 839 20 view .LVU287
+ 1270 0010 C270     		strb	r2, [r0, #3]
+ 840:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm->wp0 = (uint8_t)OB_WP0;
+ 1271              		.loc 1 840 5 is_stmt 1 view .LVU288
+ 1272              		.loc 1 840 29 is_stmt 0 view .LVU289
+ 1273 0012 1A89     		ldrh	r2, [r3, #8]
+ 1274              		.loc 1 840 18 view .LVU290
+ 1275 0014 0271     		strb	r2, [r0, #4]
+ 841:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm->wp1 = (uint8_t)OB_WP1;
+ 1276              		.loc 1 841 5 is_stmt 1 view .LVU291
+ 1277              		.loc 1 841 29 is_stmt 0 view .LVU292
+ 1278 0016 5B89     		ldrh	r3, [r3, #10]
+ 1279              		.loc 1 841 18 view .LVU293
+ 1280 0018 4371     		strb	r3, [r0, #5]
+ 842:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 1281              		.loc 1 842 1 view .LVU294
+ 1282 001a 7047     		bx	lr
+ 1283              	.L121:
+ 1284              		.align	2
+ 1285              	.L120:
+ 1286 001c 00F8FF1F 		.word	536868864
+ 1287              		.cfi_endproc
+ 1288              	.LFE146:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 40
+
+
+ 1290              		.section	.text.ob_value_modify,"ax",%progbits
+ 1291              		.align	1
+ 1292              		.global	ob_value_modify
+ 1293              		.syntax unified
+ 1294              		.thumb
+ 1295              		.thumb_func
+ 1297              	ob_value_modify:
+ 1298              	.LVL73:
+ 1299              	.LFB147:
+ 843:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 844:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** /*!
+ 845:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \brief      modify the target option byte depending on the original value
+ 846:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  address: target option byte address
+ 847:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  value: target option byte value
+ 848:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[in]  ob_parm: pointer to option byte parameter struct
+ 849:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \param[out] none
+ 850:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     \retval     none
+ 851:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** */
+ 852:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** void ob_value_modify(uint32_t address, uint16_t value, ob_parm_struct *ob_parm)
+ 853:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** {
+ 1300              		.loc 1 853 1 is_stmt 1 view -0
+ 1301              		.cfi_startproc
+ 1302              		@ args = 0, pretend = 0, frame = 0
+ 1303              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1304              		.loc 1 853 1 is_stmt 0 view .LVU296
+ 1305 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 1306              	.LCFI9:
+ 1307              		.cfi_def_cfa_offset 20
+ 1308              		.cfi_offset 4, -20
+ 1309              		.cfi_offset 5, -16
+ 1310              		.cfi_offset 6, -12
+ 1311              		.cfi_offset 7, -8
+ 1312              		.cfi_offset 14, -4
+ 854:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     uint8_t spc, user, data0, data1, wp0, wp1;
+ 1313              		.loc 1 854 5 is_stmt 1 view .LVU297
+ 855:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* store the original option bytes */
+ 856:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     spc = ob_parm->spc;
+ 1314              		.loc 1 856 5 view .LVU298
+ 1315              		.loc 1 856 9 is_stmt 0 view .LVU299
+ 1316 0002 92F800C0 		ldrb	ip, [r2]	@ zero_extendqisi2
+ 1317              	.LVL74:
+ 857:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     user = ob_parm->user;
+ 1318              		.loc 1 857 5 is_stmt 1 view .LVU300
+ 1319              		.loc 1 857 10 is_stmt 0 view .LVU301
+ 1320 0006 5478     		ldrb	r4, [r2, #1]	@ zero_extendqisi2
+ 1321              	.LVL75:
+ 858:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     data0 = ob_parm->data0;
+ 1322              		.loc 1 858 5 is_stmt 1 view .LVU302
+ 1323              		.loc 1 858 11 is_stmt 0 view .LVU303
+ 1324 0008 92F802E0 		ldrb	lr, [r2, #2]	@ zero_extendqisi2
+ 1325              	.LVL76:
+ 859:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     data1 = ob_parm->data1;
+ 1326              		.loc 1 859 5 is_stmt 1 view .LVU304
+ 1327              		.loc 1 859 11 is_stmt 0 view .LVU305
+ 1328 000c D778     		ldrb	r7, [r2, #3]	@ zero_extendqisi2
+ 1329              	.LVL77:
+ 860:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     wp0 = ob_parm->wp0;
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 41
+
+
+ 1330              		.loc 1 860 5 is_stmt 1 view .LVU306
+ 1331              		.loc 1 860 9 is_stmt 0 view .LVU307
+ 1332 000e 1679     		ldrb	r6, [r2, #4]	@ zero_extendqisi2
+ 1333              	.LVL78:
+ 861:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     wp1 = ob_parm->wp1;
+ 1334              		.loc 1 861 5 is_stmt 1 view .LVU308
+ 1335              		.loc 1 861 9 is_stmt 0 view .LVU309
+ 1336 0010 5379     		ldrb	r3, [r2, #5]	@ zero_extendqisi2
+ 1337              	.LVL79:
+ 862:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 863:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* bring in the target option byte */
+ 864:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(OB_SPC_ADDR == address) {
+ 1338              		.loc 1 864 5 is_stmt 1 view .LVU310
+ 1339              		.loc 1 864 7 is_stmt 0 view .LVU311
+ 1340 0012 1B4D     		ldr	r5, .L137
+ 1341 0014 A842     		cmp	r0, r5
+ 1342 0016 0CD0     		beq	.L133
+ 865:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         spc = (uint8_t)value;
+ 866:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else if(OB_DATA_ADDR0 == address) {
+ 1343              		.loc 1 866 12 is_stmt 1 view .LVU312
+ 1344              		.loc 1 866 14 is_stmt 0 view .LVU313
+ 1345 0018 1A4A     		ldr	r2, .L137+4
+ 1346              	.LVL80:
+ 1347              		.loc 1 866 14 view .LVU314
+ 1348 001a 9042     		cmp	r0, r2
+ 1349 001c 29D0     		beq	.L134
+ 867:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         data0 = (uint8_t)value;
+ 868:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else if(OB_DATA_ADDR1 == address) {
+ 1350              		.loc 1 868 12 is_stmt 1 view .LVU315
+ 1351              		.loc 1 868 14 is_stmt 0 view .LVU316
+ 1352 001e 1A4A     		ldr	r2, .L137+8
+ 1353 0020 9042     		cmp	r0, r2
+ 1354 0022 29D0     		beq	.L135
+ 869:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         data1 = (uint8_t)value;
+ 870:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else if(OB_USER_ADDR == address) {
+ 1355              		.loc 1 870 12 is_stmt 1 view .LVU317
+ 1356              		.loc 1 870 14 is_stmt 0 view .LVU318
+ 1357 0024 194A     		ldr	r2, .L137+12
+ 1358 0026 9042     		cmp	r0, r2
+ 1359 0028 28D0     		beq	.L136
+ 871:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         user =  user & (uint8_t)value;
+ 872:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else {
+ 873:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         wp0 = wp0 & ((uint8_t)(value));
+ 1360              		.loc 1 873 9 is_stmt 1 view .LVU319
+ 1361              		.loc 1 873 13 is_stmt 0 view .LVU320
+ 1362 002a 0E40     		ands	r6, r6, r1
+ 1363              	.LVL81:
+ 874:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         wp1 = wp1 & ((uint8_t)(value >> 8U));
+ 1364              		.loc 1 874 9 is_stmt 1 view .LVU321
+ 1365              		.loc 1 874 13 is_stmt 0 view .LVU322
+ 1366 002c 03EA1123 		and	r3, r3, r1, lsr #8
+ 1367              	.LVL82:
+ 1368              		.loc 1 874 13 view .LVU323
+ 1369 0030 01E0     		b	.L124
+ 1370              	.LVL83:
+ 1371              	.L133:
+ 865:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else if(OB_DATA_ADDR0 == address) {
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 42
+
+
+ 1372              		.loc 1 865 9 is_stmt 1 view .LVU324
+ 865:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else if(OB_DATA_ADDR0 == address) {
+ 1373              		.loc 1 865 13 is_stmt 0 view .LVU325
+ 1374 0032 5FFA81FC 		uxtb	ip, r1
+ 1375              	.LVL84:
+ 1376              	.L124:
+ 875:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 876:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* basing on original value, modify the target option byte */
+ 877:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     OB_SPC = spc;
+ 1377              		.loc 1 877 5 is_stmt 1 view .LVU326
+ 1378              		.loc 1 877 12 is_stmt 0 view .LVU327
+ 1379 0036 1FFA8CFC 		uxth	ip, ip
+ 1380              	.LVL85:
+ 1381              		.loc 1 877 12 view .LVU328
+ 1382 003a 1148     		ldr	r0, .L137
+ 1383              	.LVL86:
+ 1384              		.loc 1 877 12 view .LVU329
+ 1385 003c A0F800C0 		strh	ip, [r0]	@ movhi
+ 878:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     OB_USER = user;
+ 1386              		.loc 1 878 5 is_stmt 1 view .LVU330
+ 1387              		.loc 1 878 13 is_stmt 0 view .LVU331
+ 1388 0040 A4B2     		uxth	r4, r4
+ 1389              	.LVL87:
+ 1390              		.loc 1 878 13 view .LVU332
+ 1391 0042 4480     		strh	r4, [r0, #2]	@ movhi
+ 879:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(0xFFU != data0) {
+ 1392              		.loc 1 879 5 is_stmt 1 view .LVU333
+ 1393              		.loc 1 879 7 is_stmt 0 view .LVU334
+ 1394 0044 BEF1FF0F 		cmp	lr, #255
+ 1395 0048 03D0     		beq	.L128
+ 880:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         OB_DATA0 = data0;
+ 1396              		.loc 1 880 9 is_stmt 1 view .LVU335
+ 1397              		.loc 1 880 18 is_stmt 0 view .LVU336
+ 1398 004a 1FFA8EFE 		uxth	lr, lr
+ 1399              	.LVL88:
+ 1400              		.loc 1 880 18 view .LVU337
+ 1401 004e A0F804E0 		strh	lr, [r0, #4]	@ movhi
+ 1402              	.L128:
+ 881:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 882:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(0xFFU != data1) {
+ 1403              		.loc 1 882 5 is_stmt 1 view .LVU338
+ 1404              		.loc 1 882 7 is_stmt 0 view .LVU339
+ 1405 0052 FF2F     		cmp	r7, #255
+ 1406 0054 02D0     		beq	.L129
+ 883:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         OB_DATA1 = data1;
+ 1407              		.loc 1 883 9 is_stmt 1 view .LVU340
+ 1408              		.loc 1 883 18 is_stmt 0 view .LVU341
+ 1409 0056 B9B2     		uxth	r1, r7
+ 1410              	.LVL89:
+ 1411              		.loc 1 883 18 view .LVU342
+ 1412 0058 094A     		ldr	r2, .L137
+ 1413 005a D180     		strh	r1, [r2, #6]	@ movhi
+ 1414              	.L129:
+ 884:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 885:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(0xFFU != wp0) {
+ 1415              		.loc 1 885 5 is_stmt 1 view .LVU343
+ 1416              		.loc 1 885 7 is_stmt 0 view .LVU344
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 43
+
+
+ 1417 005c FF2E     		cmp	r6, #255
+ 1418 005e 02D0     		beq	.L130
+ 886:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         OB_WP0 = wp0;
+ 1419              		.loc 1 886 9 is_stmt 1 view .LVU345
+ 1420              		.loc 1 886 16 is_stmt 0 view .LVU346
+ 1421 0060 B2B2     		uxth	r2, r6
+ 1422 0062 0749     		ldr	r1, .L137
+ 1423 0064 0A81     		strh	r2, [r1, #8]	@ movhi
+ 1424              	.L130:
+ 887:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 888:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(0xFFU != wp1) {
+ 1425              		.loc 1 888 5 is_stmt 1 view .LVU347
+ 1426              		.loc 1 888 7 is_stmt 0 view .LVU348
+ 1427 0066 FF2B     		cmp	r3, #255
+ 1428 0068 02D0     		beq	.L122
+ 889:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         OB_WP1 = wp1;
+ 1429              		.loc 1 889 9 is_stmt 1 view .LVU349
+ 1430              		.loc 1 889 16 is_stmt 0 view .LVU350
+ 1431 006a 9BB2     		uxth	r3, r3
+ 1432              	.LVL90:
+ 1433              		.loc 1 889 16 view .LVU351
+ 1434 006c 044A     		ldr	r2, .L137
+ 1435 006e 5381     		strh	r3, [r2, #10]	@ movhi
+ 1436              	.L122:
+ 890:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 891:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 1437              		.loc 1 891 1 view .LVU352
+ 1438 0070 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 1439              	.LVL91:
+ 1440              	.L134:
+ 867:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else if(OB_DATA_ADDR1 == address) {
+ 1441              		.loc 1 867 9 is_stmt 1 view .LVU353
+ 867:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else if(OB_DATA_ADDR1 == address) {
+ 1442              		.loc 1 867 15 is_stmt 0 view .LVU354
+ 1443 0072 5FFA81FE 		uxtb	lr, r1
+ 1444              	.LVL92:
+ 867:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else if(OB_DATA_ADDR1 == address) {
+ 1445              		.loc 1 867 15 view .LVU355
+ 1446 0076 DEE7     		b	.L124
+ 1447              	.L135:
+ 869:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else if(OB_USER_ADDR == address) {
+ 1448              		.loc 1 869 9 is_stmt 1 view .LVU356
+ 869:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else if(OB_USER_ADDR == address) {
+ 1449              		.loc 1 869 15 is_stmt 0 view .LVU357
+ 1450 0078 CFB2     		uxtb	r7, r1
+ 1451              	.LVL93:
+ 869:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else if(OB_USER_ADDR == address) {
+ 1452              		.loc 1 869 15 view .LVU358
+ 1453 007a DCE7     		b	.L124
+ 1454              	.L136:
+ 871:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else {
+ 1455              		.loc 1 871 9 is_stmt 1 view .LVU359
+ 871:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else {
+ 1456              		.loc 1 871 14 is_stmt 0 view .LVU360
+ 1457 007c 0C40     		ands	r4, r4, r1
+ 1458              	.LVL94:
+ 871:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     } else {
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 44
+
+
+ 1459              		.loc 1 871 14 view .LVU361
+ 1460 007e DAE7     		b	.L124
+ 1461              	.L138:
+ 1462              		.align	2
+ 1463              	.L137:
+ 1464 0080 00F8FF1F 		.word	536868864
+ 1465 0084 04F8FF1F 		.word	536868868
+ 1466 0088 06F8FF1F 		.word	536868870
+ 1467 008c 02F8FF1F 		.word	536868866
+ 1468              		.cfi_endproc
+ 1469              	.LFE147:
+ 1471              		.section	.text.ob_write_protection_enable,"ax",%progbits
+ 1472              		.align	1
+ 1473              		.global	ob_write_protection_enable
+ 1474              		.syntax unified
+ 1475              		.thumb
+ 1476              		.thumb_func
+ 1478              	ob_write_protection_enable:
+ 1479              	.LVL95:
+ 1480              	.LFB130:
+ 379:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     uint8_t ob_wrp0, ob_wrp1;
+ 1481              		.loc 1 379 1 is_stmt 1 view -0
+ 1482              		.cfi_startproc
+ 1483              		@ args = 0, pretend = 0, frame = 8
+ 1484              		@ frame_needed = 0, uses_anonymous_args = 0
+ 379:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     uint8_t ob_wrp0, ob_wrp1;
+ 1485              		.loc 1 379 1 is_stmt 0 view .LVU363
+ 1486 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 1487              	.LCFI10:
+ 1488              		.cfi_def_cfa_offset 20
+ 1489              		.cfi_offset 4, -20
+ 1490              		.cfi_offset 5, -16
+ 1491              		.cfi_offset 6, -12
+ 1492              		.cfi_offset 7, -8
+ 1493              		.cfi_offset 14, -4
+ 1494 0002 83B0     		sub	sp, sp, #12
+ 1495              	.LCFI11:
+ 1496              		.cfi_def_cfa_offset 32
+ 1497 0004 0446     		mov	r4, r0
+ 380:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_struct ob_parm;
+ 1498              		.loc 1 380 5 is_stmt 1 view .LVU364
+ 381:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 1499              		.loc 1 381 5 view .LVU365
+ 382:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_get(&ob_parm);
+ 1500              		.loc 1 382 5 view .LVU366
+ 382:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_get(&ob_parm);
+ 1501              		.loc 1 382 32 is_stmt 0 view .LVU367
+ 1502 0006 4FF47020 		mov	r0, #983040
+ 1503              	.LVL96:
+ 382:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_get(&ob_parm);
+ 1504              		.loc 1 382 32 view .LVU368
+ 1505 000a FFF7FEFF 		bl	fmc_ready_wait
+ 1506              	.LVL97:
+ 1507 000e 0546     		mov	r5, r0
+ 1508              	.LVL98:
+ 383:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_wp   = (uint16_t)(~ob_wp);
+ 1509              		.loc 1 383 5 is_stmt 1 view .LVU369
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 45
+
+
+ 1510 0010 6846     		mov	r0, sp
+ 1511 0012 FFF7FEFF 		bl	ob_parm_get
+ 1512              	.LVL99:
+ 384:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_wrp0 = (uint8_t)(ob_wp & OB_LWP);
+ 1513              		.loc 1 384 5 view .LVU370
+ 384:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_wrp0 = (uint8_t)(ob_wp & OB_LWP);
+ 1514              		.loc 1 384 13 is_stmt 0 view .LVU371
+ 1515 0016 E343     		mvns	r3, r4
+ 1516 0018 9EB2     		uxth	r6, r3
+ 1517              	.LVL100:
+ 385:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_wrp1 = (uint8_t)((ob_wp & OB_HWP) >> 8U);
+ 1518              		.loc 1 385 5 is_stmt 1 view .LVU372
+ 385:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_wrp1 = (uint8_t)((ob_wp & OB_HWP) >> 8U);
+ 1519              		.loc 1 385 13 is_stmt 0 view .LVU373
+ 1520 001a D9B2     		uxtb	r1, r3
+ 1521              	.LVL101:
+ 386:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1522              		.loc 1 386 5 is_stmt 1 view .LVU374
+ 386:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1523              		.loc 1 386 42 is_stmt 0 view .LVU375
+ 1524 001c C3F30727 		ubfx	r7, r3, #8, #8
+ 1525              	.LVL102:
+ 388:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         if(0xFFFFU == OB_WP1) {
+ 1526              		.loc 1 388 5 is_stmt 1 view .LVU376
+ 388:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         if(0xFFFFU == OB_WP1) {
+ 1527              		.loc 1 388 19 is_stmt 0 view .LVU377
+ 1528 0020 334B     		ldr	r3, .L151
+ 1529 0022 1B89     		ldrh	r3, [r3, #8]
+ 1530 0024 9BB2     		uxth	r3, r3
+ 388:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         if(0xFFFFU == OB_WP1) {
+ 1531              		.loc 1 388 7 view .LVU378
+ 1532 0026 4FF6FF72 		movw	r2, #65535
+ 1533 002a 9342     		cmp	r3, r2
+ 1534 002c 03D0     		beq	.L146
+ 413:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* start erase the option byte */
+ 1535              		.loc 1 413 9 is_stmt 1 view .LVU379
+ 413:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* start erase the option byte */
+ 1536              		.loc 1 413 11 is_stmt 0 view .LVU380
+ 1537 002e 6DB3     		cbz	r5, .L147
+ 1538              	.LVL103:
+ 1539              	.L141:
+ 446:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 1540              		.loc 1 446 5 is_stmt 1 view .LVU381
+ 447:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1541              		.loc 1 447 1 is_stmt 0 view .LVU382
+ 1542 0030 2846     		mov	r0, r5
+ 1543 0032 03B0     		add	sp, sp, #12
+ 1544              	.LCFI12:
+ 1545              		.cfi_remember_state
+ 1546              		.cfi_def_cfa_offset 20
+ 1547              		@ sp needed
+ 1548 0034 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 1549              	.LVL104:
+ 1550              	.L146:
+ 1551              	.LCFI13:
+ 1552              		.cfi_restore_state
+ 447:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 46
+
+
+ 1553              		.loc 1 447 1 view .LVU383
+ 1554 0036 3C46     		mov	r4, r7
+ 389:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             if(FMC_READY == fmc_state) {
+ 1555              		.loc 1 389 9 is_stmt 1 view .LVU384
+ 389:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             if(FMC_READY == fmc_state) {
+ 1556              		.loc 1 389 23 is_stmt 0 view .LVU385
+ 1557 0038 2D4B     		ldr	r3, .L151
+ 1558 003a 5B89     		ldrh	r3, [r3, #10]
+ 1559 003c 9BB2     		uxth	r3, r3
+ 389:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             if(FMC_READY == fmc_state) {
+ 1560              		.loc 1 389 11 view .LVU386
+ 1561 003e 9342     		cmp	r3, r2
+ 1562 0040 F6D1     		bne	.L141
+ 390:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* set the OBPG bit*/
+ 1563              		.loc 1 390 13 is_stmt 1 view .LVU387
+ 390:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* set the OBPG bit*/
+ 1564              		.loc 1 390 15 is_stmt 0 view .LVU388
+ 1565 0042 002D     		cmp	r5, #0
+ 1566 0044 F4D1     		bne	.L141
+ 392:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1567              		.loc 1 392 17 is_stmt 1 view .LVU389
+ 392:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1568              		.loc 1 392 25 is_stmt 0 view .LVU390
+ 1569 0046 2B4A     		ldr	r2, .L151+4
+ 1570 0048 1369     		ldr	r3, [r2, #16]
+ 1571 004a 43F01003 		orr	r3, r3, #16
+ 1572 004e 1361     		str	r3, [r2, #16]
+ 394:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     OB_WP0 = ob_wrp0 ;
+ 1573              		.loc 1 394 17 is_stmt 1 view .LVU391
+ 394:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     OB_WP0 = ob_wrp0 ;
+ 1574              		.loc 1 394 19 is_stmt 0 view .LVU392
+ 1575 0050 FF29     		cmp	r1, #255
+ 1576 0052 0AD1     		bne	.L148
+ 1577              	.LVL105:
+ 1578              	.L142:
+ 400:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     OB_WP1 = ob_wrp1 ;
+ 1579              		.loc 1 400 17 is_stmt 1 view .LVU393
+ 400:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     OB_WP1 = ob_wrp1 ;
+ 1580              		.loc 1 400 19 is_stmt 0 view .LVU394
+ 1581 0054 0DB9     		cbnz	r5, .L143
+ 400:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     OB_WP1 = ob_wrp1 ;
+ 1582              		.loc 1 400 45 discriminator 1 view .LVU395
+ 1583 0056 FF2C     		cmp	r4, #255
+ 1584 0058 10D1     		bne	.L149
+ 1585              	.L143:
+ 406:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* reset the OBPG bit */
+ 1586              		.loc 1 406 17 is_stmt 1 view .LVU396
+ 406:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* reset the OBPG bit */
+ 1587              		.loc 1 406 19 is_stmt 0 view .LVU397
+ 1588 005a 042D     		cmp	r5, #4
+ 1589 005c E8D0     		beq	.L141
+ 408:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 1590              		.loc 1 408 21 is_stmt 1 view .LVU398
+ 408:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 1591              		.loc 1 408 29 is_stmt 0 view .LVU399
+ 1592 005e 254A     		ldr	r2, .L151+4
+ 1593 0060 1369     		ldr	r3, [r2, #16]
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 47
+
+
+ 1594 0062 23F01003 		bic	r3, r3, #16
+ 1595 0066 1361     		str	r3, [r2, #16]
+ 1596 0068 E2E7     		b	.L141
+ 1597              	.LVL106:
+ 1598              	.L148:
+ 395:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* wait for the FMC ready */
+ 1599              		.loc 1 395 21 is_stmt 1 view .LVU400
+ 1600 006a F6B2     		uxtb	r6, r6
+ 1601              	.LVL107:
+ 395:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* wait for the FMC ready */
+ 1602              		.loc 1 395 28 is_stmt 0 view .LVU401
+ 1603 006c 204B     		ldr	r3, .L151
+ 1604 006e 1E81     		strh	r6, [r3, #8]	@ movhi
+ 397:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 1605              		.loc 1 397 21 is_stmt 1 view .LVU402
+ 397:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 1606              		.loc 1 397 33 is_stmt 0 view .LVU403
+ 1607 0070 4FF47020 		mov	r0, #983040
+ 1608 0074 FFF7FEFF 		bl	fmc_ready_wait
+ 1609              	.LVL108:
+ 397:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 1610              		.loc 1 397 33 view .LVU404
+ 1611 0078 0546     		mov	r5, r0
+ 1612              	.LVL109:
+ 397:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 1613              		.loc 1 397 33 view .LVU405
+ 1614 007a EBE7     		b	.L142
+ 1615              	.L149:
+ 401:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* wait for the FMC ready */
+ 1616              		.loc 1 401 21 is_stmt 1 view .LVU406
+ 401:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* wait for the FMC ready */
+ 1617              		.loc 1 401 28 is_stmt 0 view .LVU407
+ 1618 007c 1C4B     		ldr	r3, .L151
+ 1619 007e 5F81     		strh	r7, [r3, #10]	@ movhi
+ 403:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 1620              		.loc 1 403 21 is_stmt 1 view .LVU408
+ 403:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 1621              		.loc 1 403 33 is_stmt 0 view .LVU409
+ 1622 0080 4FF47020 		mov	r0, #983040
+ 1623 0084 FFF7FEFF 		bl	fmc_ready_wait
+ 1624              	.LVL110:
+ 1625 0088 0546     		mov	r5, r0
+ 1626              	.LVL111:
+ 403:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 1627              		.loc 1 403 33 view .LVU410
+ 1628 008a E6E7     		b	.L143
+ 1629              	.LVL112:
+ 1630              	.L147:
+ 415:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             FMC_CTL |= FMC_CTL_START;
+ 1631              		.loc 1 415 13 is_stmt 1 view .LVU411
+ 415:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             FMC_CTL |= FMC_CTL_START;
+ 1632              		.loc 1 415 21 is_stmt 0 view .LVU412
+ 1633 008c 194B     		ldr	r3, .L151+4
+ 1634 008e 1A69     		ldr	r2, [r3, #16]
+ 1635 0090 42F02002 		orr	r2, r2, #32
+ 1636 0094 1A61     		str	r2, [r3, #16]
+ 416:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 48
+
+
+ 1637              		.loc 1 416 13 is_stmt 1 view .LVU413
+ 416:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1638              		.loc 1 416 21 is_stmt 0 view .LVU414
+ 1639 0096 1A69     		ldr	r2, [r3, #16]
+ 1640 0098 42F04002 		orr	r2, r2, #64
+ 1641 009c 1A61     		str	r2, [r3, #16]
+ 419:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1642              		.loc 1 419 13 is_stmt 1 view .LVU415
+ 419:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1643              		.loc 1 419 25 is_stmt 0 view .LVU416
+ 1644 009e 4FF47020 		mov	r0, #983040
+ 1645 00a2 FFF7FEFF 		bl	fmc_ready_wait
+ 1646              	.LVL113:
+ 421:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1647              		.loc 1 421 13 is_stmt 1 view .LVU417
+ 421:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1648              		.loc 1 421 15 is_stmt 0 view .LVU418
+ 1649 00a6 0546     		mov	r5, r0
+ 1650 00a8 38B1     		cbz	r0, .L150
+ 438:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* reset the OBER bit */
+ 1651              		.loc 1 438 17 is_stmt 1 view .LVU419
+ 438:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* reset the OBER bit */
+ 1652              		.loc 1 438 19 is_stmt 0 view .LVU420
+ 1653 00aa 0428     		cmp	r0, #4
+ 1654 00ac C0D0     		beq	.L141
+ 440:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 1655              		.loc 1 440 21 is_stmt 1 view .LVU421
+ 440:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 1656              		.loc 1 440 29 is_stmt 0 view .LVU422
+ 1657 00ae 114A     		ldr	r2, .L151+4
+ 1658 00b0 1369     		ldr	r3, [r2, #16]
+ 1659 00b2 23F02003 		bic	r3, r3, #32
+ 1660 00b6 1361     		str	r3, [r2, #16]
+ 1661 00b8 BAE7     		b	.L141
+ 1662              	.L150:
+ 424:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1663              		.loc 1 424 17 is_stmt 1 view .LVU423
+ 424:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1664              		.loc 1 424 25 is_stmt 0 view .LVU424
+ 1665 00ba 0E4B     		ldr	r3, .L151+4
+ 1666 00bc 1A69     		ldr	r2, [r3, #16]
+ 1667 00be 22F02002 		bic	r2, r2, #32
+ 1668 00c2 1A61     		str	r2, [r3, #16]
+ 427:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1669              		.loc 1 427 17 is_stmt 1 view .LVU425
+ 427:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1670              		.loc 1 427 25 is_stmt 0 view .LVU426
+ 1671 00c4 1A69     		ldr	r2, [r3, #16]
+ 1672 00c6 42F01002 		orr	r2, r2, #16
+ 1673 00ca 1A61     		str	r2, [r3, #16]
+ 429:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* wait for the FMC ready */
+ 1674              		.loc 1 429 17 is_stmt 1 view .LVU427
+ 1675 00cc 6A46     		mov	r2, sp
+ 1676 00ce 3146     		mov	r1, r6
+ 1677 00d0 0948     		ldr	r0, .L151+8
+ 1678              	.LVL114:
+ 429:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* wait for the FMC ready */
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 49
+
+
+ 1679              		.loc 1 429 17 is_stmt 0 view .LVU428
+ 1680 00d2 FFF7FEFF 		bl	ob_value_modify
+ 1681              	.LVL115:
+ 431:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1682              		.loc 1 431 17 is_stmt 1 view .LVU429
+ 431:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1683              		.loc 1 431 29 is_stmt 0 view .LVU430
+ 1684 00d6 4FF47020 		mov	r0, #983040
+ 1685 00da FFF7FEFF 		bl	fmc_ready_wait
+ 1686              	.LVL116:
+ 1687 00de 0546     		mov	r5, r0
+ 1688              	.LVL117:
+ 433:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* reset the OBPG bit */
+ 1689              		.loc 1 433 17 is_stmt 1 view .LVU431
+ 433:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* reset the OBPG bit */
+ 1690              		.loc 1 433 19 is_stmt 0 view .LVU432
+ 1691 00e0 0428     		cmp	r0, #4
+ 1692 00e2 A5D0     		beq	.L141
+ 435:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 1693              		.loc 1 435 21 is_stmt 1 view .LVU433
+ 435:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 1694              		.loc 1 435 29 is_stmt 0 view .LVU434
+ 1695 00e4 034A     		ldr	r2, .L151+4
+ 1696 00e6 1369     		ldr	r3, [r2, #16]
+ 1697 00e8 23F01003 		bic	r3, r3, #16
+ 1698 00ec 1361     		str	r3, [r2, #16]
+ 1699 00ee 9FE7     		b	.L141
+ 1700              	.L152:
+ 1701              		.align	2
+ 1702              	.L151:
+ 1703 00f0 00F8FF1F 		.word	536868864
+ 1704 00f4 00200240 		.word	1073881088
+ 1705 00f8 08F8FF1F 		.word	536868872
+ 1706              		.cfi_endproc
+ 1707              	.LFE130:
+ 1709              		.section	.text.ob_security_protection_config,"ax",%progbits
+ 1710              		.align	1
+ 1711              		.global	ob_security_protection_config
+ 1712              		.syntax unified
+ 1713              		.thumb
+ 1714              		.thumb_func
+ 1716              	ob_security_protection_config:
+ 1717              	.LVL118:
+ 1718              	.LFB131:
+ 460:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 1719              		.loc 1 460 1 is_stmt 1 view -0
+ 1720              		.cfi_startproc
+ 1721              		@ args = 0, pretend = 0, frame = 8
+ 1722              		@ frame_needed = 0, uses_anonymous_args = 0
+ 460:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 1723              		.loc 1 460 1 is_stmt 0 view .LVU436
+ 1724 0000 30B5     		push	{r4, r5, lr}
+ 1725              	.LCFI14:
+ 1726              		.cfi_def_cfa_offset 12
+ 1727              		.cfi_offset 4, -12
+ 1728              		.cfi_offset 5, -8
+ 1729              		.cfi_offset 14, -4
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 50
+
+
+ 1730 0002 83B0     		sub	sp, sp, #12
+ 1731              	.LCFI15:
+ 1732              		.cfi_def_cfa_offset 24
+ 1733 0004 0546     		mov	r5, r0
+ 461:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1734              		.loc 1 461 5 is_stmt 1 view .LVU437
+ 461:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1735              		.loc 1 461 32 is_stmt 0 view .LVU438
+ 1736 0006 4FF47020 		mov	r0, #983040
+ 1737              	.LVL119:
+ 461:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1738              		.loc 1 461 32 view .LVU439
+ 1739 000a FFF7FEFF 		bl	fmc_ready_wait
+ 1740              	.LVL120:
+ 1741 000e 0446     		mov	r4, r0
+ 1742              	.LVL121:
+ 463:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_get(&ob_parm);
+ 1743              		.loc 1 463 5 is_stmt 1 view .LVU440
+ 464:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1744              		.loc 1 464 5 view .LVU441
+ 1745 0010 6846     		mov	r0, sp
+ 1746 0012 FFF7FEFF 		bl	ob_parm_get
+ 1747              	.LVL122:
+ 467:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = FMC_OB_HSPC;
+ 1748              		.loc 1 467 5 view .LVU442
+ 467:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = FMC_OB_HSPC;
+ 1749              		.loc 1 467 33 is_stmt 0 view .LVU443
+ 1750 0016 FFF7FEFF 		bl	ob_obstat_plevel_get
+ 1751              	.LVL123:
+ 467:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         fmc_state = FMC_OB_HSPC;
+ 1752              		.loc 1 467 7 view .LVU444
+ 1753 001a 0628     		cmp	r0, #6
+ 1754 001c 35D0     		beq	.L156
+ 471:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* start erase the option byte */
+ 1755              		.loc 1 471 5 is_stmt 1 view .LVU445
+ 471:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* start erase the option byte */
+ 1756              		.loc 1 471 7 is_stmt 0 view .LVU446
+ 1757 001e 14B1     		cbz	r4, .L158
+ 1758              	.LVL124:
+ 1759              	.L154:
+ 503:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 1760              		.loc 1 503 5 is_stmt 1 view .LVU447
+ 504:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1761              		.loc 1 504 1 is_stmt 0 view .LVU448
+ 1762 0020 2046     		mov	r0, r4
+ 1763 0022 03B0     		add	sp, sp, #12
+ 1764              	.LCFI16:
+ 1765              		.cfi_remember_state
+ 1766              		.cfi_def_cfa_offset 12
+ 1767              		@ sp needed
+ 1768 0024 30BD     		pop	{r4, r5, pc}
+ 1769              	.LVL125:
+ 1770              	.L158:
+ 1771              	.LCFI17:
+ 1772              		.cfi_restore_state
+ 473:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_START;
+ 1773              		.loc 1 473 9 is_stmt 1 view .LVU449
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 51
+
+
+ 473:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_START;
+ 1774              		.loc 1 473 17 is_stmt 0 view .LVU450
+ 1775 0026 1A4B     		ldr	r3, .L160
+ 1776 0028 1A69     		ldr	r2, [r3, #16]
+ 1777 002a 42F02002 		orr	r2, r2, #32
+ 1778 002e 1A61     		str	r2, [r3, #16]
+ 474:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1779              		.loc 1 474 9 is_stmt 1 view .LVU451
+ 474:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1780              		.loc 1 474 17 is_stmt 0 view .LVU452
+ 1781 0030 1A69     		ldr	r2, [r3, #16]
+ 1782 0032 42F04002 		orr	r2, r2, #64
+ 1783 0036 1A61     		str	r2, [r3, #16]
+ 477:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1784              		.loc 1 477 9 is_stmt 1 view .LVU453
+ 477:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1785              		.loc 1 477 21 is_stmt 0 view .LVU454
+ 1786 0038 4FF47020 		mov	r0, #983040
+ 1787 003c FFF7FEFF 		bl	fmc_ready_wait
+ 1788              	.LVL126:
+ 479:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1789              		.loc 1 479 9 is_stmt 1 view .LVU455
+ 479:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1790              		.loc 1 479 11 is_stmt 0 view .LVU456
+ 1791 0040 0446     		mov	r4, r0
+ 1792 0042 38B1     		cbz	r0, .L159
+ 496:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBER bit */
+ 1793              		.loc 1 496 13 is_stmt 1 view .LVU457
+ 496:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBER bit */
+ 1794              		.loc 1 496 15 is_stmt 0 view .LVU458
+ 1795 0044 0428     		cmp	r0, #4
+ 1796 0046 EBD0     		beq	.L154
+ 498:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 1797              		.loc 1 498 17 is_stmt 1 view .LVU459
+ 498:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 1798              		.loc 1 498 25 is_stmt 0 view .LVU460
+ 1799 0048 114A     		ldr	r2, .L160
+ 1800 004a 1369     		ldr	r3, [r2, #16]
+ 1801 004c 23F02003 		bic	r3, r3, #32
+ 1802 0050 1361     		str	r3, [r2, #16]
+ 1803 0052 E5E7     		b	.L154
+ 1804              	.L159:
+ 482:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1805              		.loc 1 482 13 is_stmt 1 view .LVU461
+ 482:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1806              		.loc 1 482 21 is_stmt 0 view .LVU462
+ 1807 0054 0E4B     		ldr	r3, .L160
+ 1808 0056 1A69     		ldr	r2, [r3, #16]
+ 1809 0058 22F02002 		bic	r2, r2, #32
+ 1810 005c 1A61     		str	r2, [r3, #16]
+ 485:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1811              		.loc 1 485 13 is_stmt 1 view .LVU463
+ 485:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1812              		.loc 1 485 21 is_stmt 0 view .LVU464
+ 1813 005e 1A69     		ldr	r2, [r3, #16]
+ 1814 0060 42F01002 		orr	r2, r2, #16
+ 1815 0064 1A61     		str	r2, [r3, #16]
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 52
+
+
+ 487:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* wait for the FMC ready */
+ 1816              		.loc 1 487 13 is_stmt 1 view .LVU465
+ 1817 0066 6A46     		mov	r2, sp
+ 1818 0068 2946     		mov	r1, r5
+ 1819 006a 0A48     		ldr	r0, .L160+4
+ 1820              	.LVL127:
+ 487:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* wait for the FMC ready */
+ 1821              		.loc 1 487 13 is_stmt 0 view .LVU466
+ 1822 006c FFF7FEFF 		bl	ob_value_modify
+ 1823              	.LVL128:
+ 489:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1824              		.loc 1 489 13 is_stmt 1 view .LVU467
+ 489:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1825              		.loc 1 489 25 is_stmt 0 view .LVU468
+ 1826 0070 4FF47020 		mov	r0, #983040
+ 1827 0074 FFF7FEFF 		bl	fmc_ready_wait
+ 1828              	.LVL129:
+ 1829 0078 0446     		mov	r4, r0
+ 1830              	.LVL130:
+ 491:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBPG bit */
+ 1831              		.loc 1 491 13 is_stmt 1 view .LVU469
+ 491:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBPG bit */
+ 1832              		.loc 1 491 15 is_stmt 0 view .LVU470
+ 1833 007a 0428     		cmp	r0, #4
+ 1834 007c D0D0     		beq	.L154
+ 493:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 1835              		.loc 1 493 17 is_stmt 1 view .LVU471
+ 493:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 1836              		.loc 1 493 25 is_stmt 0 view .LVU472
+ 1837 007e 044A     		ldr	r2, .L160
+ 1838 0080 1369     		ldr	r3, [r2, #16]
+ 1839 0082 23F01003 		bic	r3, r3, #16
+ 1840 0086 1361     		str	r3, [r2, #16]
+ 1841 0088 CAE7     		b	.L154
+ 1842              	.LVL131:
+ 1843              	.L156:
+ 468:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 1844              		.loc 1 468 19 view .LVU473
+ 1845 008a 0524     		movs	r4, #5
+ 1846              	.LVL132:
+ 468:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     }
+ 1847              		.loc 1 468 19 view .LVU474
+ 1848 008c C8E7     		b	.L154
+ 1849              	.L161:
+ 1850 008e 00BF     		.align	2
+ 1851              	.L160:
+ 1852 0090 00200240 		.word	1073881088
+ 1853 0094 00F8FF1F 		.word	536868864
+ 1854              		.cfi_endproc
+ 1855              	.LFE131:
+ 1857              		.section	.text.ob_user_write,"ax",%progbits
+ 1858              		.align	1
+ 1859              		.global	ob_user_write
+ 1860              		.syntax unified
+ 1861              		.thumb
+ 1862              		.thumb_func
+ 1864              	ob_user_write:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 53
+
+
+ 1865              	.LVL133:
+ 1866              	.LFB132:
+ 520:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* check whether FMC is ready or not */
+ 1867              		.loc 1 520 1 is_stmt 1 view -0
+ 1868              		.cfi_startproc
+ 1869              		@ args = 0, pretend = 0, frame = 8
+ 1870              		@ frame_needed = 0, uses_anonymous_args = 0
+ 520:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     /* check whether FMC is ready or not */
+ 1871              		.loc 1 520 1 is_stmt 0 view .LVU476
+ 1872 0000 30B5     		push	{r4, r5, lr}
+ 1873              	.LCFI18:
+ 1874              		.cfi_def_cfa_offset 12
+ 1875              		.cfi_offset 4, -12
+ 1876              		.cfi_offset 5, -8
+ 1877              		.cfi_offset 14, -4
+ 1878 0002 83B0     		sub	sp, sp, #12
+ 1879              	.LCFI19:
+ 1880              		.cfi_def_cfa_offset 24
+ 1881 0004 0546     		mov	r5, r0
+ 522:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_struct ob_parm;
+ 1882              		.loc 1 522 5 is_stmt 1 view .LVU477
+ 522:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_struct ob_parm;
+ 1883              		.loc 1 522 32 is_stmt 0 view .LVU478
+ 1884 0006 4FF47020 		mov	r0, #983040
+ 1885              	.LVL134:
+ 522:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_struct ob_parm;
+ 1886              		.loc 1 522 32 view .LVU479
+ 1887 000a FFF7FEFF 		bl	fmc_ready_wait
+ 1888              	.LVL135:
+ 1889 000e 0446     		mov	r4, r0
+ 1890              	.LVL136:
+ 523:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_get(&ob_parm);
+ 1891              		.loc 1 523 5 is_stmt 1 view .LVU480
+ 524:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1892              		.loc 1 524 5 view .LVU481
+ 1893 0010 6846     		mov	r0, sp
+ 1894 0012 FFF7FEFF 		bl	ob_parm_get
+ 1895              	.LVL137:
+ 526:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* start erase the option byte */
+ 1896              		.loc 1 526 5 view .LVU482
+ 526:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         /* start erase the option byte */
+ 1897              		.loc 1 526 7 is_stmt 0 view .LVU483
+ 1898 0016 14B1     		cbz	r4, .L166
+ 1899              	.LVL138:
+ 1900              	.L163:
+ 559:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ 1901              		.loc 1 559 5 is_stmt 1 view .LVU484
+ 560:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1902              		.loc 1 560 1 is_stmt 0 view .LVU485
+ 1903 0018 2046     		mov	r0, r4
+ 1904 001a 03B0     		add	sp, sp, #12
+ 1905              	.LCFI20:
+ 1906              		.cfi_remember_state
+ 1907              		.cfi_def_cfa_offset 12
+ 1908              		@ sp needed
+ 1909 001c 30BD     		pop	{r4, r5, pc}
+ 1910              	.LVL139:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 54
+
+
+ 1911              	.L166:
+ 1912              	.LCFI21:
+ 1913              		.cfi_restore_state
+ 528:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_START;
+ 1914              		.loc 1 528 9 is_stmt 1 view .LVU486
+ 528:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         FMC_CTL |= FMC_CTL_START;
+ 1915              		.loc 1 528 17 is_stmt 0 view .LVU487
+ 1916 001e 194B     		ldr	r3, .L168
+ 1917 0020 1A69     		ldr	r2, [r3, #16]
+ 1918 0022 42F02002 		orr	r2, r2, #32
+ 1919 0026 1A61     		str	r2, [r3, #16]
+ 529:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1920              		.loc 1 529 9 is_stmt 1 view .LVU488
+ 529:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1921              		.loc 1 529 17 is_stmt 0 view .LVU489
+ 1922 0028 1A69     		ldr	r2, [r3, #16]
+ 1923 002a 42F04002 		orr	r2, r2, #64
+ 1924 002e 1A61     		str	r2, [r3, #16]
+ 532:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1925              		.loc 1 532 9 is_stmt 1 view .LVU490
+ 532:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1926              		.loc 1 532 21 is_stmt 0 view .LVU491
+ 1927 0030 4FF47020 		mov	r0, #983040
+ 1928 0034 FFF7FEFF 		bl	fmc_ready_wait
+ 1929              	.LVL140:
+ 534:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* reset the OBER bit */
+ 1930              		.loc 1 534 9 is_stmt 1 view .LVU492
+ 534:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* reset the OBER bit */
+ 1931              		.loc 1 534 11 is_stmt 0 view .LVU493
+ 1932 0038 0446     		mov	r4, r0
+ 1933 003a 38B1     		cbz	r0, .L167
+ 552:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBPG bit */
+ 1934              		.loc 1 552 13 is_stmt 1 view .LVU494
+ 552:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBPG bit */
+ 1935              		.loc 1 552 15 is_stmt 0 view .LVU495
+ 1936 003c 0428     		cmp	r0, #4
+ 1937 003e EBD0     		beq	.L163
+ 554:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 1938              		.loc 1 554 17 is_stmt 1 view .LVU496
+ 554:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 1939              		.loc 1 554 25 is_stmt 0 view .LVU497
+ 1940 0040 104A     		ldr	r2, .L168
+ 1941 0042 1369     		ldr	r3, [r2, #16]
+ 1942 0044 23F01003 		bic	r3, r3, #16
+ 1943 0048 1361     		str	r3, [r2, #16]
+ 1944 004a E5E7     		b	.L163
+ 1945              	.L167:
+ 536:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1946              		.loc 1 536 13 is_stmt 1 view .LVU498
+ 536:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1947              		.loc 1 536 21 is_stmt 0 view .LVU499
+ 1948 004c 0D4B     		ldr	r3, .L168
+ 1949 004e 1A69     		ldr	r2, [r3, #16]
+ 1950 0050 22F02002 		bic	r2, r2, #32
+ 1951 0054 1A61     		str	r2, [r3, #16]
+ 539:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1952              		.loc 1 539 13 is_stmt 1 view .LVU500
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 55
+
+
+ 539:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1953              		.loc 1 539 21 is_stmt 0 view .LVU501
+ 1954 0056 1A69     		ldr	r2, [r3, #16]
+ 1955 0058 42F01002 		orr	r2, r2, #16
+ 1956 005c 1A61     		str	r2, [r3, #16]
+ 542:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1957              		.loc 1 542 13 is_stmt 1 view .LVU502
+ 1958 005e 6A46     		mov	r2, sp
+ 1959 0060 2946     		mov	r1, r5
+ 1960 0062 0948     		ldr	r0, .L168+4
+ 1961              	.LVL141:
+ 542:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1962              		.loc 1 542 13 is_stmt 0 view .LVU503
+ 1963 0064 FFF7FEFF 		bl	ob_value_modify
+ 1964              	.LVL142:
+ 545:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1965              		.loc 1 545 13 is_stmt 1 view .LVU504
+ 545:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 1966              		.loc 1 545 25 is_stmt 0 view .LVU505
+ 1967 0068 4FF47020 		mov	r0, #983040
+ 1968 006c FFF7FEFF 		bl	fmc_ready_wait
+ 1969              	.LVL143:
+ 1970 0070 0446     		mov	r4, r0
+ 1971              	.LVL144:
+ 547:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBPG bit */
+ 1972              		.loc 1 547 13 is_stmt 1 view .LVU506
+ 547:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBPG bit */
+ 1973              		.loc 1 547 15 is_stmt 0 view .LVU507
+ 1974 0072 0428     		cmp	r0, #4
+ 1975 0074 D0D0     		beq	.L163
+ 549:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 1976              		.loc 1 549 17 is_stmt 1 view .LVU508
+ 549:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 1977              		.loc 1 549 25 is_stmt 0 view .LVU509
+ 1978 0076 034A     		ldr	r2, .L168
+ 1979 0078 1369     		ldr	r3, [r2, #16]
+ 1980 007a 23F01003 		bic	r3, r3, #16
+ 1981 007e 1361     		str	r3, [r2, #16]
+ 1982 0080 CAE7     		b	.L163
+ 1983              	.L169:
+ 1984 0082 00BF     		.align	2
+ 1985              	.L168:
+ 1986 0084 00200240 		.word	1073881088
+ 1987 0088 02F8FF1F 		.word	536868866
+ 1988              		.cfi_endproc
+ 1989              	.LFE132:
+ 1991              		.section	.text.ob_data_program,"ax",%progbits
+ 1992              		.align	1
+ 1993              		.global	ob_data_program
+ 1994              		.syntax unified
+ 1995              		.thumb
+ 1996              		.thumb_func
+ 1998              	ob_data_program:
+ 1999              	.LVL145:
+ 2000              	.LFB133:
+ 573:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 2001              		.loc 1 573 1 is_stmt 1 view -0
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 56
+
+
+ 2002              		.cfi_startproc
+ 2003              		@ args = 0, pretend = 0, frame = 8
+ 2004              		@ frame_needed = 0, uses_anonymous_args = 0
+ 573:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     fmc_state_enum fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+ 2005              		.loc 1 573 1 is_stmt 0 view .LVU511
+ 2006 0000 70B5     		push	{r4, r5, r6, lr}
+ 2007              	.LCFI22:
+ 2008              		.cfi_def_cfa_offset 16
+ 2009              		.cfi_offset 4, -16
+ 2010              		.cfi_offset 5, -12
+ 2011              		.cfi_offset 6, -8
+ 2012              		.cfi_offset 14, -4
+ 2013 0002 82B0     		sub	sp, sp, #8
+ 2014              	.LCFI23:
+ 2015              		.cfi_def_cfa_offset 24
+ 2016 0004 0546     		mov	r5, r0
+ 2017 0006 0E46     		mov	r6, r1
+ 574:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_struct ob_parm;
+ 2018              		.loc 1 574 5 is_stmt 1 view .LVU512
+ 574:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_struct ob_parm;
+ 2019              		.loc 1 574 32 is_stmt 0 view .LVU513
+ 2020 0008 4FF47020 		mov	r0, #983040
+ 2021              	.LVL146:
+ 574:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_struct ob_parm;
+ 2022              		.loc 1 574 32 view .LVU514
+ 2023 000c FFF7FEFF 		bl	fmc_ready_wait
+ 2024              	.LVL147:
+ 574:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_struct ob_parm;
+ 2025              		.loc 1 574 32 view .LVU515
+ 2026 0010 0446     		mov	r4, r0
+ 2027              	.LVL148:
+ 575:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     ob_parm_get(&ob_parm);
+ 2028              		.loc 1 575 5 is_stmt 1 view .LVU516
+ 576:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****     if(0xFFFFU == REG16(address)) {
+ 2029              		.loc 1 576 5 view .LVU517
+ 2030 0012 6846     		mov	r0, sp
+ 2031 0014 FFF7FEFF 		bl	ob_parm_get
+ 2032              	.LVL149:
+ 577:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         if(FMC_READY == fmc_state) {
+ 2033              		.loc 1 577 5 view .LVU518
+ 577:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         if(FMC_READY == fmc_state) {
+ 2034              		.loc 1 577 19 is_stmt 0 view .LVU519
+ 2035 0018 2B88     		ldrh	r3, [r5]
+ 2036 001a 9BB2     		uxth	r3, r3
+ 577:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****         if(FMC_READY == fmc_state) {
+ 2037              		.loc 1 577 7 view .LVU520
+ 2038 001c 4FF6FF72 		movw	r2, #65535
+ 2039 0020 9342     		cmp	r3, r2
+ 2040 0022 03D0     		beq	.L175
+ 593:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* start erase the option byte */
+ 2041              		.loc 1 593 9 is_stmt 1 view .LVU521
+ 593:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* start erase the option byte */
+ 2042              		.loc 1 593 11 is_stmt 0 view .LVU522
+ 2043 0024 C4B1     		cbz	r4, .L176
+ 2044              	.LVL150:
+ 2045              	.L172:
+ 627:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** }
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 57
+
+
+ 2046              		.loc 1 627 5 is_stmt 1 view .LVU523
+ 628:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2047              		.loc 1 628 1 is_stmt 0 view .LVU524
+ 2048 0026 2046     		mov	r0, r4
+ 2049 0028 02B0     		add	sp, sp, #8
+ 2050              	.LCFI24:
+ 2051              		.cfi_remember_state
+ 2052              		.cfi_def_cfa_offset 16
+ 2053              		@ sp needed
+ 2054 002a 70BD     		pop	{r4, r5, r6, pc}
+ 2055              	.LVL151:
+ 2056              	.L175:
+ 2057              	.LCFI25:
+ 2058              		.cfi_restore_state
+ 578:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* set the OBPG bit */
+ 2059              		.loc 1 578 9 is_stmt 1 view .LVU525
+ 578:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             /* set the OBPG bit */
+ 2060              		.loc 1 578 11 is_stmt 0 view .LVU526
+ 2061 002c 002C     		cmp	r4, #0
+ 2062 002e FAD1     		bne	.L172
+ 580:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2063              		.loc 1 580 13 is_stmt 1 view .LVU527
+ 580:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2064              		.loc 1 580 21 is_stmt 0 view .LVU528
+ 2065 0030 224A     		ldr	r2, .L178
+ 2066 0032 1369     		ldr	r3, [r2, #16]
+ 2067 0034 43F01003 		orr	r3, r3, #16
+ 2068 0038 1361     		str	r3, [r2, #16]
+ 582:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2069              		.loc 1 582 13 is_stmt 1 view .LVU529
+ 582:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2070              		.loc 1 582 28 is_stmt 0 view .LVU530
+ 2071 003a B1B2     		uxth	r1, r6
+ 2072 003c 2980     		strh	r1, [r5]	@ movhi
+ 585:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2073              		.loc 1 585 13 is_stmt 1 view .LVU531
+ 585:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2074              		.loc 1 585 25 is_stmt 0 view .LVU532
+ 2075 003e 4FF47020 		mov	r0, #983040
+ 2076 0042 FFF7FEFF 		bl	fmc_ready_wait
+ 2077              	.LVL152:
+ 2078 0046 0446     		mov	r4, r0
+ 2079              	.LVL153:
+ 587:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBPG bit */
+ 2080              		.loc 1 587 13 is_stmt 1 view .LVU533
+ 587:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* reset the OBPG bit */
+ 2081              		.loc 1 587 15 is_stmt 0 view .LVU534
+ 2082 0048 0428     		cmp	r0, #4
+ 2083 004a ECD0     		beq	.L172
+ 589:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 2084              		.loc 1 589 17 is_stmt 1 view .LVU535
+ 589:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             }
+ 2085              		.loc 1 589 25 is_stmt 0 view .LVU536
+ 2086 004c 1B4A     		ldr	r2, .L178
+ 2087 004e 1369     		ldr	r3, [r2, #16]
+ 2088 0050 23F01003 		bic	r3, r3, #16
+ 2089 0054 1361     		str	r3, [r2, #16]
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 58
+
+
+ 2090 0056 E6E7     		b	.L172
+ 2091              	.LVL154:
+ 2092              	.L176:
+ 595:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             FMC_CTL |= FMC_CTL_START;
+ 2093              		.loc 1 595 13 is_stmt 1 view .LVU537
+ 595:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****             FMC_CTL |= FMC_CTL_START;
+ 2094              		.loc 1 595 21 is_stmt 0 view .LVU538
+ 2095 0058 184B     		ldr	r3, .L178
+ 2096 005a 1A69     		ldr	r2, [r3, #16]
+ 2097 005c 42F02002 		orr	r2, r2, #32
+ 2098 0060 1A61     		str	r2, [r3, #16]
+ 596:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2099              		.loc 1 596 13 is_stmt 1 view .LVU539
+ 596:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2100              		.loc 1 596 21 is_stmt 0 view .LVU540
+ 2101 0062 1A69     		ldr	r2, [r3, #16]
+ 2102 0064 42F04002 		orr	r2, r2, #64
+ 2103 0068 1A61     		str	r2, [r3, #16]
+ 599:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2104              		.loc 1 599 13 is_stmt 1 view .LVU541
+ 599:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2105              		.loc 1 599 25 is_stmt 0 view .LVU542
+ 2106 006a 4FF47020 		mov	r0, #983040
+ 2107 006e FFF7FEFF 		bl	fmc_ready_wait
+ 2108              	.LVL155:
+ 601:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2109              		.loc 1 601 13 is_stmt 1 view .LVU543
+ 601:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2110              		.loc 1 601 15 is_stmt 0 view .LVU544
+ 2111 0072 0446     		mov	r4, r0
+ 2112 0074 38B1     		cbz	r0, .L177
+ 618:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* reset the OBER bit */
+ 2113              		.loc 1 618 17 is_stmt 1 view .LVU545
+ 618:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* reset the OBER bit */
+ 2114              		.loc 1 618 19 is_stmt 0 view .LVU546
+ 2115 0076 0428     		cmp	r0, #4
+ 2116 0078 D5D0     		beq	.L172
+ 620:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 2117              		.loc 1 620 21 is_stmt 1 view .LVU547
+ 620:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 2118              		.loc 1 620 29 is_stmt 0 view .LVU548
+ 2119 007a 104A     		ldr	r2, .L178
+ 2120 007c 1369     		ldr	r3, [r2, #16]
+ 2121 007e 23F02003 		bic	r3, r3, #32
+ 2122 0082 1361     		str	r3, [r2, #16]
+ 2123 0084 CFE7     		b	.L172
+ 2124              	.L177:
+ 604:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2125              		.loc 1 604 17 is_stmt 1 view .LVU549
+ 604:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2126              		.loc 1 604 25 is_stmt 0 view .LVU550
+ 2127 0086 0D4B     		ldr	r3, .L178
+ 2128 0088 1A69     		ldr	r2, [r3, #16]
+ 2129 008a 22F02002 		bic	r2, r2, #32
+ 2130 008e 1A61     		str	r2, [r3, #16]
+ 607:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2131              		.loc 1 607 17 is_stmt 1 view .LVU551
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 59
+
+
+ 607:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2132              		.loc 1 607 25 is_stmt 0 view .LVU552
+ 2133 0090 1A69     		ldr	r2, [r3, #16]
+ 2134 0092 42F01002 		orr	r2, r2, #16
+ 2135 0096 1A61     		str	r2, [r3, #16]
+ 609:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* wait for the FMC ready */
+ 2136              		.loc 1 609 17 is_stmt 1 view .LVU553
+ 2137 0098 6A46     		mov	r2, sp
+ 2138 009a 3146     		mov	r1, r6
+ 2139 009c 2846     		mov	r0, r5
+ 2140              	.LVL156:
+ 609:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 /* wait for the FMC ready */
+ 2141              		.loc 1 609 17 is_stmt 0 view .LVU554
+ 2142 009e FFF7FEFF 		bl	ob_value_modify
+ 2143              	.LVL157:
+ 611:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2144              		.loc 1 611 17 is_stmt 1 view .LVU555
+ 611:lib/GD32F3x0/Source/gd32f3x0_fmc.c **** 
+ 2145              		.loc 1 611 29 is_stmt 0 view .LVU556
+ 2146 00a2 4FF47020 		mov	r0, #983040
+ 2147 00a6 FFF7FEFF 		bl	fmc_ready_wait
+ 2148              	.LVL158:
+ 2149 00aa 0446     		mov	r4, r0
+ 2150              	.LVL159:
+ 613:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* reset the OBPG bit */
+ 2151              		.loc 1 613 17 is_stmt 1 view .LVU557
+ 613:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                     /* reset the OBPG bit */
+ 2152              		.loc 1 613 19 is_stmt 0 view .LVU558
+ 2153 00ac 0428     		cmp	r0, #4
+ 2154 00ae BAD0     		beq	.L172
+ 615:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 2155              		.loc 1 615 21 is_stmt 1 view .LVU559
+ 615:lib/GD32F3x0/Source/gd32f3x0_fmc.c ****                 }
+ 2156              		.loc 1 615 29 is_stmt 0 view .LVU560
+ 2157 00b0 024A     		ldr	r2, .L178
+ 2158 00b2 1369     		ldr	r3, [r2, #16]
+ 2159 00b4 23F01003 		bic	r3, r3, #16
+ 2160 00b8 1361     		str	r3, [r2, #16]
+ 2161 00ba B4E7     		b	.L172
+ 2162              	.L179:
+ 2163              		.align	2
+ 2164              	.L178:
+ 2165 00bc 00200240 		.word	1073881088
+ 2166              		.cfi_endproc
+ 2167              	.LFE133:
+ 2169              		.text
+ 2170              	.Letext0:
+ 2171              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
+ 2172              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
+ 2173              		.file 4 "lib/CMSIS/GD/GD32F3x0/Include/gd32f3x0.h"
+ 2174              		.file 5 "lib/GD32F3x0/Include/gd32f3x0_fmc.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 60
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 gd32f3x0_fmc.c
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:18     .text.fmc_unlock:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:24     .text.fmc_unlock:0000000000000000 fmc_unlock
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:54     .text.fmc_unlock:0000000000000018 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:60     .text.fmc_lock:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:66     .text.fmc_lock:0000000000000000 fmc_lock
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:84     .text.fmc_lock:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:89     .text.fmc_wscnt_set:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:95     .text.fmc_wscnt_set:0000000000000000 fmc_wscnt_set
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:124    .text.fmc_wscnt_set:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:129    .text.fmc_wait_state_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:135    .text.fmc_wait_state_enable:0000000000000000 fmc_wait_state_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:163    .text.fmc_wait_state_enable:000000000000001c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:168    .text.fmc_wait_state_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:174    .text.fmc_wait_state_disable:0000000000000000 fmc_wait_state_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:202    .text.fmc_wait_state_disable:000000000000001c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:207    .text.ob_unlock:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:213    .text.ob_unlock:0000000000000000 ob_unlock
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:242    .text.ob_unlock:0000000000000018 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:248    .text.ob_lock:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:254    .text.ob_lock:0000000000000000 ob_lock
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:272    .text.ob_lock:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:277    .text.ob_reset:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:283    .text.ob_reset:0000000000000000 ob_reset
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:301    .text.ob_reset:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:306    .text.ob_user_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:312    .text.ob_user_get:0000000000000000 ob_user_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:329    .text.ob_user_get:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:334    .text.ob_data_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:340    .text.ob_data_get:0000000000000000 ob_data_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:357    .text.ob_data_get:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:362    .text.ob_write_protection_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:368    .text.ob_write_protection_get:0000000000000000 ob_write_protection_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:385    .text.ob_write_protection_get:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:390    .text.ob_obstat_plevel_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:396    .text.ob_obstat_plevel_get:0000000000000000 ob_obstat_plevel_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:413    .text.ob_obstat_plevel_get:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:418    .text.fmc_interrupt_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:424    .text.fmc_interrupt_enable:0000000000000000 fmc_interrupt_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:443    .text.fmc_interrupt_enable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:448    .text.fmc_interrupt_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:454    .text.fmc_interrupt_disable:0000000000000000 fmc_interrupt_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:473    .text.fmc_interrupt_disable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:478    .text.fmc_flag_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:484    .text.fmc_flag_get:0000000000000000 fmc_flag_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:516    .text.fmc_flag_get:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:521    .text.fmc_flag_clear:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:527    .text.fmc_flag_clear:0000000000000000 fmc_flag_clear
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:544    .text.fmc_flag_clear:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:549    .text.fmc_interrupt_flag_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:555    .text.fmc_interrupt_flag_get:0000000000000000 fmc_interrupt_flag_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:587    .text.fmc_interrupt_flag_get:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:592    .text.fmc_interrupt_flag_clear:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:598    .text.fmc_interrupt_flag_clear:0000000000000000 fmc_interrupt_flag_clear
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:615    .text.fmc_interrupt_flag_clear:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:620    .text.fmc_state_get:0000000000000000 $t
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s 			page 61
+
+
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:626    .text.fmc_state_get:0000000000000000 fmc_state_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:677    .text.fmc_state_get:0000000000000030 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:682    .text.fmc_ready_wait:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:688    .text.fmc_ready_wait:0000000000000000 fmc_ready_wait
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:742    .text.fmc_page_erase:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:748    .text.fmc_page_erase:0000000000000000 fmc_page_erase
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:809    .text.fmc_page_erase:0000000000000038 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:814    .text.fmc_mass_erase:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:820    .text.fmc_mass_erase:0000000000000000 fmc_mass_erase
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:871    .text.fmc_mass_erase:0000000000000034 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:876    .text.fmc_word_program:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:882    .text.fmc_word_program:0000000000000000 fmc_word_program
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:939    .text.fmc_word_program:0000000000000030 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:944    .text.fmc_halfword_program:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:950    .text.fmc_halfword_program:0000000000000000 fmc_halfword_program
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1007   .text.fmc_halfword_program:0000000000000030 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1012   .text.fmc_word_reprogram:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1018   .text.fmc_word_reprogram:0000000000000000 fmc_word_reprogram
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1086   .text.fmc_word_reprogram:000000000000004c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1091   .text.ob_erase:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1097   .text.ob_erase:0000000000000000 ob_erase
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1230   .text.ob_erase:0000000000000084 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1236   .text.ob_parm_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1242   .text.ob_parm_get:0000000000000000 ob_parm_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1286   .text.ob_parm_get:000000000000001c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1291   .text.ob_value_modify:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1297   .text.ob_value_modify:0000000000000000 ob_value_modify
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1464   .text.ob_value_modify:0000000000000080 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1472   .text.ob_write_protection_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1478   .text.ob_write_protection_enable:0000000000000000 ob_write_protection_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1703   .text.ob_write_protection_enable:00000000000000f0 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1710   .text.ob_security_protection_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1716   .text.ob_security_protection_config:0000000000000000 ob_security_protection_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1852   .text.ob_security_protection_config:0000000000000090 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1858   .text.ob_user_write:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1864   .text.ob_user_write:0000000000000000 ob_user_write
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1986   .text.ob_user_write:0000000000000084 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1992   .text.ob_data_program:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:1998   .text.ob_data_program:0000000000000000 ob_data_program
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc09C2dc.s:2165   .text.ob_data_program:00000000000000bc $d
+
+NO UNDEFINED SYMBOLS

@@ -1,0 +1,704 @@
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"main.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.global	__aeabi_i2f
+  18              		.global	__aeabi_fdiv
+  19              		.global	__aeabi_f2uiz
+  20              		.section	.text.fill,"ax",%progbits
+  21              		.align	1
+  22              		.global	fill
+  23              		.syntax unified
+  24              		.thumb
+  25              		.thumb_func
+  27              	fill:
+  28              	.LVL0:
+  29              	.LFB116:
+  30              		.file 1 "main.c"
+   1:main.c        **** #include <stdint.h>
+   2:main.c        **** 
+   3:main.c        **** #include "gd32f3x0.h"
+   4:main.c        **** #include "gd32f3x0_gpio.h"
+   5:main.c        **** #include "gd32f3x0_rcu.h"
+   6:main.c        **** 
+   7:main.c        **** #define FREQ 20000
+   8:main.c        **** #define FILL 40
+   9:main.c        **** 
+  10:main.c        **** #define TIME_SET (uint16_t)(1000000 / FREQ / (100 / FILL))
+  11:main.c        **** #define TIME_RESET (uint16_t)(1000000 / FREQ - TIME_SET)
+  12:main.c        **** 
+  13:main.c        **** uint16_t time_set = 0, time_reset = 0;
+  14:main.c        **** 
+  15:main.c        **** void fill(uint16_t x) {
+  31              		.loc 1 15 23 view -0
+  32              		.cfi_startproc
+  33              		@ args = 0, pretend = 0, frame = 0
+  34              		@ frame_needed = 0, uses_anonymous_args = 0
+  35              		.loc 1 15 23 is_stmt 0 view .LVU1
+  36 0000 08B5     		push	{r3, lr}
+  37              	.LCFI0:
+  38              		.cfi_def_cfa_offset 8
+  39              		.cfi_offset 3, -8
+  40              		.cfi_offset 14, -4
+  16:main.c        ****   time_set = (((float)1000000) / ((float) FREQ) / ((float)100 / x));
+  41              		.loc 1 16 3 is_stmt 1 view .LVU2
+  42              		.loc 1 16 63 is_stmt 0 view .LVU3
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s 			page 2
+
+
+  43 0002 FFF7FEFF 		bl	__aeabi_i2f
+  44              	.LVL1:
+  45              		.loc 1 16 63 view .LVU4
+  46 0006 0146     		mov	r1, r0
+  47 0008 0848     		ldr	r0, .L3
+  48 000a FFF7FEFF 		bl	__aeabi_fdiv
+  49              	.LVL2:
+  50 000e 0146     		mov	r1, r0
+  51              		.loc 1 16 49 view .LVU5
+  52 0010 0748     		ldr	r0, .L3+4
+  53 0012 FFF7FEFF 		bl	__aeabi_fdiv
+  54              	.LVL3:
+  55              		.loc 1 16 12 view .LVU6
+  56 0016 FFF7FEFF 		bl	__aeabi_f2uiz
+  57              	.LVL4:
+  58 001a 80B2     		uxth	r0, r0
+  59 001c 054B     		ldr	r3, .L3+8
+  60 001e 1880     		strh	r0, [r3]	@ movhi
+  17:main.c        ****   time_reset = (1000000 / FREQ - time_set);
+  61              		.loc 1 17 3 is_stmt 1 view .LVU7
+  62              		.loc 1 17 32 is_stmt 0 view .LVU8
+  63 0020 C0F13200 		rsb	r0, r0, #50
+  64              		.loc 1 17 14 view .LVU9
+  65 0024 044B     		ldr	r3, .L3+12
+  66 0026 1880     		strh	r0, [r3]	@ movhi
+  18:main.c        **** }
+  67              		.loc 1 18 1 view .LVU10
+  68 0028 08BD     		pop	{r3, pc}
+  69              	.L4:
+  70 002a 00BF     		.align	2
+  71              	.L3:
+  72 002c 0000C842 		.word	1120403456
+  73 0030 00004842 		.word	1112014848
+  74 0034 00000000 		.word	.LANCHOR0
+  75 0038 00000000 		.word	.LANCHOR1
+  76              		.cfi_endproc
+  77              	.LFE116:
+  79              		.section	.text.pin_init_out,"ax",%progbits
+  80              		.align	1
+  81              		.global	pin_init_out
+  82              		.syntax unified
+  83              		.thumb
+  84              		.thumb_func
+  86              	pin_init_out:
+  87              	.LFB117:
+  19:main.c        **** 
+  20:main.c        **** typedef struct {
+  21:main.c        ****   uint32_t port;
+  22:main.c        ****   uint32_t num;
+  23:main.c        **** } pin;
+  24:main.c        **** 
+  25:main.c        **** // pin relay[] = {
+  26:main.c        **** //     {GPIOA, GPIO_PIN_9},  // dim_test
+  27:main.c        **** // };
+  28:main.c        **** pin dim_1 = {GPIOA, GPIO_PIN_9};
+  29:main.c        **** pin dim_4 = {GPIOA, GPIO_PIN_12};
+  30:main.c        **** pin rede = {GPIOA, GPIO_PIN_4};
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s 			page 3
+
+
+  31:main.c        **** 
+  32:main.c        **** void pin_init_out(pin x) {
+  88              		.loc 1 32 26 is_stmt 1 view -0
+  89              		.cfi_startproc
+  90              		@ args = 0, pretend = 0, frame = 8
+  91              		@ frame_needed = 0, uses_anonymous_args = 0
+  92 0000 30B5     		push	{r4, r5, lr}
+  93              	.LCFI1:
+  94              		.cfi_def_cfa_offset 12
+  95              		.cfi_offset 4, -12
+  96              		.cfi_offset 5, -8
+  97              		.cfi_offset 14, -4
+  98 0002 83B0     		sub	sp, sp, #12
+  99              	.LCFI2:
+ 100              		.cfi_def_cfa_offset 24
+ 101 0004 02AB     		add	r3, sp, #8
+ 102 0006 03E90300 		stmdb	r3, {r0, r1}
+  33:main.c        ****   gpio_mode_set(x.port, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, x.num);
+ 103              		.loc 1 33 3 view .LVU12
+ 104 000a 0446     		mov	r4, r0
+ 105 000c 0D46     		mov	r5, r1
+ 106 000e 0B46     		mov	r3, r1
+ 107 0010 0022     		movs	r2, #0
+ 108 0012 0121     		movs	r1, #1
+ 109 0014 FFF7FEFF 		bl	gpio_mode_set
+ 110              	.LVL5:
+  34:main.c        ****   gpio_output_options_set(x.port, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, x.num);
+ 111              		.loc 1 34 3 view .LVU13
+ 112 0018 2B46     		mov	r3, r5
+ 113 001a 0322     		movs	r2, #3
+ 114 001c 0021     		movs	r1, #0
+ 115 001e 2046     		mov	r0, r4
+ 116 0020 FFF7FEFF 		bl	gpio_output_options_set
+ 117              	.LVL6:
+  35:main.c        **** }
+ 118              		.loc 1 35 1 is_stmt 0 view .LVU14
+ 119 0024 03B0     		add	sp, sp, #12
+ 120              	.LCFI3:
+ 121              		.cfi_def_cfa_offset 12
+ 122              		@ sp needed
+ 123 0026 30BD     		pop	{r4, r5, pc}
+ 124              		.cfi_endproc
+ 125              	.LFE117:
+ 127              		.section	.text.pin_toggle,"ax",%progbits
+ 128              		.align	1
+ 129              		.global	pin_toggle
+ 130              		.syntax unified
+ 131              		.thumb
+ 132              		.thumb_func
+ 134              	pin_toggle:
+ 135              	.LFB118:
+  36:main.c        **** 
+  37:main.c        **** void pin_toggle(pin x) { gpio_bit_toggle(x.port, x.num); }
+ 136              		.loc 1 37 24 is_stmt 1 view -0
+ 137              		.cfi_startproc
+ 138              		@ args = 0, pretend = 0, frame = 8
+ 139              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s 			page 4
+
+
+ 140 0000 00B5     		push	{lr}
+ 141              	.LCFI4:
+ 142              		.cfi_def_cfa_offset 4
+ 143              		.cfi_offset 14, -4
+ 144 0002 83B0     		sub	sp, sp, #12
+ 145              	.LCFI5:
+ 146              		.cfi_def_cfa_offset 16
+ 147 0004 02AB     		add	r3, sp, #8
+ 148 0006 03E90300 		stmdb	r3, {r0, r1}
+ 149              		.loc 1 37 26 view .LVU16
+ 150 000a FFF7FEFF 		bl	gpio_bit_toggle
+ 151              	.LVL7:
+ 152              		.loc 1 37 58 is_stmt 0 view .LVU17
+ 153 000e 03B0     		add	sp, sp, #12
+ 154              	.LCFI6:
+ 155              		.cfi_def_cfa_offset 4
+ 156              		@ sp needed
+ 157 0010 5DF804FB 		ldr	pc, [sp], #4
+ 158              		.cfi_endproc
+ 159              	.LFE118:
+ 161              		.section	.text.pin_set,"ax",%progbits
+ 162              		.align	1
+ 163              		.global	pin_set
+ 164              		.syntax unified
+ 165              		.thumb
+ 166              		.thumb_func
+ 168              	pin_set:
+ 169              	.LFB119:
+  38:main.c        **** void pin_set(pin x) { gpio_bit_set(x.port, x.num); }
+ 170              		.loc 1 38 21 is_stmt 1 view -0
+ 171              		.cfi_startproc
+ 172              		@ args = 0, pretend = 0, frame = 8
+ 173              		@ frame_needed = 0, uses_anonymous_args = 0
+ 174 0000 00B5     		push	{lr}
+ 175              	.LCFI7:
+ 176              		.cfi_def_cfa_offset 4
+ 177              		.cfi_offset 14, -4
+ 178 0002 83B0     		sub	sp, sp, #12
+ 179              	.LCFI8:
+ 180              		.cfi_def_cfa_offset 16
+ 181 0004 02AB     		add	r3, sp, #8
+ 182 0006 03E90300 		stmdb	r3, {r0, r1}
+ 183              		.loc 1 38 23 view .LVU19
+ 184 000a FFF7FEFF 		bl	gpio_bit_set
+ 185              	.LVL8:
+ 186              		.loc 1 38 52 is_stmt 0 view .LVU20
+ 187 000e 03B0     		add	sp, sp, #12
+ 188              	.LCFI9:
+ 189              		.cfi_def_cfa_offset 4
+ 190              		@ sp needed
+ 191 0010 5DF804FB 		ldr	pc, [sp], #4
+ 192              		.cfi_endproc
+ 193              	.LFE119:
+ 195              		.section	.text.pin_reset,"ax",%progbits
+ 196              		.align	1
+ 197              		.global	pin_reset
+ 198              		.syntax unified
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s 			page 5
+
+
+ 199              		.thumb
+ 200              		.thumb_func
+ 202              	pin_reset:
+ 203              	.LFB120:
+  39:main.c        **** void pin_reset(pin x) { gpio_bit_reset(x.port, x.num); }
+ 204              		.loc 1 39 23 is_stmt 1 view -0
+ 205              		.cfi_startproc
+ 206              		@ args = 0, pretend = 0, frame = 8
+ 207              		@ frame_needed = 0, uses_anonymous_args = 0
+ 208 0000 00B5     		push	{lr}
+ 209              	.LCFI10:
+ 210              		.cfi_def_cfa_offset 4
+ 211              		.cfi_offset 14, -4
+ 212 0002 83B0     		sub	sp, sp, #12
+ 213              	.LCFI11:
+ 214              		.cfi_def_cfa_offset 16
+ 215 0004 02AB     		add	r3, sp, #8
+ 216 0006 03E90300 		stmdb	r3, {r0, r1}
+ 217              		.loc 1 39 25 view .LVU22
+ 218 000a FFF7FEFF 		bl	gpio_bit_reset
+ 219              	.LVL9:
+ 220              		.loc 1 39 56 is_stmt 0 view .LVU23
+ 221 000e 03B0     		add	sp, sp, #12
+ 222              	.LCFI12:
+ 223              		.cfi_def_cfa_offset 4
+ 224              		@ sp needed
+ 225 0010 5DF804FB 		ldr	pc, [sp], #4
+ 226              		.cfi_endproc
+ 227              	.LFE120:
+ 229              		.section	.text.delay_us,"ax",%progbits
+ 230              		.align	1
+ 231              		.global	delay_us
+ 232              		.syntax unified
+ 233              		.thumb
+ 234              		.thumb_func
+ 236              	delay_us:
+ 237              	.LVL10:
+ 238              	.LFB121:
+  40:main.c        **** 
+  41:main.c        **** void delay_us(uint32_t time) {
+ 239              		.loc 1 41 30 is_stmt 1 view -0
+ 240              		.cfi_startproc
+ 241              		@ args = 0, pretend = 0, frame = 0
+ 242              		@ frame_needed = 0, uses_anonymous_args = 0
+ 243              		@ link register save eliminated.
+  42:main.c        ****   uint32_t start_tick = TIMER_CNT(TIMER1);
+ 244              		.loc 1 42 3 view .LVU25
+ 245              		.loc 1 42 12 is_stmt 0 view .LVU26
+ 246 0000 4FF08043 		mov	r3, #1073741824
+ 247 0004 5A6A     		ldr	r2, [r3, #36]
+ 248              	.LVL11:
+  43:main.c        ****   while (TIMER_CNT(TIMER1) - start_tick < time)
+ 249              		.loc 1 43 3 is_stmt 1 view .LVU27
+ 250              	.L14:
+  44:main.c        ****     ;
+ 251              		.loc 1 44 5 discriminator 1 view .LVU28
+  43:main.c        ****   while (TIMER_CNT(TIMER1) - start_tick < time)
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s 			page 6
+
+
+ 252              		.loc 1 43 9 discriminator 1 view .LVU29
+  43:main.c        ****   while (TIMER_CNT(TIMER1) - start_tick < time)
+ 253              		.loc 1 43 10 is_stmt 0 discriminator 1 view .LVU30
+ 254 0006 4FF08043 		mov	r3, #1073741824
+ 255 000a 5B6A     		ldr	r3, [r3, #36]
+  43:main.c        ****   while (TIMER_CNT(TIMER1) - start_tick < time)
+ 256              		.loc 1 43 28 discriminator 1 view .LVU31
+ 257 000c 9B1A     		subs	r3, r3, r2
+  43:main.c        ****   while (TIMER_CNT(TIMER1) - start_tick < time)
+ 258              		.loc 1 43 9 discriminator 1 view .LVU32
+ 259 000e 8342     		cmp	r3, r0
+ 260 0010 F9D3     		bcc	.L14
+  45:main.c        **** }
+ 261              		.loc 1 45 1 view .LVU33
+ 262 0012 7047     		bx	lr
+ 263              		.cfi_endproc
+ 264              	.LFE121:
+ 266              		.section	.text.dim_few_sec,"ax",%progbits
+ 267              		.align	1
+ 268              		.global	dim_few_sec
+ 269              		.syntax unified
+ 270              		.thumb
+ 271              		.thumb_func
+ 273              	dim_few_sec:
+ 274              	.LVL12:
+ 275              	.LFB122:
+  46:main.c        **** uint32_t x = 0;
+  47:main.c        **** void dim_few_sec(uint16_t f) {
+ 276              		.loc 1 47 30 is_stmt 1 view -0
+ 277              		.cfi_startproc
+ 278              		@ args = 0, pretend = 0, frame = 0
+ 279              		@ frame_needed = 0, uses_anonymous_args = 0
+ 280              		.loc 1 47 30 is_stmt 0 view .LVU35
+ 281 0000 10B5     		push	{r4, lr}
+ 282              	.LCFI13:
+ 283              		.cfi_def_cfa_offset 8
+ 284              		.cfi_offset 4, -8
+ 285              		.cfi_offset 14, -4
+  48:main.c        ****   fill(f);
+ 286              		.loc 1 48 3 is_stmt 1 view .LVU36
+ 287 0002 FFF7FEFF 		bl	fill
+ 288              	.LVL13:
+  49:main.c        ****   while (x < 1000000) {
+ 289              		.loc 1 49 3 view .LVU37
+ 290              		.loc 1 49 9 is_stmt 0 view .LVU38
+ 291 0006 14E0     		b	.L16
+ 292              	.L17:
+  50:main.c        ****     pin_set(dim_4);
+ 293              		.loc 1 50 5 is_stmt 1 view .LVU39
+ 294 0008 0E4C     		ldr	r4, .L19
+ 295 000a 94E80300 		ldm	r4, {r0, r1}
+ 296 000e FFF7FEFF 		bl	pin_set
+ 297              	.LVL14:
+  51:main.c        ****     delay_us(time_set);
+ 298              		.loc 1 51 5 view .LVU40
+ 299 0012 0D4B     		ldr	r3, .L19+4
+ 300 0014 1888     		ldrh	r0, [r3]
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s 			page 7
+
+
+ 301 0016 FFF7FEFF 		bl	delay_us
+ 302              	.LVL15:
+  52:main.c        ****     pin_reset(dim_4);
+ 303              		.loc 1 52 5 view .LVU41
+ 304 001a 94E80300 		ldm	r4, {r0, r1}
+ 305 001e FFF7FEFF 		bl	pin_reset
+ 306              	.LVL16:
+  53:main.c        ****     delay_us(time_reset);
+ 307              		.loc 1 53 5 view .LVU42
+ 308 0022 0A4B     		ldr	r3, .L19+8
+ 309 0024 1888     		ldrh	r0, [r3]
+ 310 0026 FFF7FEFF 		bl	delay_us
+ 311              	.LVL17:
+  54:main.c        ****     x++;
+ 312              		.loc 1 54 5 view .LVU43
+ 313              		.loc 1 54 6 is_stmt 0 view .LVU44
+ 314 002a 094A     		ldr	r2, .L19+12
+ 315 002c 1368     		ldr	r3, [r2]
+ 316 002e 0133     		adds	r3, r3, #1
+ 317 0030 1360     		str	r3, [r2]
+ 318              	.L16:
+  49:main.c        ****     pin_set(dim_4);
+ 319              		.loc 1 49 9 is_stmt 1 view .LVU45
+  49:main.c        ****     pin_set(dim_4);
+ 320              		.loc 1 49 12 is_stmt 0 view .LVU46
+ 321 0032 074B     		ldr	r3, .L19+12
+ 322 0034 1A68     		ldr	r2, [r3]
+  49:main.c        ****     pin_set(dim_4);
+ 323              		.loc 1 49 9 view .LVU47
+ 324 0036 074B     		ldr	r3, .L19+16
+ 325 0038 9A42     		cmp	r2, r3
+ 326 003a E5D9     		bls	.L17
+  55:main.c        ****   }
+  56:main.c        ****   x = 0;
+ 327              		.loc 1 56 3 is_stmt 1 view .LVU48
+ 328              		.loc 1 56 5 is_stmt 0 view .LVU49
+ 329 003c 044B     		ldr	r3, .L19+12
+ 330 003e 0022     		movs	r2, #0
+ 331 0040 1A60     		str	r2, [r3]
+  57:main.c        **** }
+ 332              		.loc 1 57 1 view .LVU50
+ 333 0042 10BD     		pop	{r4, pc}
+ 334              	.L20:
+ 335              		.align	2
+ 336              	.L19:
+ 337 0044 00000000 		.word	.LANCHOR2
+ 338 0048 00000000 		.word	.LANCHOR0
+ 339 004c 00000000 		.word	.LANCHOR1
+ 340 0050 00000000 		.word	.LANCHOR3
+ 341 0054 3F420F00 		.word	999999
+ 342              		.cfi_endproc
+ 343              	.LFE122:
+ 345              		.section	.text.timer_config,"ax",%progbits
+ 346              		.align	1
+ 347              		.global	timer_config
+ 348              		.syntax unified
+ 349              		.thumb
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s 			page 8
+
+
+ 350              		.thumb_func
+ 352              	timer_config:
+ 353              	.LFB123:
+  58:main.c        **** 
+  59:main.c        **** void timer_config(void) {
+ 354              		.loc 1 59 25 is_stmt 1 view -0
+ 355              		.cfi_startproc
+ 356              		@ args = 0, pretend = 0, frame = 16
+ 357              		@ frame_needed = 0, uses_anonymous_args = 0
+ 358 0000 00B5     		push	{lr}
+ 359              	.LCFI14:
+ 360              		.cfi_def_cfa_offset 4
+ 361              		.cfi_offset 14, -4
+ 362 0002 85B0     		sub	sp, sp, #20
+ 363              	.LCFI15:
+ 364              		.cfi_def_cfa_offset 24
+  60:main.c        ****   timer_parameter_struct timer_initpara;
+ 365              		.loc 1 60 3 view .LVU52
+  61:main.c        **** 
+  62:main.c        ****   /* enable the peripherals clock */
+  63:main.c        ****   rcu_periph_clock_enable(RCU_TIMER1);
+ 366              		.loc 1 63 3 view .LVU53
+ 367 0004 4FF4E060 		mov	r0, #1792
+ 368 0008 FFF7FEFF 		bl	rcu_periph_clock_enable
+ 369              	.LVL18:
+  64:main.c        **** 
+  65:main.c        ****   /* deinit a TIMER */
+  66:main.c        ****   timer_deinit(TIMER1);
+ 370              		.loc 1 66 3 view .LVU54
+ 371 000c 4FF08040 		mov	r0, #1073741824
+ 372 0010 FFF7FEFF 		bl	timer_deinit
+ 373              	.LVL19:
+  67:main.c        ****   /* initialize TIMER init parameter struct */
+  68:main.c        ****   timer_struct_para_init(&timer_initpara);
+ 374              		.loc 1 68 3 view .LVU55
+ 375 0014 6846     		mov	r0, sp
+ 376 0016 FFF7FEFF 		bl	timer_struct_para_init
+ 377              	.LVL20:
+  69:main.c        ****   /* TIMER1 configuration */
+  70:main.c        ****   timer_initpara.prescaler = 83;
+ 378              		.loc 1 70 3 view .LVU56
+ 379              		.loc 1 70 28 is_stmt 0 view .LVU57
+ 380 001a 5323     		movs	r3, #83
+ 381 001c ADF80030 		strh	r3, [sp]	@ movhi
+  71:main.c        ****   //   timer_initpara.alignedmode       = TIMER_COUNTER_EDGE;
+  72:main.c        ****   timer_initpara.counterdirection = TIMER_COUNTER_UP;
+ 382              		.loc 1 72 3 is_stmt 1 view .LVU58
+ 383              		.loc 1 72 35 is_stmt 0 view .LVU59
+ 384 0020 0023     		movs	r3, #0
+ 385 0022 ADF80430 		strh	r3, [sp, #4]	@ movhi
+  73:main.c        ****   timer_initpara.period = 0xFFFFFFFF;
+ 386              		.loc 1 73 3 is_stmt 1 view .LVU60
+ 387              		.loc 1 73 25 is_stmt 0 view .LVU61
+ 388 0026 4FF0FF33 		mov	r3, #-1
+ 389 002a 0293     		str	r3, [sp, #8]
+  74:main.c        ****   //   timer_initpara.clockdivision     = TIMER_CKDIV_DIV1;
+  75:main.c        ****   timer_init(TIMER1, &timer_initpara);
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s 			page 9
+
+
+ 390              		.loc 1 75 3 is_stmt 1 view .LVU62
+ 391 002c 6946     		mov	r1, sp
+ 392 002e 4FF08040 		mov	r0, #1073741824
+ 393 0032 FFF7FEFF 		bl	timer_init
+ 394              	.LVL21:
+  76:main.c        ****   timer_enable(TIMER1);
+ 395              		.loc 1 76 3 view .LVU63
+ 396 0036 4FF08040 		mov	r0, #1073741824
+ 397 003a FFF7FEFF 		bl	timer_enable
+ 398              	.LVL22:
+  77:main.c        **** }
+ 399              		.loc 1 77 1 is_stmt 0 view .LVU64
+ 400 003e 05B0     		add	sp, sp, #20
+ 401              	.LCFI16:
+ 402              		.cfi_def_cfa_offset 4
+ 403              		@ sp needed
+ 404 0040 5DF804FB 		ldr	pc, [sp], #4
+ 405              		.cfi_endproc
+ 406              	.LFE123:
+ 408              		.section	.text.main,"ax",%progbits
+ 409              		.align	1
+ 410              		.global	main
+ 411              		.syntax unified
+ 412              		.thumb
+ 413              		.thumb_func
+ 415              	main:
+ 416              	.LFB124:
+  78:main.c        **** 
+  79:main.c        **** int main() {
+ 417              		.loc 1 79 12 is_stmt 1 view -0
+ 418              		.cfi_startproc
+ 419              		@ Volatile: function does not return.
+ 420              		@ args = 0, pretend = 0, frame = 0
+ 421              		@ frame_needed = 0, uses_anonymous_args = 0
+ 422 0000 08B5     		push	{r3, lr}
+ 423              	.LCFI17:
+ 424              		.cfi_def_cfa_offset 8
+ 425              		.cfi_offset 3, -8
+ 426              		.cfi_offset 14, -4
+  80:main.c        ****   rcu_periph_clock_enable(RCU_GPIOA);
+ 427              		.loc 1 80 3 view .LVU66
+ 428 0002 40F21150 		movw	r0, #1297
+ 429 0006 FFF7FEFF 		bl	rcu_periph_clock_enable
+ 430              	.LVL23:
+  81:main.c        ****   rcu_periph_clock_enable(RCU_GPIOB);
+ 431              		.loc 1 81 3 view .LVU67
+ 432 000a 40F21250 		movw	r0, #1298
+ 433 000e FFF7FEFF 		bl	rcu_periph_clock_enable
+ 434              	.LVL24:
+  82:main.c        ****   timer_config();
+ 435              		.loc 1 82 3 view .LVU68
+ 436 0012 FFF7FEFF 		bl	timer_config
+ 437              	.LVL25:
+  83:main.c        **** 
+  84:main.c        ****   pin_init_out(dim_1);
+ 438              		.loc 1 84 3 view .LVU69
+ 439 0016 114B     		ldr	r3, .L26
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s 			page 10
+
+
+ 440 0018 93E80300 		ldm	r3, {r0, r1}
+ 441 001c FFF7FEFF 		bl	pin_init_out
+ 442              	.LVL26:
+  85:main.c        ****   pin_init_out(dim_4);
+ 443              		.loc 1 85 3 view .LVU70
+ 444 0020 0F4B     		ldr	r3, .L26+4
+ 445 0022 93E80300 		ldm	r3, {r0, r1}
+ 446 0026 FFF7FEFF 		bl	pin_init_out
+ 447              	.LVL27:
+  86:main.c        ****   pin_init_out(rede);
+ 448              		.loc 1 86 3 view .LVU71
+ 449 002a 0E4C     		ldr	r4, .L26+8
+ 450 002c 94E80300 		ldm	r4, {r0, r1}
+ 451 0030 FFF7FEFF 		bl	pin_init_out
+ 452              	.LVL28:
+  87:main.c        ****   pin_reset(rede);
+ 453              		.loc 1 87 3 view .LVU72
+ 454 0034 94E80300 		ldm	r4, {r0, r1}
+ 455 0038 FFF7FEFF 		bl	pin_reset
+ 456              	.LVL29:
+ 457              	.L24:
+  88:main.c        **** 
+  89:main.c        ****   while (1) {
+ 458              		.loc 1 89 3 discriminator 1 view .LVU73
+  90:main.c        ****     pin_set(dim_4);
+ 459              		.loc 1 90 5 discriminator 1 view .LVU74
+ 460 003c 084C     		ldr	r4, .L26+4
+ 461 003e 94E80300 		ldm	r4, {r0, r1}
+ 462 0042 FFF7FEFF 		bl	pin_set
+ 463              	.LVL30:
+  91:main.c        ****     // delay_us(12);
+  92:main.c        ****     delay_us(25);
+ 464              		.loc 1 92 5 discriminator 1 view .LVU75
+ 465 0046 1920     		movs	r0, #25
+ 466 0048 FFF7FEFF 		bl	delay_us
+ 467              	.LVL31:
+  93:main.c        ****     pin_reset(dim_4);
+ 468              		.loc 1 93 5 discriminator 1 view .LVU76
+ 469 004c 94E80300 		ldm	r4, {r0, r1}
+ 470 0050 FFF7FEFF 		bl	pin_reset
+ 471              	.LVL32:
+  94:main.c        ****     // delay_us(38);
+  95:main.c        ****     delay_us(25);
+ 472              		.loc 1 95 5 discriminator 1 view .LVU77
+ 473 0054 1920     		movs	r0, #25
+ 474 0056 FFF7FEFF 		bl	delay_us
+ 475              	.LVL33:
+  89:main.c        ****     pin_set(dim_4);
+ 476              		.loc 1 89 9 discriminator 1 view .LVU78
+ 477 005a EFE7     		b	.L24
+ 478              	.L27:
+ 479              		.align	2
+ 480              	.L26:
+ 481 005c 00000000 		.word	.LANCHOR4
+ 482 0060 00000000 		.word	.LANCHOR2
+ 483 0064 00000000 		.word	.LANCHOR5
+ 484              		.cfi_endproc
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s 			page 11
+
+
+ 485              	.LFE124:
+ 487              		.global	x
+ 488              		.global	rede
+ 489              		.global	dim_4
+ 490              		.global	dim_1
+ 491              		.global	time_reset
+ 492              		.global	time_set
+ 493              		.section	.bss.time_reset,"aw",%nobits
+ 494              		.align	1
+ 495              		.set	.LANCHOR1,. + 0
+ 498              	time_reset:
+ 499 0000 0000     		.space	2
+ 500              		.section	.bss.time_set,"aw",%nobits
+ 501              		.align	1
+ 502              		.set	.LANCHOR0,. + 0
+ 505              	time_set:
+ 506 0000 0000     		.space	2
+ 507              		.section	.bss.x,"aw",%nobits
+ 508              		.align	2
+ 509              		.set	.LANCHOR3,. + 0
+ 512              	x:
+ 513 0000 00000000 		.space	4
+ 514              		.section	.data.dim_1,"aw"
+ 515              		.align	2
+ 516              		.set	.LANCHOR4,. + 0
+ 519              	dim_1:
+ 520 0000 00000048 		.word	1207959552
+ 521 0004 00020000 		.word	512
+ 522              		.section	.data.dim_4,"aw"
+ 523              		.align	2
+ 524              		.set	.LANCHOR2,. + 0
+ 527              	dim_4:
+ 528 0000 00000048 		.word	1207959552
+ 529 0004 00100000 		.word	4096
+ 530              		.section	.data.rede,"aw"
+ 531              		.align	2
+ 532              		.set	.LANCHOR5,. + 0
+ 535              	rede:
+ 536 0000 00000048 		.word	1207959552
+ 537 0004 10000000 		.word	16
+ 538              		.text
+ 539              	.Letext0:
+ 540              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
+ 541              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
+ 542              		.file 4 "lib/GD32F3x0/Include/gd32f3x0_dbg.h"
+ 543              		.file 5 "lib/GD32F3x0/Include/gd32f3x0_rcu.h"
+ 544              		.file 6 "lib/GD32F3x0/Include/gd32f3x0_timer.h"
+ 545              		.file 7 "lib/GD32F3x0/Include/gd32f3x0_gpio.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s 			page 12
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:21     .text.fill:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:27     .text.fill:0000000000000000 fill
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:72     .text.fill:000000000000002c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:80     .text.pin_init_out:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:86     .text.pin_init_out:0000000000000000 pin_init_out
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:128    .text.pin_toggle:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:134    .text.pin_toggle:0000000000000000 pin_toggle
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:162    .text.pin_set:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:168    .text.pin_set:0000000000000000 pin_set
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:196    .text.pin_reset:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:202    .text.pin_reset:0000000000000000 pin_reset
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:230    .text.delay_us:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:236    .text.delay_us:0000000000000000 delay_us
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:267    .text.dim_few_sec:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:273    .text.dim_few_sec:0000000000000000 dim_few_sec
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:337    .text.dim_few_sec:0000000000000044 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:346    .text.timer_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:352    .text.timer_config:0000000000000000 timer_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:409    .text.main:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:415    .text.main:0000000000000000 main
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:481    .text.main:000000000000005c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:512    .bss.x:0000000000000000 x
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:535    .data.rede:0000000000000000 rede
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:527    .data.dim_4:0000000000000000 dim_4
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:519    .data.dim_1:0000000000000000 dim_1
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:498    .bss.time_reset:0000000000000000 time_reset
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:505    .bss.time_set:0000000000000000 time_set
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:494    .bss.time_reset:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:501    .bss.time_set:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:508    .bss.x:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:515    .data.dim_1:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:523    .data.dim_4:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccvtHWZd.s:531    .data.rede:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+__aeabi_i2f
+__aeabi_fdiv
+__aeabi_f2uiz
+gpio_mode_set
+gpio_output_options_set
+gpio_bit_toggle
+gpio_bit_set
+gpio_bit_reset
+rcu_periph_clock_enable
+timer_deinit
+timer_struct_para_init
+timer_init
+timer_enable

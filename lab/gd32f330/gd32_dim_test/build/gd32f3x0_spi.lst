@@ -1,0 +1,2131 @@
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"gd32f3x0_spi.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.spi_i2s_deinit,"ax",%progbits
+  18              		.align	1
+  19              		.global	spi_i2s_deinit
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	spi_i2s_deinit:
+  25              	.LVL0:
+  26              	.LFB116:
+  27              		.file 1 "lib/GD32F3x0/Source/gd32f3x0_spi.c"
+   1:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+   2:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \file    gd32f3x0_spi.c
+   3:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief   SPI driver
+   4:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+   5:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \version 2017-06-06, V1.0.0, firmware for GD32F3x0
+   6:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \version 2019-06-01, V2.0.0, firmware for GD32F3x0
+   7:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \version 2020-09-30, V2.1.0, firmware for GD32F3x0
+   8:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \version 2022-01-06, V2.2.0, firmware for GD32F3x0
+   9:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+  10:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+  11:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*
+  12:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     Copyright (c) 2022, GigaDevice Semiconductor Inc.
+  13:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+  14:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     Redistribution and use in source and binary forms, with or without modification,
+  15:lib/GD32F3x0/Source/gd32f3x0_spi.c **** are permitted provided that the following conditions are met:
+  16:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+  17:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     1. Redistributions of source code must retain the above copyright notice, this
+  18:lib/GD32F3x0/Source/gd32f3x0_spi.c ****        list of conditions and the following disclaimer.
+  19:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     2. Redistributions in binary form must reproduce the above copyright notice,
+  20:lib/GD32F3x0/Source/gd32f3x0_spi.c ****        this list of conditions and the following disclaimer in the documentation
+  21:lib/GD32F3x0/Source/gd32f3x0_spi.c ****        and/or other materials provided with the distribution.
+  22:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     3. Neither the name of the copyright holder nor the names of its contributors
+  23:lib/GD32F3x0/Source/gd32f3x0_spi.c ****        may be used to endorse or promote products derived from this software without
+  24:lib/GD32F3x0/Source/gd32f3x0_spi.c ****        specific prior written permission.
+  25:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+  26:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  27:lib/GD32F3x0/Source/gd32f3x0_spi.c **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  28:lib/GD32F3x0/Source/gd32f3x0_spi.c **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  29:lib/GD32F3x0/Source/gd32f3x0_spi.c **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  30:lib/GD32F3x0/Source/gd32f3x0_spi.c **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+  31:lib/GD32F3x0/Source/gd32f3x0_spi.c **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 2
+
+
+  32:lib/GD32F3x0/Source/gd32f3x0_spi.c **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+  33:lib/GD32F3x0/Source/gd32f3x0_spi.c **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  34:lib/GD32F3x0/Source/gd32f3x0_spi.c **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+  35:lib/GD32F3x0/Source/gd32f3x0_spi.c **** OF SUCH DAMAGE.
+  36:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+  37:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+  38:lib/GD32F3x0/Source/gd32f3x0_spi.c **** #include "gd32f3x0_spi.h"
+  39:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+  40:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /* SPI/I2S parameter initialization mask */
+  41:lib/GD32F3x0/Source/gd32f3x0_spi.c **** #define SPI_INIT_MASK                   ((uint32_t)0x00003040U)  /*!< SPI parameter initialization 
+  42:lib/GD32F3x0/Source/gd32f3x0_spi.c **** #define I2S_INIT_MASK                   ((uint32_t)0x0000F047U)  /*!< I2S parameter initialization 
+  43:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+  44:lib/GD32F3x0/Source/gd32f3x0_spi.c **** #define SPI_I2SPSC_RESET                ((uint32_t)0x00000002U)  /*!< default value of SPI_I2SPSC r
+  45:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+  46:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+  47:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      reset SPI and I2S
+  48:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+  49:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+  50:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+  51:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+  52:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_i2s_deinit(uint32_t spi_periph)
+  53:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+  28              		.loc 1 53 1 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		.loc 1 53 1 is_stmt 0 view .LVU1
+  33 0000 08B5     		push	{r3, lr}
+  34              	.LCFI0:
+  35              		.cfi_def_cfa_offset 8
+  36              		.cfi_offset 3, -8
+  37              		.cfi_offset 14, -4
+  54:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     switch(spi_periph) {
+  38              		.loc 1 54 5 is_stmt 1 view .LVU2
+  39 0002 0C4B     		ldr	r3, .L5
+  40 0004 9842     		cmp	r0, r3
+  41 0006 0CD0     		beq	.L2
+  42 0008 03F57843 		add	r3, r3, #63488
+  43 000c 9842     		cmp	r0, r3
+  44 000e 07D1     		bne	.L1
+  55:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     case SPI0:
+  56:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         /* reset SPI0 and I2S0 */
+  57:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         rcu_periph_reset_enable(RCU_SPI0RST);
+  45              		.loc 1 57 9 view .LVU3
+  46 0010 4FF44370 		mov	r0, #780
+  47              	.LVL1:
+  48              		.loc 1 57 9 is_stmt 0 view .LVU4
+  49 0014 FFF7FEFF 		bl	rcu_periph_reset_enable
+  50              	.LVL2:
+  58:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         rcu_periph_reset_disable(RCU_SPI0RST);
+  51              		.loc 1 58 9 is_stmt 1 view .LVU5
+  52 0018 4FF44370 		mov	r0, #780
+  53 001c FFF7FEFF 		bl	rcu_periph_reset_disable
+  54              	.LVL3:
+  59:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+  55              		.loc 1 59 9 view .LVU6
+  56              	.L1:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 3
+
+
+  60:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     case SPI1:
+  61:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         /* reset SPI1 */
+  62:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         rcu_periph_reset_enable(RCU_SPI1RST);
+  63:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         rcu_periph_reset_disable(RCU_SPI1RST);
+  64:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+  65:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     default :
+  66:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+  67:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     }
+  68:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+  57              		.loc 1 68 1 is_stmt 0 view .LVU7
+  58 0020 08BD     		pop	{r3, pc}
+  59              	.LVL4:
+  60              	.L2:
+  62:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         rcu_periph_reset_disable(RCU_SPI1RST);
+  61              		.loc 1 62 9 is_stmt 1 view .LVU8
+  62 0022 40F20E40 		movw	r0, #1038
+  63              	.LVL5:
+  62:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         rcu_periph_reset_disable(RCU_SPI1RST);
+  64              		.loc 1 62 9 is_stmt 0 view .LVU9
+  65 0026 FFF7FEFF 		bl	rcu_periph_reset_enable
+  66              	.LVL6:
+  63:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+  67              		.loc 1 63 9 is_stmt 1 view .LVU10
+  68 002a 40F20E40 		movw	r0, #1038
+  69 002e FFF7FEFF 		bl	rcu_periph_reset_disable
+  70              	.LVL7:
+  64:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     default :
+  71              		.loc 1 64 9 view .LVU11
+  72              		.loc 1 68 1 is_stmt 0 view .LVU12
+  73 0032 F5E7     		b	.L1
+  74              	.L6:
+  75              		.align	2
+  76              	.L5:
+  77 0034 00380040 		.word	1073756160
+  78              		.cfi_endproc
+  79              	.LFE116:
+  81              		.section	.text.spi_struct_para_init,"ax",%progbits
+  82              		.align	1
+  83              		.global	spi_struct_para_init
+  84              		.syntax unified
+  85              		.thumb
+  86              		.thumb_func
+  88              	spi_struct_para_init:
+  89              	.LVL8:
+  90              	.LFB117:
+  69:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+  70:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+  71:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      initialize the parameters of SPI struct with the default values
+  72:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  none
+  73:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] spi_parameter_struct: the initialized structure spi_parameter_struct pointer
+  74:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+  75:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+  76:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_struct_para_init(spi_parameter_struct *spi_struct)
+  77:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+  91              		.loc 1 77 1 is_stmt 1 view -0
+  92              		.cfi_startproc
+  93              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 4
+
+
+  94              		@ frame_needed = 0, uses_anonymous_args = 0
+  95              		@ link register save eliminated.
+  78:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* configure the SPI structure with the default values */
+  79:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     spi_struct->device_mode          = SPI_SLAVE;
+  96              		.loc 1 79 5 view .LVU14
+  97              		.loc 1 79 38 is_stmt 0 view .LVU15
+  98 0000 0023     		movs	r3, #0
+  99 0002 0360     		str	r3, [r0]
+  80:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     spi_struct->trans_mode           = SPI_TRANSMODE_FULLDUPLEX;
+ 100              		.loc 1 80 5 is_stmt 1 view .LVU16
+ 101              		.loc 1 80 38 is_stmt 0 view .LVU17
+ 102 0004 4360     		str	r3, [r0, #4]
+  81:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     spi_struct->frame_size           = SPI_FRAMESIZE_8BIT;
+ 103              		.loc 1 81 5 is_stmt 1 view .LVU18
+ 104              		.loc 1 81 38 is_stmt 0 view .LVU19
+ 105 0006 8360     		str	r3, [r0, #8]
+  82:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     spi_struct->nss                  = SPI_NSS_HARD;
+ 106              		.loc 1 82 5 is_stmt 1 view .LVU20
+ 107              		.loc 1 82 38 is_stmt 0 view .LVU21
+ 108 0008 C360     		str	r3, [r0, #12]
+  83:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     spi_struct->endian               = SPI_ENDIAN_MSB;
+ 109              		.loc 1 83 5 is_stmt 1 view .LVU22
+ 110              		.loc 1 83 38 is_stmt 0 view .LVU23
+ 111 000a 0361     		str	r3, [r0, #16]
+  84:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     spi_struct->clock_polarity_phase = SPI_CK_PL_LOW_PH_1EDGE;
+ 112              		.loc 1 84 5 is_stmt 1 view .LVU24
+ 113              		.loc 1 84 38 is_stmt 0 view .LVU25
+ 114 000c 4361     		str	r3, [r0, #20]
+  85:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     spi_struct->prescale             = SPI_PSC_2;
+ 115              		.loc 1 85 5 is_stmt 1 view .LVU26
+ 116              		.loc 1 85 38 is_stmt 0 view .LVU27
+ 117 000e 8361     		str	r3, [r0, #24]
+  86:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 118              		.loc 1 86 1 view .LVU28
+ 119 0010 7047     		bx	lr
+ 120              		.cfi_endproc
+ 121              	.LFE117:
+ 123              		.section	.text.spi_init,"ax",%progbits
+ 124              		.align	1
+ 125              		.global	spi_init
+ 126              		.syntax unified
+ 127              		.thumb
+ 128              		.thumb_func
+ 130              	spi_init:
+ 131              	.LVL9:
+ 132              	.LFB118:
+  87:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+  88:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+  89:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      initialize SPI parameter
+  90:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+  91:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_struct: SPI parameter initialization stuct members of the structure
+  92:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                             and the member values are shown as below:
+  93:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                   device_mode: SPI_MASTER, SPI_SLAVE
+  94:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                   trans_mode: SPI_TRANSMODE_FULLDUPLEX, SPI_TRANSMODE_RECEIVEONLY,
+  95:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                               SPI_TRANSMODE_BDRECEIVE, SPI_TRANSMODE_BDTRANSMIT
+  96:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                   frame_size: SPI_FRAMESIZE_16BIT, SPI_FRAMESIZE_8BIT
+  97:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                   nss: SPI_NSS_SOFT, SPI_NSS_HARD
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 5
+
+
+  98:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                   endian: SPI_ENDIAN_MSB, SPI_ENDIAN_LSB
+  99:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                   clock_polarity_phase: SPI_CK_PL_LOW_PH_1EDGE, SPI_CK_PL_HIGH_PH_1EDGE
+ 100:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                                         SPI_CK_PL_LOW_PH_2EDGE, SPI_CK_PL_HIGH_PH_2EDGE
+ 101:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                   prescale: SPI_PSC_n (n=2,4,8,16,32,64,128,256)
+ 102:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 103:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 104:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 105:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_init(uint32_t spi_periph, spi_parameter_struct *spi_struct)
+ 106:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 133              		.loc 1 106 1 is_stmt 1 view -0
+ 134              		.cfi_startproc
+ 135              		@ args = 0, pretend = 0, frame = 0
+ 136              		@ frame_needed = 0, uses_anonymous_args = 0
+ 137              		@ link register save eliminated.
+ 107:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     uint32_t reg = 0U;
+ 138              		.loc 1 107 5 view .LVU30
+ 108:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     reg = SPI_CTL0(spi_periph);
+ 139              		.loc 1 108 5 view .LVU31
+ 140              		.loc 1 108 9 is_stmt 0 view .LVU32
+ 141 0000 0268     		ldr	r2, [r0]
+ 142              	.LVL10:
+ 109:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     reg &= SPI_INIT_MASK;
+ 143              		.loc 1 109 5 is_stmt 1 view .LVU33
+ 144              		.loc 1 109 9 is_stmt 0 view .LVU34
+ 145 0002 02F44152 		and	r2, r2, #12352
+ 146              	.LVL11:
+ 110:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 111:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* select SPI as master or slave */
+ 112:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     reg |= spi_struct->device_mode;
+ 147              		.loc 1 112 5 is_stmt 1 view .LVU35
+ 148              		.loc 1 112 22 is_stmt 0 view .LVU36
+ 149 0006 0B68     		ldr	r3, [r1]
+ 150              		.loc 1 112 9 view .LVU37
+ 151 0008 1A43     		orrs	r2, r2, r3
+ 152              	.LVL12:
+ 113:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* select SPI transfer mode */
+ 114:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     reg |= spi_struct->trans_mode;
+ 153              		.loc 1 114 5 is_stmt 1 view .LVU38
+ 154              		.loc 1 114 22 is_stmt 0 view .LVU39
+ 155 000a 4B68     		ldr	r3, [r1, #4]
+ 156              		.loc 1 114 9 view .LVU40
+ 157 000c 1A43     		orrs	r2, r2, r3
+ 158              	.LVL13:
+ 115:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* select SPI frame size */
+ 116:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     reg |= spi_struct->frame_size;
+ 159              		.loc 1 116 5 is_stmt 1 view .LVU41
+ 160              		.loc 1 116 22 is_stmt 0 view .LVU42
+ 161 000e 8B68     		ldr	r3, [r1, #8]
+ 162              		.loc 1 116 9 view .LVU43
+ 163 0010 1A43     		orrs	r2, r2, r3
+ 164              	.LVL14:
+ 117:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* select SPI NSS use hardware or software */
+ 118:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     reg |= spi_struct->nss;
+ 165              		.loc 1 118 5 is_stmt 1 view .LVU44
+ 166              		.loc 1 118 22 is_stmt 0 view .LVU45
+ 167 0012 CB68     		ldr	r3, [r1, #12]
+ 168              		.loc 1 118 9 view .LVU46
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 6
+
+
+ 169 0014 1A43     		orrs	r2, r2, r3
+ 170              	.LVL15:
+ 119:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* select SPI LSB or MSB */
+ 120:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     reg |= spi_struct->endian;
+ 171              		.loc 1 120 5 is_stmt 1 view .LVU47
+ 172              		.loc 1 120 22 is_stmt 0 view .LVU48
+ 173 0016 0B69     		ldr	r3, [r1, #16]
+ 174              		.loc 1 120 9 view .LVU49
+ 175 0018 1A43     		orrs	r2, r2, r3
+ 176              	.LVL16:
+ 121:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* select SPI polarity and phase */
+ 122:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     reg |= spi_struct->clock_polarity_phase;
+ 177              		.loc 1 122 5 is_stmt 1 view .LVU50
+ 178              		.loc 1 122 22 is_stmt 0 view .LVU51
+ 179 001a 4B69     		ldr	r3, [r1, #20]
+ 180              		.loc 1 122 9 view .LVU52
+ 181 001c 1A43     		orrs	r2, r2, r3
+ 182              	.LVL17:
+ 123:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* select SPI prescale to adjust transmit speed */
+ 124:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     reg |= spi_struct->prescale;
+ 183              		.loc 1 124 5 is_stmt 1 view .LVU53
+ 184              		.loc 1 124 22 is_stmt 0 view .LVU54
+ 185 001e 8B69     		ldr	r3, [r1, #24]
+ 186              		.loc 1 124 9 view .LVU55
+ 187 0020 1343     		orrs	r3, r3, r2
+ 188              	.LVL18:
+ 125:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 126:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* write to SPI_CTL0 register */
+ 127:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL0(spi_periph) = (uint32_t)reg;
+ 189              		.loc 1 127 5 is_stmt 1 view .LVU56
+ 190              		.loc 1 127 26 is_stmt 0 view .LVU57
+ 191 0022 0360     		str	r3, [r0]
+ 128:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 129:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* select SPI mode */
+ 130:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_I2SCTL(spi_periph) &= (uint32_t)(~SPI_I2SCTL_I2SSEL);
+ 192              		.loc 1 130 5 is_stmt 1 view .LVU58
+ 193              		.loc 1 130 28 is_stmt 0 view .LVU59
+ 194 0024 C369     		ldr	r3, [r0, #28]
+ 195              	.LVL19:
+ 196              		.loc 1 130 28 view .LVU60
+ 197 0026 23F40063 		bic	r3, r3, #2048
+ 198 002a C361     		str	r3, [r0, #28]
+ 199              	.LVL20:
+ 131:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 200              		.loc 1 131 1 view .LVU61
+ 201 002c 7047     		bx	lr
+ 202              		.cfi_endproc
+ 203              	.LFE118:
+ 205              		.section	.text.spi_enable,"ax",%progbits
+ 206              		.align	1
+ 207              		.global	spi_enable
+ 208              		.syntax unified
+ 209              		.thumb
+ 210              		.thumb_func
+ 212              	spi_enable:
+ 213              	.LVL21:
+ 214              	.LFB119:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 7
+
+
+ 132:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 133:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 134:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      enable SPI
+ 135:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 136:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 137:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 138:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 139:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_enable(uint32_t spi_periph)
+ 140:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 215              		.loc 1 140 1 is_stmt 1 view -0
+ 216              		.cfi_startproc
+ 217              		@ args = 0, pretend = 0, frame = 0
+ 218              		@ frame_needed = 0, uses_anonymous_args = 0
+ 219              		@ link register save eliminated.
+ 141:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL0(spi_periph) |= (uint32_t)SPI_CTL0_SPIEN;
+ 220              		.loc 1 141 5 view .LVU63
+ 221              		.loc 1 141 26 is_stmt 0 view .LVU64
+ 222 0000 0368     		ldr	r3, [r0]
+ 223 0002 43F04003 		orr	r3, r3, #64
+ 224 0006 0360     		str	r3, [r0]
+ 142:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 225              		.loc 1 142 1 view .LVU65
+ 226 0008 7047     		bx	lr
+ 227              		.cfi_endproc
+ 228              	.LFE119:
+ 230              		.section	.text.spi_disable,"ax",%progbits
+ 231              		.align	1
+ 232              		.global	spi_disable
+ 233              		.syntax unified
+ 234              		.thumb
+ 235              		.thumb_func
+ 237              	spi_disable:
+ 238              	.LVL22:
+ 239              	.LFB120:
+ 143:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 144:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 145:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      disable SPI
+ 146:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 147:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 148:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 149:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 150:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_disable(uint32_t spi_periph)
+ 151:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 240              		.loc 1 151 1 is_stmt 1 view -0
+ 241              		.cfi_startproc
+ 242              		@ args = 0, pretend = 0, frame = 0
+ 243              		@ frame_needed = 0, uses_anonymous_args = 0
+ 244              		@ link register save eliminated.
+ 152:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL0(spi_periph) &= (uint32_t)(~SPI_CTL0_SPIEN);
+ 245              		.loc 1 152 5 view .LVU67
+ 246              		.loc 1 152 26 is_stmt 0 view .LVU68
+ 247 0000 0368     		ldr	r3, [r0]
+ 248 0002 23F04003 		bic	r3, r3, #64
+ 249 0006 0360     		str	r3, [r0]
+ 153:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 250              		.loc 1 153 1 view .LVU69
+ 251 0008 7047     		bx	lr
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 8
+
+
+ 252              		.cfi_endproc
+ 253              	.LFE120:
+ 255              		.section	.text.spi_nss_output_enable,"ax",%progbits
+ 256              		.align	1
+ 257              		.global	spi_nss_output_enable
+ 258              		.syntax unified
+ 259              		.thumb
+ 260              		.thumb_func
+ 262              	spi_nss_output_enable:
+ 263              	.LVL23:
+ 264              	.LFB121:
+ 154:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 155:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 156:lib/GD32F3x0/Source/gd32f3x0_spi.c **** #if (defined(GD32F350) || defined(GD32F310))
+ 157:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 158:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      initialize I2S parameter
+ 159:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPI0
+ 160:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  mode: I2S operation mode
+ 161:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                 only one parameter can be selected which is shown as below:
+ 162:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_MODE_SLAVETX: I2S slave transmit mode
+ 163:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_MODE_SLAVERX: I2S slave receive mode
+ 164:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_MODE_MASTERTX: I2S master transmit mode
+ 165:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_MODE_MASTERRX: I2S master receive mode
+ 166:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  standard: I2S standard
+ 167:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                 only one parameter can be selected which is shown as below:
+ 168:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_STD_PHILLIPS: I2S phillips standard
+ 169:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_STD_MSB: I2S MSB standard
+ 170:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_STD_LSB: I2S LSB standard
+ 171:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_STD_PCMSHORT: I2S PCM short standard
+ 172:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_STD_PCMLONG: I2S PCM long standard
+ 173:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  ckpl: I2S idle state clock polarity
+ 174:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                 only one parameter can be selected which is shown as below:
+ 175:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_CKPL_LOW: I2S clock polarity low level
+ 176:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_CKPL_HIGH: I2S clock polarity high level
+ 177:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 178:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 179:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 180:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void i2s_init(uint32_t spi_periph, uint32_t mode, uint32_t standard, uint32_t ckpl)
+ 181:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 182:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     uint32_t reg = 0U;
+ 183:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     reg = SPI_I2SCTL(spi_periph);
+ 184:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     reg &= I2S_INIT_MASK;
+ 185:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 186:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* enable I2S mode */
+ 187:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     reg |= (uint32_t)SPI_I2SCTL_I2SSEL;
+ 188:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* select I2S mode */
+ 189:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     reg |= (uint32_t)mode;
+ 190:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* select I2S standard */
+ 191:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     reg |= (uint32_t)standard;
+ 192:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* select I2S polarity */
+ 193:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     reg |= (uint32_t)ckpl;
+ 194:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 195:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* write to SPI_I2SCTL register */
+ 196:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_I2SCTL(spi_periph) = (uint32_t)reg;
+ 197:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 198:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 199:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 9
+
+
+ 200:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      configure I2S prescaler
+ 201:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPI0
+ 202:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  audiosample: I2S audio sample rate
+ 203:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                 only one parameter can be selected which is shown as below:
+ 204:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_AUDIOSAMPLE_8K: audio sample rate is 8KHz
+ 205:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_AUDIOSAMPLE_11K: audio sample rate is 11KHz
+ 206:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_AUDIOSAMPLE_16K: audio sample rate is 16KHz
+ 207:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_AUDIOSAMPLE_22K: audio sample rate is 22KHz
+ 208:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_AUDIOSAMPLE_32K: audio sample rate is 32KHz
+ 209:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_AUDIOSAMPLE_44K: audio sample rate is 44KHz
+ 210:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_AUDIOSAMPLE_48K: audio sample rate is 48KHz
+ 211:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_AUDIOSAMPLE_96K: audio sample rate is 96KHz
+ 212:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_AUDIOSAMPLE_192K: audio sample rate is 192KHz
+ 213:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  frameformat: I2S data length and channel length
+ 214:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                 only one parameter can be selected which is shown as below:
+ 215:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_FRAMEFORMAT_DT16B_CH16B: I2S data length is 16 bit and channel length is 16 b
+ 216:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_FRAMEFORMAT_DT16B_CH32B: I2S data length is 16 bit and channel length is 32 b
+ 217:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_FRAMEFORMAT_DT24B_CH32B: I2S data length is 24 bit and channel length is 32 b
+ 218:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_FRAMEFORMAT_DT32B_CH32B: I2S data length is 32 bit and channel length is 32 b
+ 219:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  mckout: I2S master clock output
+ 220:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                 only one parameter can be selected which is shown as below:
+ 221:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_MCKOUT_ENABLE: I2S master clock output enable
+ 222:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_MCKOUT_DISABLE: I2S master clock output disable
+ 223:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 224:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 225:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 226:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void i2s_psc_config(uint32_t spi_periph, uint32_t audiosample, uint32_t frameformat, uint32_t mckou
+ 227:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 228:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     uint32_t i2sdiv = 2U, i2sof = 0U;
+ 229:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     uint32_t clks = 0U;
+ 230:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     uint32_t i2sclock = 0U;
+ 231:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 232:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* deinitialize SPI_I2SPSC register */
+ 233:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_I2SPSC(spi_periph) = SPI_I2SPSC_RESET;
+ 234:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 235:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* get system clock */
+ 236:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     i2sclock = rcu_clock_freq_get(CK_SYS);
+ 237:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 238:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* configure the prescaler depending on the mclk output state, the frame format and audio sampl
+ 239:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     if(I2S_MCKOUT_ENABLE == mckout) {
+ 240:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         clks = (uint32_t)(((i2sclock / 256U) * 10U) / audiosample);
+ 241:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     } else {
+ 242:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         if(I2S_FRAMEFORMAT_DT16B_CH16B == frameformat) {
+ 243:lib/GD32F3x0/Source/gd32f3x0_spi.c ****             clks = (uint32_t)(((i2sclock / 32U) * 10U) / audiosample);
+ 244:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         } else {
+ 245:lib/GD32F3x0/Source/gd32f3x0_spi.c ****             clks = (uint32_t)(((i2sclock / 64U) * 10U) / audiosample);
+ 246:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         }
+ 247:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     }
+ 248:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 249:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* remove the floating point */
+ 250:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     clks = (clks + 5U) / 10U;
+ 251:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     i2sof = (clks & 0x00000001U);
+ 252:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     i2sdiv = ((clks - i2sof) / 2U);
+ 253:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     i2sof  = (i2sof << 8U);
+ 254:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 255:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* set the default values */
+ 256:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     if((i2sdiv < 2U) || (i2sdiv > 255U)) {
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 10
+
+
+ 257:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         i2sdiv = 2U;
+ 258:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         i2sof = 0U;
+ 259:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     }
+ 260:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 261:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* configure SPI_I2SPSC */
+ 262:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_I2SPSC(spi_periph) = (uint32_t)(i2sdiv | i2sof | mckout);
+ 263:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 264:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* clear SPI_I2SCTL_DTLEN and SPI_I2SCTL_CHLEN bits */
+ 265:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_I2SCTL(spi_periph) &= (uint32_t)(~(SPI_I2SCTL_DTLEN | SPI_I2SCTL_CHLEN));
+ 266:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* configure data frame format */
+ 267:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_I2SCTL(spi_periph) |= (uint32_t)frameformat;
+ 268:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 269:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 270:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 271:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      enable I2S
+ 272:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPI0
+ 273:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 274:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 275:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 276:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void i2s_enable(uint32_t spi_periph)
+ 277:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 278:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_I2SCTL(spi_periph) |= (uint32_t)SPI_I2SCTL_I2SEN;
+ 279:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 280:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 281:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 282:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      disable I2S
+ 283:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPI0
+ 284:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 285:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 286:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 287:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void i2s_disable(uint32_t spi_periph)
+ 288:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 289:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_I2SCTL(spi_periph) &= (uint32_t)(~SPI_I2SCTL_I2SEN);
+ 290:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 291:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 292:lib/GD32F3x0/Source/gd32f3x0_spi.c **** #endif /* GD32F350 and GD32F310 */
+ 293:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 294:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 295:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      enable SPI NSS output
+ 296:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 297:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 298:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 299:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 300:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_nss_output_enable(uint32_t spi_periph)
+ 301:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 265              		.loc 1 301 1 is_stmt 1 view -0
+ 266              		.cfi_startproc
+ 267              		@ args = 0, pretend = 0, frame = 0
+ 268              		@ frame_needed = 0, uses_anonymous_args = 0
+ 269              		@ link register save eliminated.
+ 302:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL1(spi_periph) |= (uint32_t)SPI_CTL1_NSSDRV;
+ 270              		.loc 1 302 5 view .LVU71
+ 271              		.loc 1 302 26 is_stmt 0 view .LVU72
+ 272 0000 4368     		ldr	r3, [r0, #4]
+ 273 0002 43F00403 		orr	r3, r3, #4
+ 274 0006 4360     		str	r3, [r0, #4]
+ 303:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 11
+
+
+ 275              		.loc 1 303 1 view .LVU73
+ 276 0008 7047     		bx	lr
+ 277              		.cfi_endproc
+ 278              	.LFE121:
+ 280              		.section	.text.spi_nss_output_disable,"ax",%progbits
+ 281              		.align	1
+ 282              		.global	spi_nss_output_disable
+ 283              		.syntax unified
+ 284              		.thumb
+ 285              		.thumb_func
+ 287              	spi_nss_output_disable:
+ 288              	.LVL24:
+ 289              	.LFB122:
+ 304:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 305:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 306:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      disable SPI NSS output
+ 307:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 308:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 309:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 310:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 311:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_nss_output_disable(uint32_t spi_periph)
+ 312:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 290              		.loc 1 312 1 is_stmt 1 view -0
+ 291              		.cfi_startproc
+ 292              		@ args = 0, pretend = 0, frame = 0
+ 293              		@ frame_needed = 0, uses_anonymous_args = 0
+ 294              		@ link register save eliminated.
+ 313:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL1(spi_periph) &= (uint32_t)(~SPI_CTL1_NSSDRV);
+ 295              		.loc 1 313 5 view .LVU75
+ 296              		.loc 1 313 26 is_stmt 0 view .LVU76
+ 297 0000 4368     		ldr	r3, [r0, #4]
+ 298 0002 23F00403 		bic	r3, r3, #4
+ 299 0006 4360     		str	r3, [r0, #4]
+ 314:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 300              		.loc 1 314 1 view .LVU77
+ 301 0008 7047     		bx	lr
+ 302              		.cfi_endproc
+ 303              	.LFE122:
+ 305              		.section	.text.spi_nss_internal_high,"ax",%progbits
+ 306              		.align	1
+ 307              		.global	spi_nss_internal_high
+ 308              		.syntax unified
+ 309              		.thumb
+ 310              		.thumb_func
+ 312              	spi_nss_internal_high:
+ 313              	.LVL25:
+ 314              	.LFB123:
+ 315:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 316:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 317:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      pull NSS pin high in software mode
+ 318:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 319:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 320:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 321:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 322:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_nss_internal_high(uint32_t spi_periph)
+ 323:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 315              		.loc 1 323 1 is_stmt 1 view -0
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 12
+
+
+ 316              		.cfi_startproc
+ 317              		@ args = 0, pretend = 0, frame = 0
+ 318              		@ frame_needed = 0, uses_anonymous_args = 0
+ 319              		@ link register save eliminated.
+ 324:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL0(spi_periph) |= (uint32_t)SPI_CTL0_SWNSS;
+ 320              		.loc 1 324 5 view .LVU79
+ 321              		.loc 1 324 26 is_stmt 0 view .LVU80
+ 322 0000 0368     		ldr	r3, [r0]
+ 323 0002 43F48073 		orr	r3, r3, #256
+ 324 0006 0360     		str	r3, [r0]
+ 325:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 325              		.loc 1 325 1 view .LVU81
+ 326 0008 7047     		bx	lr
+ 327              		.cfi_endproc
+ 328              	.LFE123:
+ 330              		.section	.text.spi_nss_internal_low,"ax",%progbits
+ 331              		.align	1
+ 332              		.global	spi_nss_internal_low
+ 333              		.syntax unified
+ 334              		.thumb
+ 335              		.thumb_func
+ 337              	spi_nss_internal_low:
+ 338              	.LVL26:
+ 339              	.LFB124:
+ 326:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 327:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 328:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      pull NSS pin low in software mode
+ 329:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 330:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 331:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 332:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 333:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_nss_internal_low(uint32_t spi_periph)
+ 334:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 340              		.loc 1 334 1 is_stmt 1 view -0
+ 341              		.cfi_startproc
+ 342              		@ args = 0, pretend = 0, frame = 0
+ 343              		@ frame_needed = 0, uses_anonymous_args = 0
+ 344              		@ link register save eliminated.
+ 335:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL0(spi_periph) &= (uint32_t)(~SPI_CTL0_SWNSS);
+ 345              		.loc 1 335 5 view .LVU83
+ 346              		.loc 1 335 26 is_stmt 0 view .LVU84
+ 347 0000 0368     		ldr	r3, [r0]
+ 348 0002 23F48073 		bic	r3, r3, #256
+ 349 0006 0360     		str	r3, [r0]
+ 336:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 350              		.loc 1 336 1 view .LVU85
+ 351 0008 7047     		bx	lr
+ 352              		.cfi_endproc
+ 353              	.LFE124:
+ 355              		.section	.text.spi_dma_enable,"ax",%progbits
+ 356              		.align	1
+ 357              		.global	spi_dma_enable
+ 358              		.syntax unified
+ 359              		.thumb
+ 360              		.thumb_func
+ 362              	spi_dma_enable:
+ 363              	.LVL27:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 13
+
+
+ 364              	.LFB125:
+ 337:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 338:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 339:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      enable SPI DMA send or receive
+ 340:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 341:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  dma: SPI DMA mode
+ 342:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                 only one parameter can be selected which is shown as below:
+ 343:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_DMA_TRANSMIT: SPI transmit data using DMA
+ 344:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_DMA_RECEIVE: SPI receive data using DMA
+ 345:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 346:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 347:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 348:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_dma_enable(uint32_t spi_periph, uint8_t dma)
+ 349:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 365              		.loc 1 349 1 is_stmt 1 view -0
+ 366              		.cfi_startproc
+ 367              		@ args = 0, pretend = 0, frame = 0
+ 368              		@ frame_needed = 0, uses_anonymous_args = 0
+ 369              		@ link register save eliminated.
+ 350:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     if(SPI_DMA_TRANSMIT == dma) {
+ 370              		.loc 1 350 5 view .LVU87
+ 371              		.loc 1 350 7 is_stmt 0 view .LVU88
+ 372 0000 21B9     		cbnz	r1, .L16
+ 351:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         SPI_CTL1(spi_periph) |= (uint32_t)SPI_CTL1_DMATEN;
+ 373              		.loc 1 351 9 is_stmt 1 view .LVU89
+ 374              		.loc 1 351 30 is_stmt 0 view .LVU90
+ 375 0002 4368     		ldr	r3, [r0, #4]
+ 376 0004 43F00203 		orr	r3, r3, #2
+ 377 0008 4360     		str	r3, [r0, #4]
+ 378 000a 7047     		bx	lr
+ 379              	.L16:
+ 352:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     } else {
+ 353:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         SPI_CTL1(spi_periph) |= (uint32_t)SPI_CTL1_DMAREN;
+ 380              		.loc 1 353 9 is_stmt 1 view .LVU91
+ 381              		.loc 1 353 30 is_stmt 0 view .LVU92
+ 382 000c 4368     		ldr	r3, [r0, #4]
+ 383 000e 43F00103 		orr	r3, r3, #1
+ 384 0012 4360     		str	r3, [r0, #4]
+ 354:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     }
+ 355:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 385              		.loc 1 355 1 view .LVU93
+ 386 0014 7047     		bx	lr
+ 387              		.cfi_endproc
+ 388              	.LFE125:
+ 390              		.section	.text.spi_dma_disable,"ax",%progbits
+ 391              		.align	1
+ 392              		.global	spi_dma_disable
+ 393              		.syntax unified
+ 394              		.thumb
+ 395              		.thumb_func
+ 397              	spi_dma_disable:
+ 398              	.LVL28:
+ 399              	.LFB126:
+ 356:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 357:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 358:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      disable SPI DMA send or receive
+ 359:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 14
+
+
+ 360:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  dma: SPI DMA mode
+ 361:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                 only one parameter can be selected which is shown as below:
+ 362:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_DMA_TRANSMIT: SPI transmit data using DMA
+ 363:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_DMA_RECEIVE: SPI receive data using DMA
+ 364:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 365:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 366:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 367:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_dma_disable(uint32_t spi_periph, uint8_t dma)
+ 368:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 400              		.loc 1 368 1 is_stmt 1 view -0
+ 401              		.cfi_startproc
+ 402              		@ args = 0, pretend = 0, frame = 0
+ 403              		@ frame_needed = 0, uses_anonymous_args = 0
+ 404              		@ link register save eliminated.
+ 369:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     if(SPI_DMA_TRANSMIT == dma) {
+ 405              		.loc 1 369 5 view .LVU95
+ 406              		.loc 1 369 7 is_stmt 0 view .LVU96
+ 407 0000 21B9     		cbnz	r1, .L19
+ 370:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         SPI_CTL1(spi_periph) &= (uint32_t)(~SPI_CTL1_DMATEN);
+ 408              		.loc 1 370 9 is_stmt 1 view .LVU97
+ 409              		.loc 1 370 30 is_stmt 0 view .LVU98
+ 410 0002 4368     		ldr	r3, [r0, #4]
+ 411 0004 23F00203 		bic	r3, r3, #2
+ 412 0008 4360     		str	r3, [r0, #4]
+ 413 000a 7047     		bx	lr
+ 414              	.L19:
+ 371:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     } else {
+ 372:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         SPI_CTL1(spi_periph) &= (uint32_t)(~SPI_CTL1_DMAREN);
+ 415              		.loc 1 372 9 is_stmt 1 view .LVU99
+ 416              		.loc 1 372 30 is_stmt 0 view .LVU100
+ 417 000c 4368     		ldr	r3, [r0, #4]
+ 418 000e 23F00103 		bic	r3, r3, #1
+ 419 0012 4360     		str	r3, [r0, #4]
+ 373:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     }
+ 374:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 420              		.loc 1 374 1 view .LVU101
+ 421 0014 7047     		bx	lr
+ 422              		.cfi_endproc
+ 423              	.LFE126:
+ 425              		.section	.text.spi_i2s_data_frame_format_config,"ax",%progbits
+ 426              		.align	1
+ 427              		.global	spi_i2s_data_frame_format_config
+ 428              		.syntax unified
+ 429              		.thumb
+ 430              		.thumb_func
+ 432              	spi_i2s_data_frame_format_config:
+ 433              	.LVL29:
+ 434              	.LFB127:
+ 375:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 376:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 377:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      configure SPI data frame format
+ 378:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 379:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  frame_format: SPI frame size
+ 380:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                 only one parameter can be selected which is shown as below:
+ 381:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_FRAMESIZE_16BIT: SPI frame size is 16 bits
+ 382:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_FRAMESIZE_8BIT: SPI frame size is 8 bits
+ 383:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 15
+
+
+ 384:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 385:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 386:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_i2s_data_frame_format_config(uint32_t spi_periph, uint16_t frame_format)
+ 387:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 435              		.loc 1 387 1 is_stmt 1 view -0
+ 436              		.cfi_startproc
+ 437              		@ args = 0, pretend = 0, frame = 0
+ 438              		@ frame_needed = 0, uses_anonymous_args = 0
+ 439              		@ link register save eliminated.
+ 388:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* clear SPI_CTL0_FF16 bit */
+ 389:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL0(spi_periph) &= (uint32_t)(~SPI_CTL0_FF16);
+ 440              		.loc 1 389 5 view .LVU103
+ 441              		.loc 1 389 26 is_stmt 0 view .LVU104
+ 442 0000 0268     		ldr	r2, [r0]
+ 443 0002 22F40062 		bic	r2, r2, #2048
+ 444 0006 0260     		str	r2, [r0]
+ 390:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* configure SPI_CTL0_FF16 bit */
+ 391:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL0(spi_periph) |= (uint32_t)frame_format;
+ 445              		.loc 1 391 5 is_stmt 1 view .LVU105
+ 446              		.loc 1 391 26 is_stmt 0 view .LVU106
+ 447 0008 0368     		ldr	r3, [r0]
+ 448 000a 0B43     		orrs	r3, r3, r1
+ 449 000c 0360     		str	r3, [r0]
+ 392:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 450              		.loc 1 392 1 view .LVU107
+ 451 000e 7047     		bx	lr
+ 452              		.cfi_endproc
+ 453              	.LFE127:
+ 455              		.section	.text.spi_bidirectional_transfer_config,"ax",%progbits
+ 456              		.align	1
+ 457              		.global	spi_bidirectional_transfer_config
+ 458              		.syntax unified
+ 459              		.thumb
+ 460              		.thumb_func
+ 462              	spi_bidirectional_transfer_config:
+ 463              	.LVL30:
+ 464              	.LFB128:
+ 393:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 394:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 395:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      configure SPI bidirectional transfer direction
+ 396:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 397:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  transfer_direction: SPI transfer direction
+ 398:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                 only one parameter can be selected which is shown as below:
+ 399:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_BIDIRECTIONAL_TRANSMIT: SPI work in transmit-only mode
+ 400:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_BIDIRECTIONAL_RECEIVE: SPI work in receive-only mode
+ 401:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 402:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 403:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 404:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_bidirectional_transfer_config(uint32_t spi_periph, uint32_t transfer_direction)
+ 405:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 465              		.loc 1 405 1 is_stmt 1 view -0
+ 466              		.cfi_startproc
+ 467              		@ args = 0, pretend = 0, frame = 0
+ 468              		@ frame_needed = 0, uses_anonymous_args = 0
+ 469              		@ link register save eliminated.
+ 406:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     if(SPI_BIDIRECTIONAL_TRANSMIT == transfer_direction) {
+ 470              		.loc 1 406 5 view .LVU109
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 16
+
+
+ 471              		.loc 1 406 7 is_stmt 0 view .LVU110
+ 472 0000 B1F5804F 		cmp	r1, #16384
+ 473 0004 04D0     		beq	.L25
+ 407:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         /* set the transmit only mode */
+ 408:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         SPI_CTL0(spi_periph) |= (uint32_t)SPI_BIDIRECTIONAL_TRANSMIT;
+ 409:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     } else {
+ 410:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         /* set the receive only mode */
+ 411:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         SPI_CTL0(spi_periph) &= SPI_BIDIRECTIONAL_RECEIVE;
+ 474              		.loc 1 411 9 is_stmt 1 view .LVU111
+ 475              		.loc 1 411 30 is_stmt 0 view .LVU112
+ 476 0006 0368     		ldr	r3, [r0]
+ 477 0008 23F48043 		bic	r3, r3, #16384
+ 478 000c 0360     		str	r3, [r0]
+ 412:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     }
+ 413:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 479              		.loc 1 413 1 view .LVU113
+ 480 000e 7047     		bx	lr
+ 481              	.L25:
+ 408:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     } else {
+ 482              		.loc 1 408 9 is_stmt 1 view .LVU114
+ 408:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     } else {
+ 483              		.loc 1 408 30 is_stmt 0 view .LVU115
+ 484 0010 0368     		ldr	r3, [r0]
+ 485 0012 43F48043 		orr	r3, r3, #16384
+ 486 0016 0360     		str	r3, [r0]
+ 487 0018 7047     		bx	lr
+ 488              		.cfi_endproc
+ 489              	.LFE128:
+ 491              		.section	.text.spi_i2s_data_transmit,"ax",%progbits
+ 492              		.align	1
+ 493              		.global	spi_i2s_data_transmit
+ 494              		.syntax unified
+ 495              		.thumb
+ 496              		.thumb_func
+ 498              	spi_i2s_data_transmit:
+ 499              	.LVL31:
+ 500              	.LFB129:
+ 414:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 415:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 416:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      SPI transmit data
+ 417:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 418:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  data: 16-bit data
+ 419:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 420:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 421:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 422:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_i2s_data_transmit(uint32_t spi_periph, uint16_t data)
+ 423:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 501              		.loc 1 423 1 is_stmt 1 view -0
+ 502              		.cfi_startproc
+ 503              		@ args = 0, pretend = 0, frame = 0
+ 504              		@ frame_needed = 0, uses_anonymous_args = 0
+ 505              		@ link register save eliminated.
+ 424:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_DATA(spi_periph) = (uint32_t)data;
+ 506              		.loc 1 424 5 view .LVU117
+ 507              		.loc 1 424 26 is_stmt 0 view .LVU118
+ 508 0000 C160     		str	r1, [r0, #12]
+ 425:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 17
+
+
+ 509              		.loc 1 425 1 view .LVU119
+ 510 0002 7047     		bx	lr
+ 511              		.cfi_endproc
+ 512              	.LFE129:
+ 514              		.section	.text.spi_i2s_data_receive,"ax",%progbits
+ 515              		.align	1
+ 516              		.global	spi_i2s_data_receive
+ 517              		.syntax unified
+ 518              		.thumb
+ 519              		.thumb_func
+ 521              	spi_i2s_data_receive:
+ 522              	.LVL32:
+ 523              	.LFB130:
+ 426:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 427:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 428:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      SPI receive data
+ 429:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 430:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 431:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     16-bit data
+ 432:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 433:lib/GD32F3x0/Source/gd32f3x0_spi.c **** uint16_t spi_i2s_data_receive(uint32_t spi_periph)
+ 434:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 524              		.loc 1 434 1 is_stmt 1 view -0
+ 525              		.cfi_startproc
+ 526              		@ args = 0, pretend = 0, frame = 0
+ 527              		@ frame_needed = 0, uses_anonymous_args = 0
+ 528              		@ link register save eliminated.
+ 435:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     return ((uint16_t)SPI_DATA(spi_periph));
+ 529              		.loc 1 435 5 view .LVU121
+ 530              		.loc 1 435 23 is_stmt 0 view .LVU122
+ 531 0000 C068     		ldr	r0, [r0, #12]
+ 532              	.LVL33:
+ 436:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 533              		.loc 1 436 1 view .LVU123
+ 534 0002 80B2     		uxth	r0, r0
+ 535 0004 7047     		bx	lr
+ 536              		.cfi_endproc
+ 537              	.LFE130:
+ 539              		.section	.text.spi_crc_polynomial_set,"ax",%progbits
+ 540              		.align	1
+ 541              		.global	spi_crc_polynomial_set
+ 542              		.syntax unified
+ 543              		.thumb
+ 544              		.thumb_func
+ 546              	spi_crc_polynomial_set:
+ 547              	.LVL34:
+ 548              	.LFB131:
+ 437:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 438:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 439:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      set CRC polynomial
+ 440:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 441:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  crc_poly: CRC polynomial value
+ 442:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 443:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 444:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 445:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_crc_polynomial_set(uint32_t spi_periph, uint16_t crc_poly)
+ 446:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 18
+
+
+ 549              		.loc 1 446 1 is_stmt 1 view -0
+ 550              		.cfi_startproc
+ 551              		@ args = 0, pretend = 0, frame = 0
+ 552              		@ frame_needed = 0, uses_anonymous_args = 0
+ 553              		@ link register save eliminated.
+ 447:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* enable SPI CRC */
+ 448:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL0(spi_periph) |= (uint32_t)SPI_CTL0_CRCEN;
+ 554              		.loc 1 448 5 view .LVU125
+ 555              		.loc 1 448 26 is_stmt 0 view .LVU126
+ 556 0000 0368     		ldr	r3, [r0]
+ 557 0002 43F40053 		orr	r3, r3, #8192
+ 558 0006 0360     		str	r3, [r0]
+ 449:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* set SPI CRC polynomial */
+ 450:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CRCPOLY(spi_periph) = (uint32_t)crc_poly;
+ 559              		.loc 1 450 5 is_stmt 1 view .LVU127
+ 560              		.loc 1 450 29 is_stmt 0 view .LVU128
+ 561 0008 0161     		str	r1, [r0, #16]
+ 451:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 562              		.loc 1 451 1 view .LVU129
+ 563 000a 7047     		bx	lr
+ 564              		.cfi_endproc
+ 565              	.LFE131:
+ 567              		.section	.text.spi_crc_polynomial_get,"ax",%progbits
+ 568              		.align	1
+ 569              		.global	spi_crc_polynomial_get
+ 570              		.syntax unified
+ 571              		.thumb
+ 572              		.thumb_func
+ 574              	spi_crc_polynomial_get:
+ 575              	.LVL35:
+ 576              	.LFB132:
+ 452:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 453:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 454:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      get SPI CRC polynomial
+ 455:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 456:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 457:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     16-bit CRC polynomial
+ 458:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 459:lib/GD32F3x0/Source/gd32f3x0_spi.c **** uint16_t spi_crc_polynomial_get(uint32_t spi_periph)
+ 460:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 577              		.loc 1 460 1 is_stmt 1 view -0
+ 578              		.cfi_startproc
+ 579              		@ args = 0, pretend = 0, frame = 0
+ 580              		@ frame_needed = 0, uses_anonymous_args = 0
+ 581              		@ link register save eliminated.
+ 461:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     return ((uint16_t)SPI_CRCPOLY(spi_periph));
+ 582              		.loc 1 461 5 view .LVU131
+ 583              		.loc 1 461 23 is_stmt 0 view .LVU132
+ 584 0000 0069     		ldr	r0, [r0, #16]
+ 585              	.LVL36:
+ 462:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 586              		.loc 1 462 1 view .LVU133
+ 587 0002 80B2     		uxth	r0, r0
+ 588 0004 7047     		bx	lr
+ 589              		.cfi_endproc
+ 590              	.LFE132:
+ 592              		.section	.text.spi_crc_on,"ax",%progbits
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 19
+
+
+ 593              		.align	1
+ 594              		.global	spi_crc_on
+ 595              		.syntax unified
+ 596              		.thumb
+ 597              		.thumb_func
+ 599              	spi_crc_on:
+ 600              	.LVL37:
+ 601              	.LFB133:
+ 463:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 464:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 465:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      turn on CRC function
+ 466:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 467:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 468:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 469:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 470:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_crc_on(uint32_t spi_periph)
+ 471:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 602              		.loc 1 471 1 is_stmt 1 view -0
+ 603              		.cfi_startproc
+ 604              		@ args = 0, pretend = 0, frame = 0
+ 605              		@ frame_needed = 0, uses_anonymous_args = 0
+ 606              		@ link register save eliminated.
+ 472:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL0(spi_periph) |= (uint32_t)SPI_CTL0_CRCEN;
+ 607              		.loc 1 472 5 view .LVU135
+ 608              		.loc 1 472 26 is_stmt 0 view .LVU136
+ 609 0000 0368     		ldr	r3, [r0]
+ 610 0002 43F40053 		orr	r3, r3, #8192
+ 611 0006 0360     		str	r3, [r0]
+ 473:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 612              		.loc 1 473 1 view .LVU137
+ 613 0008 7047     		bx	lr
+ 614              		.cfi_endproc
+ 615              	.LFE133:
+ 617              		.section	.text.spi_crc_off,"ax",%progbits
+ 618              		.align	1
+ 619              		.global	spi_crc_off
+ 620              		.syntax unified
+ 621              		.thumb
+ 622              		.thumb_func
+ 624              	spi_crc_off:
+ 625              	.LVL38:
+ 626              	.LFB134:
+ 474:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 475:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 476:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      turn off CRC function
+ 477:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 478:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 479:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 480:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 481:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_crc_off(uint32_t spi_periph)
+ 482:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 627              		.loc 1 482 1 is_stmt 1 view -0
+ 628              		.cfi_startproc
+ 629              		@ args = 0, pretend = 0, frame = 0
+ 630              		@ frame_needed = 0, uses_anonymous_args = 0
+ 631              		@ link register save eliminated.
+ 483:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL0(spi_periph) &= (uint32_t)(~SPI_CTL0_CRCEN);
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 20
+
+
+ 632              		.loc 1 483 5 view .LVU139
+ 633              		.loc 1 483 26 is_stmt 0 view .LVU140
+ 634 0000 0368     		ldr	r3, [r0]
+ 635 0002 23F40053 		bic	r3, r3, #8192
+ 636 0006 0360     		str	r3, [r0]
+ 484:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 637              		.loc 1 484 1 view .LVU141
+ 638 0008 7047     		bx	lr
+ 639              		.cfi_endproc
+ 640              	.LFE134:
+ 642              		.section	.text.spi_crc_next,"ax",%progbits
+ 643              		.align	1
+ 644              		.global	spi_crc_next
+ 645              		.syntax unified
+ 646              		.thumb
+ 647              		.thumb_func
+ 649              	spi_crc_next:
+ 650              	.LVL39:
+ 651              	.LFB135:
+ 485:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 486:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 487:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      SPI next data is CRC value
+ 488:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 489:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 490:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 491:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 492:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_crc_next(uint32_t spi_periph)
+ 493:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 652              		.loc 1 493 1 is_stmt 1 view -0
+ 653              		.cfi_startproc
+ 654              		@ args = 0, pretend = 0, frame = 0
+ 655              		@ frame_needed = 0, uses_anonymous_args = 0
+ 656              		@ link register save eliminated.
+ 494:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL0(spi_periph) |= (uint32_t)SPI_CTL0_CRCNT;
+ 657              		.loc 1 494 5 view .LVU143
+ 658              		.loc 1 494 26 is_stmt 0 view .LVU144
+ 659 0000 0368     		ldr	r3, [r0]
+ 660 0002 43F48053 		orr	r3, r3, #4096
+ 661 0006 0360     		str	r3, [r0]
+ 495:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 662              		.loc 1 495 1 view .LVU145
+ 663 0008 7047     		bx	lr
+ 664              		.cfi_endproc
+ 665              	.LFE135:
+ 667              		.section	.text.spi_crc_get,"ax",%progbits
+ 668              		.align	1
+ 669              		.global	spi_crc_get
+ 670              		.syntax unified
+ 671              		.thumb
+ 672              		.thumb_func
+ 674              	spi_crc_get:
+ 675              	.LVL40:
+ 676              	.LFB136:
+ 496:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 497:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 498:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      get SPI CRC send value or receive value
+ 499:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 21
+
+
+ 500:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  crc: SPI crc value
+ 501:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                 only one parameter can be selected which is shown as below:
+ 502:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_CRC_TX: get transmit crc value
+ 503:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_CRC_RX: get receive crc value
+ 504:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 505:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     16-bit CRC value
+ 506:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 507:lib/GD32F3x0/Source/gd32f3x0_spi.c **** uint16_t spi_crc_get(uint32_t spi_periph, uint8_t crc)
+ 508:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 677              		.loc 1 508 1 is_stmt 1 view -0
+ 678              		.cfi_startproc
+ 679              		@ args = 0, pretend = 0, frame = 0
+ 680              		@ frame_needed = 0, uses_anonymous_args = 0
+ 681              		@ link register save eliminated.
+ 509:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     if(SPI_CRC_TX == crc) {
+ 682              		.loc 1 509 5 view .LVU147
+ 683              		.loc 1 509 7 is_stmt 0 view .LVU148
+ 684 0000 11B9     		cbnz	r1, .L34
+ 510:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         return ((uint16_t)(SPI_TCRC(spi_periph)));
+ 685              		.loc 1 510 9 is_stmt 1 view .LVU149
+ 686              		.loc 1 510 28 is_stmt 0 view .LVU150
+ 687 0002 8069     		ldr	r0, [r0, #24]
+ 688              	.LVL41:
+ 689              		.loc 1 510 17 view .LVU151
+ 690 0004 80B2     		uxth	r0, r0
+ 691 0006 7047     		bx	lr
+ 692              	.LVL42:
+ 693              	.L34:
+ 511:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     } else {
+ 512:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         return ((uint16_t)(SPI_RCRC(spi_periph)));
+ 694              		.loc 1 512 9 is_stmt 1 view .LVU152
+ 695              		.loc 1 512 28 is_stmt 0 view .LVU153
+ 696 0008 4069     		ldr	r0, [r0, #20]
+ 697              	.LVL43:
+ 698              		.loc 1 512 17 view .LVU154
+ 699 000a 80B2     		uxth	r0, r0
+ 513:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     }
+ 514:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 700              		.loc 1 514 1 view .LVU155
+ 701 000c 7047     		bx	lr
+ 702              		.cfi_endproc
+ 703              	.LFE136:
+ 705              		.section	.text.spi_ti_mode_enable,"ax",%progbits
+ 706              		.align	1
+ 707              		.global	spi_ti_mode_enable
+ 708              		.syntax unified
+ 709              		.thumb
+ 710              		.thumb_func
+ 712              	spi_ti_mode_enable:
+ 713              	.LVL44:
+ 714              	.LFB137:
+ 515:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 516:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 517:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      enable SPI TI mode
+ 518:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 519:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 520:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 22
+
+
+ 521:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 522:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_ti_mode_enable(uint32_t spi_periph)
+ 523:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 715              		.loc 1 523 1 is_stmt 1 view -0
+ 716              		.cfi_startproc
+ 717              		@ args = 0, pretend = 0, frame = 0
+ 718              		@ frame_needed = 0, uses_anonymous_args = 0
+ 719              		@ link register save eliminated.
+ 524:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL1(spi_periph) |= (uint32_t)SPI_CTL1_TMOD;
+ 720              		.loc 1 524 5 view .LVU157
+ 721              		.loc 1 524 26 is_stmt 0 view .LVU158
+ 722 0000 4368     		ldr	r3, [r0, #4]
+ 723 0002 43F01003 		orr	r3, r3, #16
+ 724 0006 4360     		str	r3, [r0, #4]
+ 525:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 725              		.loc 1 525 1 view .LVU159
+ 726 0008 7047     		bx	lr
+ 727              		.cfi_endproc
+ 728              	.LFE137:
+ 730              		.section	.text.spi_ti_mode_disable,"ax",%progbits
+ 731              		.align	1
+ 732              		.global	spi_ti_mode_disable
+ 733              		.syntax unified
+ 734              		.thumb
+ 735              		.thumb_func
+ 737              	spi_ti_mode_disable:
+ 738              	.LVL45:
+ 739              	.LFB138:
+ 526:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 527:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 528:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      disable SPI TI mode
+ 529:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 530:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 531:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 532:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 533:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_ti_mode_disable(uint32_t spi_periph)
+ 534:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 740              		.loc 1 534 1 is_stmt 1 view -0
+ 741              		.cfi_startproc
+ 742              		@ args = 0, pretend = 0, frame = 0
+ 743              		@ frame_needed = 0, uses_anonymous_args = 0
+ 744              		@ link register save eliminated.
+ 535:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL1(spi_periph) &= (uint32_t)(~SPI_CTL1_TMOD);
+ 745              		.loc 1 535 5 view .LVU161
+ 746              		.loc 1 535 26 is_stmt 0 view .LVU162
+ 747 0000 4368     		ldr	r3, [r0, #4]
+ 748 0002 23F01003 		bic	r3, r3, #16
+ 749 0006 4360     		str	r3, [r0, #4]
+ 536:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 750              		.loc 1 536 1 view .LVU163
+ 751 0008 7047     		bx	lr
+ 752              		.cfi_endproc
+ 753              	.LFE138:
+ 755              		.section	.text.spi_nssp_mode_enable,"ax",%progbits
+ 756              		.align	1
+ 757              		.global	spi_nssp_mode_enable
+ 758              		.syntax unified
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 23
+
+
+ 759              		.thumb
+ 760              		.thumb_func
+ 762              	spi_nssp_mode_enable:
+ 763              	.LVL46:
+ 764              	.LFB139:
+ 537:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 538:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 539:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      enable SPI NSS pulse mode
+ 540:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 541:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 542:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 543:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 544:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_nssp_mode_enable(uint32_t spi_periph)
+ 545:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 765              		.loc 1 545 1 is_stmt 1 view -0
+ 766              		.cfi_startproc
+ 767              		@ args = 0, pretend = 0, frame = 0
+ 768              		@ frame_needed = 0, uses_anonymous_args = 0
+ 769              		@ link register save eliminated.
+ 546:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL1(spi_periph) |= (uint32_t)SPI_CTL1_NSSP;
+ 770              		.loc 1 546 5 view .LVU165
+ 771              		.loc 1 546 26 is_stmt 0 view .LVU166
+ 772 0000 4368     		ldr	r3, [r0, #4]
+ 773 0002 43F00803 		orr	r3, r3, #8
+ 774 0006 4360     		str	r3, [r0, #4]
+ 547:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 775              		.loc 1 547 1 view .LVU167
+ 776 0008 7047     		bx	lr
+ 777              		.cfi_endproc
+ 778              	.LFE139:
+ 780              		.section	.text.spi_nssp_mode_disable,"ax",%progbits
+ 781              		.align	1
+ 782              		.global	spi_nssp_mode_disable
+ 783              		.syntax unified
+ 784              		.thumb
+ 785              		.thumb_func
+ 787              	spi_nssp_mode_disable:
+ 788              	.LVL47:
+ 789              	.LFB140:
+ 548:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 549:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 550:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      disable SPI NSS pulse mode
+ 551:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 552:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 553:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 554:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 555:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_nssp_mode_disable(uint32_t spi_periph)
+ 556:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 790              		.loc 1 556 1 is_stmt 1 view -0
+ 791              		.cfi_startproc
+ 792              		@ args = 0, pretend = 0, frame = 0
+ 793              		@ frame_needed = 0, uses_anonymous_args = 0
+ 794              		@ link register save eliminated.
+ 557:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL1(spi_periph) &= (uint32_t)(~SPI_CTL1_NSSP);
+ 795              		.loc 1 557 5 view .LVU169
+ 796              		.loc 1 557 26 is_stmt 0 view .LVU170
+ 797 0000 4368     		ldr	r3, [r0, #4]
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 24
+
+
+ 798 0002 23F00803 		bic	r3, r3, #8
+ 799 0006 4360     		str	r3, [r0, #4]
+ 558:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 800              		.loc 1 558 1 view .LVU171
+ 801 0008 7047     		bx	lr
+ 802              		.cfi_endproc
+ 803              	.LFE140:
+ 805              		.section	.text.spi_quad_enable,"ax",%progbits
+ 806              		.align	1
+ 807              		.global	spi_quad_enable
+ 808              		.syntax unified
+ 809              		.thumb
+ 810              		.thumb_func
+ 812              	spi_quad_enable:
+ 813              	.LVL48:
+ 814              	.LFB141:
+ 559:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 560:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 561:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      enable SPI quad wire mode
+ 562:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPI1
+ 563:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 564:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 565:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 566:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_quad_enable(uint32_t spi_periph)
+ 567:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 815              		.loc 1 567 1 is_stmt 1 view -0
+ 816              		.cfi_startproc
+ 817              		@ args = 0, pretend = 0, frame = 0
+ 818              		@ frame_needed = 0, uses_anonymous_args = 0
+ 819              		@ link register save eliminated.
+ 568:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_QCTL(spi_periph) |= (uint32_t)SPI_QCTL_QMOD;
+ 820              		.loc 1 568 5 view .LVU173
+ 821              		.loc 1 568 26 is_stmt 0 view .LVU174
+ 822 0000 D0F88030 		ldr	r3, [r0, #128]
+ 823 0004 43F00103 		orr	r3, r3, #1
+ 824 0008 C0F88030 		str	r3, [r0, #128]
+ 569:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 825              		.loc 1 569 1 view .LVU175
+ 826 000c 7047     		bx	lr
+ 827              		.cfi_endproc
+ 828              	.LFE141:
+ 830              		.section	.text.spi_quad_disable,"ax",%progbits
+ 831              		.align	1
+ 832              		.global	spi_quad_disable
+ 833              		.syntax unified
+ 834              		.thumb
+ 835              		.thumb_func
+ 837              	spi_quad_disable:
+ 838              	.LVL49:
+ 839              	.LFB142:
+ 570:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 571:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 572:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      disable SPI quad wire mode
+ 573:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPI1
+ 574:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 575:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 576:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 25
+
+
+ 577:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_quad_disable(uint32_t spi_periph)
+ 578:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 840              		.loc 1 578 1 is_stmt 1 view -0
+ 841              		.cfi_startproc
+ 842              		@ args = 0, pretend = 0, frame = 0
+ 843              		@ frame_needed = 0, uses_anonymous_args = 0
+ 844              		@ link register save eliminated.
+ 579:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_QCTL(spi_periph) &= (uint32_t)(~SPI_QCTL_QMOD);
+ 845              		.loc 1 579 5 view .LVU177
+ 846              		.loc 1 579 26 is_stmt 0 view .LVU178
+ 847 0000 D0F88030 		ldr	r3, [r0, #128]
+ 848 0004 23F00103 		bic	r3, r3, #1
+ 849 0008 C0F88030 		str	r3, [r0, #128]
+ 580:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 850              		.loc 1 580 1 view .LVU179
+ 851 000c 7047     		bx	lr
+ 852              		.cfi_endproc
+ 853              	.LFE142:
+ 855              		.section	.text.spi_quad_write_enable,"ax",%progbits
+ 856              		.align	1
+ 857              		.global	spi_quad_write_enable
+ 858              		.syntax unified
+ 859              		.thumb
+ 860              		.thumb_func
+ 862              	spi_quad_write_enable:
+ 863              	.LVL50:
+ 864              	.LFB143:
+ 581:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 582:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 583:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      enable SPI quad wire mode write
+ 584:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPI1
+ 585:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 586:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 587:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 588:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_quad_write_enable(uint32_t spi_periph)
+ 589:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 865              		.loc 1 589 1 is_stmt 1 view -0
+ 866              		.cfi_startproc
+ 867              		@ args = 0, pretend = 0, frame = 0
+ 868              		@ frame_needed = 0, uses_anonymous_args = 0
+ 869              		@ link register save eliminated.
+ 590:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_QCTL(spi_periph) &= (uint32_t)(~SPI_QCTL_QRD);
+ 870              		.loc 1 590 5 view .LVU181
+ 871              		.loc 1 590 26 is_stmt 0 view .LVU182
+ 872 0000 D0F88030 		ldr	r3, [r0, #128]
+ 873 0004 23F00203 		bic	r3, r3, #2
+ 874 0008 C0F88030 		str	r3, [r0, #128]
+ 591:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 875              		.loc 1 591 1 view .LVU183
+ 876 000c 7047     		bx	lr
+ 877              		.cfi_endproc
+ 878              	.LFE143:
+ 880              		.section	.text.spi_quad_read_enable,"ax",%progbits
+ 881              		.align	1
+ 882              		.global	spi_quad_read_enable
+ 883              		.syntax unified
+ 884              		.thumb
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 26
+
+
+ 885              		.thumb_func
+ 887              	spi_quad_read_enable:
+ 888              	.LVL51:
+ 889              	.LFB144:
+ 592:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 593:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 594:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      enable SPI quad wire mode read
+ 595:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPI1
+ 596:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 597:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 598:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 599:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_quad_read_enable(uint32_t spi_periph)
+ 600:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 890              		.loc 1 600 1 is_stmt 1 view -0
+ 891              		.cfi_startproc
+ 892              		@ args = 0, pretend = 0, frame = 0
+ 893              		@ frame_needed = 0, uses_anonymous_args = 0
+ 894              		@ link register save eliminated.
+ 601:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_QCTL(spi_periph) |= (uint32_t)SPI_QCTL_QRD;
+ 895              		.loc 1 601 5 view .LVU185
+ 896              		.loc 1 601 26 is_stmt 0 view .LVU186
+ 897 0000 D0F88030 		ldr	r3, [r0, #128]
+ 898 0004 43F00203 		orr	r3, r3, #2
+ 899 0008 C0F88030 		str	r3, [r0, #128]
+ 602:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 900              		.loc 1 602 1 view .LVU187
+ 901 000c 7047     		bx	lr
+ 902              		.cfi_endproc
+ 903              	.LFE144:
+ 905              		.section	.text.spi_quad_io23_output_enable,"ax",%progbits
+ 906              		.align	1
+ 907              		.global	spi_quad_io23_output_enable
+ 908              		.syntax unified
+ 909              		.thumb
+ 910              		.thumb_func
+ 912              	spi_quad_io23_output_enable:
+ 913              	.LVL52:
+ 914              	.LFB145:
+ 603:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 604:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 605:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      enable SPI quad wire mode SPI_IO2 and SPI_IO3 pin output
+ 606:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPI1
+ 607:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 608:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 609:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 610:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_quad_io23_output_enable(uint32_t spi_periph)
+ 611:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 915              		.loc 1 611 1 is_stmt 1 view -0
+ 916              		.cfi_startproc
+ 917              		@ args = 0, pretend = 0, frame = 0
+ 918              		@ frame_needed = 0, uses_anonymous_args = 0
+ 919              		@ link register save eliminated.
+ 612:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_QCTL(spi_periph) |= (uint32_t)SPI_QCTL_IO23_DRV;
+ 920              		.loc 1 612 5 view .LVU189
+ 921              		.loc 1 612 26 is_stmt 0 view .LVU190
+ 922 0000 D0F88030 		ldr	r3, [r0, #128]
+ 923 0004 43F00403 		orr	r3, r3, #4
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 27
+
+
+ 924 0008 C0F88030 		str	r3, [r0, #128]
+ 613:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 925              		.loc 1 613 1 view .LVU191
+ 926 000c 7047     		bx	lr
+ 927              		.cfi_endproc
+ 928              	.LFE145:
+ 930              		.section	.text.spi_quad_io23_output_disable,"ax",%progbits
+ 931              		.align	1
+ 932              		.global	spi_quad_io23_output_disable
+ 933              		.syntax unified
+ 934              		.thumb
+ 935              		.thumb_func
+ 937              	spi_quad_io23_output_disable:
+ 938              	.LVL53:
+ 939              	.LFB146:
+ 614:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 615:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 616:lib/GD32F3x0/Source/gd32f3x0_spi.c ****    \brief      disable SPI quad wire mode SPI_IO2 and SPI_IO3 pin output
+ 617:lib/GD32F3x0/Source/gd32f3x0_spi.c ****    \param[in]  spi_periph: SPI1
+ 618:lib/GD32F3x0/Source/gd32f3x0_spi.c ****    \param[out] none
+ 619:lib/GD32F3x0/Source/gd32f3x0_spi.c ****    \retval     none
+ 620:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 621:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_quad_io23_output_disable(uint32_t spi_periph)
+ 622:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 940              		.loc 1 622 1 is_stmt 1 view -0
+ 941              		.cfi_startproc
+ 942              		@ args = 0, pretend = 0, frame = 0
+ 943              		@ frame_needed = 0, uses_anonymous_args = 0
+ 944              		@ link register save eliminated.
+ 623:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_QCTL(spi_periph) &= (uint32_t)(~SPI_QCTL_IO23_DRV);
+ 945              		.loc 1 623 5 view .LVU193
+ 946              		.loc 1 623 26 is_stmt 0 view .LVU194
+ 947 0000 D0F88030 		ldr	r3, [r0, #128]
+ 948 0004 23F00403 		bic	r3, r3, #4
+ 949 0008 C0F88030 		str	r3, [r0, #128]
+ 624:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 950              		.loc 1 624 1 view .LVU195
+ 951 000c 7047     		bx	lr
+ 952              		.cfi_endproc
+ 953              	.LFE146:
+ 955              		.section	.text.spi_i2s_flag_get,"ax",%progbits
+ 956              		.align	1
+ 957              		.global	spi_i2s_flag_get
+ 958              		.syntax unified
+ 959              		.thumb
+ 960              		.thumb_func
+ 962              	spi_i2s_flag_get:
+ 963              	.LVL54:
+ 964              	.LFB147:
+ 625:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 626:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 627:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      get SPI and I2S flag status
+ 628:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 629:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  flag: SPI/I2S flag status
+ 630:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                 only one parameter can be selected which are shown as below:
+ 631:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_FLAG_TBE: transmit buffer empty flag
+ 632:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_FLAG_RBNE: receive buffer not empty flag
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 28
+
+
+ 633:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_FLAG_TRANS: transmit on-going flag
+ 634:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_FLAG_RXORERR: receive overrun error flag
+ 635:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_FLAG_CONFERR: mode config error flag
+ 636:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_FLAG_CRCERR: CRC error flag
+ 637:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_FLAG_FERR: SPI format error interrupt flag
+ 638:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_FLAG_TBE: transmit buffer empty flag
+ 639:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_FLAG_RBNE: receive buffer not empty flag
+ 640:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_FLAG_TRANS: transmit on-going flag
+ 641:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_FLAG_RXORERR: overrun error flag
+ 642:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_FLAG_TXURERR: underrun error flag
+ 643:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_FLAG_CH: channel side flag
+ 644:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_FLAG_FERR: I2S format error interrupt flag
+ 645:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 646:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     FlagStatus: SET or RESET
+ 647:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 648:lib/GD32F3x0/Source/gd32f3x0_spi.c **** FlagStatus spi_i2s_flag_get(uint32_t spi_periph, uint32_t flag)
+ 649:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 965              		.loc 1 649 1 is_stmt 1 view -0
+ 966              		.cfi_startproc
+ 967              		@ args = 0, pretend = 0, frame = 0
+ 968              		@ frame_needed = 0, uses_anonymous_args = 0
+ 969              		@ link register save eliminated.
+ 650:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     if(RESET != (SPI_STAT(spi_periph) & flag)) {
+ 970              		.loc 1 650 5 view .LVU197
+ 971              		.loc 1 650 18 is_stmt 0 view .LVU198
+ 972 0000 8368     		ldr	r3, [r0, #8]
+ 973              		.loc 1 650 7 view .LVU199
+ 974 0002 0B42     		tst	r3, r1
+ 975 0004 01D0     		beq	.L48
+ 651:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         return SET;
+ 976              		.loc 1 651 16 view .LVU200
+ 977 0006 0120     		movs	r0, #1
+ 978              	.LVL55:
+ 979              		.loc 1 651 16 view .LVU201
+ 980 0008 7047     		bx	lr
+ 981              	.LVL56:
+ 982              	.L48:
+ 652:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     } else {
+ 653:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         return RESET;
+ 983              		.loc 1 653 16 view .LVU202
+ 984 000a 0020     		movs	r0, #0
+ 985              	.LVL57:
+ 654:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     }
+ 655:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 986              		.loc 1 655 1 view .LVU203
+ 987 000c 7047     		bx	lr
+ 988              		.cfi_endproc
+ 989              	.LFE147:
+ 991              		.section	.text.spi_i2s_interrupt_enable,"ax",%progbits
+ 992              		.align	1
+ 993              		.global	spi_i2s_interrupt_enable
+ 994              		.syntax unified
+ 995              		.thumb
+ 996              		.thumb_func
+ 998              	spi_i2s_interrupt_enable:
+ 999              	.LVL58:
+ 1000              	.LFB148:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 29
+
+
+ 656:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 657:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 658:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      enable SPI and I2S interrupt
+ 659:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 660:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  interrupt: SPI/I2S interrupt
+ 661:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                 only one parameter can be selected which is shown as below:
+ 662:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_I2S_INT_TBE: transmit buffer empty interrupt
+ 663:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_I2S_INT_RBNE: receive buffer not empty interrupt
+ 664:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_I2S_INT_ERR: CRC error,configuration error,reception overrun error,
+ 665:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                                    transmission underrun error and format error interrupt
+ 666:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 667:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 668:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 669:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_i2s_interrupt_enable(uint32_t spi_periph, uint8_t interrupt)
+ 670:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 1001              		.loc 1 670 1 is_stmt 1 view -0
+ 1002              		.cfi_startproc
+ 1003              		@ args = 0, pretend = 0, frame = 0
+ 1004              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1005              		@ link register save eliminated.
+ 671:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL1(spi_periph) |= (uint32_t)interrupt;
+ 1006              		.loc 1 671 5 view .LVU205
+ 1007              		.loc 1 671 26 is_stmt 0 view .LVU206
+ 1008 0000 4368     		ldr	r3, [r0, #4]
+ 1009 0002 0B43     		orrs	r3, r3, r1
+ 1010 0004 4360     		str	r3, [r0, #4]
+ 672:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 1011              		.loc 1 672 1 view .LVU207
+ 1012 0006 7047     		bx	lr
+ 1013              		.cfi_endproc
+ 1014              	.LFE148:
+ 1016              		.section	.text.spi_i2s_interrupt_disable,"ax",%progbits
+ 1017              		.align	1
+ 1018              		.global	spi_i2s_interrupt_disable
+ 1019              		.syntax unified
+ 1020              		.thumb
+ 1021              		.thumb_func
+ 1023              	spi_i2s_interrupt_disable:
+ 1024              	.LVL59:
+ 1025              	.LFB149:
+ 673:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 674:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 675:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      disable SPI and I2S interrupt
+ 676:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 677:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  interrupt: SPI/I2S interrupt
+ 678:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                 only one parameter can be selected which is shown as below:
+ 679:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_I2S_INT_TBE: transmit buffer empty interrupt
+ 680:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_I2S_INT_RBNE: receive buffer not empty interrupt
+ 681:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_I2S_INT_ERR: CRC error,configuration error,reception overrun error,
+ 682:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                                    transmission underrun error and format error interrupt
+ 683:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 684:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 685:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 686:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_i2s_interrupt_disable(uint32_t spi_periph, uint8_t interrupt)
+ 687:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 1026              		.loc 1 687 1 is_stmt 1 view -0
+ 1027              		.cfi_startproc
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 30
+
+
+ 1028              		@ args = 0, pretend = 0, frame = 0
+ 1029              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1030              		@ link register save eliminated.
+ 688:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_CTL1(spi_periph) &= ~(uint32_t)interrupt;
+ 1031              		.loc 1 688 5 view .LVU209
+ 1032              		.loc 1 688 26 is_stmt 0 view .LVU210
+ 1033 0000 4368     		ldr	r3, [r0, #4]
+ 1034 0002 23EA0103 		bic	r3, r3, r1
+ 1035 0006 4360     		str	r3, [r0, #4]
+ 689:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 1036              		.loc 1 689 1 view .LVU211
+ 1037 0008 7047     		bx	lr
+ 1038              		.cfi_endproc
+ 1039              	.LFE149:
+ 1041              		.section	.text.spi_i2s_interrupt_flag_get,"ax",%progbits
+ 1042              		.align	1
+ 1043              		.global	spi_i2s_interrupt_flag_get
+ 1044              		.syntax unified
+ 1045              		.thumb
+ 1046              		.thumb_func
+ 1048              	spi_i2s_interrupt_flag_get:
+ 1049              	.LVL60:
+ 1050              	.LFB150:
+ 690:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 691:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 692:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      get SPI and I2S interrupt flag status
+ 693:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 694:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  interrupt: SPI/I2S interrupt flag status
+ 695:lib/GD32F3x0/Source/gd32f3x0_spi.c ****                 only one parameter can be selected which is shown as below:
+ 696:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_I2S_INT_FLAG_TBE: transmit buffer empty interrupt flag
+ 697:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_I2S_INT_FLAG_RBNE: receive buffer not empty interrupt flag
+ 698:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_I2S_INT_FLAG_RXORERR: overrun interrupt flag
+ 699:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_INT_FLAG_CONFERR: config error interrupt flag
+ 700:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_INT_FLAG_CRCERR: CRC error interrupt flag
+ 701:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        I2S_INT_FLAG_TXURERR: underrun error interrupt flag
+ 702:lib/GD32F3x0/Source/gd32f3x0_spi.c ****       \arg        SPI_I2S_INT_FLAG_FERR: format error interrupt flag
+ 703:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 704:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     FlagStatus: SET or RESET
+ 705:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 706:lib/GD32F3x0/Source/gd32f3x0_spi.c **** FlagStatus spi_i2s_interrupt_flag_get(uint32_t spi_periph, uint8_t interrupt)
+ 707:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 1051              		.loc 1 707 1 is_stmt 1 view -0
+ 1052              		.cfi_startproc
+ 1053              		@ args = 0, pretend = 0, frame = 0
+ 1054              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1055              		@ link register save eliminated.
+ 708:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     uint32_t reg1 = SPI_STAT(spi_periph);
+ 1056              		.loc 1 708 5 view .LVU213
+ 1057              		.loc 1 708 14 is_stmt 0 view .LVU214
+ 1058 0000 8368     		ldr	r3, [r0, #8]
+ 1059              	.LVL61:
+ 709:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     uint32_t reg2 = SPI_CTL1(spi_periph);
+ 1060              		.loc 1 709 5 is_stmt 1 view .LVU215
+ 1061              		.loc 1 709 14 is_stmt 0 view .LVU216
+ 1062 0002 4268     		ldr	r2, [r0, #4]
+ 1063              	.LVL62:
+ 710:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 31
+
+
+ 711:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     switch(interrupt) {
+ 1064              		.loc 1 711 5 is_stmt 1 view .LVU217
+ 1065 0004 0629     		cmp	r1, #6
+ 1066 0006 09D8     		bhi	.L52
+ 1067 0008 DFE801F0 		tbb	[pc, r1]
+ 1068              	.LVL63:
+ 1069              	.L54:
+ 1070 000c 04       		.byte	(.L60-.L54)/2
+ 1071 000d 0C       		.byte	(.L59-.L54)/2
+ 1072 000e 11       		.byte	(.L58-.L54)/2
+ 1073 000f 16       		.byte	(.L57-.L54)/2
+ 1074 0010 1B       		.byte	(.L56-.L54)/2
+ 1075 0011 20       		.byte	(.L55-.L54)/2
+ 1076 0012 25       		.byte	(.L53-.L54)/2
+ 1077 0013 00       		.p2align 1
+ 1078              	.L60:
+ 712:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* SPI/I2S transmit buffer empty interrupt */
+ 713:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     case SPI_I2S_INT_FLAG_TBE:
+ 714:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg1 = reg1 & SPI_STAT_TBE;
+ 1079              		.loc 1 714 9 view .LVU218
+ 1080              		.loc 1 714 14 is_stmt 0 view .LVU219
+ 1081 0014 03F00203 		and	r3, r3, #2
+ 1082              	.LVL64:
+ 715:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_TBEIE;
+ 1083              		.loc 1 715 9 is_stmt 1 view .LVU220
+ 1084              		.loc 1 715 14 is_stmt 0 view .LVU221
+ 1085 0018 02F08002 		and	r2, r2, #128
+ 1086              	.LVL65:
+ 716:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 1087              		.loc 1 716 9 is_stmt 1 view .LVU222
+ 1088              	.L52:
+ 717:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* SPI/I2S receive buffer not empty interrupt */
+ 718:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     case SPI_I2S_INT_FLAG_RBNE:
+ 719:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg1 = reg1 & SPI_STAT_RBNE;
+ 720:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_RBNEIE;
+ 721:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 722:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* SPI/I2S overrun interrupt */
+ 723:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     case SPI_I2S_INT_FLAG_RXORERR:
+ 724:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg1 = reg1 & SPI_STAT_RXORERR;
+ 725:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_ERRIE;
+ 726:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 727:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* SPI config error interrupt */
+ 728:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     case SPI_INT_FLAG_CONFERR:
+ 729:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg1 = reg1 & SPI_STAT_CONFERR;
+ 730:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_ERRIE;
+ 731:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 732:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* SPI CRC error interrupt */
+ 733:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     case SPI_INT_FLAG_CRCERR:
+ 734:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg1 = reg1 & SPI_STAT_CRCERR;
+ 735:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_ERRIE;
+ 736:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 737:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* I2S underrun error interrupt */
+ 738:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     case I2S_INT_FLAG_TXURERR:
+ 739:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg1 = reg1 & SPI_STAT_TXURERR;
+ 740:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_ERRIE;
+ 741:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 742:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* SPI/I2S format error interrupt */
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 32
+
+
+ 743:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     case SPI_I2S_INT_FLAG_FERR:
+ 744:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg1 = reg1 & SPI_STAT_FERR;
+ 745:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_ERRIE;
+ 746:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 747:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     default :
+ 748:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 749:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     }
+ 750:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /*get SPI/I2S interrupt flag status */
+ 751:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     if((0U != reg1) && (0U != reg2)) {
+ 1089              		.loc 1 751 5 view .LVU223
+ 1090              		.loc 1 751 7 is_stmt 0 view .LVU224
+ 1091 001c 03B3     		cbz	r3, .L62
+ 1092              		.loc 1 751 21 discriminator 1 view .LVU225
+ 1093 001e 0ABB     		cbnz	r2, .L63
+ 752:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         return SET;
+ 753:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     } else {
+ 754:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         return RESET;
+ 1094              		.loc 1 754 16 view .LVU226
+ 1095 0020 0020     		movs	r0, #0
+ 1096 0022 7047     		bx	lr
+ 1097              	.L59:
+ 719:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_RBNEIE;
+ 1098              		.loc 1 719 9 is_stmt 1 view .LVU227
+ 719:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_RBNEIE;
+ 1099              		.loc 1 719 14 is_stmt 0 view .LVU228
+ 1100 0024 03F00103 		and	r3, r3, #1
+ 1101              	.LVL66:
+ 720:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 1102              		.loc 1 720 9 is_stmt 1 view .LVU229
+ 720:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 1103              		.loc 1 720 14 is_stmt 0 view .LVU230
+ 1104 0028 02F04002 		and	r2, r2, #64
+ 1105              	.LVL67:
+ 721:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* SPI/I2S overrun interrupt */
+ 1106              		.loc 1 721 9 is_stmt 1 view .LVU231
+ 1107 002c F6E7     		b	.L52
+ 1108              	.L58:
+ 724:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_ERRIE;
+ 1109              		.loc 1 724 9 view .LVU232
+ 724:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_ERRIE;
+ 1110              		.loc 1 724 14 is_stmt 0 view .LVU233
+ 1111 002e 03F04003 		and	r3, r3, #64
+ 1112              	.LVL68:
+ 725:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 1113              		.loc 1 725 9 is_stmt 1 view .LVU234
+ 725:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 1114              		.loc 1 725 14 is_stmt 0 view .LVU235
+ 1115 0032 02F02002 		and	r2, r2, #32
+ 1116              	.LVL69:
+ 726:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* SPI config error interrupt */
+ 1117              		.loc 1 726 9 is_stmt 1 view .LVU236
+ 1118 0036 F1E7     		b	.L52
+ 1119              	.L57:
+ 729:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_ERRIE;
+ 1120              		.loc 1 729 9 view .LVU237
+ 729:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_ERRIE;
+ 1121              		.loc 1 729 14 is_stmt 0 view .LVU238
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 33
+
+
+ 1122 0038 03F02003 		and	r3, r3, #32
+ 1123              	.LVL70:
+ 730:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 1124              		.loc 1 730 9 is_stmt 1 view .LVU239
+ 730:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 1125              		.loc 1 730 14 is_stmt 0 view .LVU240
+ 1126 003c 02F02002 		and	r2, r2, #32
+ 1127              	.LVL71:
+ 731:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* SPI CRC error interrupt */
+ 1128              		.loc 1 731 9 is_stmt 1 view .LVU241
+ 1129 0040 ECE7     		b	.L52
+ 1130              	.L56:
+ 734:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_ERRIE;
+ 1131              		.loc 1 734 9 view .LVU242
+ 734:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_ERRIE;
+ 1132              		.loc 1 734 14 is_stmt 0 view .LVU243
+ 1133 0042 03F01003 		and	r3, r3, #16
+ 1134              	.LVL72:
+ 735:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 1135              		.loc 1 735 9 is_stmt 1 view .LVU244
+ 735:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 1136              		.loc 1 735 14 is_stmt 0 view .LVU245
+ 1137 0046 02F02002 		and	r2, r2, #32
+ 1138              	.LVL73:
+ 736:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* I2S underrun error interrupt */
+ 1139              		.loc 1 736 9 is_stmt 1 view .LVU246
+ 1140 004a E7E7     		b	.L52
+ 1141              	.L55:
+ 739:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_ERRIE;
+ 1142              		.loc 1 739 9 view .LVU247
+ 739:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_ERRIE;
+ 1143              		.loc 1 739 14 is_stmt 0 view .LVU248
+ 1144 004c 03F00803 		and	r3, r3, #8
+ 1145              	.LVL74:
+ 740:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 1146              		.loc 1 740 9 is_stmt 1 view .LVU249
+ 740:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 1147              		.loc 1 740 14 is_stmt 0 view .LVU250
+ 1148 0050 02F02002 		and	r2, r2, #32
+ 1149              	.LVL75:
+ 741:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     /* SPI/I2S format error interrupt */
+ 1150              		.loc 1 741 9 is_stmt 1 view .LVU251
+ 1151 0054 E2E7     		b	.L52
+ 1152              	.L53:
+ 744:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_ERRIE;
+ 1153              		.loc 1 744 9 view .LVU252
+ 744:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         reg2 = reg2 & SPI_CTL1_ERRIE;
+ 1154              		.loc 1 744 14 is_stmt 0 view .LVU253
+ 1155 0056 03F48073 		and	r3, r3, #256
+ 1156              	.LVL76:
+ 745:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 1157              		.loc 1 745 9 is_stmt 1 view .LVU254
+ 745:lib/GD32F3x0/Source/gd32f3x0_spi.c ****         break;
+ 1158              		.loc 1 745 14 is_stmt 0 view .LVU255
+ 1159 005a 02F02002 		and	r2, r2, #32
+ 1160              	.LVL77:
+ 746:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     default :
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 34
+
+
+ 1161              		.loc 1 746 9 is_stmt 1 view .LVU256
+ 1162 005e DDE7     		b	.L52
+ 1163              	.L62:
+ 1164              		.loc 1 754 16 is_stmt 0 view .LVU257
+ 1165 0060 0020     		movs	r0, #0
+ 1166 0062 7047     		bx	lr
+ 1167              	.L63:
+ 752:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     } else {
+ 1168              		.loc 1 752 16 view .LVU258
+ 1169 0064 0120     		movs	r0, #1
+ 755:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     }
+ 756:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 1170              		.loc 1 756 1 view .LVU259
+ 1171 0066 7047     		bx	lr
+ 1172              		.cfi_endproc
+ 1173              	.LFE150:
+ 1175              		.section	.text.spi_crc_error_clear,"ax",%progbits
+ 1176              		.align	1
+ 1177              		.global	spi_crc_error_clear
+ 1178              		.syntax unified
+ 1179              		.thumb
+ 1180              		.thumb_func
+ 1182              	spi_crc_error_clear:
+ 1183              	.LVL78:
+ 1184              	.LFB151:
+ 757:lib/GD32F3x0/Source/gd32f3x0_spi.c **** 
+ 758:lib/GD32F3x0/Source/gd32f3x0_spi.c **** /*!
+ 759:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \brief      clear SPI CRC error flag status
+ 760:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[in]  spi_periph: SPIx(x=0,1)
+ 761:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \param[out] none
+ 762:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     \retval     none
+ 763:lib/GD32F3x0/Source/gd32f3x0_spi.c **** */
+ 764:lib/GD32F3x0/Source/gd32f3x0_spi.c **** void spi_crc_error_clear(uint32_t spi_periph)
+ 765:lib/GD32F3x0/Source/gd32f3x0_spi.c **** {
+ 1185              		.loc 1 765 1 is_stmt 1 view -0
+ 1186              		.cfi_startproc
+ 1187              		@ args = 0, pretend = 0, frame = 0
+ 1188              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1189              		@ link register save eliminated.
+ 766:lib/GD32F3x0/Source/gd32f3x0_spi.c ****     SPI_STAT(spi_periph) &= (uint32_t)(~SPI_FLAG_CRCERR);
+ 1190              		.loc 1 766 5 view .LVU261
+ 1191              		.loc 1 766 26 is_stmt 0 view .LVU262
+ 1192 0000 8368     		ldr	r3, [r0, #8]
+ 1193 0002 23F01003 		bic	r3, r3, #16
+ 1194 0006 8360     		str	r3, [r0, #8]
+ 767:lib/GD32F3x0/Source/gd32f3x0_spi.c **** }
+ 1195              		.loc 1 767 1 view .LVU263
+ 1196 0008 7047     		bx	lr
+ 1197              		.cfi_endproc
+ 1198              	.LFE151:
+ 1200              		.text
+ 1201              	.Letext0:
+ 1202              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
+ 1203              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
+ 1204              		.file 4 "lib/CMSIS/GD/GD32F3x0/Include/gd32f3x0.h"
+ 1205              		.file 5 "lib/GD32F3x0/Include/gd32f3x0_rcu.h"
+ 1206              		.file 6 "lib/GD32F3x0/Include/gd32f3x0_spi.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 35
+
+
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 36
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 gd32f3x0_spi.c
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:18     .text.spi_i2s_deinit:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:24     .text.spi_i2s_deinit:0000000000000000 spi_i2s_deinit
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:77     .text.spi_i2s_deinit:0000000000000034 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:82     .text.spi_struct_para_init:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:88     .text.spi_struct_para_init:0000000000000000 spi_struct_para_init
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:124    .text.spi_init:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:130    .text.spi_init:0000000000000000 spi_init
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:206    .text.spi_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:212    .text.spi_enable:0000000000000000 spi_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:231    .text.spi_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:237    .text.spi_disable:0000000000000000 spi_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:256    .text.spi_nss_output_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:262    .text.spi_nss_output_enable:0000000000000000 spi_nss_output_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:281    .text.spi_nss_output_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:287    .text.spi_nss_output_disable:0000000000000000 spi_nss_output_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:306    .text.spi_nss_internal_high:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:312    .text.spi_nss_internal_high:0000000000000000 spi_nss_internal_high
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:331    .text.spi_nss_internal_low:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:337    .text.spi_nss_internal_low:0000000000000000 spi_nss_internal_low
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:356    .text.spi_dma_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:362    .text.spi_dma_enable:0000000000000000 spi_dma_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:391    .text.spi_dma_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:397    .text.spi_dma_disable:0000000000000000 spi_dma_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:426    .text.spi_i2s_data_frame_format_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:432    .text.spi_i2s_data_frame_format_config:0000000000000000 spi_i2s_data_frame_format_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:456    .text.spi_bidirectional_transfer_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:462    .text.spi_bidirectional_transfer_config:0000000000000000 spi_bidirectional_transfer_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:492    .text.spi_i2s_data_transmit:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:498    .text.spi_i2s_data_transmit:0000000000000000 spi_i2s_data_transmit
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:515    .text.spi_i2s_data_receive:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:521    .text.spi_i2s_data_receive:0000000000000000 spi_i2s_data_receive
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:540    .text.spi_crc_polynomial_set:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:546    .text.spi_crc_polynomial_set:0000000000000000 spi_crc_polynomial_set
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:568    .text.spi_crc_polynomial_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:574    .text.spi_crc_polynomial_get:0000000000000000 spi_crc_polynomial_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:593    .text.spi_crc_on:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:599    .text.spi_crc_on:0000000000000000 spi_crc_on
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:618    .text.spi_crc_off:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:624    .text.spi_crc_off:0000000000000000 spi_crc_off
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:643    .text.spi_crc_next:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:649    .text.spi_crc_next:0000000000000000 spi_crc_next
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:668    .text.spi_crc_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:674    .text.spi_crc_get:0000000000000000 spi_crc_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:706    .text.spi_ti_mode_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:712    .text.spi_ti_mode_enable:0000000000000000 spi_ti_mode_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:731    .text.spi_ti_mode_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:737    .text.spi_ti_mode_disable:0000000000000000 spi_ti_mode_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:756    .text.spi_nssp_mode_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:762    .text.spi_nssp_mode_enable:0000000000000000 spi_nssp_mode_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:781    .text.spi_nssp_mode_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:787    .text.spi_nssp_mode_disable:0000000000000000 spi_nssp_mode_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:806    .text.spi_quad_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:812    .text.spi_quad_enable:0000000000000000 spi_quad_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:831    .text.spi_quad_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:837    .text.spi_quad_disable:0000000000000000 spi_quad_disable
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s 			page 37
+
+
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:856    .text.spi_quad_write_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:862    .text.spi_quad_write_enable:0000000000000000 spi_quad_write_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:881    .text.spi_quad_read_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:887    .text.spi_quad_read_enable:0000000000000000 spi_quad_read_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:906    .text.spi_quad_io23_output_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:912    .text.spi_quad_io23_output_enable:0000000000000000 spi_quad_io23_output_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:931    .text.spi_quad_io23_output_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:937    .text.spi_quad_io23_output_disable:0000000000000000 spi_quad_io23_output_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:956    .text.spi_i2s_flag_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:962    .text.spi_i2s_flag_get:0000000000000000 spi_i2s_flag_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:992    .text.spi_i2s_interrupt_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:998    .text.spi_i2s_interrupt_enable:0000000000000000 spi_i2s_interrupt_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:1017   .text.spi_i2s_interrupt_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:1023   .text.spi_i2s_interrupt_disable:0000000000000000 spi_i2s_interrupt_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:1042   .text.spi_i2s_interrupt_flag_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:1048   .text.spi_i2s_interrupt_flag_get:0000000000000000 spi_i2s_interrupt_flag_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:1070   .text.spi_i2s_interrupt_flag_get:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:1176   .text.spi_crc_error_clear:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:1182   .text.spi_crc_error_clear:0000000000000000 spi_crc_error_clear
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:1077   .text.spi_i2s_interrupt_flag_get:0000000000000013 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccLVXN8.s:1077   .text.spi_i2s_interrupt_flag_get:0000000000000014 $t
+
+UNDEFINED SYMBOLS
+rcu_periph_reset_enable
+rcu_periph_reset_disable

@@ -1,0 +1,826 @@
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"main.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.gpio_config,"ax",%progbits
+  18              		.align	1
+  19              		.global	gpio_config
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	gpio_config:
+  25              	.LFB119:
+  26              		.file 1 "main.c"
+   1:main.c        **** #include <stdint.h>
+   2:main.c        **** 
+   3:main.c        **** #include "gd32f3x0.h"
+   4:main.c        **** #include "gd32f3x0_gpio.h"
+   5:main.c        **** #include "gd32f3x0_rcu.h"
+   6:main.c        **** #include "sk6812.h"
+   7:main.c        **** 
+   8:main.c        **** 
+   9:main.c        **** 
+  10:main.c        **** 
+  11:main.c        **** 
+  12:main.c        **** /*!
+  13:main.c        ****     \file    main.c
+  14:main.c        ****     \brief   TIMER2 dma demo
+  15:main.c        **** 
+  16:main.c        ****     \version 2017-06-06, V1.0.0, firmware for GD32F3x0
+  17:main.c        ****     \version 2019-06-01, V2.0.0, firmware for GD32F3x0
+  18:main.c        ****     \version 2020-09-30, V2.1.0, firmware for GD32F3x0
+  19:main.c        ****     \version 2022-01-06, V2.2.0, firmware for GD32F3x0
+  20:main.c        **** */
+  21:main.c        **** 
+  22:main.c        **** /*
+  23:main.c        ****     Copyright (c) 2022, GigaDevice Semiconductor Inc.
+  24:main.c        **** 
+  25:main.c        ****     Redistribution and use in source and binary forms, with or without modification,
+  26:main.c        **** are permitted provided that the following conditions are met:
+  27:main.c        **** 
+  28:main.c        ****     1. Redistributions of source code must retain the above copyright notice, this
+  29:main.c        ****        list of conditions and the following disclaimer.
+  30:main.c        ****     2. Redistributions in binary form must reproduce the above copyright notice,
+  31:main.c        ****        this list of conditions and the following disclaimer in the documentation
+  32:main.c        ****        and/or other materials provided with the distribution.
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s 			page 2
+
+
+  33:main.c        ****     3. Neither the name of the copyright holder nor the names of its contributors
+  34:main.c        ****        may be used to endorse or promote products derived from this software without
+  35:main.c        ****        specific prior written permission.
+  36:main.c        **** 
+  37:main.c        ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  38:main.c        **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  39:main.c        **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  40:main.c        **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  41:main.c        **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+  42:main.c        **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+  43:main.c        **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+  44:main.c        **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  45:main.c        **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+  46:main.c        **** OF SUCH DAMAGE.
+  47:main.c        **** */
+  48:main.c        **** 
+  49:main.c        **** 
+  50:main.c        **** #include <stdio.h>
+  51:main.c        **** 
+  52:main.c        **** #define TIMER15_CH0CC  ((uint32_t)0x40014434)
+  53:main.c        **** uint16_t buffer[3] = {249, 499, 749};
+  54:main.c        **** 
+  55:main.c        **** void gpio_config(void);
+  56:main.c        **** void timer_config(void);
+  57:main.c        **** void dma_config(void);
+  58:main.c        **** 
+  59:main.c        **** /*!
+  60:main.c        ****     \brief      configure the GPIO ports
+  61:main.c        ****     \param[in]  none
+  62:main.c        ****     \param[out] none
+  63:main.c        ****     \retval     none
+  64:main.c        ****   */
+  65:main.c        **** void gpio_config(void)
+  66:main.c        **** {
+  27              		.loc 1 66 1 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31 0000 10B5     		push	{r4, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 4, -8
+  35              		.cfi_offset 14, -4
+  67:main.c        ****     rcu_periph_clock_enable(RCU_GPIOB);
+  36              		.loc 1 67 5 view .LVU1
+  37 0002 40F21250 		movw	r0, #1298
+  38 0006 FFF7FEFF 		bl	rcu_periph_clock_enable
+  39              	.LVL0:
+  68:main.c        ****     rcu_periph_clock_enable(RCU_GPIOA);
+  40              		.loc 1 68 5 view .LVU2
+  41 000a 40F21150 		movw	r0, #1297
+  42 000e FFF7FEFF 		bl	rcu_periph_clock_enable
+  43              	.LVL1:
+  69:main.c        **** 
+  70:main.c        ****     gpio_mode_set(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_6);
+  44              		.loc 1 70 5 view .LVU3
+  45 0012 4023     		movs	r3, #64
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s 			page 3
+
+
+  46 0014 0022     		movs	r2, #0
+  47 0016 0221     		movs	r1, #2
+  48 0018 4FF09040 		mov	r0, #1207959552
+  49 001c FFF7FEFF 		bl	gpio_mode_set
+  50              	.LVL2:
+  71:main.c        ****     gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_6);
+  51              		.loc 1 71 5 view .LVU4
+  52 0020 4023     		movs	r3, #64
+  53 0022 0322     		movs	r2, #3
+  54 0024 0021     		movs	r1, #0
+  55 0026 4FF09040 		mov	r0, #1207959552
+  56 002a FFF7FEFF 		bl	gpio_output_options_set
+  57              	.LVL3:
+  72:main.c        ****     gpio_af_set(GPIOA, GPIO_AF_1, GPIO_PIN_6);
+  58              		.loc 1 72 5 view .LVU5
+  59 002e 4022     		movs	r2, #64
+  60 0030 0121     		movs	r1, #1
+  61 0032 4FF09040 		mov	r0, #1207959552
+  62 0036 FFF7FEFF 		bl	gpio_af_set
+  63              	.LVL4:
+  73:main.c        **** 
+  74:main.c        ****     gpio_mode_set(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_7);
+  64              		.loc 1 74 5 view .LVU6
+  65 003a 8023     		movs	r3, #128
+  66 003c 0022     		movs	r2, #0
+  67 003e 0221     		movs	r1, #2
+  68 0040 4FF09040 		mov	r0, #1207959552
+  69 0044 FFF7FEFF 		bl	gpio_mode_set
+  70              	.LVL5:
+  75:main.c        ****     gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_7);
+  71              		.loc 1 75 5 view .LVU7
+  72 0048 8023     		movs	r3, #128
+  73 004a 0322     		movs	r2, #3
+  74 004c 0021     		movs	r1, #0
+  75 004e 4FF09040 		mov	r0, #1207959552
+  76 0052 FFF7FEFF 		bl	gpio_output_options_set
+  77              	.LVL6:
+  76:main.c        ****     gpio_af_set(GPIOA, GPIO_AF_1, GPIO_PIN_7);
+  78              		.loc 1 76 5 view .LVU8
+  79 0056 8022     		movs	r2, #128
+  80 0058 0121     		movs	r1, #1
+  81 005a 4FF09040 		mov	r0, #1207959552
+  82 005e FFF7FEFF 		bl	gpio_af_set
+  83              	.LVL7:
+  77:main.c        **** 
+  78:main.c        ****     gpio_mode_set(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_0);
+  84              		.loc 1 78 5 view .LVU9
+  85 0062 124C     		ldr	r4, .L3
+  86 0064 0123     		movs	r3, #1
+  87 0066 0022     		movs	r2, #0
+  88 0068 0221     		movs	r1, #2
+  89 006a 2046     		mov	r0, r4
+  90 006c FFF7FEFF 		bl	gpio_mode_set
+  91              	.LVL8:
+  79:main.c        ****     gpio_output_options_set(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_0);
+  92              		.loc 1 79 5 view .LVU10
+  93 0070 0123     		movs	r3, #1
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s 			page 4
+
+
+  94 0072 0322     		movs	r2, #3
+  95 0074 0021     		movs	r1, #0
+  96 0076 2046     		mov	r0, r4
+  97 0078 FFF7FEFF 		bl	gpio_output_options_set
+  98              	.LVL9:
+  80:main.c        ****     gpio_af_set(GPIOB, GPIO_AF_1, GPIO_PIN_0);
+  99              		.loc 1 80 5 view .LVU11
+ 100 007c 0122     		movs	r2, #1
+ 101 007e 1146     		mov	r1, r2
+ 102 0080 2046     		mov	r0, r4
+ 103 0082 FFF7FEFF 		bl	gpio_af_set
+ 104              	.LVL10:
+  81:main.c        **** 
+  82:main.c        ****     gpio_mode_set(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_1);
+ 105              		.loc 1 82 5 view .LVU12
+ 106 0086 0223     		movs	r3, #2
+ 107 0088 0022     		movs	r2, #0
+ 108 008a 1946     		mov	r1, r3
+ 109 008c 2046     		mov	r0, r4
+ 110 008e FFF7FEFF 		bl	gpio_mode_set
+ 111              	.LVL11:
+  83:main.c        ****     gpio_output_options_set(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_1);
+ 112              		.loc 1 83 5 view .LVU13
+ 113 0092 0223     		movs	r3, #2
+ 114 0094 0322     		movs	r2, #3
+ 115 0096 0021     		movs	r1, #0
+ 116 0098 2046     		mov	r0, r4
+ 117 009a FFF7FEFF 		bl	gpio_output_options_set
+ 118              	.LVL12:
+  84:main.c        ****     gpio_af_set(GPIOB, GPIO_AF_1, GPIO_PIN_1);
+ 119              		.loc 1 84 5 view .LVU14
+ 120 009e 0222     		movs	r2, #2
+ 121 00a0 0121     		movs	r1, #1
+ 122 00a2 2046     		mov	r0, r4
+ 123 00a4 FFF7FEFF 		bl	gpio_af_set
+ 124              	.LVL13:
+  85:main.c        ****     
+  86:main.c        **** }
+ 125              		.loc 1 86 1 is_stmt 0 view .LVU15
+ 126 00a8 10BD     		pop	{r4, pc}
+ 127              	.L4:
+ 128 00aa 00BF     		.align	2
+ 129              	.L3:
+ 130 00ac 00040048 		.word	1207960576
+ 131              		.cfi_endproc
+ 132              	.LFE119:
+ 134              		.section	.text.timer_config,"ax",%progbits
+ 135              		.align	1
+ 136              		.global	timer_config
+ 137              		.syntax unified
+ 138              		.thumb
+ 139              		.thumb_func
+ 141              	timer_config:
+ 142              	.LFB120:
+  87:main.c        **** 
+  88:main.c        **** 
+  89:main.c        **** /*!
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s 			page 5
+
+
+  90:main.c        ****     \brief      configure the DMA peripheral
+  91:main.c        ****     \param[in]  none
+  92:main.c        ****     \param[out] none
+  93:main.c        ****     \retval     none
+  94:main.c        ****   */
+  95:main.c        **** 
+  96:main.c        **** 
+  97:main.c        **** /*!
+  98:main.c        ****     \brief      configure the TIMER peripheral
+  99:main.c        ****     \param[in]  none
+ 100:main.c        ****     \param[out] none
+ 101:main.c        ****     \retval     none
+ 102:main.c        ****   */
+ 103:main.c        **** void timer_config(void)
+ 104:main.c        **** {
+ 143              		.loc 1 104 1 is_stmt 1 view -0
+ 144              		.cfi_startproc
+ 145              		@ args = 0, pretend = 0, frame = 32
+ 146              		@ frame_needed = 0, uses_anonymous_args = 0
+ 147 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ 148              	.LCFI1:
+ 149              		.cfi_def_cfa_offset 24
+ 150              		.cfi_offset 4, -24
+ 151              		.cfi_offset 5, -20
+ 152              		.cfi_offset 6, -16
+ 153              		.cfi_offset 7, -12
+ 154              		.cfi_offset 8, -8
+ 155              		.cfi_offset 14, -4
+ 156 0004 88B0     		sub	sp, sp, #32
+ 157              	.LCFI2:
+ 158              		.cfi_def_cfa_offset 56
+ 105:main.c        **** 
+ 106:main.c        ****     timer_oc_parameter_struct timer_ocintpara;
+ 159              		.loc 1 106 5 view .LVU17
+ 107:main.c        ****     timer_parameter_struct timer_initpara;
+ 160              		.loc 1 107 5 view .LVU18
+ 108:main.c        **** 
+ 109:main.c        ****     rcu_periph_clock_enable(RCU_TIMER2);
+ 161              		.loc 1 109 5 view .LVU19
+ 162 0006 40F20170 		movw	r0, #1793
+ 163 000a FFF7FEFF 		bl	rcu_periph_clock_enable
+ 164              	.LVL14:
+ 110:main.c        **** 
+ 111:main.c        ****     timer_deinit(TIMER2);
+ 165              		.loc 1 111 5 view .LVU20
+ 166 000e 524D     		ldr	r5, .L7
+ 167 0010 2846     		mov	r0, r5
+ 168 0012 FFF7FEFF 		bl	timer_deinit
+ 169              	.LVL15:
+ 112:main.c        **** 
+ 113:main.c        ****     timer_initpara.prescaler         = 0;
+ 170              		.loc 1 113 5 view .LVU21
+ 171              		.loc 1 113 38 is_stmt 0 view .LVU22
+ 172 0016 0024     		movs	r4, #0
+ 173 0018 ADF80040 		strh	r4, [sp]	@ movhi
+ 114:main.c        ****     timer_initpara.alignedmode       = TIMER_COUNTER_EDGE;
+ 174              		.loc 1 114 5 is_stmt 1 view .LVU23
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s 			page 6
+
+
+ 175              		.loc 1 114 38 is_stmt 0 view .LVU24
+ 176 001c ADF80240 		strh	r4, [sp, #2]	@ movhi
+ 115:main.c        ****     timer_initpara.counterdirection  = TIMER_COUNTER_UP;
+ 177              		.loc 1 115 5 is_stmt 1 view .LVU25
+ 178              		.loc 1 115 38 is_stmt 0 view .LVU26
+ 179 0020 ADF80440 		strh	r4, [sp, #4]	@ movhi
+ 116:main.c        ****     timer_initpara.period            = 999;
+ 180              		.loc 1 116 5 is_stmt 1 view .LVU27
+ 181              		.loc 1 116 38 is_stmt 0 view .LVU28
+ 182 0024 40F2E733 		movw	r3, #999
+ 183 0028 0293     		str	r3, [sp, #8]
+ 117:main.c        ****     timer_initpara.clockdivision     = TIMER_CKDIV_DIV1;
+ 184              		.loc 1 117 5 is_stmt 1 view .LVU29
+ 185              		.loc 1 117 38 is_stmt 0 view .LVU30
+ 186 002a ADF80640 		strh	r4, [sp, #6]	@ movhi
+ 118:main.c        ****     timer_initpara.repetitioncounter = 0;
+ 187              		.loc 1 118 5 is_stmt 1 view .LVU31
+ 188              		.loc 1 118 38 is_stmt 0 view .LVU32
+ 189 002e 8DF80C40 		strb	r4, [sp, #12]
+ 119:main.c        ****     timer_init(TIMER2, &timer_initpara);
+ 190              		.loc 1 119 5 is_stmt 1 view .LVU33
+ 191 0032 6946     		mov	r1, sp
+ 192 0034 2846     		mov	r0, r5
+ 193 0036 FFF7FEFF 		bl	timer_init
+ 194              	.LVL16:
+ 120:main.c        **** 
+ 121:main.c        ****     /* CH0 configuration in PWM0 mode */
+ 122:main.c        ****     timer_ocintpara.outputstate  = TIMER_CCX_ENABLE;
+ 195              		.loc 1 122 5 view .LVU34
+ 196              		.loc 1 122 34 is_stmt 0 view .LVU35
+ 197 003a 0126     		movs	r6, #1
+ 198 003c 0496     		str	r6, [sp, #16]
+ 123:main.c        ****     timer_ocintpara.outputnstate = TIMER_CCXN_DISABLE;
+ 199              		.loc 1 123 5 is_stmt 1 view .LVU36
+ 200              		.loc 1 123 34 is_stmt 0 view .LVU37
+ 201 003e ADF81440 		strh	r4, [sp, #20]	@ movhi
+ 124:main.c        ****     timer_ocintpara.ocpolarity   = TIMER_OC_POLARITY_HIGH;
+ 202              		.loc 1 124 5 is_stmt 1 view .LVU38
+ 203              		.loc 1 124 34 is_stmt 0 view .LVU39
+ 204 0042 ADF81640 		strh	r4, [sp, #22]	@ movhi
+ 125:main.c        ****     timer_ocintpara.ocnpolarity  = TIMER_OCN_POLARITY_HIGH;
+ 205              		.loc 1 125 5 is_stmt 1 view .LVU40
+ 206              		.loc 1 125 34 is_stmt 0 view .LVU41
+ 207 0046 ADF81840 		strh	r4, [sp, #24]	@ movhi
+ 126:main.c        ****     timer_ocintpara.ocidlestate  = TIMER_OC_IDLE_STATE_HIGH;
+ 208              		.loc 1 126 5 is_stmt 1 view .LVU42
+ 209              		.loc 1 126 34 is_stmt 0 view .LVU43
+ 210 004a 4FF48077 		mov	r7, #256
+ 211 004e ADF81A70 		strh	r7, [sp, #26]	@ movhi
+ 127:main.c        ****     timer_ocintpara.ocnidlestate = TIMER_OCN_IDLE_STATE_LOW;
+ 212              		.loc 1 127 5 is_stmt 1 view .LVU44
+ 213              		.loc 1 127 34 is_stmt 0 view .LVU45
+ 214 0052 ADF81C40 		strh	r4, [sp, #28]	@ movhi
+ 128:main.c        ****     timer_channel_output_config(TIMER2, TIMER_CH_0, &timer_ocintpara);
+ 215              		.loc 1 128 5 is_stmt 1 view .LVU46
+ 216 0056 04AA     		add	r2, sp, #16
+ 217 0058 2146     		mov	r1, r4
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s 			page 7
+
+
+ 218 005a 2846     		mov	r0, r5
+ 219 005c FFF7FEFF 		bl	timer_channel_output_config
+ 220              	.LVL17:
+ 129:main.c        **** 
+ 130:main.c        ****     timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_0, 200);
+ 221              		.loc 1 130 5 view .LVU47
+ 222 0060 C822     		movs	r2, #200
+ 223 0062 2146     		mov	r1, r4
+ 224 0064 2846     		mov	r0, r5
+ 225 0066 FFF7FEFF 		bl	timer_channel_output_pulse_value_config
+ 226              	.LVL18:
+ 131:main.c        ****     timer_channel_output_mode_config(TIMER2, TIMER_CH_0, TIMER_OC_MODE_PWM0);
+ 227              		.loc 1 131 5 view .LVU48
+ 228 006a 6022     		movs	r2, #96
+ 229 006c 2146     		mov	r1, r4
+ 230 006e 2846     		mov	r0, r5
+ 231 0070 FFF7FEFF 		bl	timer_channel_output_mode_config
+ 232              	.LVL19:
+ 132:main.c        ****     timer_channel_output_shadow_config(TIMER2, TIMER_CH_0, TIMER_OC_SHADOW_DISABLE);
+ 233              		.loc 1 132 5 view .LVU49
+ 234 0074 2246     		mov	r2, r4
+ 235 0076 2146     		mov	r1, r4
+ 236 0078 2846     		mov	r0, r5
+ 237 007a FFF7FEFF 		bl	timer_channel_output_shadow_config
+ 238              	.LVL20:
+ 133:main.c        **** 
+ 134:main.c        **** 
+ 135:main.c        ****     /* CH1 configuration in PWM0 mode */
+ 136:main.c        ****     timer_ocintpara.outputstate  = TIMER_CCX_ENABLE;
+ 239              		.loc 1 136 5 view .LVU50
+ 240              		.loc 1 136 34 is_stmt 0 view .LVU51
+ 241 007e 0496     		str	r6, [sp, #16]
+ 137:main.c        ****     timer_ocintpara.outputnstate = TIMER_CCXN_ENABLE;
+ 242              		.loc 1 137 5 is_stmt 1 view .LVU52
+ 243              		.loc 1 137 34 is_stmt 0 view .LVU53
+ 244 0080 4FF00408 		mov	r8, #4
+ 245 0084 ADF81480 		strh	r8, [sp, #20]	@ movhi
+ 138:main.c        ****     timer_ocintpara.ocpolarity   = TIMER_OC_POLARITY_HIGH;
+ 246              		.loc 1 138 5 is_stmt 1 view .LVU54
+ 247              		.loc 1 138 34 is_stmt 0 view .LVU55
+ 248 0088 ADF81640 		strh	r4, [sp, #22]	@ movhi
+ 139:main.c        ****     timer_ocintpara.ocnpolarity  = TIMER_OCN_POLARITY_HIGH;
+ 249              		.loc 1 139 5 is_stmt 1 view .LVU56
+ 250              		.loc 1 139 34 is_stmt 0 view .LVU57
+ 251 008c ADF81840 		strh	r4, [sp, #24]	@ movhi
+ 140:main.c        ****     timer_ocintpara.ocidlestate  = TIMER_OC_IDLE_STATE_HIGH;
+ 252              		.loc 1 140 5 is_stmt 1 view .LVU58
+ 253              		.loc 1 140 34 is_stmt 0 view .LVU59
+ 254 0090 ADF81A70 		strh	r7, [sp, #26]	@ movhi
+ 141:main.c        ****     timer_ocintpara.ocnidlestate = TIMER_OCN_IDLE_STATE_LOW;
+ 255              		.loc 1 141 5 is_stmt 1 view .LVU60
+ 256              		.loc 1 141 34 is_stmt 0 view .LVU61
+ 257 0094 ADF81C40 		strh	r4, [sp, #28]	@ movhi
+ 142:main.c        ****     timer_channel_output_config(TIMER2, TIMER_CH_1, &timer_ocintpara);
+ 258              		.loc 1 142 5 is_stmt 1 view .LVU62
+ 259 0098 04AA     		add	r2, sp, #16
+ 260 009a 3146     		mov	r1, r6
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s 			page 8
+
+
+ 261 009c 2846     		mov	r0, r5
+ 262 009e FFF7FEFF 		bl	timer_channel_output_config
+ 263              	.LVL21:
+ 143:main.c        **** 
+ 144:main.c        ****     timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_1, 400);
+ 264              		.loc 1 144 5 view .LVU63
+ 265 00a2 4FF4C872 		mov	r2, #400
+ 266 00a6 3146     		mov	r1, r6
+ 267 00a8 2846     		mov	r0, r5
+ 268 00aa FFF7FEFF 		bl	timer_channel_output_pulse_value_config
+ 269              	.LVL22:
+ 145:main.c        ****     timer_channel_output_mode_config(TIMER2, TIMER_CH_1, TIMER_OC_MODE_PWM0);
+ 270              		.loc 1 145 5 view .LVU64
+ 271 00ae 6022     		movs	r2, #96
+ 272 00b0 3146     		mov	r1, r6
+ 273 00b2 2846     		mov	r0, r5
+ 274 00b4 FFF7FEFF 		bl	timer_channel_output_mode_config
+ 275              	.LVL23:
+ 146:main.c        ****     timer_channel_output_shadow_config(TIMER2, TIMER_CH_1, TIMER_OC_SHADOW_DISABLE);
+ 276              		.loc 1 146 5 view .LVU65
+ 277 00b8 2246     		mov	r2, r4
+ 278 00ba 3146     		mov	r1, r6
+ 279 00bc 2846     		mov	r0, r5
+ 280 00be FFF7FEFF 		bl	timer_channel_output_shadow_config
+ 281              	.LVL24:
+ 147:main.c        **** 
+ 148:main.c        **** 
+ 149:main.c        **** 
+ 150:main.c        ****     /* CH2 configuration in PWM0 mode */
+ 151:main.c        ****     timer_ocintpara.outputstate  = TIMER_CCX_ENABLE;
+ 282              		.loc 1 151 5 view .LVU66
+ 283              		.loc 1 151 34 is_stmt 0 view .LVU67
+ 284 00c2 0496     		str	r6, [sp, #16]
+ 152:main.c        ****     timer_ocintpara.outputnstate = TIMER_CCXN_ENABLE;
+ 285              		.loc 1 152 5 is_stmt 1 view .LVU68
+ 286              		.loc 1 152 34 is_stmt 0 view .LVU69
+ 287 00c4 ADF81480 		strh	r8, [sp, #20]	@ movhi
+ 153:main.c        ****     timer_ocintpara.ocpolarity   = TIMER_OC_POLARITY_HIGH;
+ 288              		.loc 1 153 5 is_stmt 1 view .LVU70
+ 289              		.loc 1 153 34 is_stmt 0 view .LVU71
+ 290 00c8 ADF81640 		strh	r4, [sp, #22]	@ movhi
+ 154:main.c        ****     timer_ocintpara.ocnpolarity  = TIMER_OCN_POLARITY_HIGH;
+ 291              		.loc 1 154 5 is_stmt 1 view .LVU72
+ 292              		.loc 1 154 34 is_stmt 0 view .LVU73
+ 293 00cc ADF81840 		strh	r4, [sp, #24]	@ movhi
+ 155:main.c        ****     timer_ocintpara.ocidlestate  = TIMER_OC_IDLE_STATE_HIGH;
+ 294              		.loc 1 155 5 is_stmt 1 view .LVU74
+ 295              		.loc 1 155 34 is_stmt 0 view .LVU75
+ 296 00d0 ADF81A70 		strh	r7, [sp, #26]	@ movhi
+ 156:main.c        ****     timer_ocintpara.ocnidlestate = TIMER_OCN_IDLE_STATE_LOW;
+ 297              		.loc 1 156 5 is_stmt 1 view .LVU76
+ 298              		.loc 1 156 34 is_stmt 0 view .LVU77
+ 299 00d4 ADF81C40 		strh	r4, [sp, #28]	@ movhi
+ 157:main.c        ****     timer_channel_output_config(TIMER2, TIMER_CH_2, &timer_ocintpara);
+ 300              		.loc 1 157 5 is_stmt 1 view .LVU78
+ 301 00d8 04AA     		add	r2, sp, #16
+ 302 00da 0221     		movs	r1, #2
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s 			page 9
+
+
+ 303 00dc 2846     		mov	r0, r5
+ 304 00de FFF7FEFF 		bl	timer_channel_output_config
+ 305              	.LVL25:
+ 158:main.c        **** 
+ 159:main.c        ****     timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_2, 600);
+ 306              		.loc 1 159 5 view .LVU79
+ 307 00e2 4FF41672 		mov	r2, #600
+ 308 00e6 0221     		movs	r1, #2
+ 309 00e8 2846     		mov	r0, r5
+ 310 00ea FFF7FEFF 		bl	timer_channel_output_pulse_value_config
+ 311              	.LVL26:
+ 160:main.c        ****     timer_channel_output_mode_config(TIMER2, TIMER_CH_2, TIMER_OC_MODE_PWM0);
+ 312              		.loc 1 160 5 view .LVU80
+ 313 00ee 6022     		movs	r2, #96
+ 314 00f0 0221     		movs	r1, #2
+ 315 00f2 2846     		mov	r0, r5
+ 316 00f4 FFF7FEFF 		bl	timer_channel_output_mode_config
+ 317              	.LVL27:
+ 161:main.c        ****     timer_channel_output_shadow_config(TIMER2, TIMER_CH_2, TIMER_OC_SHADOW_DISABLE);
+ 318              		.loc 1 161 5 view .LVU81
+ 319 00f8 2246     		mov	r2, r4
+ 320 00fa 0221     		movs	r1, #2
+ 321 00fc 2846     		mov	r0, r5
+ 322 00fe FFF7FEFF 		bl	timer_channel_output_shadow_config
+ 323              	.LVL28:
+ 162:main.c        **** 
+ 163:main.c        **** 
+ 164:main.c        **** 
+ 165:main.c        ****     /* CH3 configuration in PWM0 mode */
+ 166:main.c        ****     timer_ocintpara.outputstate  = TIMER_CCX_ENABLE;
+ 324              		.loc 1 166 5 view .LVU82
+ 325              		.loc 1 166 34 is_stmt 0 view .LVU83
+ 326 0102 0496     		str	r6, [sp, #16]
+ 167:main.c        ****     timer_ocintpara.outputnstate = TIMER_CCXN_ENABLE;
+ 327              		.loc 1 167 5 is_stmt 1 view .LVU84
+ 328              		.loc 1 167 34 is_stmt 0 view .LVU85
+ 329 0104 ADF81480 		strh	r8, [sp, #20]	@ movhi
+ 168:main.c        ****     timer_ocintpara.ocpolarity   = TIMER_OC_POLARITY_HIGH;
+ 330              		.loc 1 168 5 is_stmt 1 view .LVU86
+ 331              		.loc 1 168 34 is_stmt 0 view .LVU87
+ 332 0108 ADF81640 		strh	r4, [sp, #22]	@ movhi
+ 169:main.c        ****     timer_ocintpara.ocnpolarity  = TIMER_OCN_POLARITY_HIGH;
+ 333              		.loc 1 169 5 is_stmt 1 view .LVU88
+ 334              		.loc 1 169 34 is_stmt 0 view .LVU89
+ 335 010c ADF81840 		strh	r4, [sp, #24]	@ movhi
+ 170:main.c        ****     timer_ocintpara.ocidlestate  = TIMER_OC_IDLE_STATE_HIGH;
+ 336              		.loc 1 170 5 is_stmt 1 view .LVU90
+ 337              		.loc 1 170 34 is_stmt 0 view .LVU91
+ 338 0110 ADF81A70 		strh	r7, [sp, #26]	@ movhi
+ 171:main.c        ****     timer_ocintpara.ocnidlestate = TIMER_OCN_IDLE_STATE_LOW;
+ 339              		.loc 1 171 5 is_stmt 1 view .LVU92
+ 340              		.loc 1 171 34 is_stmt 0 view .LVU93
+ 341 0114 ADF81C40 		strh	r4, [sp, #28]	@ movhi
+ 172:main.c        ****     timer_channel_output_config(TIMER2, TIMER_CH_3, &timer_ocintpara);
+ 342              		.loc 1 172 5 is_stmt 1 view .LVU94
+ 343 0118 04AA     		add	r2, sp, #16
+ 344 011a 0321     		movs	r1, #3
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s 			page 10
+
+
+ 345 011c 2846     		mov	r0, r5
+ 346 011e FFF7FEFF 		bl	timer_channel_output_config
+ 347              	.LVL29:
+ 173:main.c        **** 
+ 174:main.c        ****     timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_3, 800);
+ 348              		.loc 1 174 5 view .LVU95
+ 349 0122 4FF44872 		mov	r2, #800
+ 350 0126 0321     		movs	r1, #3
+ 351 0128 2846     		mov	r0, r5
+ 352 012a FFF7FEFF 		bl	timer_channel_output_pulse_value_config
+ 353              	.LVL30:
+ 175:main.c        ****     timer_channel_output_mode_config(TIMER2, TIMER_CH_3, TIMER_OC_MODE_PWM0);
+ 354              		.loc 1 175 5 view .LVU96
+ 355 012e 6022     		movs	r2, #96
+ 356 0130 0321     		movs	r1, #3
+ 357 0132 2846     		mov	r0, r5
+ 358 0134 FFF7FEFF 		bl	timer_channel_output_mode_config
+ 359              	.LVL31:
+ 176:main.c        ****     timer_channel_output_shadow_config(TIMER2, TIMER_CH_3, TIMER_OC_SHADOW_DISABLE);
+ 360              		.loc 1 176 5 view .LVU97
+ 361 0138 2246     		mov	r2, r4
+ 362 013a 0321     		movs	r1, #3
+ 363 013c 2846     		mov	r0, r5
+ 364 013e FFF7FEFF 		bl	timer_channel_output_shadow_config
+ 365              	.LVL32:
+ 177:main.c        **** 
+ 178:main.c        **** 
+ 179:main.c        ****     /* TIMER2 primary output enable */
+ 180:main.c        ****     timer_primary_output_config(TIMER2, ENABLE);
+ 366              		.loc 1 180 5 view .LVU98
+ 367 0142 3146     		mov	r1, r6
+ 368 0144 2846     		mov	r0, r5
+ 369 0146 FFF7FEFF 		bl	timer_primary_output_config
+ 370              	.LVL33:
+ 181:main.c        **** 
+ 182:main.c        ****     /* TIMER2 counter enable */
+ 183:main.c        ****     timer_enable(TIMER2);
+ 371              		.loc 1 183 5 view .LVU99
+ 372 014a 2846     		mov	r0, r5
+ 373 014c FFF7FEFF 		bl	timer_enable
+ 374              	.LVL34:
+ 184:main.c        **** }
+ 375              		.loc 1 184 1 is_stmt 0 view .LVU100
+ 376 0150 08B0     		add	sp, sp, #32
+ 377              	.LCFI3:
+ 378              		.cfi_def_cfa_offset 24
+ 379              		@ sp needed
+ 380 0152 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 381              	.L8:
+ 382 0156 00BF     		.align	2
+ 383              	.L7:
+ 384 0158 00040040 		.word	1073742848
+ 385              		.cfi_endproc
+ 386              	.LFE120:
+ 388              		.section	.text.main,"ax",%progbits
+ 389              		.align	1
+ 390              		.global	main
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s 			page 11
+
+
+ 391              		.syntax unified
+ 392              		.thumb
+ 393              		.thumb_func
+ 395              	main:
+ 396              	.LFB121:
+ 185:main.c        **** 
+ 186:main.c        **** /*!
+ 187:main.c        ****     \brief      main function
+ 188:main.c        ****     \param[in]  none
+ 189:main.c        ****     \param[out] none
+ 190:main.c        ****     \retval     none
+ 191:main.c        **** */
+ 192:main.c        **** int main(void)
+ 193:main.c        **** {
+ 397              		.loc 1 193 1 is_stmt 1 view -0
+ 398              		.cfi_startproc
+ 399              		@ args = 0, pretend = 0, frame = 0
+ 400              		@ frame_needed = 0, uses_anonymous_args = 0
+ 401 0000 08B5     		push	{r3, lr}
+ 402              	.LCFI4:
+ 403              		.cfi_def_cfa_offset 8
+ 404              		.cfi_offset 3, -8
+ 405              		.cfi_offset 14, -4
+ 194:main.c        ****     gpio_config();
+ 406              		.loc 1 194 5 view .LVU102
+ 407 0002 FFF7FEFF 		bl	gpio_config
+ 408              	.LVL35:
+ 195:main.c        ****     timer_config();
+ 409              		.loc 1 195 5 view .LVU103
+ 410 0006 FFF7FEFF 		bl	timer_config
+ 411              	.LVL36:
+ 412 000a 2CE0     		b	.L18
+ 413              	.LVL37:
+ 414              	.L11:
+ 415              	.LBB2:
+ 196:main.c        **** 
+ 197:main.c        ****     while(1){
+ 198:main.c        ****         for(uint32_t x = 0; x < 4000000; x++);
+ 416              		.loc 1 198 46 discriminator 3 view .LVU104
+ 417              		.loc 1 198 42 discriminator 3 view .LVU105
+ 418              		.loc 1 198 43 is_stmt 0 discriminator 3 view .LVU106
+ 419 000c 0133     		adds	r3, r3, #1
+ 420              	.LVL38:
+ 421              	.L10:
+ 422              		.loc 1 198 29 is_stmt 1 discriminator 1 view .LVU107
+ 423              		.loc 1 198 9 is_stmt 0 discriminator 1 view .LVU108
+ 424 000e 174A     		ldr	r2, .L20
+ 425 0010 9342     		cmp	r3, r2
+ 426 0012 FBD9     		bls	.L11
+ 427              	.LBE2:
+ 199:main.c        ****         timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_0, 200);
+ 428              		.loc 1 199 9 is_stmt 1 view .LVU109
+ 429 0014 C822     		movs	r2, #200
+ 430 0016 0021     		movs	r1, #0
+ 431 0018 1548     		ldr	r0, .L20+4
+ 432 001a FFF7FEFF 		bl	timer_channel_output_pulse_value_config
+ 433              	.LVL39:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s 			page 12
+
+
+ 200:main.c        ****         for(uint32_t x = 0; x < 4000000; x++);
+ 434              		.loc 1 200 9 view .LVU110
+ 435              	.LBB3:
+ 436              		.loc 1 200 13 view .LVU111
+ 437              		.loc 1 200 22 is_stmt 0 view .LVU112
+ 438 001e 0023     		movs	r3, #0
+ 439              		.loc 1 200 9 view .LVU113
+ 440 0020 00E0     		b	.L12
+ 441              	.LVL40:
+ 442              	.L13:
+ 443              		.loc 1 200 46 is_stmt 1 discriminator 3 view .LVU114
+ 444              		.loc 1 200 42 discriminator 3 view .LVU115
+ 445              		.loc 1 200 43 is_stmt 0 discriminator 3 view .LVU116
+ 446 0022 0133     		adds	r3, r3, #1
+ 447              	.LVL41:
+ 448              	.L12:
+ 449              		.loc 1 200 29 is_stmt 1 discriminator 1 view .LVU117
+ 450              		.loc 1 200 9 is_stmt 0 discriminator 1 view .LVU118
+ 451 0024 114A     		ldr	r2, .L20
+ 452 0026 9342     		cmp	r3, r2
+ 453 0028 FBD9     		bls	.L13
+ 454              	.LBE3:
+ 201:main.c        ****         timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_0, 400);
+ 455              		.loc 1 201 9 is_stmt 1 view .LVU119
+ 456 002a 4FF4C872 		mov	r2, #400
+ 457 002e 0021     		movs	r1, #0
+ 458 0030 0F48     		ldr	r0, .L20+4
+ 459 0032 FFF7FEFF 		bl	timer_channel_output_pulse_value_config
+ 460              	.LVL42:
+ 202:main.c        ****         for(uint32_t x = 0; x < 4000000; x++);
+ 461              		.loc 1 202 9 view .LVU120
+ 462              	.LBB4:
+ 463              		.loc 1 202 13 view .LVU121
+ 464              		.loc 1 202 22 is_stmt 0 view .LVU122
+ 465 0036 0023     		movs	r3, #0
+ 466              		.loc 1 202 9 view .LVU123
+ 467 0038 00E0     		b	.L14
+ 468              	.LVL43:
+ 469              	.L15:
+ 470              		.loc 1 202 46 is_stmt 1 discriminator 3 view .LVU124
+ 471              		.loc 1 202 42 discriminator 3 view .LVU125
+ 472              		.loc 1 202 43 is_stmt 0 discriminator 3 view .LVU126
+ 473 003a 0133     		adds	r3, r3, #1
+ 474              	.LVL44:
+ 475              	.L14:
+ 476              		.loc 1 202 29 is_stmt 1 discriminator 1 view .LVU127
+ 477              		.loc 1 202 9 is_stmt 0 discriminator 1 view .LVU128
+ 478 003c 0B4A     		ldr	r2, .L20
+ 479 003e 9342     		cmp	r3, r2
+ 480 0040 FBD9     		bls	.L15
+ 481              	.LBE4:
+ 203:main.c        ****         timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_0, 600);
+ 482              		.loc 1 203 9 is_stmt 1 view .LVU129
+ 483 0042 4FF41672 		mov	r2, #600
+ 484 0046 0021     		movs	r1, #0
+ 485 0048 0948     		ldr	r0, .L20+4
+ 486 004a FFF7FEFF 		bl	timer_channel_output_pulse_value_config
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s 			page 13
+
+
+ 487              	.LVL45:
+ 204:main.c        ****         for(uint32_t x = 0; x < 4000000; x++);
+ 488              		.loc 1 204 9 view .LVU130
+ 489              	.LBB5:
+ 490              		.loc 1 204 13 view .LVU131
+ 491              		.loc 1 204 22 is_stmt 0 view .LVU132
+ 492 004e 0023     		movs	r3, #0
+ 493              		.loc 1 204 9 view .LVU133
+ 494 0050 00E0     		b	.L16
+ 495              	.LVL46:
+ 496              	.L17:
+ 497              		.loc 1 204 46 is_stmt 1 discriminator 3 view .LVU134
+ 498              		.loc 1 204 42 discriminator 3 view .LVU135
+ 499              		.loc 1 204 43 is_stmt 0 discriminator 3 view .LVU136
+ 500 0052 0133     		adds	r3, r3, #1
+ 501              	.LVL47:
+ 502              	.L16:
+ 503              		.loc 1 204 29 is_stmt 1 discriminator 1 view .LVU137
+ 504              		.loc 1 204 9 is_stmt 0 discriminator 1 view .LVU138
+ 505 0054 054A     		ldr	r2, .L20
+ 506 0056 9342     		cmp	r3, r2
+ 507 0058 FBD9     		bls	.L17
+ 508              	.LBE5:
+ 205:main.c        ****         timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_0, 800);
+ 509              		.loc 1 205 9 is_stmt 1 view .LVU139
+ 510 005a 4FF44872 		mov	r2, #800
+ 511 005e 0021     		movs	r1, #0
+ 512 0060 0348     		ldr	r0, .L20+4
+ 513 0062 FFF7FEFF 		bl	timer_channel_output_pulse_value_config
+ 514              	.LVL48:
+ 197:main.c        ****         for(uint32_t x = 0; x < 4000000; x++);
+ 515              		.loc 1 197 10 view .LVU140
+ 516              	.L18:
+ 197:main.c        ****         for(uint32_t x = 0; x < 4000000; x++);
+ 517              		.loc 1 197 5 view .LVU141
+ 198:main.c        ****         timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_0, 200);
+ 518              		.loc 1 198 9 view .LVU142
+ 519              	.LBB6:
+ 198:main.c        ****         timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_0, 200);
+ 520              		.loc 1 198 13 view .LVU143
+ 198:main.c        ****         timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_0, 200);
+ 521              		.loc 1 198 22 is_stmt 0 view .LVU144
+ 522 0066 0023     		movs	r3, #0
+ 198:main.c        ****         timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_0, 200);
+ 523              		.loc 1 198 9 view .LVU145
+ 524 0068 D1E7     		b	.L10
+ 525              	.L21:
+ 526 006a 00BF     		.align	2
+ 527              	.L20:
+ 528 006c FF083D00 		.word	3999999
+ 529 0070 00040040 		.word	1073742848
+ 530              	.LBE6:
+ 531              		.cfi_endproc
+ 532              	.LFE121:
+ 534              		.global	buffer
+ 535              		.section	.data.buffer,"aw"
+ 536              		.align	2
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s 			page 14
+
+
+ 539              	buffer:
+ 540 0000 F900     		.short	249
+ 541 0002 F301     		.short	499
+ 542 0004 ED02     		.short	749
+ 543              		.text
+ 544              	.Letext0:
+ 545              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
+ 546              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
+ 547              		.file 4 "lib/CMSIS/GD/GD32F3x0/Include/gd32f3x0.h"
+ 548              		.file 5 "lib/GD32F3x0/Include/gd32f3x0_dbg.h"
+ 549              		.file 6 "lib/GD32F3x0/Include/gd32f3x0_rcu.h"
+ 550              		.file 7 "lib/GD32F3x0/Include/gd32f3x0_timer.h"
+ 551              		.file 8 "lib/GD32F3x0/Include/gd32f3x0_gpio.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s 			page 15
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s:18     .text.gpio_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s:24     .text.gpio_config:0000000000000000 gpio_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s:130    .text.gpio_config:00000000000000ac $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s:135    .text.timer_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s:141    .text.timer_config:0000000000000000 timer_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s:384    .text.timer_config:0000000000000158 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s:389    .text.main:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s:395    .text.main:0000000000000000 main
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s:528    .text.main:000000000000006c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s:539    .data.buffer:0000000000000000 buffer
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc5jk7y3.s:536    .data.buffer:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+rcu_periph_clock_enable
+gpio_mode_set
+gpio_output_options_set
+gpio_af_set
+timer_deinit
+timer_init
+timer_channel_output_config
+timer_channel_output_pulse_value_config
+timer_channel_output_mode_config
+timer_channel_output_shadow_config
+timer_primary_output_config
+timer_enable

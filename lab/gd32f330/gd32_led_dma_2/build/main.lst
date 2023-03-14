@@ -1,0 +1,617 @@
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"main.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.gpio_config,"ax",%progbits
+  18              		.align	1
+  19              		.global	gpio_config
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	gpio_config:
+  25              	.LFB119:
+  26              		.file 1 "main.c"
+   1:main.c        **** #include <stdint.h>
+   2:main.c        **** 
+   3:main.c        **** #include "gd32f3x0.h"
+   4:main.c        **** #include "gd32f3x0_gpio.h"
+   5:main.c        **** #include "gd32f3x0_rcu.h"
+   6:main.c        **** #include "sk6812.h"
+   7:main.c        **** 
+   8:main.c        **** 
+   9:main.c        **** 
+  10:main.c        **** 
+  11:main.c        **** 
+  12:main.c        **** /*!
+  13:main.c        ****     \file    main.c
+  14:main.c        ****     \brief   TIMER15 dma demo
+  15:main.c        **** 
+  16:main.c        ****     \version 2017-06-06, V1.0.0, firmware for GD32F3x0
+  17:main.c        ****     \version 2019-06-01, V2.0.0, firmware for GD32F3x0
+  18:main.c        ****     \version 2020-09-30, V2.1.0, firmware for GD32F3x0
+  19:main.c        ****     \version 2022-01-06, V2.2.0, firmware for GD32F3x0
+  20:main.c        **** */
+  21:main.c        **** 
+  22:main.c        **** /*
+  23:main.c        ****     Copyright (c) 2022, GigaDevice Semiconductor Inc.
+  24:main.c        **** 
+  25:main.c        ****     Redistribution and use in source and binary forms, with or without modification,
+  26:main.c        **** are permitted provided that the following conditions are met:
+  27:main.c        **** 
+  28:main.c        ****     1. Redistributions of source code must retain the above copyright notice, this
+  29:main.c        ****        list of conditions and the following disclaimer.
+  30:main.c        ****     2. Redistributions in binary form must reproduce the above copyright notice,
+  31:main.c        ****        this list of conditions and the following disclaimer in the documentation
+  32:main.c        ****        and/or other materials provided with the distribution.
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s 			page 2
+
+
+  33:main.c        ****     3. Neither the name of the copyright holder nor the names of its contributors
+  34:main.c        ****        may be used to endorse or promote products derived from this software without
+  35:main.c        ****        specific prior written permission.
+  36:main.c        **** 
+  37:main.c        ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  38:main.c        **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  39:main.c        **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  40:main.c        **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  41:main.c        **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+  42:main.c        **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+  43:main.c        **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+  44:main.c        **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  45:main.c        **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+  46:main.c        **** OF SUCH DAMAGE.
+  47:main.c        **** */
+  48:main.c        **** 
+  49:main.c        **** 
+  50:main.c        **** #include <stdio.h>
+  51:main.c        **** 
+  52:main.c        **** #define TIMER15_CH0CC  ((uint32_t)0x40014434)
+  53:main.c        **** uint16_t buffer[3] = {249, 499, 749};
+  54:main.c        **** 
+  55:main.c        **** void gpio_config(void);
+  56:main.c        **** void timer_config(void);
+  57:main.c        **** void dma_config(void);
+  58:main.c        **** 
+  59:main.c        **** /*!
+  60:main.c        ****     \brief      configure the GPIO ports
+  61:main.c        ****     \param[in]  none
+  62:main.c        ****     \param[out] none
+  63:main.c        ****     \retval     none
+  64:main.c        ****   */
+  65:main.c        **** void gpio_config(void)
+  66:main.c        **** {
+  27              		.loc 1 66 1 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31 0000 10B5     		push	{r4, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 4, -8
+  35              		.cfi_offset 14, -4
+  67:main.c        ****     rcu_periph_clock_enable(RCU_GPIOB);
+  36              		.loc 1 67 5 view .LVU1
+  37 0002 40F21250 		movw	r0, #1298
+  38 0006 FFF7FEFF 		bl	rcu_periph_clock_enable
+  39              	.LVL0:
+  68:main.c        **** 
+  69:main.c        ****     /*configure PA8(TIMER15 CH0) as alternate function*/
+  70:main.c        ****     gpio_mode_set(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_8);
+  40              		.loc 1 70 5 view .LVU2
+  41 000a 0B4C     		ldr	r4, .L3
+  42 000c 4FF48073 		mov	r3, #256
+  43 0010 0022     		movs	r2, #0
+  44 0012 0221     		movs	r1, #2
+  45 0014 2046     		mov	r0, r4
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s 			page 3
+
+
+  46 0016 FFF7FEFF 		bl	gpio_mode_set
+  47              	.LVL1:
+  71:main.c        ****     gpio_output_options_set(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_8);
+  48              		.loc 1 71 5 view .LVU3
+  49 001a 4FF48073 		mov	r3, #256
+  50 001e 0322     		movs	r2, #3
+  51 0020 0021     		movs	r1, #0
+  52 0022 2046     		mov	r0, r4
+  53 0024 FFF7FEFF 		bl	gpio_output_options_set
+  54              	.LVL2:
+  72:main.c        **** 
+  73:main.c        ****     gpio_af_set(GPIOB, GPIO_AF_2, GPIO_PIN_8);
+  55              		.loc 1 73 5 view .LVU4
+  56 0028 4FF48072 		mov	r2, #256
+  57 002c 0221     		movs	r1, #2
+  58 002e 2046     		mov	r0, r4
+  59 0030 FFF7FEFF 		bl	gpio_af_set
+  60              	.LVL3:
+  74:main.c        **** }
+  61              		.loc 1 74 1 is_stmt 0 view .LVU5
+  62 0034 10BD     		pop	{r4, pc}
+  63              	.L4:
+  64 0036 00BF     		.align	2
+  65              	.L3:
+  66 0038 00040048 		.word	1207960576
+  67              		.cfi_endproc
+  68              	.LFE119:
+  70              		.section	.text.dma_config,"ax",%progbits
+  71              		.align	1
+  72              		.global	dma_config
+  73              		.syntax unified
+  74              		.thumb
+  75              		.thumb_func
+  77              	dma_config:
+  78              	.LFB120:
+  75:main.c        **** 
+  76:main.c        **** 
+  77:main.c        **** /*!
+  78:main.c        ****     \brief      configure the DMA peripheral
+  79:main.c        ****     \param[in]  none
+  80:main.c        ****     \param[out] none
+  81:main.c        ****     \retval     none
+  82:main.c        ****   */
+  83:main.c        **** void dma_config(void)
+  84:main.c        **** {
+  79              		.loc 1 84 1 is_stmt 1 view -0
+  80              		.cfi_startproc
+  81              		@ args = 0, pretend = 0, frame = 32
+  82              		@ frame_needed = 0, uses_anonymous_args = 0
+  83 0000 10B5     		push	{r4, lr}
+  84              	.LCFI1:
+  85              		.cfi_def_cfa_offset 8
+  86              		.cfi_offset 4, -8
+  87              		.cfi_offset 14, -4
+  88 0002 88B0     		sub	sp, sp, #32
+  89              	.LCFI2:
+  90              		.cfi_def_cfa_offset 40
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s 			page 4
+
+
+  85:main.c        ****     dma_parameter_struct dma_init_struct;
+  91              		.loc 1 85 5 view .LVU7
+  86:main.c        **** 
+  87:main.c        ****     /* enable DMA clock */
+  88:main.c        ****     rcu_periph_clock_enable(RCU_DMA);
+  92              		.loc 1 88 5 view .LVU8
+  93 0004 4FF4A060 		mov	r0, #1280
+  94 0008 FFF7FEFF 		bl	rcu_periph_clock_enable
+  95              	.LVL4:
+  89:main.c        **** 
+  90:main.c        ****     /* initialize DMA channel4 */
+  91:main.c        ****     dma_deinit(DMA_CH0);
+  96              		.loc 1 91 5 view .LVU9
+  97 000c 0020     		movs	r0, #0
+  98 000e FFF7FEFF 		bl	dma_deinit
+  99              	.LVL5:
+  92:main.c        **** 
+  93:main.c        ****     /* DMA channel4 initialize */
+  94:main.c        ****     dma_deinit(DMA_CH0);
+ 100              		.loc 1 94 5 view .LVU10
+ 101 0012 0020     		movs	r0, #0
+ 102 0014 FFF7FEFF 		bl	dma_deinit
+ 103              	.LVL6:
+  95:main.c        ****     dma_init_struct.direction    = DMA_MEMORY_TO_PERIPHERAL;
+ 104              		.loc 1 95 5 view .LVU11
+ 105              		.loc 1 95 34 is_stmt 0 view .LVU12
+ 106 0018 0123     		movs	r3, #1
+ 107 001a 8DF81530 		strb	r3, [sp, #21]
+  96:main.c        ****     dma_init_struct.memory_addr  = (uint32_t)buffer;
+ 108              		.loc 1 96 5 is_stmt 1 view .LVU13
+ 109              		.loc 1 96 36 is_stmt 0 view .LVU14
+ 110 001e 114A     		ldr	r2, .L7
+ 111              		.loc 1 96 34 view .LVU15
+ 112 0020 0392     		str	r2, [sp, #12]
+  97:main.c        ****     dma_init_struct.memory_inc   = DMA_MEMORY_INCREASE_ENABLE;
+ 113              		.loc 1 97 5 is_stmt 1 view .LVU16
+ 114              		.loc 1 97 34 is_stmt 0 view .LVU17
+ 115 0022 8DF81430 		strb	r3, [sp, #20]
+  98:main.c        ****     dma_init_struct.memory_width = DMA_MEMORY_WIDTH_16BIT;
+ 116              		.loc 1 98 5 is_stmt 1 view .LVU18
+ 117              		.loc 1 98 34 is_stmt 0 view .LVU19
+ 118 0026 4FF48063 		mov	r3, #1024
+ 119 002a 0493     		str	r3, [sp, #16]
+  99:main.c        ****     dma_init_struct.number       = 3;
+ 120              		.loc 1 99 5 is_stmt 1 view .LVU20
+ 121              		.loc 1 99 34 is_stmt 0 view .LVU21
+ 122 002c 0323     		movs	r3, #3
+ 123 002e 0693     		str	r3, [sp, #24]
+ 100:main.c        ****     dma_init_struct.periph_addr  = (uint32_t)TIMER15_CH0CC;
+ 124              		.loc 1 100 5 is_stmt 1 view .LVU22
+ 125              		.loc 1 100 34 is_stmt 0 view .LVU23
+ 126 0030 0D4B     		ldr	r3, .L7+4
+ 127 0032 0093     		str	r3, [sp]
+ 101:main.c        ****     dma_init_struct.periph_inc   = DMA_PERIPH_INCREASE_DISABLE;
+ 128              		.loc 1 101 5 is_stmt 1 view .LVU24
+ 129              		.loc 1 101 34 is_stmt 0 view .LVU25
+ 130 0034 0024     		movs	r4, #0
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s 			page 5
+
+
+ 131 0036 8DF80840 		strb	r4, [sp, #8]
+ 102:main.c        ****     dma_init_struct.periph_width = DMA_PERIPHERAL_WIDTH_16BIT;
+ 132              		.loc 1 102 5 is_stmt 1 view .LVU26
+ 133              		.loc 1 102 34 is_stmt 0 view .LVU27
+ 134 003a 4FF48073 		mov	r3, #256
+ 135 003e 0193     		str	r3, [sp, #4]
+ 103:main.c        ****     dma_init_struct.priority     = DMA_PRIORITY_HIGH;
+ 136              		.loc 1 103 5 is_stmt 1 view .LVU28
+ 137              		.loc 1 103 34 is_stmt 0 view .LVU29
+ 138 0040 4FF40053 		mov	r3, #8192
+ 139 0044 0793     		str	r3, [sp, #28]
+ 104:main.c        ****     dma_init(DMA_CH0, &dma_init_struct);
+ 140              		.loc 1 104 5 is_stmt 1 view .LVU30
+ 141 0046 6946     		mov	r1, sp
+ 142 0048 2046     		mov	r0, r4
+ 143 004a FFF7FEFF 		bl	dma_init
+ 144              	.LVL7:
+ 105:main.c        **** 
+ 106:main.c        ****     /* configure DMA mode */
+ 107:main.c        ****     dma_circulation_enable(DMA_CH0);
+ 145              		.loc 1 107 5 view .LVU31
+ 146 004e 2046     		mov	r0, r4
+ 147 0050 FFF7FEFF 		bl	dma_circulation_enable
+ 148              	.LVL8:
+ 108:main.c        ****     dma_memory_to_memory_disable(DMA_CH0);
+ 149              		.loc 1 108 5 view .LVU32
+ 150 0054 2046     		mov	r0, r4
+ 151 0056 FFF7FEFF 		bl	dma_memory_to_memory_disable
+ 152              	.LVL9:
+ 109:main.c        **** 
+ 110:main.c        ****     /* enable DMA channel4 */
+ 111:main.c        ****     dma_channel_enable(DMA_CH0);
+ 153              		.loc 1 111 5 view .LVU33
+ 154 005a 2046     		mov	r0, r4
+ 155 005c FFF7FEFF 		bl	dma_channel_enable
+ 156              	.LVL10:
+ 112:main.c        **** }
+ 157              		.loc 1 112 1 is_stmt 0 view .LVU34
+ 158 0060 08B0     		add	sp, sp, #32
+ 159              	.LCFI3:
+ 160              		.cfi_def_cfa_offset 8
+ 161              		@ sp needed
+ 162 0062 10BD     		pop	{r4, pc}
+ 163              	.L8:
+ 164              		.align	2
+ 165              	.L7:
+ 166 0064 00000000 		.word	.LANCHOR0
+ 167 0068 34440140 		.word	1073824820
+ 168              		.cfi_endproc
+ 169              	.LFE120:
+ 171              		.section	.text.timer_config,"ax",%progbits
+ 172              		.align	1
+ 173              		.global	timer_config
+ 174              		.syntax unified
+ 175              		.thumb
+ 176              		.thumb_func
+ 178              	timer_config:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s 			page 6
+
+
+ 179              	.LFB121:
+ 113:main.c        **** 
+ 114:main.c        **** /*!
+ 115:main.c        ****     \brief      configure the TIMER peripheral
+ 116:main.c        ****     \param[in]  none
+ 117:main.c        ****     \param[out] none
+ 118:main.c        ****     \retval     none
+ 119:main.c        ****   */
+ 120:main.c        **** void timer_config(void)
+ 121:main.c        **** {
+ 180              		.loc 1 121 1 is_stmt 1 view -0
+ 181              		.cfi_startproc
+ 182              		@ args = 0, pretend = 0, frame = 32
+ 183              		@ frame_needed = 0, uses_anonymous_args = 0
+ 184 0000 F0B5     		push	{r4, r5, r6, r7, lr}
+ 185              	.LCFI4:
+ 186              		.cfi_def_cfa_offset 20
+ 187              		.cfi_offset 4, -20
+ 188              		.cfi_offset 5, -16
+ 189              		.cfi_offset 6, -12
+ 190              		.cfi_offset 7, -8
+ 191              		.cfi_offset 14, -4
+ 192 0002 89B0     		sub	sp, sp, #36
+ 193              	.LCFI5:
+ 194              		.cfi_def_cfa_offset 56
+ 122:main.c        ****     /* TIMER15 DMA Transfer example -------------------------------------------------
+ 123:main.c        ****     TIMER15CLK = 84MHz(GD32F330) or 108MHz(GD32F350), Prescaler = 84(GD32F330) or 108(GD32F350)
+ 124:main.c        ****     TIMER15 counter clock 1MHz.
+ 125:main.c        **** 
+ 126:main.c        ****     the objective is to configure TIMER15 channel 1 to generate PWM
+ 127:main.c        ****     signal with a frequency equal to 1KHz and a variable duty cycle(25%,50%,75%) that is
+ 128:main.c        ****     changed by the DMA after a specific number of update DMA request.
+ 129:main.c        **** 
+ 130:main.c        ****     the number of this repetitive requests is defined by the TIMER15 repetition counter,
+ 131:main.c        ****     each 2 update requests, the TIMER15 Channel 0 duty cycle changes to the next new
+ 132:main.c        ****     value defined by the buffer .
+ 133:main.c        ****     -----------------------------------------------------------------------------*/
+ 134:main.c        ****     timer_oc_parameter_struct timer_ocintpara;
+ 195              		.loc 1 134 5 view .LVU36
+ 135:main.c        ****     timer_parameter_struct timer_initpara;
+ 196              		.loc 1 135 5 view .LVU37
+ 136:main.c        **** 
+ 137:main.c        ****     rcu_periph_clock_enable(RCU_TIMER15);
+ 197              		.loc 1 137 5 view .LVU38
+ 198 0004 40F21160 		movw	r0, #1553
+ 199 0008 FFF7FEFF 		bl	rcu_periph_clock_enable
+ 200              	.LVL11:
+ 138:main.c        **** 
+ 139:main.c        ****     timer_deinit(TIMER15);
+ 201              		.loc 1 139 5 view .LVU39
+ 202 000c 254D     		ldr	r5, .L11
+ 203 000e 2846     		mov	r0, r5
+ 204 0010 FFF7FEFF 		bl	timer_deinit
+ 205              	.LVL12:
+ 140:main.c        **** 
+ 141:main.c        ****     /* TIMER15 configuration */
+ 142:main.c        **** #ifdef GD32F330
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s 			page 7
+
+
+ 143:main.c        ****     timer_initpara.prescaler         = 83;
+ 206              		.loc 1 143 5 view .LVU40
+ 207              		.loc 1 143 38 is_stmt 0 view .LVU41
+ 208 0014 5323     		movs	r3, #83
+ 209 0016 ADF80030 		strh	r3, [sp]	@ movhi
+ 144:main.c        **** #endif /* GD32F330 */
+ 145:main.c        **** #ifdef GD32F350
+ 146:main.c        ****     timer_initpara.prescaler         = 107;
+ 147:main.c        **** #endif /* GD32F350 */
+ 148:main.c        ****     timer_initpara.alignedmode       = TIMER_COUNTER_EDGE;
+ 210              		.loc 1 148 5 is_stmt 1 view .LVU42
+ 211              		.loc 1 148 38 is_stmt 0 view .LVU43
+ 212 001a 0024     		movs	r4, #0
+ 213 001c ADF80240 		strh	r4, [sp, #2]	@ movhi
+ 149:main.c        ****     timer_initpara.counterdirection  = TIMER_COUNTER_UP;
+ 214              		.loc 1 149 5 is_stmt 1 view .LVU44
+ 215              		.loc 1 149 38 is_stmt 0 view .LVU45
+ 216 0020 ADF80440 		strh	r4, [sp, #4]	@ movhi
+ 150:main.c        ****     timer_initpara.period            = 999;
+ 217              		.loc 1 150 5 is_stmt 1 view .LVU46
+ 218              		.loc 1 150 38 is_stmt 0 view .LVU47
+ 219 0024 40F2E733 		movw	r3, #999
+ 220 0028 0293     		str	r3, [sp, #8]
+ 151:main.c        ****     timer_initpara.clockdivision     = TIMER_CKDIV_DIV1;
+ 221              		.loc 1 151 5 is_stmt 1 view .LVU48
+ 222              		.loc 1 151 38 is_stmt 0 view .LVU49
+ 223 002a ADF80640 		strh	r4, [sp, #6]	@ movhi
+ 152:main.c        ****     timer_initpara.repetitioncounter = 1;
+ 224              		.loc 1 152 5 is_stmt 1 view .LVU50
+ 225              		.loc 1 152 38 is_stmt 0 view .LVU51
+ 226 002e 0126     		movs	r6, #1
+ 227 0030 8DF80C60 		strb	r6, [sp, #12]
+ 153:main.c        ****     timer_init(TIMER15, &timer_initpara);
+ 228              		.loc 1 153 5 is_stmt 1 view .LVU52
+ 229 0034 6946     		mov	r1, sp
+ 230 0036 2846     		mov	r0, r5
+ 231 0038 FFF7FEFF 		bl	timer_init
+ 232              	.LVL13:
+ 154:main.c        **** 
+ 155:main.c        ****     /* CH0 configuration in PWM0 mode */
+ 156:main.c        ****     timer_ocintpara.outputstate  = TIMER_CCX_ENABLE;
+ 233              		.loc 1 156 5 view .LVU53
+ 234              		.loc 1 156 34 is_stmt 0 view .LVU54
+ 235 003c 0496     		str	r6, [sp, #16]
+ 157:main.c        ****     timer_ocintpara.outputnstate = TIMER_CCXN_ENABLE;
+ 236              		.loc 1 157 5 is_stmt 1 view .LVU55
+ 237              		.loc 1 157 34 is_stmt 0 view .LVU56
+ 238 003e 0423     		movs	r3, #4
+ 239 0040 ADF81430 		strh	r3, [sp, #20]	@ movhi
+ 158:main.c        ****     timer_ocintpara.ocpolarity   = TIMER_OC_POLARITY_HIGH;
+ 240              		.loc 1 158 5 is_stmt 1 view .LVU57
+ 241              		.loc 1 158 34 is_stmt 0 view .LVU58
+ 242 0044 ADF81640 		strh	r4, [sp, #22]	@ movhi
+ 159:main.c        ****     timer_ocintpara.ocnpolarity  = TIMER_OCN_POLARITY_HIGH;
+ 243              		.loc 1 159 5 is_stmt 1 view .LVU59
+ 244              		.loc 1 159 34 is_stmt 0 view .LVU60
+ 245 0048 ADF81840 		strh	r4, [sp, #24]	@ movhi
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s 			page 8
+
+
+ 160:main.c        ****     timer_ocintpara.ocidlestate  = TIMER_OC_IDLE_STATE_HIGH;
+ 246              		.loc 1 160 5 is_stmt 1 view .LVU61
+ 247              		.loc 1 160 34 is_stmt 0 view .LVU62
+ 248 004c 4FF48077 		mov	r7, #256
+ 249 0050 ADF81A70 		strh	r7, [sp, #26]	@ movhi
+ 161:main.c        ****     timer_ocintpara.ocnidlestate = TIMER_OCN_IDLE_STATE_LOW;
+ 250              		.loc 1 161 5 is_stmt 1 view .LVU63
+ 251              		.loc 1 161 34 is_stmt 0 view .LVU64
+ 252 0054 ADF81C40 		strh	r4, [sp, #28]	@ movhi
+ 162:main.c        ****     timer_channel_output_config(TIMER15, TIMER_CH_0, &timer_ocintpara);
+ 253              		.loc 1 162 5 is_stmt 1 view .LVU65
+ 254 0058 04AA     		add	r2, sp, #16
+ 255 005a 2146     		mov	r1, r4
+ 256 005c 2846     		mov	r0, r5
+ 257 005e FFF7FEFF 		bl	timer_channel_output_config
+ 258              	.LVL14:
+ 163:main.c        **** 
+ 164:main.c        ****     timer_channel_output_pulse_value_config(TIMER15, TIMER_CH_0, buffer[0]);
+ 259              		.loc 1 164 5 view .LVU66
+ 260 0062 114B     		ldr	r3, .L11+4
+ 261 0064 1A88     		ldrh	r2, [r3]
+ 262 0066 2146     		mov	r1, r4
+ 263 0068 2846     		mov	r0, r5
+ 264 006a FFF7FEFF 		bl	timer_channel_output_pulse_value_config
+ 265              	.LVL15:
+ 165:main.c        ****     timer_channel_output_mode_config(TIMER15, TIMER_CH_0, TIMER_OC_MODE_PWM0);
+ 266              		.loc 1 165 5 view .LVU67
+ 267 006e 6022     		movs	r2, #96
+ 268 0070 2146     		mov	r1, r4
+ 269 0072 2846     		mov	r0, r5
+ 270 0074 FFF7FEFF 		bl	timer_channel_output_mode_config
+ 271              	.LVL16:
+ 166:main.c        ****     timer_channel_output_shadow_config(TIMER15, TIMER_CH_0, TIMER_OC_SHADOW_DISABLE);
+ 272              		.loc 1 166 5 view .LVU68
+ 273 0078 2246     		mov	r2, r4
+ 274 007a 2146     		mov	r1, r4
+ 275 007c 2846     		mov	r0, r5
+ 276 007e FFF7FEFF 		bl	timer_channel_output_shadow_config
+ 277              	.LVL17:
+ 167:main.c        **** 
+ 168:main.c        ****     /* TIMER15 primary output enable */
+ 169:main.c        ****     timer_primary_output_config(TIMER15, ENABLE);
+ 278              		.loc 1 169 5 view .LVU69
+ 279 0082 3146     		mov	r1, r6
+ 280 0084 2846     		mov	r0, r5
+ 281 0086 FFF7FEFF 		bl	timer_primary_output_config
+ 282              	.LVL18:
+ 170:main.c        **** 
+ 171:main.c        ****     /* TIMER15 update DMA request enable */
+ 172:main.c        ****     timer_dma_enable(TIMER15, TIMER_DMA_UPD);
+ 283              		.loc 1 172 5 view .LVU70
+ 284 008a 3946     		mov	r1, r7
+ 285 008c 2846     		mov	r0, r5
+ 286 008e FFF7FEFF 		bl	timer_dma_enable
+ 287              	.LVL19:
+ 173:main.c        **** 
+ 174:main.c        ****     /* auto-reload preload enable */
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s 			page 9
+
+
+ 175:main.c        ****     timer_auto_reload_shadow_enable(TIMER15);
+ 288              		.loc 1 175 5 view .LVU71
+ 289 0092 2846     		mov	r0, r5
+ 290 0094 FFF7FEFF 		bl	timer_auto_reload_shadow_enable
+ 291              	.LVL20:
+ 176:main.c        **** 
+ 177:main.c        ****     /* TIMER15 counter enable */
+ 178:main.c        ****     timer_enable(TIMER15);
+ 292              		.loc 1 178 5 view .LVU72
+ 293 0098 2846     		mov	r0, r5
+ 294 009a FFF7FEFF 		bl	timer_enable
+ 295              	.LVL21:
+ 179:main.c        **** }
+ 296              		.loc 1 179 1 is_stmt 0 view .LVU73
+ 297 009e 09B0     		add	sp, sp, #36
+ 298              	.LCFI6:
+ 299              		.cfi_def_cfa_offset 20
+ 300              		@ sp needed
+ 301 00a0 F0BD     		pop	{r4, r5, r6, r7, pc}
+ 302              	.L12:
+ 303 00a2 00BF     		.align	2
+ 304              	.L11:
+ 305 00a4 00440140 		.word	1073824768
+ 306 00a8 00000000 		.word	.LANCHOR0
+ 307              		.cfi_endproc
+ 308              	.LFE121:
+ 310              		.section	.text.main,"ax",%progbits
+ 311              		.align	1
+ 312              		.global	main
+ 313              		.syntax unified
+ 314              		.thumb
+ 315              		.thumb_func
+ 317              	main:
+ 318              	.LFB122:
+ 180:main.c        **** 
+ 181:main.c        **** /*!
+ 182:main.c        ****     \brief      main function
+ 183:main.c        ****     \param[in]  none
+ 184:main.c        ****     \param[out] none
+ 185:main.c        ****     \retval     none
+ 186:main.c        **** */
+ 187:main.c        **** int main(void)
+ 188:main.c        **** {
+ 319              		.loc 1 188 1 is_stmt 1 view -0
+ 320              		.cfi_startproc
+ 321              		@ Volatile: function does not return.
+ 322              		@ args = 0, pretend = 0, frame = 0
+ 323              		@ frame_needed = 0, uses_anonymous_args = 0
+ 324 0000 08B5     		push	{r3, lr}
+ 325              	.LCFI7:
+ 326              		.cfi_def_cfa_offset 8
+ 327              		.cfi_offset 3, -8
+ 328              		.cfi_offset 14, -4
+ 189:main.c        ****     gpio_config();
+ 329              		.loc 1 189 5 view .LVU75
+ 330 0002 FFF7FEFF 		bl	gpio_config
+ 331              	.LVL22:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s 			page 10
+
+
+ 190:main.c        ****     dma_config();
+ 332              		.loc 1 190 5 view .LVU76
+ 333 0006 FFF7FEFF 		bl	dma_config
+ 334              	.LVL23:
+ 191:main.c        ****     timer_config();
+ 335              		.loc 1 191 5 view .LVU77
+ 336 000a FFF7FEFF 		bl	timer_config
+ 337              	.LVL24:
+ 338              	.L14:
+ 192:main.c        **** 
+ 193:main.c        ****     while(1);
+ 339              		.loc 1 193 5 discriminator 1 view .LVU78
+ 340              		.loc 1 193 13 discriminator 1 view .LVU79
+ 341              		.loc 1 193 10 discriminator 1 view .LVU80
+ 342 000e FEE7     		b	.L14
+ 343              		.cfi_endproc
+ 344              	.LFE122:
+ 346              		.global	buffer
+ 347              		.section	.data.buffer,"aw"
+ 348              		.align	2
+ 349              		.set	.LANCHOR0,. + 0
+ 352              	buffer:
+ 353 0000 F900     		.short	249
+ 354 0002 F301     		.short	499
+ 355 0004 ED02     		.short	749
+ 356              		.text
+ 357              	.Letext0:
+ 358              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
+ 359              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
+ 360              		.file 4 "lib/CMSIS/GD/GD32F3x0/Include/gd32f3x0.h"
+ 361              		.file 5 "lib/GD32F3x0/Include/gd32f3x0_dbg.h"
+ 362              		.file 6 "lib/GD32F3x0/Include/gd32f3x0_dma.h"
+ 363              		.file 7 "lib/GD32F3x0/Include/gd32f3x0_rcu.h"
+ 364              		.file 8 "lib/GD32F3x0/Include/gd32f3x0_timer.h"
+ 365              		.file 9 "lib/GD32F3x0/Include/gd32f3x0_gpio.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s 			page 11
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s:18     .text.gpio_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s:24     .text.gpio_config:0000000000000000 gpio_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s:66     .text.gpio_config:0000000000000038 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s:71     .text.dma_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s:77     .text.dma_config:0000000000000000 dma_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s:166    .text.dma_config:0000000000000064 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s:172    .text.timer_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s:178    .text.timer_config:0000000000000000 timer_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s:305    .text.timer_config:00000000000000a4 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s:311    .text.main:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s:317    .text.main:0000000000000000 main
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s:352    .data.buffer:0000000000000000 buffer
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccqCCqtV.s:348    .data.buffer:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+rcu_periph_clock_enable
+gpio_mode_set
+gpio_output_options_set
+gpio_af_set
+dma_deinit
+dma_init
+dma_circulation_enable
+dma_memory_to_memory_disable
+dma_channel_enable
+timer_deinit
+timer_init
+timer_channel_output_config
+timer_channel_output_pulse_value_config
+timer_channel_output_mode_config
+timer_channel_output_shadow_config
+timer_primary_output_config
+timer_dma_enable
+timer_auto_reload_shadow_enable
+timer_enable

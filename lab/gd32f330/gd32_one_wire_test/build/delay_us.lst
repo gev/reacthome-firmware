@@ -1,0 +1,175 @@
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccHTJkfs.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"delay_us.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.delay_init,"ax",%progbits
+  18              		.align	1
+  19              		.global	delay_init
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	delay_init:
+  25              	.LFB116:
+  26              		.file 1 "src/delay_us.c"
+   1:src/delay_us.c **** #include "delay_us.h"
+   2:src/delay_us.c **** 
+   3:src/delay_us.c **** void delay_init(void) {
+  27              		.loc 1 3 23 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 16
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31 0000 00B5     		push	{lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 4
+  34              		.cfi_offset 14, -4
+  35 0002 85B0     		sub	sp, sp, #20
+  36              	.LCFI1:
+  37              		.cfi_def_cfa_offset 24
+   4:src/delay_us.c ****   timer_parameter_struct timer_initpara;
+  38              		.loc 1 4 3 view .LVU1
+   5:src/delay_us.c **** 
+   6:src/delay_us.c ****   /* enable the peripherals clock */
+   7:src/delay_us.c ****   rcu_periph_clock_enable(RCU_TIMER1);
+  39              		.loc 1 7 3 view .LVU2
+  40 0004 4FF4E060 		mov	r0, #1792
+  41 0008 FFF7FEFF 		bl	rcu_periph_clock_enable
+  42              	.LVL0:
+   8:src/delay_us.c **** 
+   9:src/delay_us.c ****   /* deinit a TIMER */
+  10:src/delay_us.c ****   timer_deinit(TIMER1);
+  43              		.loc 1 10 3 view .LVU3
+  44 000c 4FF08040 		mov	r0, #1073741824
+  45 0010 FFF7FEFF 		bl	timer_deinit
+  46              	.LVL1:
+  11:src/delay_us.c ****   /* initialize TIMER init parameter struct */
+  12:src/delay_us.c ****   timer_struct_para_init(&timer_initpara);
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccHTJkfs.s 			page 2
+
+
+  47              		.loc 1 12 3 view .LVU4
+  48 0014 6846     		mov	r0, sp
+  49 0016 FFF7FEFF 		bl	timer_struct_para_init
+  50              	.LVL2:
+  13:src/delay_us.c ****   /* TIMER1 configuration */
+  14:src/delay_us.c ****   timer_initpara.prescaler = 83;
+  51              		.loc 1 14 3 view .LVU5
+  52              		.loc 1 14 28 is_stmt 0 view .LVU6
+  53 001a 5323     		movs	r3, #83
+  54 001c ADF80030 		strh	r3, [sp]	@ movhi
+  15:src/delay_us.c ****   //   timer_initpara.alignedmode       = TIMER_COUNTER_EDGE;
+  16:src/delay_us.c ****   timer_initpara.counterdirection = TIMER_COUNTER_UP;
+  55              		.loc 1 16 3 is_stmt 1 view .LVU7
+  56              		.loc 1 16 35 is_stmt 0 view .LVU8
+  57 0020 0023     		movs	r3, #0
+  58 0022 ADF80430 		strh	r3, [sp, #4]	@ movhi
+  17:src/delay_us.c ****   timer_initpara.period = 0xFFFFFFFF;
+  59              		.loc 1 17 3 is_stmt 1 view .LVU9
+  60              		.loc 1 17 25 is_stmt 0 view .LVU10
+  61 0026 4FF0FF33 		mov	r3, #-1
+  62 002a 0293     		str	r3, [sp, #8]
+  18:src/delay_us.c ****   //   timer_initpara.clockdivision     = TIMER_CKDIV_DIV1;
+  19:src/delay_us.c ****   timer_init(TIMER1, &timer_initpara);
+  63              		.loc 1 19 3 is_stmt 1 view .LVU11
+  64 002c 6946     		mov	r1, sp
+  65 002e 4FF08040 		mov	r0, #1073741824
+  66 0032 FFF7FEFF 		bl	timer_init
+  67              	.LVL3:
+  20:src/delay_us.c ****   timer_enable(TIMER1);
+  68              		.loc 1 20 3 view .LVU12
+  69 0036 4FF08040 		mov	r0, #1073741824
+  70 003a FFF7FEFF 		bl	timer_enable
+  71              	.LVL4:
+  21:src/delay_us.c **** }
+  72              		.loc 1 21 1 is_stmt 0 view .LVU13
+  73 003e 05B0     		add	sp, sp, #20
+  74              	.LCFI2:
+  75              		.cfi_def_cfa_offset 4
+  76              		@ sp needed
+  77 0040 5DF804FB 		ldr	pc, [sp], #4
+  78              		.cfi_endproc
+  79              	.LFE116:
+  81              		.section	.text.delay_us,"ax",%progbits
+  82              		.align	1
+  83              		.global	delay_us
+  84              		.syntax unified
+  85              		.thumb
+  86              		.thumb_func
+  88              	delay_us:
+  89              	.LVL5:
+  90              	.LFB117:
+  22:src/delay_us.c **** 
+  23:src/delay_us.c **** void delay_us(uint32_t time) {
+  91              		.loc 1 23 30 is_stmt 1 view -0
+  92              		.cfi_startproc
+  93              		@ args = 0, pretend = 0, frame = 0
+  94              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccHTJkfs.s 			page 3
+
+
+  95              		@ link register save eliminated.
+  24:src/delay_us.c ****   uint32_t start_tick = TIMER_CNT(TIMER1);
+  96              		.loc 1 24 3 view .LVU15
+  97              		.loc 1 24 12 is_stmt 0 view .LVU16
+  98 0000 4FF08043 		mov	r3, #1073741824
+  99 0004 5A6A     		ldr	r2, [r3, #36]
+ 100              	.LVL6:
+  25:src/delay_us.c ****   while (TIMER_CNT(TIMER1) - start_tick < time)
+ 101              		.loc 1 25 3 is_stmt 1 view .LVU17
+ 102              	.L4:
+  26:src/delay_us.c ****     ;
+ 103              		.loc 1 26 5 discriminator 1 view .LVU18
+  25:src/delay_us.c ****   while (TIMER_CNT(TIMER1) - start_tick < time)
+ 104              		.loc 1 25 9 discriminator 1 view .LVU19
+  25:src/delay_us.c ****   while (TIMER_CNT(TIMER1) - start_tick < time)
+ 105              		.loc 1 25 10 is_stmt 0 discriminator 1 view .LVU20
+ 106 0006 4FF08043 		mov	r3, #1073741824
+ 107 000a 5B6A     		ldr	r3, [r3, #36]
+  25:src/delay_us.c ****   while (TIMER_CNT(TIMER1) - start_tick < time)
+ 108              		.loc 1 25 28 discriminator 1 view .LVU21
+ 109 000c 9B1A     		subs	r3, r3, r2
+  25:src/delay_us.c ****   while (TIMER_CNT(TIMER1) - start_tick < time)
+ 110              		.loc 1 25 9 discriminator 1 view .LVU22
+ 111 000e 8342     		cmp	r3, r0
+ 112 0010 F9D3     		bcc	.L4
+  27:src/delay_us.c **** }...
+ 113              		.loc 1 27 1 view .LVU23
+ 114 0012 7047     		bx	lr
+ 115              		.cfi_endproc
+ 116              	.LFE117:
+ 118              		.text
+ 119              	.Letext0:
+ 120              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
+ 121              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
+ 122              		.file 4 "lib/GD32F3x0/Include/gd32f3x0_timer.h"
+ 123              		.file 5 "lib/GD32F3x0/Include/gd32f3x0_rcu.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccHTJkfs.s 			page 4
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 delay_us.c
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccHTJkfs.s:18     .text.delay_init:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccHTJkfs.s:24     .text.delay_init:0000000000000000 delay_init
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccHTJkfs.s:82     .text.delay_us:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccHTJkfs.s:88     .text.delay_us:0000000000000000 delay_us
+
+UNDEFINED SYMBOLS
+rcu_periph_clock_enable
+timer_deinit
+timer_struct_para_init
+timer_init
+timer_enable

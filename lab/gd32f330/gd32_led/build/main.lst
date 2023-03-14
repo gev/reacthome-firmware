@@ -1,0 +1,758 @@
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"main.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.main,"ax",%progbits
+  18              		.align	1
+  19              		.global	main
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	main:
+  25              	.LFB116:
+  26              		.file 1 "main.c"
+   1:main.c        **** #include "gd32f3x0.h"                   
+   2:main.c        **** #include "gd32f3x0_gpio.h"              
+   3:main.c        **** #include "gd32f3x0_rcu.h"               
+   4:main.c        **** #include <stdint.h>
+   5:main.c        **** #include "sk6812.h"
+   6:main.c        **** 
+   7:main.c        **** int main(){
+  27              		.loc 1 7 11 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31 0000 10B5     		push	{r4, lr}
+  32              	.LCFI0:
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 4, -8
+  35              		.cfi_offset 14, -4
+   8:main.c        **** 	SystemInit();
+  36              		.loc 1 8 2 view .LVU1
+  37 0002 FFF7FEFF 		bl	SystemInit
+  38              	.LVL0:
+   9:main.c        **** 	rcu_periph_clock_enable(RCU_GPIOA);
+  39              		.loc 1 9 2 view .LVU2
+  40 0006 40F21150 		movw	r0, #1297
+  41 000a FFF7FEFF 		bl	rcu_periph_clock_enable
+  42              	.LVL1:
+  10:main.c        **** 	rcu_periph_clock_enable(RCU_GPIOB);
+  43              		.loc 1 10 2 view .LVU3
+  44 000e 40F21250 		movw	r0, #1298
+  45 0012 FFF7FEFF 		bl	rcu_periph_clock_enable
+  46              	.LVL2:
+  11:main.c        **** 
+  12:main.c        **** 	gpio_mode_set(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_8);
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 2
+
+
+  47              		.loc 1 12 2 view .LVU4
+  48 0016 744C     		ldr	r4, .L34
+  49 0018 4FF48073 		mov	r3, #256
+  50 001c 0022     		movs	r2, #0
+  51 001e 0121     		movs	r1, #1
+  52 0020 2046     		mov	r0, r4
+  53 0022 FFF7FEFF 		bl	gpio_mode_set
+  54              	.LVL3:
+  13:main.c        **** 	gpio_output_options_set(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_8);
+  55              		.loc 1 13 2 view .LVU5
+  56 0026 4FF48073 		mov	r3, #256
+  57 002a 0322     		movs	r2, #3
+  58 002c 0021     		movs	r1, #0
+  59 002e 2046     		mov	r0, r4
+  60 0030 FFF7FEFF 		bl	gpio_output_options_set
+  61              	.LVL4:
+  14:main.c        **** 
+  15:main.c        **** 	gpio_mode_set(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_4);
+  62              		.loc 1 15 2 view .LVU6
+  63 0034 1023     		movs	r3, #16
+  64 0036 0022     		movs	r2, #0
+  65 0038 0121     		movs	r1, #1
+  66 003a 4FF09040 		mov	r0, #1207959552
+  67 003e FFF7FEFF 		bl	gpio_mode_set
+  68              	.LVL5:
+  16:main.c        **** 	gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_4);
+  69              		.loc 1 16 2 view .LVU7
+  70 0042 1023     		movs	r3, #16
+  71 0044 0322     		movs	r2, #3
+  72 0046 0021     		movs	r1, #0
+  73 0048 4FF09040 		mov	r0, #1207959552
+  74 004c FFF7FEFF 		bl	gpio_output_options_set
+  75              	.LVL6:
+  17:main.c        **** 	gpio_bit_reset(GPIOA, GPIO_PIN_4);
+  76              		.loc 1 17 2 view .LVU8
+  77 0050 1021     		movs	r1, #16
+  78 0052 4FF09040 		mov	r0, #1207959552
+  79 0056 FFF7FEFF 		bl	gpio_bit_reset
+  80              	.LVL7:
+  18:main.c        **** 
+  19:main.c        **** 	gpio_mode_set(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_15);
+  81              		.loc 1 19 2 view .LVU9
+  82 005a 4FF40043 		mov	r3, #32768
+  83 005e 0022     		movs	r2, #0
+  84 0060 0121     		movs	r1, #1
+  85 0062 4FF09040 		mov	r0, #1207959552
+  86 0066 FFF7FEFF 		bl	gpio_mode_set
+  87              	.LVL8:
+  20:main.c        **** 	gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_15);
+  88              		.loc 1 20 2 view .LVU10
+  89 006a 4FF40043 		mov	r3, #32768
+  90 006e 0322     		movs	r2, #3
+  91 0070 0021     		movs	r1, #0
+  92 0072 4FF09040 		mov	r0, #1207959552
+  93 0076 FFF7FEFF 		bl	gpio_output_options_set
+  94              	.LVL9:
+  21:main.c        **** 
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 3
+
+
+  22:main.c        **** 	sk6812_initialize();
+  95              		.loc 1 22 2 view .LVU11
+  96 007a FFF7FEFF 		bl	sk6812_initialize
+  97              	.LVL10:
+  98 007e ABE0     		b	.L32
+  99              	.LVL11:
+ 100              	.L3:
+ 101              	.LBB2:
+  23:main.c        **** 	while(1){
+  24:main.c        **** 			sk6812_set(1, 255, 255, 255);
+  25:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+  26:main.c        **** 		;
+ 102              		.loc 1 26 3 discriminator 3 view .LVU12
+  25:main.c        **** 		;
+ 103              		.loc 1 25 37 discriminator 3 view .LVU13
+  25:main.c        **** 		;
+ 104              		.loc 1 25 38 is_stmt 0 discriminator 3 view .LVU14
+ 105 0080 0133     		adds	r3, r3, #1
+ 106              	.LVL12:
+ 107              	.L2:
+  25:main.c        **** 		;
+ 108              		.loc 1 25 23 is_stmt 1 discriminator 1 view .LVU15
+  25:main.c        **** 		;
+ 109              		.loc 1 25 3 is_stmt 0 discriminator 1 view .LVU16
+ 110 0082 5A4A     		ldr	r2, .L34+4
+ 111 0084 9342     		cmp	r3, r2
+ 112 0086 FBD3     		bcc	.L3
+ 113              	.LBE2:
+  27:main.c        **** 		sk6812_set(1, 0, 255, 255);
+ 114              		.loc 1 27 3 is_stmt 1 view .LVU17
+ 115 0088 FF23     		movs	r3, #255
+ 116              	.LVL13:
+ 117              		.loc 1 27 3 is_stmt 0 view .LVU18
+ 118 008a 1A46     		mov	r2, r3
+ 119 008c 0021     		movs	r1, #0
+ 120 008e 0120     		movs	r0, #1
+ 121 0090 FFF7FEFF 		bl	sk6812_set
+ 122              	.LVL14:
+  28:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 123              		.loc 1 28 3 is_stmt 1 view .LVU19
+ 124              	.LBB3:
+ 125              		.loc 1 28 7 view .LVU20
+ 126              		.loc 1 28 16 is_stmt 0 view .LVU21
+ 127 0094 0023     		movs	r3, #0
+ 128              		.loc 1 28 3 view .LVU22
+ 129 0096 00E0     		b	.L4
+ 130              	.LVL15:
+ 131              	.L5:
+  29:main.c        **** 		;
+ 132              		.loc 1 29 3 is_stmt 1 discriminator 3 view .LVU23
+  28:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 133              		.loc 1 28 37 discriminator 3 view .LVU24
+  28:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 134              		.loc 1 28 38 is_stmt 0 discriminator 3 view .LVU25
+ 135 0098 0133     		adds	r3, r3, #1
+ 136              	.LVL16:
+ 137              	.L4:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 4
+
+
+  28:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 138              		.loc 1 28 23 is_stmt 1 discriminator 1 view .LVU26
+  28:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 139              		.loc 1 28 3 is_stmt 0 discriminator 1 view .LVU27
+ 140 009a 544A     		ldr	r2, .L34+4
+ 141 009c 9342     		cmp	r3, r2
+ 142 009e FBD3     		bcc	.L5
+ 143              	.LBE3:
+  30:main.c        **** 		sk6812_set(1, 255, 0, 255);
+ 144              		.loc 1 30 3 is_stmt 1 view .LVU28
+ 145 00a0 FF23     		movs	r3, #255
+ 146              	.LVL17:
+ 147              		.loc 1 30 3 is_stmt 0 view .LVU29
+ 148 00a2 0022     		movs	r2, #0
+ 149 00a4 1946     		mov	r1, r3
+ 150 00a6 0120     		movs	r0, #1
+ 151 00a8 FFF7FEFF 		bl	sk6812_set
+ 152              	.LVL18:
+  31:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 153              		.loc 1 31 3 is_stmt 1 view .LVU30
+ 154              	.LBB4:
+ 155              		.loc 1 31 7 view .LVU31
+ 156              		.loc 1 31 16 is_stmt 0 view .LVU32
+ 157 00ac 0023     		movs	r3, #0
+ 158              		.loc 1 31 3 view .LVU33
+ 159 00ae 00E0     		b	.L6
+ 160              	.LVL19:
+ 161              	.L7:
+  32:main.c        **** 		;
+ 162              		.loc 1 32 3 is_stmt 1 discriminator 3 view .LVU34
+  31:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 163              		.loc 1 31 37 discriminator 3 view .LVU35
+  31:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 164              		.loc 1 31 38 is_stmt 0 discriminator 3 view .LVU36
+ 165 00b0 0133     		adds	r3, r3, #1
+ 166              	.LVL20:
+ 167              	.L6:
+  31:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 168              		.loc 1 31 23 is_stmt 1 discriminator 1 view .LVU37
+  31:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 169              		.loc 1 31 3 is_stmt 0 discriminator 1 view .LVU38
+ 170 00b2 4E4A     		ldr	r2, .L34+4
+ 171 00b4 9342     		cmp	r3, r2
+ 172 00b6 FBD3     		bcc	.L7
+ 173              	.LBE4:
+  33:main.c        **** 		sk6812_set(1, 255, 255, 0);
+ 174              		.loc 1 33 3 is_stmt 1 view .LVU39
+ 175 00b8 0023     		movs	r3, #0
+ 176              	.LVL21:
+ 177              		.loc 1 33 3 is_stmt 0 view .LVU40
+ 178 00ba FF22     		movs	r2, #255
+ 179 00bc 1146     		mov	r1, r2
+ 180 00be 0120     		movs	r0, #1
+ 181 00c0 FFF7FEFF 		bl	sk6812_set
+ 182              	.LVL22:
+  34:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 183              		.loc 1 34 3 is_stmt 1 view .LVU41
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 5
+
+
+ 184              	.LBB5:
+ 185              		.loc 1 34 7 view .LVU42
+ 186              		.loc 1 34 16 is_stmt 0 view .LVU43
+ 187 00c4 0023     		movs	r3, #0
+ 188              		.loc 1 34 3 view .LVU44
+ 189 00c6 00E0     		b	.L8
+ 190              	.LVL23:
+ 191              	.L9:
+  35:main.c        **** 		;
+ 192              		.loc 1 35 3 is_stmt 1 discriminator 3 view .LVU45
+  34:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 193              		.loc 1 34 37 discriminator 3 view .LVU46
+  34:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 194              		.loc 1 34 38 is_stmt 0 discriminator 3 view .LVU47
+ 195 00c8 0133     		adds	r3, r3, #1
+ 196              	.LVL24:
+ 197              	.L8:
+  34:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 198              		.loc 1 34 23 is_stmt 1 discriminator 1 view .LVU48
+  34:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 199              		.loc 1 34 3 is_stmt 0 discriminator 1 view .LVU49
+ 200 00ca 484A     		ldr	r2, .L34+4
+ 201 00cc 9342     		cmp	r3, r2
+ 202 00ce FBD3     		bcc	.L9
+ 203              	.LBE5:
+  36:main.c        **** 		sk6812_set(1, 255, 0, 0);
+ 204              		.loc 1 36 3 is_stmt 1 view .LVU50
+ 205 00d0 0023     		movs	r3, #0
+ 206              	.LVL25:
+ 207              		.loc 1 36 3 is_stmt 0 view .LVU51
+ 208 00d2 1A46     		mov	r2, r3
+ 209 00d4 FF21     		movs	r1, #255
+ 210 00d6 0120     		movs	r0, #1
+ 211 00d8 FFF7FEFF 		bl	sk6812_set
+ 212              	.LVL26:
+  37:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 213              		.loc 1 37 3 is_stmt 1 view .LVU52
+ 214              	.LBB6:
+ 215              		.loc 1 37 7 view .LVU53
+ 216              		.loc 1 37 16 is_stmt 0 view .LVU54
+ 217 00dc 0023     		movs	r3, #0
+ 218              		.loc 1 37 3 view .LVU55
+ 219 00de 00E0     		b	.L10
+ 220              	.LVL27:
+ 221              	.L11:
+  38:main.c        **** 		;
+ 222              		.loc 1 38 3 is_stmt 1 discriminator 3 view .LVU56
+  37:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 223              		.loc 1 37 37 discriminator 3 view .LVU57
+  37:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 224              		.loc 1 37 38 is_stmt 0 discriminator 3 view .LVU58
+ 225 00e0 0133     		adds	r3, r3, #1
+ 226              	.LVL28:
+ 227              	.L10:
+  37:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 228              		.loc 1 37 23 is_stmt 1 discriminator 1 view .LVU59
+  37:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 6
+
+
+ 229              		.loc 1 37 3 is_stmt 0 discriminator 1 view .LVU60
+ 230 00e2 424A     		ldr	r2, .L34+4
+ 231 00e4 9342     		cmp	r3, r2
+ 232 00e6 FBD3     		bcc	.L11
+ 233              	.LBE6:
+  39:main.c        **** 		sk6812_set(1, 0, 255, 0);
+ 234              		.loc 1 39 3 is_stmt 1 view .LVU61
+ 235 00e8 0023     		movs	r3, #0
+ 236              	.LVL29:
+ 237              		.loc 1 39 3 is_stmt 0 view .LVU62
+ 238 00ea FF22     		movs	r2, #255
+ 239 00ec 1946     		mov	r1, r3
+ 240 00ee 0120     		movs	r0, #1
+ 241 00f0 FFF7FEFF 		bl	sk6812_set
+ 242              	.LVL30:
+  40:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 243              		.loc 1 40 3 is_stmt 1 view .LVU63
+ 244              	.LBB7:
+ 245              		.loc 1 40 7 view .LVU64
+ 246              		.loc 1 40 16 is_stmt 0 view .LVU65
+ 247 00f4 0023     		movs	r3, #0
+ 248              		.loc 1 40 3 view .LVU66
+ 249 00f6 00E0     		b	.L12
+ 250              	.LVL31:
+ 251              	.L13:
+  41:main.c        **** 		;
+ 252              		.loc 1 41 3 is_stmt 1 discriminator 3 view .LVU67
+  40:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 253              		.loc 1 40 37 discriminator 3 view .LVU68
+  40:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 254              		.loc 1 40 38 is_stmt 0 discriminator 3 view .LVU69
+ 255 00f8 0133     		adds	r3, r3, #1
+ 256              	.LVL32:
+ 257              	.L12:
+  40:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 258              		.loc 1 40 23 is_stmt 1 discriminator 1 view .LVU70
+  40:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 259              		.loc 1 40 3 is_stmt 0 discriminator 1 view .LVU71
+ 260 00fa 3C4A     		ldr	r2, .L34+4
+ 261 00fc 9342     		cmp	r3, r2
+ 262 00fe FBD3     		bcc	.L13
+ 263              	.LBE7:
+  42:main.c        **** 		sk6812_set(1, 0, 0, 255);
+ 264              		.loc 1 42 3 is_stmt 1 view .LVU72
+ 265 0100 FF23     		movs	r3, #255
+ 266              	.LVL33:
+ 267              		.loc 1 42 3 is_stmt 0 view .LVU73
+ 268 0102 0022     		movs	r2, #0
+ 269 0104 1146     		mov	r1, r2
+ 270 0106 0120     		movs	r0, #1
+ 271 0108 FFF7FEFF 		bl	sk6812_set
+ 272              	.LVL34:
+  43:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 273              		.loc 1 43 3 is_stmt 1 view .LVU74
+ 274              	.LBB8:
+ 275              		.loc 1 43 7 view .LVU75
+ 276              		.loc 1 43 16 is_stmt 0 view .LVU76
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 7
+
+
+ 277 010c 0023     		movs	r3, #0
+ 278              		.loc 1 43 3 view .LVU77
+ 279 010e 00E0     		b	.L14
+ 280              	.LVL35:
+ 281              	.L15:
+  44:main.c        **** 		;
+ 282              		.loc 1 44 3 is_stmt 1 discriminator 3 view .LVU78
+  43:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 283              		.loc 1 43 37 discriminator 3 view .LVU79
+  43:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 284              		.loc 1 43 38 is_stmt 0 discriminator 3 view .LVU80
+ 285 0110 0133     		adds	r3, r3, #1
+ 286              	.LVL36:
+ 287              	.L14:
+  43:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 288              		.loc 1 43 23 is_stmt 1 discriminator 1 view .LVU81
+  43:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 289              		.loc 1 43 3 is_stmt 0 discriminator 1 view .LVU82
+ 290 0112 364A     		ldr	r2, .L34+4
+ 291 0114 9342     		cmp	r3, r2
+ 292 0116 FBD3     		bcc	.L15
+ 293              	.LBE8:
+  45:main.c        **** 		sk6812_set(1, 0, 0, 0);
+ 294              		.loc 1 45 3 is_stmt 1 view .LVU83
+ 295 0118 0023     		movs	r3, #0
+ 296              	.LVL37:
+ 297              		.loc 1 45 3 is_stmt 0 view .LVU84
+ 298 011a 1A46     		mov	r2, r3
+ 299 011c 1946     		mov	r1, r3
+ 300 011e 0120     		movs	r0, #1
+ 301 0120 FFF7FEFF 		bl	sk6812_set
+ 302              	.LVL38:
+  46:main.c        **** 		for(uint32_t x = 0; x < 30000000; x++)
+ 303              		.loc 1 46 3 is_stmt 1 view .LVU85
+ 304              	.LBB9:
+ 305              		.loc 1 46 7 view .LVU86
+ 306              		.loc 1 46 16 is_stmt 0 view .LVU87
+ 307 0124 0023     		movs	r3, #0
+ 308              		.loc 1 46 3 view .LVU88
+ 309 0126 00E0     		b	.L16
+ 310              	.LVL39:
+ 311              	.L17:
+  47:main.c        **** 		;
+ 312              		.loc 1 47 3 is_stmt 1 discriminator 3 view .LVU89
+  46:main.c        **** 		for(uint32_t x = 0; x < 30000000; x++)
+ 313              		.loc 1 46 37 discriminator 3 view .LVU90
+  46:main.c        **** 		for(uint32_t x = 0; x < 30000000; x++)
+ 314              		.loc 1 46 38 is_stmt 0 discriminator 3 view .LVU91
+ 315 0128 0133     		adds	r3, r3, #1
+ 316              	.LVL40:
+ 317              	.L16:
+  46:main.c        **** 		for(uint32_t x = 0; x < 30000000; x++)
+ 318              		.loc 1 46 23 is_stmt 1 discriminator 1 view .LVU92
+  46:main.c        **** 		for(uint32_t x = 0; x < 30000000; x++)
+ 319              		.loc 1 46 3 is_stmt 0 discriminator 1 view .LVU93
+ 320 012a 314A     		ldr	r2, .L34+8
+ 321 012c 9342     		cmp	r3, r2
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 8
+
+
+ 322 012e FBD9     		bls	.L17
+ 323              	.LBE9:
+  48:main.c        **** 		sk6812_set(1, 127, 127, 127);
+ 324              		.loc 1 48 3 is_stmt 1 view .LVU94
+ 325 0130 7F23     		movs	r3, #127
+ 326              	.LVL41:
+ 327              		.loc 1 48 3 is_stmt 0 view .LVU95
+ 328 0132 1A46     		mov	r2, r3
+ 329 0134 1946     		mov	r1, r3
+ 330 0136 0120     		movs	r0, #1
+ 331 0138 FFF7FEFF 		bl	sk6812_set
+ 332              	.LVL42:
+  49:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 333              		.loc 1 49 3 is_stmt 1 view .LVU96
+ 334              	.LBB10:
+ 335              		.loc 1 49 7 view .LVU97
+ 336              		.loc 1 49 16 is_stmt 0 view .LVU98
+ 337 013c 0023     		movs	r3, #0
+ 338              		.loc 1 49 3 view .LVU99
+ 339 013e 00E0     		b	.L18
+ 340              	.LVL43:
+ 341              	.L19:
+  50:main.c        **** 		;
+ 342              		.loc 1 50 3 is_stmt 1 discriminator 3 view .LVU100
+  49:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 343              		.loc 1 49 37 discriminator 3 view .LVU101
+  49:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 344              		.loc 1 49 38 is_stmt 0 discriminator 3 view .LVU102
+ 345 0140 0133     		adds	r3, r3, #1
+ 346              	.LVL44:
+ 347              	.L18:
+  49:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 348              		.loc 1 49 23 is_stmt 1 discriminator 1 view .LVU103
+  49:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 349              		.loc 1 49 3 is_stmt 0 discriminator 1 view .LVU104
+ 350 0142 2A4A     		ldr	r2, .L34+4
+ 351 0144 9342     		cmp	r3, r2
+ 352 0146 FBD3     		bcc	.L19
+ 353              	.LBE10:
+  51:main.c        **** 		sk6812_set(1, 0, 127, 127);
+ 354              		.loc 1 51 3 is_stmt 1 view .LVU105
+ 355 0148 7F23     		movs	r3, #127
+ 356              	.LVL45:
+ 357              		.loc 1 51 3 is_stmt 0 view .LVU106
+ 358 014a 1A46     		mov	r2, r3
+ 359 014c 0021     		movs	r1, #0
+ 360 014e 0120     		movs	r0, #1
+ 361 0150 FFF7FEFF 		bl	sk6812_set
+ 362              	.LVL46:
+  52:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 363              		.loc 1 52 3 is_stmt 1 view .LVU107
+ 364              	.LBB11:
+ 365              		.loc 1 52 7 view .LVU108
+ 366              		.loc 1 52 16 is_stmt 0 view .LVU109
+ 367 0154 0023     		movs	r3, #0
+ 368              		.loc 1 52 3 view .LVU110
+ 369 0156 00E0     		b	.L20
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 9
+
+
+ 370              	.LVL47:
+ 371              	.L21:
+  53:main.c        **** 		;
+ 372              		.loc 1 53 3 is_stmt 1 discriminator 3 view .LVU111
+  52:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 373              		.loc 1 52 37 discriminator 3 view .LVU112
+  52:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 374              		.loc 1 52 38 is_stmt 0 discriminator 3 view .LVU113
+ 375 0158 0133     		adds	r3, r3, #1
+ 376              	.LVL48:
+ 377              	.L20:
+  52:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 378              		.loc 1 52 23 is_stmt 1 discriminator 1 view .LVU114
+  52:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 379              		.loc 1 52 3 is_stmt 0 discriminator 1 view .LVU115
+ 380 015a 244A     		ldr	r2, .L34+4
+ 381 015c 9342     		cmp	r3, r2
+ 382 015e FBD3     		bcc	.L21
+ 383              	.LBE11:
+  54:main.c        **** 		sk6812_set(1, 127, 0, 127);
+ 384              		.loc 1 54 3 is_stmt 1 view .LVU116
+ 385 0160 7F23     		movs	r3, #127
+ 386              	.LVL49:
+ 387              		.loc 1 54 3 is_stmt 0 view .LVU117
+ 388 0162 0022     		movs	r2, #0
+ 389 0164 1946     		mov	r1, r3
+ 390 0166 0120     		movs	r0, #1
+ 391 0168 FFF7FEFF 		bl	sk6812_set
+ 392              	.LVL50:
+  55:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 393              		.loc 1 55 3 is_stmt 1 view .LVU118
+ 394              	.LBB12:
+ 395              		.loc 1 55 7 view .LVU119
+ 396              		.loc 1 55 16 is_stmt 0 view .LVU120
+ 397 016c 0023     		movs	r3, #0
+ 398              		.loc 1 55 3 view .LVU121
+ 399 016e 00E0     		b	.L22
+ 400              	.LVL51:
+ 401              	.L23:
+  56:main.c        **** 		;
+ 402              		.loc 1 56 3 is_stmt 1 discriminator 3 view .LVU122
+  55:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 403              		.loc 1 55 37 discriminator 3 view .LVU123
+  55:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 404              		.loc 1 55 38 is_stmt 0 discriminator 3 view .LVU124
+ 405 0170 0133     		adds	r3, r3, #1
+ 406              	.LVL52:
+ 407              	.L22:
+  55:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 408              		.loc 1 55 23 is_stmt 1 discriminator 1 view .LVU125
+  55:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 409              		.loc 1 55 3 is_stmt 0 discriminator 1 view .LVU126
+ 410 0172 1E4A     		ldr	r2, .L34+4
+ 411 0174 9342     		cmp	r3, r2
+ 412 0176 FBD3     		bcc	.L23
+ 413              	.LBE12:
+  57:main.c        **** 		sk6812_set(1, 127, 127, 0);
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 10
+
+
+ 414              		.loc 1 57 3 is_stmt 1 view .LVU127
+ 415 0178 0023     		movs	r3, #0
+ 416              	.LVL53:
+ 417              		.loc 1 57 3 is_stmt 0 view .LVU128
+ 418 017a 7F22     		movs	r2, #127
+ 419 017c 1146     		mov	r1, r2
+ 420 017e 0120     		movs	r0, #1
+ 421 0180 FFF7FEFF 		bl	sk6812_set
+ 422              	.LVL54:
+  58:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 423              		.loc 1 58 3 is_stmt 1 view .LVU129
+ 424              	.LBB13:
+ 425              		.loc 1 58 7 view .LVU130
+ 426              		.loc 1 58 16 is_stmt 0 view .LVU131
+ 427 0184 0023     		movs	r3, #0
+ 428              		.loc 1 58 3 view .LVU132
+ 429 0186 00E0     		b	.L24
+ 430              	.LVL55:
+ 431              	.L25:
+  59:main.c        **** 		;
+ 432              		.loc 1 59 3 is_stmt 1 discriminator 3 view .LVU133
+  58:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 433              		.loc 1 58 37 discriminator 3 view .LVU134
+  58:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 434              		.loc 1 58 38 is_stmt 0 discriminator 3 view .LVU135
+ 435 0188 0133     		adds	r3, r3, #1
+ 436              	.LVL56:
+ 437              	.L24:
+  58:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 438              		.loc 1 58 23 is_stmt 1 discriminator 1 view .LVU136
+  58:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 439              		.loc 1 58 3 is_stmt 0 discriminator 1 view .LVU137
+ 440 018a 184A     		ldr	r2, .L34+4
+ 441 018c 9342     		cmp	r3, r2
+ 442 018e FBD3     		bcc	.L25
+ 443              	.LBE13:
+  60:main.c        **** 		sk6812_set(1, 127, 0, 0);
+ 444              		.loc 1 60 3 is_stmt 1 view .LVU138
+ 445 0190 0023     		movs	r3, #0
+ 446              	.LVL57:
+ 447              		.loc 1 60 3 is_stmt 0 view .LVU139
+ 448 0192 1A46     		mov	r2, r3
+ 449 0194 7F21     		movs	r1, #127
+ 450 0196 0120     		movs	r0, #1
+ 451 0198 FFF7FEFF 		bl	sk6812_set
+ 452              	.LVL58:
+  61:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 453              		.loc 1 61 3 is_stmt 1 view .LVU140
+ 454              	.LBB14:
+ 455              		.loc 1 61 7 view .LVU141
+ 456              		.loc 1 61 16 is_stmt 0 view .LVU142
+ 457 019c 0023     		movs	r3, #0
+ 458              		.loc 1 61 3 view .LVU143
+ 459 019e 00E0     		b	.L26
+ 460              	.LVL59:
+ 461              	.L27:
+  62:main.c        **** 		;
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 11
+
+
+ 462              		.loc 1 62 3 is_stmt 1 discriminator 3 view .LVU144
+  61:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 463              		.loc 1 61 37 discriminator 3 view .LVU145
+  61:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 464              		.loc 1 61 38 is_stmt 0 discriminator 3 view .LVU146
+ 465 01a0 0133     		adds	r3, r3, #1
+ 466              	.LVL60:
+ 467              	.L26:
+  61:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 468              		.loc 1 61 23 is_stmt 1 discriminator 1 view .LVU147
+  61:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 469              		.loc 1 61 3 is_stmt 0 discriminator 1 view .LVU148
+ 470 01a2 124A     		ldr	r2, .L34+4
+ 471 01a4 9342     		cmp	r3, r2
+ 472 01a6 FBD3     		bcc	.L27
+ 473              	.LBE14:
+  63:main.c        **** 		sk6812_set(1, 0, 127, 0);
+ 474              		.loc 1 63 3 is_stmt 1 view .LVU149
+ 475 01a8 0023     		movs	r3, #0
+ 476              	.LVL61:
+ 477              		.loc 1 63 3 is_stmt 0 view .LVU150
+ 478 01aa 7F22     		movs	r2, #127
+ 479 01ac 1946     		mov	r1, r3
+ 480 01ae 0120     		movs	r0, #1
+ 481 01b0 FFF7FEFF 		bl	sk6812_set
+ 482              	.LVL62:
+  64:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 483              		.loc 1 64 3 is_stmt 1 view .LVU151
+ 484              	.LBB15:
+ 485              		.loc 1 64 7 view .LVU152
+ 486              		.loc 1 64 16 is_stmt 0 view .LVU153
+ 487 01b4 0023     		movs	r3, #0
+ 488              		.loc 1 64 3 view .LVU154
+ 489 01b6 00E0     		b	.L28
+ 490              	.LVL63:
+ 491              	.L29:
+  65:main.c        **** 		;
+ 492              		.loc 1 65 3 is_stmt 1 discriminator 3 view .LVU155
+  64:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 493              		.loc 1 64 37 discriminator 3 view .LVU156
+  64:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 494              		.loc 1 64 38 is_stmt 0 discriminator 3 view .LVU157
+ 495 01b8 0133     		adds	r3, r3, #1
+ 496              	.LVL64:
+ 497              	.L28:
+  64:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 498              		.loc 1 64 23 is_stmt 1 discriminator 1 view .LVU158
+  64:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 499              		.loc 1 64 3 is_stmt 0 discriminator 1 view .LVU159
+ 500 01ba 0C4A     		ldr	r2, .L34+4
+ 501 01bc 9342     		cmp	r3, r2
+ 502 01be FBD3     		bcc	.L29
+ 503              	.LBE15:
+  66:main.c        **** 		sk6812_set(1, 0, 0, 127);
+ 504              		.loc 1 66 3 is_stmt 1 view .LVU160
+ 505 01c0 7F23     		movs	r3, #127
+ 506              	.LVL65:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 12
+
+
+ 507              		.loc 1 66 3 is_stmt 0 view .LVU161
+ 508 01c2 0022     		movs	r2, #0
+ 509 01c4 1146     		mov	r1, r2
+ 510 01c6 0120     		movs	r0, #1
+ 511 01c8 FFF7FEFF 		bl	sk6812_set
+ 512              	.LVL66:
+  67:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 513              		.loc 1 67 3 is_stmt 1 view .LVU162
+ 514              	.LBB16:
+ 515              		.loc 1 67 7 view .LVU163
+ 516              		.loc 1 67 16 is_stmt 0 view .LVU164
+ 517 01cc 0023     		movs	r3, #0
+ 518              		.loc 1 67 3 view .LVU165
+ 519 01ce 00E0     		b	.L30
+ 520              	.LVL67:
+ 521              	.L31:
+  68:main.c        **** 		;
+ 522              		.loc 1 68 3 is_stmt 1 discriminator 3 view .LVU166
+  67:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 523              		.loc 1 67 37 discriminator 3 view .LVU167
+  67:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 524              		.loc 1 67 38 is_stmt 0 discriminator 3 view .LVU168
+ 525 01d0 0133     		adds	r3, r3, #1
+ 526              	.LVL68:
+ 527              	.L30:
+  67:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 528              		.loc 1 67 23 is_stmt 1 discriminator 1 view .LVU169
+  67:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 529              		.loc 1 67 3 is_stmt 0 discriminator 1 view .LVU170
+ 530 01d2 064A     		ldr	r2, .L34+4
+ 531 01d4 9342     		cmp	r3, r2
+ 532 01d6 FBD3     		bcc	.L31
+ 533              	.LVL69:
+ 534              	.L32:
+  67:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 535              		.loc 1 67 3 discriminator 1 view .LVU171
+ 536              	.LBE16:
+  23:main.c        **** 			sk6812_set(1, 255, 255, 255);
+ 537              		.loc 1 23 2 is_stmt 1 view .LVU172
+  24:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
+ 538              		.loc 1 24 4 view .LVU173
+ 539 01d8 FF23     		movs	r3, #255
+ 540 01da 1A46     		mov	r2, r3
+ 541 01dc 1946     		mov	r1, r3
+ 542 01de 0120     		movs	r0, #1
+ 543 01e0 FFF7FEFF 		bl	sk6812_set
+ 544              	.LVL70:
+  25:main.c        **** 		;
+ 545              		.loc 1 25 3 view .LVU174
+ 546              	.LBB17:
+  25:main.c        **** 		;
+ 547              		.loc 1 25 7 view .LVU175
+  25:main.c        **** 		;
+ 548              		.loc 1 25 16 is_stmt 0 view .LVU176
+ 549 01e4 0023     		movs	r3, #0
+  25:main.c        **** 		;
+ 550              		.loc 1 25 3 view .LVU177
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 13
+
+
+ 551 01e6 4CE7     		b	.L2
+ 552              	.L35:
+ 553              		.align	2
+ 554              	.L34:
+ 555 01e8 00040048 		.word	1207960576
+ 556 01ec C0E1E400 		.word	15000000
+ 557 01f0 7FC3C901 		.word	29999999
+ 558              	.LBE17:
+ 559              		.cfi_endproc
+ 560              	.LFE116:
+ 562              		.text
+ 563              	.Letext0:
+ 564              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
+ 565              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
+ 566              		.file 4 "lib/CMSIS/GD/GD32F3x0/Include/system_gd32f3x0.h"
+ 567              		.file 5 "lib/GD32F3x0/Include/gd32f3x0_rcu.h"
+ 568              		.file 6 "lib/GD32F3x0/Include/gd32f3x0_gpio.h"
+ 569              		.file 7 "sk6812.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 14
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s:18     .text.main:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s:24     .text.main:0000000000000000 main
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s:555    .text.main:00000000000001e8 $d
+
+UNDEFINED SYMBOLS
+SystemInit
+rcu_periph_clock_enable
+gpio_mode_set
+gpio_output_options_set
+gpio_bit_reset
+sk6812_initialize
+sk6812_set

@@ -1,0 +1,907 @@
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"gd32f3x0_exti.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.exti_deinit,"ax",%progbits
+  18              		.align	1
+  19              		.global	exti_deinit
+  20              		.syntax unified
+  21              		.thumb
+  22              		.thumb_func
+  24              	exti_deinit:
+  25              	.LFB116:
+  26              		.file 1 "lib/GD32F3x0/Source/gd32f3x0_exti.c"
+   1:lib/GD32F3x0/Source/gd32f3x0_exti.c **** /*!
+   2:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \file    gd32f3x0_exti.c
+   3:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \brief   EXTI driver
+   4:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+   5:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \version 2017-06-06, V1.0.0, firmware for GD32F3x0
+   6:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \version 2019-06-01, V2.0.0, firmware for GD32F3x0
+   7:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \version 2020-09-30, V2.1.0, firmware for GD32F3x0
+   8:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \version 2022-01-06, V2.2.0, firmware for GD32F3x0
+   9:lib/GD32F3x0/Source/gd32f3x0_exti.c **** */
+  10:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+  11:lib/GD32F3x0/Source/gd32f3x0_exti.c **** /*
+  12:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     Copyright (c) 2022, GigaDevice Semiconductor Inc.
+  13:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+  14:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     Redistribution and use in source and binary forms, with or without modification,
+  15:lib/GD32F3x0/Source/gd32f3x0_exti.c **** are permitted provided that the following conditions are met:
+  16:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+  17:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     1. Redistributions of source code must retain the above copyright notice, this
+  18:lib/GD32F3x0/Source/gd32f3x0_exti.c ****        list of conditions and the following disclaimer.
+  19:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     2. Redistributions in binary form must reproduce the above copyright notice,
+  20:lib/GD32F3x0/Source/gd32f3x0_exti.c ****        this list of conditions and the following disclaimer in the documentation
+  21:lib/GD32F3x0/Source/gd32f3x0_exti.c ****        and/or other materials provided with the distribution.
+  22:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     3. Neither the name of the copyright holder nor the names of its contributors
+  23:lib/GD32F3x0/Source/gd32f3x0_exti.c ****        may be used to endorse or promote products derived from this software without
+  24:lib/GD32F3x0/Source/gd32f3x0_exti.c ****        specific prior written permission.
+  25:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+  26:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  27:lib/GD32F3x0/Source/gd32f3x0_exti.c **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  28:lib/GD32F3x0/Source/gd32f3x0_exti.c **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  29:lib/GD32F3x0/Source/gd32f3x0_exti.c **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  30:lib/GD32F3x0/Source/gd32f3x0_exti.c **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+  31:lib/GD32F3x0/Source/gd32f3x0_exti.c **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+  32:lib/GD32F3x0/Source/gd32f3x0_exti.c **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s 			page 2
+
+
+  33:lib/GD32F3x0/Source/gd32f3x0_exti.c **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  34:lib/GD32F3x0/Source/gd32f3x0_exti.c **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+  35:lib/GD32F3x0/Source/gd32f3x0_exti.c **** OF SUCH DAMAGE.
+  36:lib/GD32F3x0/Source/gd32f3x0_exti.c **** */
+  37:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+  38:lib/GD32F3x0/Source/gd32f3x0_exti.c **** #include "gd32f3x0_exti.h"
+  39:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+  40:lib/GD32F3x0/Source/gd32f3x0_exti.c **** /*!
+  41:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \brief      reset EXTI, reset the value of all EXTI registers into initial values
+  42:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[in]  none
+  43:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[out] none
+  44:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \retval     none
+  45:lib/GD32F3x0/Source/gd32f3x0_exti.c **** */
+  46:lib/GD32F3x0/Source/gd32f3x0_exti.c **** void exti_deinit(void)
+  47:lib/GD32F3x0/Source/gd32f3x0_exti.c **** {
+  27              		.loc 1 47 1 view -0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+  48:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     /* reset the value of all the EXTI registers */
+  49:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     EXTI_INTEN = (uint32_t)0x0F940000U;
+  32              		.loc 1 49 5 view .LVU1
+  33              		.loc 1 49 16 is_stmt 0 view .LVU2
+  34 0000 064B     		ldr	r3, .L2
+  35 0002 074A     		ldr	r2, .L2+4
+  36 0004 C3F80024 		str	r2, [r3, #1024]
+  50:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     EXTI_EVEN  = (uint32_t)0x00000000U;
+  37              		.loc 1 50 5 is_stmt 1 view .LVU3
+  38              		.loc 1 50 16 is_stmt 0 view .LVU4
+  39 0008 0022     		movs	r2, #0
+  40 000a C3F80424 		str	r2, [r3, #1028]
+  51:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     EXTI_RTEN  = (uint32_t)0x00000000U;
+  41              		.loc 1 51 5 is_stmt 1 view .LVU5
+  42              		.loc 1 51 16 is_stmt 0 view .LVU6
+  43 000e C3F80824 		str	r2, [r3, #1032]
+  52:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     EXTI_FTEN  = (uint32_t)0x00000000U;
+  44              		.loc 1 52 5 is_stmt 1 view .LVU7
+  45              		.loc 1 52 16 is_stmt 0 view .LVU8
+  46 0012 C3F80C24 		str	r2, [r3, #1036]
+  53:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     EXTI_SWIEV = (uint32_t)0x00000000U;
+  47              		.loc 1 53 5 is_stmt 1 view .LVU9
+  48              		.loc 1 53 16 is_stmt 0 view .LVU10
+  49 0016 C3F81024 		str	r2, [r3, #1040]
+  54:lib/GD32F3x0/Source/gd32f3x0_exti.c **** }
+  50              		.loc 1 54 1 view .LVU11
+  51 001a 7047     		bx	lr
+  52              	.L3:
+  53              		.align	2
+  54              	.L2:
+  55 001c 00000140 		.word	1073807360
+  56 0020 0000940F 		.word	261357568
+  57              		.cfi_endproc
+  58              	.LFE116:
+  60              		.section	.text.exti_init,"ax",%progbits
+  61              		.align	1
+  62              		.global	exti_init
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s 			page 3
+
+
+  63              		.syntax unified
+  64              		.thumb
+  65              		.thumb_func
+  67              	exti_init:
+  68              	.LVL0:
+  69              	.LFB117:
+  55:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+  56:lib/GD32F3x0/Source/gd32f3x0_exti.c **** /*!
+  57:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \brief      initialize the EXTI, enable the configuration of EXTI initialize
+  58:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[in]  linex: EXTI line number, refer to exti_line_enum
+  59:lib/GD32F3x0/Source/gd32f3x0_exti.c ****                 only one parameter can be selected which is shown as below:
+  60:lib/GD32F3x0/Source/gd32f3x0_exti.c ****       \arg        EXTI_x (x=0..19,21,22): EXTI line x
+  61:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[in]  mode: interrupt or event mode, refer to exti_mode_enum
+  62:lib/GD32F3x0/Source/gd32f3x0_exti.c ****                 only one parameter can be selected which is shown as below:
+  63:lib/GD32F3x0/Source/gd32f3x0_exti.c ****       \arg        EXTI_INTERRUPT: interrupt mode
+  64:lib/GD32F3x0/Source/gd32f3x0_exti.c ****       \arg        EXTI_EVENT: event mode
+  65:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[in]  trig_type: interrupt trigger type, refer to exti_trig_type_enum
+  66:lib/GD32F3x0/Source/gd32f3x0_exti.c ****                 only one parameter can be selected which is shown as below:
+  67:lib/GD32F3x0/Source/gd32f3x0_exti.c ****       \arg        EXTI_TRIG_RISING: rising edge trigger
+  68:lib/GD32F3x0/Source/gd32f3x0_exti.c ****       \arg        EXTI_TRIG_FALLING: falling trigger
+  69:lib/GD32F3x0/Source/gd32f3x0_exti.c ****       \arg        EXTI_TRIG_BOTH: rising and falling trigger
+  70:lib/GD32F3x0/Source/gd32f3x0_exti.c ****       \arg        EXTI_TRIG_NONE: without rising edge or falling edge trigger
+  71:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[out] none
+  72:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \retval     none
+  73:lib/GD32F3x0/Source/gd32f3x0_exti.c **** */
+  74:lib/GD32F3x0/Source/gd32f3x0_exti.c **** void exti_init(exti_line_enum linex, \
+  75:lib/GD32F3x0/Source/gd32f3x0_exti.c ****                exti_mode_enum mode, \
+  76:lib/GD32F3x0/Source/gd32f3x0_exti.c ****                exti_trig_type_enum trig_type)
+  77:lib/GD32F3x0/Source/gd32f3x0_exti.c **** {
+  70              		.loc 1 77 1 is_stmt 1 view -0
+  71              		.cfi_startproc
+  72              		@ args = 0, pretend = 0, frame = 0
+  73              		@ frame_needed = 0, uses_anonymous_args = 0
+  74              		@ link register save eliminated.
+  75              		.loc 1 77 1 is_stmt 0 view .LVU13
+  76 0000 10B4     		push	{r4}
+  77              	.LCFI0:
+  78              		.cfi_def_cfa_offset 4
+  79              		.cfi_offset 4, -4
+  78:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     /* reset the EXTI line x */
+  79:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     EXTI_INTEN &= ~(uint32_t)linex;
+  80              		.loc 1 79 5 is_stmt 1 view .LVU14
+  81              		.loc 1 79 16 is_stmt 0 view .LVU15
+  82 0002 2C4B     		ldr	r3, .L13
+  83 0004 D3F80044 		ldr	r4, [r3, #1024]
+  84              		.loc 1 79 19 view .LVU16
+  85 0008 6FEA000C 		mvn	ip, r0
+  86              		.loc 1 79 16 view .LVU17
+  87 000c 24EA0004 		bic	r4, r4, r0
+  88 0010 C3F80044 		str	r4, [r3, #1024]
+  80:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     EXTI_EVEN &= ~(uint32_t)linex;
+  89              		.loc 1 80 5 is_stmt 1 view .LVU18
+  90              		.loc 1 80 15 is_stmt 0 view .LVU19
+  91 0014 D3F80444 		ldr	r4, [r3, #1028]
+  92 0018 24EA0004 		bic	r4, r4, r0
+  93 001c C3F80444 		str	r4, [r3, #1028]
+  81:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     EXTI_RTEN &= ~(uint32_t)linex;
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s 			page 4
+
+
+  94              		.loc 1 81 5 is_stmt 1 view .LVU20
+  95              		.loc 1 81 15 is_stmt 0 view .LVU21
+  96 0020 D3F80844 		ldr	r4, [r3, #1032]
+  97 0024 24EA0004 		bic	r4, r4, r0
+  98 0028 C3F80844 		str	r4, [r3, #1032]
+  82:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     EXTI_FTEN &= ~(uint32_t)linex;
+  99              		.loc 1 82 5 is_stmt 1 view .LVU22
+ 100              		.loc 1 82 15 is_stmt 0 view .LVU23
+ 101 002c D3F80C44 		ldr	r4, [r3, #1036]
+ 102 0030 24EA0004 		bic	r4, r4, r0
+ 103 0034 C3F80C44 		str	r4, [r3, #1036]
+  83:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+  84:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     /* set the EXTI mode and enable the interrupts or events from EXTI line x */
+  85:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     switch(mode) {
+ 104              		.loc 1 85 5 is_stmt 1 view .LVU24
+ 105 0038 41B1     		cbz	r1, .L5
+ 106 003a 0129     		cmp	r1, #1
+ 107 003c 0DD0     		beq	.L6
+ 108              	.LVL1:
+ 109              	.L7:
+  86:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     case EXTI_INTERRUPT:
+  87:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         EXTI_INTEN |= (uint32_t)linex;
+  88:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+  89:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     case EXTI_EVENT:
+  90:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         EXTI_EVEN |= (uint32_t)linex;
+  91:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+  92:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     default:
+  93:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+  94:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     }
+  95:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+  96:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     /* set the EXTI trigger type */
+  97:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     switch(trig_type) {
+ 110              		.loc 1 97 5 view .LVU25
+ 111 003e 012A     		cmp	r2, #1
+ 112 0040 1FD0     		beq	.L8
+ 113 0042 022A     		cmp	r2, #2
+ 114 0044 2AD0     		beq	.L9
+ 115 0046 7AB1     		cbz	r2, .L12
+ 116              	.LVL2:
+ 117              	.L4:
+  98:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     case EXTI_TRIG_RISING:
+  99:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         EXTI_RTEN |= (uint32_t)linex;
+ 100:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         EXTI_FTEN &= ~(uint32_t)linex;
+ 101:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+ 102:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     case EXTI_TRIG_FALLING:
+ 103:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         EXTI_RTEN &= ~(uint32_t)linex;
+ 104:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         EXTI_FTEN |= (uint32_t)linex;
+ 105:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+ 106:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     case EXTI_TRIG_BOTH:
+ 107:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         EXTI_RTEN |= (uint32_t)linex;
+ 108:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         EXTI_FTEN |= (uint32_t)linex;
+ 109:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+ 110:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     case EXTI_TRIG_NONE:
+ 111:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     default:
+ 112:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+ 113:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     }
+ 114:lib/GD32F3x0/Source/gd32f3x0_exti.c **** }
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s 			page 5
+
+
+ 118              		.loc 1 114 1 is_stmt 0 view .LVU26
+ 119 0048 10BC     		pop	{r4}
+ 120              	.LCFI1:
+ 121              		.cfi_remember_state
+ 122              		.cfi_restore 4
+ 123              		.cfi_def_cfa_offset 0
+ 124 004a 7047     		bx	lr
+ 125              	.LVL3:
+ 126              	.L5:
+ 127              	.LCFI2:
+ 128              		.cfi_restore_state
+  87:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+ 129              		.loc 1 87 9 is_stmt 1 view .LVU27
+  87:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+ 130              		.loc 1 87 20 is_stmt 0 view .LVU28
+ 131 004c 1949     		ldr	r1, .L13
+ 132              	.LVL4:
+  87:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+ 133              		.loc 1 87 20 view .LVU29
+ 134 004e D1F80034 		ldr	r3, [r1, #1024]
+ 135 0052 0343     		orrs	r3, r3, r0
+ 136 0054 C1F80034 		str	r3, [r1, #1024]
+  88:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     case EXTI_EVENT:
+ 137              		.loc 1 88 9 is_stmt 1 view .LVU30
+ 138 0058 F1E7     		b	.L7
+ 139              	.LVL5:
+ 140              	.L6:
+  90:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+ 141              		.loc 1 90 9 view .LVU31
+  90:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+ 142              		.loc 1 90 19 is_stmt 0 view .LVU32
+ 143 005a 1649     		ldr	r1, .L13
+ 144              	.LVL6:
+  90:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+ 145              		.loc 1 90 19 view .LVU33
+ 146 005c D1F80434 		ldr	r3, [r1, #1028]
+ 147 0060 0343     		orrs	r3, r3, r0
+ 148 0062 C1F80434 		str	r3, [r1, #1028]
+  91:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     default:
+ 149              		.loc 1 91 9 is_stmt 1 view .LVU34
+ 150 0066 EAE7     		b	.L7
+ 151              	.L12:
+  99:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         EXTI_FTEN &= ~(uint32_t)linex;
+ 152              		.loc 1 99 9 view .LVU35
+  99:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         EXTI_FTEN &= ~(uint32_t)linex;
+ 153              		.loc 1 99 19 is_stmt 0 view .LVU36
+ 154 0068 124B     		ldr	r3, .L13
+ 155 006a D3F80824 		ldr	r2, [r3, #1032]
+ 156              	.LVL7:
+  99:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         EXTI_FTEN &= ~(uint32_t)linex;
+ 157              		.loc 1 99 19 view .LVU37
+ 158 006e 1043     		orrs	r0, r0, r2
+ 159              	.LVL8:
+  99:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         EXTI_FTEN &= ~(uint32_t)linex;
+ 160              		.loc 1 99 19 view .LVU38
+ 161 0070 C3F80804 		str	r0, [r3, #1032]
+ 100:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s 			page 6
+
+
+ 162              		.loc 1 100 9 is_stmt 1 view .LVU39
+ 100:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+ 163              		.loc 1 100 19 is_stmt 0 view .LVU40
+ 164 0074 D3F80C24 		ldr	r2, [r3, #1036]
+ 165 0078 0CEA0202 		and	r2, ip, r2
+ 166 007c C3F80C24 		str	r2, [r3, #1036]
+ 101:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     case EXTI_TRIG_FALLING:
+ 167              		.loc 1 101 9 is_stmt 1 view .LVU41
+ 168 0080 E2E7     		b	.L4
+ 169              	.LVL9:
+ 170              	.L8:
+ 103:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         EXTI_FTEN |= (uint32_t)linex;
+ 171              		.loc 1 103 9 view .LVU42
+ 103:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         EXTI_FTEN |= (uint32_t)linex;
+ 172              		.loc 1 103 19 is_stmt 0 view .LVU43
+ 173 0082 0C4A     		ldr	r2, .L13
+ 174              	.LVL10:
+ 103:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         EXTI_FTEN |= (uint32_t)linex;
+ 175              		.loc 1 103 19 view .LVU44
+ 176 0084 D2F80834 		ldr	r3, [r2, #1032]
+ 177 0088 0CEA0303 		and	r3, ip, r3
+ 178 008c C2F80834 		str	r3, [r2, #1032]
+ 104:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+ 179              		.loc 1 104 9 is_stmt 1 view .LVU45
+ 104:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+ 180              		.loc 1 104 19 is_stmt 0 view .LVU46
+ 181 0090 D2F80C34 		ldr	r3, [r2, #1036]
+ 182 0094 1843     		orrs	r0, r0, r3
+ 183              	.LVL11:
+ 104:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+ 184              		.loc 1 104 19 view .LVU47
+ 185 0096 C2F80C04 		str	r0, [r2, #1036]
+ 105:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     case EXTI_TRIG_BOTH:
+ 186              		.loc 1 105 9 is_stmt 1 view .LVU48
+ 187 009a D5E7     		b	.L4
+ 188              	.LVL12:
+ 189              	.L9:
+ 107:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         EXTI_FTEN |= (uint32_t)linex;
+ 190              		.loc 1 107 9 view .LVU49
+ 107:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         EXTI_FTEN |= (uint32_t)linex;
+ 191              		.loc 1 107 19 is_stmt 0 view .LVU50
+ 192 009c 054B     		ldr	r3, .L13
+ 193 009e D3F80824 		ldr	r2, [r3, #1032]
+ 194              	.LVL13:
+ 107:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         EXTI_FTEN |= (uint32_t)linex;
+ 195              		.loc 1 107 19 view .LVU51
+ 196 00a2 0243     		orrs	r2, r2, r0
+ 197 00a4 C3F80824 		str	r2, [r3, #1032]
+ 108:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+ 198              		.loc 1 108 9 is_stmt 1 view .LVU52
+ 108:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+ 199              		.loc 1 108 19 is_stmt 0 view .LVU53
+ 200 00a8 D3F80C24 		ldr	r2, [r3, #1036]
+ 201 00ac 1043     		orrs	r0, r0, r2
+ 202              	.LVL14:
+ 108:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         break;
+ 203              		.loc 1 108 19 view .LVU54
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s 			page 7
+
+
+ 204 00ae C3F80C04 		str	r0, [r3, #1036]
+ 109:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     case EXTI_TRIG_NONE:
+ 205              		.loc 1 109 9 is_stmt 1 view .LVU55
+ 206              		.loc 1 114 1 is_stmt 0 view .LVU56
+ 207 00b2 C9E7     		b	.L4
+ 208              	.L14:
+ 209              		.align	2
+ 210              	.L13:
+ 211 00b4 00000140 		.word	1073807360
+ 212              		.cfi_endproc
+ 213              	.LFE117:
+ 215              		.section	.text.exti_interrupt_enable,"ax",%progbits
+ 216              		.align	1
+ 217              		.global	exti_interrupt_enable
+ 218              		.syntax unified
+ 219              		.thumb
+ 220              		.thumb_func
+ 222              	exti_interrupt_enable:
+ 223              	.LVL15:
+ 224              	.LFB118:
+ 115:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+ 116:lib/GD32F3x0/Source/gd32f3x0_exti.c **** /*!
+ 117:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \brief      enable the interrupts from EXTI line x
+ 118:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[in]  linex: EXTI line number, refer to exti_line_enum
+ 119:lib/GD32F3x0/Source/gd32f3x0_exti.c ****                 only one parameter can be selected which is shown as below:
+ 120:lib/GD32F3x0/Source/gd32f3x0_exti.c ****       \arg        EXTI_x (x=0..27): EXTI line x
+ 121:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[out] none
+ 122:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \retval     none
+ 123:lib/GD32F3x0/Source/gd32f3x0_exti.c **** */
+ 124:lib/GD32F3x0/Source/gd32f3x0_exti.c **** void exti_interrupt_enable(exti_line_enum linex)
+ 125:lib/GD32F3x0/Source/gd32f3x0_exti.c **** {
+ 225              		.loc 1 125 1 is_stmt 1 view -0
+ 226              		.cfi_startproc
+ 227              		@ args = 0, pretend = 0, frame = 0
+ 228              		@ frame_needed = 0, uses_anonymous_args = 0
+ 229              		@ link register save eliminated.
+ 126:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     EXTI_INTEN |= (uint32_t)linex;
+ 230              		.loc 1 126 5 view .LVU58
+ 231              		.loc 1 126 16 is_stmt 0 view .LVU59
+ 232 0000 034A     		ldr	r2, .L16
+ 233 0002 D2F80034 		ldr	r3, [r2, #1024]
+ 234 0006 0343     		orrs	r3, r3, r0
+ 235 0008 C2F80034 		str	r3, [r2, #1024]
+ 127:lib/GD32F3x0/Source/gd32f3x0_exti.c **** }
+ 236              		.loc 1 127 1 view .LVU60
+ 237 000c 7047     		bx	lr
+ 238              	.L17:
+ 239 000e 00BF     		.align	2
+ 240              	.L16:
+ 241 0010 00000140 		.word	1073807360
+ 242              		.cfi_endproc
+ 243              	.LFE118:
+ 245              		.section	.text.exti_interrupt_disable,"ax",%progbits
+ 246              		.align	1
+ 247              		.global	exti_interrupt_disable
+ 248              		.syntax unified
+ 249              		.thumb
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s 			page 8
+
+
+ 250              		.thumb_func
+ 252              	exti_interrupt_disable:
+ 253              	.LVL16:
+ 254              	.LFB119:
+ 128:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+ 129:lib/GD32F3x0/Source/gd32f3x0_exti.c **** /*!
+ 130:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \brief      disable the interrupt from EXTI line x
+ 131:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[in]  linex: EXTI line number, refer to exti_line_enum
+ 132:lib/GD32F3x0/Source/gd32f3x0_exti.c ****                 only one parameter can be selected which is shown as below:
+ 133:lib/GD32F3x0/Source/gd32f3x0_exti.c ****       \arg        EXTI_x (x=0..27): EXTI line x
+ 134:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[out] none
+ 135:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \retval     none
+ 136:lib/GD32F3x0/Source/gd32f3x0_exti.c **** */
+ 137:lib/GD32F3x0/Source/gd32f3x0_exti.c **** void exti_interrupt_disable(exti_line_enum linex)
+ 138:lib/GD32F3x0/Source/gd32f3x0_exti.c **** {
+ 255              		.loc 1 138 1 is_stmt 1 view -0
+ 256              		.cfi_startproc
+ 257              		@ args = 0, pretend = 0, frame = 0
+ 258              		@ frame_needed = 0, uses_anonymous_args = 0
+ 259              		@ link register save eliminated.
+ 139:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     EXTI_INTEN &= ~(uint32_t)linex;
+ 260              		.loc 1 139 5 view .LVU62
+ 261              		.loc 1 139 16 is_stmt 0 view .LVU63
+ 262 0000 034A     		ldr	r2, .L19
+ 263 0002 D2F80034 		ldr	r3, [r2, #1024]
+ 264 0006 23EA0003 		bic	r3, r3, r0
+ 265 000a C2F80034 		str	r3, [r2, #1024]
+ 140:lib/GD32F3x0/Source/gd32f3x0_exti.c **** }
+ 266              		.loc 1 140 1 view .LVU64
+ 267 000e 7047     		bx	lr
+ 268              	.L20:
+ 269              		.align	2
+ 270              	.L19:
+ 271 0010 00000140 		.word	1073807360
+ 272              		.cfi_endproc
+ 273              	.LFE119:
+ 275              		.section	.text.exti_event_enable,"ax",%progbits
+ 276              		.align	1
+ 277              		.global	exti_event_enable
+ 278              		.syntax unified
+ 279              		.thumb
+ 280              		.thumb_func
+ 282              	exti_event_enable:
+ 283              	.LVL17:
+ 284              	.LFB120:
+ 141:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+ 142:lib/GD32F3x0/Source/gd32f3x0_exti.c **** /*!
+ 143:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \brief      enable the events from EXTI line x
+ 144:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[in]  linex: EXTI line number, refer to exti_line_enum
+ 145:lib/GD32F3x0/Source/gd32f3x0_exti.c ****                 only one parameter can be selected which is shown as below:
+ 146:lib/GD32F3x0/Source/gd32f3x0_exti.c ****       \arg        EXTI_x (x=0..27): EXTI line x
+ 147:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[out] none
+ 148:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \retval     none
+ 149:lib/GD32F3x0/Source/gd32f3x0_exti.c **** */
+ 150:lib/GD32F3x0/Source/gd32f3x0_exti.c **** void exti_event_enable(exti_line_enum linex)
+ 151:lib/GD32F3x0/Source/gd32f3x0_exti.c **** {
+ 285              		.loc 1 151 1 is_stmt 1 view -0
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s 			page 9
+
+
+ 286              		.cfi_startproc
+ 287              		@ args = 0, pretend = 0, frame = 0
+ 288              		@ frame_needed = 0, uses_anonymous_args = 0
+ 289              		@ link register save eliminated.
+ 152:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     EXTI_EVEN |= (uint32_t)linex;
+ 290              		.loc 1 152 5 view .LVU66
+ 291              		.loc 1 152 15 is_stmt 0 view .LVU67
+ 292 0000 034A     		ldr	r2, .L22
+ 293 0002 D2F80434 		ldr	r3, [r2, #1028]
+ 294 0006 0343     		orrs	r3, r3, r0
+ 295 0008 C2F80434 		str	r3, [r2, #1028]
+ 153:lib/GD32F3x0/Source/gd32f3x0_exti.c **** }
+ 296              		.loc 1 153 1 view .LVU68
+ 297 000c 7047     		bx	lr
+ 298              	.L23:
+ 299 000e 00BF     		.align	2
+ 300              	.L22:
+ 301 0010 00000140 		.word	1073807360
+ 302              		.cfi_endproc
+ 303              	.LFE120:
+ 305              		.section	.text.exti_event_disable,"ax",%progbits
+ 306              		.align	1
+ 307              		.global	exti_event_disable
+ 308              		.syntax unified
+ 309              		.thumb
+ 310              		.thumb_func
+ 312              	exti_event_disable:
+ 313              	.LVL18:
+ 314              	.LFB121:
+ 154:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+ 155:lib/GD32F3x0/Source/gd32f3x0_exti.c **** /*!
+ 156:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \brief      disable the events from EXTI line x
+ 157:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[in]  linex: EXTI line number, refer to exti_line_enum
+ 158:lib/GD32F3x0/Source/gd32f3x0_exti.c ****                 only one parameter can be selected which is shown as below:
+ 159:lib/GD32F3x0/Source/gd32f3x0_exti.c ****       \arg        EXTI_x (x=0..27): EXTI line x
+ 160:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[out] none
+ 161:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \retval     none
+ 162:lib/GD32F3x0/Source/gd32f3x0_exti.c **** */
+ 163:lib/GD32F3x0/Source/gd32f3x0_exti.c **** void exti_event_disable(exti_line_enum linex)
+ 164:lib/GD32F3x0/Source/gd32f3x0_exti.c **** {
+ 315              		.loc 1 164 1 is_stmt 1 view -0
+ 316              		.cfi_startproc
+ 317              		@ args = 0, pretend = 0, frame = 0
+ 318              		@ frame_needed = 0, uses_anonymous_args = 0
+ 319              		@ link register save eliminated.
+ 165:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     EXTI_EVEN &= ~(uint32_t)linex;
+ 320              		.loc 1 165 5 view .LVU70
+ 321              		.loc 1 165 15 is_stmt 0 view .LVU71
+ 322 0000 034A     		ldr	r2, .L25
+ 323 0002 D2F80434 		ldr	r3, [r2, #1028]
+ 324 0006 23EA0003 		bic	r3, r3, r0
+ 325 000a C2F80434 		str	r3, [r2, #1028]
+ 166:lib/GD32F3x0/Source/gd32f3x0_exti.c **** }
+ 326              		.loc 1 166 1 view .LVU72
+ 327 000e 7047     		bx	lr
+ 328              	.L26:
+ 329              		.align	2
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s 			page 10
+
+
+ 330              	.L25:
+ 331 0010 00000140 		.word	1073807360
+ 332              		.cfi_endproc
+ 333              	.LFE121:
+ 335              		.section	.text.exti_software_interrupt_enable,"ax",%progbits
+ 336              		.align	1
+ 337              		.global	exti_software_interrupt_enable
+ 338              		.syntax unified
+ 339              		.thumb
+ 340              		.thumb_func
+ 342              	exti_software_interrupt_enable:
+ 343              	.LVL19:
+ 344              	.LFB122:
+ 167:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+ 168:lib/GD32F3x0/Source/gd32f3x0_exti.c **** /*!
+ 169:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \brief      enable EXTI software interrupt event
+ 170:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[in]  linex: EXTI line number, refer to exti_line_enum
+ 171:lib/GD32F3x0/Source/gd32f3x0_exti.c ****                 only one parameter can be selected which is shown as below:
+ 172:lib/GD32F3x0/Source/gd32f3x0_exti.c ****       \arg        EXTI_x (x=0..19,21,22): EXTI line x
+ 173:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[out] none
+ 174:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \retval     none
+ 175:lib/GD32F3x0/Source/gd32f3x0_exti.c **** */
+ 176:lib/GD32F3x0/Source/gd32f3x0_exti.c **** void exti_software_interrupt_enable(exti_line_enum linex)
+ 177:lib/GD32F3x0/Source/gd32f3x0_exti.c **** {
+ 345              		.loc 1 177 1 is_stmt 1 view -0
+ 346              		.cfi_startproc
+ 347              		@ args = 0, pretend = 0, frame = 0
+ 348              		@ frame_needed = 0, uses_anonymous_args = 0
+ 349              		@ link register save eliminated.
+ 178:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     EXTI_SWIEV |= (uint32_t)linex;
+ 350              		.loc 1 178 5 view .LVU74
+ 351              		.loc 1 178 16 is_stmt 0 view .LVU75
+ 352 0000 034A     		ldr	r2, .L28
+ 353 0002 D2F81034 		ldr	r3, [r2, #1040]
+ 354 0006 0343     		orrs	r3, r3, r0
+ 355 0008 C2F81034 		str	r3, [r2, #1040]
+ 179:lib/GD32F3x0/Source/gd32f3x0_exti.c **** }
+ 356              		.loc 1 179 1 view .LVU76
+ 357 000c 7047     		bx	lr
+ 358              	.L29:
+ 359 000e 00BF     		.align	2
+ 360              	.L28:
+ 361 0010 00000140 		.word	1073807360
+ 362              		.cfi_endproc
+ 363              	.LFE122:
+ 365              		.section	.text.exti_software_interrupt_disable,"ax",%progbits
+ 366              		.align	1
+ 367              		.global	exti_software_interrupt_disable
+ 368              		.syntax unified
+ 369              		.thumb
+ 370              		.thumb_func
+ 372              	exti_software_interrupt_disable:
+ 373              	.LVL20:
+ 374              	.LFB123:
+ 180:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+ 181:lib/GD32F3x0/Source/gd32f3x0_exti.c **** /*!
+ 182:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \brief      disable EXTI software interrupt event
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s 			page 11
+
+
+ 183:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[in]  linex: EXTI line number, refer to exti_line_enum
+ 184:lib/GD32F3x0/Source/gd32f3x0_exti.c ****                 only one parameter can be selected which is shown as below:
+ 185:lib/GD32F3x0/Source/gd32f3x0_exti.c ****       \arg        EXTI_x (x=0..19,21,22): EXTI line x
+ 186:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[out] none
+ 187:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \retval     none
+ 188:lib/GD32F3x0/Source/gd32f3x0_exti.c **** */
+ 189:lib/GD32F3x0/Source/gd32f3x0_exti.c **** void exti_software_interrupt_disable(exti_line_enum linex)
+ 190:lib/GD32F3x0/Source/gd32f3x0_exti.c **** {
+ 375              		.loc 1 190 1 is_stmt 1 view -0
+ 376              		.cfi_startproc
+ 377              		@ args = 0, pretend = 0, frame = 0
+ 378              		@ frame_needed = 0, uses_anonymous_args = 0
+ 379              		@ link register save eliminated.
+ 191:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     EXTI_SWIEV &= ~(uint32_t)linex;
+ 380              		.loc 1 191 5 view .LVU78
+ 381              		.loc 1 191 16 is_stmt 0 view .LVU79
+ 382 0000 034A     		ldr	r2, .L31
+ 383 0002 D2F81034 		ldr	r3, [r2, #1040]
+ 384 0006 23EA0003 		bic	r3, r3, r0
+ 385 000a C2F81034 		str	r3, [r2, #1040]
+ 192:lib/GD32F3x0/Source/gd32f3x0_exti.c **** }
+ 386              		.loc 1 192 1 view .LVU80
+ 387 000e 7047     		bx	lr
+ 388              	.L32:
+ 389              		.align	2
+ 390              	.L31:
+ 391 0010 00000140 		.word	1073807360
+ 392              		.cfi_endproc
+ 393              	.LFE123:
+ 395              		.section	.text.exti_flag_get,"ax",%progbits
+ 396              		.align	1
+ 397              		.global	exti_flag_get
+ 398              		.syntax unified
+ 399              		.thumb
+ 400              		.thumb_func
+ 402              	exti_flag_get:
+ 403              	.LVL21:
+ 404              	.LFB124:
+ 193:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+ 194:lib/GD32F3x0/Source/gd32f3x0_exti.c **** /*!
+ 195:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \brief      get EXTI line x pending flag
+ 196:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[in]  linex: EXTI line number, refer to exti_line_enum
+ 197:lib/GD32F3x0/Source/gd32f3x0_exti.c ****                 only one parameter can be selected which is shown as below:
+ 198:lib/GD32F3x0/Source/gd32f3x0_exti.c ****       \arg        EXTI_x (x=0..19,21,22): EXTI line x
+ 199:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[out] none
+ 200:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \retval     FlagStatus: status of flag (RESET or SET)
+ 201:lib/GD32F3x0/Source/gd32f3x0_exti.c **** */
+ 202:lib/GD32F3x0/Source/gd32f3x0_exti.c **** FlagStatus exti_flag_get(exti_line_enum linex)
+ 203:lib/GD32F3x0/Source/gd32f3x0_exti.c **** {
+ 405              		.loc 1 203 1 is_stmt 1 view -0
+ 406              		.cfi_startproc
+ 407              		@ args = 0, pretend = 0, frame = 0
+ 408              		@ frame_needed = 0, uses_anonymous_args = 0
+ 409              		@ link register save eliminated.
+ 204:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     if(RESET != (EXTI_PD & (uint32_t)linex)) {
+ 410              		.loc 1 204 5 view .LVU82
+ 411              		.loc 1 204 18 is_stmt 0 view .LVU83
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s 			page 12
+
+
+ 412 0000 044B     		ldr	r3, .L36
+ 413 0002 D3F81434 		ldr	r3, [r3, #1044]
+ 414              		.loc 1 204 7 view .LVU84
+ 415 0006 0342     		tst	r3, r0
+ 416 0008 01D0     		beq	.L35
+ 205:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         return SET;
+ 417              		.loc 1 205 16 view .LVU85
+ 418 000a 0120     		movs	r0, #1
+ 419              	.LVL22:
+ 420              		.loc 1 205 16 view .LVU86
+ 421 000c 7047     		bx	lr
+ 422              	.LVL23:
+ 423              	.L35:
+ 206:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     } else {
+ 207:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         return RESET;
+ 424              		.loc 1 207 16 view .LVU87
+ 425 000e 0020     		movs	r0, #0
+ 426              	.LVL24:
+ 208:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     }
+ 209:lib/GD32F3x0/Source/gd32f3x0_exti.c **** }
+ 427              		.loc 1 209 1 view .LVU88
+ 428 0010 7047     		bx	lr
+ 429              	.L37:
+ 430 0012 00BF     		.align	2
+ 431              	.L36:
+ 432 0014 00000140 		.word	1073807360
+ 433              		.cfi_endproc
+ 434              	.LFE124:
+ 436              		.section	.text.exti_flag_clear,"ax",%progbits
+ 437              		.align	1
+ 438              		.global	exti_flag_clear
+ 439              		.syntax unified
+ 440              		.thumb
+ 441              		.thumb_func
+ 443              	exti_flag_clear:
+ 444              	.LVL25:
+ 445              	.LFB125:
+ 210:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+ 211:lib/GD32F3x0/Source/gd32f3x0_exti.c **** /*!
+ 212:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \brief      clear EXTI line x pending flag
+ 213:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[in]  linex: EXTI line number, refer to exti_line_enum
+ 214:lib/GD32F3x0/Source/gd32f3x0_exti.c ****                 only one parameter can be selected which is shown as below:
+ 215:lib/GD32F3x0/Source/gd32f3x0_exti.c ****       \arg        EXTI_x (x=0..19,21,22): EXTI line x
+ 216:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[out] none
+ 217:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \retval     none
+ 218:lib/GD32F3x0/Source/gd32f3x0_exti.c **** */
+ 219:lib/GD32F3x0/Source/gd32f3x0_exti.c **** void exti_flag_clear(exti_line_enum linex)
+ 220:lib/GD32F3x0/Source/gd32f3x0_exti.c **** {
+ 446              		.loc 1 220 1 is_stmt 1 view -0
+ 447              		.cfi_startproc
+ 448              		@ args = 0, pretend = 0, frame = 0
+ 449              		@ frame_needed = 0, uses_anonymous_args = 0
+ 450              		@ link register save eliminated.
+ 221:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     EXTI_PD = (uint32_t)linex;
+ 451              		.loc 1 221 5 view .LVU90
+ 452              		.loc 1 221 13 is_stmt 0 view .LVU91
+ 453 0000 014B     		ldr	r3, .L39
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s 			page 13
+
+
+ 454 0002 C3F81404 		str	r0, [r3, #1044]
+ 222:lib/GD32F3x0/Source/gd32f3x0_exti.c **** }
+ 455              		.loc 1 222 1 view .LVU92
+ 456 0006 7047     		bx	lr
+ 457              	.L40:
+ 458              		.align	2
+ 459              	.L39:
+ 460 0008 00000140 		.word	1073807360
+ 461              		.cfi_endproc
+ 462              	.LFE125:
+ 464              		.section	.text.exti_interrupt_flag_get,"ax",%progbits
+ 465              		.align	1
+ 466              		.global	exti_interrupt_flag_get
+ 467              		.syntax unified
+ 468              		.thumb
+ 469              		.thumb_func
+ 471              	exti_interrupt_flag_get:
+ 472              	.LVL26:
+ 473              	.LFB126:
+ 223:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+ 224:lib/GD32F3x0/Source/gd32f3x0_exti.c **** /*!
+ 225:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \brief      get EXTI line x flag when the interrupt flag is set
+ 226:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[in]  linex: EXTI line number, refer to exti_line_enum
+ 227:lib/GD32F3x0/Source/gd32f3x0_exti.c ****                 only one parameter can be selected which is shown as below:
+ 228:lib/GD32F3x0/Source/gd32f3x0_exti.c ****       \arg        EXTI_x (x=0..19,21,22): EXTI line x
+ 229:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[out] none
+ 230:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \retval     FlagStatus: status of flag (RESET or SET)
+ 231:lib/GD32F3x0/Source/gd32f3x0_exti.c **** */
+ 232:lib/GD32F3x0/Source/gd32f3x0_exti.c **** FlagStatus exti_interrupt_flag_get(exti_line_enum linex)
+ 233:lib/GD32F3x0/Source/gd32f3x0_exti.c **** {
+ 474              		.loc 1 233 1 is_stmt 1 view -0
+ 475              		.cfi_startproc
+ 476              		@ args = 0, pretend = 0, frame = 0
+ 477              		@ frame_needed = 0, uses_anonymous_args = 0
+ 478              		@ link register save eliminated.
+ 234:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     uint32_t flag_left, flag_right;
+ 479              		.loc 1 234 5 view .LVU94
+ 235:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+ 236:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     flag_left = EXTI_PD & (uint32_t)linex;
+ 480              		.loc 1 236 5 view .LVU95
+ 481              		.loc 1 236 17 is_stmt 0 view .LVU96
+ 482 0000 074B     		ldr	r3, .L45
+ 483 0002 D3F81424 		ldr	r2, [r3, #1044]
+ 484              	.LVL27:
+ 237:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     flag_right = EXTI_INTEN & (uint32_t)linex;
+ 485              		.loc 1 237 5 is_stmt 1 view .LVU97
+ 486              		.loc 1 237 18 is_stmt 0 view .LVU98
+ 487 0006 D3F80034 		ldr	r3, [r3, #1024]
+ 488              		.loc 1 237 16 view .LVU99
+ 489 000a 0340     		ands	r3, r3, r0
+ 490              	.LVL28:
+ 238:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+ 239:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     if((RESET != flag_left) && (RESET != flag_right)) {
+ 491              		.loc 1 239 5 is_stmt 1 view .LVU100
+ 492              		.loc 1 239 7 is_stmt 0 view .LVU101
+ 493 000c 0242     		tst	r2, r0
+ 494 000e 02D0     		beq	.L43
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s 			page 14
+
+
+ 495              		.loc 1 239 29 discriminator 1 view .LVU102
+ 496 0010 1BB9     		cbnz	r3, .L44
+ 240:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         return SET;
+ 241:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     } else {
+ 242:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         return RESET;
+ 497              		.loc 1 242 16 view .LVU103
+ 498 0012 0020     		movs	r0, #0
+ 499              	.LVL29:
+ 500              		.loc 1 242 16 view .LVU104
+ 501 0014 7047     		bx	lr
+ 502              	.LVL30:
+ 503              	.L43:
+ 504              		.loc 1 242 16 view .LVU105
+ 505 0016 0020     		movs	r0, #0
+ 506              	.LVL31:
+ 507              		.loc 1 242 16 view .LVU106
+ 508 0018 7047     		bx	lr
+ 509              	.LVL32:
+ 510              	.L44:
+ 240:lib/GD32F3x0/Source/gd32f3x0_exti.c ****         return SET;
+ 511              		.loc 1 240 16 view .LVU107
+ 512 001a 0120     		movs	r0, #1
+ 513              	.LVL33:
+ 243:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     }
+ 244:lib/GD32F3x0/Source/gd32f3x0_exti.c **** }
+ 514              		.loc 1 244 1 view .LVU108
+ 515 001c 7047     		bx	lr
+ 516              	.L46:
+ 517 001e 00BF     		.align	2
+ 518              	.L45:
+ 519 0020 00000140 		.word	1073807360
+ 520              		.cfi_endproc
+ 521              	.LFE126:
+ 523              		.section	.text.exti_interrupt_flag_clear,"ax",%progbits
+ 524              		.align	1
+ 525              		.global	exti_interrupt_flag_clear
+ 526              		.syntax unified
+ 527              		.thumb
+ 528              		.thumb_func
+ 530              	exti_interrupt_flag_clear:
+ 531              	.LVL34:
+ 532              	.LFB127:
+ 245:lib/GD32F3x0/Source/gd32f3x0_exti.c **** 
+ 246:lib/GD32F3x0/Source/gd32f3x0_exti.c **** /*!
+ 247:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \brief      clear EXTI line x pending flag
+ 248:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[in]  linex: EXTI line number, refer to exti_line_enum
+ 249:lib/GD32F3x0/Source/gd32f3x0_exti.c ****                 only one parameter can be selected which is shown as below:
+ 250:lib/GD32F3x0/Source/gd32f3x0_exti.c ****       \arg        EXTI_x (x=0..19,21,22): EXTI line x
+ 251:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \param[out] none
+ 252:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     \retval     none
+ 253:lib/GD32F3x0/Source/gd32f3x0_exti.c **** */
+ 254:lib/GD32F3x0/Source/gd32f3x0_exti.c **** void exti_interrupt_flag_clear(exti_line_enum linex)
+ 255:lib/GD32F3x0/Source/gd32f3x0_exti.c **** {
+ 533              		.loc 1 255 1 is_stmt 1 view -0
+ 534              		.cfi_startproc
+ 535              		@ args = 0, pretend = 0, frame = 0
+ 536              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s 			page 15
+
+
+ 537              		@ link register save eliminated.
+ 256:lib/GD32F3x0/Source/gd32f3x0_exti.c ****     EXTI_PD = (uint32_t)linex;
+ 538              		.loc 1 256 5 view .LVU110
+ 539              		.loc 1 256 13 is_stmt 0 view .LVU111
+ 540 0000 014B     		ldr	r3, .L48
+ 541 0002 C3F81404 		str	r0, [r3, #1044]
+ 257:lib/GD32F3x0/Source/gd32f3x0_exti.c **** }
+ 542              		.loc 1 257 1 view .LVU112
+ 543 0006 7047     		bx	lr
+ 544              	.L49:
+ 545              		.align	2
+ 546              	.L48:
+ 547 0008 00000140 		.word	1073807360
+ 548              		.cfi_endproc
+ 549              	.LFE127:
+ 551              		.text
+ 552              	.Letext0:
+ 553              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
+ 554              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
+ 555              		.file 4 "lib/CMSIS/GD/GD32F3x0/Include/gd32f3x0.h"
+ 556              		.file 5 "lib/GD32F3x0/Include/gd32f3x0_exti.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s 			page 16
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 gd32f3x0_exti.c
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:18     .text.exti_deinit:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:24     .text.exti_deinit:0000000000000000 exti_deinit
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:55     .text.exti_deinit:000000000000001c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:61     .text.exti_init:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:67     .text.exti_init:0000000000000000 exti_init
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:211    .text.exti_init:00000000000000b4 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:216    .text.exti_interrupt_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:222    .text.exti_interrupt_enable:0000000000000000 exti_interrupt_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:241    .text.exti_interrupt_enable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:246    .text.exti_interrupt_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:252    .text.exti_interrupt_disable:0000000000000000 exti_interrupt_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:271    .text.exti_interrupt_disable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:276    .text.exti_event_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:282    .text.exti_event_enable:0000000000000000 exti_event_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:301    .text.exti_event_enable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:306    .text.exti_event_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:312    .text.exti_event_disable:0000000000000000 exti_event_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:331    .text.exti_event_disable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:336    .text.exti_software_interrupt_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:342    .text.exti_software_interrupt_enable:0000000000000000 exti_software_interrupt_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:361    .text.exti_software_interrupt_enable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:366    .text.exti_software_interrupt_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:372    .text.exti_software_interrupt_disable:0000000000000000 exti_software_interrupt_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:391    .text.exti_software_interrupt_disable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:396    .text.exti_flag_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:402    .text.exti_flag_get:0000000000000000 exti_flag_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:432    .text.exti_flag_get:0000000000000014 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:437    .text.exti_flag_clear:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:443    .text.exti_flag_clear:0000000000000000 exti_flag_clear
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:460    .text.exti_flag_clear:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:465    .text.exti_interrupt_flag_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:471    .text.exti_interrupt_flag_get:0000000000000000 exti_interrupt_flag_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:519    .text.exti_interrupt_flag_get:0000000000000020 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:524    .text.exti_interrupt_flag_clear:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:530    .text.exti_interrupt_flag_clear:0000000000000000 exti_interrupt_flag_clear
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccOGiRCN.s:547    .text.exti_interrupt_flag_clear:0000000000000008 $d
+
+NO UNDEFINED SYMBOLS
