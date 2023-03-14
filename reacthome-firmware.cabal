@@ -34,10 +34,12 @@ executable reacthome-firmware
                     , Core.Include
                     , Core.Initialize
                     , Core.Scheduler
-                    , Core.Shake
                     , Core.Task
                     , Core.Transport
                     , Core.Version
+
+                    , Build.Shake
+                    , Build.GCC
 
                     , Data.Value
                     , Data.Record
