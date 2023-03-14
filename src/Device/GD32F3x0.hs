@@ -5,24 +5,20 @@ import           Device.GD32F3x0.GPIO
 import           Device.GD32F3x0.GPIO.Input
 import           Device.GD32F3x0.GPIO.Output
 import           Device.GD32F3x0.GPIOs.Outputs
-import           Device.GD32F3x0.Mac            (makeMac)
-import           Device.GD32F3x0.SystemClock    as G
+import           Device.GD32F3x0.Mac           (makeMac)
+import           Device.GD32F3x0.SystemClock   as G
 import           Device.GD32F3x0.SysTick
 import           Device.GD32F3x0.Timer
 import           Device.GD32F3x0.USART
-import           Interface.Mac                  (Mac)
+import           Interface.Mac                 (Mac)
 import           Interface.MCU
-import           Interface.SystemClock          (SystemClock)
+import           Interface.SystemClock         (SystemClock)
 import           Support.CMSIS.CoreCM4
 import           Support.Device.GD32F3x0
-import           Support.Device.GD32F3x0.DBG
 import           Support.Device.GD32F3x0.DMA
-import           Support.Device.GD32F3x0.EXTI
 import           Support.Device.GD32F3x0.GPIO
-import           Support.Device.GD32F3x0.Misc
+import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.RCU
-import           Support.Device.GD32F3x0.SYSCFG
-import           Support.Device.GD32F3x0.Timer
 import           Support.Device.GD32F3x0.USART
 
 
@@ -182,19 +178,7 @@ gd32f3x0 = GD32F3x0
 
 
 instance Include GD32F3x0 where
-    include _ = do
-        inclDBG
-        inclDMA
-        inclExti
-        inclGPIO
-        inclMisc
-        inclRCU
-        inclSYSCFG
-        inclTimer
-        inclUSART
-        inclG
-        inclCoreCM4
-
+    include _ = inclGD32F3x0
 
 
 instance MCU GD32F3x0 where

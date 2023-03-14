@@ -12,6 +12,7 @@ import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Stdlib
 import           Support.Device.GD32F3x0
+import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.Timer
