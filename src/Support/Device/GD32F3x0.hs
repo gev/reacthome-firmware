@@ -4,10 +4,7 @@
 
 module Support.Device.GD32F3x0 where
 
-import           Ivory.Language
 import           Ivory.Language.Module
-import           Ivory.Language.Proc
-import           Ivory.Language.Syntax
 import           Support.CMSIS.CoreCM4
 import           Support.Device.GD32F3x0.DBG
 import           Support.Device.GD32F3x0.DMA
