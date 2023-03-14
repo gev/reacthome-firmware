@@ -24,7 +24,9 @@ import           Support.Device.GD32F3x0.USART
 
 
 data GD32F3x0 = GD32F3x0
-    { usart_1   :: USART
+    { getModel  :: String
+
+    , usart_1   :: USART
 
     , in_pa_0   :: Input
     , in_pa_1   :: Input
@@ -96,8 +98,10 @@ data GD32F3x0 = GD32F3x0
     }
 
 
-gd32f3x0 = GD32F3x0
-    { usart_1   = USART USART1
+gd32f3x0 :: String -> GD32F3x0
+gd32f3x0 model = GD32F3x0
+    { getModel  = model
+    , usart_1   = USART USART1
                         RCU_USART1
                         USART1_IRQn
                         DMA_CH3
@@ -177,10 +181,17 @@ gd32f3x0 = GD32F3x0
 
 
 
+gd32f330 = gd32f3x0 "GD32F330"
+
+
+
 instance Include GD32F3x0 where
     include _ = inclGD32F3x0
 
 
+
 instance MCU GD32F3x0 where
+    model         = getModel
+    hasFPU      _ = False
     mac         _ = makeMac
     systemClock _ = G.systemClock
