@@ -16,7 +16,6 @@ import           Ivory.Language.Module
 import           Ivory.Language.Proc
 import           Ivory.Language.Syntax
 import           Ivory.Support
-import           Ivory.Support.Device.GD32F3x0
 
 
 inclCoreCM4 :: ModuleM ()
@@ -33,7 +32,7 @@ sysTickConfig :: Uint32 -> Ivory eff ()
 sysTickConfig = call_ sysTick_Config
 
 sysTick_Config :: Def ('[Uint32] :-> ())
-sysTick_Config = fun "SysTick_Config"
+sysTick_Config = importProc "SysTick_Config" "core_cm4.h"
 
 
 
@@ -41,25 +40,25 @@ nop :: Int -> Ivory eff ()
 nop n = replicateM_ n (call_ __NOP)
 
 __NOP :: Def ('[] :-> ())
-__NOP = fun "__NOP"
+__NOP = importProc "__NOP" "core_cm4.h"
 
 
 isb :: Ivory eff ()
 isb = call_ __ISB
 
 __ISB :: Def ('[] :-> ())
-__ISB = fun "__ISB"
+__ISB = importProc "__ISB" "core_cm4.h"
 
 
 dsb :: Ivory eff ()
 dsb = call_ __DSB
 
 __DSB :: Def ('[] :-> ())
-__DSB = fun "__DSB"
+__DSB = importProc "__DSB" "core_cm4.h"
 
 
 dmb :: Ivory eff ()
 dmb = call_ __DMB
 
 __DMB :: Def ('[] :-> ())
-__DMB = fun "__DMB"
+__DMB = importProc "__DMB" "core_cm4.h"
