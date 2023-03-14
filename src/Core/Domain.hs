@@ -19,6 +19,8 @@ import           Ivory.Language
 import           Support.Cast
 import           Support.Serialize
 
+
+
 data Domain mcu t where
      Domain :: (I.MCU mcu, Transport t)
             => { model      :: Value  Uint8
@@ -29,6 +31,7 @@ data Domain mcu t where
                , transport  :: t
                , features   :: [Feature]
                } -> Domain mcu t
+
 
 
 domain :: (I.MCU mcu, Transport t)
@@ -51,7 +54,7 @@ domain model (major, minor) mcu shouldInit transport features = Domain
 
 
 
-instance I.MCU mcu => Include (Domain mcu t) where
+instance Include (Domain mcu t) where
     include (Domain {..}) = do
         inclCast
         inclSerialize
@@ -61,6 +64,7 @@ instance I.MCU mcu => Include (Domain mcu t) where
         include mac
         include shouldInit
         include transport
+
 
 
 instance Initialize (Domain mcu t) where
