@@ -16,27 +16,23 @@ import           Ivory.Language.Module
 
 data Mac = Mac
     { name          :: String
-    , includeMac    :: ModuleM ()
     , initializeMac :: Buffer 6 Uint8 -> forall eff. Ivory eff ()
     , getMac        :: Buffer 6 Uint8
     }
 
 
-mac :: ModuleM ()
-    -> (Buffer 6 Uint8 -> forall eff. Ivory eff ())
+mac :: (Buffer 6 Uint8 -> forall eff. Ivory eff ())
     -> String
     -> Mac
-mac include initialize name = Mac
+mac initialize name = Mac
     { name          = name
-    , includeMac    = include
     , initializeMac = initialize
     , getMac        = buffer name
     }
 
 
 instance Include Mac where
-    include (Mac {..}) =
-        includeMac >> include getMac
+    include (Mac {..}) = include getMac
 
 
 instance Initialize Mac where

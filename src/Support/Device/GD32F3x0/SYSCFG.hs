@@ -8,6 +8,7 @@ module Support.Device.GD32F3x0.SYSCFG
     ( EXTI_PORT(..)
     , EXTI_PIN(..)
     , configExtiLine
+    , inclSYSCFG
     ) where
 
 import           Ivory.Language
@@ -24,16 +25,16 @@ data EXTI_PORT = EXTI_SOURCE_GPIOA
 instance ExtDef EXTI_PORT Uint8
 
 
-data EXTI_PIN =   EXTI_SOURCE_PIN0 
-                | EXTI_SOURCE_PIN1 
-                | EXTI_SOURCE_PIN2 
-                | EXTI_SOURCE_PIN3 
-                | EXTI_SOURCE_PIN4 
-                | EXTI_SOURCE_PIN5 
-                | EXTI_SOURCE_PIN6 
-                | EXTI_SOURCE_PIN7 
-                | EXTI_SOURCE_PIN8 
-                | EXTI_SOURCE_PIN9 
+data EXTI_PIN =   EXTI_SOURCE_PIN0
+                | EXTI_SOURCE_PIN1
+                | EXTI_SOURCE_PIN2
+                | EXTI_SOURCE_PIN3
+                | EXTI_SOURCE_PIN4
+                | EXTI_SOURCE_PIN5
+                | EXTI_SOURCE_PIN6
+                | EXTI_SOURCE_PIN7
+                | EXTI_SOURCE_PIN8
+                | EXTI_SOURCE_PIN9
                 | EXTI_SOURCE_PIN10
                 | EXTI_SOURCE_PIN11
                 | EXTI_SOURCE_PIN12

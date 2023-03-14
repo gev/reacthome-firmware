@@ -5,14 +5,14 @@
 
 module Support.Cast
     ( castArrayToUint32
-    , inclUtil
+    , inclCast
     ) where
 
 import           Ivory.Language
 import           Ivory.Language.Module
 
-inclUtil :: ModuleM ()
-inclUtil = incl cast_to_uint32
+inclCast :: ModuleM ()
+inclCast = incl cast_to_uint32
 
 
 castArrayToUint32 :: Ref r (CArray (Stored Uint16)) -> Ivory eff Uint32

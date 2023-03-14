@@ -24,9 +24,7 @@ data Outputs = Outputs
 
 
 instance Include Outputs where
-    include (Outputs {..}) = do
-        traverse_ include getOutputs
-        runOutputs include
+    include (Outputs {..}) = runOutputs include
 
 instance Initialize Outputs where
     initialize = concatMap initialize . getOutputs

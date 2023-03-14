@@ -35,7 +35,6 @@ data USART = USART
 
 instance Include (I.HandleUSART USART) where
     include (I.HandleUSART (USART {..}) onReceive onTransmit onDrain) =
-        inclG >> inclMisc >> inclUSART >> inclDMA >> inclUtil >> include rx >> include tx >>
         makeIRQHandler usart (handleUSART usart onReceive onDrain) >>
         makeIRQHandler dmaIRQc (handleDMA dma usart onTransmit)
 

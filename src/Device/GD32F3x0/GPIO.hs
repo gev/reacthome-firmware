@@ -71,9 +71,6 @@ io m p = p $ MF m
 
 
 
-instance Include Port where
-    include _ = inclRCU >> inclGPIO
-
 instance Initialize Port where
     initialize (Port {..}) = [
             proc (show gpio <> "_" <> show pin <>"_init") $ body $ do

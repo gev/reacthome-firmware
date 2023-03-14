@@ -16,6 +16,7 @@ import qualified Interface.Mac         as M
 import qualified Interface.MCU         as I
 import           Interface.SystemClock
 import           Ivory.Language
+import           Support.Cast
 import           Support.Serialize
 
 data Domain mcu t where
@@ -50,9 +51,11 @@ domain model (major, minor) mcu shouldInit transport features = Domain
 
 
 
-instance Include (Domain mcu t) where
+instance I.MCU mcu => Include (Domain mcu t) where
     include (Domain {..}) = do
+        inclCast
         inclSerialize
+        include mcu
         include model
         include version
         include mac
