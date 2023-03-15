@@ -4,10 +4,9 @@
 module Transport.RBUS    where
 
 import           Control.Monad.Reader  (Reader, asks, runReader)
+import           Core.Context
 import           Core.Dispatcher
 import qualified Core.Domain           as D
-import           Core.Include
-import           Core.Initialize
 import           Core.Task
 import           Core.Transport
 import           Data.Buffer
@@ -76,25 +75,24 @@ rbus rs = do
 
 
 instance Include RBUS where
-    include r = do include $ rxBuff          r
-                   include $ rxQueue         r
-                   include $ msgOffset       r
-                   include $ msgSize         r
-                   include $ msgTTL          r
-                   include $ msgQueue        r
-                   include $ msgBuff         r
-                   include $ msgIndex        r
-                   include $ txBuff          r
-                   include $ initBuff        r
-                   include $ txLock          r
-                   include $ timestamp       r
-                   include $ shouldConfirm   r
-                   include $ HandleRS485 (rs r) (rxHandle r) (txHandle r)
-                   include $ protocol        r
+    include r@(RBUS {..}) = do
+      include rs
+      include rxBuff
+      include rxQueue
+      include msgOffset
+      include msgSize
+      include msgTTL
+      include msgQueue
+      include msgBuff
+      include msgIndex
+      include txBuff
+      include initBuff
+      include txLock
+      include timestamp
+      include shouldConfirm
+      include $ HandleRS485 rs (rxHandle r) (txHandle r)
+      include protocol
 
-
-instance Initialize RBUS where
-    initialize (RBUS {..}) = initialize rs <> initialize protocol
 
 
 instance Task RBUS where

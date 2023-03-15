@@ -4,8 +4,7 @@
 
 module Core.Task where
 
-import           Core.Include
-import           Core.Initialize
+import           Core.Context
 import           Ivory.Language
 
 
@@ -38,5 +37,5 @@ yeld :: String
 yeld = step Nothing
 
 
-class (Include t, Initialize t) => Task t where
+class Include t => Task t where
     tasks :: t -> [Step]

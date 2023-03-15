@@ -4,8 +4,7 @@
 
 module Interface.SystemClock where
 
-import           Core.Include
-import           Core.Initialize
+import           Core.Context
 import           Data.Value
 import           Interface.Counter (Counter (readCounter))
 import           Interface.Timer   (HandleTimer (HandleTimer), Timer)
@@ -30,14 +29,12 @@ systemClock timer counter = SystemClock
 
 
 instance Include SystemClock where
-    include (SystemClock {..}) =
-        include time >>
+    include (SystemClock {..}) = do
+        include time
+        include counter
         include (HandleTimer timer $ handle time)
 
-instance Initialize SystemClock where
-    initialize (SystemClock {..}) =
-        initialize counter <>
-        initialize (HandleTimer timer $ handle time)
+
 
 handle :: Value Uint32 -> Ivory eff ()
 handle time = do

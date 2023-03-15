@@ -5,11 +5,9 @@
 module Core.Scheduler where
 
 import           Control.Monad         (replicateM, zipWithM_)
+import           Core.Context
 import           Core.Feature
-import           Core.Include
-import           Core.Initialize
 import           Core.Task
-import           Data.Foldable         (traverse_)
 import           Data.List
 import           Data.Maybe
 import           Data.Value
@@ -33,11 +31,7 @@ scheduler clock steps =  Scheduler
 
 
 instance Include Scheduler where
-    include (Scheduler {..}) =
-        include clock
-
-instance Initialize Scheduler where
-    initialize (Scheduler {..}) = initialize clock
+    include (Scheduler {..}) = include clock
 
 
 

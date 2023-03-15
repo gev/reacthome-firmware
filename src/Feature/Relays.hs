@@ -9,11 +9,10 @@
 module Feature.Relays where
 
 import           Control.Monad.Reader    (Reader, asks)
+import           Core.Context
 import           Core.Controller
 import qualified Core.Domain             as D
 import           Core.Feature
-import           Core.Include
-import           Core.Initialize
 import           Core.Task
 import qualified Core.Transport          as T
 import           Data.Buffer
@@ -25,7 +24,7 @@ import qualified Endpoint.Groups         as G
 import qualified Endpoint.Relays         as R
 import           GHC.TypeNats
 import           Interface.GPIOs.Outputs as I
-import           Interface.MCU           (MCU, systemClock, peripherals)
+import           Interface.MCU           (MCU, peripherals, systemClock)
 import           Interface.SystemClock   (SystemClock, getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
@@ -72,11 +71,6 @@ instance Include Relays where
         include getRelays
         include getGroups
         include current
-
-
-instance Initialize Relays where
-    initialize (Relays {..}) =
-        initialize getOutputs
 
 
 

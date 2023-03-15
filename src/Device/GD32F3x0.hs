@@ -1,6 +1,6 @@
 module Device.GD32F3x0 where
 
-import           Core.Include
+import           Core.Context
 import           Device.GD32F3x0.GPIO
 import           Device.GD32F3x0.GPIO.Input
 import           Device.GD32F3x0.GPIO.Output
@@ -183,4 +183,4 @@ gd32f330k8u6 = gd32f3x0 "GD32F330" "k8u6"
 
 
 instance Include GD32F3x0 where
-    include _ = inclGD32F3x0
+    include _ = include inclGD32F3x0

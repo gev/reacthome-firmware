@@ -1,11 +1,13 @@
+{-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE RankNTypes        #-}
 {-# LANGUAGE RecordWildCards   #-}
+{-# LANGUAGE TypeOperators     #-}
 
 module Device.GD32F3x0.Timer where
 
-import           Core.Include
-import           Core.Initialize
+import           Core.Context
 import qualified Interface.Counter             as I
 import qualified Interface.Timer               as I
 import           Ivory.Language
@@ -33,14 +35,15 @@ timer_2 :: TIMER_PARAM -> Timer
 timer_2 = Timer TIMER2 RCU_TIMER2 TIMER2_IRQn
 
 
-instance Initialize Timer where
-    initialize (Timer {..}) = [
-            proc (show timer <> "_init") $ body $ do
+instance Include Timer where
+    include (Timer {..}) = include initTimer'
+        where
+            initTimer' :: Def ('[] ':-> ())
+            initTimer' = proc (show timer <> "_init") $ body $ do
                 enablePeriphClock rcu
                 deinitTimer       timer
                 initTimer         timer param
                 enableTimer       timer
-        ]
 
 
 instance I.Counter Timer where
@@ -48,16 +51,14 @@ instance I.Counter Timer where
 
 
 instance Include (I.HandleTimer Timer) where
-    include (I.HandleTimer (Timer {..}) handle) =
-        makeIRQHandler timer (handleIRQ timer handle)
-
-
-instance Initialize (I.HandleTimer Timer) where
-    initialize (I.HandleTimer {I.timer = Timer {..}}) = [
-            proc (show timer <> "_irq_init") $ body $ do
+    include (I.HandleTimer {I.timer = Timer {..}, handle}) = do
+        include $ makeIRQHandler timer (handleIRQ timer handle)
+        include initTimerIRQ'
+        where
+            initTimerIRQ' :: Def ('[] ':-> ())
+            initTimerIRQ' = proc (show timer <> "_irq_init") $ body $ do
                 enableIrqNvic irq 0 0
                 enableTimerInterrupt timer TIMER_INT_UP
-        ]
 
 
 handleIRQ :: TIMER_PERIPH -> Ivory eff () -> Ivory eff ()

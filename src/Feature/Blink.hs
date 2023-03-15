@@ -6,11 +6,10 @@
 module Feature.Blink where
 
 import           Control.Monad.Reader
+import           Core.Context
 import           Core.Controller
 import           Core.Domain
 import           Core.Feature
-import           Core.Include
-import           Core.Initialize
 import           Core.Task
 import           Data.Value
 import           Interface.GPIO.Output
@@ -39,11 +38,10 @@ blink n out = do
 
 
 instance Include Blink where
-    include (Blink {..}) = include state
+    include (Blink {..}) = do
+        include state
+        include out
 
-
-instance Initialize Blink where
-    initialize (Blink {..}) = initialize out
 
 
 instance Task Blink where

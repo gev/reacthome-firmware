@@ -3,12 +3,12 @@
 {-# LANGUAGE GADTs             #-}
 {-# LANGUAGE RankNTypes        #-}
 {-# LANGUAGE RecordWildCards   #-}
+{-# LANGUAGE TypeOperators     #-}
 
 module Interface.RS485 where
 
 import           Control.Monad.Reader
-import           Core.Include
-import           Core.Initialize
+import           Core.Context
 import           Interface.GPIO.Output
 import           Interface.MCU
 import qualified Interface.USART       as I
@@ -69,9 +69,12 @@ instance Include (HandleRS485 RS485) where
         include $ I.HandleUSART usart onReceive onTransmit (reset rede)
 
 
-instance Initialize RS485 where
-    initialize (RS485 {..}) =
-        initialize rede <> initialize usart <> [initR]
-        where initR =
-                proc ("rs485_" <> show n <> "_init") $ body
-                                                     $ reset rede
+instance Include RS485 where
+    include (RS485 {..}) = do
+        include rede
+        include usart
+        include initRS485'
+            where
+                initRS485' :: Def ('[] ':-> ())
+                initRS485' = proc ("rs485_" <> show n <> "_init") $ body
+                                                                  $ reset rede

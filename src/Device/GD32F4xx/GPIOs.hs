@@ -5,8 +5,7 @@
 
 module Device.GD32F4xx.GPIOs where
 
-import           Core.Include
-import           Core.Initialize
+import           Core.Context
 import           Data.Record
 import qualified Device.GD32F4xx.GPIO          as D
 import           GHC.TypeNats
@@ -46,5 +45,5 @@ runGPIO f run ix = run $ \o -> do
 
 instance KnownNat n => Include (Records n GPIOStruct) where
     include r = do
-        defStruct (Proxy :: Proxy GPIOStruct)
-        defMemArea r
+        include $ defStruct (Proxy :: Proxy GPIOStruct)
+        include $ defMemArea r

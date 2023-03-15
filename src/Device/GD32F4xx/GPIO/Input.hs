@@ -1,7 +1,6 @@
 module Device.GD32F4xx.GPIO.Input where
 
-import           Core.Include
-import           Core.Initialize
+import           Core.Context
 import           Device.GD32F4xx.GPIO
 import qualified Interface.GPIO.Input         as I
 import           Ivory.Language
@@ -18,8 +17,8 @@ input = Input . io GPIO_MODE_INPUT
 
 
 
-instance Initialize Input where
-    initialize = initialize . getInput
+instance Include Input where
+    include = include . getInput
 
 instance I.Input Input where
     get = undefined

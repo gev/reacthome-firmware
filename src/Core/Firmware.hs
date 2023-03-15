@@ -1,7 +1,6 @@
 module Core.Firmware where
 
 import           Core.Feature
-import           Data.Foldable
 import           Ivory.Compile.C.CmdlineFrontend
 import           Ivory.Language
 import           Ivory.Language.Module

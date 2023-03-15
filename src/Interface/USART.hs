@@ -4,8 +4,7 @@
 
 module Interface.USART where
 
-import           Core.Include
-import           Core.Initialize
+import           Core.Context
 import           Ivory.Language
 import           Ivory.Language.Module
 
@@ -33,7 +32,7 @@ data StopBit
     | SB_1_5b
     | SB_2b
 
-class (Include (HandleUSART u), Initialize u) => USART u where
+class (Include (HandleUSART u), Include u) => USART u where
 
     setBaudrate   :: u -> Uint32 -> Ivory eff ()
     setWordLength :: u -> WordLength -> Ivory eff ()

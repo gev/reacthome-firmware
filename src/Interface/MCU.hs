@@ -3,8 +3,7 @@
 
 module Interface.MCU where
 
-import           Core.Include
-import           Core.Initialize       (Initialize (initialize))
+import           Core.Context
 import           Interface.Mac
 import           Interface.SystemClock
 
@@ -37,8 +36,3 @@ instance Include (MCU p) where
         include mac
         include peripherals
         include systemClock
-
-
-instance Initialize (MCU p) where
-    initialize (MCU {..}) = initialize mac
-                         <> initialize systemClock

@@ -1,13 +1,14 @@
 {-# LANGUAGE DataKinds       #-}
 {-# LANGUAGE GADTs           #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TypeOperators   #-}
 
 module Endpoint.Relay where
 
-import           Core.Include
-import           Core.Initialize
+import           Core.Context
 import           Data.Buffer
 import           Data.Value
+import           Feature.Relays        (initRelays)
 import           Interface.GPIO.Output
 import           Ivory.Language
 
@@ -52,11 +53,10 @@ instance Include Relay where
     include (Relay {..}) = do
         include state
         include payload
-
-instance Initialize Relay where
-    initialize (Relay {..}) =
-        initialize out <> [
-            proc (name <> "_payload_init") $ body $ do
+        include initRelay'
+        where
+            initRelay' :: Def ('[] ':-> ())
+            initRelay' = proc (name <> "_payload_init") $ body $ do
                 let payload' = addrOf payload
                 store (payload' ! 0) 0
                 store (payload' ! 1) $ fromIntegral n
@@ -66,4 +66,3 @@ instance Initialize Relay where
                 store (payload' ! 5) 0
                 store (payload' ! 6) 0
                 store (payload' ! 7) 0
-        ]

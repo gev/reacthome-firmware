@@ -15,7 +15,7 @@ module Util.CRC16
     , inclCRC16
     ) where
 
-import           Core.Include
+import           Core.Context
 import           Data.Record
 import           Ivory.Language
 import           Ivory.Language.Module
@@ -121,5 +121,5 @@ crc16_lsb = constArea "crc16_lsb" $ iarray $ map ival [
 
 instance Include (Record CRC16) where
     include r = do
-        defStruct (Proxy :: Proxy CRC16)
-        defMemArea r
+        include $ defStruct (Proxy :: Proxy CRC16)
+        include $ defMemArea r

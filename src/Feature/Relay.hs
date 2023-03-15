@@ -6,15 +6,13 @@
 module Feature.Relay where
 
 import           Control.Monad.Reader  (Reader, asks)
+import           Core.Context
 import           Core.Controller
 import           Core.Domain
 import           Core.Feature
-import           Core.Include
-import           Core.Initialize
 import           Core.Task
 import qualified Core.Transport        as T
 import           Data.Buffer
-import           Data.Foldable
 import           Data.Value
 import qualified Endpoint.Relay        as E
 import           GHC.TypeNats
@@ -41,9 +39,6 @@ relay out = do
 
 instance Include Relay where
     include = include . getRelay
-
-instance Initialize Relay where
-    initialize = initialize . getRelay
 
 instance Task Relay where
     tasks (Relay {..}) = [

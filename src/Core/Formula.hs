@@ -5,14 +5,14 @@
 module Core.Formula where
 
 import           Control.Monad.Reader  (Reader, runReader)
+import           Control.Monad.Writer  (runWriter)
+import           Core.Context
 import           Core.Domain
 import           Core.Feature
-import           Core.Include
-import           Core.Initialize
 import           Core.Scheduler        (schedule, scheduler)
 import           Core.Task
 import           Core.Transport
-import           Data.Foldable
+import           Data.Foldable         (traverse_)
 import           Data.Record
 import           Data.Value
 import           Interface.MCU
@@ -34,21 +34,25 @@ data Formula where
 cook :: Formula -> ModuleM ()
 cook (Formula model version mcu shouldInit transport features) = do
 
-    include     domain'
-    traverse_   incl inits
-    include     scheduler'
-    traverse_   include features'
-    traverse_   (incl . runStep) tasks'
-    incl        init
-    incl        loop
-    incl        main
+    inclModule
+    traverse_ (incl . runStep) tasks'
+    incl  init
+    incl  loop
+    incl  main
 
     where domain'    = domain model version mcu shouldInit transport' features'
           transport' = runReader transport domain'
           features'  = (`runReader` domain') <$> features
           tasks'     = tasks transport' <> concatMap tasks features'
           scheduler' = scheduler (systemClock mcu) tasks'
-          inits      = initialize domain' <> initialize scheduler' <> (initialize =<< features')
+
+          context    = snd (runWriter $ include domain')
+                    <> snd (runWriter $ include scheduler')
+                    <> snd (runWriter $ include features')
+
+          inits      = getInits context
+          inclModule = getModule context
+
           loop       = schedule scheduler'
 
           init :: Def ('[] :-> ())

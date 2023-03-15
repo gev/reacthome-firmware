@@ -8,9 +8,8 @@
 
 module Protocol.RBUS.Slave where
 
-import           Core.Include
-import           Core.Initialize
-import           Core.Version    (Version, major, minor)
+import           Core.Context
+import           Core.Version   (Version, major, minor)
 import           Data.Buffer
 import           Data.Record
 import           Data.Value
@@ -87,8 +86,8 @@ slave n mac model version onMessage onConfirm onDiscovery = Slave
 
 
 instance KnownNat n => Include (Slave n) where
-    include (Slave {..}) = do
-        inclCRC16
+    include s@(Slave {..}) = do
+        include inclCRC16
         include tmp
         include address
         include state
@@ -103,10 +102,9 @@ instance KnownNat n => Include (Slave n) where
         include tidTx
         include crc
         include tmp
-
-
-instance Initialize (Slave n) where
-    initialize s = ($ s) <$> [initDisc, initConf, initPing]
+        include $ initDisc s
+        include $ initConf s
+        include $ initPing s
 
 
 initDisc :: Slave n -> Def('[] :-> ())

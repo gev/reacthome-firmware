@@ -3,8 +3,7 @@
 
 module Interface.Timer where
 
-import           Core.Include
-import           Core.Initialize
+import           Core.Context
 import           Ivory.Language
 import           Ivory.Stdlib
 
@@ -15,4 +14,4 @@ data HandleTimer t = HandleTimer
     }
 
 
-class (Include (HandleTimer t), Initialize (HandleTimer t)) => Timer t
+class Include (HandleTimer t) => Timer t

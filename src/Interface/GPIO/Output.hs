@@ -1,10 +1,9 @@
 module Interface.GPIO.Output where
 
-import           Core.Include
-import           Core.Initialize
+import           Core.Context
 import           Ivory.Language
 import           Ivory.Language.Module
 
-class Initialize a => Output a where
+class Include a => Output a where
     reset :: a -> Ivory eff ()
     set   :: a -> Ivory eff ()

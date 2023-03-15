@@ -5,7 +5,7 @@
 
 module Data.Concurrent.Queue where
 
-import           Core.Include
+import           Core.Context
 import           Data.Concurrent.Semaphore
 import           Data.Index
 import           GHC.TypeNats
@@ -78,7 +78,7 @@ size (Queue {..}) =
 
 
 instance Include (Queue n) where
-    include (Queue producerIx consumerIx producerS consumerS) = do
+    include (Queue {..}) = do
         include producerIx
         include consumerIx
         include producerS

@@ -1,6 +1,6 @@
 module Device.GD32F4xx where
 
-import           Core.Include
+import           Core.Context
 import           Device.GD32F4xx.GPIO
 import           Device.GD32F4xx.GPIO.Input
 import           Device.GD32F4xx.GPIO.Output
@@ -187,4 +187,4 @@ gd32f450vit6 = gd32f4xx "GD32F4xx" "vit6"
 
 
 instance Include GD32F4xx where
-    include _ = inclGD32F4xx
+    include _ = include inclGD32F4xx

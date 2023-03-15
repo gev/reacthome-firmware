@@ -16,7 +16,7 @@ module Data.Value
     , runValuesFromList
     ) where
 
-import           Core.Include
+import           Core.Context
 import           GHC.TypeNats
 import           Ivory.Language
 
@@ -76,7 +76,7 @@ run v n f = go . someNatVal . fromIntegral $ n
 
 
 instance IvoryType t => Include (Value t) where
-    include = defMemArea
+    include = include . defMemArea
 
 instance (KnownNat n, IvoryType t) => Include (Values n t) where
-    include = defMemArea
+    include = include . defMemArea

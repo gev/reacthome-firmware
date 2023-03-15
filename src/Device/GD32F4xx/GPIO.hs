@@ -1,9 +1,10 @@
+{-# LANGUAGE DataKinds       #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TypeOperators   #-}
 
 module Device.GD32F4xx.GPIO where
 
-import           Core.Include
-import           Core.Initialize
+import           Core.Context
 import           Ivory.Language
 import           Support.Device.GD32F4xx.GPIO
 import           Support.Device.GD32F4xx.RCU
@@ -71,13 +72,14 @@ io m p = p $ MF m
 
 
 
-instance Initialize Port where
-    initialize (Port {..}) = [
-            proc (show gpio <> "_" <> show pin <>"_init") $ body $ do
+instance Include Port where
+    include (Port {..}) = include initPort'
+        where
+            initPort' :: Def ('[] ':-> ())
+            initPort' = proc (show gpio <> "_" <> show pin <>"_init") $ body $ do
                 enablePeriphClock rcu
                 setOutputOptions gpio GPIO_OTYPE_PP GPIO_OSPEED_50MHZ pin
                 case mode of
                     (MF mode) -> setMode gpio mode GPIO_PUPD_NONE pin
                     (AF mode) -> setMode gpio GPIO_MODE_AF GPIO_PUPD_NONE pin
                               >> setAF gpio mode pin
-        ]

@@ -3,11 +3,11 @@
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE RankNTypes         #-}
 {-# LANGUAGE RecordWildCards    #-}
+{-# LANGUAGE TypeOperators      #-}
 
 module Device.GD32F4xx.USART where
 
-import           Core.Include
-import           Core.Initialize
+import           Core.Context
 import qualified Device.GD32F4xx.GPIO          as G
 import qualified Interface.USART               as I
 import           Ivory.Language
@@ -35,9 +35,9 @@ data USART = USART
 
 
 instance Include (I.HandleUSART USART) where
-    include (I.HandleUSART (USART {..}) onReceive onTransmit onDrain) =
-        makeIRQHandler usart (handleUSART usart onReceive onDrain) >>
-        makeIRQHandler dmaIRQc (handleDMA dmaPer dmaCh usart onTransmit)
+    include (I.HandleUSART (USART {..}) onReceive onTransmit onDrain) = do
+        include $ makeIRQHandler usart (handleUSART usart onReceive onDrain)
+        include $ makeIRQHandler dmaIRQc (handleDMA dmaPer dmaCh usart onTransmit)
 
 
 handleDMA :: DMA_PERIPH -> DMA_CHANNEL -> USART_PERIPH -> Ivory eff () -> Ivory eff ()
@@ -63,10 +63,14 @@ handleUSART usart onReceive onDrain = do
 
 
 
-instance Initialize USART where
-    initialize (USART {..}) =
-        initialize rx <> initialize tx <> [
-            proc (show usart <> "_init") $ body $ do
+instance Include USART where
+    include (USART {..}) = do
+        include rx
+        include tx
+        include initUSART'
+        where
+            initUSART' :: Def ('[] ':-> ())
+            initUSART' = proc (show usart <> "_init") $ body $ do
                 enablePeriphClock   RCU_DMA
                 enableIrqNvic       usartIRQ 0 0
                 enableIrqNvic       dmaIRQn  1 0
@@ -79,7 +83,6 @@ instance Initialize USART where
                 configParity        usart USART_PM_NONE
                 enableInterrupt     usart USART_INT_RBNE
                 enableUSART         usart
-        ]
 
 
 instance I.USART USART where
@@ -101,10 +104,13 @@ instance I.USART USART where
         m <- castArrayToUint32 buff
         initSingleDMA dmaPer dmaCh dmaInitParam { dmaPeriphAddr = p
                                                 , dmaMemoryAddr = m
-                                                , dmaNumber     = n
+                                                , dmaNumber     = safeCast n
+                                                {-
+                                                    TODO: Check type of dmaNumber for GD32F3x0
+                                                -}
                                                 }
         disableCirculationDMA dmaPer dmaCh
-        selectChannelSubperipheralDMA dmaPer dmaCh DMA_SUBPERI7  
+        selectChannelSubperipheralDMA dmaPer dmaCh DMA_SUBPERI7
         transmitDMA usart USART_DENT_ENABLE
         enableInterruptDMA dmaPer dmaCh DMA_CHXCTL_FTFIE
         enableChannelDMA dmaPer dmaCh

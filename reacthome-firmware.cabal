@@ -32,8 +32,6 @@ executable reacthome-firmware
                     , Core.Feature                    
                     , Core.Firmware
                     , Core.Formula
-                    , Core.Include
-                    , Core.Initialize
                     , Core.Scheduler
                     , Core.Task
                     , Core.Transport

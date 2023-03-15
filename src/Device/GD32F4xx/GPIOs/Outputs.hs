@@ -4,9 +4,7 @@
 
 module Device.GD32F4xx.GPIOs.Outputs where
 
-import           Core.Include
-import           Core.Initialize
-import           Data.Foldable
+import           Core.Context
 import           Data.Record
 import qualified Device.GD32F4xx.GPIO.Output  as D
 import           Device.GD32F4xx.GPIOs
@@ -24,10 +22,9 @@ data Outputs = Outputs
 
 
 instance Include Outputs where
-    include (Outputs {..}) = runOutputs include
-
-instance Initialize Outputs where
-    initialize = concatMap initialize . getOutputs
+    include (Outputs {..}) = do
+        mapM_ include getOutputs
+        runOutputs include
 
 instance I.Outputs Outputs where
     reset a = runGPIO (call_ gpio_bit_reset) $ runOutputs a

@@ -4,7 +4,7 @@
 
 module Data.Concurrent.Semaphore where
 
-import           Core.Include
+import           Core.Context
 import           Data.Value
 import           Ivory.Language
 import           Ivory.Stdlib

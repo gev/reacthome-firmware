@@ -4,9 +4,7 @@
 
 module Device.GD32F4xx.GPIOs.Inputs where
 
-import           Core.Include
-import           Core.Initialize
-import           Data.Foldable
+import           Core.Context
 import           Data.Record
 import qualified Device.GD32F4xx.GPIO.Input as D
 import           Device.GD32F4xx.GPIOs
@@ -23,10 +21,9 @@ data Inputs = Inputs
 
 
 instance Include Inputs where
-    include (Inputs {..}) = runInputs include
-
-instance Initialize Inputs where
-    initialize = concatMap initialize . getInputs
+    include (Inputs {..}) = do
+        mapM_ include getInputs
+        runInputs include
 
 instance I.Inputs Inputs where
   get a = runGPIO undefined $ runInputs a

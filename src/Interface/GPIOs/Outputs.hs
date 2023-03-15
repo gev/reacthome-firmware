@@ -3,14 +3,13 @@
 
 module Interface.GPIOs.Outputs where
 
-import           Core.Include
-import           Core.Initialize
+import           Core.Context
 import           GHC.TypeNats
 import           Interface.GPIO.Output
 import           Ivory.Language
 import           Ivory.Language.Module
 
-class (Include a, Initialize a) => Outputs a where
+class Include a => Outputs a where
     reset :: a -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
     set   :: a -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
 

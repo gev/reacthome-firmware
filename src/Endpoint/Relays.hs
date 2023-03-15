@@ -6,7 +6,7 @@
 
 module Endpoint.Relays where
 
-import           Core.Include
+import           Core.Context
 import           Data.Buffer
 import           Data.Record
 import           Data.Serialize
@@ -67,8 +67,8 @@ message (Relays {..}) i = do
 
 instance KnownNat n => Include (Records n RelayStruct) where
     include r = do
-        defStruct (Proxy :: Proxy RelayStruct)
-        defMemArea r
+        include $ defStruct (Proxy :: Proxy RelayStruct)
+        include $ defMemArea r
 
 instance Include Relays where
     include (Relays {..}) =

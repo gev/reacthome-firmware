@@ -9,7 +9,7 @@ module Core.Version
     , minor
     ) where
 
-import           Core.Include
+import           Core.Context
 import           Data.Record
 import           Ivory.Language
 
@@ -37,5 +37,5 @@ version name maj min = record name [ major .= ival maj
 
 instance Include Version where
     include v = do
-        defStruct (Proxy :: Proxy VersionStruct)
-        defMemArea v
+        include $ defStruct (Proxy :: Proxy VersionStruct)
+        include $ defMemArea v

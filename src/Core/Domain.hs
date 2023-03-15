@@ -5,9 +5,9 @@
 
 module Core.Domain where
 
+import           Control.Monad.Writer
+import           Core.Context
 import           Core.Feature
-import           Core.Include
-import           Core.Initialize
 import           Core.Transport
 import qualified Core.Version          as V
 import           Data.Buffer
@@ -42,29 +42,22 @@ domain :: Transport t
        -> t
        -> [Feature]
        -> Domain p t
-domain model (major, minor) mcu shouldInit transport features = Domain
-    { model      = value "model" model
-    , version    = V.version "version" major minor
-    , mcu        = mcu
-    , shouldInit = value "should_init" shouldInit
-    , transport  = transport
-    , features   = features
-    }
-
+domain model (major, minor) mcu shouldInit transport features =
+    Domain { model      = value "model" model
+           , version    = V.version "version" major minor
+           , mcu        = mcu
+           , shouldInit = value "should_init" shouldInit
+           , transport  = transport
+           , features   = features
+           }
 
 
 instance Include (Domain p t) where
     include (Domain {..}) = do
-        inclCast
-        inclSerialize
+        include inclCast
+        include inclSerialize
         include mcu
         include model
         include version
         include shouldInit
         include transport
-
-
-
-instance Initialize (Domain p t) where
-    initialize (Domain {..}) =
-        initialize mcu <> initialize transport

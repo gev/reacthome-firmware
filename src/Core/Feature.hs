@@ -1,10 +1,10 @@
-{-# LANGUAGE GADTs #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GADTs             #-}
 
 module Core.Feature where
 
+import           Core.Context
 import           Core.Controller
-import           Core.Include
-import           Core.Initialize
 import           Core.Task
 import           Ivory.Language
 
@@ -16,8 +16,8 @@ data Feature where
 instance Include Feature where
     include (Feature f) = include f
 
-instance Initialize Feature where
-    initialize (Feature f) = initialize f
+instance Include [Feature] where
+    include = mapM_ include
 
 instance Task Feature where
     tasks (Feature f) = tasks f

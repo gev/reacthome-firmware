@@ -6,7 +6,7 @@
 
 module Endpoint.Groups where
 
-import           Core.Include
+import           Core.Context
 import           Data.Buffer
 import           Data.Record
 import           Data.Serialize
@@ -58,8 +58,8 @@ message (Groups runGroup payload) i = do
 
 instance KnownNat n => Include (Records n GroupStruct) where
     include r = do
-        defStruct (Proxy :: Proxy GroupStruct)
-        defMemArea r
+        include $ defStruct (Proxy :: Proxy GroupStruct)
+        include $ defMemArea r
 
 instance Include Groups where
     include (Groups {..}) =
