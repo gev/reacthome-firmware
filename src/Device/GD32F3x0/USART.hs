@@ -16,6 +16,7 @@ import           Ivory.Support.Device.GD32F3x0
 import           Support.Cast
 import           Support.Device.GD32F3x0
 import           Support.Device.GD32F3x0.DMA
+import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.USART as S
@@ -35,7 +36,6 @@ data USART = USART
 
 instance Include (I.HandleUSART USART) where
     include (I.HandleUSART (USART {..}) onReceive onTransmit onDrain) =
-        inclG >> inclMisc >> inclUSART >> inclDMA >> inclUtil >> include rx >> include tx >>
         makeIRQHandler usart (handleUSART usart onReceive onDrain) >>
         makeIRQHandler dmaIRQc (handleDMA dma usart onTransmit)
 

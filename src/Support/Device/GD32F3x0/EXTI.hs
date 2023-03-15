@@ -11,6 +11,7 @@ module Support.Device.GD32F3x0.EXTI
     , initExti
     , getExtiInterruptFlag
     , clearExtiInterruptFlag
+    , inclExti
     ) where
 
 import           Ivory.Language
@@ -18,16 +19,16 @@ import           Ivory.Language.Module
 import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
 
-data EXTI_LINE  = EXTI_0 
-                | EXTI_1 
-                | EXTI_2 
-                | EXTI_3 
-                | EXTI_4 
-                | EXTI_5 
-                | EXTI_6 
-                | EXTI_7 
-                | EXTI_8 
-                | EXTI_9 
+data EXTI_LINE  = EXTI_0
+                | EXTI_1
+                | EXTI_2
+                | EXTI_3
+                | EXTI_4
+                | EXTI_5
+                | EXTI_6
+                | EXTI_7
+                | EXTI_8
+                | EXTI_9
                 | EXTI_10
                 | EXTI_11
                 | EXTI_12

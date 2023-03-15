@@ -31,7 +31,7 @@ systemClock timer counter = SystemClock
 
 instance Include SystemClock where
     include (SystemClock {..}) =
-        include counter >> include time >>
+        include time >>
         include (HandleTimer timer $ handle time)
 
 instance Initialize SystemClock where

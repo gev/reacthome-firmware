@@ -2,38 +2,32 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes            #-}
 
-module Support.Device.GD32F3x0
-    ( IRQn (..)
-    , inclG
-    , makeIRQHandler
-    ) where
+module Support.Device.GD32F3x0 where
 
-import           Ivory.Language
 import           Ivory.Language.Module
-import           Ivory.Language.Proc
-import           Ivory.Language.Syntax
-import           Ivory.Support
-import           Ivory.Support.Device.GD32F3x0
+import           Support.CMSIS.CoreCM4
+import           Support.Device.GD32F3x0.DBG
+import           Support.Device.GD32F3x0.DMA
+import           Support.Device.GD32F3x0.EXTI
+import           Support.Device.GD32F3x0.GPIO
+import           Support.Device.GD32F3x0.IRQ
+import           Support.Device.GD32F3x0.Misc
+import           Support.Device.GD32F3x0.RCU
+import           Support.Device.GD32F3x0.SYSCFG
+import           Support.Device.GD32F3x0.Timer
+import           Support.Device.GD32F3x0.USART
 
 
-data IRQn
-    = TIMER1_IRQn
-    | TIMER2_IRQn
-    | USART1_IRQn
-    | DMA_Channel3_4_IRQn
-    | EXTI0_1_IRQn
-    | EXTI2_3_IRQn
-    | EXTI4_15_IRQn
-    deriving (Show, Enum, Bounded)
-instance ExtDef IRQn Uint8
-
-
-inclG :: ModuleM ()
-inclG = inclDef (def :: Cast IRQn Uint8)
-
-
-makeIRQHandler :: Show t
-               => t
-               -> (forall s. Ivory (ProcEffects s ()) ())
-               -> ModuleM ()
-makeIRQHandler t b = incl $ proc (show t <> "_IRQHandler") $ body b
+inclGD32F3x0 :: ModuleM ()
+inclGD32F3x0 = do
+    inclDBG
+    inclDMA
+    inclExti
+    inclGPIO
+    inclIRQ
+    inclMisc
+    inclRCU
+    inclSYSCFG
+    inclTimer
+    inclUSART
+    inclCoreCM4

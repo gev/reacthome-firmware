@@ -39,7 +39,7 @@ blink n out = do
 
 
 instance Include Blink where
-    include (Blink {..}) = include state >> include out
+    include (Blink {..}) = include state
 
 
 instance Initialize Blink where

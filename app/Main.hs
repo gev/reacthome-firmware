@@ -3,7 +3,7 @@ module Main where
 import           Control.Monad
 import           Core.Firmware
 import           Core.Formula
-import           Core.Shake
+import           Build.Shake
 import           Formula.Blink
 import           Formula.Relay12
 import           Ivory.Language

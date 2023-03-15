@@ -23,9 +23,7 @@ data Inputs = Inputs
 
 
 instance Include Inputs where
-    include (Inputs {..}) = do
-        traverse_ include getInputs
-        runInputs include
+    include (Inputs {..}) = runInputs include
 
 instance Initialize Inputs where
     initialize = concatMap initialize . getInputs

@@ -66,7 +66,6 @@ setParity (RS485 {..}) = I.setParity usart
 
 instance Include (HandleRS485 RS485) where
     include (HandleRS485 (RS485 {..}) onReceive onTransmit) = do
-        include rede
         include $ I.HandleUSART usart onReceive onTransmit (reset rede)
 
 

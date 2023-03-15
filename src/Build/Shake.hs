@@ -1,4 +1,4 @@
-module Core.Shake (Core.Shake.shake) where
+module Build.Shake (Build.Shake.shake) where
 
 import           Development.Shake
 import           Development.Shake.FilePath
@@ -46,6 +46,9 @@ ldflags =  [ "-mthumb"
            , "-specs=nano.specs"
            ]
 
+libs :: String
+libs = "support/device/gd32f3x0"
+
 ld :: String
 ld = "-Tsupport/device/gd32f3x0/gd32f3x0.ld"
 
@@ -74,11 +77,9 @@ shake ns = shakeArgs shakeOptions{shakeFiles="build"} $ do
             cmd_ oc "-O ihex" elf out
 
         "build//*.elf" %> \out -> do
-            ss <- getDirectoryFiles "support/device/gd32f3x0" ["//*.c", "//*.s"]
-            ss' <- getDirectoryFiles "support/CMSIS" ["//*.c"]
+            ss <- getDirectoryFiles libs ["//*.c", "//*.s"]
             let os = out -<.> "c" <.> "o"
-                   : ["build/support/device/gd32f3x0" </> s <.> "o" | s <- ss]
-                  <> ["build/support/CMSIS" </> s <.> "o" | s <- ss']
+                   : ["build" </> libs </> s <.> "o" | s <- ss]
             need os
             cmd_ cc ldflags ld os "-lc" "-o" out
 

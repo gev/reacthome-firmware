@@ -2,6 +2,7 @@
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
+
 module Support.Device.GD32F3x0.Misc
     ( enableIrqNvic
     , inclMisc
@@ -11,7 +12,7 @@ import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
-import           Support.Device.GD32F3x0
+import           Support.Device.GD32F3x0.IRQ
 
 
 inclMisc :: ModuleM ()

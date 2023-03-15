@@ -12,6 +12,7 @@ import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Stdlib
 import           Support.Device.GD32F3x0
+import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.Timer
@@ -32,10 +33,6 @@ timer_2 :: TIMER_PARAM -> Timer
 timer_2 = Timer TIMER2 RCU_TIMER2 TIMER2_IRQn
 
 
-instance Include Timer where
-    include = const $ inclRCU <> inclTimer
-
-
 instance Initialize Timer where
     initialize (Timer {..}) = [
             proc (show timer <> "_init") $ body $ do
@@ -52,7 +49,6 @@ instance I.Counter Timer where
 
 instance Include (I.HandleTimer Timer) where
     include (I.HandleTimer (Timer {..}) handle) =
-        inclG >> inclMisc >>
         makeIRQHandler timer (handleIRQ timer handle)
 
 

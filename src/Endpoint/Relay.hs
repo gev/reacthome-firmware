@@ -50,7 +50,6 @@ manage (Relay {..}) = do
 
 instance Include Relay where
     include (Relay {..}) = do
-        include out
         include state
         include payload
 
