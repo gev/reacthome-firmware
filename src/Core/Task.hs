@@ -4,7 +4,6 @@
 
 module Core.Task where
 
-import           Core.Context
 import           Ivory.Language
 
 
@@ -35,7 +34,3 @@ yeld :: String
      -> (forall s. Ivory (ProcEffects s ()) ())
      -> Step
 yeld = step Nothing
-
-
-class Include t => Task t where
-    tasks :: t -> [Step]

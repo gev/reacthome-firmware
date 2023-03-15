@@ -38,12 +38,9 @@ relay out = do
 
 
 instance Include Relay where
-    include = include . getRelay
-
-instance Task Relay where
-    tasks (Relay {..}) = [
-            delay 10 "relays" $ E.manage getRelay
-        ]
+    include r = do
+        include $ getRelay r
+        include $ delay 10 "relays" $ E.manage $ getRelay r
 
 
 instance Controller Relay where

@@ -4,21 +4,16 @@
 
 module Core.Formula where
 
-import           Control.Monad.Reader  (Reader, runReader)
-import           Control.Monad.Writer  (runWriter)
+import           Control.Monad.Reader
+import           Control.Monad.Writer
 import           Core.Context
 import           Core.Domain
 import           Core.Feature
-import           Core.Scheduler        (schedule, scheduler)
-import           Core.Task
+import           Core.Scheduler
 import           Core.Transport
-import           Data.Foldable         (traverse_)
-import           Data.Record
-import           Data.Value
 import           Interface.MCU
 import           Ivory.Language
 import           Ivory.Language.Module
-import           Protocol.RBUS.Slave   (Slave (model))
 
 
 data Formula where
@@ -35,7 +30,6 @@ cook :: Formula -> ModuleM ()
 cook (Formula model version mcu shouldInit transport features) = do
 
     inclModule
-    traverse_ (incl . runStep) tasks'
     incl  init
     incl  loop
     incl  main
@@ -43,15 +37,14 @@ cook (Formula model version mcu shouldInit transport features) = do
     where domain'    = domain model version mcu shouldInit transport' features'
           transport' = runReader transport domain'
           features'  = (`runReader` domain') <$> features
-          tasks'     = tasks transport' <> concatMap tasks features'
-          scheduler' = scheduler (systemClock mcu) tasks'
+          scheduler' = scheduler (systemClock mcu) steps
 
-          context    = snd (runWriter $ include domain')
-                    <> snd (runWriter $ include scheduler')
-                    <> snd (runWriter $ include features')
+          context    = execWriter (include domain'   )
+                    <> execWriter (include scheduler')
+                    <> execWriter (include features' )
+                    <> execWriter (include transport')
 
-          inits      = getInits context
-          inclModule = getModule context
+          (Context inclModule inits steps) = context
 
           loop       = schedule scheduler'
 

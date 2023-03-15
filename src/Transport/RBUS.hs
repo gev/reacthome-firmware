@@ -92,12 +92,8 @@ instance Include RBUS where
       include shouldConfirm
       include $ HandleRS485 rs (rxHandle r) (txHandle r)
       include protocol
-
-
-
-instance Task RBUS where
-    tasks r = [ yeld    (name r <> "_rx"  ) $ rxTask r
-              , delay 1 (name r <> "_tx"  ) $ txTask r
+      include [ yeld    (name <> "_rx"  ) $ rxTask r
+              , delay 1 (name <> "_tx"  ) $ txTask r
               ]
 
 

@@ -41,17 +41,12 @@ instance Include Blink where
     include (Blink {..}) = do
         include state
         include out
-
-
-
-instance Task Blink where
-    tasks (Blink name out state) = [
-        delay 1_000 name $ do
+        include $ delay 1_000 name $ do
             v <- deref $ addrOf state
             store (addrOf state) $ iNot v
             ifte_ v (set   out)
                     (reset out)
-        ]
+
 
 
 instance Controller Blink

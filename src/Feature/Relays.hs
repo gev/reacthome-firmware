@@ -66,18 +66,14 @@ relays outs = do
 
 
 instance Include Relays where
-    include (Relays {..}) = do
+    include rs@(Relays {..}) = do
         include getOutputs
         include getRelays
         include getGroups
         include current
-
-
-
-instance Task Relays where
-    tasks rs = [ delay 10 "relays_manage" $ manage rs
-               , delay  5 "relays_sync"   $ sync rs
-               ]
+        include [ delay 10 "relays_manage" $ manage rs
+                , delay  5 "relays_sync"   $ sync rs
+                ]
 
 
 
