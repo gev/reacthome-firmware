@@ -41,15 +41,17 @@ domain :: Transport t
        -> IBool
        -> t
        -> [Feature]
-       -> Domain p t
-domain model (major, minor) mcu shouldInit transport features =
-    Domain { model      = value "model" model
-           , version    = V.version "version" major minor
-           , mcu        = mcu
-           , shouldInit = value "should_init" shouldInit
-           , transport  = transport
-           , features   = features
-           }
+       -> Writer Context (Domain p t)
+domain model (major, minor) mcu shouldInit transport features = do
+    include domain
+    pure    domain
+    where   domain = Domain { model      = value "model" model
+                            , version    = V.version "version" major minor
+                            , mcu        = mcu
+                            , shouldInit = value "should_init" shouldInit
+                            , transport  = transport
+                            , features   = features
+                            }
 
 
 instance Include (Domain p t) where

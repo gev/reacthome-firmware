@@ -22,8 +22,8 @@ data Formula where
                , version    :: (Uint8, Uint8)
                , mcu        :: MCU p
                , shouldInit :: IBool
-               , transport  :: Reader (Domain p t) t
-               , features   :: [Reader (Domain p t) Feature]
+               , transport  :: WriterT Context (Reader (Domain p t))  t
+               , features   :: [WriterT Context (Reader (Domain p t)) Feature]
                } -> Formula
 
 cook :: Formula -> ModuleM ()
@@ -34,19 +34,19 @@ cook (Formula model version mcu shouldInit transport features) = do
     incl  loop
     incl  main
 
-    where domain'    = domain model version mcu shouldInit transport' features'
-          transport' = runReader transport domain'
-          features'  = (`runReader` domain') <$> features
-          scheduler' = scheduler (systemClock mcu) steps
+    where (domain'   , domainContext'   ) = runWriter $ domain model version mcu shouldInit transport' features'
+          (scheduler', schedulerContext') = runWriter $ scheduler (systemClock mcu) steps
+          (transport', transportContext') = runReader (runWriterT transport) domain'
+          (features' , featuresContext' ) = unzip $ run <$> features
 
-          context    = execWriter (include domain'   )
-                    <> execWriter (include scheduler')
-                    <> execWriter (include features' )
-                    <> execWriter (include transport')
+          run t = runReader (runWriterT t) domain'
 
-          (Context inclModule inits steps) = context
+          (Context inclModule inits steps) = domainContext'
+                                          <> transportContext'
+                                          <> schedulerContext'
+                                          <> mconcat featuresContext'
 
-          loop       = schedule scheduler'
+          loop = schedule scheduler'
 
           init :: Def ('[] :-> ())
           init = proc "init" $ body $ mapM_ call_ inits

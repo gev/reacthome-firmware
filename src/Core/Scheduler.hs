@@ -5,6 +5,7 @@
 module Core.Scheduler where
 
 import           Control.Monad         (replicateM, zipWithM_)
+import           Control.Monad.Writer  (Writer)
 import           Core.Context
 import           Core.Feature
 import           Core.Task
@@ -22,11 +23,13 @@ data Scheduler = Scheduler
     , steps :: [Step]
     }
 
-scheduler :: SystemClock -> [Step] -> Scheduler
-scheduler clock steps =  Scheduler
-    { clock = clock
-    , steps = steps
-    }
+scheduler :: SystemClock -> [Step] -> Writer Context Scheduler
+scheduler clock steps =  do
+    include scheduler
+    pure    scheduler
+    where   scheduler = Scheduler { clock = clock
+                                  , steps = steps
+                                  }
 
 
 

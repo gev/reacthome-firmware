@@ -21,7 +21,7 @@ data Context = Context
 
 
 class Include a where
-    include :: a -> Writer Context ()
+    include :: Monad m => a -> WriterT Context m ()
 
 
 

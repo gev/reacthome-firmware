@@ -6,6 +6,7 @@
 module Feature.Blink where
 
 import           Control.Monad.Reader
+import           Control.Monad.Writer
 import           Core.Context
 import           Core.Controller
 import           Core.Domain
@@ -26,14 +27,18 @@ data Blink where
 
 
 blink :: Output o
-      => Int -> (p -> o) -> Reader (Domain p t) Feature
+      => Int
+      -> (p -> o)
+      -> WriterT Context (Reader (Domain p t)) Feature
 blink n out = do
     mcu <- asks mcu
-    pure $ Feature $ Blink { name  = name
-                           , out   = out $ peripherals mcu
-                           , state = value (name <> "_state") false
-                           }
-    where name = "blink_" <> show n
+    let name = "blink_" <> show n
+    let feature = Feature $ Blink { name  = name
+                                  , out   = out $ peripherals mcu
+                                  , state = value (name <> "_state") false
+                                  }
+    include feature
+    pure feature
 
 
 

@@ -6,6 +6,7 @@
 module Feature.Relay where
 
 import           Control.Monad.Reader  (Reader, asks)
+import           Control.Monad.Writer
 import           Core.Context
 import           Core.Controller
 import           Core.Domain
@@ -27,14 +28,17 @@ data Relay = Relay
     }
 
 relay :: (Output o, T.Transport t)
-       => (p -> o) -> Reader (Domain p t) Feature
+       => (p -> o)
+       -> WriterT Context (Reader (Domain p t)) Feature
 relay out = do
     mcu       <- asks mcu
     transport <- asks transport
     let o = out $ peripherals mcu
-    pure . Feature $ Relay { getRelay = E.relay 1 o
-                           , transmit = T.transmit transport
-                           }
+    let feature = Feature $ Relay { getRelay = E.relay 1 o
+                                  , transmit = T.transmit transport
+                                  }
+    include feature
+    pure feature
 
 
 instance Include Relay where

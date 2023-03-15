@@ -3,28 +3,30 @@
 
 module Transport.RBUS    where
 
-import           Control.Monad.Reader  (Reader, asks, runReader)
+import           Control.Monad.Identity (Identity)
+import           Control.Monad.Reader   (Reader, asks, runReader)
+import           Control.Monad.Writer   (WriterT)
 import           Core.Context
 import           Core.Dispatcher
-import qualified Core.Domain           as D
+import qualified Core.Domain            as D
 import           Core.Task
 import           Core.Transport
 import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Data.Value
-import           Interface.Mac         (getMac)
-import           Interface.MCU         (MCU (peripherals, systemClock), mac)
+import           Interface.Mac          (getMac)
+import           Interface.MCU          (MCU (peripherals, systemClock), mac)
 import           Interface.RS485
-import           Interface.SystemClock (getSystemTime)
+import           Interface.SystemClock  (getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Protocol.RBUS.Slave   (slave)
+import           Protocol.RBUS.Slave    (slave)
 import           Transport.RBUS.Data
 import           Transport.RBUS.Rx
 import           Transport.RBUS.Tx
 
 
-rbus :: Reader p RS485 -> Reader (D.Domain p t) RBUS
+rbus :: Reader p RS485 -> (WriterT Context (Reader (D.Domain p t))) RBUS
 rbus rs = do
     model       <- asks D.model
     version     <- asks D.version
@@ -54,6 +56,7 @@ rbus rs = do
                         , shouldConfirm = value  (name <> "_should_confirm") false
                         , shouldInit    = shouldInit
                         }
+    include rbus
     pure rbus
 
     where name = "rbus_slave"

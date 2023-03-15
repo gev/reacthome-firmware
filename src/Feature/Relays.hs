@@ -9,6 +9,7 @@
 module Feature.Relays where
 
 import           Control.Monad.Reader    (Reader, asks)
+import           Control.Monad.Writer    (WriterT)
 import           Core.Context
 import           Core.Controller
 import qualified Core.Domain             as D
@@ -46,22 +47,25 @@ data Relays = forall os. Outputs os => Relays
 
 
 relays :: (MakeOutputs o os, T.Transport t)
-       => [p -> o] -> Reader (D.Domain p t) Feature
+       => [p -> o]
+       -> WriterT Context (Reader (D.Domain p t)) Feature
 relays outs = do
     mcu        <- asks D.mcu
     transport  <- asks D.transport
     shouldInit <- asks D.shouldInit
     let os = ($ peripherals mcu) <$> outs
     let n = length os
-    pure . Feature $ Relays { n = fromIntegral n
-                            , getRelays  = R.relays "relays" n
-                            , getGroups  = G.groups "groups" n
-                            , getOutputs = makeOutputs "relays_outputs" os
-                            , shouldInit = shouldInit
-                            , clock      = systemClock mcu
-                            , current    = index "current_relay"
-                            , transmit   = T.transmit transport
-                            }
+    let feature = Feature $ Relays { n = fromIntegral n
+                                   , getRelays  = R.relays "relays" n
+                                   , getGroups  = G.groups "groups" n
+                                   , getOutputs = makeOutputs "relays_outputs" os
+                                   , shouldInit = shouldInit
+                                   , clock      = systemClock mcu
+                                   , current    = index "current_relay"
+                                   , transmit   = T.transmit transport
+                                   }
+    include feature
+    pure feature
 
 
 
