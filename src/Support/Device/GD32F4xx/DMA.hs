@@ -116,7 +116,7 @@ data DMA_PRIORITY
 instance ExtDef DMA_PRIORITY Uint32
 
 data DMA_INT_FLAG
-    = DMA_INTF_FTFIF
+    = DMA_INTF_FTF
     deriving (Show, Enum, Bounded)
 instance ExtDef DMA_INT_FLAG Uint32
 

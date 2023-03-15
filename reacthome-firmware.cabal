@@ -95,6 +95,17 @@ executable reacthome-firmware
                     , Device.GD32F3x0.USART
 
                     , Device.GD32F4xx
+                    , Device.GD32F4xx.GPIO
+                    , Device.GD32F4xx.GPIO.Input
+                    , Device.GD32F4xx.GPIO.Output
+                    , Device.GD32F4xx.GPIOs
+                    , Device.GD32F4xx.GPIOs.Inputs
+                    , Device.GD32F4xx.GPIOs.Outputs
+                    , Device.GD32F4xx.Mac
+                    , Device.GD32F4xx.SysTick
+                    , Device.GD32F4xx.SystemClock
+                    , Device.GD32F4xx.Timer
+                    , Device.GD32F4xx.USART
 
                     , Ivory.Support
                     , Ivory.Support.Device.GD32F3x0
@@ -117,7 +128,12 @@ executable reacthome-firmware
                     , Support.Device.GD32F4xx.DBG
                     , Support.Device.GD32F4xx.DMA
                     , Support.Device.GD32F4xx.GPIO
+                    , Support.Device.GD32F4xx.Misc
                     , Support.Device.GD32F4xx.RCU
+                    , Support.Device.GD32F4xx.Timer
+                    , Support.Device.GD32F4xx.USART
+                    , Support.Device.GD32F4xx.EXTI
+                    , Support.Device.GD32F4xx.SYSCFG
 
                     , Util.CRC16
 
