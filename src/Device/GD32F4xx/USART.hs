@@ -92,6 +92,9 @@ instance I.USART USART where
     setParity     u p  = S.configParity  (usart u) (coerceParity p)
 
 
+{-
+    TODO: selectChannelSubperipheralDMA ?!?!?
+-}
     transmit (USART {..}) buff n = do
         deinitDMA dmaPer dmaCh
         p <- tdata (def usart)
@@ -100,6 +103,8 @@ instance I.USART USART where
                                                 , dmaMemoryAddr = m
                                                 , dmaNumber     = n
                                                 }
+        disableCirculationDMA dmaPer dmaCh
+        selectChannelSubperipheralDMA dmaPer dmaCh DMA_SUBPERI7  
         transmitDMA usart USART_DENT_ENABLE
         enableInterruptDMA dmaPer dmaCh DMA_CHXCTL_FTFIE
         enableChannelDMA dmaPer dmaCh

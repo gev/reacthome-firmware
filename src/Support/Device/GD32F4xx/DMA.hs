@@ -20,8 +20,11 @@ module Support.Device.GD32F4xx.DMA
     , DMA_INT           (..)
     , DMA_INT_FLAG      (..)
     , DMA_CIRCULAR_MODE (..)
+    , DMA_SUBPERIPH     (..)
     , deinitDMA
     , initSingleDMA
+    , disableCirculationDMA
+    , selectChannelSubperipheralDMA
     , enableChannelDMA
     , enableInterruptDMA
     , getInterruptFlagDMA
@@ -125,23 +128,35 @@ data DMA_INT
     deriving (Show, Enum, Bounded)
 instance ExtDef DMA_INT Uint32
 
-
 data DMA_CIRCULAR_MODE
     = DMA_CIRCULAR_MODE_ENABLE
     | DMA_CIRCULAR_MODE_DISABLE
     deriving (Show, Enum, Bounded)
 instance ExtDef DMA_CIRCULAR_MODE Uint32
 
+data DMA_SUBPERIPH
+    = DMA_SUBPERI0
+    | DMA_SUBPERI1
+    | DMA_SUBPERI2
+    | DMA_SUBPERI3
+    | DMA_SUBPERI4
+    | DMA_SUBPERI5
+    | DMA_SUBPERI6
+    | DMA_SUBPERI7
+    deriving (Show, Enum, Bounded)
+instance ExtDef DMA_SUBPERIPH Uint32
+
+
 data DMA_SINGLE_PARAM = DMA_SINGLE_PARAM
-        { dmaPeriphAddr         :: Uint32
-        , dmaPeriphInc          :: DMA_PERIPH_INC
-        , dmaMemoryAddr         :: Uint32
-        , dmaMemoryInc          :: DMA_MEMORY_INC
-        , dmaPeriphMemoryWidth  :: DMA_PERIPH_WIDTH
-        , dmaCircularMode       :: DMA_CIRCULAR_MODE
-        , dmaDirection          :: DMA_DIRECTION
-        , dmaNumber             :: Uint32
-        , dmaPriority           :: DMA_PRIORITY
+        { dmaPeriphAddr        :: Uint32
+        , dmaPeriphInc         :: DMA_PERIPH_INC
+        , dmaMemoryAddr        :: Uint32
+        , dmaMemoryInc         :: DMA_MEMORY_INC
+        , dmaPeriphMemoryWidth :: DMA_PERIPH_WIDTH
+        , dmaCircularMode      :: DMA_CIRCULAR_MODE
+        , dmaDirection         :: DMA_DIRECTION
+        , dmaNumber            :: Uint32
+        , dmaPriority          :: DMA_PRIORITY
         }
 
 [ivory|
@@ -171,8 +186,11 @@ inclDMA = do
     inclDef (def :: Cast DMA_INT Uint32)
     inclDef (def :: Cast DMA_INT_FLAG Uint32)
     inclDef (def :: Cast DMA_CIRCULAR_MODE Uint32)
+    inclDef (def :: Cast DMA_SUBPERIPH Uint32)
     incl dma_deinit
     incl dma_single_data_mode_init
+    incl dma_circulation_disable
+    incl dma_channel_subperipheral_select
     incl dma_channel_enable
     incl dma_interrupt_enable
     incl dma_interrupt_flag_get
@@ -203,6 +221,20 @@ initSingleDMA per c p = do
 
 dma_single_data_mode_init ::    Def ('[Uint32, Uint32, Ref s (Struct "dma_single_data_parameter_struct")] :-> ())
 dma_single_data_mode_init = fun "dma_single_data_mode_init"
+
+
+disableCirculationDMA :: DMA_PERIPH -> DMA_CHANNEL -> Ivory eff ()
+disableCirculationDMA p c = call_ dma_circulation_disable (def p) (def c)
+
+dma_circulation_disable :: Def ('[Uint32, Uint32] :-> ())
+dma_circulation_disable = fun "dma_circulation_disable"
+
+
+selectChannelSubperipheralDMA :: DMA_PERIPH -> DMA_CHANNEL -> DMA_SUBPERIPH -> Ivory eff ()
+selectChannelSubperipheralDMA p c s = call_ dma_channel_subperipheral_select (def p) (def c) (def s)
+
+dma_channel_subperipheral_select :: Def ('[Uint32, Uint32, Uint32] :-> ())
+dma_channel_subperipheral_select = fun "dma_channel_subperipheral_select"
 
 
 enableChannelDMA :: DMA_PERIPH -> DMA_CHANNEL -> Ivory eff ()
