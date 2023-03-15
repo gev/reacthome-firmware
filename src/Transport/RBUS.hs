@@ -14,7 +14,7 @@ import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Data.Value
 import           Interface.Mac         (getMac)
-import           Interface.MCU         (MCU (systemClock))
+import           Interface.MCU         (MCU (peripherals, systemClock), mac)
 import           Interface.RS485
 import           Interface.SystemClock (getSystemTime)
 import           Ivory.Language
@@ -25,11 +25,10 @@ import           Transport.RBUS.Rx
 import           Transport.RBUS.Tx
 
 
-rbus :: MCU mcu => Reader mcu RS485 -> Reader (D.Domain mcu t) RBUS
+rbus :: Reader p RS485 -> Reader (D.Domain p t) RBUS
 rbus rs = do
     model       <- asks D.model
     version     <- asks D.version
-    mac         <- asks D.mac
     mcu         <- asks D.mcu
     shouldInit  <- asks D.shouldInit
     features    <- asks D.features
@@ -39,8 +38,8 @@ rbus rs = do
     let dispatch = makeDispatcher features
     let rbus     = RBUS { name          = name
                         , clock         = systemClock mcu
-                        , rs            = runReader rs mcu
-                        , protocol      = slave name (getMac mac) model version (onMessage dispatch rbus) (onConfirm rbus) (onDiscovery rbus)
+                        , rs            = runReader rs $ peripherals mcu
+                        , protocol      = slave name (getMac $ mac mcu) model version (onMessage dispatch rbus) (onConfirm rbus) (onDiscovery rbus)
                         , rxBuff        = buffer (name <> "_rx")
                         , rxQueue       = queue  (name <> "_rx")
                         , msgOffset     = buffer (name <> "_msg_offset")

@@ -14,7 +14,7 @@ import           Core.Initialize
 import           Core.Task
 import           Data.Value
 import           Interface.GPIO.Output
-import           Interface.MCU
+import           Interface.MCU         (MCU (peripherals))
 import           Interface.Timer
 import           Ivory.Language
 
@@ -26,12 +26,12 @@ data Blink where
              } -> Blink
 
 
-blink :: (MCU mcu, Output o)
-      => Int -> (mcu -> o) -> Reader (Domain mcu t) Feature
+blink :: Output o
+      => Int -> (p -> o) -> Reader (Domain p t) Feature
 blink n out = do
     mcu <- asks mcu
     pure $ Feature $ Blink { name  = name
-                           , out   = out mcu
+                           , out   = out $ peripherals mcu
                            , state = value (name <> "_state") false
                            }
     where name = "blink_" <> show n

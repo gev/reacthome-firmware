@@ -22,13 +22,13 @@ import           Protocol.RBUS.Slave   (Slave (model))
 
 
 data Formula where
-    Formula :: (MCU mcu, Transport t)
+    Formula :: Transport t
             => { model      :: Uint8
                , version    :: (Uint8, Uint8)
-               , mcu        :: mcu
+               , mcu        :: MCU p
                , shouldInit :: IBool
-               , transport  :: Reader (Domain mcu t) t
-               , features   :: [Reader (Domain mcu t) Feature]
+               , transport  :: Reader (Domain p t) t
+               , features   :: [Reader (Domain p t) Feature]
                } -> Formula
 
 cook :: Formula -> ModuleM ()

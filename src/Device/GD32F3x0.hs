@@ -12,7 +12,7 @@ import           Device.GD32F3x0.Timer
 import           Device.GD32F3x0.USART
 import           Interface.Mac                 (Mac)
 import           Interface.MCU
-import           Interface.SystemClock         (SystemClock)
+import           Interface.SystemClock         (SystemClock, systemClock)
 import           Support.Device.GD32F3x0
 import           Support.Device.GD32F3x0.DMA
 import           Support.Device.GD32F3x0.GPIO
@@ -23,9 +23,7 @@ import           Support.Device.GD32F3x0.USART
 
 
 data GD32F3x0 = GD32F3x0
-    { getModel  :: String
-
-    , usart_1   :: USART
+    { usart_1   :: USART
 
     , in_pa_0   :: Input
     , in_pa_1   :: Input
@@ -97,10 +95,9 @@ data GD32F3x0 = GD32F3x0
     }
 
 
-gd32f3x0 :: String -> GD32F3x0
-gd32f3x0 model = GD32F3x0
-    { getModel  = model
-    , usart_1   = USART USART1
+gd32f3x0 :: String -> String -> MCU GD32F3x0
+gd32f3x0 = mcu "GD32F3x0" False G.systemClock makeMac GD32F3x0
+    { usart_1   = USART USART1
                         RCU_USART1
                         USART1_IRQn
                         DMA_CH3
@@ -180,17 +177,10 @@ gd32f3x0 model = GD32F3x0
 
 
 
-gd32f330 = gd32f3x0 "GD32F330"
+gd32f330k8u6 :: MCU GD32F3x0
+gd32f330k8u6 = gd32f3x0 "GD32F330" "k8u6"
 
 
 
 instance Include GD32F3x0 where
     include _ = inclGD32F3x0
-
-
-
-instance MCU GD32F3x0 where
-    model         = getModel
-    hasFPU      _ = False
-    mac         _ = makeMac
-    systemClock _ = G.systemClock

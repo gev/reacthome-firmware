@@ -1,6 +1,7 @@
-{-# LANGUAGE DataKinds       #-}
-{-# LANGUAGE GADTs           #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GADTs             #-}
+{-# LANGUAGE RecordWildCards   #-}
 
 module Core.Domain where
 
@@ -21,31 +22,29 @@ import           Support.Serialize
 
 
 
-data Domain mcu t where
-     Domain :: (I.MCU mcu, Transport t)
+data Domain p t where
+     Domain :: Transport t
             => { model      :: Value  Uint8
                , version    :: V.Version
-               , mac        :: M.Mac
-               , mcu        :: mcu
+               , mcu        :: I.MCU p
                , shouldInit :: Value IBool
                , transport  :: t
                , features   :: [Feature]
-               } -> Domain mcu t
+               } -> Domain p t
 
 
 
-domain :: (I.MCU mcu, Transport t)
+domain :: Transport t
        => Uint8
        -> (Uint8, Uint8)
-       -> mcu
+       -> I.MCU p
        -> IBool
        -> t
        -> [Feature]
-       -> Domain mcu t
+       -> Domain p t
 domain model (major, minor) mcu shouldInit transport features = Domain
     { model      = value "model" model
     , version    = V.version "version" major minor
-    , mac        = I.mac mcu "mac"
     , mcu        = mcu
     , shouldInit = value "should_init" shouldInit
     , transport  = transport
@@ -54,19 +53,18 @@ domain model (major, minor) mcu shouldInit transport features = Domain
 
 
 
-instance Include (Domain mcu t) where
+instance Include (Domain p t) where
     include (Domain {..}) = do
         inclCast
         inclSerialize
         include mcu
         include model
         include version
-        include mac
         include shouldInit
         include transport
 
 
 
-instance Initialize (Domain mcu t) where
+instance Initialize (Domain p t) where
     initialize (Domain {..}) =
-        initialize mac <> initialize transport
+        initialize mcu <> initialize transport

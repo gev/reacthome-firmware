@@ -11,7 +11,7 @@ import           Transport.RBUS
 blink :: Formula
 blink = Formula { model      = 0xff
                 , version    = (1, 0)
-                , mcu        = gd32f330
+                , mcu        = gd32f330k8u6
                 , shouldInit = false
                 , transport  = rbus $ rs485 1 usart_1 out_pa_4
                 , features   = [ F.blink 1 out_pa_15 ]

@@ -31,16 +31,16 @@ data HandleRS485 r = HandleRS485
     }
 
 
-rs485 :: (I.USART u, Output o, MCU mcu)
+rs485 :: (I.USART u, Output o)
       => Int
-      -> (mcu -> u)
-      -> (mcu -> o)
-      -> Reader mcu RS485
+      -> (p -> u)
+      -> (p -> o)
+      -> Reader p RS485
 rs485 n usart rede = do
-    mcu <- ask
+    peripherals <- ask
     pure $ RS485 { n     = n
-                 , usart = usart mcu
-                 , rede  = rede  mcu
+                 , usart = usart peripherals
+                 , rede  = rede  peripherals
                  }
 
 

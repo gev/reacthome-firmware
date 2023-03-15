@@ -19,7 +19,7 @@ import           Data.Value
 import qualified Endpoint.Relay        as E
 import           GHC.TypeNats
 import           Interface.GPIO.Output
-import           Interface.MCU         (MCU)
+import           Interface.MCU         (MCU, peripherals)
 import           Ivory.Language
 import           Ivory.Stdlib
 
@@ -28,12 +28,12 @@ data Relay = Relay
     , transmit :: forall s n. (KnownNat n) => Buffer n Uint8 -> Ivory (ProcEffects s ()) ()
     }
 
-relay :: (MCU mcu, Output o, T.Transport t)
-       => (mcu -> o) -> Reader (Domain mcu t) Feature
+relay :: (Output o, T.Transport t)
+       => (p -> o) -> Reader (Domain p t) Feature
 relay out = do
     mcu       <- asks mcu
     transport <- asks transport
-    let o = out mcu
+    let o = out $ peripherals mcu
     pure . Feature $ Relay { getRelay = E.relay 1 o
                            , transmit = T.transmit transport
                            }
