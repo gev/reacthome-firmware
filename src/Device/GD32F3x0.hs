@@ -13,7 +13,6 @@ import           Device.GD32F3x0.USART
 import           Interface.Mac                 (Mac)
 import           Interface.MCU
 import           Interface.SystemClock         (SystemClock)
-import           Support.CMSIS.CoreCM4
 import           Support.Device.GD32F3x0
 import           Support.Device.GD32F3x0.DMA
 import           Support.Device.GD32F3x0.GPIO

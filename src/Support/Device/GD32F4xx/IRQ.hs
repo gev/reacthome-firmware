@@ -1,7 +1,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes            #-}
 
-module Support.Device.GD32F3x0.IRQ
+module Support.Device.GD32F4xx.IRQ
     ( IRQn (..)
     , makeIRQHandler
     , inclIRQ
@@ -12,17 +12,14 @@ import           Ivory.Language.Module
 import           Ivory.Language.Proc
 import           Ivory.Language.Syntax
 import           Ivory.Support
-import           Ivory.Support.Device.GD32F3x0
+import           Ivory.Support.Device.GD32F4xx
 
 
 data IRQn
     = TIMER1_IRQn
     | TIMER2_IRQn
     | USART1_IRQn
-    | DMA_Channel3_4_IRQn
-    | EXTI0_1_IRQn
-    | EXTI2_3_IRQn
-    | EXTI4_15_IRQn
+    | DMA0_Channel0_IRQn
     deriving (Show, Enum, Bounded)
 instance ExtDef IRQn Uint8
 

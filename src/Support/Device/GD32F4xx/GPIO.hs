@@ -22,8 +22,7 @@ module Support.Device.GD32F4xx.GPIO
     , inclGPIO
     ) where
 
-import           Ivory.Language                (Def, Ivory, Proc ((:->)),
-                                                Uint32, call_)
+import           Ivory.Language                hiding (setBit)
 import           Ivory.Language.Module
 import           Ivory.Support
 import           Ivory.Support.Device.GD32F4xx

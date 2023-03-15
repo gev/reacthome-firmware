@@ -40,7 +40,6 @@ import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Support
 import           Ivory.Support.Device.GD32F4xx
-import           Support.Device.GD32F4xx.DMA   (DMA_CHANNEL)
 
 data USART_INT
     = USART_INT_RBNE

@@ -20,9 +20,6 @@ output = Output . io GPIO_MODE_OUTPUT
 
 
 
-instance Include Output where
-    include = include . getOutput
-
 instance Initialize Output where
     initialize = initialize . getOutput
 

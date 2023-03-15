@@ -3,9 +3,7 @@
 module Device.GD32F3x0.Mac where
 
 
-import           Control.Monad
 import           Data.Serialize
-import           GHC.TypeNats
 import           Interface.Mac
 import           Ivory.Language
 import           Support.Device.GD32F3x0.DBG

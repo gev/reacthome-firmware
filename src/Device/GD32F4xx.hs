@@ -1,5 +1,6 @@
 module Device.GD32F4xx where
 
+import           Core.Include
 import           Device.GD32F4xx.GPIO
 import           Device.GD32F4xx.GPIO.Input
 import           Device.GD32F4xx.GPIO.Output
@@ -15,13 +16,16 @@ import           Interface.SystemClock         (SystemClock)
 import           Support.Device.GD32F4xx
 import           Support.Device.GD32F4xx.DMA
 import           Support.Device.GD32F4xx.GPIO
+import           Support.Device.GD32F4xx.IRQ
 import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.USART
 
 
-data GD32F4xx = GD32F4xx
 
-    { usart_1   :: USART
+data GD32F4xx = GD32F4xx
+    { getModel  :: String
+
+    , usart_1   :: USART
 
     , in_pa_0   :: Input
     , in_pa_1   :: Input
@@ -93,8 +97,9 @@ data GD32F4xx = GD32F4xx
     }
 
 
-gd32f4xx = GD32F4xx
-    { usart_1   = USART USART1
+gd32f4xx model = GD32F4xx
+    { getModel  = model
+    , usart_1   = USART USART1
                         RCU_USART1
                         USART1_IRQn
                         DMA0
@@ -175,6 +180,16 @@ gd32f4xx = GD32F4xx
 
 
 
+gd32f450 = gd32f4xx "GD32F4xx"
+
+
+
+instance Include GD32F4xx where
+    include _ = inclGD32F4xx
+
+
 instance MCU GD32F4xx where
+    model         = getModel
+    hasFPU      _ = True
     mac         _ = makeMac
     systemClock _ = G.systemClock

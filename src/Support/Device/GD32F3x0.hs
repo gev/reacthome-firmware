@@ -1,7 +1,3 @@
-{-# LANGUAGE DataKinds             #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE RankNTypes            #-}
-
 module Support.Device.GD32F3x0 where
 
 import           Ivory.Language.Module

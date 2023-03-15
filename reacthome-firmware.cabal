@@ -116,6 +116,7 @@ executable reacthome-firmware
                     , Support.Cast
                     , Support.Serialize
                     , Support.CMSIS.CoreCM4
+
                     , Support.Device.GD32F3x0
                     , Support.Device.GD32F3x0.DBG
                     , Support.Device.GD32F3x0.DMA
@@ -132,6 +133,7 @@ executable reacthome-firmware
                     , Support.Device.GD32F4xx.DBG
                     , Support.Device.GD32F4xx.DMA
                     , Support.Device.GD32F4xx.GPIO
+                    , Support.Device.GD32F4xx.IRQ
                     , Support.Device.GD32F4xx.Misc
                     , Support.Device.GD32F4xx.RCU
                     , Support.Device.GD32F4xx.Timer

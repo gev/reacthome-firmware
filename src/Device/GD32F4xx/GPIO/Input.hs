@@ -18,9 +18,6 @@ input = Input . io GPIO_MODE_INPUT
 
 
 
-instance Include Input where
-    include = include . getInput
-
 instance Initialize Input where
     initialize = initialize . getInput
 

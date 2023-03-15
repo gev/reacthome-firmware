@@ -14,8 +14,8 @@ import           Ivory.Language
 import           Ivory.Stdlib
 import           Ivory.Support.Device.GD32F4xx
 import           Support.Cast
-import           Support.Device.GD32F4xx
 import           Support.Device.GD32F4xx.DMA
+import           Support.Device.GD32F4xx.IRQ
 import           Support.Device.GD32F4xx.Misc
 import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.USART as S
@@ -36,7 +36,6 @@ data USART = USART
 
 instance Include (I.HandleUSART USART) where
     include (I.HandleUSART (USART {..}) onReceive onTransmit onDrain) =
-        inclG >> inclMisc >> inclUSART >> inclDMA >> inclUtil >> include rx >> include tx >>
         makeIRQHandler usart (handleUSART usart onReceive onDrain) >>
         makeIRQHandler dmaIRQc (handleDMA dmaPer dmaCh usart onTransmit)
 
@@ -125,7 +124,7 @@ dmaInitParam :: DMA_SINGLE_PARAM
 dmaInitParam = dmaParam { dmaPeriphInc         =  DMA_PERIPH_INCREASE_DISABLE
                         , dmaMemoryInc         =  DMA_MEMORY_INCREASE_ENABLE
                         , dmaPeriphMemoryWidth =  DMA_PERIPH_WIDTH_16BIT
-                        , dmaCircularMode      =  DMA_CIRCULAR_MODE_DISABLE 
+                        , dmaCircularMode      =  DMA_CIRCULAR_MODE_DISABLE
                         , dmaDirection         =  DMA_MEMORY_TO_PERIPH
                         , dmaPriority          =  DMA_PRIORITY_ULTRA_HIGH
                         }

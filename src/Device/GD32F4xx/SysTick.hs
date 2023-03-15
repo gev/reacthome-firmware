@@ -20,8 +20,7 @@ sysTick = SysTick
 
 
 instance Include (HandleTimer SysTick) where
-    include (HandleTimer {..}) =
-        inclCoreCM4 >> incl (handleIRQ handle)
+    include (HandleTimer {..}) = incl (handleIRQ handle)
 
 
 instance Initialize (HandleTimer SysTick) where
