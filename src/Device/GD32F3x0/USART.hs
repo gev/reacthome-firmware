@@ -114,6 +114,7 @@ instance I.USART USART where
 
 {-
     TODO: add all values of word length, stopbit and parity
+    TODO: check: are DMA structure's completed?
 -}
 coerceWordLength :: I.WordLength -> USART_WORD_LENGTH
 coerceWordLength I.WL_8b = USART_WL_8BIT
