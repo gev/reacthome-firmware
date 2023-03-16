@@ -1,14 +1,20 @@
-{-# LANGUAGE GADTs           #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DataKinds      #-}
+{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE RankNTypes     #-}
 
 module Interface.MCU where
 
+import           Control.Monad.Writer
 import           Core.Context
+import           Data.Buffer
+import           Data.Value
 import           Interface.Mac
-import           Interface.SystemClock
+import           Interface.SystemClock (SystemClock)
+import           Ivory.Language
+import           Ivory.Language.Module
 
 
-data MCU p = Include p => MCU
+data MCU p = MCU
     { family       :: String
     , model        :: String
     , modification :: String
@@ -19,20 +25,18 @@ data MCU p = Include p => MCU
     }
 
 
-mcu :: Include p => String -> Bool -> SystemClock -> (String -> Mac) -> p -> String -> String -> MCU p
-mcu family hasFPU systemClock initializeMac peripherals model modification = MCU
-    { family       = family
-    , model        = model
-    , modification = modification
-    , hasFPU       = hasFPU
-    , systemClock  = systemClock
-    , peripherals  = peripherals
-    , mac          = initializeMac "mac"
-    }
-
-
-instance Include (MCU p) where
-    include (MCU {..}) = do
-        include mac
-        include peripherals
-        include systemClock
+mcu :: Monad m
+    => String
+    -> Bool
+    -> SystemClock
+    -> (Buffer 6 Uint8 -> forall eff. Ivory eff ())
+    -> ModuleM ()
+    -> p
+    -> String
+    -> String
+    -> WriterT Context m (MCU p)
+mcu family hasFPU systemClock initializeMac mcuModule peripherals model modification = do
+    mac <- makeMac initializeMac "mac"
+    include mcuModule
+    include systemClock
+    pure MCU { family, model, modification, hasFPU, systemClock, peripherals, mac }

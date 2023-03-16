@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs             #-}
+{-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE RecordWildCards   #-}
 
 module Core.Domain where
@@ -24,7 +25,7 @@ import           Support.Serialize
 
 data Domain p t where
      Domain :: Transport t
-            => { model      :: Value  Uint8
+            => { model      :: Value Uint8
                , version    :: V.Version
                , mcu        :: I.MCU p
                , shouldInit :: Value IBool
@@ -34,32 +35,21 @@ data Domain p t where
 
 
 
-domain :: Transport t
+domain :: (Monad m, Transport t)
        => Uint8
        -> (Uint8, Uint8)
        -> I.MCU p
        -> IBool
        -> t
        -> [Feature]
-       -> Writer Context (Domain p t)
-domain model (major, minor) mcu shouldInit transport features = do
-    include domain
-    pure    domain
-    where   domain = Domain { model      = value "model" model
-                            , version    = V.version "version" major minor
-                            , mcu        = mcu
-                            , shouldInit = value "should_init" shouldInit
-                            , transport  = transport
-                            , features   = features
-                            }
-
-
-instance Include (Domain p t) where
-    include (Domain {..}) = do
-        include inclCast
-        include inclSerialize
-        include mcu
-        include model
-        include version
-        include shouldInit
-        include transport
+       -> WriterT Context m (Domain p t)
+domain model' (major, minor) mcu shouldInit' transport features = do
+    include inclCast
+    include inclSerialize
+    let model      = value "model" model'
+    let version    = V.version "version" major minor
+    let shouldInit = value "should_init" shouldInit'
+    include model
+    include version
+    include shouldInit
+    pure Domain { model, version, mcu, shouldInit, transport, features}

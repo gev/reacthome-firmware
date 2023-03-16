@@ -1,5 +1,6 @@
 module Device.GD32F3x0 where
 
+import           Control.Monad.Writer
 import           Core.Context
 import           Device.GD32F3x0.GPIO
 import           Device.GD32F3x0.GPIO.Input
@@ -95,8 +96,8 @@ data GD32F3x0 = GD32F3x0
     }
 
 
-gd32f3x0 :: String -> String -> MCU GD32F3x0
-gd32f3x0 = mcu "GD32F3x0" False G.systemClock makeMac GD32F3x0
+gd32f3x0 :: Monad m => String -> String -> WriterT Context m (MCU GD32F3x0)
+gd32f3x0 = mcu "GD32F3x0" False G.systemClock makeMac inclGD32F3x0 GD32F3x0
     { usart_1   = USART USART1
                         RCU_USART1
                         USART1_IRQn
@@ -177,10 +178,5 @@ gd32f3x0 = mcu "GD32F3x0" False G.systemClock makeMac GD32F3x0
 
 
 
-gd32f330k8u6 :: MCU GD32F3x0
+gd32f330k8u6 :: Monad m => WriterT Context m (MCU GD32F3x0)
 gd32f330k8u6 = gd32f3x0 "GD32F330" "k8u6"
-
-
-
-instance Include GD32F3x0 where
-    include _ = include inclGD32F3x0

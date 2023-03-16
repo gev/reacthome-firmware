@@ -5,11 +5,13 @@
 {-# LANGUAGE TypeOperators   #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
+{-# LANGUAGE NamedFieldPuns  #-}
 
 module Protocol.RBUS.Slave where
 
+import           Control.Monad.Writer
 import           Core.Context
-import           Core.Version   (Version, major, minor)
+import           Core.Version         (Version, major, minor)
 import           Data.Buffer
 import           Data.Record
 import           Data.Value
@@ -52,7 +54,7 @@ txPreamble :: Preamble
 txPreamble = preambleSlave
 
 
-slave :: KnownNat n
+slave :: (Monad m, KnownNat n)
       => String
       -> Buffer 6 Uint8
       -> Value Uint8
@@ -60,51 +62,43 @@ slave :: KnownNat n
       -> (Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ())
       -> (forall eff. Ivory eff ())
       -> (forall eff. Ivory eff ())
-      -> Slave n
-slave n mac model version onMessage onConfirm onDiscovery = Slave
-    { name          = name
-    , mac           = mac
-    , model         = model
-    , version       = version
-    , address       = value      (name <> "_address")      broadcastAddress
-    , state         = value      (name <> "_state")        readyToReceive
-    , phase         = value      (name <> "_phase")        waitingAddress
-    , index         = value      (name <> "_index")        0
-    , size          = value      (name <> "_size")         0
-    , buff          = buffer     (name <> "_message")
-    , buffConf      = buffer     (name <> "_confirm_tx")
-    , buffPing      = buffer     (name <> "_ping_tx")
-    , buffDisc      = buffer     (name <> "_disc_tx")
-    , tidRx         = value      (name <> "_tid_rx")     (-1)
-    , tidTx         = value      (name <> "_tid_tx")       0
-    , crc           = record     (name <> "_crc")          initCRC16
-    , tmp           = value      (name <> "_tmp")          0
-    , onMessage     = onMessage
-    , onConfirm     = onConfirm
-    , onDiscovery   = onDiscovery
-    } where name = "protocol_" <> n
-
-
-instance KnownNat n => Include (Slave n) where
-    include s@(Slave {..}) = do
-        include inclCRC16
-        include tmp
-        include address
-        include state
-        include phase
-        include index
-        include size
-        include buff
-        include buffConf
-        include buffPing
-        include buffDisc
-        include tidRx
-        include tidTx
-        include crc
-        include tmp
-        include $ initDisc s
-        include $ initConf s
-        include $ initPing s
+      -> WriterT Context m (Slave n)
+slave n mac model version onMessage onConfirm onDiscovery = do
+    let name = "protocol_" <> n
+    let address = value      (name <> "_address")      broadcastAddress
+    let state   = value      (name <> "_state")        readyToReceive
+    let phase   = value      (name <> "_phase")        waitingAddress
+    let index   = value      (name <> "_index")        0
+    let size    = value      (name <> "_size")         0
+    buff       <- buffer     (name <> "_message")
+    buffConf   <- buffer     (name <> "_confirm_tx")
+    buffPing   <- buffer     (name <> "_ping_tx")
+    buffDisc   <- buffer     (name <> "_disc_tx")
+    let tidRx   = value      (name <> "_tid_rx")     (-1)
+    let tidTx   = value      (name <> "_tid_tx")       0
+    let crc     = record     (name <> "_crc")          initCRC16
+    let tmp     = value      (name <> "_tmp")          0
+    include tmp
+    include address
+    include state
+    include phase
+    include index
+    include size
+    include tidRx
+    include tidTx
+    include crc
+    include tmp
+    let slave = Slave { name, mac, model, version
+                      , address, state, phase, index, size
+                      , buff, buffConf, buffPing, buffDisc
+                      , tidRx, tidTx, crc, tmp
+                      , onMessage, onConfirm, onDiscovery
+                      }
+    include inclCRC16
+    include $ initDisc slave
+    include $ initConf slave
+    include $ initPing slave
+    pure slave
 
 
 initDisc :: Slave n -> Def('[] :-> ())

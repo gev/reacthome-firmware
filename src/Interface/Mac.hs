@@ -2,11 +2,11 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes            #-}
-{-# LANGUAGE RecordWildCards       #-}
 {-# LANGUAGE TypeOperators         #-}
 
-module Interface.Mac (Mac, mac, getMac) where
+module Interface.Mac where
 
+import           Control.Monad.Writer
 import           Core.Context
 import           Data.Buffer
 import           GHC.TypeNats
@@ -14,28 +14,16 @@ import           Ivory.Language
 import           Ivory.Language.Module
 
 
-data Mac = Mac
-    { name    :: String
-    , initMac :: Buffer 6 Uint8 -> forall eff. Ivory eff ()
-    , getMac  :: Buffer 6 Uint8
-    }
+type Mac = Buffer 6 Uint8
 
 
-mac :: (Buffer 6 Uint8 -> forall eff. Ivory eff ())
+makeMac :: Monad m
+    => (Buffer 6 Uint8 -> forall eff. Ivory eff ())
     -> String
-    -> Mac
-mac init name = Mac
-    { name    = name
-    , initMac = init
-    , getMac  = buffer name
-    }
-
-
-
-instance Include Mac where
-    include (Mac {..}) = do
-        include getMac
-        include initMac'
-        where
-            initMac' :: Def ('[] ':-> ())
-            initMac' = proc (name <> "_init") $ body $ initMac getMac
+    -> WriterT Context m Mac
+makeMac initMac name = do
+    mac <- buffer name
+    let initMac' :: Def ('[] ':-> ())
+        initMac' = proc (name <> "_init") $ body $ initMac mac
+    include initMac'
+    pure mac

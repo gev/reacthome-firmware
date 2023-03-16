@@ -1,11 +1,13 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE RankNTypes        #-}
 {-# LANGUAGE RecordWildCards   #-}
 
 module Endpoint.Relays where
 
+import           Control.Monad.Writer
 import           Core.Context
 import           Data.Buffer
 import           Data.Record
@@ -36,18 +38,22 @@ data Relays = Relays
     , payload   :: Buffer 8 Uint8
     }
 
-relays :: String -> Int -> Relays
-relays name n = Relays
-    { runRelays = runRecords name $ replicate n go
-    , payload   = buffer "relay_message"
-    } where go = [ state           .= ival false
-                 , defaultDelayOff .= ival 0
-                 , delayOff        .= ival 0
-                 , delayOn         .= ival 0
-                 , timestamp       .= ival 0
-                 , group           .= ival 1
-                 , synced          .= ival true
-                 ]
+relays :: Monad m => String -> Int -> WriterT Context m Relays
+relays name n = do
+    include $ defStruct (Proxy :: Proxy RelayStruct)
+    let runRelays = runRecords name $ replicate n go
+    payload      <- buffer "relay_message"
+    let relays    = Relays {runRelays, payload}
+    runRelays include
+    pure relays
+    where go = [ state           .= ival false
+               , defaultDelayOff .= ival 0
+               , delayOff        .= ival 0
+               , delayOn         .= ival 0
+               , timestamp       .= ival 0
+               , group           .= ival 1
+               , synced          .= ival true
+               ]
 
 
 
@@ -66,10 +72,4 @@ message (Relays {..}) i = do
 
 
 instance KnownNat n => Include (Records n RelayStruct) where
-    include r = do
-        include $ defStruct (Proxy :: Proxy RelayStruct)
-        include $ defMemArea r
-
-instance Include Relays where
-    include (Relays {..}) =
-        runRelays include >> include payload
+    include r = include $ defMemArea r

@@ -26,7 +26,7 @@ class Include a where
 
 
 instance Include [ModuleM ()] where
-    include = mapM_ include
+    include = include . mconcat
 
 instance Include (ModuleM ()) where
     include a = tell $ Context a mempty mempty

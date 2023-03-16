@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds       #-}
 {-# LANGUAGE GADTs           #-}
+{-# LANGUAGE NamedFieldPuns  #-}
 {-# LANGUAGE RankNTypes      #-}
 {-# LANGUAGE RecordWildCards #-}
 
@@ -33,18 +34,10 @@ relay :: (Output o, T.Transport t)
 relay out = do
     mcu       <- asks mcu
     transport <- asks transport
-    let o = out $ peripherals mcu
-    let feature = Feature $ Relay { getRelay = E.relay 1 o
-                                  , transmit = T.transmit transport
-                                  }
-    include feature
+    getRelay  <- E.relay 1 (out $ peripherals mcu)
+    let feature = Feature $ Relay { getRelay , transmit = T.transmit transport }
+    include $ delay 10 "relays" $ E.manage getRelay
     pure feature
-
-
-instance Include Relay where
-    include r = do
-        include $ getRelay r
-        include $ delay 10 "relays" $ E.manage $ getRelay r
 
 
 instance Controller Relay where

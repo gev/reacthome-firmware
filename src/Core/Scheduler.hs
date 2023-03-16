@@ -1,11 +1,12 @@
 {-# LANGUAGE DataKinds       #-}
+{-# LANGUAGE NamedFieldPuns  #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeOperators   #-}
 
 module Core.Scheduler where
 
 import           Control.Monad         (replicateM, zipWithM_)
-import           Control.Monad.Writer  (Writer)
+import           Control.Monad.Writer  (WriterT)
 import           Core.Context
 import           Core.Feature
 import           Core.Task
@@ -23,18 +24,10 @@ data Scheduler = Scheduler
     , steps :: [Step]
     }
 
-scheduler :: SystemClock -> [Step] -> Writer Context Scheduler
+scheduler :: Monad m => SystemClock -> [Step] -> WriterT Context m Scheduler
 scheduler clock steps =  do
-    include scheduler
-    pure    scheduler
-    where   scheduler = Scheduler { clock = clock
-                                  , steps = steps
-                                  }
-
-
-
-instance Include Scheduler where
-    include (Scheduler {..}) = include clock
+    include clock
+    pure Scheduler {clock, steps}
 
 
 

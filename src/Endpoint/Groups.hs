@@ -1,11 +1,13 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE QuasiQuotes       #-}
 {-# LANGUAGE RankNTypes        #-}
 {-# LANGUAGE RecordWildCards   #-}
 
 module Endpoint.Groups where
 
+import           Control.Monad.Writer
 import           Core.Context
 import           Data.Buffer
 import           Data.Record
@@ -32,14 +34,17 @@ data Groups = Groups
     , payload   :: Buffer 7 Uint8
     }
 
-groups :: String -> Int -> Groups
-groups name n = Groups
-    { runGroups = runRecords name $ replicate n go
-    , payload   = buffer "group_message"
-    } where go = [ enabled   .= ival false
-                 , delay     .= ival 0
-                 , synced    .= ival true
-                 ]
+groups :: Monad m =>  String -> Int -> WriterT Context m Groups
+groups name n = do
+    include $ defStruct (Proxy :: Proxy GroupStruct)
+    let runGroups = runRecords name $ replicate n go
+    payload      <- buffer "group_message"
+    runGroups include
+    pure Groups { runGroups, payload }
+    where go =  [ enabled   .= ival false
+                , delay     .= ival 0
+                , synced    .= ival true
+                ]
 
 
 
@@ -57,10 +62,4 @@ message (Groups runGroup payload) i = do
 
 
 instance KnownNat n => Include (Records n GroupStruct) where
-    include r = do
-        include $ defStruct (Proxy :: Proxy GroupStruct)
-        include $ defMemArea r
-
-instance Include Groups where
-    include (Groups {..}) =
-        runGroups include >> include payload
+    include r = include $ defMemArea r

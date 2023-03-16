@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds          #-}
 {-# LANGUAGE GADTs              #-}
+{-# LANGUAGE NamedFieldPuns     #-}
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE RecordWildCards    #-}
 
@@ -30,28 +31,19 @@ blink :: Output o
       => Int
       -> (p -> o)
       -> WriterT Context (Reader (Domain p t)) Feature
-blink n out = do
+blink n o = do
     mcu <- asks mcu
-    let name = "blink_" <> show n
-    let feature = Feature $ Blink { name  = name
-                                  , out   = out $ peripherals mcu
-                                  , state = value (name <> "_state") false
-                                  }
-    include feature
+    let name  = "blink_" <> show n
+    let out   = o $ peripherals mcu
+    let state = value (name <> "_state") false
+    let feature = Feature $ Blink { name, out, state }
+    include state
+    include out
+    include $ delay 1_000 name $ do
+        v <- deref $ addrOf state
+        store (addrOf state) $ iNot v
+        ifte_ v (set   out)
+                (reset out)
     pure feature
-
-
-
-instance Include Blink where
-    include (Blink {..}) = do
-        include state
-        include out
-        include $ delay 1_000 name $ do
-            v <- deref $ addrOf state
-            store (addrOf state) $ iNot v
-            ifte_ v (set   out)
-                    (reset out)
-
-
 
 instance Controller Blink

@@ -4,6 +4,7 @@
 
 module Core.Formula where
 
+import           Control.Monad.Identity
 import           Control.Monad.Reader
 import           Control.Monad.Writer
 import           Core.Context
@@ -20,9 +21,9 @@ data Formula where
     Formula :: Transport t
             => { model      :: Uint8
                , version    :: (Uint8, Uint8)
-               , mcu        :: MCU p
+               , mcu        :: Writer Context (MCU p)
                , shouldInit :: IBool
-               , transport  :: WriterT Context (Reader (Domain p t))  t
+               , transport  :: WriterT Context (Reader (Domain p t)) t
                , features   :: [WriterT Context (Reader (Domain p t)) Feature]
                } -> Formula
 
@@ -34,14 +35,16 @@ cook (Formula model version mcu shouldInit transport features) = do
     incl  loop
     incl  main
 
-    where (domain'   , domainContext'   ) = runWriter $ domain model version mcu shouldInit transport' features'
-          (scheduler', schedulerContext') = runWriter $ scheduler (systemClock mcu) steps
+    where (domain'   , domainContext'   ) = runWriter $ domain model version mcu' shouldInit transport' features'
+          (scheduler', schedulerContext') = runWriter $ scheduler (systemClock mcu') steps
           (transport', transportContext') = runReader (runWriterT transport) domain'
           (features' , featuresContext' ) = unzip $ run <$> features
+          (mcu'      , mcuContext'      ) = runWriter mcu
 
           run t = runReader (runWriterT t) domain'
 
-          (Context inclModule inits steps) = domainContext'
+          (Context inclModule inits steps) = mcuContext'
+                                          <> domainContext'
                                           <> transportContext'
                                           <> schedulerContext'
                                           <> mconcat featuresContext'

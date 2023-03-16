@@ -1,10 +1,12 @@
 {-# LANGUAGE DataKinds       #-}
 {-# LANGUAGE GADTs           #-}
+{-# LANGUAGE NamedFieldPuns  #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeOperators   #-}
 
 module Endpoint.Relay where
 
+import           Control.Monad.Writer
 import           Core.Context
 import           Data.Buffer
 import           Data.Value
@@ -22,16 +24,27 @@ data Relay = forall o. Output o => Relay
     }
 
 
-relay :: Output o => Int -> o -> Relay
-relay n out = Relay
-    { n       = n
-    , name    = name
-    , out     = out
-    , state   = value (name <> "_state") false
-    , payload = buffer (name <> "_payload")
-    } where name = "relay_" <> show n
+relay :: (Monad m, Output o) => Int -> o -> WriterT Context m Relay
+relay n out = do
+    let name  = "relay_" <> show n
+    let state = value (name <> "_state") false
+    payload  <- buffer (name <> "_payload")
+    let relay = Relay { n, name , out, state, payload }
+    include state
+    let initRelay' :: Def ('[] ':-> ())
+        initRelay' = proc (name <> "_payload_init") $ body $ do
+            let payload' = addrOf payload
+            store (payload' ! 0) 0
+            store (payload' ! 1) $ fromIntegral n
+            store (payload' ! 2) 0
+            store (payload' ! 3) $ fromIntegral n
+            store (payload' ! 4) 0
+            store (payload' ! 5) 0
+            store (payload' ! 6) 0
+            store (payload' ! 7) 0
 
-
+    include initRelay'
+    pure relay
 
 turnOn :: Relay -> Ivory eff ()
 turnOn (Relay {..}) =
@@ -46,23 +59,3 @@ manage (Relay {..}) = do
     s <- deref $ addrOf state
     ifte_ s (set   out)
             (reset out)
-
-
-
-instance Include Relay where
-    include (Relay {..}) = do
-        include state
-        include payload
-        include initRelay'
-        where
-            initRelay' :: Def ('[] ':-> ())
-            initRelay' = proc (name <> "_payload_init") $ body $ do
-                let payload' = addrOf payload
-                store (payload' ! 0) 0
-                store (payload' ! 1) $ fromIntegral n
-                store (payload' ! 2) 0
-                store (payload' ! 3) $ fromIntegral n
-                store (payload' ! 4) 0
-                store (payload' ! 5) 0
-                store (payload' ! 6) 0
-                store (payload' ! 7) 0

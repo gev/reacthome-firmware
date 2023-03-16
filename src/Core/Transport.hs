@@ -7,5 +7,5 @@ import           GHC.TypeNats
 import           Ivory.Language
 
 
-class Include t => Transport t where
+class Transport t where
     transmit :: KnownNat l => t -> Buffer l Uint8 -> Ivory (ProcEffects s ()) ()

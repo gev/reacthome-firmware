@@ -5,6 +5,7 @@
 {-# LANGUAGE RecordWildCards  #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
+{-# LANGUAGE NamedFieldPuns   #-}
 
 module Feature.Relays where
 
@@ -55,29 +56,27 @@ relays outs = do
     shouldInit <- asks D.shouldInit
     let os = ($ peripherals mcu) <$> outs
     let n = length os
-    let feature = Feature $ Relays { n = fromIntegral n
-                                   , getRelays  = R.relays "relays" n
-                                   , getGroups  = G.groups "groups" n
-                                   , getOutputs = makeOutputs "relays_outputs" os
-                                   , shouldInit = shouldInit
-                                   , clock      = systemClock mcu
-                                   , current    = index "current_relay"
-                                   , transmit   = T.transmit transport
-                                   }
-    include feature
+    getRelays     <- R.relays "relays" n
+    getGroups     <- G.groups "groups" n
+    let getOutputs = makeOutputs "relays_outputs" os
+    let clock      = systemClock mcu
+    let current    = index "current_relay"
+    let relays = Relays { n = fromIntegral n
+                        , getRelays
+                        , getGroups
+                        , getOutputs
+                        , shouldInit
+                        , clock
+                        , current
+                        , transmit = T.transmit transport
+                        }
+    let feature = Feature relays
+    include getOutputs
+    include current
+    include [ delay 10 "relays_manage" $ manage relays
+            , delay  5 "relays_sync"   $ sync relays
+            ]
     pure feature
-
-
-
-instance Include Relays where
-    include rs@(Relays {..}) = do
-        include getOutputs
-        include getRelays
-        include getGroups
-        include current
-        include [ delay 10 "relays_manage" $ manage rs
-                , delay  5 "relays_sync"   $ sync rs
-                ]
 
 
 
