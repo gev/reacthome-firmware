@@ -29,7 +29,7 @@ type RunValues t = forall a. (forall n. KnownNat n => Values n t -> a) -> a
 
 
 
-value_ :: (IvoryArea t, IvoryZero t) => String -> MemArea t
+value_ :: IvoryZeroVal t => String -> Value t
 value_ id = area id Nothing
 
 value :: (IvoryZeroVal t, IvoryInit t) => String -> t -> Value t
@@ -37,7 +37,7 @@ value id v = area id . Just $ ival v
 
 
 
-values_ :: (IvoryArea t, IvoryZero t) => String -> MemArea t
+values_ :: (KnownNat n, IvoryZeroVal t) => String -> Values n t
 values_ id = area id Nothing
 
 values :: (KnownNat n, IvoryZeroVal t, IvoryInit t) => String -> [t] -> Values n t
