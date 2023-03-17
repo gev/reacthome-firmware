@@ -1,11 +1,11 @@
 
 {-# LANGUAGE DataKinds       #-}
+{-# LANGUAGE NamedFieldPuns  #-}
 {-# LANGUAGE RankNTypes      #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeOperators   #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
-{-# LANGUAGE NamedFieldPuns  #-}
 
 module Protocol.RBUS.Slave where
 
