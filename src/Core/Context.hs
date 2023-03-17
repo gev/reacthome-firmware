@@ -58,7 +58,7 @@ instance Include Task where
 
 
 instance Semigroup Context where
-  (Context m1 i1 s1) <> (Context m2 i2 s2) = Context (m1 <> m2) (i1 <> i2) (s1 <> s2)
+  (Context m1 i1 t1) <> (Context m2 i2 t2) = Context (m1 <> m2) (i1 <> i2) (t1 <> t2)
 
 instance Monoid Context where
   mempty = Context mempty mempty mempty
