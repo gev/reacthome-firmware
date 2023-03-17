@@ -1,4 +1,5 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
 
@@ -20,15 +21,12 @@ data Inputs = Inputs
 
 
 
-instance Include Inputs where
-    include (Inputs {..}) = do
-        mapM_ include getInputs
-        runInputs include
-
 instance I.Inputs Inputs where
   get a = runGPIO undefined $ runInputs a
 
 instance I.MakeInputs D.Input Inputs where
-    makeInputs name is = Inputs { getInputs = is
-                                , runInputs = runRecordsFromList name fromPort $ D.getInput <$> is
-                                }
+    makeInputs name getInputs = do
+        let runInputs = runRecordsFromList name fromPort $ D.getInput <$> getInputs
+        mapM_ include getInputs
+        runInputs include
+        pure Inputs { getInputs, runInputs }

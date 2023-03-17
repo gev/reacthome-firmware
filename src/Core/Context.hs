@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeOperators         #-}
 
@@ -7,6 +8,7 @@ module Core.Context where
 
 import           Control.Monad.Writer
 import           Core.Task
+import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Language.Module
 
@@ -39,6 +41,7 @@ instance Include [Def ('[] :-> ())] where
         include $ incl <$> a
 
 instance Include (Def ('[] :-> ())) where
+    include :: Monad m => Def ('[] ':-> ()) -> WriterT Context m ()
     include a = include [a]
 
 
@@ -50,6 +53,7 @@ instance Include [Step] where
 
 instance Include Step where
     include a = include [a]
+
 
 
 

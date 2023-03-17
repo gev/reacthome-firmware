@@ -9,6 +9,7 @@ module Core.Version
     , minor
     ) where
 
+import           Control.Monad.Writer
 import           Core.Context
 import           Data.Record
 import           Ivory.Language
@@ -29,13 +30,11 @@ type Version = Record VersionStruct
 |]
 
 
-version :: String -> Uint8 -> Uint8 -> Version
-version name maj min = record name [ major .= ival maj
-                                   , minor .= ival min
-                                   ]
-
-
-instance Include Version where
-    include v = do
-        include $ defStruct (Proxy :: Proxy VersionStruct)
-        include $ defMemArea v
+version :: Monad m => String -> Uint8 -> Uint8 -> WriterT Context m Version
+version name maj min = do
+    let v = record name [ major .= ival maj
+                        , minor .= ival min
+                        ]
+    include $ defStruct (Proxy :: Proxy VersionStruct)
+    include $ defMemArea v
+    pure v

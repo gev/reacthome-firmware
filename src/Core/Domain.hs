@@ -47,7 +47,6 @@ domain model' (major, minor) mcu shouldInit' transport features = do
     include inclCast
     include inclSerialize
     model      <- value "model" model'
-    let version = V.version "version" major minor
+    version    <- V.version "version" major minor
     shouldInit <- value "should_init" shouldInit'
-    include version
     pure Domain { model, version, mcu, shouldInit, transport, features}

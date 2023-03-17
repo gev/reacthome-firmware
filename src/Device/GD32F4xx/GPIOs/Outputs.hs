@@ -1,4 +1,5 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
 
@@ -21,16 +22,13 @@ data Outputs = Outputs
 
 
 
-instance Include Outputs where
-    include (Outputs {..}) = do
-        mapM_ include getOutputs
-        runOutputs include
-
 instance I.Outputs Outputs where
     reset a = runGPIO (call_ gpio_bit_reset) $ runOutputs a
     set a = runGPIO (call_ gpio_bit_set) $ runOutputs a
 
 instance I.MakeOutputs D.Output Outputs where
-    makeOutputs name os = Outputs { getOutputs = os
-                                  , runOutputs = runRecordsFromList name fromPort $ D.getOutput <$> os
-                                  }
+    makeOutputs name getOutputs = do
+        let runOutputs = runRecordsFromList name fromPort $ D.getOutput <$> getOutputs
+        mapM_ include getOutputs
+        runOutputs include
+        pure Outputs { getOutputs, runOutputs }

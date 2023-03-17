@@ -12,9 +12,10 @@ module Util.CRC16
     , digestCRC16
     , updateCRC16
     , msb, lsb
-    , inclCRC16
+    , makeCRC16
     ) where
 
+import           Control.Monad.Writer
 import           Core.Context
 import           Data.Record
 import           Ivory.Language
@@ -119,7 +120,10 @@ crc16_lsb = constArea "crc16_lsb" $ iarray $ map ival [
     ]
 
 
-instance Include (Record CRC16) where
-    include r = do
-        include $ defStruct (Proxy :: Proxy CRC16)
-        include $ defMemArea r
+makeCRC16 :: Monad m => String -> WriterT Context m (Record CRC16)
+makeCRC16 name = do
+    let crc = record name initCRC16
+    include inclCRC16
+    include $ defStruct (Proxy :: Proxy CRC16)
+    include $ defMemArea crc
+    pure crc
