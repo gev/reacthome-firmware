@@ -1,7 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RankNTypes            #-}
-{-# LANGUAGE RecordWildCards       #-}
 
 module Device.GD32F4xx.GPIOs.Inputs where
 
@@ -13,20 +12,18 @@ import qualified Interface.GPIOs.Inputs     as I
 import           Ivory.Language
 
 
-
 data Inputs = Inputs
     { getInputs :: [D.Input]
     , runInputs :: RunRecords GPIOStruct
     }
 
 
-
 instance I.Inputs Inputs where
   get a = runGPIO undefined $ runInputs a
+
 
 instance I.MakeInputs D.Input Inputs where
     makeInputs name getInputs = do
         let runInputs = runRecordsFromList name fromPort $ D.getInput <$> getInputs
-        mapM_ include getInputs
         runInputs include
         pure Inputs { getInputs, runInputs }

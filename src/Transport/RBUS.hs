@@ -4,7 +4,7 @@
 module Transport.RBUS    where
 
 import           Control.Monad.Reader  (Reader, asks, runReader)
-import           Control.Monad.Writer  (WriterT)
+import           Control.Monad.Writer  (WriterT, runWriter)
 import           Core.Context
 import           Core.Dispatcher
 import qualified Core.Domain           as D
@@ -25,7 +25,8 @@ import           Transport.RBUS.Rx
 import           Transport.RBUS.Tx
 
 
-rbus :: Reader p RS485 -> (WriterT Context (Reader (D.Domain p t))) RBUS
+rbus :: WriterT Context (Reader (D.Domain p t)) RS485
+     -> WriterT Context (Reader (D.Domain p t)) RBUS
 rbus rs485 = do
 
     model         <- asks D.model
@@ -36,8 +37,8 @@ rbus rs485 = do
 
     let name       = "rbus_slave"
     let clock      = systemClock mcu
-    let rs         = runReader rs485 $ peripherals mcu
 
+    rs            <- rs485
     rxBuff        <- buffer (name <> "_rx")
     rxQueue       <- queue  (name <> "_rx")
     msgOffset     <- buffer (name <> "_msg_offset")
@@ -80,7 +81,6 @@ rbus rs485 = do
                     , txBuff, initBuff, txLock, timestamp
                     , shouldConfirm, shouldInit
                     }
-    include rs
     include $ HandleRS485 rs (rxHandle rbus) (txHandle rbus)
 
     include [ yeld    (name <> "_rx"  ) $ rxTask rbus

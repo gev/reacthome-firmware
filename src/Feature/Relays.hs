@@ -48,29 +48,29 @@ data Relays = forall os. Outputs os => Relays
 
 
 relays :: (MakeOutputs o os, T.Transport t)
-       => [p -> o]
+       => [p -> WriterT Context (Reader (D.Domain p t)) o]
        -> WriterT Context (Reader (D.Domain p t)) Feature
 relays outs = do
-    mcu           <- asks D.mcu
-    transport     <- asks D.transport
-    shouldInit    <- asks D.shouldInit
-    let os         = ($ peripherals mcu) <$> outs
-    let n          = length os
-    getRelays     <- R.relays "relays" n
-    getGroups     <- G.groups "groups" n
-    current       <- index "current_relay"
-    getOutputs    <- makeOutputs "relays_outputs" os
-    let clock      = systemClock mcu
-    let relays     = Relays { n = fromIntegral n
-                            , getRelays
-                            , getGroups
-                            , getOutputs
-                            , shouldInit
-                            , clock
-                            , current
-                            , transmit = T.transmit transport
-                            }
-    let feature    = Feature relays
+    mcu        <- asks D.mcu
+    transport  <- asks D.transport
+    shouldInit <- asks D.shouldInit
+    os         <- mapM ($ peripherals mcu) outs
+    let n       = length os
+    getRelays  <- R.relays "relays" n
+    getGroups  <- G.groups "groups" n
+    current    <- index "current_relay"
+    getOutputs <- makeOutputs "relays_outputs" os
+    let clock   = systemClock mcu
+    let relays  = Relays { n = fromIntegral n
+                         , getRelays
+                         , getGroups
+                         , getOutputs
+                         , shouldInit
+                         , clock
+                         , current
+                         , transmit = T.transmit transport
+                         }
+    let feature = Feature relays
     include [ delay 10 "relays_manage" $ manage relays
             , delay  5 "relays_sync"   $ sync relays
             ]

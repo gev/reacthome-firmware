@@ -29,15 +29,14 @@ data Blink where
 
 blink :: Output o
       => Int
-      -> (p -> o)
+      -> (p -> WriterT Context (Reader (Domain p t)) o)
       -> WriterT Context (Reader (Domain p t)) Feature
 blink n o = do
     let name  = "blink_" <> show n
     mcu      <- asks mcu
-    let out   = o $ peripherals mcu
+    out      <- o $ peripherals mcu
     state    <- value (name <> "_state") false
     let feature = Feature $ Blink { name, out, state }
-    include out
     include $ delay 1_000 name $ do
         v <- deref $ addrOf state
         store (addrOf state) $ iNot v

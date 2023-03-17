@@ -32,7 +32,7 @@ data StopBit
     | SB_1_5b
     | SB_2b
 
-class (Include (HandleUSART u), Include u) => USART u where
+class Include (HandleUSART u) => USART u where
 
     setBaudrate   :: u -> Uint32 -> Ivory eff ()
     setWordLength :: u -> WordLength -> Ivory eff ()

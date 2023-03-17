@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds         #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs             #-}
+{-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE RankNTypes        #-}
 {-# LANGUAGE RecordWildCards   #-}
 {-# LANGUAGE TypeOperators     #-}
@@ -8,11 +9,14 @@
 module Interface.RS485 where
 
 import           Control.Monad.Reader
+import           Control.Monad.Writer
 import           Core.Context
+import           Core.Domain           as D
 import           Interface.GPIO.Output
 import           Interface.MCU
 import qualified Interface.USART       as I
 import           Ivory.Language
+
 
 
 data RS485 where
@@ -24,6 +28,7 @@ data RS485 where
             -> RS485
 
 
+
 data HandleRS485 r = HandleRS485
     { re         :: r
     , onReceive  :: Uint16 -> forall eff. Ivory eff ()
@@ -31,17 +36,22 @@ data HandleRS485 r = HandleRS485
     }
 
 
+
 rs485 :: (I.USART u, Output o)
       => Int
-      -> (p -> u)
-      -> (p -> o)
-      -> Reader p RS485
-rs485 n usart rede = do
-    peripherals <- ask
-    pure $ RS485 { n     = n
-                 , usart = usart peripherals
-                 , rede  = rede  peripherals
-                 }
+      -> (p -> WriterT Context (Reader (Domain p t)) u)
+      -> (p -> WriterT Context (Reader (Domain p t)) o)
+      -> WriterT Context (Reader (Domain p t)) RS485
+rs485 n usart' rede' = do
+    mcu'        <- asks D.mcu
+    usart       <- usart' $ peripherals mcu'
+    rede        <- rede'  $ peripherals mcu'
+    let initRS485' :: Def ('[] ':-> ())
+        initRS485' = proc ("rs485_" <> show n <> "_init") $ body
+                                                          $ reset rede
+    include initRS485'
+    pure RS485 { n, usart, rede }
+
 
 
 transmit :: RS485
@@ -64,17 +74,7 @@ setParity :: RS485 -> I.Parity -> Ivory eff ()
 setParity (RS485 {..}) = I.setParity usart
 
 
+
 instance Include (HandleRS485 RS485) where
     include (HandleRS485 (RS485 {..}) onReceive onTransmit) = do
         include $ I.HandleUSART usart onReceive onTransmit (reset rede)
-
-
-instance Include RS485 where
-    include (RS485 {..}) = do
-        include rede
-        include usart
-        include initRS485'
-            where
-                initRS485' :: Def ('[] ':-> ())
-                initRS485' = proc ("rs485_" <> show n <> "_init") $ body
-                                                                  $ reset rede

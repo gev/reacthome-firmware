@@ -1,3 +1,5 @@
+{-# LANGUAGE RankNTypes #-}
+
 module Device.GD32F3x0 where
 
 import           Control.Monad.Writer
@@ -23,89 +25,95 @@ import           Support.Device.GD32F3x0.USART
 
 
 
+type USARTW  = forall m. Monad m => WriterT Context m USART
+type InputW  = forall m. Monad m => WriterT Context m Input
+type OutputW = forall m. Monad m => WriterT Context m Output
+
+
+
 data GD32F3x0 = GD32F3x0
-    { usart_1   :: USART
+    { usart_1   :: USARTW
 
-    , in_pa_0   :: Input
-    , in_pa_1   :: Input
-    , in_pa_2   :: Input
-    , in_pa_3   :: Input
-    , in_pa_4   :: Input
-    , in_pa_5   :: Input
-    , in_pa_6   :: Input
-    , in_pa_7   :: Input
-    , in_pa_8   :: Input
-    , in_pa_9   :: Input
-    , in_pa_10  :: Input
-    , in_pa_11  :: Input
-    , in_pa_12  :: Input
-    , in_pa_13  :: Input
-    , in_pa_14  :: Input
-    , in_pa_15  :: Input
+    , in_pa_0   :: InputW
+    , in_pa_1   :: InputW
+    , in_pa_2   :: InputW
+    , in_pa_3   :: InputW
+    , in_pa_4   :: InputW
+    , in_pa_5   :: InputW
+    , in_pa_6   :: InputW
+    , in_pa_7   :: InputW
+    , in_pa_8   :: InputW
+    , in_pa_9   :: InputW
+    , in_pa_10  :: InputW
+    , in_pa_11  :: InputW
+    , in_pa_12  :: InputW
+    , in_pa_13  :: InputW
+    , in_pa_14  :: InputW
+    , in_pa_15  :: InputW
 
-    , in_pb_0   :: Input
-    , in_pb_1   :: Input
-    , in_pb_2   :: Input
-    , in_pb_3   :: Input
-    , in_pb_4   :: Input
-    , in_pb_5   :: Input
-    , in_pb_6   :: Input
-    , in_pb_7   :: Input
-    , in_pb_8   :: Input
-    , in_pb_9   :: Input
-    , in_pb_10  :: Input
-    , in_pb_11  :: Input
-    , in_pb_12  :: Input
-    , in_pb_13  :: Input
-    , in_pb_14  :: Input
-    , in_pb_15  :: Input
+    , in_pb_0   :: InputW
+    , in_pb_1   :: InputW
+    , in_pb_2   :: InputW
+    , in_pb_3   :: InputW
+    , in_pb_4   :: InputW
+    , in_pb_5   :: InputW
+    , in_pb_6   :: InputW
+    , in_pb_7   :: InputW
+    , in_pb_8   :: InputW
+    , in_pb_9   :: InputW
+    , in_pb_10  :: InputW
+    , in_pb_11  :: InputW
+    , in_pb_12  :: InputW
+    , in_pb_13  :: InputW
+    , in_pb_14  :: InputW
+    , in_pb_15  :: InputW
 
-    , out_pa_0  :: Output
-    , out_pa_1  :: Output
-    , out_pa_2  :: Output
-    , out_pa_3  :: Output
-    , out_pa_4  :: Output
-    , out_pa_5  :: Output
-    , out_pa_6  :: Output
-    , out_pa_7  :: Output
-    , out_pa_8  :: Output
-    , out_pa_9  :: Output
-    , out_pa_10 :: Output
-    , out_pa_11 :: Output
-    , out_pa_12 :: Output
-    , out_pa_13 :: Output
-    , out_pa_14 :: Output
-    , out_pa_15 :: Output
+    , out_pa_0  :: OutputW
+    , out_pa_1  :: OutputW
+    , out_pa_2  :: OutputW
+    , out_pa_3  :: OutputW
+    , out_pa_4  :: OutputW
+    , out_pa_5  :: OutputW
+    , out_pa_6  :: OutputW
+    , out_pa_7  :: OutputW
+    , out_pa_8  :: OutputW
+    , out_pa_9  :: OutputW
+    , out_pa_10 :: OutputW
+    , out_pa_11 :: OutputW
+    , out_pa_12 :: OutputW
+    , out_pa_13 :: OutputW
+    , out_pa_14 :: OutputW
+    , out_pa_15 :: OutputW
 
-    , out_pb_0  :: Output
-    , out_pb_1  :: Output
-    , out_pb_2  :: Output
-    , out_pb_3  :: Output
-    , out_pb_4  :: Output
-    , out_pb_5  :: Output
-    , out_pb_6  :: Output
-    , out_pb_7  :: Output
-    , out_pb_8  :: Output
-    , out_pb_9  :: Output
-    , out_pb_10 :: Output
-    , out_pb_11 :: Output
-    , out_pb_12 :: Output
-    , out_pb_13 :: Output
-    , out_pb_14 :: Output
-    , out_pb_15 :: Output
+    , out_pb_0  :: OutputW
+    , out_pb_1  :: OutputW
+    , out_pb_2  :: OutputW
+    , out_pb_3  :: OutputW
+    , out_pb_4  :: OutputW
+    , out_pb_5  :: OutputW
+    , out_pb_6  :: OutputW
+    , out_pb_7  :: OutputW
+    , out_pb_8  :: OutputW
+    , out_pb_9  :: OutputW
+    , out_pb_10 :: OutputW
+    , out_pb_11 :: OutputW
+    , out_pb_12 :: OutputW
+    , out_pb_13 :: OutputW
+    , out_pb_14 :: OutputW
+    , out_pb_15 :: OutputW
     }
 
 
 gd32f3x0 :: Monad m => String -> String -> WriterT Context m (MCU GD32F3x0)
 gd32f3x0 = mcu "GD32F3x0" False G.systemClock makeMac inclGD32F3x0 GD32F3x0
-    { usart_1   = USART USART1
-                        RCU_USART1
-                        USART1_IRQn
-                        DMA_CH3
-                        DMA_Channel3_4_IRQn
-                        DMA_Channel3_4
-                        (pa_3 $ AF GPIO_AF_1)
-                        (pa_2 $ AF GPIO_AF_1)
+    { usart_1   = mkUSART USART1
+                          RCU_USART1
+                          USART1_IRQn
+                          DMA_CH3
+                          DMA_Channel3_4_IRQn
+                          DMA_Channel3_4
+                          (pa_3 $ AF GPIO_AF_1)
+                          (pa_2 $ AF GPIO_AF_1)
 
     , in_pa_0   = input pa_0
     , in_pa_1   = input pa_1

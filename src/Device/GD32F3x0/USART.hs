@@ -1,5 +1,7 @@
 {-# LANGUAGE DataKinds          #-}
+{-# LANGUAGE FlexibleContexts   #-}
 {-# LANGUAGE FlexibleInstances  #-}
+{-# LANGUAGE NamedFieldPuns     #-}
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE RankNTypes         #-}
 {-# LANGUAGE RecordWildCards    #-}
@@ -7,6 +9,7 @@
 
 module Device.GD32F3x0.USART where
 
+import           Control.Monad.Writer          (WriterT)
 import           Core.Context
 import qualified Device.GD32F3x0.GPIO          as G
 import qualified Interface.USART               as I
@@ -32,6 +35,38 @@ data USART = USART
     , rx       :: G.Port
     , tx       :: G.Port
     }
+
+
+mkUSART :: Monad m
+        => USART_PERIPH
+        -> RCU_PERIPH
+        -> IRQn
+        -> DMA_CHANNEL
+        -> IRQn
+        -> DMA_CHANNEL_IRQ
+        -> G.Port
+        -> G.Port
+        -> WriterT Context m USART
+mkUSART usart rcu usartIRQ dma dmaIRQn dmaIRQc rx tx = do
+    include rx
+    include tx
+    include initUSART'
+    pure USART { usart, rcu, usartIRQ, dma, dmaIRQn, dmaIRQc, rx, tx }
+    where
+        initUSART' :: Def ('[] ':-> ())
+        initUSART' = proc (show usart <> "_init") $ body $ do
+            enablePeriphClock   RCU_DMA
+            enableIrqNvic       usartIRQ 0 0
+            enableIrqNvic       dmaIRQn  1 0
+            enablePeriphClock   rcu
+            deinitUSART         usart
+            configReceive       usart USART_RECEIVE_ENABLE
+            configTransmit      usart USART_TRANSMIT_ENABLE
+            setBaudrate         usart 1_000_000
+            setWordLength       usart USART_WL_8BIT
+            configParity        usart USART_PM_NONE
+            enableInterrupt     usart USART_INT_RBNE
+            enableUSART         usart
 
 
 instance Include (I.HandleUSART USART) where
@@ -61,28 +96,6 @@ handleUSART usart onReceive onDrain = do
         enableInterrupt         usart USART_INT_RBNE
         onDrain
 
-
-
-instance Include USART where
-    include (USART {..}) = do
-        include rx
-        include tx
-        include initUSART'
-        where
-            initUSART' :: Def ('[] ':-> ())
-            initUSART' = proc (show usart <> "_init") $ body $ do
-                enablePeriphClock   RCU_DMA
-                enableIrqNvic       usartIRQ 0 0
-                enableIrqNvic       dmaIRQn  1 0
-                enablePeriphClock   rcu
-                deinitUSART         usart
-                configReceive       usart USART_RECEIVE_ENABLE
-                configTransmit      usart USART_TRANSMIT_ENABLE
-                setBaudrate         usart 1_000_000
-                setWordLength       usart USART_WL_8BIT
-                configParity        usart USART_PM_NONE
-                enableInterrupt     usart USART_INT_RBNE
-                enableUSART         usart
 
 
 instance I.USART USART where
