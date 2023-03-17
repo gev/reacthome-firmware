@@ -17,6 +17,7 @@ import           Ivory.Language
 import           Ivory.Language.Module
 
 
+
 data Formula where
     Formula :: Transport t
             => { model      :: Uint8
@@ -27,6 +28,8 @@ data Formula where
                , features   :: [WriterT Context (Reader (Domain p t)) Feature]
                } -> Formula
 
+
+
 cook :: Formula -> ModuleM ()
 cook (Formula model version mcu shouldInit transport features) = do
 
@@ -36,7 +39,6 @@ cook (Formula model version mcu shouldInit transport features) = do
     incl  main
 
     where (domain'   , domainContext'   ) = runWriter $ domain model version mcu' shouldInit transport' features'
-          (scheduler', schedulerContext') = runWriter $ scheduler (systemClock mcu') steps
           (transport', transportContext') = runReader (runWriterT transport) domain'
           (features' , featuresContext' ) = unzip $ run <$> features
           (mcu'      , mcuContext'      ) = runWriter mcu
@@ -46,10 +48,9 @@ cook (Formula model version mcu shouldInit transport features) = do
           (Context inclModule inits steps) = mcuContext'
                                           <> domainContext'
                                           <> transportContext'
-                                          <> schedulerContext'
                                           <> mconcat featuresContext'
 
-          loop = schedule scheduler'
+          loop = schedule $ scheduler (systemClock mcu') steps
 
           init :: Def ('[] :-> ())
           init = proc "init" $ body $ mapM_ call_ inits

@@ -4,6 +4,7 @@
 
 module Data.Concurrent.Semaphore where
 
+import           Control.Monad.Writer (WriterT)
 import           Core.Context
 import           Data.Value
 import           Ivory.Language
@@ -13,8 +14,10 @@ import           Ivory.Stdlib
 newtype Semaphore t = Semaphore { getSemaphore :: Value t }
 
 
-semaphore :: String -> Uint32 -> Semaphore Uint32
-semaphore id = Semaphore . value (id <> "_semaphore")
+semaphore :: Monad m => String -> Uint32 -> WriterT Context m (Semaphore Uint32)
+semaphore id n = do
+    v <- value (id <> "_semaphore") n
+    pure $ Semaphore v
 
 
 up :: (IvoryStore t, Num t)
@@ -38,6 +41,3 @@ check :: (IvoryStore t, IvoryOrd t, Num t)
 check (Semaphore s) run = do
     v <-  deref $ addrOf s
     when (v >? 0) run
-
-instance IvoryType t => Include (Semaphore t) where
-     include s = include $ getSemaphore s

@@ -1,13 +1,15 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs             #-}
+{-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE RecordWildCards   #-}
 
 module Interface.SystemClock where
 
+import           Control.Monad.Writer
 import           Core.Context
 import           Data.Value
-import           Interface.Counter (Counter (readCounter))
-import           Interface.Timer   (HandleTimer (HandleTimer), Timer)
+import           Interface.Counter    (Counter (readCounter))
+import           Interface.Timer      (HandleTimer (HandleTimer), Timer)
 import           Ivory.Language
 
 
@@ -20,19 +22,13 @@ data SystemClock where
                    }
                 -> SystemClock
 
-systemClock timer counter = SystemClock
-    { timer   = timer
-    , counter = counter
-    , time    = value "system_time" 0
-    }
-
-
-
-instance Include SystemClock where
-    include (SystemClock {..}) = do
-        include time
-        include counter
-        include (HandleTimer timer $ handle time)
+systemClock :: (Monad m, Timer t, Counter c, Include c)
+            => t -> c -> WriterT Context m SystemClock
+systemClock timer counter = do
+    time <- value "system_time" 0
+    include counter
+    include (HandleTimer timer $ handle time)
+    pure SystemClock { timer, counter, time }
 
 
 

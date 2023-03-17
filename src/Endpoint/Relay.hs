@@ -27,10 +27,10 @@ data Relay = forall o. Output o => Relay
 relay :: (Monad m, Output o) => Int -> o -> WriterT Context m Relay
 relay n out = do
     let name  = "relay_" <> show n
-    let state = value (name <> "_state") false
+
+    state    <- value  (name <> "_state"  ) false
     payload  <- buffer (name <> "_payload")
-    let relay = Relay { n, name , out, state, payload }
-    include state
+
     let initRelay' :: Def ('[] ':-> ())
         initRelay' = proc (name <> "_payload_init") $ body $ do
             let payload' = addrOf payload
@@ -42,17 +42,21 @@ relay n out = do
             store (payload' ! 5) 0
             store (payload' ! 6) 0
             store (payload' ! 7) 0
-
     include initRelay'
-    pure relay
+
+    pure Relay { n, name , out, state, payload }
+
+
 
 turnOn :: Relay -> Ivory eff ()
 turnOn (Relay {..}) =
     store (addrOf state) true >> store (addrOf payload ! 2) 1
 
+
 turnOff :: Relay -> Ivory eff ()
 turnOff (Relay {..}) = do
     store (addrOf state) false >> store (addrOf payload ! 2) 0
+
 
 manage :: Relay -> Ivory eff ()
 manage (Relay {..}) = do

@@ -65,29 +65,20 @@ slave :: (Monad m, KnownNat n)
       -> WriterT Context m (Slave n)
 slave n mac model version onMessage onConfirm onDiscovery = do
     let name = "protocol_" <> n
-    let address = value      (name <> "_address")      broadcastAddress
-    let state   = value      (name <> "_state")        readyToReceive
-    let phase   = value      (name <> "_phase")        waitingAddress
-    let index   = value      (name <> "_index")        0
-    let size    = value      (name <> "_size")         0
-    buff       <- buffer     (name <> "_message")
-    buffConf   <- buffer     (name <> "_confirm_tx")
-    buffPing   <- buffer     (name <> "_ping_tx")
-    buffDisc   <- buffer     (name <> "_disc_tx")
-    let tidRx   = value      (name <> "_tid_rx")     (-1)
-    let tidTx   = value      (name <> "_tid_tx")       0
-    let crc     = record     (name <> "_crc")          initCRC16
-    let tmp     = value      (name <> "_tmp")          0
-    include tmp
-    include address
-    include state
-    include phase
-    include index
-    include size
-    include tidRx
-    include tidTx
+    address  <- value      (name <> "_address")      broadcastAddress
+    state    <- value      (name <> "_state")        readyToReceive
+    phase    <- value      (name <> "_phase")        waitingAddress
+    index    <- value      (name <> "_index")        0
+    size     <- value      (name <> "_size")         0
+    buff     <- buffer     (name <> "_message")
+    buffConf <- buffer     (name <> "_confirm_tx")
+    buffPing <- buffer     (name <> "_ping_tx")
+    buffDisc <- buffer     (name <> "_disc_tx")
+    tidRx    <- value      (name <> "_tid_rx")     (-1)
+    tidTx    <- value      (name <> "_tid_tx")       0
+    let crc   = record     (name <> "_crc")          initCRC16
+    tmp      <- value      (name <> "_tmp")          0
     include crc
-    include tmp
     let slave = Slave { name, mac, model, version
                       , address, state, phase, index, size
                       , buff, buffConf, buffPing, buffDisc
@@ -99,6 +90,7 @@ slave n mac model version onMessage onConfirm onDiscovery = do
     include $ initConf slave
     include $ initPing slave
     pure slave
+
 
 
 initDisc :: Slave n -> Def('[] :-> ())

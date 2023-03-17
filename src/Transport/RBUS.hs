@@ -28,28 +28,29 @@ import           Transport.RBUS.Tx
 rbus :: Reader p RS485 -> (WriterT Context (Reader (D.Domain p t))) RBUS
 rbus rs485 = do
 
-    model       <- asks D.model
-    version     <- asks D.version
-    mcu         <- asks D.mcu
-    shouldInit  <- asks D.shouldInit
-    features    <- asks D.features
+    model         <- asks D.model
+    version       <- asks D.version
+    mcu           <- asks D.mcu
+    shouldInit    <- asks D.shouldInit
+    features      <- asks D.features
 
-    let name          = "rbus_slave"
-    let clock         = systemClock mcu
-    let rs            = runReader rs485 $ peripherals mcu
-    rxBuff           <- buffer (name <> "_rx")
-    let rxQueue       = queue  (name <> "_rx")
-    msgOffset        <- buffer (name <> "_msg_offset")
-    msgSize          <- buffer (name <> "_msg_size")
-    msgTTL           <- buffer (name <> "_msg_ttl")
-    let msgQueue      = queue  (name <> "_msg")
-    msgBuff          <- buffer (name <> "_msg")
-    let msgIndex      = value  (name <> "_msg_index") 0
-    txBuff           <- buffer (name <> "_tx")
-    let initBuff      = values (name <> "_init_request") [0xf2]
-    let txLock        = value  (name <> "_tx_lock") false
-    let timestamp     = value  (name <> "_timestamp") 0
-    let shouldConfirm = value  (name <> "_should_confirm") false
+    let name       = "rbus_slave"
+    let clock      = systemClock mcu
+    let rs         = runReader rs485 $ peripherals mcu
+
+    rxBuff        <- buffer (name <> "_rx")
+    rxQueue       <- queue  (name <> "_rx")
+    msgOffset     <- buffer (name <> "_msg_offset")
+    msgSize       <- buffer (name <> "_msg_size")
+    msgTTL        <- buffer (name <> "_msg_ttl")
+    msgQueue      <- queue  (name <> "_msg")
+    msgBuff       <- buffer (name <> "_msg")
+    msgIndex      <- value  (name <> "_msg_index") 0
+    txBuff        <- buffer (name <> "_tx")
+    initBuff      <- values (name <> "_init_request") [0xf2]
+    txLock        <- value  (name <> "_tx_lock") false
+    timestamp     <- value  (name <> "_timestamp") 0
+    shouldConfirm <- value  (name <> "_should_confirm") false
 
     {--
         TODO: move dispatcher outside
@@ -80,16 +81,6 @@ rbus rs485 = do
                     , shouldConfirm, shouldInit
                     }
     include rs
-    include rxQueue
-    include msgOffset
-    include msgSize
-    include msgTTL
-    include msgQueue
-    include msgIndex
-    include initBuff
-    include txLock
-    include timestamp
-    include shouldConfirm
     include $ HandleRS485 rs (rxHandle rbus) (txHandle rbus)
 
     include [ yeld    (name <> "_rx"  ) $ rxTask rbus

@@ -28,15 +28,15 @@ data MCU p = MCU
 mcu :: Monad m
     => String
     -> Bool
-    -> SystemClock
+    -> WriterT Context m SystemClock
     -> (Buffer 6 Uint8 -> forall eff. Ivory eff ())
     -> ModuleM ()
     -> p
     -> String
     -> String
     -> WriterT Context m (MCU p)
-mcu family hasFPU systemClock initializeMac mcuModule peripherals model modification = do
-    mac <- makeMac initializeMac "mac"
+mcu family hasFPU systemClock' initializeMac mcuModule peripherals model modification = do
     include mcuModule
-    include systemClock
+    systemClock <- systemClock'
+    mac         <- makeMac initializeMac "mac"
     pure MCU { family, model, modification, hasFPU, systemClock, peripherals, mac }

@@ -1,10 +1,12 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE KindSignatures      #-}
+{-# LANGUAGE NamedFieldPuns      #-}
 {-# LANGUAGE RecordWildCards     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Data.Concurrent.Queue where
 
+import           Control.Monad.Writer      (WriterT)
 import           Core.Context
 import           Data.Concurrent.Semaphore
 import           Data.Index
@@ -26,16 +28,17 @@ data Queue (n :: Nat) = Queue
     }
 
 
-queue :: forall n. KnownNat n => String -> Queue n
-queue id =
-    let name       = id   <> "_queue"
-        producerId = name <> "_producer"
-        consumerId = name <> "_consumer"
-    in Queue { producerIx = index     producerId
-             , consumerIx = index     consumerId
-             , producerS  = semaphore producerId $ fromInteger $ fromTypeNat (aNat :: NatType n)
-             , consumerS  = semaphore consumerId 0
-             }
+queue :: forall m n. (Monad m, KnownNat n)
+      => String -> WriterT Context m (Queue n)
+queue id = do
+    let name        = id    <>  "_queue"
+    let producerId  = name  <>  "_producer"
+    let consumerId  = name  <>  "_consumer"
+    producerIx     <- index     producerId
+    consumerIx     <- index     consumerId
+    producerS      <- semaphore producerId $ fromInteger $ fromTypeNat (aNat :: NatType n)
+    consumerS      <- semaphore consumerId 0
+    pure Queue { producerIx, consumerIx, producerS, consumerS }
 
 
 push :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
@@ -74,12 +77,3 @@ remove (Queue {..}) =
 size :: Queue n -> Ivory eff Uint16
 size (Queue {..}) =
     (-) <$> deref (addrOf producerIx) <*> deref (addrOf consumerIx)
-
-
-
-instance Include (Queue n) where
-    include (Queue {..}) = do
-        include producerIx
-        include consumerIx
-        include producerS
-        include consumerS
