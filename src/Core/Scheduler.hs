@@ -19,10 +19,10 @@ import           Ivory.Stdlib
 
 data Scheduler = Scheduler
     { clock :: SystemClock
-    , steps :: [Step]
+    , steps :: [Task]
     }
 
-scheduler :: SystemClock -> [Step] -> Scheduler
+scheduler :: SystemClock -> [Task] -> Scheduler
 scheduler = Scheduler
 
 
@@ -34,13 +34,13 @@ schedule (Scheduler {..}) = proc "loop" $ body $ do
     forever $ do
         t <- getSystemTime clock
         zipWithM_ (run t) clocks scheduled
-        mapM_ (call_ . runStep) immediately
+        mapM_ (call_ . runTask) immediately
 
 
 
-run :: Uint32 -> Ref ('Stack s) ('Stored Uint32) -> Step -> Ivory eff ()
+run :: Uint32 -> Ref ('Stack s) ('Stored Uint32) -> Task -> Ivory eff ()
 run t c s = do
     v <- deref c
     when (t - v >=? fromJust (period s)) $ do
-        call_ $ runStep s
+        call_ $ runTask s
         store c t

@@ -17,7 +17,7 @@ import           Ivory.Language.Module
 data Context = Context
     { getModule :: ModuleM ()
     , getInits  :: [Def ('[] :-> ())]
-    , getSteps  :: [Step]
+    , getTasks  :: [Task]
     }
 
 
@@ -46,12 +46,12 @@ instance Include (Def ('[] :-> ())) where
 
 
 
-instance Include [Step] where
+instance Include [Task] where
     include a = do
         tell $ Context mempty mempty a
-        include $ runStep <$> a
+        include $ runTask <$> a
 
-instance Include Step where
+instance Include Task where
     include a = include [a]
 
 

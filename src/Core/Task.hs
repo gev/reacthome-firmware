@@ -7,30 +7,30 @@ module Core.Task where
 import           Ivory.Language
 
 
-data Step = Step
+data Task = Task
     { period  :: Maybe Uint32
-    , runStep :: Def ('[] :-> ())
+    , runTask :: Def ('[] :-> ())
     }
 
 
-step :: Maybe Uint32
+task :: Maybe Uint32
      -> String
      -> (forall s. Ivory (ProcEffects s ()) ())
-     -> Step
-step p id b = Step
+     -> Task
+task p id b = Task
     { period    = p
-    , runStep = proc (id <> "_step") $ body b
+    , runTask = proc (id <> "_step") $ body b
     }
 
 
 delay :: Uint32
       -> String
       -> (forall s. Ivory (ProcEffects s ()) ())
-      -> Step
-delay p = step (Just p)
+      -> Task
+delay p = task (Just p)
 
 
 yeld :: String
      -> (forall s. Ivory (ProcEffects s ()) ())
-     -> Step
-yeld = step Nothing
+     -> Task
+yeld = task Nothing
