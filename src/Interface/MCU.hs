@@ -1,6 +1,7 @@
-{-# LANGUAGE DataKinds      #-}
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE RankNTypes     #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RankNTypes       #-}
 
 module Interface.MCU where
 
@@ -25,18 +26,18 @@ data MCU p = MCU
     }
 
 
-mcu :: Monad m
+mcu :: MonadWriter Context m
     => String
     -> Bool
-    -> WriterT Context m SystemClock
+    -> m SystemClock
     -> (Buffer 6 Uint8 -> forall eff. Ivory eff ())
     -> ModuleM ()
     -> p
     -> String
     -> String
-    -> WriterT Context m (MCU p)
+    -> m (MCU p)
 mcu family hasFPU systemClock' initializeMac mcuModule peripherals model modification = do
-    include mcuModule
+    addModule mcuModule
     systemClock <- systemClock'
     mac         <- makeMac initializeMac "mac"
     pure MCU { family, model, modification, hasFPU, systemClock, peripherals, mac }

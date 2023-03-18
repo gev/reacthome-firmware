@@ -40,10 +40,3 @@ runGPIO f run ix = run $ \o -> do
     gpio' <- deref (o' ! ix ~> gpio)
     pin'  <- deref (o' ! ix ~> pin )
     f gpio' pin'
-
-
-
-instance KnownNat n => Include (Records n GPIOStruct) where
-    include r = do
-        include $ defStruct (Proxy :: Proxy GPIOStruct)
-        include $ defMemArea r

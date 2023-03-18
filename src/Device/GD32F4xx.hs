@@ -1,4 +1,5 @@
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Device.GD32F4xx where
 
@@ -25,9 +26,9 @@ import           Support.Device.GD32F4xx.USART
 
 
 
-type USARTW  = forall m. Monad m => WriterT Context m USART
-type InputW  = forall m. Monad m => WriterT Context m Input
-type OutputW = forall m. Monad m => WriterT Context m Output
+type USARTW  = forall m. MonadWriter Context m => m USART
+type InputW  = forall m. MonadWriter Context m => m Input
+type OutputW = forall m. MonadWriter Context m => m Output
 
 
 
@@ -104,7 +105,7 @@ data GD32F4xx = GD32F4xx
     }
 
 
-gd32f4xx :: Monad m => String -> String -> WriterT Context m (MCU GD32F4xx)
+gd32f4xx :: MonadWriter Context m => String -> String -> m (MCU GD32F4xx)
 gd32f4xx = mcu "GD32F4xx" False G.systemClock makeMac inclGD32F4xx GD32F4xx
     { usart_1   = mkUSART USART1
                           RCU_USART1
@@ -187,8 +188,8 @@ gd32f4xx = mcu "GD32F4xx" False G.systemClock makeMac inclGD32F4xx GD32F4xx
 
 
 
-gd32f450vgt6 :: Monad m => WriterT Context m (MCU GD32F4xx)
+gd32f450vgt6 :: MonadWriter Context m => m (MCU GD32F4xx)
 gd32f450vgt6 = gd32f4xx "GD32F4xx" "vgt6"
 
-gd32f450vit6 :: Monad m => WriterT Context m (MCU GD32F4xx)
+gd32f450vit6 :: MonadWriter Context m => m (MCU GD32F4xx)
 gd32f450vit6 = gd32f4xx "GD32F4xx" "vit6"

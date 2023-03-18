@@ -9,8 +9,9 @@
 
 module Device.GD32F3x0.USART where
 
-import           Control.Monad.Writer          (WriterT)
+import           Control.Monad.Writer          (MonadWriter)
 import           Core.Context
+import           Core.Handler
 import qualified Device.GD32F3x0.GPIO          as G
 import qualified Interface.USART               as I
 import           Ivory.Language
@@ -37,7 +38,7 @@ data USART = USART
     }
 
 
-mkUSART :: Monad m
+mkUSART :: MonadWriter Context m
         => USART_PERIPH
         -> RCU_PERIPH
         -> IRQn
@@ -46,11 +47,11 @@ mkUSART :: Monad m
         -> DMA_CHANNEL_IRQ
         -> G.Port
         -> G.Port
-        -> WriterT Context m USART
+        -> m USART
 mkUSART usart rcu usartIRQ dma dmaIRQn dmaIRQc rx tx = do
-    include rx
-    include tx
-    include initUSART'
+    addInit $ G.initPort rx
+    addInit $ G.initPort tx
+    addInit initUSART'
     pure USART { usart, rcu, usartIRQ, dma, dmaIRQn, dmaIRQc, rx, tx }
     where
         initUSART' :: Def ('[] ':-> ())
@@ -69,10 +70,10 @@ mkUSART usart rcu usartIRQ dma dmaIRQn dmaIRQc rx tx = do
             enableUSART         usart
 
 
-instance Include (I.HandleUSART USART) where
-    include (I.HandleUSART (USART {..}) onReceive onTransmit onDrain) = do
-        include $ makeIRQHandler usart (handleUSART usart onReceive onDrain)
-        include $ makeIRQHandler dmaIRQc (handleDMA dma usart onTransmit)
+instance Handler (I.HandleUSART USART) where
+    addHandler (I.HandleUSART (USART {..}) onReceive onTransmit onDrain) = do
+        addModule $ makeIRQHandler usart (handleUSART usart onReceive onDrain)
+        addModule $ makeIRQHandler dmaIRQc (handleDMA dma usart onTransmit)
 
 
 handleDMA :: DMA_CHANNEL -> USART_PERIPH -> Ivory eff () -> Ivory eff ()

@@ -12,6 +12,7 @@ import           Control.Monad.Reader
 import           Control.Monad.Writer
 import           Core.Context
 import           Core.Domain           as D
+import           Core.Handler
 import           Interface.GPIO.Output
 import           Interface.MCU
 import qualified Interface.USART       as I
@@ -49,7 +50,7 @@ rs485 n usart' rede' = do
     let initRS485' :: Def ('[] ':-> ())
         initRS485' = proc ("rs485_" <> show n <> "_init") $ body
                                                           $ reset rede
-    include initRS485'
+    addInit initRS485'
     pure RS485 { n, usart, rede }
 
 
@@ -75,6 +76,6 @@ setParity (RS485 {..}) = I.setParity usart
 
 
 
-instance Include (HandleRS485 RS485) where
-    include (HandleRS485 (RS485 {..}) onReceive onTransmit) = do
-        include $ I.HandleUSART usart onReceive onTransmit (reset rede)
+instance Handler (HandleRS485 RS485) where
+    addHandler (HandleRS485 (RS485 {..}) onReceive onTransmit) = do
+        addHandler $ I.HandleUSART usart onReceive onTransmit (reset rede)

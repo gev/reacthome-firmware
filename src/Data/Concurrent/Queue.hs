@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds           #-}
+{-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE KindSignatures      #-}
 {-# LANGUAGE NamedFieldPuns      #-}
 {-# LANGUAGE RecordWildCards     #-}
@@ -6,7 +7,7 @@
 
 module Data.Concurrent.Queue where
 
-import           Control.Monad.Writer      (WriterT)
+import           Control.Monad.Writer      (MonadWriter)
 import           Core.Context
 import           Data.Concurrent.Semaphore
 import           Data.Index
@@ -28,8 +29,8 @@ data Queue (n :: Nat) = Queue
     }
 
 
-queue :: forall m n. (Monad m, KnownNat n)
-      => String -> WriterT Context m (Queue n)
+queue :: forall m n. (MonadWriter Context m, KnownNat n)
+      => String -> m (Queue n)
 queue id = do
     let name        = id    <>  "_queue"
     let producerId  = name  <>  "_producer"

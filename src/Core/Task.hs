@@ -19,7 +19,7 @@ task :: Maybe Uint32
      -> Task
 task p id b = Task
     { period    = p
-    , runTask = proc (id <> "_step") $ body b
+    , runTask = proc (id <> "_task") $ body b
     }
 
 

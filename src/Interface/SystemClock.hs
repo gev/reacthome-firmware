@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs             #-}
 {-# LANGUAGE NamedFieldPuns    #-}
@@ -7,6 +8,7 @@ module Interface.SystemClock where
 
 import           Control.Monad.Writer
 import           Core.Context
+import           Core.Handler         (Handler (addHandler))
 import           Data.Value
 import           Interface.Counter    (Counter (readCounter))
 import           Interface.Timer      (HandleTimer (HandleTimer), Timer)
@@ -22,27 +24,25 @@ data SystemClock where
                    }
                 -> SystemClock
 
-systemClock :: (Monad m, Timer t, Counter c, Include c)
-            => t -> c -> WriterT Context m SystemClock
-systemClock timer counter = do
-    time <- value "system_time" 0
-    include counter
-    include (HandleTimer timer $ handle time)
+
+systemClock :: (MonadWriter Context m, Timer t, Counter c)
+            => m t -> m c -> m SystemClock
+systemClock timer' counter' = do
+    time    <- value "system_time" 0
+    timer   <- timer'
+    counter <- counter'
+    let handle' :: Ivory eff ()
+        handle' = do
+            t <- deref $ addrOf time
+            store (addrOf time) $ t + 1
+    addHandler $ HandleTimer timer handle'
     pure SystemClock { timer, counter, time }
-
-
-
-handle :: Value Uint32 -> Ivory eff ()
-handle time = do
-    t <- deref $ addrOf time
-    store (addrOf time) $ t + 1
-
-
-
-instance Counter SystemClock where
-    readCounter (SystemClock {..}) = readCounter counter
 
 
 
 getSystemTime :: SystemClock -> Ivory eff Uint32
 getSystemTime = deref . addrOf . time
+
+
+instance Counter SystemClock where
+    readCounter (SystemClock {..}) = readCounter counter

@@ -72,14 +72,11 @@ io m p = p $ MF m
 
 
 
-instance Include Port where
-    include (Port {..}) = include initPort'
-        where
-            initPort' :: Def ('[] ':-> ())
-            initPort' = proc (show gpio <> "_" <> show pin <>"_init") $ body $ do
-                enablePeriphClock rcu
-                setOutputOptions gpio GPIO_OTYPE_PP GPIO_OSPEED_50MHZ pin
-                case mode of
-                    (MF mode) -> setMode gpio mode GPIO_PUPD_NONE pin
-                    (AF mode) -> setMode gpio GPIO_MODE_AF GPIO_PUPD_NONE pin
-                                >> setAF gpio mode pin
+initPort :: Port -> Def ('[] ':-> ())
+initPort (Port {..}) = proc (show gpio <> "_" <> show pin <>"_init") $ body $ do
+    enablePeriphClock rcu
+    setOutputOptions gpio GPIO_OTYPE_PP GPIO_OSPEED_50MHZ pin
+    case mode of
+        (MF mode) -> setMode gpio mode GPIO_PUPD_NONE pin
+        (AF mode) -> setMode gpio GPIO_MODE_AF GPIO_PUPD_NONE pin
+                  >> setAF gpio mode pin

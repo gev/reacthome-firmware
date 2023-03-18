@@ -33,15 +33,19 @@ blink :: Output o
       -> WriterT Context (Reader (Domain p t)) Feature
 blink n o = do
     let name  = "blink_" <> show n
+
     mcu      <- asks mcu
     out      <- o $ peripherals mcu
     state    <- value (name <> "_state") false
+
     let feature = Feature $ Blink { name, out, state }
-    include $ delay 1_000 name $ do
+
+    addTask $ delay 1_000 name $ do
         v <- deref $ addrOf state
         store (addrOf state) $ iNot v
         ifte_ v (set   out)
                 (reset out)
+
     pure feature
 
 instance Controller Blink

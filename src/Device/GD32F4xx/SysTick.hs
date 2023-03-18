@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE RankNTypes        #-}
@@ -6,7 +7,9 @@
 
 module Device.GD32F4xx.SysTick where
 
+import           Control.Monad.Writer
 import           Core.Context
+import           Core.Handler
 import           Interface.Timer
 import           Ivory.Language
 import           Ivory.Language.Module
@@ -15,20 +18,21 @@ import           Support.CMSIS.CoreCM4
 
 newtype SysTick = SysTick Uint32
 
-sysTick = SysTick
+sysTick :: MonadWriter Context m => Uint32 -> m SysTick
+sysTick freq = do
+    addInit initSysTick'
+    pure $ SysTick freq
+    where
+        initSysTick' :: Def ('[] :-> ())
+        initSysTick' =  proc "systick_init" $ body $ sysTickConfig freq
 
 
-instance Include (HandleTimer SysTick) where
-    include (HandleTimer {timer = (SysTick ticks), handle}) = do
-        include $ handleIRQ handle
-        include initSysTick'
+instance Handler (HandleTimer SysTick) where
+    addHandler (HandleTimer {timer = (SysTick ticks), handle}) = do
+        addProc handleIRQ'
         where
-            initSysTick' :: Def ('[] :-> ())
-            initSysTick' =  proc "systick_init" $ body $ sysTickConfig ticks
-
-
-handleIRQ :: (forall eff. Ivory eff ()) -> Def('[] :-> ())
-handleIRQ handle = proc "SysTick_Handler" $ body handle
+            handleIRQ' :: Def('[] :-> ())
+            handleIRQ' = proc "SysTick_Handler" $ body handle
 
 
 instance Timer SysTick

@@ -4,6 +4,7 @@
 {-# LANGUAGE TypeOperators     #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
+{-# LANGUAGE FlexibleContexts  #-}
 
 module Util.CRC16
     ( CRC16
@@ -120,10 +121,10 @@ crc16_lsb = constArea "crc16_lsb" $ iarray $ map ival [
     ]
 
 
-makeCRC16 :: Monad m => String -> WriterT Context m (Record CRC16)
+makeCRC16 :: MonadWriter Context m => String -> m (Record CRC16)
 makeCRC16 name = do
     let crc = record name initCRC16
-    include inclCRC16
-    include $ defStruct (Proxy :: Proxy CRC16)
-    include $ defMemArea crc
+    addModule inclCRC16
+    addStruct (Proxy :: Proxy CRC16)
+    addArea crc
     pure crc

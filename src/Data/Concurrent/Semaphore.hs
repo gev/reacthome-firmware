@@ -1,10 +1,11 @@
 {-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 module Data.Concurrent.Semaphore where
 
-import           Control.Monad.Writer (WriterT)
+import           Control.Monad.Writer (MonadWriter)
 import           Core.Context
 import           Data.Value
 import           Ivory.Language
@@ -14,7 +15,7 @@ import           Ivory.Stdlib
 newtype Semaphore t = Semaphore { getSemaphore :: Value t }
 
 
-semaphore :: Monad m => String -> Uint32 -> WriterT Context m (Semaphore Uint32)
+semaphore :: MonadWriter Context m => String -> Uint32 -> m (Semaphore Uint32)
 semaphore id n = do
     v <- value (id <> "_semaphore") n
     pure $ Semaphore v

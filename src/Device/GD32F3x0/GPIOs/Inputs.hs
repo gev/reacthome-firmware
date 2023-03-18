@@ -24,6 +24,7 @@ instance I.Inputs Inputs where
 
 instance I.MakeInputs D.Input Inputs where
     makeInputs name getInputs = do
+        addStruct (Proxy :: Proxy GPIOStruct)
         let runInputs = runRecordsFromList name fromPort $ D.getInput <$> getInputs
-        runInputs include
+        runInputs addArea
         pure Inputs { getInputs, runInputs }

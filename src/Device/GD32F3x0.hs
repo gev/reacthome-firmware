@@ -1,4 +1,5 @@
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RankNTypes       #-}
 
 module Device.GD32F3x0 where
 
@@ -25,9 +26,9 @@ import           Support.Device.GD32F3x0.USART
 
 
 
-type USARTW  = forall m. Monad m => WriterT Context m USART
-type InputW  = forall m. Monad m => WriterT Context m Input
-type OutputW = forall m. Monad m => WriterT Context m Output
+type USARTW  = forall m. MonadWriter Context m => m USART
+type InputW  = forall m. MonadWriter Context m => m Input
+type OutputW = forall m. MonadWriter Context m => m Output
 
 
 
@@ -104,7 +105,7 @@ data GD32F3x0 = GD32F3x0
     }
 
 
-gd32f3x0 :: Monad m => String -> String -> WriterT Context m (MCU GD32F3x0)
+gd32f3x0 :: MonadWriter Context m => String -> String -> m (MCU GD32F3x0)
 gd32f3x0 = mcu "GD32F3x0" False G.systemClock makeMac inclGD32F3x0 GD32F3x0
     { usart_1   = mkUSART USART1
                           RCU_USART1
@@ -186,5 +187,5 @@ gd32f3x0 = mcu "GD32F3x0" False G.systemClock makeMac inclGD32F3x0 GD32F3x0
 
 
 
-gd32f330k8u6 :: Monad m => WriterT Context m (MCU GD32F3x0)
+gd32f330k8u6 :: MonadWriter Context m => m (MCU GD32F3x0)
 gd32f330k8u6 = gd32f3x0 "GD32F330" "k8u6"

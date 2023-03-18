@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts       #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE RankNTypes             #-}
 
@@ -15,4 +16,4 @@ class Outputs a where
     set   :: a -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
 
 class (Output a, Outputs as) => MakeOutputs a as | a -> as where
-    makeOutputs :: Monad m => String -> [a] -> WriterT Context m as
+    makeOutputs :: MonadWriter Context m => String -> [a] -> m as

@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE QuasiQuotes       #-}
@@ -38,13 +39,13 @@ data Relays = Relays
     , payload   :: Buffer 8 Uint8
     }
 
-relays :: Monad m => String -> Int -> WriterT Context m Relays
+relays :: MonadWriter Context m => String -> Int -> m Relays
 relays name n = do
-    include $ defStruct (Proxy :: Proxy RelayStruct)
+    addStruct (Proxy :: Proxy RelayStruct)
     let runRelays = runRecords name $ replicate n go
     payload      <- buffer "relay_message"
     let relays    = Relays {runRelays, payload}
-    runRelays include
+    runRelays addArea
     pure relays
     where go = [ state           .= ival false
                , defaultDelayOff .= ival 0
@@ -68,8 +69,3 @@ message (Relays {..}) i = do
         pack   payload' 3 =<< deref (relay ~> group)
         packLE payload' 4 =<< deref (relay ~> defaultDelayOff)
     pure payload
-
-
-
-instance KnownNat n => Include (Records n RelayStruct) where
-    include r = include $ defMemArea r

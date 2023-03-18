@@ -1,4 +1,5 @@
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RecordWildCards  #-}
 
 module Device.GD32F3x0.GPIO.Output where
 
@@ -13,10 +14,10 @@ import           Support.Device.GD32F3x0.GPIO as S
 newtype Output = Output {getOutput :: Port}
 
 
-output :: Monad m => (MODE -> Port) -> WriterT Context m Output
+output :: MonadWriter Context m => (MODE -> Port) -> m Output
 output p = do
     let port = io GPIO_MODE_OUTPUT p
-    include port
+    addInit $ initPort port
     pure $ Output port
 
 

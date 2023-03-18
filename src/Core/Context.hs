@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -22,38 +23,36 @@ data Context = Context
 
 
 
-class Include a where
-    include :: Monad m => a -> WriterT Context m ()
+addContext :: MonadWriter Context m => Context -> m ()
+addContext = tell
 
 
-
-instance Include [ModuleM ()] where
-    include = include . mconcat
-
-instance Include (ModuleM ()) where
-    include a = tell $ Context a mempty mempty
+addModule :: MonadWriter Context m => ModuleM () -> m ()
+addModule m = tell $ Context m mempty mempty
 
 
-
-instance Include [Def ('[] :-> ())] where
-    include a = do
-        tell $ Context mempty a mempty
-        include $ incl <$> a
-
-instance Include (Def ('[] :-> ())) where
-    include :: Monad m => Def ('[] ':-> ()) -> WriterT Context m ()
-    include a = include [a]
+addInit :: MonadWriter Context m => Def ('[] :-> ()) -> m ()
+addInit d = do
+    tell $ Context mempty [d] mempty
+    addProc d
 
 
+addTask :: MonadWriter Context m => Task -> m ()
+addTask t = do
+        tell $ Context mempty mempty [t]
+        addProc $ runTask t
 
-instance Include [Task] where
-    include a = do
-        tell $ Context mempty mempty a
-        include $ runTask <$> a
 
-instance Include Task where
-    include a = include [a]
+addProc :: MonadWriter Context m => Def ('[] :-> ()) -> m ()
+addProc = addModule . incl
 
+
+addArea :: (MonadWriter Context m, IvoryArea area) => MemArea area -> m ()
+addArea = addModule . defMemArea
+
+
+addStruct :: (MonadWriter Context m, IvoryStruct sym) => Proxy sym -> m ()
+addStruct = addModule . defStruct
 
 
 

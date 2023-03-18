@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds          #-}
+{-# LANGUAGE FlexibleContexts   #-}
 {-# LANGUAGE FlexibleInstances  #-}
 {-# LANGUAGE NamedFieldPuns     #-}
 {-# LANGUAGE NumericUnderscores #-}
@@ -8,8 +9,9 @@
 
 module Device.GD32F4xx.USART where
 
-import           Control.Monad.Writer          (WriterT)
+import           Control.Monad.Writer          (MonadWriter)
 import           Core.Context
+import           Core.Handler
 import qualified Device.GD32F4xx.GPIO          as G
 import qualified Interface.USART               as I
 import           Ivory.Language
@@ -37,7 +39,7 @@ data USART = USART
 
 
 
-mkUSART :: Monad m
+mkUSART :: MonadWriter Context m
         => USART_PERIPH
         -> RCU_PERIPH
         -> IRQn
@@ -47,11 +49,11 @@ mkUSART :: Monad m
         -> DMA_CHANNEL_IRQ
         -> G.Port
         -> G.Port
-        -> WriterT Context m USART
+        -> m USART
 mkUSART usart rcu usartIRQ dmaPer dmaCh dmaIRQn dmaIRQc rx tx = do
-    include rx
-    include tx
-    include initUSART'
+    addInit $ G.initPort rx
+    addInit $ G.initPort tx
+    addInit initUSART'
     pure USART { usart, rcu, usartIRQ, dmaPer, dmaCh, dmaIRQn, dmaIRQc, rx, tx }
     where
         initUSART' :: Def ('[] ':-> ())
@@ -71,10 +73,10 @@ mkUSART usart rcu usartIRQ dmaPer dmaCh dmaIRQn dmaIRQc rx tx = do
 
 
 
-instance Include (I.HandleUSART USART) where
-    include (I.HandleUSART (USART {..}) onReceive onTransmit onDrain) = do
-        include $ makeIRQHandler usart (handleUSART usart onReceive onDrain)
-        include $ makeIRQHandler dmaIRQc (handleDMA dmaPer dmaCh usart onTransmit)
+instance Handler (I.HandleUSART USART) where
+    addHandler (I.HandleUSART (USART {..}) onReceive onTransmit onDrain) = do
+        addModule $ makeIRQHandler usart (handleUSART usart onReceive onDrain)
+        addModule $ makeIRQHandler dmaIRQc (handleDMA dmaPer dmaCh usart onTransmit)
 
 
 handleDMA :: DMA_PERIPH -> DMA_CHANNEL -> USART_PERIPH -> Ivory eff () -> Ivory eff ()
@@ -98,28 +100,6 @@ handleUSART usart onReceive onDrain = do
         enableInterrupt         usart USART_INT_RBNE
         onDrain
 
-
-
-instance Include USART where
-    include (USART {..}) = do
-        include rx
-        include tx
-        include initUSART'
-        where
-            initUSART' :: Def ('[] ':-> ())
-            initUSART' = proc (show usart <> "_init") $ body $ do
-                enablePeriphClock   RCU_DMA
-                enableIrqNvic       usartIRQ 0 0
-                enableIrqNvic       dmaIRQn  1 0
-                enablePeriphClock   rcu
-                deinitUSART         usart
-                configReceive       usart USART_RECEIVE_ENABLE
-                configTransmit      usart USART_TRANSMIT_ENABLE
-                setBaudrate         usart 1_000_000
-                setWordLength       usart USART_WL_8BIT
-                configParity        usart USART_PM_NONE
-                enableInterrupt     usart USART_INT_RBNE
-                enableUSART         usart
 
 
 instance I.USART USART where

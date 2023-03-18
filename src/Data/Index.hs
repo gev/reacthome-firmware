@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 module Data.Index where
 
 import           Control.Monad.Writer
@@ -9,6 +10,6 @@ import           Ivory.Language
 type Index t = Value t
 
 
-index :: (Monad m, IvoryZeroVal t, IvoryInit t, Num t)
-      => String -> WriterT Context m (Index t)
+index :: (MonadWriter Context m, IvoryZeroVal t, IvoryInit t, Num t)
+      => String -> m (Index t)
 index id = value (id <> "_index") 0

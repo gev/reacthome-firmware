@@ -5,6 +5,7 @@
 module Interface.USART where
 
 import           Core.Context
+import           Core.Handler
 import           Ivory.Language
 import           Ivory.Language.Module
 
@@ -32,12 +33,12 @@ data StopBit
     | SB_1_5b
     | SB_2b
 
-class Include (HandleUSART u) => USART u where
+class Handler (HandleUSART u) => USART u where
 
-    setBaudrate   :: u -> Uint32 -> Ivory eff ()
+    setBaudrate   :: u -> Uint32     -> Ivory eff ()
     setWordLength :: u -> WordLength -> Ivory eff ()
-    setStopBit    :: u -> StopBit -> Ivory eff ()
-    setParity     :: u -> Parity -> Ivory eff ()
+    setStopBit    :: u -> StopBit    -> Ivory eff ()
+    setParity     :: u -> Parity     -> Ivory eff ()
 
     transmit      :: u -> Ref r (CArray (Stored Uint16))
                        -> Uint16

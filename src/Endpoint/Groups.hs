@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE QuasiQuotes       #-}
@@ -34,12 +35,12 @@ data Groups = Groups
     , payload   :: Buffer 7 Uint8
     }
 
-groups :: Monad m =>  String -> Int -> WriterT Context m Groups
+groups :: MonadWriter Context m =>  String -> Int -> m Groups
 groups name n = do
-    include $ defStruct (Proxy :: Proxy GroupStruct)
+    addStruct (Proxy :: Proxy GroupStruct)
     let runGroups = runRecords name $ replicate n go
     payload      <- buffer "group_message"
-    runGroups include
+    runGroups addArea
     pure Groups { runGroups, payload }
     where go =  [ enabled   .= ival false
                 , delay     .= ival 0
@@ -58,8 +59,3 @@ message (Groups runGroup payload) i = do
         pack   payload' 2 =<< deref (group ~> enabled)
         packLE payload' 3 =<< deref (group ~> delay)
     pure payload
-
-
-
-instance KnownNat n => Include (Records n GroupStruct) where
-    include r = include $ defMemArea r

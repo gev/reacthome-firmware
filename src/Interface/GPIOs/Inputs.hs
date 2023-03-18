@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts       #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE RankNTypes             #-}
 
@@ -14,4 +15,4 @@ class Inputs a where
     get :: a -> (forall n. KnownNat n => Ix n) -> Ivory eff IBool
 
 class (Input a, Inputs as) => MakeInputs a as | a -> as where
-    makeInputs :: Monad m => String -> [a] -> WriterT Context m as
+    makeInputs :: MonadWriter Context m => String -> [a] -> m as

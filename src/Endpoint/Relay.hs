@@ -1,8 +1,9 @@
-{-# LANGUAGE DataKinds       #-}
-{-# LANGUAGE GADTs           #-}
-{-# LANGUAGE NamedFieldPuns  #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TypeOperators   #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs            #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE TypeOperators    #-}
 
 module Endpoint.Relay where
 
@@ -24,7 +25,7 @@ data Relay = forall o. Output o => Relay
     }
 
 
-relay :: (Monad m, Output o) => Int -> o -> WriterT Context m Relay
+relay :: (MonadWriter Context m, Output o) => Int -> o -> m Relay
 relay n out = do
     let name  = "relay_" <> show n
 
@@ -42,7 +43,7 @@ relay n out = do
             store (payload' ! 5) 0
             store (payload' ! 6) 0
             store (payload' ! 7) 0
-    include initRelay'
+    addInit initRelay'
 
     pure Relay { n, name , out, state, payload }
 

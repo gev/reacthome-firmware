@@ -26,6 +26,7 @@ instance I.Outputs Outputs where
 
 instance I.MakeOutputs D.Output Outputs where
     makeOutputs name getOutputs = do
+        addStruct (Proxy :: Proxy GPIOStruct)
         let runOutputs = runRecordsFromList name fromPort $ D.getOutput <$> getOutputs
-        runOutputs include
+        runOutputs addArea
         pure Outputs { getOutputs, runOutputs }

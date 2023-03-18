@@ -1,8 +1,8 @@
 {-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs             #-}
 {-# LANGUAGE NamedFieldPuns    #-}
-{-# LANGUAGE RecordWildCards   #-}
 
 module Core.Domain where
 
@@ -35,17 +35,17 @@ data Domain p t where
 
 
 
-domain :: (Monad m, Transport t)
+domain :: (MonadWriter Context m, Transport t)
        => Uint8
        -> (Uint8, Uint8)
        -> I.MCU p
        -> IBool
        -> t
        -> [Feature]
-       -> WriterT Context m (Domain p t)
+       -> m (Domain p t)
 domain model' (major, minor) mcu shouldInit' transport features = do
-    include inclCast
-    include inclSerialize
+    addModule inclCast
+    addModule inclSerialize
     model      <- value "model" model'
     version    <- V.version "version" major minor
     shouldInit <- value "should_init" shouldInit'

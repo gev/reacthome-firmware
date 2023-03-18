@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE RankNTypes            #-}
@@ -17,13 +18,13 @@ import           Ivory.Language.Module
 type Mac = Buffer 6 Uint8
 
 
-makeMac :: Monad m
-    => (Buffer 6 Uint8 -> forall eff. Ivory eff ())
-    -> String
-    -> WriterT Context m Mac
+makeMac :: MonadWriter Context m
+        => (Buffer 6 Uint8 -> forall eff. Ivory eff ())
+        -> String
+        -> m Mac
 makeMac initMac name = do
     mac <- buffer name
     let initMac' :: Def ('[] ':-> ())
         initMac' = proc (name <> "_init") $ body $ initMac mac
-    include initMac'
+    addInit initMac'
     pure mac

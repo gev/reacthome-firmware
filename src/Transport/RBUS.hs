@@ -8,6 +8,7 @@ import           Control.Monad.Writer  (WriterT, runWriter)
 import           Core.Context
 import           Core.Dispatcher
 import qualified Core.Domain           as D
+import           Core.Handler
 import           Core.Task
 import           Core.Transport
 import           Data.Buffer
@@ -81,11 +82,10 @@ rbus rs485 = do
                     , txBuff, initBuff, txLock, timestamp
                     , shouldConfirm, shouldInit
                     }
-    include $ HandleRS485 rs (rxHandle rbus) (txHandle rbus)
+    addHandler $ HandleRS485 rs (rxHandle rbus) (txHandle rbus)
 
-    include [ yeld    (name <> "_rx"  ) $ rxTask rbus
-            , delay 1 (name <> "_tx"  ) $ txTask rbus
-            ]
+    addTask $ yeld    (name <> "_rx"  ) $ rxTask rbus
+    addTask $ delay 1 (name <> "_tx"  ) $ txTask rbus
 
     pure rbus
 

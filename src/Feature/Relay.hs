@@ -35,8 +35,11 @@ relay out = do
     mcu       <- asks mcu
     transport <- asks transport
     getRelay  <- E.relay 1 (out $ peripherals mcu)
+
     let feature = Feature $ Relay { getRelay , transmit = T.transmit transport }
-    include $ delay 10 "relays" $ E.manage getRelay
+
+    addTask $ delay 10 "relays" $ E.manage getRelay
+
     pure feature
 
 

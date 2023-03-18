@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 module Device.GD32F3x0.GPIO.Input where
 
 import           Control.Monad.Writer
@@ -11,10 +12,10 @@ import           Support.Device.GD32F3x0.GPIO
 newtype Input = Input {getInput :: Port}
 
 
-input :: Monad m => (MODE -> Port) -> WriterT Context m Input
+input :: MonadWriter Context m => (MODE -> Port) -> m Input
 input p = do
     let port = io GPIO_MODE_INPUT p
-    include port
+    addInit $ initPort port
     pure $ Input port
 
 

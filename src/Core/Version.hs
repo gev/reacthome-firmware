@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE QuasiQuotes       #-}
 
@@ -30,11 +31,11 @@ type Version = Record VersionStruct
 |]
 
 
-version :: Monad m => String -> Uint8 -> Uint8 -> WriterT Context m Version
+version :: MonadWriter Context m => String -> Uint8 -> Uint8 -> m Version
 version name maj min = do
     let v = record name [ major .= ival maj
                         , minor .= ival min
                         ]
-    include $ defStruct (Proxy :: Proxy VersionStruct)
-    include $ defMemArea v
+    addStruct (Proxy :: Proxy VersionStruct)
+    addArea v
     pure v

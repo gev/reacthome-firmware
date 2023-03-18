@@ -1,11 +1,12 @@
 
-{-# LANGUAGE DataKinds       #-}
-{-# LANGUAGE NamedFieldPuns  #-}
-{-# LANGUAGE RankNTypes      #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TypeOperators   #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE TypeOperators    #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Protocol.RBUS.Slave where
 
@@ -54,7 +55,7 @@ txPreamble :: Preamble
 txPreamble = preambleSlave
 
 
-slave :: (Monad m, KnownNat n)
+slave :: (MonadWriter Context m, KnownNat n)
       => String
       -> Buffer 6 Uint8
       -> Value Uint8
@@ -62,7 +63,7 @@ slave :: (Monad m, KnownNat n)
       -> (Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ())
       -> (forall eff. Ivory eff ())
       -> (forall eff. Ivory eff ())
-      -> WriterT Context m (Slave n)
+      -> m (Slave n)
 slave n mac model version onMessage onConfirm onDiscovery = do
     let name = "protocol_" <> n
     address  <- value      (name <> "_address"   )   broadcastAddress
@@ -84,9 +85,9 @@ slave n mac model version onMessage onConfirm onDiscovery = do
                       , tidRx, tidTx, crc, tmp
                       , onMessage, onConfirm, onDiscovery
                       }
-    include $ initDisc slave
-    include $ initConf slave
-    include $ initPing slave
+    addInit $ initDisc slave
+    addInit $ initConf slave
+    addInit $ initPing slave
     pure slave
 
 
