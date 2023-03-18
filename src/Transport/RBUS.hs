@@ -82,6 +82,7 @@ rbus rs485 = do
                     , txBuff, initBuff, txLock, timestamp
                     , shouldConfirm, shouldInit
                     }
+
     addHandler $ HandleRS485 rs (rxHandle rbus) (txHandle rbus)
 
     addTask $ yeld    (name <> "_rx"  ) $ rxTask rbus
