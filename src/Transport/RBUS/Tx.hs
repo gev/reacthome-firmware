@@ -46,11 +46,11 @@ txTask r@(RBUS {..}) = do
 
 
 doConfirm :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
-doConfirm r@(RBUS {..}) ts = do
-    ts' <- deref timestamp
-    when (ts - ts' >? 0)
+doConfirm r@(RBUS {..}) t1 = do
+    t0 <- deref timestamp
+    when (t1 - t0 >? 0)
          (do store shouldConfirm false
-             store timestamp ts
+             store timestamp t1
              confirm r
          )
 
@@ -76,23 +76,23 @@ doTransmitMessage r@(RBUS {..}) ts = peek msgQueue $ \i -> do
 
 
 doPing :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
-doPing r@(RBUS {..}) ts = do
-    ts' <- deref timestamp
-    when (ts - ts' >? 1000)
-         (store timestamp ts >> ping r)
+doPing r@(RBUS {..}) t1 = do
+    t0 <- deref timestamp
+    when (t1 - t0 >? 1000)
+         (store timestamp t1 >> ping r)
 
 
 doDiscovery :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
-doDiscovery r@(RBUS {..}) ts = do
-    ts' <- deref timestamp
-    when (ts - ts' >? 1000)
-         (store timestamp ts >> discovery r)
+doDiscovery r@(RBUS {..}) t1 = do
+    t0 <- deref timestamp
+    when (t1 - t0 >? 1000)
+         (store timestamp t1 >> discovery r)
 
 
-doRequestInit r@(RBUS {..}) ts = do
-    ts' <- deref timestamp
-    when (ts - ts' >? 1000)
-         (store timestamp ts >> toQueue r initBuff)
+doRequestInit r@(RBUS {..}) t1 = do
+    t0 <- deref timestamp
+    when (t1 - t0 >? 1000)
+         (store timestamp t1 >> toQueue r initBuff)
 
 
 

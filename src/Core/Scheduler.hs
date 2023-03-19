@@ -14,16 +14,16 @@ import           Ivory.Stdlib
 
 
 mkLoop :: SystemClock -> [Task] -> Def ('[] :-> ())
-mkLoop clock tasks = proc "loop" $ body $ do
+mkLoop systemClock tasks = proc "loop" $ body $ do
     let (scheduled, immediately) = partition (isJust . period) tasks
     clocks <- replicateM (length scheduled) (local (ival 0))
     forever $ do
-        t <- getSystemTime clock
+        t <- getSystemTime systemClock
         zipWithM_ (run t) clocks scheduled
         mapM_ (call_ . runTask) immediately
     where
-        run t c s = do
-            v <- deref c
-            when (t - v >=? fromJust (period s)) $ do
-                call_ $ runTask s
-                store c t
+        run t1 clock task = do
+            t0 <- deref clock
+            when (t1 - t0 >=? fromJust (period task)) $ do
+                call_ $ runTask task
+                store clock t1

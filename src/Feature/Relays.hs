@@ -107,7 +107,7 @@ manageRelay r o ix timestamp setOut delay = do
     when (delay' >? 0) $ do
         t0 <- deref $ r ~> R.timestamp
         t1 <- timestamp
-        when (t1 >=? t0 + delay') $ do
+        when (t1 - t0 >=? delay') $ do
             store (r ~> delay      ) 0
             store (r ~> R.state    ) true
             store (r ~> R.timestamp) t1
