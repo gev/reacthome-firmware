@@ -45,6 +45,7 @@ rs485 n usart' rede' = do
     mcu'        <- asks D.mcu
     usart       <- usart' $ peripherals mcu'
     rede        <- rede'  $ peripherals mcu'
+
     let initRS485' :: Def ('[] ':-> ())
         initRS485' = proc ("rs485_" <> show n <> "_init") $ body
                                                           $ reset rede
