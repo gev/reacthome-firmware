@@ -1,7 +1,7 @@
 module Main where
 
+import           Build.Firmware
 import           Build.Shake
-import           Core.Firmware
 import           Formula.Blink
 import           Formula.Relay12
 import           Ivory.Language

@@ -30,7 +30,6 @@ executable reacthome-firmware
                     , Core.Domain
                     , Core.Dispatcher
                     , Core.Feature                    
-                    , Core.Firmware
                     , Core.Formula
                     , Core.Handler
                     , Core.Scheduler
@@ -38,8 +37,9 @@ executable reacthome-firmware
                     , Core.Transport
                     , Core.Version
 
-                    , Build.Shake
+                    , Build.Firmware
                     , Build.GCC
+                    , Build.Shake
 
                     , Data.Area
                     , Data.Value

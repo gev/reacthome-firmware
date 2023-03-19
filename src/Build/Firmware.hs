@@ -1,7 +1,7 @@
 {-# LANGUAGE DataKinds     #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Core.Firmware where
+module Build.Firmware where
 
 import           Control.Monad.Reader
 import           Control.Monad.Writer
