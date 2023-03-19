@@ -34,7 +34,7 @@ relay n out = do
 
     let initRelay' :: Def ('[] ':-> ())
         initRelay' = proc (name <> "_payload_init") $ body $ do
-            let payload' = addrOf payload
+            let payload' = payload
             store (payload' ! 0) 0
             store (payload' ! 1) $ fromIntegral n
             store (payload' ! 2) 0
@@ -51,16 +51,15 @@ relay n out = do
 
 turnOn :: Relay -> Ivory eff ()
 turnOn (Relay {..}) =
-    store (addrOf state) true >> store (addrOf payload ! 2) 1
+    store state true >> store (payload ! 2) 1
 
 
 turnOff :: Relay -> Ivory eff ()
-turnOff (Relay {..}) = do
-    store (addrOf state) false >> store (addrOf payload ! 2) 0
+turnOff (Relay {..}) = store state false >> store (payload ! 2) 0
 
 
 manage :: Relay -> Ivory eff ()
 manage (Relay {..}) = do
-    s <- deref $ addrOf state
+    s <- deref state
     ifte_ s (set   out)
             (reset out)

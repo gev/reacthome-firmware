@@ -1,8 +1,7 @@
-{-# LANGUAGE DataKinds       #-}
-{-# LANGUAGE GADTs           #-}
-{-# LANGUAGE NamedFieldPuns  #-}
-{-# LANGUAGE RankNTypes      #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DataKinds      #-}
+{-# LANGUAGE GADTs          #-}
+{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE RankNTypes     #-}
 
 module Feature.Relay where
 
@@ -45,10 +44,9 @@ relay out = do
 
 instance Controller Relay where
     handle (Relay r transmit) buff size = do
-        let buff' = addrOf buff
-        action <- deref $ buff' ! 0
-        index  <- deref $ buff' ! 1
-        state  <- deref $ buff' ! 2
+        action <- deref $ buff ! 0
+        index  <- deref $ buff ! 1
+        state  <- deref $ buff ! 2
         let run f = f r >> transmit (E.payload r)
         pure [ action ==? 0 ==> cond_ [ state ==? 1 ==> run E.turnOn
                                       , state ==? 0 ==> run E.turnOff

@@ -118,11 +118,10 @@ manageRelay r o ix timestamp setOut delay = do
 
 sync :: Relays -> Ivory (ProcEffects s ()) ()
 sync rs@(Relays {..}) = do
-    let current' = addrOf current
-    i <- deref current'
+    i <- deref current
     syncRelays rs i
     syncGroups rs i
-    store current' $ i + 1
+    store current $ i + 1
 
 
 
@@ -150,15 +149,14 @@ syncGroups (Relays {..}) i =
 
 instance Controller Relays where
     handle rs buff size = do
-        let buff' = addrOf buff
-        shouldInit' <- deref . addrOf $ shouldInit rs
+        shouldInit' <- deref $ shouldInit rs
         pure [ size >=? 3 ==> do
-                action <- deref $ buff' ! 0
+                action <- deref $ buff ! 0
                 cond_ [ iNot shouldInit' ==> cond_
-                      [ action ==? 0x00  ==> onDo    rs buff' size
-                      , action ==? 0x02  ==> onGroup rs buff' size
+                      [ action ==? 0x00  ==> onDo    rs buff size
+                      , action ==? 0x02  ==> onGroup rs buff size
                       ]
-                      , action ==? 0xf2  ==> onInit  rs buff' size
+                      , action ==? 0xf2  ==> onInit  rs buff size
                       ]
              ]
 
@@ -202,7 +200,7 @@ onDo (Relays {..}) buff size = do
 
 syncGroup :: KnownNat n
           => G.Groups
-          -> Records n R.RelayStruct
+          -> Records' n R.RelayStruct
           -> Ix n
           -> Ivory (ProcEffects s ()) IBool
 syncGroup groups rs ix = do
@@ -218,7 +216,7 @@ syncGroup groups rs ix = do
 
 
 turnOffGroup :: KnownNat n
-             => Records n R.RelayStruct
+             => Records' n R.RelayStruct
              -> Ix n
              -> Uint8
              -> Ivory (ProcEffects s ()) IBool
@@ -240,9 +238,9 @@ turnOffGroup rs ix g = do
 
 
 
-onGroup :: KnownNat l
+onGroup :: KnownNat n
         => Relays
-        -> Ref Global ('Array l ('Stored Uint8))
+        -> Buffer n Uint8
         -> Uint8
         -> Ivory eff ()
 onGroup (Relays {..}) buff size =
@@ -260,9 +258,9 @@ onGroup (Relays {..}) buff size =
 {-
     TODO: Generalize initialization
 -}
-onInit :: KnownNat l
+onInit :: KnownNat n
         => Relays
-        -> Ref Global ('Array l ('Stored Uint8))
+        -> Buffer n Uint8
         -> Uint8
         -> Ivory (ProcEffects s ()) ()
 onInit rs@(Relays {..}) buff size =
@@ -270,13 +268,13 @@ onInit rs@(Relays {..}) buff size =
         offset <- local $ ival 1
         initGroups rs buff offset
         initRelays rs buff offset
-        store (addrOf shouldInit) false
+        store shouldInit false
 
 
 
 initGroups :: KnownNat n
            => Relays
-           -> Ref Global (Array n ('Stored Uint8))
+           -> Buffer n Uint8
            -> Ref s (Stored (Ix n))
            -> Ivory eff ()
 initGroups (Relays {..}) buff offset =
@@ -292,7 +290,7 @@ initGroups (Relays {..}) buff offset =
 
 initRelays :: KnownNat n
            => Relays
-           -> Ref Global (Array n ('Stored Uint8))
+           -> Buffer n Uint8
            -> Ref s (Stored (Ix n))
            -> Ivory eff ()
 initRelays (Relays {..}) buff offset =

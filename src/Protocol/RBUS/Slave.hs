@@ -1,12 +1,12 @@
 
 {-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RankNTypes       #-}
 {-# LANGUAGE RecordWildCards  #-}
 {-# LANGUAGE TypeOperators    #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
-{-# LANGUAGE FlexibleContexts #-}
 
 module Protocol.RBUS.Slave where
 
@@ -95,47 +95,40 @@ slave n mac model version onMessage onConfirm onDiscovery = do
 initDisc :: Slave n -> Def('[] :-> ())
 initDisc (Slave {..}) =
     proc (name <> "_init_disc_tx") $ body $ do
-        let mac'         = addrOf mac
-        let model'       = addrOf model
-        let version'     = addrOf version
-        let buffDisc'    = addrOf buffDisc
-        store (buffDisc' ! 0) $ discovery txPreamble
-        arrayCopy buffDisc' mac' 1 $ arrayLen mac'
-        store (buffDisc' ! 7) =<< deref model'
-        store (buffDisc' ! 8) =<< deref (version' ~> major)
-        store (buffDisc' ! 9) =<< deref (version' ~> minor)
+        store (buffDisc ! 0) $ discovery txPreamble
+        arrayCopy buffDisc mac 1 $ arrayLen mac
+        store (buffDisc ! 7) =<< deref model
+        store (buffDisc ! 8) =<< deref (version ~> major)
+        store (buffDisc ! 9) =<< deref (version ~> minor)
         calcCRC16 buffDisc
 
 initConf :: Slave n -> Def('[] :-> ())
 initConf (Slave {..}) =
     proc (name <> "_init_conf_tx") $ body $ do
-        let buffConf'    = addrOf buffConf
-        store (buffConf' ! 0) $ confirm txPreamble
-        store (buffConf' ! 1) =<< deref (addrOf address)
+        store (buffConf ! 0) $ confirm txPreamble
+        store (buffConf ! 1) =<< deref address
         calcCRC16 buffConf
 
 initPing :: Slave n -> Def('[] :-> ())
 initPing (Slave {..}) =
     proc (name <> "_init_ping_tx") $ body $ do
-        let buffPing'    = addrOf buffPing
-        store (buffPing' ! 0) $ ping txPreamble
-        store (buffPing' ! 1) =<< deref (addrOf address)
+        store (buffPing ! 0) $ ping txPreamble
+        store (buffPing ! 1) =<< deref address
         calcCRC16 buffPing
 
 calcCRC16 :: KnownNat n => Buffer n Uint8 -> Ivory (ProcEffects s ()) ()
 calcCRC16 buff = do
-    let buff'    = addrOf buff
-    let size     = arrayLen buff' :: Uint16
+    let size     = arrayLen buff :: Uint16
     let s_2      = toIx $ size - 2
     let s_1      = toIx $ size - 1
     crc <- local $ istruct initCRC16
-    for s_2 $ \ix -> updateCRC16 crc =<< deref (buff' ! ix)
-    store (buff' ! s_2)  =<< deref (crc ~> msb)
-    store (buff' ! s_1) =<< deref (crc ~> lsb)
+    for s_2 $ \ix -> updateCRC16 crc =<< deref (buff ! ix)
+    store (buff ! s_2)  =<< deref (crc ~> msb)
+    store (buff ! s_1) =<< deref (crc ~> lsb)
 
 
 
 hasAddress :: Slave n -> Ivory eff IBool
 hasAddress (Slave {..}) = do
-    a <- deref $ addrOf address
+    a <- deref address
     pure $ a /=? broadcastAddress

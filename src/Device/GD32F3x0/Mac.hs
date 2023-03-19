@@ -11,6 +11,5 @@ import           Support.Device.GD32F3x0.DBG
 
 makeMac :: Buffer 6 Uint8 -> Ivory eff ()
 makeMac buff = do
-    let buff' = addrOf buff
-    packBE buff' 0 (0x014a :: Uint16)
-    packBE buff' 2 =<< getID
+    packBE buff 0 (0x014a :: Uint16)
+    packBE buff 2 =<< getID

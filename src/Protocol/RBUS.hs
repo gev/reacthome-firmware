@@ -47,7 +47,7 @@ waitingMsbCRC       = 0x04 :: Uint8
 waitingLsbCRC       = 0x05 :: Uint8
 
 updateCRC :: Record CRC16 -> Uint8 -> Ivory eff ()
-updateCRC = updateCRC16 . addrOf
+updateCRC = updateCRC16
 
 
 go :: a -> b -> (a, b)
@@ -61,6 +61,6 @@ go = (,)
 --            -> Uint8
 --            -> Ivory (ProcEffects s ()) ()
 runReceive f hs r v = do
-    p <- deref $ addrOf (f r)
+    p <- deref (f r)
     let go (w, h) = w ==? p ==> h r v
     cond_ $ go <$> hs

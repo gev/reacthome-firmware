@@ -123,8 +123,6 @@ crc16_lsb = constArea "crc16_lsb" $ iarray $ map ival [
 
 makeCRC16 :: MonadWriter Context m => String -> m (Record CRC16)
 makeCRC16 name = do
-    let crc = record name initCRC16
     addModule inclCRC16
     addStruct (Proxy :: Proxy CRC16)
-    addArea crc
-    pure crc
+    record name initCRC16

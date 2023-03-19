@@ -60,17 +60,17 @@ rbus rs485 = do
     let dispatch = makeDispatcher features
 
     let onMessage buff n shouldHandle = do
-            store (addrOf timestamp) =<< getSystemTime clock
+            store timestamp =<< getSystemTime clock
             when shouldHandle $ dispatch buff n
-            store (addrOf shouldConfirm) true
+            store shouldConfirm true
 
     {-
       TODO: Should make Init request here?
       TODO: Should reset Tx queue when address has changed?
     -}
     let onDiscovery = do
-            store (addrOf timestamp) =<< getSystemTime clock
-            store (addrOf shouldConfirm) false
+            store timestamp =<< getSystemTime clock
+            store shouldConfirm false
 
     let onConfirm = remove msgQueue
 

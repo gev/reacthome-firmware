@@ -60,12 +60,11 @@ relays name n = do
 
 message :: Relays -> Uint8 -> Ivory eff (Buffer 8 Uint8)
 message (Relays {..}) i = do
-    let payload' = addrOf payload
     runRelays $ \r -> do
         let relay = addrOf r ! toIx i
-        pack   payload' 0 (0 :: Uint8)
-        pack   payload' 1 $ i + 1
-        pack   payload' 2 =<< deref (relay ~> state)
-        pack   payload' 3 =<< deref (relay ~> group)
-        packLE payload' 4 =<< deref (relay ~> defaultDelayOff)
+        pack   payload 0 (0 :: Uint8)
+        pack   payload 1 $ i + 1
+        pack   payload 2 =<< deref (relay ~> state)
+        pack   payload 3 =<< deref (relay ~> group)
+        packLE payload 4 =<< deref (relay ~> defaultDelayOff)
     pure payload

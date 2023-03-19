@@ -33,15 +33,15 @@ systemClock timer' counter' = do
     counter <- counter'
     let handle' :: Ivory eff ()
         handle' = do
-            t <- deref $ addrOf time
-            store (addrOf time) $ t + 1
+            t <- deref time
+            store time $ t + 1
     addHandler $ HandleTimer timer handle'
     pure SystemClock { timer, counter, time }
 
 
 
 getSystemTime :: SystemClock -> Ivory eff Uint32
-getSystemTime = deref . addrOf . time
+getSystemTime = deref . time
 
 
 instance Counter SystemClock where

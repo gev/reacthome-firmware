@@ -24,21 +24,21 @@ semaphore id n = do
 up :: (IvoryStore t, Num t)
    => Semaphore t -> Ivory eff ()
 up (Semaphore s) = do
-    v <- deref $ addrOf s
-    store (addrOf s) $ v + 1
+    v <- deref s
+    store s $ v + 1
 
 
 down :: (IvoryStore t, IvoryOrd t, Num t)
      => Semaphore t -> Ivory eff () -> Ivory eff ()
 down (Semaphore s) run = do
-    v <- deref $ addrOf s
+    v <- deref s
     when (v >? 0) $ do
-        store (addrOf s) $ v - 1
+        store s $ v - 1
         run
 
 
 check :: (IvoryStore t, IvoryOrd t, Num t)
       => Semaphore t -> Ivory eff () -> Ivory eff ()
 check (Semaphore s) run = do
-    v <-  deref $ addrOf s
+    v <-  deref s
     when (v >? 0) run

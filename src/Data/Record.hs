@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds           #-}
+{-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE RankNTypes          #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
@@ -6,6 +7,7 @@
 module Data.Record
     ( Record
     , Records
+    , Records'
     , RunRecords
     , record_
     , record
@@ -16,58 +18,72 @@ module Data.Record
     , runRecordsFromList
     ) where
 
-import           GHC.TypeLits   (KnownSymbol)
-import           GHC.TypeNats   (KnownNat, SomeNat (..), someNatVal)
+import           Control.Monad.Writer
+import           Core.Context
+import           GHC.TypeLits         (KnownSymbol)
+import           GHC.TypeNats         (KnownNat, SomeNat (..), someNatVal)
 import           Ivory.Language
 
 
-type Record t    = MemArea (Struct t)
-type Records n t = MemArea (Array n (Struct t))
-
-type RunRecords t = forall a. (forall n. KnownNat n => Records n t -> a) -> a
-
-
-
-record_ :: IvoryStruct t => String -> Record t
-record_ id = area id Nothing
-
-record :: IvoryStruct t => String -> [InitStruct t] -> Record t
-record id r = area id . Just $ istruct r
+type Record     t = Ref Global (Struct t)
+type Records  n t = Ref Global (Array n (Struct t))
+type Records' n t = MemArea    (Array n (Struct t))
+type RunRecords t = forall a.  (forall n. KnownNat n => Records' n t -> a) -> a
 
 
 
-records_ :: (IvoryStruct t, KnownNat n) => String -> Records n t
-records_ id = area id Nothing
+record_ :: (MonadWriter Context m, IvoryStruct t)
+        => String -> m (Record t)
+record_ id = mem id Nothing
 
-records :: (IvoryStruct t, KnownNat n) => String -> [[InitStruct t]] -> Records n t
-records id r = area id . Just . iarray $ istruct <$> r
+record :: (MonadWriter Context m, IvoryStruct t)
+       => String -> [InitStruct t] -> m (Record t)
+record id r = mem id . Just $ istruct r
 
 
+
+records_ :: (MonadWriter Context m, KnownNat n, IvoryStruct t)
+         => String -> m (Records n t)
+records_ id = mem id Nothing
+
+records :: (MonadWriter Context m, KnownNat n, IvoryStruct t)
+        => String -> [[InitStruct t]] -> m (Records n t)
+records id r = mem id . Just . iarray $ istruct <$> r
+
+
+
+mem :: (MonadWriter Context m, IvoryArea area, IvoryZero area)
+    => String -> Maybe (Init area) -> m (Ref 'Global area)
+mem id v = do
+    let a = area id v
+    addArea a
+    pure $ addrOf a
 
 runRecords_ :: IvoryStruct t
-            => String
-            -> Int
-            -> RunRecords t
-runRecords_ name = run $ records_ name
+             => String
+             -> Int
+             -> RunRecords t
+runRecords_ id = run (area id Nothing)
+
+
 
 runRecords :: IvoryStruct t
            => String
            -> [[InitStruct t]]
            -> RunRecords t
-runRecords name xs = run (records name xs) $ length xs
+runRecords id xs = run (area id . Just . iarray $ istruct <$> xs) $ length xs
 
 runRecordsFromList :: IvoryStruct t
                   => String
                   -> (c -> [InitStruct t])
                   -> [c]
                   -> RunRecords t
-runRecordsFromList name h xs = run (records name $ h <$> xs) $ length xs
+runRecordsFromList id h xs = run (area id . Just . iarray $ istruct . h <$> xs) $ length xs
 
 
 
-run :: forall a t. (forall n. KnownNat n => Records n t)
+run :: forall t. (forall n. KnownNat n => Records' n t)
     -> Int
-    -> (forall n. KnownNat n => Records n t -> a)
-    -> a
+    -> RunRecords t
 run r n f = go . someNatVal . fromIntegral $ n
-    where go (SomeNat (p :: Proxy p)) = f (r :: Records p t)
+    where go (SomeNat (p :: Proxy p)) = f (r :: Records' p t)

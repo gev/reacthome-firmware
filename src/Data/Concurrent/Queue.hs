@@ -45,36 +45,36 @@ queue id = do
 push :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
 push (Queue {..}) handle =
     down producerS $ do
-        x <- deref $ addrOf producerIx
+        x <- deref producerIx
         handle x
-        store (addrOf producerIx) $ x + 1
+        store producerIx $ x + 1
         up consumerS
 
 
 pop :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
 pop (Queue {..}) handle =
     down consumerS $ do
-        x <- deref $ addrOf consumerIx
+        x <- deref consumerIx
         handle x
-        store (addrOf consumerIx) $ x + 1
+        store consumerIx $ x + 1
         up producerS
 
 
 peek :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
 peek (Queue {..}) handle = do
     check consumerS $ do
-        x <- deref $ addrOf consumerIx
+        x <- deref consumerIx
         handle x
 
 
 remove :: Queue n -> Ivory eff ()
 remove (Queue {..}) =
     down consumerS $ do
-        x <- deref $ addrOf consumerIx
-        store (addrOf consumerIx) $ x + 1
+        x <- deref consumerIx
+        store consumerIx $ x + 1
         up producerS
 
 
 size :: Queue n -> Ivory eff Uint16
 size (Queue {..}) =
-    (-) <$> deref (addrOf producerIx) <*> deref (addrOf consumerIx)
+    (-) <$> deref producerIx <*> deref consumerIx

@@ -7,6 +7,7 @@
 module Data.Value
     ( Value
     , Values
+    , Values'
     , RunValues
     , value_
     , value
@@ -24,9 +25,10 @@ import           Ivory.Language
 
 
 
-type Value     t = MemArea   (Stored t)
-type Values  n t = MemArea   (Array  n (Stored t))
-type RunValues t = forall a. (forall n. KnownNat n => Values n t -> a) -> a
+type Value     t = Ref Global (Stored t)
+type Values  n t = Ref Global (Array  n (Stored t))
+type Values' n t = MemArea    (Array  n (Stored t))
+type RunValues t = forall a.  (forall n. KnownNat n => Values' n t -> a) -> a
 
 
 
@@ -50,12 +52,13 @@ values id v = mem id . Just . iarray $ ival <$> v
 
 
 
+
 mem :: (MonadWriter Context m, IvoryArea area, IvoryZero area)
-    => String -> Maybe (Init area) -> m (MemArea area)
+    => String -> Maybe (Init area) -> m (Ref 'Global area)
 mem id v = do
     let a = area id v
     addArea a
-    pure a
+    pure $ addrOf a
 
 
 
@@ -75,7 +78,9 @@ runValuesFromList id h xs =
 
 
 
-run :: forall t. (forall n. KnownNat n => Values n t) -> Int -> RunValues t
+run :: forall t. (forall n. KnownNat n => Values' n t)
+    -> Int
+    -> RunValues t
 run v n f = do
         go . someNatVal . fromIntegral $ n
-    where go (SomeNat (p :: Proxy p)) = f (v :: Values p t)
+    where go (SomeNat (p :: Proxy p)) = f (v :: Values' p t)
