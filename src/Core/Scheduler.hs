@@ -17,30 +17,17 @@ import           Ivory.Language
 import           Ivory.Stdlib
 
 
-data Scheduler = Scheduler
-    { clock :: SystemClock
-    , steps :: [Task]
-    }
-
-scheduler :: SystemClock -> [Task] -> Scheduler
-scheduler = Scheduler
-
-
-
-schedule :: Scheduler -> Def ('[] :-> ())
-schedule (Scheduler {..}) = proc "loop" $ body $ do
-    let (scheduled, immediately) = partition (isJust . period) steps
+mkLoop :: SystemClock -> [Task] -> Def ('[] :-> ())
+mkLoop clock tasks = proc "loop" $ body $ do
+    let (scheduled, immediately) = partition (isJust . period) tasks
     clocks <- replicateM (length scheduled) (local (ival 0))
     forever $ do
         t <- getSystemTime clock
         zipWithM_ (run t) clocks scheduled
         mapM_ (call_ . runTask) immediately
-
-
-
-run :: Uint32 -> Ref ('Stack s) ('Stored Uint32) -> Task -> Ivory eff ()
-run t c s = do
-    v <- deref c
-    when (t - v >=? fromJust (period s)) $ do
-        call_ $ runTask s
-        store c t
+    where
+        run t c s = do
+            v <- deref c
+            when (t - v >=? fromJust (period s)) $ do
+                call_ $ runTask s
+                store c t

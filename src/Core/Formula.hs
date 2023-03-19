@@ -20,11 +20,11 @@ import           Ivory.Language.Module
 
 data Formula where
     Formula :: Transport t
-            => { model      :: Uint8
-               , version    :: (Uint8, Uint8)
-               , mcu        :: Writer Context (MCU p)
-               , shouldInit :: IBool
-               , transport  :: WriterT Context (Reader (Domain p t)) t
+            => { model      ::  Uint8
+               , version    :: (Uint8,  Uint8)
+               , mcu        ::  Writer  Context (MCU p)
+               , shouldInit ::  IBool
+               , transport  ::  WriterT Context (Reader (Domain p t)) t
                , features   :: [WriterT Context (Reader (Domain p t)) Feature]
                } -> Formula
 
@@ -38,10 +38,10 @@ cook (Formula model version mcu shouldInit transport features) = do
     incl  loop
     incl  main
 
-    where (domain'   , domainContext'   ) = runWriter $ domain model version mcu' shouldInit transport' features'
-          (transport', transportContext') = runReader (runWriterT transport) domain'
-          (features' , featuresContext' ) = unzip $ run <$> features
-          (mcu'      , mcuContext'      ) = runWriter mcu
+    where (domain'   , domainContext'    ) = runWriter $ domain model version mcu' shouldInit transport' features'
+          (transport', transportContext' ) = runReader (runWriterT transport) domain'
+          (features' , featuresContext'  ) = unzip $ run <$> features
+          (mcu'      , mcuContext'       ) = runWriter mcu
 
           run t = runReader (runWriterT t) domain'
 
@@ -50,10 +50,13 @@ cook (Formula model version mcu shouldInit transport features) = do
                                           <> transportContext'
                                           <> mconcat featuresContext'
 
-          loop = schedule $ scheduler (systemClock mcu') steps
+          loop = mkLoop (systemClock mcu') steps
 
           init :: Def ('[] :-> ())
           init = proc "init" $ body $ mapM_ call_ inits
 
           main :: Def ('[] :-> Sint32)
-          main = proc "main" $ body $ call_ init >> call_ loop >> ret 0
+          main = proc "main" $ body $ do
+            call_ init
+            call_ loop
+            ret 0
