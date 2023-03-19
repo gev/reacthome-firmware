@@ -41,6 +41,7 @@ executable reacthome-firmware
                     , Build.Shake
                     , Build.GCC
 
+                    , Data.Area
                     , Data.Value
                     , Data.Record
                     , Data.Buffer

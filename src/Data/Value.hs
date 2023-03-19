@@ -20,6 +20,7 @@ module Data.Value
 
 import           Control.Monad.Writer
 import           Core.Context
+import           Data.Area
 import           GHC.TypeNats
 import           Ivory.Language
 
@@ -34,31 +35,21 @@ type RunValues t = forall a.  (forall n. KnownNat n => Values' n t -> a) -> a
 
 value_ :: (MonadWriter Context m, IvoryZeroVal t)
        => String -> m (Value t)
-value_ id = mem id Nothing
+value_ id = mkArea id Nothing
 
 value :: (MonadWriter Context m, IvoryZeroVal t, IvoryInit t)
       => String -> t -> m (Value t)
-value id v = mem id . Just $ ival v
+value id v = mkArea id . Just $ ival v
 
 
 
 values_ :: (MonadWriter Context m, KnownNat n, IvoryZeroVal t)
         => String -> m (Values n t)
-values_ id = mem id Nothing
+values_ id = mkArea id Nothing
 
 values :: (MonadWriter Context m, KnownNat n, IvoryZeroVal t, IvoryInit t)
        => String -> [t] -> m (Values n t)
-values id v = mem id . Just . iarray $ ival <$> v
-
-
-
-
-mem :: (MonadWriter Context m, IvoryArea area, IvoryZero area)
-    => String -> Maybe (Init area) -> m (Ref 'Global area)
-mem id v = do
-    let a = area id v
-    addArea a
-    pure $ addrOf a
+values id v = mkArea id . Just . iarray $ ival <$> v
 
 
 

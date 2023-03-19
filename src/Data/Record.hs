@@ -20,6 +20,7 @@ module Data.Record
 
 import           Control.Monad.Writer
 import           Core.Context
+import           Data.Area
 import           GHC.TypeLits         (KnownSymbol)
 import           GHC.TypeNats         (KnownNat, SomeNat (..), someNatVal)
 import           Ivory.Language
@@ -34,30 +35,23 @@ type RunRecords t = forall a.  (forall n. KnownNat n => Records' n t -> a) -> a
 
 record_ :: (MonadWriter Context m, IvoryStruct t)
         => String -> m (Record t)
-record_ id = mem id Nothing
+record_ id = mkArea id Nothing
 
 record :: (MonadWriter Context m, IvoryStruct t)
        => String -> [InitStruct t] -> m (Record t)
-record id r = mem id . Just $ istruct r
+record id r = mkArea id . Just $ istruct r
 
 
 
 records_ :: (MonadWriter Context m, KnownNat n, IvoryStruct t)
          => String -> m (Records n t)
-records_ id = mem id Nothing
+records_ id = mkArea id Nothing
 
 records :: (MonadWriter Context m, KnownNat n, IvoryStruct t)
         => String -> [[InitStruct t]] -> m (Records n t)
-records id r = mem id . Just . iarray $ istruct <$> r
+records id r = mkArea id . Just . iarray $ istruct <$> r
 
 
-
-mem :: (MonadWriter Context m, IvoryArea area, IvoryZero area)
-    => String -> Maybe (Init area) -> m (Ref 'Global area)
-mem id v = do
-    let a = area id v
-    addArea a
-    pure $ addrOf a
 
 runRecords_ :: IvoryStruct t
              => String
