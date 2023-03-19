@@ -117,7 +117,7 @@ toRS transmit r@(RBUS {..}) = do
 
 
 {--
-    TODO: potential msgBuff overflow
+    TODO: potential message overwriting in the msgBuff
 --}
 toQueue :: KnownNat l => RBUS -> Buffer l Uint8 -> Ivory (ProcEffects s ()) ()
 toQueue (RBUS {..}) buff = push msgQueue $ \i -> do
