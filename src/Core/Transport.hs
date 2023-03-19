@@ -8,4 +8,4 @@ import           Ivory.Language
 
 
 class Transport t where
-    transmit :: KnownNat l => t -> Buffer l Uint8 -> Ivory (ProcEffects s ()) ()
+    transmit :: KnownNat n => t -> Buffer n Uint8 -> Ivory (ProcEffects s ()) ()
