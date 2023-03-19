@@ -1,7 +1,6 @@
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE InstanceSigs          #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeOperators         #-}
 
@@ -28,18 +27,18 @@ addContext = tell
 
 
 addModule :: MonadWriter Context m => ModuleM () -> m ()
-addModule m = tell $ Context m mempty mempty
+addModule m = addContext $ Context m mempty mempty
 
 
 addInit :: MonadWriter Context m => Def ('[] :-> ()) -> m ()
 addInit d = do
-    tell $ Context mempty [d] mempty
+    addContext $ Context mempty [d] mempty
     addProc d
 
 
 addTask :: MonadWriter Context m => Task -> m ()
 addTask t = do
-        tell $ Context mempty mempty [t]
+        addContext $ Context mempty mempty [t]
         addProc $ getTask t
 
 
