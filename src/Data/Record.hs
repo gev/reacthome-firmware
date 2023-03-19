@@ -21,9 +21,9 @@ module Data.Record
 import           Control.Monad.Writer
 import           Core.Context
 import           Data.Area
-import           GHC.TypeLits         (KnownSymbol)
-import           GHC.TypeNats         (KnownNat, SomeNat (..), someNatVal)
+import           GHC.TypeNats
 import           Ivory.Language
+
 
 
 type Record     t = Ref Global (Struct t)
@@ -54,30 +54,19 @@ records id r = mkArea id . Just . iarray $ istruct <$> r
 
 
 runRecords_ :: IvoryStruct t
-             => String
-             -> Int
-             -> RunRecords t
+            => String -> Int -> RunRecords t
 runRecords_ id = run (area id Nothing)
 
-
-
-runRecords :: IvoryStruct t
-           => String
-           -> [[InitStruct t]]
-           -> RunRecords t
+runRecords :: IvoryStruct t => String
+           -> [[InitStruct t]] -> RunRecords t
 runRecords id xs = run (area id . Just . iarray $ istruct <$> xs) $ length xs
 
 runRecordsFromList :: IvoryStruct t
-                  => String
-                  -> (c -> [InitStruct t])
-                  -> [c]
-                  -> RunRecords t
+                   => String -> (c -> [InitStruct t]) -> [c] -> RunRecords t
 runRecordsFromList id h xs = run (area id . Just . iarray $ istruct . h <$> xs) $ length xs
 
 
 
-run :: forall t. (forall n. KnownNat n => Records' n t)
-    -> Int
-    -> RunRecords t
+run :: forall t. (forall n. KnownNat n => Records' n t) -> Int -> RunRecords t
 run r n f = go . someNatVal . fromIntegral $ n
     where go (SomeNat (p :: Proxy p)) = f (r :: Records' p t)

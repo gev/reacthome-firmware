@@ -57,21 +57,16 @@ runValues_ :: (IvoryInit t, IvoryZeroVal t)
            => String -> Int -> RunValues t
 runValues_ id = run (area id Nothing)
 
-runValues :: (MonadWriter Context m, IvoryInit t, IvoryZeroVal t)
-          => String -> [t] -> m (RunValues t)
-runValues id xs =
-    pure $ run (area id . Just . iarray $ ival <$> xs) $ length xs
+runValues :: (IvoryInit t, IvoryZeroVal t)
+          => String -> [t] -> RunValues t
+runValues id xs = run (area id . Just . iarray $ ival <$> xs) $ length xs
 
-runValuesFromList :: (MonadWriter Context m, IvoryInit t, IvoryZeroVal t)
-                  => String -> (c -> t) -> [c] -> m (RunValues t)
-runValuesFromList id h xs =
-    pure $ run (area id . Just . iarray $ ival . h <$> xs) $ length xs
+runValuesFromList :: (IvoryInit t, IvoryZeroVal t)
+                  => String -> (c -> t) -> [c] -> RunValues t
+runValuesFromList id h xs = run (area id . Just . iarray $ ival . h <$> xs) $ length xs
 
 
 
-run :: forall t. (forall n. KnownNat n => Values' n t)
-    -> Int
-    -> RunValues t
-run v n f = do
-        go . someNatVal . fromIntegral $ n
+run :: forall t. (forall n. KnownNat n => Values' n t) -> Int -> RunValues t
+run v n f = go . someNatVal . fromIntegral $ n
     where go (SomeNat (p :: Proxy p)) = f (v :: Values' p t)
