@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds          #-}
+{-# LANGUAGE FlexibleContexts   #-}
 {-# LANGUAGE GADTs              #-}
 {-# LANGUAGE NamedFieldPuns     #-}
 {-# LANGUAGE NumericUnderscores #-}
@@ -26,10 +27,8 @@ data Blink where
              } -> Blink
 
 
-blink :: Output o
-      => Int
-      -> (p -> WriterT Context (Reader (Domain p t)) o)
-      -> WriterT Context (Reader (Domain p t)) Feature
+blink :: (MonadWriter Context m, MonadReader (Domain p t) m, Output o)
+      => Int -> (p -> m o) -> m Feature
 blink n o = do
     let name  = "blink_" <> show n
 

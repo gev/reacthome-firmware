@@ -9,8 +9,8 @@
 
 module Feature.Relays where
 
-import           Control.Monad.Reader    (Reader, asks)
-import           Control.Monad.Writer    (WriterT)
+import           Control.Monad.Reader    (MonadReader, asks)
+import           Control.Monad.Writer    (MonadWriter)
 import           Core.Context
 import           Core.Controller
 import qualified Core.Domain             as D
@@ -47,9 +47,8 @@ data Relays = forall os. Outputs os => Relays
 
 
 
-relays :: (MakeOutputs o os, T.Transport t)
-       => [p -> WriterT Context (Reader (D.Domain p t)) o]
-       -> WriterT Context (Reader (D.Domain p t)) Feature
+relays :: (MonadWriter Context m, MonadReader (D.Domain p t) m, MakeOutputs o os, T.Transport t)
+       => [p -> m o] -> m Feature
 relays outs = do
     mcu        <- asks D.mcu
     transport  <- asks D.transport

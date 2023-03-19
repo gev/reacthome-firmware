@@ -1,10 +1,11 @@
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE RankNTypes     #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RankNTypes       #-}
 
 module Transport.RBUS    where
 
-import           Control.Monad.Reader  (Reader, asks, runReader)
-import           Control.Monad.Writer  (WriterT, runWriter)
+import           Control.Monad.Reader  (MonadReader, asks)
+import           Control.Monad.Writer  (MonadWriter)
 import           Core.Context
 import           Core.Dispatcher
 import qualified Core.Domain           as D
@@ -26,8 +27,8 @@ import           Transport.RBUS.Rx
 import           Transport.RBUS.Tx
 
 
-rbus :: WriterT Context (Reader (D.Domain p t)) RS485
-     -> WriterT Context (Reader (D.Domain p t)) RBUS
+rbus :: (MonadWriter Context m, MonadReader (D.Domain p t) m)
+     => m RS485 -> m RBUS
 rbus rs485 = do
 
     model         <- asks D.model

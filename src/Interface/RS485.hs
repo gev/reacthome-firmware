@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE FlexibleContexts  #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs             #-}
 {-# LANGUAGE NamedFieldPuns    #-}
@@ -38,11 +39,8 @@ data HandleRS485 r = HandleRS485
 
 
 
-rs485 :: (I.USART u, Output o)
-      => Int
-      -> (p -> WriterT Context (Reader (Domain p t)) u)
-      -> (p -> WriterT Context (Reader (Domain p t)) o)
-      -> WriterT Context (Reader (Domain p t)) RS485
+rs485 :: (MonadWriter Context m, MonadReader (D.Domain p t) m, I.USART u, Output o)
+      => Int -> (p -> m u) -> (p -> m o) -> m RS485
 rs485 n usart' rede' = do
     mcu'        <- asks D.mcu
     usart       <- usart' $ peripherals mcu'

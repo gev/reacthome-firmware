@@ -1,11 +1,12 @@
-{-# LANGUAGE DataKinds      #-}
-{-# LANGUAGE GADTs          #-}
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE RankNTypes     #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs            #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RankNTypes       #-}
 
 module Feature.Relay where
 
-import           Control.Monad.Reader  (Reader, asks)
+import           Control.Monad.Reader  (MonadReader, asks)
 import           Control.Monad.Writer
 import           Core.Context
 import           Core.Controller
@@ -27,9 +28,8 @@ data Relay = Relay
     , transmit :: forall s n. (KnownNat n) => Buffer n Uint8 -> Ivory (ProcEffects s ()) ()
     }
 
-relay :: (Output o, T.Transport t)
-       => (p -> o)
-       -> WriterT Context (Reader (Domain p t)) Feature
+relay :: (MonadWriter Context m, MonadReader (Domain p t) m, Output o, T.Transport t)
+       => (p -> o) -> m Feature
 relay out = do
     mcu       <- asks mcu
     transport <- asks transport
