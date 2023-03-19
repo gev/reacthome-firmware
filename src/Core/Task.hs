@@ -9,7 +9,7 @@ import           Ivory.Language
 
 data Task = Task
     { period  :: Maybe Uint32
-    , runTask :: Def ('[] :-> ())
+    , getTask :: Def ('[] :-> ())
     }
 
 
@@ -17,20 +17,23 @@ task :: Maybe Uint32
      -> String
      -> (forall s. Ivory (ProcEffects s ()) ())
      -> Task
-task p id b = Task
-    { period    = p
-    , runTask = proc (id <> "_task") $ body b
-    }
+task period id run = Task { period  = period
+                          , getTask = proc (id <> "_task") $ body run
+                          }
 
 
 delay :: Uint32
       -> String
       -> (forall s. Ivory (ProcEffects s ()) ())
       -> Task
-delay p = task (Just p)
+delay period = task (Just period)
 
 
 yeld :: String
      -> (forall s. Ivory (ProcEffects s ()) ())
      -> Task
 yeld = task Nothing
+
+
+runTask :: Task -> Ivory eff ()
+runTask = call_ . getTask

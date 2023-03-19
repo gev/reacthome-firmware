@@ -4,7 +4,6 @@
 
 module Core.Formula where
 
-import           Control.Monad.Identity
 import           Control.Monad.Reader
 import           Control.Monad.Writer
 import           Core.Context
@@ -43,14 +42,14 @@ cook (Formula model version mcu shouldInit transport features) = do
           (features' , featuresContext'  ) = unzip $ run <$> features
           (mcu'      , mcuContext'       ) = runWriter mcu
 
-          run t = runReader (runWriterT t) domain'
+          run f = runReader (runWriterT f) domain'
 
-          (Context inclModule inits steps) = mcuContext'
+          (Context inclModule inits tasks) = mcuContext'
                                           <> domainContext'
                                           <> transportContext'
                                           <> mconcat featuresContext'
 
-          loop = mkLoop (systemClock mcu') steps
+          loop = mkLoop (systemClock mcu') tasks
 
           init :: Def ('[] :-> ())
           init = proc "init" $ body $ mapM_ call_ inits

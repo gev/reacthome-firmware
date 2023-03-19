@@ -20,10 +20,10 @@ mkLoop systemClock tasks = proc "loop" $ body $ do
     forever $ do
         t <- getSystemTime systemClock
         zipWithM_ (run t) clocks scheduled
-        mapM_ (call_ . runTask) immediately
+        mapM_ runTask immediately
     where
         run t1 clock task = do
             t0 <- deref clock
             when (t1 - t0 >=? fromJust (period task)) $ do
-                call_ $ runTask task
+                runTask task
                 store clock t1

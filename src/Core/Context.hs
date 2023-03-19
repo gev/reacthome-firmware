@@ -40,7 +40,7 @@ addInit d = do
 addTask :: MonadWriter Context m => Task -> m ()
 addTask t = do
         tell $ Context mempty mempty [t]
-        addProc $ runTask t
+        addProc $ getTask t
 
 
 addProc :: MonadWriter Context m => Def ('[] :-> ()) -> m ()
