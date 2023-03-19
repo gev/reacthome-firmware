@@ -15,6 +15,6 @@ import           Support.Device.GD32F4xx.Timer
 systemClock :: MonadWriter Context m => m SystemClock
 systemClock = I.systemClock (sysTick 83_999)
                             (timer_1 timerParam { timerPrescaler = 83
-                                                , timerPeriod = 0xff_ff_ff_ff
+                                                , timerPeriod    = 0xff_ff_ff_ff
                                                 }
                             )
