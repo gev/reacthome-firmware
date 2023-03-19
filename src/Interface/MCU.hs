@@ -16,8 +16,7 @@ import           Ivory.Language.Module
 
 
 data MCU p = MCU
-    { family       :: String
-    , model        :: String
+    { model        :: String
     , modification :: String
     , hasFPU       :: Bool
     , systemClock  :: SystemClock
@@ -27,8 +26,7 @@ data MCU p = MCU
 
 
 mcu :: MonadWriter Context m
-    => String
-    -> Bool
+    => Bool
     -> m SystemClock
     -> (Buffer 6 Uint8 -> forall eff. Ivory eff ())
     -> ModuleDef
@@ -36,8 +34,8 @@ mcu :: MonadWriter Context m
     -> String
     -> String
     -> m (MCU p)
-mcu family hasFPU systemClock' initializeMac mcuModule peripherals model modification = do
+mcu hasFPU systemClock' initializeMac mcuModule peripherals model modification = do
     addModule mcuModule
     systemClock <- systemClock'
     mac         <- makeMac initializeMac "mac"
-    pure MCU { family, model, modification, hasFPU, systemClock, peripherals, mac }
+    pure MCU { model, modification, hasFPU, systemClock, peripherals, mac }
