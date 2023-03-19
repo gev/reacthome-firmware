@@ -128,7 +128,7 @@ data DMA_PARAM = DMA_PARAM
         }
 |]
 
-inclDMA :: ModuleM ()
+inclDMA :: ModuleDef
 inclDMA = do
     inclDef (def :: Cast DMA_CHANNEL Uint32)
     inclDef (def :: Cast DMA_DIRECTION Uint8)

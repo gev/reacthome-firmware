@@ -18,7 +18,7 @@ import           Ivory.Language.Syntax
 import           Ivory.Support
 
 
-inclCoreCM4 :: ModuleM ()
+inclCoreCM4 :: ModuleDef
 inclCoreCM4 = do
     incl sysTick_Config
     incl __NOP

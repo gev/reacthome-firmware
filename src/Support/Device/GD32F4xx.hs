@@ -14,7 +14,7 @@ import           Support.Device.GD32F4xx.Timer
 import           Support.Device.GD32F4xx.USART
 
 
-inclGD32F4xx :: ModuleM ()
+inclGD32F4xx :: ModuleDef
 inclGD32F4xx = do
     inclDBG
     inclDMA

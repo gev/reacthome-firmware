@@ -17,7 +17,7 @@ import           Ivory.Language.Module
 
 
 
-cook :: Formula -> ModuleM ()
+cook :: Formula -> ModuleDef
 cook (Formula model version mcu shouldInit transport features) = do
 
     inclModule
@@ -51,8 +51,8 @@ cook (Formula model version mcu shouldInit transport features) = do
 
 
 compile :: (ModuleDef, String) -> IO ()
-compile (m, n) = runCompiler
-    [package n m]
+compile (moduleDef, name) = runCompiler
+    [package name moduleDef]
     []
     initialOpts
         { outDir = Just "./firmware"

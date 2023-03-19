@@ -24,12 +24,12 @@ data IRQn
 instance ExtDef IRQn Uint8
 
 
-inclIRQ :: ModuleM ()
+inclIRQ :: ModuleDef
 inclIRQ = inclDef (def :: Cast IRQn Uint8)
 
 
 makeIRQHandler :: Show t
                => t
                -> (forall s. Ivory (ProcEffects s ()) ())
-               -> ModuleM ()
+               -> ModuleDef
 makeIRQHandler t b = incl $ proc (show t <> "_IRQHandler") $ body b

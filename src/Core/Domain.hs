@@ -43,10 +43,10 @@ domain :: (MonadWriter Context m, Transport t)
        -> t
        -> [Feature]
        -> m (Domain p t)
-domain model' (major, minor) mcu shouldInit' transport features = do
+domain model' version' mcu shouldInit' transport features = do
     addModule inclCast
     addModule inclSerialize
     model      <- value "model" model'
-    version    <- V.version "version" major minor
+    version    <- V.version "version" version'
     shouldInit <- value "should_init" shouldInit'
     pure Domain { model, version, mcu, shouldInit, transport, features}

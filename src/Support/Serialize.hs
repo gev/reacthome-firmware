@@ -9,7 +9,7 @@ import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Language.Module
 
-inclSerialize :: ModuleM ()
+inclSerialize :: ModuleDef
 inclSerialize = do
     incl pack_bool
     incl unpack_bool

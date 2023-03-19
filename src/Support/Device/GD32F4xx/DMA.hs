@@ -173,7 +173,7 @@ data DMA_SINGLE_PARAM = DMA_SINGLE_PARAM
         }
 |]
 
-inclDMA :: ModuleM ()
+inclDMA :: ModuleDef
 inclDMA = do
     inclDef (def :: Cast DMA_CHANNEL Uint32)
     inclDef (def :: Cast DMA_PERIPH Uint32)

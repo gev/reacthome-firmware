@@ -1,4 +1,4 @@
-  {-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE TypeOperators         #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
@@ -26,7 +26,7 @@ data RCU_PERIPH
 instance ExtDef RCU_PERIPH Uint32
 
 
-inclRCU :: ModuleM ()
+inclRCU :: ModuleDef
 inclRCU =    do
     inclDef (def :: Cast RCU_PERIPH Uint32)
     incl rcu_periph_clock_enable

@@ -63,7 +63,7 @@ data EXTI_TRIG_TYPE = EXTI_TRIG_RISING
 instance ExtDef EXTI_TRIG_TYPE Uint8
 
 
-inclExti :: ModuleM ()
+inclExti :: ModuleDef
 inclExti = do
     inclDef (def :: Cast EXTI_LINE Uint32)
     inclDef (def :: Cast EXTI_MODE Uint8)

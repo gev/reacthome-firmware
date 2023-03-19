@@ -31,9 +31,9 @@ type Version = Record VersionStruct
 |]
 
 
-version :: MonadWriter Context m => String -> Uint8 -> Uint8 -> m Version
-version name maj min = do
+version :: MonadWriter Context m => String -> (Uint8, Uint8) -> m Version
+version name (major', minor') = do
     addStruct (Proxy :: Proxy VersionStruct)
-    record name [ major .= ival maj
-                , minor .= ival min
+    record name [ major .= ival major'
+                , minor .= ival minor'
                 ]

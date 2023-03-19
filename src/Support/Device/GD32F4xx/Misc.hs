@@ -15,7 +15,7 @@ import           Ivory.Support.Device.GD32F4xx
 import           Support.Device.GD32F4xx.IRQ
 
 
-inclMisc :: ModuleM ()
+inclMisc :: ModuleDef
 inclMisc =    incl nvic_irq_enable
 
 

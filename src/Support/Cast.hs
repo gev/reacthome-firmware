@@ -11,7 +11,7 @@ module Support.Cast
 import           Ivory.Language
 import           Ivory.Language.Module
 
-inclCast :: ModuleM ()
+inclCast :: ModuleDef
 inclCast = incl cast_to_uint32
 
 

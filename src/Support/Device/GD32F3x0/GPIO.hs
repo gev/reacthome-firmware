@@ -83,7 +83,7 @@ data GPIO_AF
     deriving (Show, Enum, Bounded)
 instance ExtDef GPIO_AF Uint32
 
-inclGPIO :: ModuleM ()
+inclGPIO :: ModuleDef
 inclGPIO = do
     inclDef (def :: Cast GPIO_PERIPH Uint32)
     inclDef (def :: Cast GPIO_MODE Uint32)

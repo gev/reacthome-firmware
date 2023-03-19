@@ -31,7 +31,7 @@ mcu :: MonadWriter Context m
     -> Bool
     -> m SystemClock
     -> (Buffer 6 Uint8 -> forall eff. Ivory eff ())
-    -> ModuleM ()
+    -> ModuleDef
     -> p
     -> String
     -> String

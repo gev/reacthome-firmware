@@ -13,8 +13,8 @@ module Support.Device.GD32F4xx.Timer
     , TIMER_INT                         (..)
     , TIMER_INT_FLAG                    (..)
     , TIMER_PARAM                       (..)
-    , TIMER_CHANNEL                     (..) 
-    , TIMER_COMPARE_MODE                (..)           
+    , TIMER_CHANNEL                     (..)
+    , TIMER_COMPARE_MODE                (..)
     , TIMER_COMPARE_SHADOW              (..)
     , TIMER_CHANNEL_STATE               (..)
     , TIMER_COMPL_CHANNEL_STATE         (..)
@@ -99,7 +99,7 @@ data TIMER_COMPARE_SHADOW
     = TIMER_OC_SHADOW_DISABLE
     deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_COMPARE_SHADOW Uint16
--- 
+--
 data TIMER_CHANNEL_STATE
     = TIMER_CCX_ENABLE
     deriving (Show, Enum, Bounded)
@@ -153,12 +153,12 @@ data TIMER_PARAM = TIMER_PARAM
 
 
 data TIMER_OC_PARAM = TIMER_OC_PARAM
-        { timerOutputState     :: TIMER_CHANNEL_STATE
-        , timerOutputnState    :: TIMER_COMPL_CHANNEL_STATE
-        , timerOcPolarity      :: TIMER_CHANNEL_POLARITY
-        , timerOcnPolarity     :: TIMER_COMPL_CHANNEL_POLARITY
-        , timerOcIdleState     :: TIMER_CHANNEL_IDLE_STATE
-        , timerOcnIdleState    :: TIMER_COMPL_CHANNEL_IDLE_STATE
+        { timerOutputState  :: TIMER_CHANNEL_STATE
+        , timerOutputnState :: TIMER_COMPL_CHANNEL_STATE
+        , timerOcPolarity   :: TIMER_CHANNEL_POLARITY
+        , timerOcnPolarity  :: TIMER_COMPL_CHANNEL_POLARITY
+        , timerOcIdleState  :: TIMER_CHANNEL_IDLE_STATE
+        , timerOcnIdleState :: TIMER_COMPL_CHANNEL_IDLE_STATE
         }
 
 [ivory|
@@ -173,7 +173,7 @@ data TIMER_OC_PARAM = TIMER_OC_PARAM
 |]
 
 
-inclTimer :: ModuleM ()
+inclTimer :: ModuleDef
 inclTimer = do
     inclDef (def :: Cast TIMER_PERIPH Uint32)
     inclDef (def :: Cast TIMER_ALIGNE_MODE Uint16)
@@ -320,7 +320,7 @@ initChannelOcTimer t ch p = do
     call_ timer_channel_output_config (def t) (def ch) r
 
 timer_channel_output_config :: Def ('[ Uint32, Uint16, Ref s (Struct "timer_oc_parameter_struct")] :-> ())
-timer_channel_output_config = fun "timer_channel_output_config" 
+timer_channel_output_config = fun "timer_channel_output_config"
 
 timerOcParam :: TIMER_OC_PARAM
 timerOcParam =  TIMER_OC_PARAM  TIMER_CCX_ENABLE

@@ -100,7 +100,7 @@ data USART_DENT
 instance ExtDef USART_DENT Uint32
 
 
-inclUSART :: ModuleM ()
+inclUSART :: ModuleDef
 inclUSART =    do
     inclDef (def :: Cast USART_PERIPH Uint32)
     inclDef (def :: Cast USART_WORD_LENGTH Uint32)

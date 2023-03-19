@@ -15,7 +15,7 @@ import           Ivory.Language.Module
 
 
 data Context = Context
-    { getModule :: ModuleM ()
+    { getModule :: ModuleDef
     , getInits  :: [Def ('[] :-> ())]
     , getTasks  :: [Task]
     }
@@ -26,7 +26,7 @@ addContext :: MonadWriter Context m => Context -> m ()
 addContext = tell
 
 
-addModule :: MonadWriter Context m => ModuleM () -> m ()
+addModule :: MonadWriter Context m => ModuleDef -> m ()
 addModule m = addContext $ Context m mempty mempty
 
 

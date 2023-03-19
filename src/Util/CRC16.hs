@@ -35,7 +35,7 @@ initCRC = 0xff :: Uint8
     }
 |]
 
-inclCRC16 :: ModuleM ()
+inclCRC16 :: ModuleDef
 inclCRC16 = do
     incl crc_16_digest
     incl crc_16_update

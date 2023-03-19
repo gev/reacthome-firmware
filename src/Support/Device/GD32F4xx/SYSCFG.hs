@@ -45,7 +45,7 @@ data EXTI_PIN =   EXTI_SOURCE_PIN0
 instance ExtDef EXTI_PIN Uint8
 
 
-inclSYSCFG :: ModuleM ()
+inclSYSCFG :: ModuleDef
 inclSYSCFG = do
     inclDef (def :: Cast EXTI_PORT Uint8)
     inclDef (def :: Cast EXTI_PIN Uint8)
