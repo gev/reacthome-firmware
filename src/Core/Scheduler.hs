@@ -1,16 +1,12 @@
-{-# LANGUAGE DataKinds       #-}
-{-# LANGUAGE NamedFieldPuns  #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TypeOperators   #-}
+{-# LANGUAGE DataKinds     #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Core.Scheduler where
 
 import           Control.Monad         (replicateM, zipWithM_)
-import           Core.Feature
 import           Core.Task
 import           Data.List
 import           Data.Maybe
-import           Data.Value
 import           Interface.SystemClock
 import           Interface.Timer
 import           Ivory.Language
