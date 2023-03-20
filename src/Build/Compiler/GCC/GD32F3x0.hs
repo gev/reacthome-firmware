@@ -12,7 +12,7 @@ import           Interface.MCU
 
 instance Compiler GCC GD32F3x0 where
 
-  makeConfig (MCU {..}) =
+  mkCompiler (MCUmod {..}) =
 
     GCC { defs    = [ "-D" <> (toUpper <$> model)
                     , "-DUSE_STDPERIPH_DRIVER"

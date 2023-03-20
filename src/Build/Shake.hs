@@ -6,4 +6,5 @@ import           Development.Shake.Util
 
 
 class Shake c where
+    key   :: c -> String
     shake :: c -> [String] -> IO ()

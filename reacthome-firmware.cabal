@@ -154,6 +154,8 @@ executable reacthome-firmware
                     , ivory-backend-c
                     , ivory-stdlib
                     , shake
+                    , pureMD5
+                    , bytestring
 
     hs-source-dirs:   app
                     , formula

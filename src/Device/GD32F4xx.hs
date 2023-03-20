@@ -105,8 +105,8 @@ data GD32F4xx = GD32F4xx
     }
 
 
-gd32f4xx :: MonadWriter Context m => String -> String -> m (MCU GD32F4xx)
-gd32f4xx = mcu G.systemClock makeMac inclGD32F4xx GD32F4xx
+gd32f4xx :: String -> String -> MCUmod GD32F4xx
+gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
     { usart_1   = mkUSART USART1
                           RCU_USART1
                           USART1_IRQn
@@ -188,8 +188,8 @@ gd32f4xx = mcu G.systemClock makeMac inclGD32F4xx GD32F4xx
 
 
 
-gd32f450vgt6 :: MonadWriter Context m => m (MCU GD32F4xx)
-gd32f450vgt6 = gd32f4xx "GD32F4xx" "VGT6"
+gd32f450vgt6 :: MCUmod GD32F4xx
+gd32f450vgt6 = gd32f4xx "gd32f4xx" "vgt6"
 
-gd32f450vit6 :: MonadWriter Context m => m (MCU GD32F4xx)
-gd32f450vit6 = gd32f4xx "GD32F4xx" "VIT6"
+gd32f450vit6 :: MCUmod GD32F4xx
+gd32f450vit6 = gd32f4xx "gd32f4xx" "vit6"

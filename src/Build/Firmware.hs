@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RecordWildCards  #-}
 {-# LANGUAGE TypeOperators    #-}
 
@@ -20,8 +21,8 @@ import           Ivory.Language.Module
 
 
 
-cook :: Formula p -> MCU p -> Context -> ModuleDef
-cook (Formula {..}) mcu' mcuContext' = do
+cook :: Formula p -> MCUmod p -> ModuleDef
+cook (Formula {..}) (MCUmod {mcu}) = do
 
     inclModule
     incl  init
@@ -31,6 +32,7 @@ cook (Formula {..}) mcu' mcuContext' = do
     where (domain'   , domainContext'    ) = runWriter $ domain model version mcu' shouldInit transport' features'
           (transport', transportContext' ) = runReader (runWriterT transport) domain'
           (features' , featuresContext'  ) = unzip $ run <$> features
+          (mcu'      , mcuContext'       ) = runWriter mcu
 
           run f = runReader (runWriterT f) domain'
 
@@ -52,8 +54,8 @@ cook (Formula {..}) mcu' mcuContext' = do
 
 
 
-compile :: (ModuleDef, String) -> IO ()
-compile (moduleDef, name) = runCompiler
+compile :: ModuleDef -> String -> IO ()
+compile moduleDef name = runCompiler
     [package name moduleDef]
     []
     initialOpts
@@ -63,10 +65,10 @@ compile (moduleDef, name) = runCompiler
 
 
 
-build :: Shake c =>[(Formula p, String)] -> MCU p -> Context -> c -> IO ()
-build ms mcu context config = do
+build :: Shake c => c -> MCUmod p -> [(Formula p, String)] -> IO ()
+build config mcu ms = do
     mapM_ run ms
     shake config $ snd <$> ms
     where
         run (f@(Formula {..}), name) = do
-            compile (cook f mcu context, name)
+            compile (cook f mcu) name
