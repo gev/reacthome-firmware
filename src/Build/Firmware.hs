@@ -5,6 +5,7 @@
 
 module Build.Firmware where
 
+import           Build.Shake
 import           Control.Monad.Reader
 import           Control.Monad.Writer
 import           Core.Context
@@ -59,3 +60,13 @@ compile (moduleDef, name) = runCompiler
         { outDir = Just "./firmware"
         , constFold = True
         }
+
+
+
+build :: Shake c =>[(Formula p, String)] -> MCU p -> Context -> c -> IO ()
+build ms mcu context config = do
+    mapM_ run ms
+    shake config $ snd <$> ms
+    where
+        run (f@(Formula {..}), name) = do
+            compile (cook f mcu context, name)

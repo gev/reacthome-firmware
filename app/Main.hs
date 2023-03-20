@@ -2,6 +2,7 @@ module Main where
 
 import           Build.Compiler
 import           Build.Compiler.GCC
+import           Build.Firmware
 import           Control.Monad.Writer
 import           Device.GD32F3x0
 import           Formula.Blink
