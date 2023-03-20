@@ -11,6 +11,6 @@ import           Formula.Relay12
 
 main :: IO ()
 main = do
-    gcc gd32f330k8u6 [ (blink  , "blink"  )
-                     , (relay12, "relay12")
+    gcc gd32f330k8u6 [ blink
+                     , relay12
                      ]

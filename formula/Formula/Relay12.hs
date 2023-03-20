@@ -9,7 +9,8 @@ import           Transport.RBUS
 
 
 relay12 :: Formula GD32F3x0
-relay12 = Formula { model      = 0xae
+relay12 = Formula { name       = "relay12"
+                  , model      = 0xae
                   , version    = (3, 0)
                   , shouldInit = true
                   , transport  = rbus $ rs485 1 usart_1 out_pa_4
