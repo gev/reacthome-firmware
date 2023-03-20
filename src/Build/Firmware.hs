@@ -5,10 +5,6 @@
 
 module Build.Firmware where
 
-import           Build.Compiler
-import           Build.Compiler.GCC
-import           Build.Compiler.GCC.GD32F3x0
-import           Build.Shake
 import           Control.Monad.Reader
 import           Control.Monad.Writer
 import           Core.Context
@@ -63,14 +59,3 @@ compile (moduleDef, name) = runCompiler
         { outDir = Just "./firmware"
         , constFold = True
         }
-
-
-build :: Compiler GCC p => [(Formula p, String)] -> Writer Context (MCU p) -> IO ()
-build ms mcu' = do
-    let (mcu, context) = runWriter mcu'
-    let config :: GCC
-        config = makeConfig mcu
-    let run (f@(Formula {..}), name) = do
-            compile (cook f mcu context, name)
-    mapM_ run ms
-    shake config $ snd <$> ms

@@ -4,7 +4,7 @@
 module Build.Compiler.GCC.GD32F3x0 where
 
 import           Build.Compiler
-import           Build.Compiler.GCC
+import           Build.Compiler.GCC.Config
 import           Data.Char
 import           Device.GD32F3x0
 import           Interface.MCU
