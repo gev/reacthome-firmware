@@ -1,17 +1,13 @@
 module Main where
 
 import           Build.Firmware
-import           Build.Shake
+import           Device.GD32F3x0
 import           Formula.Blink
 import           Formula.Relay12
-import           Ivory.Language
 
-
-build :: [(ModuleDef, String)] -> IO ()
-build  ms = mapM_ compile ms >> shake (snd <$> ms)
 
 main :: IO ()
-main = build
-  [ (cook blink, "blink")
-  , (cook relay12, "relay12")
-  ]
+main = do
+    build [ (blink  , "blink"  )
+          , (relay12, "relay12")
+          ] gd32f330k8u6

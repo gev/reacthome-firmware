@@ -106,7 +106,7 @@ data GD32F3x0 = GD32F3x0
 
 
 gd32f3x0 :: MonadWriter Context m => String -> String -> m (MCU GD32F3x0)
-gd32f3x0 = mcu False G.systemClock makeMac inclGD32F3x0 GD32F3x0
+gd32f3x0 = mcu G.systemClock makeMac inclGD32F3x0 GD32F3x0
     { usart_1   = mkUSART USART1
                           RCU_USART1
                           USART1_IRQn

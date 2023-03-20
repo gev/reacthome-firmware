@@ -1,8 +1,14 @@
-{-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE TypeOperators    #-}
 
 module Build.Firmware where
 
+import           Build.Compiler
+import           Build.Compiler.GCC
+import           Build.Compiler.GCC.GD32F3x0
+import           Build.Shake
 import           Control.Monad.Reader
 import           Control.Monad.Writer
 import           Core.Context
@@ -11,14 +17,14 @@ import           Core.Feature
 import           Core.Formula
 import           Core.Scheduler
 import           Interface.MCU
-import           Ivory.Compile.C.CmdlineFrontend
+import           Ivory.Compile.C.CmdlineFrontend hiding (compile)
 import           Ivory.Language
 import           Ivory.Language.Module
 
 
 
-cook :: Formula -> ModuleDef
-cook (Formula model version mcu shouldInit transport features) = do
+cook :: Formula p -> MCU p -> Context -> ModuleDef
+cook (Formula {..}) mcu' mcuContext' = do
 
     inclModule
     incl  init
@@ -28,7 +34,6 @@ cook (Formula model version mcu shouldInit transport features) = do
     where (domain'   , domainContext'    ) = runWriter $ domain model version mcu' shouldInit transport' features'
           (transport', transportContext' ) = runReader (runWriterT transport) domain'
           (features' , featuresContext'  ) = unzip $ run <$> features
-          (mcu'      , mcuContext'       ) = runWriter mcu
 
           run f = runReader (runWriterT f) domain'
 
@@ -58,3 +63,14 @@ compile (moduleDef, name) = runCompiler
         { outDir = Just "./firmware"
         , constFold = True
         }
+
+
+build :: Compiler GCC p => [(Formula p, String)] -> Writer Context (MCU p) -> IO ()
+build ms mcu' = do
+    let (mcu, context) = runWriter mcu'
+    let config :: GCC
+        config = makeConfig mcu
+    let run (f@(Formula {..}), name) = do
+            compile (cook f mcu context, name)
+    mapM_ run ms
+    shake config $ snd <$> ms
