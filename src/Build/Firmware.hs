@@ -14,7 +14,7 @@ import           Core.Feature
 import           Core.Formula
 import           Core.Scheduler
 import           Interface.MCU
-import           Ivory.Compile.C.CmdlineFrontend hiding (compile)
+import           Ivory.Compile.C.CmdlineFrontend
 import           Ivory.Language
 import           Ivory.Language.Module
 
