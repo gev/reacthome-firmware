@@ -31,6 +31,9 @@ import           Ivory.Support.Device.GD32F4xx
 data GPIO_PERIPH
     = GPIOA
     | GPIOB
+    | GPIOC
+    | GPIOD
+    | GPIOE
     deriving (Show, Enum, Bounded)
 instance ExtDef GPIO_PERIPH Uint32
 

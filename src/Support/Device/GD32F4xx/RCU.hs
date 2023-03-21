@@ -19,6 +19,9 @@ data RCU_PERIPH
     = RCU_DMA
     | RCU_GPIOA
     | RCU_GPIOB
+    | RCU_GPIOC
+    | RCU_GPIOD
+    | RCU_GPIOE
     | RCU_TIMER1
     | RCU_TIMER2
     | RCU_USART1

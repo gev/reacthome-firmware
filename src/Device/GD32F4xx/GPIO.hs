@@ -58,6 +58,57 @@ pb_13 = pb GPIO_PIN_13
 pb_14 = pb GPIO_PIN_14
 pb_15 = pb GPIO_PIN_15
 
+pc_0  = pc GPIO_PIN_0
+pc_1  = pc GPIO_PIN_1
+pc_2  = pc GPIO_PIN_2
+pc_3  = pc GPIO_PIN_3
+pc_4  = pc GPIO_PIN_4
+pc_5  = pc GPIO_PIN_5
+pc_6  = pc GPIO_PIN_6
+pc_7  = pc GPIO_PIN_7
+pc_8  = pc GPIO_PIN_8
+pc_9  = pc GPIO_PIN_9
+pc_10 = pc GPIO_PIN_10
+pc_11 = pc GPIO_PIN_11
+pc_12 = pc GPIO_PIN_12
+pc_13 = pc GPIO_PIN_13
+pc_14 = pc GPIO_PIN_14
+pc_15 = pc GPIO_PIN_15
+
+pd_0  = pd GPIO_PIN_0
+pd_1  = pd GPIO_PIN_1
+pd_2  = pd GPIO_PIN_2
+pd_3  = pd GPIO_PIN_3
+pd_4  = pd GPIO_PIN_4
+pd_5  = pd GPIO_PIN_5
+pd_6  = pd GPIO_PIN_6
+pd_7  = pd GPIO_PIN_7
+pd_8  = pd GPIO_PIN_8
+pd_9  = pd GPIO_PIN_9
+pd_10 = pd GPIO_PIN_10
+pd_11 = pd GPIO_PIN_11
+pd_12 = pd GPIO_PIN_12
+pd_13 = pd GPIO_PIN_13
+pd_14 = pd GPIO_PIN_14
+pd_15 = pd GPIO_PIN_15
+
+pe_0  = pe GPIO_PIN_0
+pe_1  = pe GPIO_PIN_1
+pe_2  = pe GPIO_PIN_2
+pe_3  = pe GPIO_PIN_3
+pe_4  = pe GPIO_PIN_4
+pe_5  = pe GPIO_PIN_5
+pe_6  = pe GPIO_PIN_6
+pe_7  = pe GPIO_PIN_7
+pe_8  = pe GPIO_PIN_8
+pe_9  = pe GPIO_PIN_9
+pe_10 = pe GPIO_PIN_10
+pe_11 = pe GPIO_PIN_11
+pe_12 = pe GPIO_PIN_12
+pe_13 = pe GPIO_PIN_13
+pe_14 = pe GPIO_PIN_14
+pe_15 = pe GPIO_PIN_15
+
 
 
 pa :: GPIO_PIN -> MODE -> Port
@@ -65,6 +116,16 @@ pa = Port RCU_GPIOA GPIOA
 
 pb :: GPIO_PIN -> MODE -> Port
 pb = Port RCU_GPIOB GPIOB
+
+pc :: GPIO_PIN -> MODE -> Port
+pc = Port RCU_GPIOC GPIOC
+
+pd :: GPIO_PIN -> MODE -> Port
+pd = Port RCU_GPIOD GPIOD
+
+pe :: GPIO_PIN -> MODE -> Port
+pe = Port RCU_GPIOE GPIOE
+
 
 
 
