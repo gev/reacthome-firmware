@@ -38,7 +38,8 @@ instance Compiler GCC GD32F4xx where
                     , "-O3"
                     ]
 
-        , ld      = "-Tsupport/device/gd32f4xx/" <> model <> modification <> ".ld"
+        , ld      = "-Tsupport/device/gd32f4xx/gd32f450-470.ld"
+        -- , ld      = "-Tsupport/device/gd32f4xx/" <> model <> modification <> ".ld"
 
         , ldflags = [ "-mthumb"
                     , "-mcpu=cortex-m4"

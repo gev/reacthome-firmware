@@ -62,7 +62,8 @@ executable reacthome-firmware
                     , Feature.Relay
                     , Feature.Relays
 
-                    , Formula.Blink
+                    , Formula.Blink330
+                    , Formula.Blink450
                     , Formula.Relay12
 
                     , Interface.Counter
@@ -87,6 +88,7 @@ executable reacthome-firmware
                     , Transport.RBUS.Data
                     , Transport.RBUS.Rx
                     , Transport.RBUS.Tx
+                    , Transport.UBUS
 
                     , Device.GD32F3x0
                     , Device.GD32F3x0.GPIO
