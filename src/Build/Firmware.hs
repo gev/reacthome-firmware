@@ -10,7 +10,6 @@ import           Control.Monad.Reader
 import           Control.Monad.Writer
 import           Core.Context
 import           Core.Domain
-import           Core.Feature
 import           Core.Formula
 import           Core.Scheduler
 import           Interface.MCU
@@ -69,4 +68,6 @@ build :: Shake c
 build config (MCUmod {..}) formulas =
     shake config =<< mapM run formulas
     where
-        run f = generate (cook mcu f) >> pure $ name f
+        run f@(Formula {..}) = do
+            generate (cook mcu f) name
+            pure name
