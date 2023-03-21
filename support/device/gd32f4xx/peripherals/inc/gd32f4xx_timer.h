@@ -265,7 +265,7 @@ OF SUCH DAMAGE.
 
 /* constants definitions */
 /* TIMER init parameter struct definitions*/
-typedef struct
+typedef struct timer_parameter_struct
 { 
     uint16_t prescaler;                         /*!< prescaler value */
     uint16_t alignedmode;                       /*!< aligned mode */
