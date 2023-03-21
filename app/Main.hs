@@ -16,5 +16,5 @@ main = do
     gcc gd32f330k8u6 [ blink330
                      , relay12
                      ]
-    gcc gd32f450vit6 [ blink450
+    gcc gd32f450vgt6 [ blink450
                      ]

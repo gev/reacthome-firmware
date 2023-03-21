@@ -119,7 +119,7 @@ data GD32F4xx = GD32F4xx
     , in_pe_13  :: InputW
     , in_pe_14  :: InputW
     , in_pe_15  :: InputW
-    
+
 
     , out_pa_0  :: OutputW
     , out_pa_1  :: OutputW
@@ -394,7 +394,7 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
 
 
 gd32f450vgt6 :: MCUmod GD32F4xx
-gd32f450vgt6 = gd32f4xx "gd32f4xx" "vgt6"
+gd32f450vgt6 = gd32f4xx "gd32f450" "vgt6"
 
 gd32f450vit6 :: MCUmod GD32F4xx
-gd32f450vit6 = gd32f4xx "gd32f4xx" "vit6"
+gd32f450vit6 = gd32f4xx "gd32f450" "vit6"

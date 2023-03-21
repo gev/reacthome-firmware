@@ -13,8 +13,8 @@ import           Support.Device.GD32F4xx.Timer
 
 
 systemClock :: MonadWriter Context m => m SystemClock
-systemClock = I.systemClock (sysTick 83_999)
-                            (timer_1 timerParam { timerPrescaler = 83
+systemClock = I.systemClock (sysTick 199_999)
+                            (timer_1 timerParam { timerPrescaler = 199
                                                 , timerPeriod    = 0xff_ff_ff_ff
                                                 }
                             )
