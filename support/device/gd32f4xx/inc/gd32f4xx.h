@@ -43,7 +43,7 @@ OF SUCH DAMAGE.
 
 /* define GD32F4xx */
 #if !defined (GD32F450)  && !defined (GD32F405) && !defined (GD32F407) && !defined (GD32F470)  && !defined (GD32F425) && !defined (GD32F427)
- /* #define GD32F450 */ 
+  /* #define GD32F450 */ 
   /* #define GD32F405 */
   /* #define GD32F407 */
   /* #define GD32F470 */
