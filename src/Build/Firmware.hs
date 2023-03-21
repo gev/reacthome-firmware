@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RecordWildCards  #-}
 {-# LANGUAGE TypeOperators    #-}
 
@@ -15,14 +14,14 @@ import           Core.Feature
 import           Core.Formula
 import           Core.Scheduler
 import           Interface.MCU
-import           Ivory.Compile.C.CmdlineFrontend hiding (compile)
+import           Ivory.Compile.C.CmdlineFrontend
 import           Ivory.Language
 import           Ivory.Language.Module
 
 
 
-cook :: Formula p -> MCUmod p -> ModuleDef
-cook (Formula {..}) (MCUmod {mcu}) = do
+cook :: Writer Context (MCU p) -> Formula p -> ModuleDef
+cook mcu (Formula {..}) = do
 
     inclModule
     incl  init
@@ -54,8 +53,8 @@ cook (Formula {..}) (MCUmod {mcu}) = do
 
 
 
-compile :: ModuleDef -> String -> IO ()
-compile moduleDef name = runCompiler
+generate :: ModuleDef -> String -> IO ()
+generate moduleDef name = runCompiler
     [package name moduleDef]
     []
     initialOpts
@@ -65,10 +64,9 @@ compile moduleDef name = runCompiler
 
 
 
-build :: Shake c => c -> MCUmod p -> [(Formula p, String)] -> IO ()
-build config mcu ms = do
-    mapM_ run ms
-    shake config $ snd <$> ms
+build :: Shake c
+      => c -> MCUmod p -> [Formula p] -> IO ()
+build config (MCUmod {..}) formulas =
+    shake config =<< mapM run formulas
     where
-        run (f@(Formula {..}), name) = do
-            compile (cook f mcu) name
+        run f = generate (cook mcu f) >> pure $ name f

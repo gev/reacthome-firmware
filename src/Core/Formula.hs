@@ -16,7 +16,8 @@ import           Ivory.Language.Module
 
 data Formula p where
     Formula :: Transport t
-            => { model      ::  Uint8
+            => { name       ::  String
+               , model      ::  Uint8
                , version    :: (Uint8,  Uint8)
                , shouldInit ::  IBool
                , transport  ::  WriterT Context (Reader (Domain p t)) t
