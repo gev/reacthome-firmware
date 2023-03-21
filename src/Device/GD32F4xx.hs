@@ -69,6 +69,58 @@ data GD32F4xx = GD32F4xx
     , in_pb_14  :: InputW
     , in_pb_15  :: InputW
 
+    , in_pc_0   :: InputW
+    , in_pc_1   :: InputW
+    , in_pc_2   :: InputW
+    , in_pc_3   :: InputW
+    , in_pc_4   :: InputW
+    , in_pc_5   :: InputW
+    , in_pc_6   :: InputW
+    , in_pc_7   :: InputW
+    , in_pc_8   :: InputW
+    , in_pc_9   :: InputW
+    , in_pc_10  :: InputW
+    , in_pc_11  :: InputW
+    , in_pc_12  :: InputW
+    , in_pc_13  :: InputW
+    , in_pc_14  :: InputW
+    , in_pc_15  :: InputW
+
+    , in_pd_0   :: InputW
+    , in_pd_1   :: InputW
+    , in_pd_2   :: InputW
+    , in_pd_3   :: InputW
+    , in_pd_4   :: InputW
+    , in_pd_5   :: InputW
+    , in_pd_6   :: InputW
+    , in_pd_7   :: InputW
+    , in_pd_8   :: InputW
+    , in_pd_9   :: InputW
+    , in_pd_10  :: InputW
+    , in_pd_11  :: InputW
+    , in_pd_12  :: InputW
+    , in_pd_13  :: InputW
+    , in_pd_14  :: InputW
+    , in_pd_15  :: InputW
+
+    , in_pe_0   :: InputW
+    , in_pe_1   :: InputW
+    , in_pe_2   :: InputW
+    , in_pe_3   :: InputW
+    , in_pe_4   :: InputW
+    , in_pe_5   :: InputW
+    , in_pe_6   :: InputW
+    , in_pe_7   :: InputW
+    , in_pe_8   :: InputW
+    , in_pe_9   :: InputW
+    , in_pe_10  :: InputW
+    , in_pe_11  :: InputW
+    , in_pe_12  :: InputW
+    , in_pe_13  :: InputW
+    , in_pe_14  :: InputW
+    , in_pe_15  :: InputW
+    
+
     , out_pa_0  :: OutputW
     , out_pa_1  :: OutputW
     , out_pa_2  :: OutputW
@@ -102,6 +154,57 @@ data GD32F4xx = GD32F4xx
     , out_pb_13 :: OutputW
     , out_pb_14 :: OutputW
     , out_pb_15 :: OutputW
+
+    , out_pc_0  :: OutputW
+    , out_pc_1  :: OutputW
+    , out_pc_2  :: OutputW
+    , out_pc_3  :: OutputW
+    , out_pc_4  :: OutputW
+    , out_pc_5  :: OutputW
+    , out_pc_6  :: OutputW
+    , out_pc_7  :: OutputW
+    , out_pc_8  :: OutputW
+    , out_pc_9  :: OutputW
+    , out_pc_10 :: OutputW
+    , out_pc_11 :: OutputW
+    , out_pc_12 :: OutputW
+    , out_pc_13 :: OutputW
+    , out_pc_14 :: OutputW
+    , out_pc_15 :: OutputW
+
+    , out_pd_0  :: OutputW
+    , out_pd_1  :: OutputW
+    , out_pd_2  :: OutputW
+    , out_pd_3  :: OutputW
+    , out_pd_4  :: OutputW
+    , out_pd_5  :: OutputW
+    , out_pd_6  :: OutputW
+    , out_pd_7  :: OutputW
+    , out_pd_8  :: OutputW
+    , out_pd_9  :: OutputW
+    , out_pd_10 :: OutputW
+    , out_pd_11 :: OutputW
+    , out_pd_12 :: OutputW
+    , out_pd_13 :: OutputW
+    , out_pd_14 :: OutputW
+    , out_pd_15 :: OutputW
+
+    , out_pe_0  :: OutputW
+    , out_pe_1  :: OutputW
+    , out_pe_2  :: OutputW
+    , out_pe_3  :: OutputW
+    , out_pe_4  :: OutputW
+    , out_pe_5  :: OutputW
+    , out_pe_6  :: OutputW
+    , out_pe_7  :: OutputW
+    , out_pe_8  :: OutputW
+    , out_pe_9  :: OutputW
+    , out_pe_10 :: OutputW
+    , out_pe_11 :: OutputW
+    , out_pe_12 :: OutputW
+    , out_pe_13 :: OutputW
+    , out_pe_14 :: OutputW
+    , out_pe_15 :: OutputW
     }
 
 
@@ -151,6 +254,57 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
     , in_pb_14  = input pb_14
     , in_pb_15  = input pb_15
 
+    , in_pc_0   = input pc_0
+    , in_pc_1   = input pc_1
+    , in_pc_2   = input pc_2
+    , in_pc_3   = input pc_3
+    , in_pc_4   = input pc_4
+    , in_pc_5   = input pc_5
+    , in_pc_6   = input pc_6
+    , in_pc_7   = input pc_7
+    , in_pc_8   = input pc_8
+    , in_pc_9   = input pc_9
+    , in_pc_10  = input pc_10
+    , in_pc_11  = input pc_11
+    , in_pc_12  = input pc_12
+    , in_pc_13  = input pc_13
+    , in_pc_14  = input pc_14
+    , in_pc_15  = input pc_15
+
+    , in_pd_0   = input pd_0
+    , in_pd_1   = input pd_1
+    , in_pd_2   = input pd_2
+    , in_pd_3   = input pd_3
+    , in_pd_4   = input pd_4
+    , in_pd_5   = input pd_5
+    , in_pd_6   = input pd_6
+    , in_pd_7   = input pd_7
+    , in_pd_8   = input pd_8
+    , in_pd_9   = input pd_9
+    , in_pd_10  = input pd_10
+    , in_pd_11  = input pd_11
+    , in_pd_12  = input pd_12
+    , in_pd_13  = input pd_13
+    , in_pd_14  = input pd_14
+    , in_pd_15  = input pd_15
+
+    , in_pe_0   = input pe_0
+    , in_pe_1   = input pe_1
+    , in_pe_2   = input pe_2
+    , in_pe_3   = input pe_3
+    , in_pe_4   = input pe_4
+    , in_pe_5   = input pe_5
+    , in_pe_6   = input pe_6
+    , in_pe_7   = input pe_7
+    , in_pe_8   = input pe_8
+    , in_pe_9   = input pe_9
+    , in_pe_10  = input pe_10
+    , in_pe_11  = input pe_11
+    , in_pe_12  = input pe_12
+    , in_pe_13  = input pe_13
+    , in_pe_14  = input pe_14
+    , in_pe_15  = input pe_15
+
     , out_pa_0  = output pa_0
     , out_pa_1  = output pa_1
     , out_pa_2  = output pa_2
@@ -184,6 +338,57 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
     , out_pb_13 = output pb_13
     , out_pb_14 = output pb_14
     , out_pb_15 = output pb_15
+
+    , out_pc_0  = output pc_0
+    , out_pc_1  = output pc_1
+    , out_pc_2  = output pc_2
+    , out_pc_3  = output pc_3
+    , out_pc_4  = output pc_4
+    , out_pc_5  = output pc_5
+    , out_pc_6  = output pc_6
+    , out_pc_7  = output pc_7
+    , out_pc_8  = output pc_8
+    , out_pc_9  = output pc_9
+    , out_pc_10 = output pc_10
+    , out_pc_11 = output pc_11
+    , out_pc_12 = output pc_12
+    , out_pc_13 = output pc_13
+    , out_pc_14 = output pc_14
+    , out_pc_15 = output pc_15
+
+    , out_pd_0  = output pd_0
+    , out_pd_1  = output pd_1
+    , out_pd_2  = output pd_2
+    , out_pd_3  = output pd_3
+    , out_pd_4  = output pd_4
+    , out_pd_5  = output pd_5
+    , out_pd_6  = output pd_6
+    , out_pd_7  = output pd_7
+    , out_pd_8  = output pd_8
+    , out_pd_9  = output pd_9
+    , out_pd_10 = output pd_10
+    , out_pd_11 = output pd_11
+    , out_pd_12 = output pd_12
+    , out_pd_13 = output pd_13
+    , out_pd_14 = output pd_14
+    , out_pd_15 = output pd_15
+
+    , out_pe_0  = output pe_0
+    , out_pe_1  = output pe_1
+    , out_pe_2  = output pe_2
+    , out_pe_3  = output pe_3
+    , out_pe_4  = output pe_4
+    , out_pe_5  = output pe_5
+    , out_pe_6  = output pe_6
+    , out_pe_7  = output pe_7
+    , out_pe_8  = output pe_8
+    , out_pe_9  = output pe_9
+    , out_pe_10 = output pe_10
+    , out_pe_11 = output pe_11
+    , out_pe_12 = output pe_12
+    , out_pe_13 = output pe_13
+    , out_pe_14 = output pe_14
+    , out_pe_15 = output pe_15
     }
 
 
