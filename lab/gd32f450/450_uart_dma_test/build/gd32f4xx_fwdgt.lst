@@ -1,0 +1,552 @@
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 2
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"gd32f4xx_fwdgt.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.fwdgt_write_enable,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.global	fwdgt_write_enable
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	fwdgt_write_enable:
+  26              	.LFB116:
+  27              		.file 1 "lib/GD32F4xx/Source/gd32f4xx_fwdgt.c"
+   1:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** /*!
+   2:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \file    gd32f4xx_fwdgt.c
+   3:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \brief   FWDGT driver
+   4:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+   5:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \version 2016-08-15, V1.0.0, firmware for GD32F4xx
+   6:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \version 2018-12-12, V2.0.0, firmware for GD32F4xx
+   7:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \version 2020-09-30, V2.1.0, firmware for GD32F4xx
+   8:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+   9:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** */
+  10:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+  11:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** /*
+  12:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     Copyright (c) 2022, GigaDevice Semiconductor Inc.
+  13:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+  14:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     Redistribution and use in source and binary forms, with or without modification, 
+  15:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** are permitted provided that the following conditions are met:
+  16:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+  17:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     1. Redistributions of source code must retain the above copyright notice, this 
+  18:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****        list of conditions and the following disclaimer.
+  19:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     2. Redistributions in binary form must reproduce the above copyright notice, 
+  20:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****        this list of conditions and the following disclaimer in the documentation 
+  21:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****        and/or other materials provided with the distribution.
+  22:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     3. Neither the name of the copyright holder nor the names of its contributors 
+  23:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****        may be used to endorse or promote products derived from this software without 
+  24:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****        specific prior written permission.
+  25:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+  26:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+  27:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+  28:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+  29:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
+  30:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  31:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s 			page 2
+
+
+  32:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
+  33:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  34:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+  35:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** OF SUCH DAMAGE.
+  36:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** */
+  37:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+  38:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** #include "gd32f4xx_fwdgt.h"
+  39:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+  40:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** /* write value to FWDGT_CTL_CMD bit field */
+  41:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** #define CTL_CMD(regval)             (BITS(0,15) & ((uint32_t)(regval) << 0))
+  42:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** /* write value to FWDGT_RLD_RLD bit field */
+  43:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** #define RLD_RLD(regval)             (BITS(0,11) & ((uint32_t)(regval) << 0))
+  44:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+  45:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** /*!
+  46:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \brief    enable write access to FWDGT_PSC and FWDGT_RLD
+  47:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \param[in]  none
+  48:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \param[out] none
+  49:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \retval     none
+  50:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** */
+  51:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** void fwdgt_write_enable(void)
+  52:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** {
+  28              		.loc 1 52 1 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  32              		@ link register save eliminated.
+  53:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     FWDGT_CTL = FWDGT_WRITEACCESS_ENABLE;
+  33              		.loc 1 53 5 view .LVU1
+  34              		.loc 1 53 15 is_stmt 0 view .LVU2
+  35 0000 024B     		ldr	r3, .L3
+  36 0002 45F25552 		movw	r2, #21845
+  37 0006 1A60     		str	r2, [r3]
+  54:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** }
+  38              		.loc 1 54 1 view .LVU3
+  39 0008 7047     		bx	lr
+  40              	.L4:
+  41 000a 00BF     		.align	2
+  42              	.L3:
+  43 000c 00300040 		.word	1073754112
+  44              		.cfi_endproc
+  45              	.LFE116:
+  47              		.section	.text.fwdgt_write_disable,"ax",%progbits
+  48              		.align	1
+  49              		.p2align 2,,3
+  50              		.global	fwdgt_write_disable
+  51              		.syntax unified
+  52              		.thumb
+  53              		.thumb_func
+  55              	fwdgt_write_disable:
+  56              	.LFB117:
+  55:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+  56:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** /*!
+  57:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \brief    disable write access to FWDGT_PSC and FWDGT_RLD
+  58:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \param[in]  none
+  59:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \param[out] none
+  60:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \retval     none
+  61:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** */
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s 			page 3
+
+
+  62:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** void fwdgt_write_disable(void)
+  63:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** {
+  57              		.loc 1 63 1 is_stmt 1 view -0
+  58              		.cfi_startproc
+  59              		@ args = 0, pretend = 0, frame = 0
+  60              		@ frame_needed = 0, uses_anonymous_args = 0
+  61              		@ link register save eliminated.
+  64:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     FWDGT_CTL = FWDGT_WRITEACCESS_DISABLE;
+  62              		.loc 1 64 5 view .LVU5
+  63              		.loc 1 64 15 is_stmt 0 view .LVU6
+  64 0000 014B     		ldr	r3, .L6
+  65 0002 0022     		movs	r2, #0
+  66 0004 1A60     		str	r2, [r3]
+  65:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** }
+  67              		.loc 1 65 1 view .LVU7
+  68 0006 7047     		bx	lr
+  69              	.L7:
+  70              		.align	2
+  71              	.L6:
+  72 0008 00300040 		.word	1073754112
+  73              		.cfi_endproc
+  74              	.LFE117:
+  76              		.section	.text.fwdgt_enable,"ax",%progbits
+  77              		.align	1
+  78              		.p2align 2,,3
+  79              		.global	fwdgt_enable
+  80              		.syntax unified
+  81              		.thumb
+  82              		.thumb_func
+  84              	fwdgt_enable:
+  85              	.LFB118:
+  66:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+  67:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** /*!
+  68:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \brief    start the free watchdog timer counter
+  69:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \param[in]  none
+  70:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \param[out] none
+  71:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \retval     none
+  72:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** */
+  73:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** void fwdgt_enable(void)
+  74:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** {
+  86              		.loc 1 74 1 is_stmt 1 view -0
+  87              		.cfi_startproc
+  88              		@ args = 0, pretend = 0, frame = 0
+  89              		@ frame_needed = 0, uses_anonymous_args = 0
+  90              		@ link register save eliminated.
+  75:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     FWDGT_CTL = FWDGT_KEY_ENABLE;
+  91              		.loc 1 75 5 view .LVU9
+  92              		.loc 1 75 15 is_stmt 0 view .LVU10
+  93 0000 024B     		ldr	r3, .L9
+  94 0002 4CF6CC42 		movw	r2, #52428
+  95 0006 1A60     		str	r2, [r3]
+  76:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** }
+  96              		.loc 1 76 1 view .LVU11
+  97 0008 7047     		bx	lr
+  98              	.L10:
+  99 000a 00BF     		.align	2
+ 100              	.L9:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s 			page 4
+
+
+ 101 000c 00300040 		.word	1073754112
+ 102              		.cfi_endproc
+ 103              	.LFE118:
+ 105              		.section	.text.fwdgt_counter_reload,"ax",%progbits
+ 106              		.align	1
+ 107              		.p2align 2,,3
+ 108              		.global	fwdgt_counter_reload
+ 109              		.syntax unified
+ 110              		.thumb
+ 111              		.thumb_func
+ 113              	fwdgt_counter_reload:
+ 114              	.LFB119:
+  77:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+  78:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** /*!
+  79:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \brief    reload the counter of FWDGT
+  80:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \param[in]  none
+  81:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \param[out] none
+  82:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \retval     none
+  83:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** */
+  84:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** void fwdgt_counter_reload(void)
+  85:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** {
+ 115              		.loc 1 85 1 is_stmt 1 view -0
+ 116              		.cfi_startproc
+ 117              		@ args = 0, pretend = 0, frame = 0
+ 118              		@ frame_needed = 0, uses_anonymous_args = 0
+ 119              		@ link register save eliminated.
+  86:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     FWDGT_CTL = FWDGT_KEY_RELOAD;
+ 120              		.loc 1 86 5 view .LVU13
+ 121              		.loc 1 86 15 is_stmt 0 view .LVU14
+ 122 0000 024B     		ldr	r3, .L12
+ 123 0002 4AF6AA22 		movw	r2, #43690
+ 124 0006 1A60     		str	r2, [r3]
+  87:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** }
+ 125              		.loc 1 87 1 view .LVU15
+ 126 0008 7047     		bx	lr
+ 127              	.L13:
+ 128 000a 00BF     		.align	2
+ 129              	.L12:
+ 130 000c 00300040 		.word	1073754112
+ 131              		.cfi_endproc
+ 132              	.LFE119:
+ 134              		.section	.text.fwdgt_config,"ax",%progbits
+ 135              		.align	1
+ 136              		.p2align 2,,3
+ 137              		.global	fwdgt_config
+ 138              		.syntax unified
+ 139              		.thumb
+ 140              		.thumb_func
+ 142              	fwdgt_config:
+ 143              	.LVL0:
+ 144              	.LFB120:
+  88:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+  89:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** /*!
+  90:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \brief    configure counter reload value, and prescaler divider value
+  91:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \param[in]  reload_value: specify reload value(0x0000 - 0x0FFF)
+  92:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \param[in]  prescaler_div: FWDGT prescaler value
+  93:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****                 only one parameter can be selected which is shown as below:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s 			page 5
+
+
+  94:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****       \arg        FWDGT_PSC_DIV4: FWDGT prescaler set to 4
+  95:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****       \arg        FWDGT_PSC_DIV8: FWDGT prescaler set to 8
+  96:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****       \arg        FWDGT_PSC_DIV16: FWDGT prescaler set to 16
+  97:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****       \arg        FWDGT_PSC_DIV32: FWDGT prescaler set to 32
+  98:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****       \arg        FWDGT_PSC_DIV64: FWDGT prescaler set to 64
+  99:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****       \arg        FWDGT_PSC_DIV128: FWDGT prescaler set to 128
+ 100:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****       \arg        FWDGT_PSC_DIV256: FWDGT prescaler set to 256
+ 101:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \param[out] none
+ 102:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \retval     ErrStatus: ERROR or SUCCESS
+ 103:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** */
+ 104:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** ErrStatus fwdgt_config(uint16_t reload_value, uint8_t prescaler_div)
+ 105:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** {
+ 145              		.loc 1 105 1 is_stmt 1 view -0
+ 146              		.cfi_startproc
+ 147              		@ args = 0, pretend = 0, frame = 0
+ 148              		@ frame_needed = 0, uses_anonymous_args = 0
+ 149              		@ link register save eliminated.
+ 106:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     uint32_t timeout = FWDGT_PSC_TIMEOUT;
+ 150              		.loc 1 106 5 view .LVU17
+ 107:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     uint32_t flag_status = RESET;
+ 151              		.loc 1 107 5 view .LVU18
+ 108:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****   
+ 109:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     /* enable write access to FWDGT_PSC,and FWDGT_RLD */
+ 110:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     FWDGT_CTL = FWDGT_WRITEACCESS_ENABLE;
+ 152              		.loc 1 110 5 view .LVU19
+ 105:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     uint32_t timeout = FWDGT_PSC_TIMEOUT;
+ 153              		.loc 1 105 1 is_stmt 0 view .LVU20
+ 154 0000 10B4     		push	{r4}
+ 155              	.LCFI0:
+ 156              		.cfi_def_cfa_offset 4
+ 157              		.cfi_offset 4, -4
+ 158              		.loc 1 110 15 view .LVU21
+ 159 0002 154C     		ldr	r4, .L31
+ 111:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****   
+ 112:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     /* wait until the PUD flag to be reset */
+ 113:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     do{
+ 114:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****        flag_status = FWDGT_STAT & FWDGT_STAT_PUD;
+ 160              		.loc 1 114 20 view .LVU22
+ 161 0004 154A     		ldr	r2, .L31+4
+ 110:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****   
+ 162              		.loc 1 110 15 view .LVU23
+ 163 0006 45F25553 		movw	r3, #21845
+ 164 000a 2360     		str	r3, [r4]
+ 113:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****        flag_status = FWDGT_STAT & FWDGT_STAT_PUD;
+ 165              		.loc 1 113 5 is_stmt 1 view .LVU24
+ 166              		.loc 1 114 8 view .LVU25
+ 167              		.loc 1 114 22 is_stmt 0 view .LVU26
+ 168 000c E368     		ldr	r3, [r4, #12]
+ 169              		.loc 1 114 20 view .LVU27
+ 170 000e 03F00103 		and	r3, r3, #1
+ 171              	.LVL1:
+ 115:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     }while((--timeout > 0U) && ((uint32_t)RESET != flag_status));
+ 172              		.loc 1 115 11 is_stmt 1 view .LVU28
+ 173              	.L15:
+ 113:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****        flag_status = FWDGT_STAT & FWDGT_STAT_PUD;
+ 174              		.loc 1 113 5 discriminator 1 view .LVU29
+ 114:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     }while((--timeout > 0U) && ((uint32_t)RESET != flag_status));
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s 			page 6
+
+
+ 175              		.loc 1 114 8 discriminator 1 view .LVU30
+ 176              		.loc 1 115 29 is_stmt 0 discriminator 1 view .LVU31
+ 177 0012 43B1     		cbz	r3, .L18
+ 114:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     }while((--timeout > 0U) && ((uint32_t)RESET != flag_status));
+ 178              		.loc 1 114 22 discriminator 2 view .LVU32
+ 179 0014 E368     		ldr	r3, [r4, #12]
+ 180              	.LVL2:
+ 181              		.loc 1 115 5 discriminator 2 view .LVU33
+ 182 0016 013A     		subs	r2, r2, #1
+ 114:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     }while((--timeout > 0U) && ((uint32_t)RESET != flag_status));
+ 183              		.loc 1 114 20 discriminator 2 view .LVU34
+ 184 0018 03F00103 		and	r3, r3, #1
+ 185              	.LVL3:
+ 186              		.loc 1 115 11 is_stmt 1 discriminator 2 view .LVU35
+ 187              		.loc 1 115 5 is_stmt 0 discriminator 2 view .LVU36
+ 188 001c F9D1     		bne	.L15
+ 116:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     
+ 117:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     if ((uint32_t)RESET != flag_status){
+ 189              		.loc 1 117 5 is_stmt 1 view .LVU37
+ 190              		.loc 1 117 8 is_stmt 0 view .LVU38
+ 191 001e 13B1     		cbz	r3, .L18
+ 192              	.L24:
+ 118:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****         return ERROR;
+ 193              		.loc 1 118 16 view .LVU39
+ 194 0020 0020     		movs	r0, #0
+ 195              	.LVL4:
+ 119:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     }
+ 120:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+ 121:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     /* configure FWDGT */
+ 122:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     FWDGT_PSC = (uint32_t)prescaler_div;
+ 123:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+ 124:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     timeout = FWDGT_RLD_TIMEOUT;
+ 125:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     /* wait until the RUD flag to be reset */
+ 126:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     do{
+ 127:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****        flag_status = FWDGT_STAT & FWDGT_STAT_RUD;
+ 128:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     }while((--timeout > 0U) && ((uint32_t)RESET != flag_status));
+ 129:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****    
+ 130:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     if ((uint32_t)RESET != flag_status){
+ 131:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****         return ERROR;
+ 132:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     }
+ 133:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     
+ 134:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     FWDGT_RLD = RLD_RLD(reload_value);
+ 135:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     
+ 136:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     /* reload the counter */
+ 137:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     FWDGT_CTL = FWDGT_KEY_RELOAD;
+ 138:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+ 139:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     return SUCCESS;
+ 140:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** }
+ 196              		.loc 1 140 1 view .LVU40
+ 197 0022 10BC     		pop	{r4}
+ 198              	.LCFI1:
+ 199              		.cfi_remember_state
+ 200              		.cfi_restore 4
+ 201              		.cfi_def_cfa_offset 0
+ 202 0024 7047     		bx	lr
+ 203              	.LVL5:
+ 204              	.L18:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s 			page 7
+
+
+ 205              	.LCFI2:
+ 206              		.cfi_restore_state
+ 122:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+ 207              		.loc 1 122 5 is_stmt 1 view .LVU41
+ 122:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+ 208              		.loc 1 122 15 is_stmt 0 view .LVU42
+ 209 0026 0C4C     		ldr	r4, .L31
+ 127:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     }while((--timeout > 0U) && ((uint32_t)RESET != flag_status));
+ 210              		.loc 1 127 20 view .LVU43
+ 211 0028 0C4A     		ldr	r2, .L31+4
+ 122:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+ 212              		.loc 1 122 15 view .LVU44
+ 213 002a 6160     		str	r1, [r4, #4]
+ 124:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     /* wait until the RUD flag to be reset */
+ 214              		.loc 1 124 5 is_stmt 1 view .LVU45
+ 215              	.LVL6:
+ 126:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****        flag_status = FWDGT_STAT & FWDGT_STAT_RUD;
+ 216              		.loc 1 126 5 view .LVU46
+ 127:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     }while((--timeout > 0U) && ((uint32_t)RESET != flag_status));
+ 217              		.loc 1 127 8 view .LVU47
+ 127:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     }while((--timeout > 0U) && ((uint32_t)RESET != flag_status));
+ 218              		.loc 1 127 22 is_stmt 0 view .LVU48
+ 219 002c E368     		ldr	r3, [r4, #12]
+ 220              	.LVL7:
+ 127:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     }while((--timeout > 0U) && ((uint32_t)RESET != flag_status));
+ 221              		.loc 1 127 20 view .LVU49
+ 222 002e 03F00203 		and	r3, r3, #2
+ 223              	.LVL8:
+ 128:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****    
+ 224              		.loc 1 128 11 is_stmt 1 view .LVU50
+ 225              	.L20:
+ 126:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****        flag_status = FWDGT_STAT & FWDGT_STAT_RUD;
+ 226              		.loc 1 126 5 discriminator 1 view .LVU51
+ 127:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     }while((--timeout > 0U) && ((uint32_t)RESET != flag_status));
+ 227              		.loc 1 127 8 discriminator 1 view .LVU52
+ 128:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****    
+ 228              		.loc 1 128 29 is_stmt 0 discriminator 1 view .LVU53
+ 229 0032 33B1     		cbz	r3, .L23
+ 127:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     }while((--timeout > 0U) && ((uint32_t)RESET != flag_status));
+ 230              		.loc 1 127 22 discriminator 2 view .LVU54
+ 231 0034 E368     		ldr	r3, [r4, #12]
+ 232              	.LVL9:
+ 128:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****    
+ 233              		.loc 1 128 5 discriminator 2 view .LVU55
+ 234 0036 013A     		subs	r2, r2, #1
+ 127:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     }while((--timeout > 0U) && ((uint32_t)RESET != flag_status));
+ 235              		.loc 1 127 20 discriminator 2 view .LVU56
+ 236 0038 03F00203 		and	r3, r3, #2
+ 237              	.LVL10:
+ 128:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****    
+ 238              		.loc 1 128 11 is_stmt 1 discriminator 2 view .LVU57
+ 128:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****    
+ 239              		.loc 1 128 5 is_stmt 0 discriminator 2 view .LVU58
+ 240 003c F9D1     		bne	.L20
+ 130:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****         return ERROR;
+ 241              		.loc 1 130 5 is_stmt 1 view .LVU59
+ 130:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****         return ERROR;
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s 			page 8
+
+
+ 242              		.loc 1 130 8 is_stmt 0 view .LVU60
+ 243 003e 002B     		cmp	r3, #0
+ 244 0040 EED1     		bne	.L24
+ 245              	.L23:
+ 134:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     
+ 246              		.loc 1 134 5 is_stmt 1 view .LVU61
+ 134:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     
+ 247              		.loc 1 134 15 is_stmt 0 view .LVU62
+ 248 0042 054B     		ldr	r3, .L31
+ 249              	.LVL11:
+ 250              		.loc 1 140 1 view .LVU63
+ 251 0044 10BC     		pop	{r4}
+ 252              	.LCFI3:
+ 253              		.cfi_restore 4
+ 254              		.cfi_def_cfa_offset 0
+ 134:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     
+ 255              		.loc 1 134 17 view .LVU64
+ 256 0046 C0F30B00 		ubfx	r0, r0, #0, #12
+ 257              	.LVL12:
+ 137:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+ 258              		.loc 1 137 15 view .LVU65
+ 259 004a 4AF6AA22 		movw	r2, #43690
+ 134:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     
+ 260              		.loc 1 134 15 view .LVU66
+ 261 004e 9860     		str	r0, [r3, #8]
+ 137:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+ 262              		.loc 1 137 5 is_stmt 1 view .LVU67
+ 139:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** }
+ 263              		.loc 1 139 12 is_stmt 0 view .LVU68
+ 264 0050 0120     		movs	r0, #1
+ 137:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+ 265              		.loc 1 137 15 view .LVU69
+ 266 0052 1A60     		str	r2, [r3]
+ 139:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** }
+ 267              		.loc 1 139 5 is_stmt 1 view .LVU70
+ 268              		.loc 1 140 1 is_stmt 0 view .LVU71
+ 269 0054 7047     		bx	lr
+ 270              	.L32:
+ 271 0056 00BF     		.align	2
+ 272              	.L31:
+ 273 0058 00300040 		.word	1073754112
+ 274 005c FEFF0F00 		.word	1048574
+ 275              		.cfi_endproc
+ 276              	.LFE120:
+ 278              		.section	.text.fwdgt_flag_get,"ax",%progbits
+ 279              		.align	1
+ 280              		.p2align 2,,3
+ 281              		.global	fwdgt_flag_get
+ 282              		.syntax unified
+ 283              		.thumb
+ 284              		.thumb_func
+ 286              	fwdgt_flag_get:
+ 287              	.LVL13:
+ 288              	.LFB121:
+ 141:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+ 142:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** /*!
+ 143:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \brief    get flag state of FWDGT
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s 			page 9
+
+
+ 144:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \param[in]  flag: flag to get 
+ 145:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****                 only one parameter can be selected which is shown as below:
+ 146:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****       \arg        FWDGT_STAT_PUD: a write operation to FWDGT_PSC register is on going
+ 147:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****       \arg        FWDGT_STAT_RUD: a write operation to FWDGT_RLD register is on going
+ 148:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \param[out] none
+ 149:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     \retval     FlagStatus: SET or RESET
+ 150:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** */
+ 151:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** FlagStatus fwdgt_flag_get(uint16_t flag)
+ 152:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** {
+ 289              		.loc 1 152 1 is_stmt 1 view -0
+ 290              		.cfi_startproc
+ 291              		@ args = 0, pretend = 0, frame = 0
+ 292              		@ frame_needed = 0, uses_anonymous_args = 0
+ 293              		@ link register save eliminated.
+ 153:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     if(RESET != (FWDGT_STAT & flag)){
+ 294              		.loc 1 153 5 view .LVU73
+ 295              		.loc 1 153 18 is_stmt 0 view .LVU74
+ 296 0000 034B     		ldr	r3, .L34
+ 297 0002 DB68     		ldr	r3, [r3, #12]
+ 298              		.loc 1 153 7 view .LVU75
+ 299 0004 1842     		tst	r0, r3
+ 154:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****         return SET;
+ 155:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****   }
+ 156:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** 
+ 157:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c ****     return RESET;
+ 158:lib/GD32F4xx/Source/gd32f4xx_fwdgt.c **** }
+ 300              		.loc 1 158 1 view .LVU76
+ 301 0006 14BF     		ite	ne
+ 302 0008 0120     		movne	r0, #1
+ 303              	.LVL14:
+ 304              		.loc 1 158 1 view .LVU77
+ 305 000a 0020     		moveq	r0, #0
+ 306 000c 7047     		bx	lr
+ 307              	.L35:
+ 308 000e 00BF     		.align	2
+ 309              	.L34:
+ 310 0010 00300040 		.word	1073754112
+ 311              		.cfi_endproc
+ 312              	.LFE121:
+ 314              		.text
+ 315              	.Letext0:
+ 316              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
+ 317              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
+ 318              		.file 4 "lib/CMSIS/GD/GD32F4xx/Include/gd32f4xx.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s 			page 10
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 gd32f4xx_fwdgt.c
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s:18     .text.fwdgt_write_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s:25     .text.fwdgt_write_enable:0000000000000000 fwdgt_write_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s:43     .text.fwdgt_write_enable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s:48     .text.fwdgt_write_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s:55     .text.fwdgt_write_disable:0000000000000000 fwdgt_write_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s:72     .text.fwdgt_write_disable:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s:77     .text.fwdgt_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s:84     .text.fwdgt_enable:0000000000000000 fwdgt_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s:101    .text.fwdgt_enable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s:106    .text.fwdgt_counter_reload:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s:113    .text.fwdgt_counter_reload:0000000000000000 fwdgt_counter_reload
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s:130    .text.fwdgt_counter_reload:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s:135    .text.fwdgt_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s:142    .text.fwdgt_config:0000000000000000 fwdgt_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s:273    .text.fwdgt_config:0000000000000058 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s:279    .text.fwdgt_flag_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s:286    .text.fwdgt_flag_get:0000000000000000 fwdgt_flag_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccyOldxS.s:310    .text.fwdgt_flag_get:0000000000000010 $d
+
+NO UNDEFINED SYMBOLS

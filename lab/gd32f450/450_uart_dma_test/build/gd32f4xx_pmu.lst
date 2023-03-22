@@ -1,0 +1,2109 @@
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 2
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"gd32f4xx_pmu.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.pmu_deinit,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.global	pmu_deinit
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	pmu_deinit:
+  26              	.LFB116:
+  27              		.file 1 "lib/GD32F4xx/Source/gd32f4xx_pmu.c"
+   1:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+   2:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \file    gd32f4xx_pmu.c
+   3:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief   PMU driver
+   4:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+   5:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \version 2016-08-15, V1.0.0, firmware for GD32F4xx
+   6:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \version 2018-12-12, V2.0.0, firmware for GD32F4xx
+   7:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \version 2020-09-30, V2.1.0, firmware for GD32F4xx
+   8:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+   9:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+  10:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+  11:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*
+  12:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     Copyright (c) 2022, GigaDevice Semiconductor Inc.
+  13:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+  14:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     Redistribution and use in source and binary forms, with or without modification,
+  15:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** are permitted provided that the following conditions are met:
+  16:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+  17:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     1. Redistributions of source code must retain the above copyright notice, this
+  18:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****        list of conditions and the following disclaimer.
+  19:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     2. Redistributions in binary form must reproduce the above copyright notice,
+  20:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****        this list of conditions and the following disclaimer in the documentation
+  21:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****        and/or other materials provided with the distribution.
+  22:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     3. Neither the name of the copyright holder nor the names of its contributors
+  23:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****        may be used to endorse or promote products derived from this software without
+  24:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****        specific prior written permission.
+  25:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+  26:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  27:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  28:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  29:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  30:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+  31:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 2
+
+
+  32:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+  33:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  34:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+  35:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** OF SUCH DAMAGE.
+  36:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+  37:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+  38:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** #include "gd32f4xx_pmu.h"
+  39:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** #include "core_cm4.h"
+  40:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+  41:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+  42:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      reset PMU registers
+  43:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  none
+  44:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+  45:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+  46:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+  47:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_deinit(void)
+  48:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+  28              		.loc 1 48 1 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  49:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* reset PMU */
+  50:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     rcu_periph_reset_enable(RCU_PMURST);
+  32              		.loc 1 50 5 view .LVU1
+  48:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* reset PMU */
+  33              		.loc 1 48 1 is_stmt 0 view .LVU2
+  34 0000 08B5     		push	{r3, lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 8
+  37              		.cfi_offset 3, -8
+  38              		.cfi_offset 14, -4
+  39              		.loc 1 50 5 view .LVU3
+  40 0002 40F61C00 		movw	r0, #2076
+  41 0006 FFF7FEFF 		bl	rcu_periph_reset_enable
+  42              	.LVL0:
+  51:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     rcu_periph_reset_disable(RCU_PMURST);
+  43              		.loc 1 51 5 is_stmt 1 view .LVU4
+  52:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+  44              		.loc 1 52 1 is_stmt 0 view .LVU5
+  45 000a BDE80840 		pop	{r3, lr}
+  46              	.LCFI1:
+  47              		.cfi_restore 14
+  48              		.cfi_restore 3
+  49              		.cfi_def_cfa_offset 0
+  51:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     rcu_periph_reset_disable(RCU_PMURST);
+  50              		.loc 1 51 5 view .LVU6
+  51 000e 40F61C00 		movw	r0, #2076
+  52 0012 FFF7FEBF 		b	rcu_periph_reset_disable
+  53              	.LVL1:
+  54              		.cfi_endproc
+  55              	.LFE116:
+  57 0016 00BF     		.section	.text.pmu_lvd_select,"ax",%progbits
+  58              		.align	1
+  59              		.p2align 2,,3
+  60              		.global	pmu_lvd_select
+  61              		.syntax unified
+  62              		.thumb
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 3
+
+
+  63              		.thumb_func
+  65              	pmu_lvd_select:
+  66              	.LVL2:
+  67              	.LFB117:
+  53:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+  54:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+  55:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      select low voltage detector threshold
+  56:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  lvdt_n:
+  57:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_LVDT_0: voltage threshold is 2.1V
+  58:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_LVDT_1: voltage threshold is 2.3V
+  59:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_LVDT_2: voltage threshold is 2.4V
+  60:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_LVDT_3: voltage threshold is 2.6V
+  61:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_LVDT_4: voltage threshold is 2.7V
+  62:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_LVDT_5: voltage threshold is 2.9V
+  63:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_LVDT_6: voltage threshold is 3.0V
+  64:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_LVDT_7: voltage threshold is 3.1V
+  65:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+  66:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+  67:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+  68:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_lvd_select(uint32_t lvdt_n)
+  69:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+  68              		.loc 1 69 1 is_stmt 1 view -0
+  69              		.cfi_startproc
+  70              		@ args = 0, pretend = 0, frame = 0
+  71              		@ frame_needed = 0, uses_anonymous_args = 0
+  72              		@ link register save eliminated.
+  70:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* disable LVD */
+  71:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL &= ~PMU_CTL_LVDEN;
+  73              		.loc 1 71 5 view .LVU8
+  74              		.loc 1 71 13 is_stmt 0 view .LVU9
+  75 0000 084B     		ldr	r3, .L5
+  76 0002 1968     		ldr	r1, [r3]
+  77 0004 21F01001 		bic	r1, r1, #16
+  78 0008 1960     		str	r1, [r3]
+  72:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* clear LVDT bits */
+  73:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL &= ~PMU_CTL_LVDT;
+  79              		.loc 1 73 5 is_stmt 1 view .LVU10
+  80              		.loc 1 73 13 is_stmt 0 view .LVU11
+  81 000a 1968     		ldr	r1, [r3]
+  82 000c 21F0E001 		bic	r1, r1, #224
+  83 0010 1960     		str	r1, [r3]
+  74:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* set LVDT bits according to pmu_lvdt_n */
+  75:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= lvdt_n;
+  84              		.loc 1 75 5 is_stmt 1 view .LVU12
+  85              		.loc 1 75 13 is_stmt 0 view .LVU13
+  86 0012 1A68     		ldr	r2, [r3]
+  87 0014 0243     		orrs	r2, r2, r0
+  88 0016 1A60     		str	r2, [r3]
+  76:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* enable LVD */
+  77:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= PMU_CTL_LVDEN;
+  89              		.loc 1 77 5 is_stmt 1 view .LVU14
+  90              		.loc 1 77 13 is_stmt 0 view .LVU15
+  91 0018 1A68     		ldr	r2, [r3]
+  92 001a 42F01002 		orr	r2, r2, #16
+  93 001e 1A60     		str	r2, [r3]
+  78:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+  94              		.loc 1 78 1 view .LVU16
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 4
+
+
+  95 0020 7047     		bx	lr
+  96              	.L6:
+  97 0022 00BF     		.align	2
+  98              	.L5:
+  99 0024 00700040 		.word	1073770496
+ 100              		.cfi_endproc
+ 101              	.LFE117:
+ 103              		.section	.text.pmu_lvd_disable,"ax",%progbits
+ 104              		.align	1
+ 105              		.p2align 2,,3
+ 106              		.global	pmu_lvd_disable
+ 107              		.syntax unified
+ 108              		.thumb
+ 109              		.thumb_func
+ 111              	pmu_lvd_disable:
+ 112              	.LFB118:
+  79:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+  80:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+  81:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      disable PMU lvd
+  82:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  none
+  83:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+  84:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+  85:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+  86:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_lvd_disable(void)
+  87:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 113              		.loc 1 87 1 is_stmt 1 view -0
+ 114              		.cfi_startproc
+ 115              		@ args = 0, pretend = 0, frame = 0
+ 116              		@ frame_needed = 0, uses_anonymous_args = 0
+ 117              		@ link register save eliminated.
+  88:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* disable LVD */
+  89:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL &= ~PMU_CTL_LVDEN;
+ 118              		.loc 1 89 5 view .LVU18
+ 119              		.loc 1 89 13 is_stmt 0 view .LVU19
+ 120 0000 024A     		ldr	r2, .L8
+ 121 0002 1368     		ldr	r3, [r2]
+ 122 0004 23F01003 		bic	r3, r3, #16
+ 123 0008 1360     		str	r3, [r2]
+  90:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 124              		.loc 1 90 1 view .LVU20
+ 125 000a 7047     		bx	lr
+ 126              	.L9:
+ 127              		.align	2
+ 128              	.L8:
+ 129 000c 00700040 		.word	1073770496
+ 130              		.cfi_endproc
+ 131              	.LFE118:
+ 133              		.section	.text.pmu_ldo_output_select,"ax",%progbits
+ 134              		.align	1
+ 135              		.p2align 2,,3
+ 136              		.global	pmu_ldo_output_select
+ 137              		.syntax unified
+ 138              		.thumb
+ 139              		.thumb_func
+ 141              	pmu_ldo_output_select:
+ 142              	.LVL3:
+ 143              	.LFB119:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 5
+
+
+  91:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+  92:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+  93:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      select LDO output voltage
+  94:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****                 this bit set by software when the main PLL closed, before closing PLL, change the s
+  95:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  ldo_output:
+  96:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_LDOVS_LOW: low-driver mode enable in deep-sleep mode
+  97:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_LDOVS_MID: mid-driver mode disable in deep-sleep mode
+  98:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_LDOVS_HIGH: high-driver mode disable in deep-sleep mode
+  99:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+ 100:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+ 101:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+ 102:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_ldo_output_select(uint32_t ldo_output)
+ 103:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 144              		.loc 1 103 1 is_stmt 1 view -0
+ 145              		.cfi_startproc
+ 146              		@ args = 0, pretend = 0, frame = 0
+ 147              		@ frame_needed = 0, uses_anonymous_args = 0
+ 148              		@ link register save eliminated.
+ 104:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL &= ~PMU_CTL_LDOVS;
+ 149              		.loc 1 104 5 view .LVU22
+ 150              		.loc 1 104 13 is_stmt 0 view .LVU23
+ 151 0000 044B     		ldr	r3, .L11
+ 152 0002 1968     		ldr	r1, [r3]
+ 153 0004 21F44041 		bic	r1, r1, #49152
+ 154 0008 1960     		str	r1, [r3]
+ 105:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= ldo_output;
+ 155              		.loc 1 105 5 is_stmt 1 view .LVU24
+ 156              		.loc 1 105 13 is_stmt 0 view .LVU25
+ 157 000a 1A68     		ldr	r2, [r3]
+ 158 000c 0243     		orrs	r2, r2, r0
+ 159 000e 1A60     		str	r2, [r3]
+ 106:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 160              		.loc 1 106 1 view .LVU26
+ 161 0010 7047     		bx	lr
+ 162              	.L12:
+ 163 0012 00BF     		.align	2
+ 164              	.L11:
+ 165 0014 00700040 		.word	1073770496
+ 166              		.cfi_endproc
+ 167              	.LFE119:
+ 169              		.section	.text.pmu_highdriver_mode_enable,"ax",%progbits
+ 170              		.align	1
+ 171              		.p2align 2,,3
+ 172              		.global	pmu_highdriver_mode_enable
+ 173              		.syntax unified
+ 174              		.thumb
+ 175              		.thumb_func
+ 177              	pmu_highdriver_mode_enable:
+ 178              	.LFB120:
+ 107:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 108:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+ 109:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      enable high-driver mode
+ 110:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****                 this bit set by software only when IRC16M or HXTAL used as system clock
+ 111:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  none
+ 112:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+ 113:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+ 114:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 6
+
+
+ 115:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_highdriver_mode_enable(void)
+ 116:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 179              		.loc 1 116 1 is_stmt 1 view -0
+ 180              		.cfi_startproc
+ 181              		@ args = 0, pretend = 0, frame = 0
+ 182              		@ frame_needed = 0, uses_anonymous_args = 0
+ 183              		@ link register save eliminated.
+ 117:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= PMU_CTL_HDEN;
+ 184              		.loc 1 117 5 view .LVU28
+ 185              		.loc 1 117 13 is_stmt 0 view .LVU29
+ 186 0000 024A     		ldr	r2, .L14
+ 187 0002 1368     		ldr	r3, [r2]
+ 188 0004 43F48033 		orr	r3, r3, #65536
+ 189 0008 1360     		str	r3, [r2]
+ 118:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 190              		.loc 1 118 1 view .LVU30
+ 191 000a 7047     		bx	lr
+ 192              	.L15:
+ 193              		.align	2
+ 194              	.L14:
+ 195 000c 00700040 		.word	1073770496
+ 196              		.cfi_endproc
+ 197              	.LFE120:
+ 199              		.section	.text.pmu_highdriver_mode_disable,"ax",%progbits
+ 200              		.align	1
+ 201              		.p2align 2,,3
+ 202              		.global	pmu_highdriver_mode_disable
+ 203              		.syntax unified
+ 204              		.thumb
+ 205              		.thumb_func
+ 207              	pmu_highdriver_mode_disable:
+ 208              	.LFB121:
+ 119:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 120:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+ 121:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      disable high-driver mode
+ 122:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  none
+ 123:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+ 124:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+ 125:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+ 126:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_highdriver_mode_disable(void)
+ 127:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 209              		.loc 1 127 1 is_stmt 1 view -0
+ 210              		.cfi_startproc
+ 211              		@ args = 0, pretend = 0, frame = 0
+ 212              		@ frame_needed = 0, uses_anonymous_args = 0
+ 213              		@ link register save eliminated.
+ 128:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL &= ~PMU_CTL_HDEN;
+ 214              		.loc 1 128 5 view .LVU32
+ 215              		.loc 1 128 13 is_stmt 0 view .LVU33
+ 216 0000 024A     		ldr	r2, .L17
+ 217 0002 1368     		ldr	r3, [r2]
+ 218 0004 23F48033 		bic	r3, r3, #65536
+ 219 0008 1360     		str	r3, [r2]
+ 129:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 220              		.loc 1 129 1 view .LVU34
+ 221 000a 7047     		bx	lr
+ 222              	.L18:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 7
+
+
+ 223              		.align	2
+ 224              	.L17:
+ 225 000c 00700040 		.word	1073770496
+ 226              		.cfi_endproc
+ 227              	.LFE121:
+ 229              		.section	.text.pmu_highdriver_switch_select,"ax",%progbits
+ 230              		.align	1
+ 231              		.p2align 2,,3
+ 232              		.global	pmu_highdriver_switch_select
+ 233              		.syntax unified
+ 234              		.thumb
+ 235              		.thumb_func
+ 237              	pmu_highdriver_switch_select:
+ 238              	.LVL4:
+ 239              	.LFB122:
+ 130:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 131:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+ 132:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      switch high-driver mode
+ 133:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****                 this bit set by software only when IRC16M or HXTAL used as system clock
+ 134:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  highdr_switch:
+ 135:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_HIGHDR_SWITCH_NONE: disable high-driver mode switch
+ 136:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_HIGHDR_SWITCH_EN: enable high-driver mode switch
+ 137:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+ 138:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+ 139:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+ 140:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_highdriver_switch_select(uint32_t highdr_switch)
+ 141:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 240              		.loc 1 141 1 is_stmt 1 view -0
+ 241              		.cfi_startproc
+ 242              		@ args = 0, pretend = 0, frame = 0
+ 243              		@ frame_needed = 0, uses_anonymous_args = 0
+ 244              		@ link register save eliminated.
+ 142:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* wait for HDRF flag set */
+ 143:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     while(SET != pmu_flag_get(PMU_FLAG_HDRF)) {
+ 245              		.loc 1 143 5 view .LVU36
+ 246              	.LBB22:
+ 247              	.LBB23:
+ 144:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     }
+ 145:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL &= ~PMU_CTL_HDS;
+ 146:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= highdr_switch;
+ 147:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 148:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 149:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+ 150:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      enable low-driver mode in deep-sleep
+ 151:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  none
+ 152:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+ 153:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+ 154:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+ 155:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_lowdriver_mode_enable(void)
+ 156:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 157:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= PMU_CTL_LDEN;
+ 158:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 159:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 160:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+ 161:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      disable low-driver mode in deep-sleep
+ 162:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  none
+ 163:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 8
+
+
+ 164:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+ 165:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+ 166:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_lowdriver_mode_disable(void)
+ 167:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 168:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL &= ~PMU_CTL_LDEN;
+ 169:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 170:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 171:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+ 172:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      in deep-sleep mode, driver mode when use low power LDO
+ 173:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  mode:
+ 174:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_NORMALDR_LOWPWR:  normal driver when use low power LDO
+ 175:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_LOWDR_LOWPWR:  low-driver mode enabled when LDEN is 11 and use low power LDO
+ 176:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+ 177:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+ 178:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+ 179:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_lowpower_driver_config(uint32_t mode)
+ 180:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 181:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL &= ~PMU_CTL_LDLP;
+ 182:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= mode;
+ 183:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 184:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 185:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+ 186:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      in deep-sleep mode, driver mode when use normal power LDO
+ 187:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  mode:
+ 188:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_NORMALDR_NORMALPWR: normal driver when use normal power LDO
+ 189:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_LOWDR_NORMALPWR: low-driver mode enabled when LDEN is 11 and use normal power
+ 190:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+ 191:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+ 192:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+ 193:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_normalpower_driver_config(uint32_t mode)
+ 194:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 195:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL &= ~PMU_CTL_LDNP;
+ 196:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= mode;
+ 197:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 198:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 199:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+ 200:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      PMU work in sleep mode
+ 201:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  sleepmodecmd:
+ 202:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        WFI_CMD: use WFI command
+ 203:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        WFE_CMD: use WFE command
+ 204:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+ 205:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+ 206:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+ 207:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_to_sleepmode(uint8_t sleepmodecmd)
+ 208:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 209:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* clear sleepdeep bit of Cortex-M4 system control register */
+ 210:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     SCB->SCR &= ~((uint32_t)SCB_SCR_SLEEPDEEP_Msk);
+ 211:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 212:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* select WFI or WFE command to enter sleep mode */
+ 213:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     if(WFI_CMD == sleepmodecmd) {
+ 214:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         __WFI();
+ 215:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     } else {
+ 216:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         __WFE();
+ 217:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     }
+ 218:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 219:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 220:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 9
+
+
+ 221:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      PMU work in deep-sleep mode
+ 222:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  ldo
+ 223:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_LDO_NORMAL: LDO normal work when pmu enter deep-sleep mode
+ 224:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_LDO_LOWPOWER: LDO work at low power mode when pmu enter deep-sleep mode
+ 225:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  lowdrive:
+ 226:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****                 only one parameter can be selected which is shown as below:
+ 227:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_LOWDRIVER_DISABLE: Low-driver mode disable in deep-sleep mode
+ 228:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_LOWDRIVER_ENABLE: Low-driver mode enable in deep-sleep mode
+ 229:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  deepsleepmodecmd:
+ 230:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        WFI_CMD: use WFI command
+ 231:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        WFE_CMD: use WFE command
+ 232:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+ 233:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+ 234:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+ 235:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_to_deepsleepmode(uint32_t ldo, uint32_t lowdrive, uint8_t deepsleepmodecmd)
+ 236:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 237:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     static uint32_t reg_snap[4];
+ 238:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* clear stbmod and ldolp bits */
+ 239:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL &= ~((uint32_t)(PMU_CTL_STBMOD | PMU_CTL_LDOLP | PMU_CTL_LDEN | PMU_CTL_LDNP | PMU_CTL_
+ 240:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 241:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* set ldolp bit according to pmu_ldo */
+ 242:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= ldo;
+ 243:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 244:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* configure low drive mode in deep-sleep mode */
+ 245:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     if(PMU_LOWDRIVER_ENABLE == lowdrive) {
+ 246:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         if(PMU_LDO_NORMAL == ldo) {
+ 247:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****             PMU_CTL |= (uint32_t)(PMU_CTL_LDEN | PMU_CTL_LDNP);
+ 248:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         } else {
+ 249:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****             PMU_CTL |= (uint32_t)(PMU_CTL_LDEN | PMU_CTL_LDLP);
+ 250:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         }
+ 251:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     }
+ 252:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* set sleepdeep bit of Cortex-M4 system control register */
+ 253:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
+ 254:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 255:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     reg_snap[0] = REG32(0xE000E010U);
+ 256:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     reg_snap[1] = REG32(0xE000E100U);
+ 257:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     reg_snap[2] = REG32(0xE000E104U);
+ 258:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     reg_snap[3] = REG32(0xE000E108U);
+ 259:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 260:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E010U) &= 0x00010004U;
+ 261:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E180U)  = 0XFF7FF831U;
+ 262:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E184U)  = 0XBFFFF8FFU;
+ 263:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E188U)  = 0xFFFFEFFFU;
+ 264:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 265:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* select WFI or WFE command to enter deep-sleep mode */
+ 266:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     if(WFI_CMD == deepsleepmodecmd) {
+ 267:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         __WFI();
+ 268:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     } else {
+ 269:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         __SEV();
+ 270:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         __WFE();
+ 271:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         __WFE();
+ 272:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     }
+ 273:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 274:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E010U) = reg_snap[0];
+ 275:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E100U) = reg_snap[1];
+ 276:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E104U) = reg_snap[2];
+ 277:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E108U) = reg_snap[3];
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 10
+
+
+ 278:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 279:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* reset sleepdeep bit of Cortex-M4 system control register */
+ 280:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     SCB->SCR &= ~((uint32_t)SCB_SCR_SLEEPDEEP_Msk);
+ 281:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 282:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 283:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+ 284:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      pmu work in standby mode
+ 285:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  standbymodecmd:
+ 286:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        WFI_CMD: use WFI command
+ 287:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        WFE_CMD: use WFE command
+ 288:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+ 289:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+ 290:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+ 291:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_to_standbymode(uint8_t standbymodecmd)
+ 292:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 293:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* set sleepdeep bit of Cortex-M4 system control register */
+ 294:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
+ 295:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 296:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* set stbmod bit */
+ 297:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= PMU_CTL_STBMOD;
+ 298:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 299:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* reset wakeup flag */
+ 300:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= PMU_CTL_WURST;
+ 301:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 302:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* select WFI or WFE command to enter standby mode */
+ 303:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     if(WFI_CMD == standbymodecmd) {
+ 304:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         __WFI();
+ 305:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     } else {
+ 306:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         __WFE();
+ 307:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         __WFE();
+ 308:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     }
+ 309:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 310:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 311:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+ 312:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      enable PMU wakeup pin
+ 313:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  none
+ 314:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+ 315:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+ 316:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+ 317:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_wakeup_pin_enable(void)
+ 318:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 319:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CS |= PMU_CS_WUPEN;
+ 320:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 321:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 322:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+ 323:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      disable PMU wakeup pin
+ 324:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  none
+ 325:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+ 326:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+ 327:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+ 328:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_wakeup_pin_disable(void)
+ 329:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 330:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CS &= ~PMU_CS_WUPEN;
+ 331:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 332:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 333:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+ 334:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      backup SRAM LDO on
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 11
+
+
+ 335:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  bkp_ldo:
+ 336:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_BLDOON_OFF: backup SRAM LDO closed
+ 337:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_BLDOON_ON: open the backup SRAM LDO
+ 338:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+ 339:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+ 340:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+ 341:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_backup_ldo_config(uint32_t bkp_ldo)
+ 342:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 343:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CS &= ~PMU_CS_BLDOON;
+ 344:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CS |= bkp_ldo;
+ 345:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 346:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 347:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+ 348:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      enable write access to the registers in backup domain
+ 349:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  none
+ 350:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+ 351:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+ 352:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+ 353:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_backup_write_enable(void)
+ 354:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 355:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= PMU_CTL_BKPWEN;
+ 356:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 357:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 358:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+ 359:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      disable write access to the registers in backup domain
+ 360:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  none
+ 361:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+ 362:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+ 363:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+ 364:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_backup_write_disable(void)
+ 365:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 366:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL &= ~PMU_CTL_BKPWEN;
+ 367:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 368:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 369:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+ 370:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      get flag state
+ 371:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  flag:
+ 372:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_FLAG_WAKEUP: wakeup flag
+ 373:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_FLAG_STANDBY: standby flag
+ 374:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_FLAG_LVD: lvd flag
+ 375:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_FLAG_BLDORF: backup SRAM LDO ready flag
+ 376:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_FLAG_LDOVSRF: LDO voltage select ready flag
+ 377:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_FLAG_HDRF: high-driver ready flag
+ 378:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_FLAG_HDSRF: high-driver switch ready flag
+ 379:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_FLAG_LDRF: low-driver mode ready flag
+ 380:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+ 381:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     FlagStatus: SET or RESET
+ 382:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+ 383:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** FlagStatus pmu_flag_get(uint32_t flag)
+ 384:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 385:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     if(PMU_CS & flag) {
+ 248              		.loc 1 385 8 is_stmt 0 view .LVU37
+ 249 0000 054B     		ldr	r3, .L23
+ 250              	.L20:
+ 251              	.LBE23:
+ 252              	.LBE22:
+ 144:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     }
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 12
+
+
+ 253              		.loc 1 144 5 is_stmt 1 discriminator 1 view .LVU38
+ 143:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     }
+ 254              		.loc 1 143 10 discriminator 1 view .LVU39
+ 255              	.LVL5:
+ 256              	.LBB25:
+ 257              	.LBI22:
+ 383:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 258              		.loc 1 383 12 discriminator 1 view .LVU40
+ 259              	.LBB24:
+ 260              		.loc 1 385 5 discriminator 1 view .LVU41
+ 261              		.loc 1 385 8 is_stmt 0 discriminator 1 view .LVU42
+ 262 0002 5A68     		ldr	r2, [r3, #4]
+ 263              		.loc 1 385 7 discriminator 1 view .LVU43
+ 264 0004 D203     		lsls	r2, r2, #15
+ 265 0006 FCD5     		bpl	.L20
+ 266              	.LVL6:
+ 267              		.loc 1 385 7 discriminator 1 view .LVU44
+ 268              	.LBE24:
+ 269              	.LBE25:
+ 145:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= highdr_switch;
+ 270              		.loc 1 145 5 is_stmt 1 view .LVU45
+ 145:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= highdr_switch;
+ 271              		.loc 1 145 13 is_stmt 0 view .LVU46
+ 272 0008 1A68     		ldr	r2, [r3]
+ 273 000a 22F40032 		bic	r2, r2, #131072
+ 274 000e 1A60     		str	r2, [r3]
+ 146:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 275              		.loc 1 146 5 is_stmt 1 view .LVU47
+ 146:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 276              		.loc 1 146 13 is_stmt 0 view .LVU48
+ 277 0010 1A68     		ldr	r2, [r3]
+ 278 0012 1043     		orrs	r0, r0, r2
+ 279              	.LVL7:
+ 146:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 280              		.loc 1 146 13 view .LVU49
+ 281 0014 1860     		str	r0, [r3]
+ 147:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 282              		.loc 1 147 1 view .LVU50
+ 283 0016 7047     		bx	lr
+ 284              	.L24:
+ 285              		.align	2
+ 286              	.L23:
+ 287 0018 00700040 		.word	1073770496
+ 288              		.cfi_endproc
+ 289              	.LFE122:
+ 291              		.section	.text.pmu_lowdriver_mode_enable,"ax",%progbits
+ 292              		.align	1
+ 293              		.p2align 2,,3
+ 294              		.global	pmu_lowdriver_mode_enable
+ 295              		.syntax unified
+ 296              		.thumb
+ 297              		.thumb_func
+ 299              	pmu_lowdriver_mode_enable:
+ 300              	.LFB123:
+ 156:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= PMU_CTL_LDEN;
+ 301              		.loc 1 156 1 is_stmt 1 view -0
+ 302              		.cfi_startproc
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 13
+
+
+ 303              		@ args = 0, pretend = 0, frame = 0
+ 304              		@ frame_needed = 0, uses_anonymous_args = 0
+ 305              		@ link register save eliminated.
+ 157:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 306              		.loc 1 157 5 view .LVU52
+ 157:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 307              		.loc 1 157 13 is_stmt 0 view .LVU53
+ 308 0000 024A     		ldr	r2, .L26
+ 309 0002 1368     		ldr	r3, [r2]
+ 310 0004 43F44023 		orr	r3, r3, #786432
+ 311 0008 1360     		str	r3, [r2]
+ 158:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 312              		.loc 1 158 1 view .LVU54
+ 313 000a 7047     		bx	lr
+ 314              	.L27:
+ 315              		.align	2
+ 316              	.L26:
+ 317 000c 00700040 		.word	1073770496
+ 318              		.cfi_endproc
+ 319              	.LFE123:
+ 321              		.section	.text.pmu_lowdriver_mode_disable,"ax",%progbits
+ 322              		.align	1
+ 323              		.p2align 2,,3
+ 324              		.global	pmu_lowdriver_mode_disable
+ 325              		.syntax unified
+ 326              		.thumb
+ 327              		.thumb_func
+ 329              	pmu_lowdriver_mode_disable:
+ 330              	.LFB124:
+ 167:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL &= ~PMU_CTL_LDEN;
+ 331              		.loc 1 167 1 is_stmt 1 view -0
+ 332              		.cfi_startproc
+ 333              		@ args = 0, pretend = 0, frame = 0
+ 334              		@ frame_needed = 0, uses_anonymous_args = 0
+ 335              		@ link register save eliminated.
+ 168:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 336              		.loc 1 168 5 view .LVU56
+ 168:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 337              		.loc 1 168 13 is_stmt 0 view .LVU57
+ 338 0000 024A     		ldr	r2, .L29
+ 339 0002 1368     		ldr	r3, [r2]
+ 340 0004 23F44023 		bic	r3, r3, #786432
+ 341 0008 1360     		str	r3, [r2]
+ 169:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 342              		.loc 1 169 1 view .LVU58
+ 343 000a 7047     		bx	lr
+ 344              	.L30:
+ 345              		.align	2
+ 346              	.L29:
+ 347 000c 00700040 		.word	1073770496
+ 348              		.cfi_endproc
+ 349              	.LFE124:
+ 351              		.section	.text.pmu_lowpower_driver_config,"ax",%progbits
+ 352              		.align	1
+ 353              		.p2align 2,,3
+ 354              		.global	pmu_lowpower_driver_config
+ 355              		.syntax unified
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 14
+
+
+ 356              		.thumb
+ 357              		.thumb_func
+ 359              	pmu_lowpower_driver_config:
+ 360              	.LVL8:
+ 361              	.LFB125:
+ 180:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL &= ~PMU_CTL_LDLP;
+ 362              		.loc 1 180 1 is_stmt 1 view -0
+ 363              		.cfi_startproc
+ 364              		@ args = 0, pretend = 0, frame = 0
+ 365              		@ frame_needed = 0, uses_anonymous_args = 0
+ 366              		@ link register save eliminated.
+ 181:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= mode;
+ 367              		.loc 1 181 5 view .LVU60
+ 181:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= mode;
+ 368              		.loc 1 181 13 is_stmt 0 view .LVU61
+ 369 0000 044B     		ldr	r3, .L32
+ 370 0002 1968     		ldr	r1, [r3]
+ 371 0004 21F48061 		bic	r1, r1, #1024
+ 372 0008 1960     		str	r1, [r3]
+ 182:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 373              		.loc 1 182 5 is_stmt 1 view .LVU62
+ 182:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 374              		.loc 1 182 13 is_stmt 0 view .LVU63
+ 375 000a 1A68     		ldr	r2, [r3]
+ 376 000c 0243     		orrs	r2, r2, r0
+ 377 000e 1A60     		str	r2, [r3]
+ 183:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 378              		.loc 1 183 1 view .LVU64
+ 379 0010 7047     		bx	lr
+ 380              	.L33:
+ 381 0012 00BF     		.align	2
+ 382              	.L32:
+ 383 0014 00700040 		.word	1073770496
+ 384              		.cfi_endproc
+ 385              	.LFE125:
+ 387              		.section	.text.pmu_normalpower_driver_config,"ax",%progbits
+ 388              		.align	1
+ 389              		.p2align 2,,3
+ 390              		.global	pmu_normalpower_driver_config
+ 391              		.syntax unified
+ 392              		.thumb
+ 393              		.thumb_func
+ 395              	pmu_normalpower_driver_config:
+ 396              	.LVL9:
+ 397              	.LFB126:
+ 194:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL &= ~PMU_CTL_LDNP;
+ 398              		.loc 1 194 1 is_stmt 1 view -0
+ 399              		.cfi_startproc
+ 400              		@ args = 0, pretend = 0, frame = 0
+ 401              		@ frame_needed = 0, uses_anonymous_args = 0
+ 402              		@ link register save eliminated.
+ 195:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= mode;
+ 403              		.loc 1 195 5 view .LVU66
+ 195:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= mode;
+ 404              		.loc 1 195 13 is_stmt 0 view .LVU67
+ 405 0000 044B     		ldr	r3, .L35
+ 406 0002 1968     		ldr	r1, [r3]
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 15
+
+
+ 407 0004 21F40061 		bic	r1, r1, #2048
+ 408 0008 1960     		str	r1, [r3]
+ 196:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 409              		.loc 1 196 5 is_stmt 1 view .LVU68
+ 196:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 410              		.loc 1 196 13 is_stmt 0 view .LVU69
+ 411 000a 1A68     		ldr	r2, [r3]
+ 412 000c 0243     		orrs	r2, r2, r0
+ 413 000e 1A60     		str	r2, [r3]
+ 197:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 414              		.loc 1 197 1 view .LVU70
+ 415 0010 7047     		bx	lr
+ 416              	.L36:
+ 417 0012 00BF     		.align	2
+ 418              	.L35:
+ 419 0014 00700040 		.word	1073770496
+ 420              		.cfi_endproc
+ 421              	.LFE126:
+ 423              		.section	.text.pmu_to_sleepmode,"ax",%progbits
+ 424              		.align	1
+ 425              		.p2align 2,,3
+ 426              		.global	pmu_to_sleepmode
+ 427              		.syntax unified
+ 428              		.thumb
+ 429              		.thumb_func
+ 431              	pmu_to_sleepmode:
+ 432              	.LVL10:
+ 433              	.LFB127:
+ 208:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* clear sleepdeep bit of Cortex-M4 system control register */
+ 434              		.loc 1 208 1 is_stmt 1 view -0
+ 435              		.cfi_startproc
+ 436              		@ args = 0, pretend = 0, frame = 0
+ 437              		@ frame_needed = 0, uses_anonymous_args = 0
+ 438              		@ link register save eliminated.
+ 210:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 439              		.loc 1 210 5 view .LVU72
+ 210:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 440              		.loc 1 210 14 is_stmt 0 view .LVU73
+ 441 0000 044A     		ldr	r2, .L40
+ 442 0002 1369     		ldr	r3, [r2, #16]
+ 443 0004 23F00403 		bic	r3, r3, #4
+ 444 0008 1361     		str	r3, [r2, #16]
+ 213:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         __WFI();
+ 445              		.loc 1 213 5 is_stmt 1 view .LVU74
+ 213:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         __WFI();
+ 446              		.loc 1 213 7 is_stmt 0 view .LVU75
+ 447 000a 08B9     		cbnz	r0, .L38
+ 214:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     } else {
+ 448              		.loc 1 214 9 is_stmt 1 view .LVU76
+ 449              	.LBB26:
+ 450              	.LBI26:
+ 451              		.file 2 "lib/CMSIS/core_cmInstr.h"
+   1:lib/CMSIS/core_cmInstr.h **** /**************************************************************************//**
+   2:lib/CMSIS/core_cmInstr.h ****  * @file     core_cmInstr.h
+   3:lib/CMSIS/core_cmInstr.h ****  * @brief    CMSIS Cortex-M Core Instruction Access Header File
+   4:lib/CMSIS/core_cmInstr.h ****  * @version  V3.01
+   5:lib/CMSIS/core_cmInstr.h ****  * @date     06. March 2012
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 16
+
+
+   6:lib/CMSIS/core_cmInstr.h ****  *
+   7:lib/CMSIS/core_cmInstr.h ****  * @note
+   8:lib/CMSIS/core_cmInstr.h ****  * Copyright (C) 2009-2012 ARM Limited. All rights reserved.
+   9:lib/CMSIS/core_cmInstr.h ****  *
+  10:lib/CMSIS/core_cmInstr.h ****  * @par
+  11:lib/CMSIS/core_cmInstr.h ****  * ARM Limited (ARM) is supplying this software for use with Cortex-M
+  12:lib/CMSIS/core_cmInstr.h ****  * processor based microcontrollers.  This file can be freely distributed
+  13:lib/CMSIS/core_cmInstr.h ****  * within development tools that are supporting such ARM based processors.
+  14:lib/CMSIS/core_cmInstr.h ****  *
+  15:lib/CMSIS/core_cmInstr.h ****  * @par
+  16:lib/CMSIS/core_cmInstr.h ****  * THIS SOFTWARE IS PROVIDED "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED
+  17:lib/CMSIS/core_cmInstr.h ****  * OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF
+  18:lib/CMSIS/core_cmInstr.h ****  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE APPLY TO THIS SOFTWARE.
+  19:lib/CMSIS/core_cmInstr.h ****  * ARM SHALL NOT, IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL, OR
+  20:lib/CMSIS/core_cmInstr.h ****  * CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
+  21:lib/CMSIS/core_cmInstr.h ****  *
+  22:lib/CMSIS/core_cmInstr.h ****  ******************************************************************************/
+  23:lib/CMSIS/core_cmInstr.h **** 
+  24:lib/CMSIS/core_cmInstr.h **** #ifndef __CORE_CMINSTR_H
+  25:lib/CMSIS/core_cmInstr.h **** #define __CORE_CMINSTR_H
+  26:lib/CMSIS/core_cmInstr.h **** 
+  27:lib/CMSIS/core_cmInstr.h **** 
+  28:lib/CMSIS/core_cmInstr.h **** /* ##########################  Core Instruction Access  ######################### */
+  29:lib/CMSIS/core_cmInstr.h **** /** \defgroup CMSIS_Core_InstructionInterface CMSIS Core Instruction Interface
+  30:lib/CMSIS/core_cmInstr.h ****   Access to dedicated instructions
+  31:lib/CMSIS/core_cmInstr.h ****   @{
+  32:lib/CMSIS/core_cmInstr.h **** */
+  33:lib/CMSIS/core_cmInstr.h **** 
+  34:lib/CMSIS/core_cmInstr.h **** #if   defined ( __CC_ARM ) /*------------------RealView Compiler -----------------*/
+  35:lib/CMSIS/core_cmInstr.h **** /* ARM armcc specific functions */
+  36:lib/CMSIS/core_cmInstr.h **** 
+  37:lib/CMSIS/core_cmInstr.h **** #if (__ARMCC_VERSION < 400677)
+  38:lib/CMSIS/core_cmInstr.h ****   #error "Please use ARM Compiler Toolchain V4.0.677 or later!"
+  39:lib/CMSIS/core_cmInstr.h **** #endif
+  40:lib/CMSIS/core_cmInstr.h **** 
+  41:lib/CMSIS/core_cmInstr.h **** 
+  42:lib/CMSIS/core_cmInstr.h **** /** \brief  No Operation
+  43:lib/CMSIS/core_cmInstr.h **** 
+  44:lib/CMSIS/core_cmInstr.h ****     No Operation does nothing. This instruction can be used for code alignment purposes.
+  45:lib/CMSIS/core_cmInstr.h ****  */
+  46:lib/CMSIS/core_cmInstr.h **** #define __NOP                             __nop
+  47:lib/CMSIS/core_cmInstr.h **** 
+  48:lib/CMSIS/core_cmInstr.h **** 
+  49:lib/CMSIS/core_cmInstr.h **** /** \brief  Wait For Interrupt
+  50:lib/CMSIS/core_cmInstr.h **** 
+  51:lib/CMSIS/core_cmInstr.h ****     Wait For Interrupt is a hint instruction that suspends execution
+  52:lib/CMSIS/core_cmInstr.h ****     until one of a number of events occurs.
+  53:lib/CMSIS/core_cmInstr.h ****  */
+  54:lib/CMSIS/core_cmInstr.h **** #define __WFI                             __wfi
+  55:lib/CMSIS/core_cmInstr.h **** 
+  56:lib/CMSIS/core_cmInstr.h **** 
+  57:lib/CMSIS/core_cmInstr.h **** /** \brief  Wait For Event
+  58:lib/CMSIS/core_cmInstr.h **** 
+  59:lib/CMSIS/core_cmInstr.h ****     Wait For Event is a hint instruction that permits the processor to enter
+  60:lib/CMSIS/core_cmInstr.h ****     a low-power state until one of a number of events occurs.
+  61:lib/CMSIS/core_cmInstr.h ****  */
+  62:lib/CMSIS/core_cmInstr.h **** #define __WFE                             __wfe
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 17
+
+
+  63:lib/CMSIS/core_cmInstr.h **** 
+  64:lib/CMSIS/core_cmInstr.h **** 
+  65:lib/CMSIS/core_cmInstr.h **** /** \brief  Send Event
+  66:lib/CMSIS/core_cmInstr.h **** 
+  67:lib/CMSIS/core_cmInstr.h ****     Send Event is a hint instruction. It causes an event to be signaled to the CPU.
+  68:lib/CMSIS/core_cmInstr.h ****  */
+  69:lib/CMSIS/core_cmInstr.h **** #define __SEV                             __sev
+  70:lib/CMSIS/core_cmInstr.h **** 
+  71:lib/CMSIS/core_cmInstr.h **** 
+  72:lib/CMSIS/core_cmInstr.h **** /** \brief  Instruction Synchronization Barrier
+  73:lib/CMSIS/core_cmInstr.h **** 
+  74:lib/CMSIS/core_cmInstr.h ****     Instruction Synchronization Barrier flushes the pipeline in the processor,
+  75:lib/CMSIS/core_cmInstr.h ****     so that all instructions following the ISB are fetched from cache or
+  76:lib/CMSIS/core_cmInstr.h ****     memory, after the instruction has been completed.
+  77:lib/CMSIS/core_cmInstr.h ****  */
+  78:lib/CMSIS/core_cmInstr.h **** #define __ISB()                           __isb(0xF)
+  79:lib/CMSIS/core_cmInstr.h **** 
+  80:lib/CMSIS/core_cmInstr.h **** 
+  81:lib/CMSIS/core_cmInstr.h **** /** \brief  Data Synchronization Barrier
+  82:lib/CMSIS/core_cmInstr.h **** 
+  83:lib/CMSIS/core_cmInstr.h ****     This function acts as a special kind of Data Memory Barrier.
+  84:lib/CMSIS/core_cmInstr.h ****     It completes when all explicit memory accesses before this instruction complete.
+  85:lib/CMSIS/core_cmInstr.h ****  */
+  86:lib/CMSIS/core_cmInstr.h **** #define __DSB()                           __dsb(0xF)
+  87:lib/CMSIS/core_cmInstr.h **** 
+  88:lib/CMSIS/core_cmInstr.h **** 
+  89:lib/CMSIS/core_cmInstr.h **** /** \brief  Data Memory Barrier
+  90:lib/CMSIS/core_cmInstr.h **** 
+  91:lib/CMSIS/core_cmInstr.h ****     This function ensures the apparent order of the explicit memory operations before
+  92:lib/CMSIS/core_cmInstr.h ****     and after the instruction, without ensuring their completion.
+  93:lib/CMSIS/core_cmInstr.h ****  */
+  94:lib/CMSIS/core_cmInstr.h **** #define __DMB()                           __dmb(0xF)
+  95:lib/CMSIS/core_cmInstr.h **** 
+  96:lib/CMSIS/core_cmInstr.h **** 
+  97:lib/CMSIS/core_cmInstr.h **** /** \brief  Reverse byte order (32 bit)
+  98:lib/CMSIS/core_cmInstr.h **** 
+  99:lib/CMSIS/core_cmInstr.h ****     This function reverses the byte order in integer value.
+ 100:lib/CMSIS/core_cmInstr.h **** 
+ 101:lib/CMSIS/core_cmInstr.h ****     \param [in]    value  Value to reverse
+ 102:lib/CMSIS/core_cmInstr.h ****     \return               Reversed value
+ 103:lib/CMSIS/core_cmInstr.h ****  */
+ 104:lib/CMSIS/core_cmInstr.h **** #define __REV                             __rev
+ 105:lib/CMSIS/core_cmInstr.h **** 
+ 106:lib/CMSIS/core_cmInstr.h **** 
+ 107:lib/CMSIS/core_cmInstr.h **** /** \brief  Reverse byte order (16 bit)
+ 108:lib/CMSIS/core_cmInstr.h **** 
+ 109:lib/CMSIS/core_cmInstr.h ****     This function reverses the byte order in two unsigned short values.
+ 110:lib/CMSIS/core_cmInstr.h **** 
+ 111:lib/CMSIS/core_cmInstr.h ****     \param [in]    value  Value to reverse
+ 112:lib/CMSIS/core_cmInstr.h ****     \return               Reversed value
+ 113:lib/CMSIS/core_cmInstr.h ****  */
+ 114:lib/CMSIS/core_cmInstr.h **** __attribute__((section(".rev16_text"))) __STATIC_INLINE __ASM uint32_t __REV16(uint32_t value)
+ 115:lib/CMSIS/core_cmInstr.h **** {
+ 116:lib/CMSIS/core_cmInstr.h ****   rev16 r0, r0
+ 117:lib/CMSIS/core_cmInstr.h ****   bx lr
+ 118:lib/CMSIS/core_cmInstr.h **** }
+ 119:lib/CMSIS/core_cmInstr.h **** 
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 18
+
+
+ 120:lib/CMSIS/core_cmInstr.h **** 
+ 121:lib/CMSIS/core_cmInstr.h **** /** \brief  Reverse byte order in signed short value
+ 122:lib/CMSIS/core_cmInstr.h **** 
+ 123:lib/CMSIS/core_cmInstr.h ****     This function reverses the byte order in a signed short value with sign extension to integer.
+ 124:lib/CMSIS/core_cmInstr.h **** 
+ 125:lib/CMSIS/core_cmInstr.h ****     \param [in]    value  Value to reverse
+ 126:lib/CMSIS/core_cmInstr.h ****     \return               Reversed value
+ 127:lib/CMSIS/core_cmInstr.h ****  */
+ 128:lib/CMSIS/core_cmInstr.h **** __attribute__((section(".revsh_text"))) __STATIC_INLINE __ASM int32_t __REVSH(int32_t value)
+ 129:lib/CMSIS/core_cmInstr.h **** {
+ 130:lib/CMSIS/core_cmInstr.h ****   revsh r0, r0
+ 131:lib/CMSIS/core_cmInstr.h ****   bx lr
+ 132:lib/CMSIS/core_cmInstr.h **** }
+ 133:lib/CMSIS/core_cmInstr.h **** 
+ 134:lib/CMSIS/core_cmInstr.h **** 
+ 135:lib/CMSIS/core_cmInstr.h **** /** \brief  Rotate Right in unsigned value (32 bit)
+ 136:lib/CMSIS/core_cmInstr.h **** 
+ 137:lib/CMSIS/core_cmInstr.h ****     This function Rotate Right (immediate) provides the value of the contents of a register rotated
+ 138:lib/CMSIS/core_cmInstr.h **** 
+ 139:lib/CMSIS/core_cmInstr.h ****     \param [in]    value  Value to rotate
+ 140:lib/CMSIS/core_cmInstr.h ****     \param [in]    value  Number of Bits to rotate
+ 141:lib/CMSIS/core_cmInstr.h ****     \return               Rotated value
+ 142:lib/CMSIS/core_cmInstr.h ****  */
+ 143:lib/CMSIS/core_cmInstr.h **** #define __ROR                             __ror
+ 144:lib/CMSIS/core_cmInstr.h **** 
+ 145:lib/CMSIS/core_cmInstr.h **** 
+ 146:lib/CMSIS/core_cmInstr.h **** #if       (__CORTEX_M >= 0x03)
+ 147:lib/CMSIS/core_cmInstr.h **** 
+ 148:lib/CMSIS/core_cmInstr.h **** /** \brief  Reverse bit order of value
+ 149:lib/CMSIS/core_cmInstr.h **** 
+ 150:lib/CMSIS/core_cmInstr.h ****     This function reverses the bit order of the given value.
+ 151:lib/CMSIS/core_cmInstr.h **** 
+ 152:lib/CMSIS/core_cmInstr.h ****     \param [in]    value  Value to reverse
+ 153:lib/CMSIS/core_cmInstr.h ****     \return               Reversed value
+ 154:lib/CMSIS/core_cmInstr.h ****  */
+ 155:lib/CMSIS/core_cmInstr.h **** #define __RBIT                            __rbit
+ 156:lib/CMSIS/core_cmInstr.h **** 
+ 157:lib/CMSIS/core_cmInstr.h **** 
+ 158:lib/CMSIS/core_cmInstr.h **** /** \brief  LDR Exclusive (8 bit)
+ 159:lib/CMSIS/core_cmInstr.h **** 
+ 160:lib/CMSIS/core_cmInstr.h ****     This function performs a exclusive LDR command for 8 bit value.
+ 161:lib/CMSIS/core_cmInstr.h **** 
+ 162:lib/CMSIS/core_cmInstr.h ****     \param [in]    ptr  Pointer to data
+ 163:lib/CMSIS/core_cmInstr.h ****     \return             value of type uint8_t at (*ptr)
+ 164:lib/CMSIS/core_cmInstr.h ****  */
+ 165:lib/CMSIS/core_cmInstr.h **** #define __LDREXB(ptr)                     ((uint8_t ) __ldrex(ptr))
+ 166:lib/CMSIS/core_cmInstr.h **** 
+ 167:lib/CMSIS/core_cmInstr.h **** 
+ 168:lib/CMSIS/core_cmInstr.h **** /** \brief  LDR Exclusive (16 bit)
+ 169:lib/CMSIS/core_cmInstr.h **** 
+ 170:lib/CMSIS/core_cmInstr.h ****     This function performs a exclusive LDR command for 16 bit values.
+ 171:lib/CMSIS/core_cmInstr.h **** 
+ 172:lib/CMSIS/core_cmInstr.h ****     \param [in]    ptr  Pointer to data
+ 173:lib/CMSIS/core_cmInstr.h ****     \return        value of type uint16_t at (*ptr)
+ 174:lib/CMSIS/core_cmInstr.h ****  */
+ 175:lib/CMSIS/core_cmInstr.h **** #define __LDREXH(ptr)                     ((uint16_t) __ldrex(ptr))
+ 176:lib/CMSIS/core_cmInstr.h **** 
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 19
+
+
+ 177:lib/CMSIS/core_cmInstr.h **** 
+ 178:lib/CMSIS/core_cmInstr.h **** /** \brief  LDR Exclusive (32 bit)
+ 179:lib/CMSIS/core_cmInstr.h **** 
+ 180:lib/CMSIS/core_cmInstr.h ****     This function performs a exclusive LDR command for 32 bit values.
+ 181:lib/CMSIS/core_cmInstr.h **** 
+ 182:lib/CMSIS/core_cmInstr.h ****     \param [in]    ptr  Pointer to data
+ 183:lib/CMSIS/core_cmInstr.h ****     \return        value of type uint32_t at (*ptr)
+ 184:lib/CMSIS/core_cmInstr.h ****  */
+ 185:lib/CMSIS/core_cmInstr.h **** #define __LDREXW(ptr)                     ((uint32_t ) __ldrex(ptr))
+ 186:lib/CMSIS/core_cmInstr.h **** 
+ 187:lib/CMSIS/core_cmInstr.h **** 
+ 188:lib/CMSIS/core_cmInstr.h **** /** \brief  STR Exclusive (8 bit)
+ 189:lib/CMSIS/core_cmInstr.h **** 
+ 190:lib/CMSIS/core_cmInstr.h ****     This function performs a exclusive STR command for 8 bit values.
+ 191:lib/CMSIS/core_cmInstr.h **** 
+ 192:lib/CMSIS/core_cmInstr.h ****     \param [in]  value  Value to store
+ 193:lib/CMSIS/core_cmInstr.h ****     \param [in]    ptr  Pointer to location
+ 194:lib/CMSIS/core_cmInstr.h ****     \return          0  Function succeeded
+ 195:lib/CMSIS/core_cmInstr.h ****     \return          1  Function failed
+ 196:lib/CMSIS/core_cmInstr.h ****  */
+ 197:lib/CMSIS/core_cmInstr.h **** #define __STREXB(value, ptr)              __strex(value, ptr)
+ 198:lib/CMSIS/core_cmInstr.h **** 
+ 199:lib/CMSIS/core_cmInstr.h **** 
+ 200:lib/CMSIS/core_cmInstr.h **** /** \brief  STR Exclusive (16 bit)
+ 201:lib/CMSIS/core_cmInstr.h **** 
+ 202:lib/CMSIS/core_cmInstr.h ****     This function performs a exclusive STR command for 16 bit values.
+ 203:lib/CMSIS/core_cmInstr.h **** 
+ 204:lib/CMSIS/core_cmInstr.h ****     \param [in]  value  Value to store
+ 205:lib/CMSIS/core_cmInstr.h ****     \param [in]    ptr  Pointer to location
+ 206:lib/CMSIS/core_cmInstr.h ****     \return          0  Function succeeded
+ 207:lib/CMSIS/core_cmInstr.h ****     \return          1  Function failed
+ 208:lib/CMSIS/core_cmInstr.h ****  */
+ 209:lib/CMSIS/core_cmInstr.h **** #define __STREXH(value, ptr)              __strex(value, ptr)
+ 210:lib/CMSIS/core_cmInstr.h **** 
+ 211:lib/CMSIS/core_cmInstr.h **** 
+ 212:lib/CMSIS/core_cmInstr.h **** /** \brief  STR Exclusive (32 bit)
+ 213:lib/CMSIS/core_cmInstr.h **** 
+ 214:lib/CMSIS/core_cmInstr.h ****     This function performs a exclusive STR command for 32 bit values.
+ 215:lib/CMSIS/core_cmInstr.h **** 
+ 216:lib/CMSIS/core_cmInstr.h ****     \param [in]  value  Value to store
+ 217:lib/CMSIS/core_cmInstr.h ****     \param [in]    ptr  Pointer to location
+ 218:lib/CMSIS/core_cmInstr.h ****     \return          0  Function succeeded
+ 219:lib/CMSIS/core_cmInstr.h ****     \return          1  Function failed
+ 220:lib/CMSIS/core_cmInstr.h ****  */
+ 221:lib/CMSIS/core_cmInstr.h **** #define __STREXW(value, ptr)              __strex(value, ptr)
+ 222:lib/CMSIS/core_cmInstr.h **** 
+ 223:lib/CMSIS/core_cmInstr.h **** 
+ 224:lib/CMSIS/core_cmInstr.h **** /** \brief  Remove the exclusive lock
+ 225:lib/CMSIS/core_cmInstr.h **** 
+ 226:lib/CMSIS/core_cmInstr.h ****     This function removes the exclusive lock which is created by LDREX.
+ 227:lib/CMSIS/core_cmInstr.h **** 
+ 228:lib/CMSIS/core_cmInstr.h ****  */
+ 229:lib/CMSIS/core_cmInstr.h **** #define __CLREX                           __clrex
+ 230:lib/CMSIS/core_cmInstr.h **** 
+ 231:lib/CMSIS/core_cmInstr.h **** 
+ 232:lib/CMSIS/core_cmInstr.h **** /** \brief  Signed Saturate
+ 233:lib/CMSIS/core_cmInstr.h **** 
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 20
+
+
+ 234:lib/CMSIS/core_cmInstr.h ****     This function saturates a signed value.
+ 235:lib/CMSIS/core_cmInstr.h **** 
+ 236:lib/CMSIS/core_cmInstr.h ****     \param [in]  value  Value to be saturated
+ 237:lib/CMSIS/core_cmInstr.h ****     \param [in]    sat  Bit position to saturate to (1..32)
+ 238:lib/CMSIS/core_cmInstr.h ****     \return             Saturated value
+ 239:lib/CMSIS/core_cmInstr.h ****  */
+ 240:lib/CMSIS/core_cmInstr.h **** #define __SSAT                            __ssat
+ 241:lib/CMSIS/core_cmInstr.h **** 
+ 242:lib/CMSIS/core_cmInstr.h **** 
+ 243:lib/CMSIS/core_cmInstr.h **** /** \brief  Unsigned Saturate
+ 244:lib/CMSIS/core_cmInstr.h **** 
+ 245:lib/CMSIS/core_cmInstr.h ****     This function saturates an unsigned value.
+ 246:lib/CMSIS/core_cmInstr.h **** 
+ 247:lib/CMSIS/core_cmInstr.h ****     \param [in]  value  Value to be saturated
+ 248:lib/CMSIS/core_cmInstr.h ****     \param [in]    sat  Bit position to saturate to (0..31)
+ 249:lib/CMSIS/core_cmInstr.h ****     \return             Saturated value
+ 250:lib/CMSIS/core_cmInstr.h ****  */
+ 251:lib/CMSIS/core_cmInstr.h **** #define __USAT                            __usat
+ 252:lib/CMSIS/core_cmInstr.h **** 
+ 253:lib/CMSIS/core_cmInstr.h **** 
+ 254:lib/CMSIS/core_cmInstr.h **** /** \brief  Count leading zeros
+ 255:lib/CMSIS/core_cmInstr.h **** 
+ 256:lib/CMSIS/core_cmInstr.h ****     This function counts the number of leading zeros of a data value.
+ 257:lib/CMSIS/core_cmInstr.h **** 
+ 258:lib/CMSIS/core_cmInstr.h ****     \param [in]  value  Value to count the leading zeros
+ 259:lib/CMSIS/core_cmInstr.h ****     \return             number of leading zeros in value
+ 260:lib/CMSIS/core_cmInstr.h ****  */
+ 261:lib/CMSIS/core_cmInstr.h **** #define __CLZ                             __clz
+ 262:lib/CMSIS/core_cmInstr.h **** 
+ 263:lib/CMSIS/core_cmInstr.h **** #endif /* (__CORTEX_M >= 0x03) */
+ 264:lib/CMSIS/core_cmInstr.h **** 
+ 265:lib/CMSIS/core_cmInstr.h **** 
+ 266:lib/CMSIS/core_cmInstr.h **** 
+ 267:lib/CMSIS/core_cmInstr.h **** #elif defined ( __ICCARM__ ) /*------------------ ICC Compiler -------------------*/
+ 268:lib/CMSIS/core_cmInstr.h **** /* IAR iccarm specific functions */
+ 269:lib/CMSIS/core_cmInstr.h **** 
+ 270:lib/CMSIS/core_cmInstr.h **** #include <cmsis_iar.h>
+ 271:lib/CMSIS/core_cmInstr.h **** 
+ 272:lib/CMSIS/core_cmInstr.h **** 
+ 273:lib/CMSIS/core_cmInstr.h **** #elif defined ( __TMS470__ ) /*---------------- TI CCS Compiler ------------------*/
+ 274:lib/CMSIS/core_cmInstr.h **** /* TI CCS specific functions */
+ 275:lib/CMSIS/core_cmInstr.h **** 
+ 276:lib/CMSIS/core_cmInstr.h **** #include <cmsis_ccs.h>
+ 277:lib/CMSIS/core_cmInstr.h **** 
+ 278:lib/CMSIS/core_cmInstr.h **** 
+ 279:lib/CMSIS/core_cmInstr.h **** #elif defined ( __GNUC__ ) /*------------------ GNU Compiler ---------------------*/
+ 280:lib/CMSIS/core_cmInstr.h **** /* GNU gcc specific functions */
+ 281:lib/CMSIS/core_cmInstr.h **** 
+ 282:lib/CMSIS/core_cmInstr.h **** /** \brief  No Operation
+ 283:lib/CMSIS/core_cmInstr.h **** 
+ 284:lib/CMSIS/core_cmInstr.h ****     No Operation does nothing. This instruction can be used for code alignment purposes.
+ 285:lib/CMSIS/core_cmInstr.h ****  */
+ 286:lib/CMSIS/core_cmInstr.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __NOP(void)
+ 287:lib/CMSIS/core_cmInstr.h **** {
+ 288:lib/CMSIS/core_cmInstr.h ****   __ASM volatile ("nop");
+ 289:lib/CMSIS/core_cmInstr.h **** }
+ 290:lib/CMSIS/core_cmInstr.h **** 
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 21
+
+
+ 291:lib/CMSIS/core_cmInstr.h **** 
+ 292:lib/CMSIS/core_cmInstr.h **** /** \brief  Wait For Interrupt
+ 293:lib/CMSIS/core_cmInstr.h **** 
+ 294:lib/CMSIS/core_cmInstr.h ****     Wait For Interrupt is a hint instruction that suspends execution
+ 295:lib/CMSIS/core_cmInstr.h ****     until one of a number of events occurs.
+ 296:lib/CMSIS/core_cmInstr.h ****  */
+ 297:lib/CMSIS/core_cmInstr.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __WFI(void)
+ 452              		.loc 2 297 57 view .LVU77
+ 453              	.LBB27:
+ 298:lib/CMSIS/core_cmInstr.h **** {
+ 299:lib/CMSIS/core_cmInstr.h ****   __ASM volatile ("wfi");
+ 454              		.loc 2 299 3 view .LVU78
+ 455              		.syntax unified
+ 456              	@ 299 "lib/CMSIS/core_cmInstr.h" 1
+ 457 000c 30BF     		wfi
+ 458              	@ 0 "" 2
+ 300:lib/CMSIS/core_cmInstr.h **** }
+ 459              		.loc 2 300 1 is_stmt 0 view .LVU79
+ 460              		.thumb
+ 461              		.syntax unified
+ 462 000e 7047     		bx	lr
+ 463              	.L38:
+ 464              	.LBE27:
+ 465              	.LBE26:
+ 216:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     }
+ 466              		.loc 1 216 9 is_stmt 1 view .LVU80
+ 467              	.LBB28:
+ 468              	.LBI28:
+ 301:lib/CMSIS/core_cmInstr.h **** 
+ 302:lib/CMSIS/core_cmInstr.h **** 
+ 303:lib/CMSIS/core_cmInstr.h **** /** \brief  Wait For Event
+ 304:lib/CMSIS/core_cmInstr.h **** 
+ 305:lib/CMSIS/core_cmInstr.h ****     Wait For Event is a hint instruction that permits the processor to enter
+ 306:lib/CMSIS/core_cmInstr.h ****     a low-power state until one of a number of events occurs.
+ 307:lib/CMSIS/core_cmInstr.h ****  */
+ 308:lib/CMSIS/core_cmInstr.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __WFE(void)
+ 469              		.loc 2 308 57 view .LVU81
+ 470              	.LBB29:
+ 309:lib/CMSIS/core_cmInstr.h **** {
+ 310:lib/CMSIS/core_cmInstr.h ****   __ASM volatile ("wfe");
+ 471              		.loc 2 310 3 view .LVU82
+ 472              		.syntax unified
+ 473              	@ 310 "lib/CMSIS/core_cmInstr.h" 1
+ 474 0010 20BF     		wfe
+ 475              	@ 0 "" 2
+ 476              		.thumb
+ 477              		.syntax unified
+ 478              	.LBE29:
+ 479              	.LBE28:
+ 218:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 480              		.loc 1 218 1 is_stmt 0 view .LVU83
+ 481 0012 7047     		bx	lr
+ 482              	.L41:
+ 483              		.align	2
+ 484              	.L40:
+ 485 0014 00ED00E0 		.word	-536810240
+ 486              		.cfi_endproc
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 22
+
+
+ 487              	.LFE127:
+ 489              		.section	.text.pmu_to_deepsleepmode,"ax",%progbits
+ 490              		.align	1
+ 491              		.p2align 2,,3
+ 492              		.global	pmu_to_deepsleepmode
+ 493              		.syntax unified
+ 494              		.thumb
+ 495              		.thumb_func
+ 497              	pmu_to_deepsleepmode:
+ 498              	.LVL11:
+ 499              	.LFB128:
+ 236:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     static uint32_t reg_snap[4];
+ 500              		.loc 1 236 1 is_stmt 1 view -0
+ 501              		.cfi_startproc
+ 502              		@ args = 0, pretend = 0, frame = 0
+ 503              		@ frame_needed = 0, uses_anonymous_args = 0
+ 504              		@ link register save eliminated.
+ 237:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* clear stbmod and ldolp bits */
+ 505              		.loc 1 237 5 view .LVU85
+ 239:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 506              		.loc 1 239 5 view .LVU86
+ 239:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 507              		.loc 1 239 13 is_stmt 0 view .LVU87
+ 508 0000 294B     		ldr	r3, .L49
+ 236:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     static uint32_t reg_snap[4];
+ 509              		.loc 1 236 1 view .LVU88
+ 510 0002 30B4     		push	{r4, r5}
+ 511              	.LCFI2:
+ 512              		.cfi_def_cfa_offset 8
+ 513              		.cfi_offset 4, -8
+ 514              		.cfi_offset 5, -4
+ 239:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 515              		.loc 1 239 13 view .LVU89
+ 516 0004 1D68     		ldr	r5, [r3]
+ 517 0006 294C     		ldr	r4, .L49+4
+ 518 0008 2C40     		ands	r4, r4, r5
+ 519 000a 1C60     		str	r4, [r3]
+ 242:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 520              		.loc 1 242 5 is_stmt 1 view .LVU90
+ 242:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 521              		.loc 1 242 13 is_stmt 0 view .LVU91
+ 522 000c 1C68     		ldr	r4, [r3]
+ 245:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         if(PMU_LDO_NORMAL == ldo) {
+ 523              		.loc 1 245 7 view .LVU92
+ 524 000e B1F5402F 		cmp	r1, #786432
+ 242:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 525              		.loc 1 242 13 view .LVU93
+ 526 0012 44EA0004 		orr	r4, r4, r0
+ 527 0016 1C60     		str	r4, [r3]
+ 245:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         if(PMU_LDO_NORMAL == ldo) {
+ 528              		.loc 1 245 5 is_stmt 1 view .LVU94
+ 245:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         if(PMU_LDO_NORMAL == ldo) {
+ 529              		.loc 1 245 7 is_stmt 0 view .LVU95
+ 530 0018 3AD0     		beq	.L48
+ 531              	.LVL12:
+ 532              	.L43:
+ 253:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 23
+
+
+ 533              		.loc 1 253 5 is_stmt 1 view .LVU96
+ 253:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 534              		.loc 1 253 14 is_stmt 0 view .LVU97
+ 535 001a 254C     		ldr	r4, .L49+8
+ 255:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     reg_snap[1] = REG32(0xE000E100U);
+ 536              		.loc 1 255 17 view .LVU98
+ 537 001c 2549     		ldr	r1, .L49+12
+ 253:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 538              		.loc 1 253 14 view .LVU99
+ 539 001e 2069     		ldr	r0, [r4, #16]
+ 540              	.LVL13:
+ 255:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     reg_snap[1] = REG32(0xE000E100U);
+ 541              		.loc 1 255 19 view .LVU100
+ 542 0020 4FF0E023 		mov	r3, #-536813568
+ 253:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 543              		.loc 1 253 14 view .LVU101
+ 544 0024 40F00400 		orr	r0, r0, #4
+ 545 0028 2061     		str	r0, [r4, #16]
+ 255:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     reg_snap[1] = REG32(0xE000E100U);
+ 546              		.loc 1 255 5 is_stmt 1 view .LVU102
+ 255:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     reg_snap[1] = REG32(0xE000E100U);
+ 547              		.loc 1 255 19 is_stmt 0 view .LVU103
+ 548 002a 1869     		ldr	r0, [r3, #16]
+ 255:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     reg_snap[1] = REG32(0xE000E100U);
+ 549              		.loc 1 255 17 view .LVU104
+ 550 002c 0860     		str	r0, [r1]
+ 256:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     reg_snap[2] = REG32(0xE000E104U);
+ 551              		.loc 1 256 5 is_stmt 1 view .LVU105
+ 256:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     reg_snap[2] = REG32(0xE000E104U);
+ 552              		.loc 1 256 19 is_stmt 0 view .LVU106
+ 553 002e D3F80041 		ldr	r4, [r3, #256]
+ 257:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     reg_snap[3] = REG32(0xE000E108U);
+ 554              		.loc 1 257 19 view .LVU107
+ 555 0032 D3F80451 		ldr	r5, [r3, #260]
+ 260:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E180U)  = 0XFF7FF831U;
+ 556              		.loc 1 260 24 view .LVU108
+ 557 0036 2048     		ldr	r0, .L49+16
+ 256:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     reg_snap[2] = REG32(0xE000E104U);
+ 558              		.loc 1 256 17 view .LVU109
+ 559 0038 C1E90145 		strd	r4, r5, [r1, #4]
+ 257:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     reg_snap[3] = REG32(0xE000E108U);
+ 560              		.loc 1 257 5 is_stmt 1 view .LVU110
+ 258:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 561              		.loc 1 258 5 view .LVU111
+ 258:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 562              		.loc 1 258 19 is_stmt 0 view .LVU112
+ 563 003c D3F80841 		ldr	r4, [r3, #264]
+ 258:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 564              		.loc 1 258 17 view .LVU113
+ 565 0040 CC60     		str	r4, [r1, #12]
+ 260:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E180U)  = 0XFF7FF831U;
+ 566              		.loc 1 260 5 is_stmt 1 view .LVU114
+ 260:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E180U)  = 0XFF7FF831U;
+ 567              		.loc 1 260 24 is_stmt 0 view .LVU115
+ 568 0042 1C69     		ldr	r4, [r3, #16]
+ 569 0044 2040     		ands	r0, r0, r4
+ 261:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E184U)  = 0XBFFFF8FFU;
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 24
+
+
+ 570              		.loc 1 261 25 view .LVU116
+ 571 0046 1D4C     		ldr	r4, .L49+20
+ 260:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E180U)  = 0XFF7FF831U;
+ 572              		.loc 1 260 24 view .LVU117
+ 573 0048 1861     		str	r0, [r3, #16]
+ 261:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E184U)  = 0XBFFFF8FFU;
+ 574              		.loc 1 261 5 is_stmt 1 view .LVU118
+ 261:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E184U)  = 0XBFFFF8FFU;
+ 575              		.loc 1 261 25 is_stmt 0 view .LVU119
+ 576 004a C3F88041 		str	r4, [r3, #384]
+ 262:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E188U)  = 0xFFFFEFFFU;
+ 577              		.loc 1 262 5 is_stmt 1 view .LVU120
+ 263:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 578              		.loc 1 263 25 is_stmt 0 view .LVU121
+ 579 004e 6FF48050 		mvn	r0, #4096
+ 262:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E188U)  = 0xFFFFEFFFU;
+ 580              		.loc 1 262 25 view .LVU122
+ 581 0052 1B4C     		ldr	r4, .L49+24
+ 582 0054 C3F88441 		str	r4, [r3, #388]
+ 263:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 583              		.loc 1 263 5 is_stmt 1 view .LVU123
+ 263:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 584              		.loc 1 263 25 is_stmt 0 view .LVU124
+ 585 0058 C3F88801 		str	r0, [r3, #392]
+ 266:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         __WFI();
+ 586              		.loc 1 266 5 is_stmt 1 view .LVU125
+ 266:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         __WFI();
+ 587              		.loc 1 266 7 is_stmt 0 view .LVU126
+ 588 005c A2B9     		cbnz	r2, .L45
+ 267:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     } else {
+ 589              		.loc 1 267 9 is_stmt 1 view .LVU127
+ 590              	.LBB30:
+ 591              	.LBI30:
+ 297:lib/CMSIS/core_cmInstr.h **** {
+ 592              		.loc 2 297 57 view .LVU128
+ 593              	.LBB31:
+ 299:lib/CMSIS/core_cmInstr.h **** }
+ 594              		.loc 2 299 3 view .LVU129
+ 595              		.syntax unified
+ 596              	@ 299 "lib/CMSIS/core_cmInstr.h" 1
+ 597 005e 30BF     		wfi
+ 598              	@ 0 "" 2
+ 599              		.thumb
+ 600              		.syntax unified
+ 601              	.L46:
+ 602              	.LBE31:
+ 603              	.LBE30:
+ 274:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E100U) = reg_snap[1];
+ 604              		.loc 1 274 5 view .LVU130
+ 274:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E100U) = reg_snap[1];
+ 605              		.loc 1 274 24 is_stmt 0 view .LVU131
+ 606 0060 4FF0E023 		mov	r3, #-536813568
+ 274:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E100U) = reg_snap[1];
+ 607              		.loc 1 274 34 view .LVU132
+ 608 0064 0868     		ldr	r0, [r1]
+ 275:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E104U) = reg_snap[2];
+ 609              		.loc 1 275 34 view .LVU133
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 25
+
+
+ 610 0066 4C68     		ldr	r4, [r1, #4]
+ 274:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E100U) = reg_snap[1];
+ 611              		.loc 1 274 24 view .LVU134
+ 612 0068 1861     		str	r0, [r3, #16]
+ 275:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E104U) = reg_snap[2];
+ 613              		.loc 1 275 5 is_stmt 1 view .LVU135
+ 277:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 614              		.loc 1 277 34 is_stmt 0 view .LVU136
+ 615 006a D1E90201 		ldrd	r0, r1, [r1, #8]
+ 280:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 616              		.loc 1 280 14 view .LVU137
+ 617 006e 104A     		ldr	r2, .L49+8
+ 618              	.LVL14:
+ 275:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E104U) = reg_snap[2];
+ 619              		.loc 1 275 24 view .LVU138
+ 620 0070 C3F80041 		str	r4, [r3, #256]
+ 276:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E108U) = reg_snap[3];
+ 621              		.loc 1 276 5 is_stmt 1 view .LVU139
+ 276:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     REG32(0xE000E108U) = reg_snap[3];
+ 622              		.loc 1 276 24 is_stmt 0 view .LVU140
+ 623 0074 C3F80401 		str	r0, [r3, #260]
+ 277:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 624              		.loc 1 277 5 is_stmt 1 view .LVU141
+ 277:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 625              		.loc 1 277 24 is_stmt 0 view .LVU142
+ 626 0078 C3F80811 		str	r1, [r3, #264]
+ 280:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 627              		.loc 1 280 5 is_stmt 1 view .LVU143
+ 280:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 628              		.loc 1 280 14 is_stmt 0 view .LVU144
+ 629 007c 1369     		ldr	r3, [r2, #16]
+ 630 007e 23F00403 		bic	r3, r3, #4
+ 281:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 631              		.loc 1 281 1 view .LVU145
+ 632 0082 30BC     		pop	{r4, r5}
+ 633              	.LCFI3:
+ 634              		.cfi_remember_state
+ 635              		.cfi_restore 5
+ 636              		.cfi_restore 4
+ 637              		.cfi_def_cfa_offset 0
+ 280:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 638              		.loc 1 280 14 view .LVU146
+ 639 0084 1361     		str	r3, [r2, #16]
+ 281:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 640              		.loc 1 281 1 view .LVU147
+ 641 0086 7047     		bx	lr
+ 642              	.LVL15:
+ 643              	.L45:
+ 644              	.LCFI4:
+ 645              		.cfi_restore_state
+ 269:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         __WFE();
+ 646              		.loc 1 269 9 is_stmt 1 view .LVU148
+ 647              	.LBB32:
+ 648              	.LBI32:
+ 311:lib/CMSIS/core_cmInstr.h **** }
+ 312:lib/CMSIS/core_cmInstr.h **** 
+ 313:lib/CMSIS/core_cmInstr.h **** 
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 26
+
+
+ 314:lib/CMSIS/core_cmInstr.h **** /** \brief  Send Event
+ 315:lib/CMSIS/core_cmInstr.h **** 
+ 316:lib/CMSIS/core_cmInstr.h ****     Send Event is a hint instruction. It causes an event to be signaled to the CPU.
+ 317:lib/CMSIS/core_cmInstr.h ****  */
+ 318:lib/CMSIS/core_cmInstr.h **** __attribute__( ( always_inline ) ) __STATIC_INLINE void __SEV(void)
+ 649              		.loc 2 318 57 view .LVU149
+ 650              	.LBB33:
+ 319:lib/CMSIS/core_cmInstr.h **** {
+ 320:lib/CMSIS/core_cmInstr.h ****   __ASM volatile ("sev");
+ 651              		.loc 2 320 3 view .LVU150
+ 652              		.syntax unified
+ 653              	@ 320 "lib/CMSIS/core_cmInstr.h" 1
+ 654 0088 40BF     		sev
+ 655              	@ 0 "" 2
+ 656              		.thumb
+ 657              		.syntax unified
+ 658              	.LBE33:
+ 659              	.LBE32:
+ 270:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         __WFE();
+ 660              		.loc 1 270 9 view .LVU151
+ 661              	.LBB34:
+ 662              	.LBI34:
+ 308:lib/CMSIS/core_cmInstr.h **** {
+ 663              		.loc 2 308 57 view .LVU152
+ 664              	.LBB35:
+ 310:lib/CMSIS/core_cmInstr.h **** }
+ 665              		.loc 2 310 3 view .LVU153
+ 666              		.syntax unified
+ 667              	@ 310 "lib/CMSIS/core_cmInstr.h" 1
+ 668 008a 20BF     		wfe
+ 669              	@ 0 "" 2
+ 670              		.thumb
+ 671              		.syntax unified
+ 672              	.LBE35:
+ 673              	.LBE34:
+ 271:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     }
+ 674              		.loc 1 271 9 view .LVU154
+ 675              	.LBB36:
+ 676              	.LBI36:
+ 308:lib/CMSIS/core_cmInstr.h **** {
+ 677              		.loc 2 308 57 view .LVU155
+ 678              	.LBB37:
+ 310:lib/CMSIS/core_cmInstr.h **** }
+ 679              		.loc 2 310 3 view .LVU156
+ 680              		.syntax unified
+ 681              	@ 310 "lib/CMSIS/core_cmInstr.h" 1
+ 682 008c 20BF     		wfe
+ 683              	@ 0 "" 2
+ 311:lib/CMSIS/core_cmInstr.h **** 
+ 684              		.loc 2 311 1 is_stmt 0 view .LVU157
+ 685              		.thumb
+ 686              		.syntax unified
+ 687 008e E7E7     		b	.L46
+ 688              	.LVL16:
+ 689              	.L48:
+ 311:lib/CMSIS/core_cmInstr.h **** 
+ 690              		.loc 2 311 1 view .LVU158
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 27
+
+
+ 691              	.LBE37:
+ 692              	.LBE36:
+ 246:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****             PMU_CTL |= (uint32_t)(PMU_CTL_LDEN | PMU_CTL_LDNP);
+ 693              		.loc 1 246 9 is_stmt 1 view .LVU159
+ 247:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         } else {
+ 694              		.loc 1 247 21 is_stmt 0 view .LVU160
+ 695 0090 1968     		ldr	r1, [r3]
+ 696              	.LVL17:
+ 247:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         } else {
+ 697              		.loc 1 247 21 view .LVU161
+ 698 0092 41F44021 		orr	r1, r1, #786432
+ 246:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****             PMU_CTL |= (uint32_t)(PMU_CTL_LDEN | PMU_CTL_LDNP);
+ 699              		.loc 1 246 11 view .LVU162
+ 700 0096 18B9     		cbnz	r0, .L44
+ 247:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         } else {
+ 701              		.loc 1 247 13 is_stmt 1 view .LVU163
+ 247:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         } else {
+ 702              		.loc 1 247 21 is_stmt 0 view .LVU164
+ 703 0098 41F40061 		orr	r1, r1, #2048
+ 704 009c 1960     		str	r1, [r3]
+ 705 009e BCE7     		b	.L43
+ 706              	.L44:
+ 249:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         }
+ 707              		.loc 1 249 13 is_stmt 1 view .LVU165
+ 249:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         }
+ 708              		.loc 1 249 21 is_stmt 0 view .LVU166
+ 709 00a0 41F48061 		orr	r1, r1, #1024
+ 710 00a4 1960     		str	r1, [r3]
+ 711 00a6 B8E7     		b	.L43
+ 712              	.L50:
+ 713              		.align	2
+ 714              	.L49:
+ 715 00a8 00700040 		.word	1073770496
+ 716 00ac FCF3F3FF 		.word	-789508
+ 717 00b0 00ED00E0 		.word	-536810240
+ 718 00b4 00000000 		.word	.LANCHOR0
+ 719 00b8 04000100 		.word	65540
+ 720 00bc 31F87FFF 		.word	-8390607
+ 721 00c0 FFF8FFBF 		.word	-1073743617
+ 722              		.cfi_endproc
+ 723              	.LFE128:
+ 725              		.section	.text.pmu_to_standbymode,"ax",%progbits
+ 726              		.align	1
+ 727              		.p2align 2,,3
+ 728              		.global	pmu_to_standbymode
+ 729              		.syntax unified
+ 730              		.thumb
+ 731              		.thumb_func
+ 733              	pmu_to_standbymode:
+ 734              	.LVL18:
+ 735              	.LFB129:
+ 292:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     /* set sleepdeep bit of Cortex-M4 system control register */
+ 736              		.loc 1 292 1 is_stmt 1 view -0
+ 737              		.cfi_startproc
+ 738              		@ args = 0, pretend = 0, frame = 0
+ 739              		@ frame_needed = 0, uses_anonymous_args = 0
+ 740              		@ link register save eliminated.
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 28
+
+
+ 294:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 741              		.loc 1 294 5 view .LVU168
+ 294:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 742              		.loc 1 294 14 is_stmt 0 view .LVU169
+ 743 0000 0949     		ldr	r1, .L54
+ 297:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 744              		.loc 1 297 13 view .LVU170
+ 745 0002 0A4B     		ldr	r3, .L54+4
+ 294:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 746              		.loc 1 294 14 view .LVU171
+ 747 0004 0A69     		ldr	r2, [r1, #16]
+ 748 0006 42F00402 		orr	r2, r2, #4
+ 749 000a 0A61     		str	r2, [r1, #16]
+ 297:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 750              		.loc 1 297 5 is_stmt 1 view .LVU172
+ 297:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 751              		.loc 1 297 13 is_stmt 0 view .LVU173
+ 752 000c 1A68     		ldr	r2, [r3]
+ 753 000e 42F00202 		orr	r2, r2, #2
+ 754 0012 1A60     		str	r2, [r3]
+ 300:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 755              		.loc 1 300 5 is_stmt 1 view .LVU174
+ 300:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 756              		.loc 1 300 13 is_stmt 0 view .LVU175
+ 757 0014 1A68     		ldr	r2, [r3]
+ 758 0016 42F00402 		orr	r2, r2, #4
+ 759 001a 1A60     		str	r2, [r3]
+ 303:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         __WFI();
+ 760              		.loc 1 303 5 is_stmt 1 view .LVU176
+ 303:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         __WFI();
+ 761              		.loc 1 303 7 is_stmt 0 view .LVU177
+ 762 001c 08B9     		cbnz	r0, .L52
+ 304:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     } else {
+ 763              		.loc 1 304 9 is_stmt 1 view .LVU178
+ 764              	.LBB38:
+ 765              	.LBI38:
+ 297:lib/CMSIS/core_cmInstr.h **** {
+ 766              		.loc 2 297 57 view .LVU179
+ 767              	.LBB39:
+ 299:lib/CMSIS/core_cmInstr.h **** }
+ 768              		.loc 2 299 3 view .LVU180
+ 769              		.syntax unified
+ 770              	@ 299 "lib/CMSIS/core_cmInstr.h" 1
+ 771 001e 30BF     		wfi
+ 772              	@ 0 "" 2
+ 300:lib/CMSIS/core_cmInstr.h **** 
+ 773              		.loc 2 300 1 is_stmt 0 view .LVU181
+ 774              		.thumb
+ 775              		.syntax unified
+ 776 0020 7047     		bx	lr
+ 777              	.L52:
+ 778              	.LBE39:
+ 779              	.LBE38:
+ 306:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         __WFE();
+ 780              		.loc 1 306 9 is_stmt 1 view .LVU182
+ 781              	.LBB40:
+ 782              	.LBI40:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 29
+
+
+ 308:lib/CMSIS/core_cmInstr.h **** {
+ 783              		.loc 2 308 57 view .LVU183
+ 784              	.LBB41:
+ 310:lib/CMSIS/core_cmInstr.h **** }
+ 785              		.loc 2 310 3 view .LVU184
+ 786              		.syntax unified
+ 787              	@ 310 "lib/CMSIS/core_cmInstr.h" 1
+ 788 0022 20BF     		wfe
+ 789              	@ 0 "" 2
+ 790              		.thumb
+ 791              		.syntax unified
+ 792              	.LBE41:
+ 793              	.LBE40:
+ 307:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     }
+ 794              		.loc 1 307 9 view .LVU185
+ 795              	.LBB42:
+ 796              	.LBI42:
+ 308:lib/CMSIS/core_cmInstr.h **** {
+ 797              		.loc 2 308 57 view .LVU186
+ 798              	.LBB43:
+ 310:lib/CMSIS/core_cmInstr.h **** }
+ 799              		.loc 2 310 3 view .LVU187
+ 800              		.syntax unified
+ 801              	@ 310 "lib/CMSIS/core_cmInstr.h" 1
+ 802 0024 20BF     		wfe
+ 803              	@ 0 "" 2
+ 804              		.thumb
+ 805              		.syntax unified
+ 806              	.LBE43:
+ 807              	.LBE42:
+ 309:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 808              		.loc 1 309 1 is_stmt 0 view .LVU188
+ 809 0026 7047     		bx	lr
+ 810              	.L55:
+ 811              		.align	2
+ 812              	.L54:
+ 813 0028 00ED00E0 		.word	-536810240
+ 814 002c 00700040 		.word	1073770496
+ 815              		.cfi_endproc
+ 816              	.LFE129:
+ 818              		.section	.text.pmu_wakeup_pin_enable,"ax",%progbits
+ 819              		.align	1
+ 820              		.p2align 2,,3
+ 821              		.global	pmu_wakeup_pin_enable
+ 822              		.syntax unified
+ 823              		.thumb
+ 824              		.thumb_func
+ 826              	pmu_wakeup_pin_enable:
+ 827              	.LFB130:
+ 318:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CS |= PMU_CS_WUPEN;
+ 828              		.loc 1 318 1 is_stmt 1 view -0
+ 829              		.cfi_startproc
+ 830              		@ args = 0, pretend = 0, frame = 0
+ 831              		@ frame_needed = 0, uses_anonymous_args = 0
+ 832              		@ link register save eliminated.
+ 319:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 833              		.loc 1 319 5 view .LVU190
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 30
+
+
+ 319:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 834              		.loc 1 319 12 is_stmt 0 view .LVU191
+ 835 0000 024A     		ldr	r2, .L57
+ 836 0002 5368     		ldr	r3, [r2, #4]
+ 837 0004 43F48073 		orr	r3, r3, #256
+ 838 0008 5360     		str	r3, [r2, #4]
+ 320:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 839              		.loc 1 320 1 view .LVU192
+ 840 000a 7047     		bx	lr
+ 841              	.L58:
+ 842              		.align	2
+ 843              	.L57:
+ 844 000c 00700040 		.word	1073770496
+ 845              		.cfi_endproc
+ 846              	.LFE130:
+ 848              		.section	.text.pmu_wakeup_pin_disable,"ax",%progbits
+ 849              		.align	1
+ 850              		.p2align 2,,3
+ 851              		.global	pmu_wakeup_pin_disable
+ 852              		.syntax unified
+ 853              		.thumb
+ 854              		.thumb_func
+ 856              	pmu_wakeup_pin_disable:
+ 857              	.LFB131:
+ 329:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CS &= ~PMU_CS_WUPEN;
+ 858              		.loc 1 329 1 is_stmt 1 view -0
+ 859              		.cfi_startproc
+ 860              		@ args = 0, pretend = 0, frame = 0
+ 861              		@ frame_needed = 0, uses_anonymous_args = 0
+ 862              		@ link register save eliminated.
+ 330:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 863              		.loc 1 330 5 view .LVU194
+ 330:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 864              		.loc 1 330 12 is_stmt 0 view .LVU195
+ 865 0000 024A     		ldr	r2, .L60
+ 866 0002 5368     		ldr	r3, [r2, #4]
+ 867 0004 23F48073 		bic	r3, r3, #256
+ 868 0008 5360     		str	r3, [r2, #4]
+ 331:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 869              		.loc 1 331 1 view .LVU196
+ 870 000a 7047     		bx	lr
+ 871              	.L61:
+ 872              		.align	2
+ 873              	.L60:
+ 874 000c 00700040 		.word	1073770496
+ 875              		.cfi_endproc
+ 876              	.LFE131:
+ 878              		.section	.text.pmu_backup_ldo_config,"ax",%progbits
+ 879              		.align	1
+ 880              		.p2align 2,,3
+ 881              		.global	pmu_backup_ldo_config
+ 882              		.syntax unified
+ 883              		.thumb
+ 884              		.thumb_func
+ 886              	pmu_backup_ldo_config:
+ 887              	.LVL19:
+ 888              	.LFB132:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 31
+
+
+ 342:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CS &= ~PMU_CS_BLDOON;
+ 889              		.loc 1 342 1 is_stmt 1 view -0
+ 890              		.cfi_startproc
+ 891              		@ args = 0, pretend = 0, frame = 0
+ 892              		@ frame_needed = 0, uses_anonymous_args = 0
+ 893              		@ link register save eliminated.
+ 343:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CS |= bkp_ldo;
+ 894              		.loc 1 343 5 view .LVU198
+ 343:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CS |= bkp_ldo;
+ 895              		.loc 1 343 12 is_stmt 0 view .LVU199
+ 896 0000 044B     		ldr	r3, .L63
+ 897 0002 5968     		ldr	r1, [r3, #4]
+ 898 0004 21F40071 		bic	r1, r1, #512
+ 899 0008 5960     		str	r1, [r3, #4]
+ 344:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 900              		.loc 1 344 5 is_stmt 1 view .LVU200
+ 344:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 901              		.loc 1 344 12 is_stmt 0 view .LVU201
+ 902 000a 5A68     		ldr	r2, [r3, #4]
+ 903 000c 0243     		orrs	r2, r2, r0
+ 904 000e 5A60     		str	r2, [r3, #4]
+ 345:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 905              		.loc 1 345 1 view .LVU202
+ 906 0010 7047     		bx	lr
+ 907              	.L64:
+ 908 0012 00BF     		.align	2
+ 909              	.L63:
+ 910 0014 00700040 		.word	1073770496
+ 911              		.cfi_endproc
+ 912              	.LFE132:
+ 914              		.section	.text.pmu_backup_write_enable,"ax",%progbits
+ 915              		.align	1
+ 916              		.p2align 2,,3
+ 917              		.global	pmu_backup_write_enable
+ 918              		.syntax unified
+ 919              		.thumb
+ 920              		.thumb_func
+ 922              	pmu_backup_write_enable:
+ 923              	.LFB133:
+ 354:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL |= PMU_CTL_BKPWEN;
+ 924              		.loc 1 354 1 is_stmt 1 view -0
+ 925              		.cfi_startproc
+ 926              		@ args = 0, pretend = 0, frame = 0
+ 927              		@ frame_needed = 0, uses_anonymous_args = 0
+ 928              		@ link register save eliminated.
+ 355:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 929              		.loc 1 355 5 view .LVU204
+ 355:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 930              		.loc 1 355 13 is_stmt 0 view .LVU205
+ 931 0000 024A     		ldr	r2, .L66
+ 932 0002 1368     		ldr	r3, [r2]
+ 933 0004 43F48073 		orr	r3, r3, #256
+ 934 0008 1360     		str	r3, [r2]
+ 356:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 935              		.loc 1 356 1 view .LVU206
+ 936 000a 7047     		bx	lr
+ 937              	.L67:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 32
+
+
+ 938              		.align	2
+ 939              	.L66:
+ 940 000c 00700040 		.word	1073770496
+ 941              		.cfi_endproc
+ 942              	.LFE133:
+ 944              		.section	.text.pmu_backup_write_disable,"ax",%progbits
+ 945              		.align	1
+ 946              		.p2align 2,,3
+ 947              		.global	pmu_backup_write_disable
+ 948              		.syntax unified
+ 949              		.thumb
+ 950              		.thumb_func
+ 952              	pmu_backup_write_disable:
+ 953              	.LFB134:
+ 365:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     PMU_CTL &= ~PMU_CTL_BKPWEN;
+ 954              		.loc 1 365 1 is_stmt 1 view -0
+ 955              		.cfi_startproc
+ 956              		@ args = 0, pretend = 0, frame = 0
+ 957              		@ frame_needed = 0, uses_anonymous_args = 0
+ 958              		@ link register save eliminated.
+ 366:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 959              		.loc 1 366 5 view .LVU208
+ 366:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 960              		.loc 1 366 13 is_stmt 0 view .LVU209
+ 961 0000 024A     		ldr	r2, .L69
+ 962 0002 1368     		ldr	r3, [r2]
+ 963 0004 23F48073 		bic	r3, r3, #256
+ 964 0008 1360     		str	r3, [r2]
+ 367:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 965              		.loc 1 367 1 view .LVU210
+ 966 000a 7047     		bx	lr
+ 967              	.L70:
+ 968              		.align	2
+ 969              	.L69:
+ 970 000c 00700040 		.word	1073770496
+ 971              		.cfi_endproc
+ 972              	.LFE134:
+ 974              		.section	.text.pmu_flag_get,"ax",%progbits
+ 975              		.align	1
+ 976              		.p2align 2,,3
+ 977              		.global	pmu_flag_get
+ 978              		.syntax unified
+ 979              		.thumb
+ 980              		.thumb_func
+ 982              	pmu_flag_get:
+ 983              	.LVL20:
+ 984              	.LFB135:
+ 384:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     if(PMU_CS & flag) {
+ 985              		.loc 1 384 1 is_stmt 1 view -0
+ 986              		.cfi_startproc
+ 987              		@ args = 0, pretend = 0, frame = 0
+ 988              		@ frame_needed = 0, uses_anonymous_args = 0
+ 989              		@ link register save eliminated.
+ 990              		.loc 1 385 5 view .LVU212
+ 991              		.loc 1 385 8 is_stmt 0 view .LVU213
+ 992 0000 034B     		ldr	r3, .L72
+ 993 0002 5B68     		ldr	r3, [r3, #4]
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 33
+
+
+ 994              		.loc 1 385 7 view .LVU214
+ 995 0004 0342     		tst	r3, r0
+ 386:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         return SET;
+ 387:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     } else {
+ 388:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         return RESET;
+ 389:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     }
+ 390:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 996              		.loc 1 390 1 view .LVU215
+ 997 0006 14BF     		ite	ne
+ 998 0008 0120     		movne	r0, #1
+ 999              	.LVL21:
+ 1000              		.loc 1 390 1 view .LVU216
+ 1001 000a 0020     		moveq	r0, #0
+ 1002 000c 7047     		bx	lr
+ 1003              	.L73:
+ 1004 000e 00BF     		.align	2
+ 1005              	.L72:
+ 1006 0010 00700040 		.word	1073770496
+ 1007              		.cfi_endproc
+ 1008              	.LFE135:
+ 1010              		.section	.text.pmu_flag_clear,"ax",%progbits
+ 1011              		.align	1
+ 1012              		.p2align 2,,3
+ 1013              		.global	pmu_flag_clear
+ 1014              		.syntax unified
+ 1015              		.thumb
+ 1016              		.thumb_func
+ 1018              	pmu_flag_clear:
+ 1019              	.LVL22:
+ 1020              	.LFB136:
+ 391:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** 
+ 392:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** /*!
+ 393:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \brief      clear flag bit
+ 394:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[in]  flag:
+ 395:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_FLAG_RESET_WAKEUP: reset wakeup flag
+ 396:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****       \arg        PMU_FLAG_RESET_STANDBY: reset standby flag
+ 397:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \param[out] none
+ 398:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     \retval     none
+ 399:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** */
+ 400:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** void pmu_flag_clear(uint32_t flag)
+ 401:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** {
+ 1021              		.loc 1 401 1 is_stmt 1 view -0
+ 1022              		.cfi_startproc
+ 1023              		@ args = 0, pretend = 0, frame = 0
+ 1024              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1025              		@ link register save eliminated.
+ 402:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     switch(flag) {
+ 1026              		.loc 1 402 5 view .LVU218
+ 1027 0000 40B1     		cbz	r0, .L75
+ 1028 0002 0128     		cmp	r0, #1
+ 1029 0004 05D1     		bne	.L78
+ 403:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     case PMU_FLAG_RESET_WAKEUP:
+ 404:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         /* reset wakeup flag */
+ 405:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         PMU_CTL |= PMU_CTL_WURST;
+ 406:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         break;
+ 407:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     case PMU_FLAG_RESET_STANDBY:
+ 408:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         /* reset standby flag */
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 34
+
+
+ 409:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         PMU_CTL |= PMU_CTL_STBRST;
+ 1030              		.loc 1 409 9 view .LVU219
+ 1031              		.loc 1 409 17 is_stmt 0 view .LVU220
+ 1032 0006 064A     		ldr	r2, .L79
+ 1033 0008 1368     		ldr	r3, [r2]
+ 1034 000a 43F00803 		orr	r3, r3, #8
+ 1035 000e 1360     		str	r3, [r2]
+ 410:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         break;
+ 1036              		.loc 1 410 9 is_stmt 1 view .LVU221
+ 411:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     default :
+ 412:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         break;
+ 413:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     }
+ 414:lib/GD32F4xx/Source/gd32f4xx_pmu.c **** }
+ 1037              		.loc 1 414 1 is_stmt 0 view .LVU222
+ 1038 0010 7047     		bx	lr
+ 1039              	.L78:
+ 1040 0012 7047     		bx	lr
+ 1041              	.L75:
+ 405:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         break;
+ 1042              		.loc 1 405 9 is_stmt 1 view .LVU223
+ 405:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****         break;
+ 1043              		.loc 1 405 17 is_stmt 0 view .LVU224
+ 1044 0014 024A     		ldr	r2, .L79
+ 1045 0016 1368     		ldr	r3, [r2]
+ 1046 0018 43F00403 		orr	r3, r3, #4
+ 1047 001c 1360     		str	r3, [r2]
+ 406:lib/GD32F4xx/Source/gd32f4xx_pmu.c ****     case PMU_FLAG_RESET_STANDBY:
+ 1048              		.loc 1 406 9 is_stmt 1 view .LVU225
+ 1049 001e 7047     		bx	lr
+ 1050              	.L80:
+ 1051              		.align	2
+ 1052              	.L79:
+ 1053 0020 00700040 		.word	1073770496
+ 1054              		.cfi_endproc
+ 1055              	.LFE136:
+ 1057              		.section	.bss.reg_snap.0,"aw",%nobits
+ 1058              		.align	2
+ 1059              		.set	.LANCHOR0,. + 0
+ 1062              	reg_snap.0:
+ 1063 0000 00000000 		.space	16
+ 1063      00000000 
+ 1063      00000000 
+ 1063      00000000 
+ 1064              		.text
+ 1065              	.Letext0:
+ 1066              		.file 3 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
+ 1067              		.file 4 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
+ 1068              		.file 5 "lib/CMSIS/core_cm4.h"
+ 1069              		.file 6 "lib/CMSIS/GD/GD32F4xx/Include/gd32f4xx.h"
+ 1070              		.file 7 "lib/GD32F4xx/Include/gd32f4xx_rcu.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 35
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 gd32f4xx_pmu.c
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:18     .text.pmu_deinit:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:25     .text.pmu_deinit:0000000000000000 pmu_deinit
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:58     .text.pmu_lvd_select:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:65     .text.pmu_lvd_select:0000000000000000 pmu_lvd_select
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:99     .text.pmu_lvd_select:0000000000000024 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:104    .text.pmu_lvd_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:111    .text.pmu_lvd_disable:0000000000000000 pmu_lvd_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:129    .text.pmu_lvd_disable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:134    .text.pmu_ldo_output_select:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:141    .text.pmu_ldo_output_select:0000000000000000 pmu_ldo_output_select
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:165    .text.pmu_ldo_output_select:0000000000000014 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:170    .text.pmu_highdriver_mode_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:177    .text.pmu_highdriver_mode_enable:0000000000000000 pmu_highdriver_mode_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:195    .text.pmu_highdriver_mode_enable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:200    .text.pmu_highdriver_mode_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:207    .text.pmu_highdriver_mode_disable:0000000000000000 pmu_highdriver_mode_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:225    .text.pmu_highdriver_mode_disable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:230    .text.pmu_highdriver_switch_select:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:237    .text.pmu_highdriver_switch_select:0000000000000000 pmu_highdriver_switch_select
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:287    .text.pmu_highdriver_switch_select:0000000000000018 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:292    .text.pmu_lowdriver_mode_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:299    .text.pmu_lowdriver_mode_enable:0000000000000000 pmu_lowdriver_mode_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:317    .text.pmu_lowdriver_mode_enable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:322    .text.pmu_lowdriver_mode_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:329    .text.pmu_lowdriver_mode_disable:0000000000000000 pmu_lowdriver_mode_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:347    .text.pmu_lowdriver_mode_disable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:352    .text.pmu_lowpower_driver_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:359    .text.pmu_lowpower_driver_config:0000000000000000 pmu_lowpower_driver_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:383    .text.pmu_lowpower_driver_config:0000000000000014 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:388    .text.pmu_normalpower_driver_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:395    .text.pmu_normalpower_driver_config:0000000000000000 pmu_normalpower_driver_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:419    .text.pmu_normalpower_driver_config:0000000000000014 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:424    .text.pmu_to_sleepmode:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:431    .text.pmu_to_sleepmode:0000000000000000 pmu_to_sleepmode
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:485    .text.pmu_to_sleepmode:0000000000000014 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:490    .text.pmu_to_deepsleepmode:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:497    .text.pmu_to_deepsleepmode:0000000000000000 pmu_to_deepsleepmode
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:715    .text.pmu_to_deepsleepmode:00000000000000a8 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:726    .text.pmu_to_standbymode:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:733    .text.pmu_to_standbymode:0000000000000000 pmu_to_standbymode
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:813    .text.pmu_to_standbymode:0000000000000028 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:819    .text.pmu_wakeup_pin_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:826    .text.pmu_wakeup_pin_enable:0000000000000000 pmu_wakeup_pin_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:844    .text.pmu_wakeup_pin_enable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:849    .text.pmu_wakeup_pin_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:856    .text.pmu_wakeup_pin_disable:0000000000000000 pmu_wakeup_pin_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:874    .text.pmu_wakeup_pin_disable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:879    .text.pmu_backup_ldo_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:886    .text.pmu_backup_ldo_config:0000000000000000 pmu_backup_ldo_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:910    .text.pmu_backup_ldo_config:0000000000000014 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:915    .text.pmu_backup_write_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:922    .text.pmu_backup_write_enable:0000000000000000 pmu_backup_write_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:940    .text.pmu_backup_write_enable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:945    .text.pmu_backup_write_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:952    .text.pmu_backup_write_disable:0000000000000000 pmu_backup_write_disable
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s 			page 36
+
+
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:970    .text.pmu_backup_write_disable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:975    .text.pmu_flag_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:982    .text.pmu_flag_get:0000000000000000 pmu_flag_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:1006   .text.pmu_flag_get:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:1011   .text.pmu_flag_clear:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:1018   .text.pmu_flag_clear:0000000000000000 pmu_flag_clear
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:1053   .text.pmu_flag_clear:0000000000000020 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:1058   .bss.reg_snap.0:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctasUIM.s:1062   .bss.reg_snap.0:0000000000000000 reg_snap.0
+
+UNDEFINED SYMBOLS
+rcu_periph_reset_enable
+rcu_periph_reset_disable

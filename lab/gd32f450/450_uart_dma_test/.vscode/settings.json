@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "gd32f3x0.h": "c",
+        "gd32f3x0_rcu.h": "c",
+        "stdint.h": "c",
+        "gd32f3x0_gpio.h": "c",
+        "gd32f3x0_syscfg.h": "c",
+        "sk6812.h": "c",
+        "gd32f4xx.h": "c"
+    }
+}

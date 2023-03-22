@@ -1,0 +1,1099 @@
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 2
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"sk6812.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.sk6812_send_colors,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.global	sk6812_send_colors
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	sk6812_send_colors:
+  26              	.LFB118:
+  27              		.file 1 "sk6812.c"
+   1:sk6812.c      **** #include "sk6812.h"
+   2:sk6812.c      **** 
+   3:sk6812.c      **** uint8_t colors[RGB_NUMBER * 3] = {0};
+   4:sk6812.c      **** 
+   5:sk6812.c      **** inline void delay_300ns() {
+   6:sk6812.c      ****   asm(" nop");
+   7:sk6812.c      ****   asm(" nop");
+   8:sk6812.c      ****   asm(" nop");
+   9:sk6812.c      **** }
+  10:sk6812.c      **** inline void delay_900ns() {
+  11:sk6812.c      ****   asm(" nop");
+  12:sk6812.c      ****   asm(" nop");
+  13:sk6812.c      ****   asm(" nop");
+  14:sk6812.c      ****   asm(" nop");
+  15:sk6812.c      ****   asm(" nop");
+  16:sk6812.c      ****   asm(" nop");
+  17:sk6812.c      ****   asm(" nop");
+  18:sk6812.c      ****   asm(" nop");
+  19:sk6812.c      ****   asm(" nop");
+  20:sk6812.c      ****   asm(" nop");
+  21:sk6812.c      **** 
+  22:sk6812.c      ****   asm(" nop");
+  23:sk6812.c      ****   asm(" nop");
+  24:sk6812.c      ****   asm(" nop");
+  25:sk6812.c      ****   asm(" nop");
+  26:sk6812.c      ****   asm(" nop");
+  27:sk6812.c      ****   asm(" nop");
+  28:sk6812.c      ****   asm(" nop");
+  29:sk6812.c      ****   asm(" nop");
+  30:sk6812.c      ****   asm(" nop");
+  31:sk6812.c      ****   asm(" nop");
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 2
+
+
+  32:sk6812.c      **** 
+  33:sk6812.c      ****   asm(" nop");
+  34:sk6812.c      ****   asm(" nop");
+  35:sk6812.c      ****   asm(" nop");
+  36:sk6812.c      ****   asm(" nop");
+  37:sk6812.c      ****   asm(" nop");
+  38:sk6812.c      ****   asm(" nop");
+  39:sk6812.c      **** 
+  40:sk6812.c      ****   asm(" nop");
+  41:sk6812.c      ****   asm(" nop");
+  42:sk6812.c      ****   asm(" nop");
+  43:sk6812.c      ****   asm(" nop");
+  44:sk6812.c      ****   asm(" nop");
+  45:sk6812.c      ****   asm(" nop");
+  46:sk6812.c      **** 
+  47:sk6812.c      ****   asm(" nop");
+  48:sk6812.c      ****   asm(" nop");
+  49:sk6812.c      ****   asm(" nop");
+  50:sk6812.c      ****   asm(" nop");
+  51:sk6812.c      ****   asm(" nop");
+  52:sk6812.c      ****   asm(" nop");
+  53:sk6812.c      ****   asm(" nop");
+  54:sk6812.c      ****   asm(" nop");
+  55:sk6812.c      ****   asm(" nop");
+  56:sk6812.c      ****   asm(" nop");
+  57:sk6812.c      **** 
+  58:sk6812.c      ****   asm(" nop");
+  59:sk6812.c      ****   asm(" nop");
+  60:sk6812.c      ****   asm(" nop");
+  61:sk6812.c      ****   asm(" nop");
+  62:sk6812.c      ****   asm(" nop");
+  63:sk6812.c      ****   asm(" nop");
+  64:sk6812.c      **** 
+  65:sk6812.c      ****   asm(" nop");
+  66:sk6812.c      ****   asm(" nop");
+  67:sk6812.c      ****   asm(" nop");
+  68:sk6812.c      ****   asm(" nop");
+  69:sk6812.c      ****   asm(" nop");
+  70:sk6812.c      ****   asm(" nop");
+  71:sk6812.c      **** }
+  72:sk6812.c      **** 
+  73:sk6812.c      **** void sk6812_send_colors() {
+  28              		.loc 1 73 27 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  74:sk6812.c      ****   uint8_t byte;
+  32              		.loc 1 74 3 view .LVU1
+  75:sk6812.c      ****   uint8_t bit;
+  33              		.loc 1 75 3 view .LVU2
+  76:sk6812.c      ****   for (byte = 0; byte < RGB_NUMBER * 3; byte++) {
+  34              		.loc 1 76 3 view .LVU3
+  35              	.LVL0:
+  36              		.loc 1 76 18 view .LVU4
+  73:sk6812.c      ****   uint8_t byte;
+  37              		.loc 1 73 27 is_stmt 0 view .LVU5
+  38 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 3
+
+
+  39              	.LCFI0:
+  40              		.cfi_def_cfa_offset 24
+  41              		.cfi_offset 4, -24
+  42              		.cfi_offset 5, -20
+  43              		.cfi_offset 6, -16
+  44              		.cfi_offset 7, -12
+  45              		.cfi_offset 8, -8
+  46              		.cfi_offset 14, -4
+  47 0004 4C4E     		ldr	r6, .L12
+  77:sk6812.c      ****     for (bit = 0; bit < 8; bit++) {
+  78:sk6812.c      ****       if (colors[byte] & (0x80 >> bit)) {
+  79:sk6812.c      ****         leds_pin_write(1);
+  80:sk6812.c      ****         delay_900ns();
+  81:sk6812.c      ****         leds_pin_write(0);
+  82:sk6812.c      ****         delay_300ns();
+  83:sk6812.c      ****       } else {
+  84:sk6812.c      ****         leds_pin_write(1);
+  48              		.loc 1 84 9 view .LVU6
+  49 0006 4D4D     		ldr	r5, .L12+4
+  50 0008 06F10308 		add	r8, r6, #3
+  78:sk6812.c      ****         leds_pin_write(1);
+  51              		.loc 1 78 32 view .LVU7
+  52 000c 8027     		movs	r7, #128
+  53              	.LVL1:
+  54              	.L2:
+  77:sk6812.c      ****     for (bit = 0; bit < 8; bit++) {
+  55              		.loc 1 77 19 is_stmt 1 view .LVU8
+  73:sk6812.c      ****   uint8_t byte;
+  56              		.loc 1 73 27 is_stmt 0 view .LVU9
+  57 000e 0024     		movs	r4, #0
+  58 0010 41E0     		b	.L5
+  59              	.LVL2:
+  60              	.L11:
+  79:sk6812.c      ****         delay_900ns();
+  61              		.loc 1 79 9 is_stmt 1 view .LVU10
+  62 0012 FFF7FEFF 		bl	gpio_bit_set
+  63              	.LVL3:
+  80:sk6812.c      ****         leds_pin_write(0);
+  64              		.loc 1 80 9 view .LVU11
+  65              	.LBB16:
+  66              	.LBI16:
+  10:sk6812.c      ****   asm(" nop");
+  67              		.loc 1 10 13 view .LVU12
+  68              	.LBB17:
+  11:sk6812.c      ****   asm(" nop");
+  69              		.loc 1 11 3 view .LVU13
+  70              		.syntax unified
+  71              	@ 11 "sk6812.c" 1
+  72 0016 00BF     		 nop
+  73              	@ 0 "" 2
+  12:sk6812.c      ****   asm(" nop");
+  74              		.loc 1 12 3 view .LVU14
+  75              	@ 12 "sk6812.c" 1
+  76 0018 00BF     		 nop
+  77              	@ 0 "" 2
+  13:sk6812.c      ****   asm(" nop");
+  78              		.loc 1 13 3 view .LVU15
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 4
+
+
+  79              	@ 13 "sk6812.c" 1
+  80 001a 00BF     		 nop
+  81              	@ 0 "" 2
+  14:sk6812.c      ****   asm(" nop");
+  82              		.loc 1 14 3 view .LVU16
+  83              	@ 14 "sk6812.c" 1
+  84 001c 00BF     		 nop
+  85              	@ 0 "" 2
+  15:sk6812.c      ****   asm(" nop");
+  86              		.loc 1 15 3 view .LVU17
+  87              	@ 15 "sk6812.c" 1
+  88 001e 00BF     		 nop
+  89              	@ 0 "" 2
+  16:sk6812.c      ****   asm(" nop");
+  90              		.loc 1 16 3 view .LVU18
+  91              	@ 16 "sk6812.c" 1
+  92 0020 00BF     		 nop
+  93              	@ 0 "" 2
+  17:sk6812.c      ****   asm(" nop");
+  94              		.loc 1 17 3 view .LVU19
+  95              	@ 17 "sk6812.c" 1
+  96 0022 00BF     		 nop
+  97              	@ 0 "" 2
+  18:sk6812.c      ****   asm(" nop");
+  98              		.loc 1 18 3 view .LVU20
+  99              	@ 18 "sk6812.c" 1
+ 100 0024 00BF     		 nop
+ 101              	@ 0 "" 2
+  19:sk6812.c      ****   asm(" nop");
+ 102              		.loc 1 19 3 view .LVU21
+ 103              	@ 19 "sk6812.c" 1
+ 104 0026 00BF     		 nop
+ 105              	@ 0 "" 2
+  20:sk6812.c      **** 
+ 106              		.loc 1 20 3 view .LVU22
+ 107              	@ 20 "sk6812.c" 1
+ 108 0028 00BF     		 nop
+ 109              	@ 0 "" 2
+  22:sk6812.c      ****   asm(" nop");
+ 110              		.loc 1 22 3 view .LVU23
+ 111              	@ 22 "sk6812.c" 1
+ 112 002a 00BF     		 nop
+ 113              	@ 0 "" 2
+  23:sk6812.c      ****   asm(" nop");
+ 114              		.loc 1 23 3 view .LVU24
+ 115              	@ 23 "sk6812.c" 1
+ 116 002c 00BF     		 nop
+ 117              	@ 0 "" 2
+  24:sk6812.c      ****   asm(" nop");
+ 118              		.loc 1 24 3 view .LVU25
+ 119              	@ 24 "sk6812.c" 1
+ 120 002e 00BF     		 nop
+ 121              	@ 0 "" 2
+  25:sk6812.c      ****   asm(" nop");
+ 122              		.loc 1 25 3 view .LVU26
+ 123              	@ 25 "sk6812.c" 1
+ 124 0030 00BF     		 nop
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 5
+
+
+ 125              	@ 0 "" 2
+  26:sk6812.c      ****   asm(" nop");
+ 126              		.loc 1 26 3 view .LVU27
+ 127              	@ 26 "sk6812.c" 1
+ 128 0032 00BF     		 nop
+ 129              	@ 0 "" 2
+  27:sk6812.c      ****   asm(" nop");
+ 130              		.loc 1 27 3 view .LVU28
+ 131              	@ 27 "sk6812.c" 1
+ 132 0034 00BF     		 nop
+ 133              	@ 0 "" 2
+  28:sk6812.c      ****   asm(" nop");
+ 134              		.loc 1 28 3 view .LVU29
+ 135              	@ 28 "sk6812.c" 1
+ 136 0036 00BF     		 nop
+ 137              	@ 0 "" 2
+  29:sk6812.c      ****   asm(" nop");
+ 138              		.loc 1 29 3 view .LVU30
+ 139              	@ 29 "sk6812.c" 1
+ 140 0038 00BF     		 nop
+ 141              	@ 0 "" 2
+  30:sk6812.c      ****   asm(" nop");
+ 142              		.loc 1 30 3 view .LVU31
+ 143              	@ 30 "sk6812.c" 1
+ 144 003a 00BF     		 nop
+ 145              	@ 0 "" 2
+  31:sk6812.c      **** 
+ 146              		.loc 1 31 3 view .LVU32
+ 147              	@ 31 "sk6812.c" 1
+ 148 003c 00BF     		 nop
+ 149              	@ 0 "" 2
+  33:sk6812.c      ****   asm(" nop");
+ 150              		.loc 1 33 3 view .LVU33
+ 151              	@ 33 "sk6812.c" 1
+ 152 003e 00BF     		 nop
+ 153              	@ 0 "" 2
+  34:sk6812.c      ****   asm(" nop");
+ 154              		.loc 1 34 3 view .LVU34
+ 155              	@ 34 "sk6812.c" 1
+ 156 0040 00BF     		 nop
+ 157              	@ 0 "" 2
+  35:sk6812.c      ****   asm(" nop");
+ 158              		.loc 1 35 3 view .LVU35
+ 159              	@ 35 "sk6812.c" 1
+ 160 0042 00BF     		 nop
+ 161              	@ 0 "" 2
+  36:sk6812.c      ****   asm(" nop");
+ 162              		.loc 1 36 3 view .LVU36
+ 163              	@ 36 "sk6812.c" 1
+ 164 0044 00BF     		 nop
+ 165              	@ 0 "" 2
+  37:sk6812.c      ****   asm(" nop");
+ 166              		.loc 1 37 3 view .LVU37
+ 167              	@ 37 "sk6812.c" 1
+ 168 0046 00BF     		 nop
+ 169              	@ 0 "" 2
+  38:sk6812.c      **** 
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 6
+
+
+ 170              		.loc 1 38 3 view .LVU38
+ 171              	@ 38 "sk6812.c" 1
+ 172 0048 00BF     		 nop
+ 173              	@ 0 "" 2
+  40:sk6812.c      ****   asm(" nop");
+ 174              		.loc 1 40 3 view .LVU39
+ 175              	@ 40 "sk6812.c" 1
+ 176 004a 00BF     		 nop
+ 177              	@ 0 "" 2
+  41:sk6812.c      ****   asm(" nop");
+ 178              		.loc 1 41 3 view .LVU40
+ 179              	@ 41 "sk6812.c" 1
+ 180 004c 00BF     		 nop
+ 181              	@ 0 "" 2
+  42:sk6812.c      ****   asm(" nop");
+ 182              		.loc 1 42 3 view .LVU41
+ 183              	@ 42 "sk6812.c" 1
+ 184 004e 00BF     		 nop
+ 185              	@ 0 "" 2
+  43:sk6812.c      ****   asm(" nop");
+ 186              		.loc 1 43 3 view .LVU42
+ 187              	@ 43 "sk6812.c" 1
+ 188 0050 00BF     		 nop
+ 189              	@ 0 "" 2
+  44:sk6812.c      ****   asm(" nop");
+ 190              		.loc 1 44 3 view .LVU43
+ 191              	@ 44 "sk6812.c" 1
+ 192 0052 00BF     		 nop
+ 193              	@ 0 "" 2
+  45:sk6812.c      **** 
+ 194              		.loc 1 45 3 view .LVU44
+ 195              	@ 45 "sk6812.c" 1
+ 196 0054 00BF     		 nop
+ 197              	@ 0 "" 2
+  47:sk6812.c      ****   asm(" nop");
+ 198              		.loc 1 47 3 view .LVU45
+ 199              	@ 47 "sk6812.c" 1
+ 200 0056 00BF     		 nop
+ 201              	@ 0 "" 2
+  48:sk6812.c      ****   asm(" nop");
+ 202              		.loc 1 48 3 view .LVU46
+ 203              	@ 48 "sk6812.c" 1
+ 204 0058 00BF     		 nop
+ 205              	@ 0 "" 2
+  49:sk6812.c      ****   asm(" nop");
+ 206              		.loc 1 49 3 view .LVU47
+ 207              	@ 49 "sk6812.c" 1
+ 208 005a 00BF     		 nop
+ 209              	@ 0 "" 2
+  50:sk6812.c      ****   asm(" nop");
+ 210              		.loc 1 50 3 view .LVU48
+ 211              	@ 50 "sk6812.c" 1
+ 212 005c 00BF     		 nop
+ 213              	@ 0 "" 2
+  51:sk6812.c      ****   asm(" nop");
+ 214              		.loc 1 51 3 view .LVU49
+ 215              	@ 51 "sk6812.c" 1
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 7
+
+
+ 216 005e 00BF     		 nop
+ 217              	@ 0 "" 2
+  52:sk6812.c      ****   asm(" nop");
+ 218              		.loc 1 52 3 view .LVU50
+ 219              	@ 52 "sk6812.c" 1
+ 220 0060 00BF     		 nop
+ 221              	@ 0 "" 2
+  53:sk6812.c      ****   asm(" nop");
+ 222              		.loc 1 53 3 view .LVU51
+ 223              	@ 53 "sk6812.c" 1
+ 224 0062 00BF     		 nop
+ 225              	@ 0 "" 2
+  54:sk6812.c      ****   asm(" nop");
+ 226              		.loc 1 54 3 view .LVU52
+ 227              	@ 54 "sk6812.c" 1
+ 228 0064 00BF     		 nop
+ 229              	@ 0 "" 2
+  55:sk6812.c      ****   asm(" nop");
+ 230              		.loc 1 55 3 view .LVU53
+ 231              	@ 55 "sk6812.c" 1
+ 232 0066 00BF     		 nop
+ 233              	@ 0 "" 2
+  56:sk6812.c      **** 
+ 234              		.loc 1 56 3 view .LVU54
+ 235              	@ 56 "sk6812.c" 1
+ 236 0068 00BF     		 nop
+ 237              	@ 0 "" 2
+  58:sk6812.c      ****   asm(" nop");
+ 238              		.loc 1 58 3 view .LVU55
+ 239              	@ 58 "sk6812.c" 1
+ 240 006a 00BF     		 nop
+ 241              	@ 0 "" 2
+  59:sk6812.c      ****   asm(" nop");
+ 242              		.loc 1 59 3 view .LVU56
+ 243              	@ 59 "sk6812.c" 1
+ 244 006c 00BF     		 nop
+ 245              	@ 0 "" 2
+  60:sk6812.c      ****   asm(" nop");
+ 246              		.loc 1 60 3 view .LVU57
+ 247              	@ 60 "sk6812.c" 1
+ 248 006e 00BF     		 nop
+ 249              	@ 0 "" 2
+  61:sk6812.c      ****   asm(" nop");
+ 250              		.loc 1 61 3 view .LVU58
+ 251              	@ 61 "sk6812.c" 1
+ 252 0070 00BF     		 nop
+ 253              	@ 0 "" 2
+  62:sk6812.c      ****   asm(" nop");
+ 254              		.loc 1 62 3 view .LVU59
+ 255              	@ 62 "sk6812.c" 1
+ 256 0072 00BF     		 nop
+ 257              	@ 0 "" 2
+  63:sk6812.c      **** 
+ 258              		.loc 1 63 3 view .LVU60
+ 259              	@ 63 "sk6812.c" 1
+ 260 0074 00BF     		 nop
+ 261              	@ 0 "" 2
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 8
+
+
+  65:sk6812.c      ****   asm(" nop");
+ 262              		.loc 1 65 3 view .LVU61
+ 263              	@ 65 "sk6812.c" 1
+ 264 0076 00BF     		 nop
+ 265              	@ 0 "" 2
+  66:sk6812.c      ****   asm(" nop");
+ 266              		.loc 1 66 3 view .LVU62
+ 267              	@ 66 "sk6812.c" 1
+ 268 0078 00BF     		 nop
+ 269              	@ 0 "" 2
+  67:sk6812.c      ****   asm(" nop");
+ 270              		.loc 1 67 3 view .LVU63
+ 271              	@ 67 "sk6812.c" 1
+ 272 007a 00BF     		 nop
+ 273              	@ 0 "" 2
+  68:sk6812.c      ****   asm(" nop");
+ 274              		.loc 1 68 3 view .LVU64
+ 275              	@ 68 "sk6812.c" 1
+ 276 007c 00BF     		 nop
+ 277              	@ 0 "" 2
+  69:sk6812.c      ****   asm(" nop");
+ 278              		.loc 1 69 3 view .LVU65
+ 279              	@ 69 "sk6812.c" 1
+ 280 007e 00BF     		 nop
+ 281              	@ 0 "" 2
+  70:sk6812.c      **** }
+ 282              		.loc 1 70 3 view .LVU66
+ 283              	@ 70 "sk6812.c" 1
+ 284 0080 00BF     		 nop
+ 285              	@ 0 "" 2
+ 286              		.thumb
+ 287              		.syntax unified
+ 288              	.LBE17:
+ 289              	.LBE16:
+  81:sk6812.c      ****         delay_300ns();
+ 290              		.loc 1 81 9 view .LVU67
+ 291 0082 0421     		movs	r1, #4
+ 292 0084 2846     		mov	r0, r5
+ 293 0086 FFF7FEFF 		bl	gpio_bit_reset
+ 294              	.LVL4:
+  82:sk6812.c      ****       } else {
+ 295              		.loc 1 82 9 view .LVU68
+ 296              	.LBB18:
+ 297              	.LBI18:
+   5:sk6812.c      ****   asm(" nop");
+ 298              		.loc 1 5 13 view .LVU69
+ 299              	.LBB19:
+   6:sk6812.c      ****   asm(" nop");
+ 300              		.loc 1 6 3 view .LVU70
+ 301              		.syntax unified
+ 302              	@ 6 "sk6812.c" 1
+ 303 008a 00BF     		 nop
+ 304              	@ 0 "" 2
+   7:sk6812.c      ****   asm(" nop");
+ 305              		.loc 1 7 3 view .LVU71
+ 306              	@ 7 "sk6812.c" 1
+ 307 008c 00BF     		 nop
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 9
+
+
+ 308              	@ 0 "" 2
+   8:sk6812.c      **** }
+ 309              		.loc 1 8 3 view .LVU72
+ 310              	@ 8 "sk6812.c" 1
+ 311 008e 00BF     		 nop
+ 312              	@ 0 "" 2
+ 313              		.thumb
+ 314              		.syntax unified
+ 315              	.LBE19:
+ 316              	.LBE18:
+  77:sk6812.c      ****       if (colors[byte] & (0x80 >> bit)) {
+ 317              		.loc 1 77 28 view .LVU73
+ 318              	.LVL5:
+  77:sk6812.c      ****       if (colors[byte] & (0x80 >> bit)) {
+ 319              		.loc 1 77 19 view .LVU74
+  77:sk6812.c      ****       if (colors[byte] & (0x80 >> bit)) {
+ 320              		.loc 1 77 5 is_stmt 0 view .LVU75
+ 321 0090 0134     		adds	r4, r4, #1
+ 322              	.LVL6:
+  77:sk6812.c      ****       if (colors[byte] & (0x80 >> bit)) {
+ 323              		.loc 1 77 5 view .LVU76
+ 324 0092 082C     		cmp	r4, #8
+ 325 0094 4AD0     		beq	.L10
+ 326              	.L5:
+ 327              	.LVL7:
+  78:sk6812.c      ****         leds_pin_write(1);
+ 328              		.loc 1 78 7 is_stmt 1 view .LVU77
+  78:sk6812.c      ****         leds_pin_write(1);
+ 329              		.loc 1 78 17 is_stmt 0 view .LVU78
+ 330 0096 3278     		ldrb	r2, [r6]	@ zero_extendqisi2
+  78:sk6812.c      ****         leds_pin_write(1);
+ 331              		.loc 1 78 32 view .LVU79
+ 332 0098 47FA04F3 		asr	r3, r7, r4
+  78:sk6812.c      ****         leds_pin_write(1);
+ 333              		.loc 1 78 10 view .LVU80
+ 334 009c 1A42     		tst	r2, r3
+  79:sk6812.c      ****         delay_900ns();
+ 335              		.loc 1 79 9 view .LVU81
+ 336 009e 4FF00401 		mov	r1, #4
+ 337 00a2 2846     		mov	r0, r5
+  78:sk6812.c      ****         leds_pin_write(1);
+ 338              		.loc 1 78 10 view .LVU82
+ 339 00a4 B5D1     		bne	.L11
+ 340              		.loc 1 84 9 is_stmt 1 view .LVU83
+ 341 00a6 FFF7FEFF 		bl	gpio_bit_set
+ 342              	.LVL8:
+  85:sk6812.c      ****         delay_300ns();
+ 343              		.loc 1 85 9 view .LVU84
+ 344              	.LBB20:
+ 345              	.LBI20:
+   5:sk6812.c      ****   asm(" nop");
+ 346              		.loc 1 5 13 view .LVU85
+ 347              	.LBB21:
+   6:sk6812.c      ****   asm(" nop");
+ 348              		.loc 1 6 3 view .LVU86
+ 349              		.syntax unified
+ 350              	@ 6 "sk6812.c" 1
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 10
+
+
+ 351 00aa 00BF     		 nop
+ 352              	@ 0 "" 2
+   7:sk6812.c      ****   asm(" nop");
+ 353              		.loc 1 7 3 view .LVU87
+ 354              	@ 7 "sk6812.c" 1
+ 355 00ac 00BF     		 nop
+ 356              	@ 0 "" 2
+   8:sk6812.c      **** }
+ 357              		.loc 1 8 3 view .LVU88
+ 358              	@ 8 "sk6812.c" 1
+ 359 00ae 00BF     		 nop
+ 360              	@ 0 "" 2
+ 361              		.thumb
+ 362              		.syntax unified
+ 363              	.LBE21:
+ 364              	.LBE20:
+  86:sk6812.c      ****         leds_pin_write(0);
+ 365              		.loc 1 86 9 view .LVU89
+ 366 00b0 0421     		movs	r1, #4
+ 367 00b2 2846     		mov	r0, r5
+ 368 00b4 FFF7FEFF 		bl	gpio_bit_reset
+ 369              	.LVL9:
+  87:sk6812.c      ****         asm(" nop");
+ 370              		.loc 1 87 9 view .LVU90
+ 371              		.syntax unified
+ 372              	@ 87 "sk6812.c" 1
+ 373 00b8 00BF     		 nop
+ 374              	@ 0 "" 2
+  88:sk6812.c      ****         delay_900ns();
+ 375              		.loc 1 88 9 view .LVU91
+ 376              		.thumb
+ 377              		.syntax unified
+ 378              	.LBB22:
+ 379              	.LBI22:
+  10:sk6812.c      ****   asm(" nop");
+ 380              		.loc 1 10 13 view .LVU92
+ 381              	.LBB23:
+  11:sk6812.c      ****   asm(" nop");
+ 382              		.loc 1 11 3 view .LVU93
+ 383              		.syntax unified
+ 384              	@ 11 "sk6812.c" 1
+ 385 00ba 00BF     		 nop
+ 386              	@ 0 "" 2
+  12:sk6812.c      ****   asm(" nop");
+ 387              		.loc 1 12 3 view .LVU94
+ 388              	@ 12 "sk6812.c" 1
+ 389 00bc 00BF     		 nop
+ 390              	@ 0 "" 2
+  13:sk6812.c      ****   asm(" nop");
+ 391              		.loc 1 13 3 view .LVU95
+ 392              	@ 13 "sk6812.c" 1
+ 393 00be 00BF     		 nop
+ 394              	@ 0 "" 2
+  14:sk6812.c      ****   asm(" nop");
+ 395              		.loc 1 14 3 view .LVU96
+ 396              	@ 14 "sk6812.c" 1
+ 397 00c0 00BF     		 nop
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 11
+
+
+ 398              	@ 0 "" 2
+  15:sk6812.c      ****   asm(" nop");
+ 399              		.loc 1 15 3 view .LVU97
+ 400              	@ 15 "sk6812.c" 1
+ 401 00c2 00BF     		 nop
+ 402              	@ 0 "" 2
+  16:sk6812.c      ****   asm(" nop");
+ 403              		.loc 1 16 3 view .LVU98
+ 404              	@ 16 "sk6812.c" 1
+ 405 00c4 00BF     		 nop
+ 406              	@ 0 "" 2
+  17:sk6812.c      ****   asm(" nop");
+ 407              		.loc 1 17 3 view .LVU99
+ 408              	@ 17 "sk6812.c" 1
+ 409 00c6 00BF     		 nop
+ 410              	@ 0 "" 2
+  18:sk6812.c      ****   asm(" nop");
+ 411              		.loc 1 18 3 view .LVU100
+ 412              	@ 18 "sk6812.c" 1
+ 413 00c8 00BF     		 nop
+ 414              	@ 0 "" 2
+  19:sk6812.c      ****   asm(" nop");
+ 415              		.loc 1 19 3 view .LVU101
+ 416              	@ 19 "sk6812.c" 1
+ 417 00ca 00BF     		 nop
+ 418              	@ 0 "" 2
+  20:sk6812.c      **** 
+ 419              		.loc 1 20 3 view .LVU102
+ 420              	@ 20 "sk6812.c" 1
+ 421 00cc 00BF     		 nop
+ 422              	@ 0 "" 2
+  22:sk6812.c      ****   asm(" nop");
+ 423              		.loc 1 22 3 view .LVU103
+ 424              	@ 22 "sk6812.c" 1
+ 425 00ce 00BF     		 nop
+ 426              	@ 0 "" 2
+  23:sk6812.c      ****   asm(" nop");
+ 427              		.loc 1 23 3 view .LVU104
+ 428              	@ 23 "sk6812.c" 1
+ 429 00d0 00BF     		 nop
+ 430              	@ 0 "" 2
+  24:sk6812.c      ****   asm(" nop");
+ 431              		.loc 1 24 3 view .LVU105
+ 432              	@ 24 "sk6812.c" 1
+ 433 00d2 00BF     		 nop
+ 434              	@ 0 "" 2
+  25:sk6812.c      ****   asm(" nop");
+ 435              		.loc 1 25 3 view .LVU106
+ 436              	@ 25 "sk6812.c" 1
+ 437 00d4 00BF     		 nop
+ 438              	@ 0 "" 2
+  26:sk6812.c      ****   asm(" nop");
+ 439              		.loc 1 26 3 view .LVU107
+ 440              	@ 26 "sk6812.c" 1
+ 441 00d6 00BF     		 nop
+ 442              	@ 0 "" 2
+  27:sk6812.c      ****   asm(" nop");
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 12
+
+
+ 443              		.loc 1 27 3 view .LVU108
+ 444              	@ 27 "sk6812.c" 1
+ 445 00d8 00BF     		 nop
+ 446              	@ 0 "" 2
+  28:sk6812.c      ****   asm(" nop");
+ 447              		.loc 1 28 3 view .LVU109
+ 448              	@ 28 "sk6812.c" 1
+ 449 00da 00BF     		 nop
+ 450              	@ 0 "" 2
+  29:sk6812.c      ****   asm(" nop");
+ 451              		.loc 1 29 3 view .LVU110
+ 452              	@ 29 "sk6812.c" 1
+ 453 00dc 00BF     		 nop
+ 454              	@ 0 "" 2
+  30:sk6812.c      ****   asm(" nop");
+ 455              		.loc 1 30 3 view .LVU111
+ 456              	@ 30 "sk6812.c" 1
+ 457 00de 00BF     		 nop
+ 458              	@ 0 "" 2
+  31:sk6812.c      **** 
+ 459              		.loc 1 31 3 view .LVU112
+ 460              	@ 31 "sk6812.c" 1
+ 461 00e0 00BF     		 nop
+ 462              	@ 0 "" 2
+  33:sk6812.c      ****   asm(" nop");
+ 463              		.loc 1 33 3 view .LVU113
+ 464              	@ 33 "sk6812.c" 1
+ 465 00e2 00BF     		 nop
+ 466              	@ 0 "" 2
+  34:sk6812.c      ****   asm(" nop");
+ 467              		.loc 1 34 3 view .LVU114
+ 468              	@ 34 "sk6812.c" 1
+ 469 00e4 00BF     		 nop
+ 470              	@ 0 "" 2
+  35:sk6812.c      ****   asm(" nop");
+ 471              		.loc 1 35 3 view .LVU115
+ 472              	@ 35 "sk6812.c" 1
+ 473 00e6 00BF     		 nop
+ 474              	@ 0 "" 2
+  36:sk6812.c      ****   asm(" nop");
+ 475              		.loc 1 36 3 view .LVU116
+ 476              	@ 36 "sk6812.c" 1
+ 477 00e8 00BF     		 nop
+ 478              	@ 0 "" 2
+  37:sk6812.c      ****   asm(" nop");
+ 479              		.loc 1 37 3 view .LVU117
+ 480              	@ 37 "sk6812.c" 1
+ 481 00ea 00BF     		 nop
+ 482              	@ 0 "" 2
+  38:sk6812.c      **** 
+ 483              		.loc 1 38 3 view .LVU118
+ 484              	@ 38 "sk6812.c" 1
+ 485 00ec 00BF     		 nop
+ 486              	@ 0 "" 2
+  40:sk6812.c      ****   asm(" nop");
+ 487              		.loc 1 40 3 view .LVU119
+ 488              	@ 40 "sk6812.c" 1
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 13
+
+
+ 489 00ee 00BF     		 nop
+ 490              	@ 0 "" 2
+  41:sk6812.c      ****   asm(" nop");
+ 491              		.loc 1 41 3 view .LVU120
+ 492              	@ 41 "sk6812.c" 1
+ 493 00f0 00BF     		 nop
+ 494              	@ 0 "" 2
+  42:sk6812.c      ****   asm(" nop");
+ 495              		.loc 1 42 3 view .LVU121
+ 496              	@ 42 "sk6812.c" 1
+ 497 00f2 00BF     		 nop
+ 498              	@ 0 "" 2
+  43:sk6812.c      ****   asm(" nop");
+ 499              		.loc 1 43 3 view .LVU122
+ 500              	@ 43 "sk6812.c" 1
+ 501 00f4 00BF     		 nop
+ 502              	@ 0 "" 2
+  44:sk6812.c      ****   asm(" nop");
+ 503              		.loc 1 44 3 view .LVU123
+ 504              	@ 44 "sk6812.c" 1
+ 505 00f6 00BF     		 nop
+ 506              	@ 0 "" 2
+  45:sk6812.c      **** 
+ 507              		.loc 1 45 3 view .LVU124
+ 508              	@ 45 "sk6812.c" 1
+ 509 00f8 00BF     		 nop
+ 510              	@ 0 "" 2
+  47:sk6812.c      ****   asm(" nop");
+ 511              		.loc 1 47 3 view .LVU125
+ 512              	@ 47 "sk6812.c" 1
+ 513 00fa 00BF     		 nop
+ 514              	@ 0 "" 2
+  48:sk6812.c      ****   asm(" nop");
+ 515              		.loc 1 48 3 view .LVU126
+ 516              	@ 48 "sk6812.c" 1
+ 517 00fc 00BF     		 nop
+ 518              	@ 0 "" 2
+  49:sk6812.c      ****   asm(" nop");
+ 519              		.loc 1 49 3 view .LVU127
+ 520              	@ 49 "sk6812.c" 1
+ 521 00fe 00BF     		 nop
+ 522              	@ 0 "" 2
+  50:sk6812.c      ****   asm(" nop");
+ 523              		.loc 1 50 3 view .LVU128
+ 524              	@ 50 "sk6812.c" 1
+ 525 0100 00BF     		 nop
+ 526              	@ 0 "" 2
+  51:sk6812.c      ****   asm(" nop");
+ 527              		.loc 1 51 3 view .LVU129
+ 528              	@ 51 "sk6812.c" 1
+ 529 0102 00BF     		 nop
+ 530              	@ 0 "" 2
+  52:sk6812.c      ****   asm(" nop");
+ 531              		.loc 1 52 3 view .LVU130
+ 532              	@ 52 "sk6812.c" 1
+ 533 0104 00BF     		 nop
+ 534              	@ 0 "" 2
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 14
+
+
+  53:sk6812.c      ****   asm(" nop");
+ 535              		.loc 1 53 3 view .LVU131
+ 536              	@ 53 "sk6812.c" 1
+ 537 0106 00BF     		 nop
+ 538              	@ 0 "" 2
+  54:sk6812.c      ****   asm(" nop");
+ 539              		.loc 1 54 3 view .LVU132
+ 540              	@ 54 "sk6812.c" 1
+ 541 0108 00BF     		 nop
+ 542              	@ 0 "" 2
+  55:sk6812.c      ****   asm(" nop");
+ 543              		.loc 1 55 3 view .LVU133
+ 544              	@ 55 "sk6812.c" 1
+ 545 010a 00BF     		 nop
+ 546              	@ 0 "" 2
+  56:sk6812.c      **** 
+ 547              		.loc 1 56 3 view .LVU134
+ 548              	@ 56 "sk6812.c" 1
+ 549 010c 00BF     		 nop
+ 550              	@ 0 "" 2
+  58:sk6812.c      ****   asm(" nop");
+ 551              		.loc 1 58 3 view .LVU135
+ 552              	@ 58 "sk6812.c" 1
+ 553 010e 00BF     		 nop
+ 554              	@ 0 "" 2
+  59:sk6812.c      ****   asm(" nop");
+ 555              		.loc 1 59 3 view .LVU136
+ 556              	@ 59 "sk6812.c" 1
+ 557 0110 00BF     		 nop
+ 558              	@ 0 "" 2
+  60:sk6812.c      ****   asm(" nop");
+ 559              		.loc 1 60 3 view .LVU137
+ 560              	@ 60 "sk6812.c" 1
+ 561 0112 00BF     		 nop
+ 562              	@ 0 "" 2
+  61:sk6812.c      ****   asm(" nop");
+ 563              		.loc 1 61 3 view .LVU138
+ 564              	@ 61 "sk6812.c" 1
+ 565 0114 00BF     		 nop
+ 566              	@ 0 "" 2
+  62:sk6812.c      ****   asm(" nop");
+ 567              		.loc 1 62 3 view .LVU139
+ 568              	@ 62 "sk6812.c" 1
+ 569 0116 00BF     		 nop
+ 570              	@ 0 "" 2
+  63:sk6812.c      **** 
+ 571              		.loc 1 63 3 view .LVU140
+ 572              	@ 63 "sk6812.c" 1
+ 573 0118 00BF     		 nop
+ 574              	@ 0 "" 2
+  65:sk6812.c      ****   asm(" nop");
+ 575              		.loc 1 65 3 view .LVU141
+ 576              	@ 65 "sk6812.c" 1
+ 577 011a 00BF     		 nop
+ 578              	@ 0 "" 2
+  66:sk6812.c      ****   asm(" nop");
+ 579              		.loc 1 66 3 view .LVU142
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 15
+
+
+ 580              	@ 66 "sk6812.c" 1
+ 581 011c 00BF     		 nop
+ 582              	@ 0 "" 2
+  67:sk6812.c      ****   asm(" nop");
+ 583              		.loc 1 67 3 view .LVU143
+ 584              	@ 67 "sk6812.c" 1
+ 585 011e 00BF     		 nop
+ 586              	@ 0 "" 2
+  68:sk6812.c      ****   asm(" nop");
+ 587              		.loc 1 68 3 view .LVU144
+ 588              	@ 68 "sk6812.c" 1
+ 589 0120 00BF     		 nop
+ 590              	@ 0 "" 2
+  69:sk6812.c      ****   asm(" nop");
+ 591              		.loc 1 69 3 view .LVU145
+ 592              	@ 69 "sk6812.c" 1
+ 593 0122 00BF     		 nop
+ 594              	@ 0 "" 2
+  70:sk6812.c      **** }
+ 595              		.loc 1 70 3 view .LVU146
+ 596              	@ 70 "sk6812.c" 1
+ 597 0124 00BF     		 nop
+ 598              	@ 0 "" 2
+ 599              		.thumb
+ 600              		.syntax unified
+ 601              	.LBE23:
+ 602              	.LBE22:
+  77:sk6812.c      ****       if (colors[byte] & (0x80 >> bit)) {
+ 603              		.loc 1 77 28 view .LVU147
+ 604              	.LVL10:
+  77:sk6812.c      ****       if (colors[byte] & (0x80 >> bit)) {
+ 605              		.loc 1 77 19 view .LVU148
+  77:sk6812.c      ****       if (colors[byte] & (0x80 >> bit)) {
+ 606              		.loc 1 77 5 is_stmt 0 view .LVU149
+ 607 0126 0134     		adds	r4, r4, #1
+ 608              	.LVL11:
+  77:sk6812.c      ****       if (colors[byte] & (0x80 >> bit)) {
+ 609              		.loc 1 77 5 view .LVU150
+ 610 0128 082C     		cmp	r4, #8
+ 611 012a B4D1     		bne	.L5
+ 612              	.L10:
+  76:sk6812.c      ****     for (bit = 0; bit < 8; bit++) {
+ 613              		.loc 1 76 41 is_stmt 1 discriminator 2 view .LVU151
+ 614              	.LVL12:
+  76:sk6812.c      ****     for (bit = 0; bit < 8; bit++) {
+ 615              		.loc 1 76 18 discriminator 2 view .LVU152
+  76:sk6812.c      ****     for (bit = 0; bit < 8; bit++) {
+ 616              		.loc 1 76 3 is_stmt 0 discriminator 2 view .LVU153
+ 617 012c 0136     		adds	r6, r6, #1
+ 618              	.LVL13:
+  76:sk6812.c      ****     for (bit = 0; bit < 8; bit++) {
+ 619              		.loc 1 76 3 discriminator 2 view .LVU154
+ 620 012e B045     		cmp	r8, r6
+ 621 0130 7FF46DAF 		bne	.L2
+  89:sk6812.c      ****       }
+  90:sk6812.c      ****     }
+  91:sk6812.c      ****   }
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 16
+
+
+  92:sk6812.c      **** }
+ 622              		.loc 1 92 1 view .LVU155
+ 623 0134 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 624              	.L13:
+ 625              		.align	2
+ 626              	.L12:
+ 627 0138 00000000 		.word	.LANCHOR0
+ 628 013c 00080240 		.word	1073874944
+ 629              		.cfi_endproc
+ 630              	.LFE118:
+ 632              		.section	.text.sk6812_set,"ax",%progbits
+ 633              		.align	1
+ 634              		.p2align 2,,3
+ 635              		.global	sk6812_set
+ 636              		.syntax unified
+ 637              		.thumb
+ 638              		.thumb_func
+ 640              	sk6812_set:
+ 641              	.LVL14:
+ 642              	.LFB119:
+  93:sk6812.c      **** 
+  94:sk6812.c      **** void sk6812_set(uint8_t sequence, uint8_t r, uint8_t g, uint8_t b) {
+ 643              		.loc 1 94 68 is_stmt 1 view -0
+ 644              		.cfi_startproc
+ 645              		@ args = 0, pretend = 0, frame = 0
+ 646              		@ frame_needed = 0, uses_anonymous_args = 0
+ 647              		@ link register save eliminated.
+  95:sk6812.c      ****   colors[((sequence - 1) * 3) + R_OFFSET] = r;
+ 648              		.loc 1 95 3 view .LVU157
+  94:sk6812.c      ****   colors[((sequence - 1) * 3) + R_OFFSET] = r;
+ 649              		.loc 1 94 68 is_stmt 0 view .LVU158
+ 650 0000 10B4     		push	{r4}
+ 651              	.LCFI1:
+ 652              		.cfi_def_cfa_offset 4
+ 653              		.cfi_offset 4, -4
+ 654              		.loc 1 95 21 view .LVU159
+ 655 0002 0138     		subs	r0, r0, #1
+ 656              	.LVL15:
+ 657              		.loc 1 95 43 view .LVU160
+ 658 0004 064C     		ldr	r4, .L16
+ 659              		.loc 1 95 26 view .LVU161
+ 660 0006 00EB4000 		add	r0, r0, r0, lsl #1
+ 661              		.loc 1 95 43 view .LVU162
+ 662 000a 04EB000C 		add	ip, r4, r0
+ 663 000e 8CF80110 		strb	r1, [ip, #1]
+  96:sk6812.c      ****   colors[((sequence - 1) * 3) + G_OFFSET] = g;
+ 664              		.loc 1 96 3 is_stmt 1 view .LVU163
+ 665              		.loc 1 96 43 is_stmt 0 view .LVU164
+ 666 0012 2254     		strb	r2, [r4, r0]
+  97:sk6812.c      ****   colors[((sequence - 1) * 3) + B_OFFSET] = b;
+ 667              		.loc 1 97 3 is_stmt 1 view .LVU165
+ 668              		.loc 1 97 43 is_stmt 0 view .LVU166
+ 669 0014 8CF80230 		strb	r3, [ip, #2]
+  98:sk6812.c      ****   sk6812_send_colors();
+ 670              		.loc 1 98 3 is_stmt 1 view .LVU167
+  99:sk6812.c      **** }
+ 671              		.loc 1 99 1 is_stmt 0 view .LVU168
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 17
+
+
+ 672 0018 10BC     		pop	{r4}
+ 673              	.LCFI2:
+ 674              		.cfi_restore 4
+ 675              		.cfi_def_cfa_offset 0
+  98:sk6812.c      ****   sk6812_send_colors();
+ 676              		.loc 1 98 3 view .LVU169
+ 677 001a FFF7FEBF 		b	sk6812_send_colors
+ 678              	.LVL16:
+ 679              	.L17:
+  98:sk6812.c      ****   sk6812_send_colors();
+ 680              		.loc 1 98 3 view .LVU170
+ 681 001e 00BF     		.align	2
+ 682              	.L16:
+ 683 0020 00000000 		.word	.LANCHOR0
+ 684              		.cfi_endproc
+ 685              	.LFE119:
+ 687              		.section	.text.sk6812_initialize,"ax",%progbits
+ 688              		.align	1
+ 689              		.p2align 2,,3
+ 690              		.global	sk6812_initialize
+ 691              		.syntax unified
+ 692              		.thumb
+ 693              		.thumb_func
+ 695              	sk6812_initialize:
+ 696              	.LFB120:
+ 100:sk6812.c      **** 
+ 101:sk6812.c      **** void sk6812_initialize(void) {
+ 697              		.loc 1 101 30 is_stmt 1 view -0
+ 698              		.cfi_startproc
+ 699              		@ args = 0, pretend = 0, frame = 0
+ 700              		@ frame_needed = 0, uses_anonymous_args = 0
+ 102:sk6812.c      ****   uint32_t led;
+ 701              		.loc 1 102 3 view .LVU172
+ 103:sk6812.c      ****   for (led = 0; led < RGB_NUMBER; led++) {
+ 702              		.loc 1 103 3 view .LVU173
+ 703              	.LVL17:
+ 704              		.loc 1 103 17 view .LVU174
+ 104:sk6812.c      ****     sk6812_set(led, 0, 0, 0);
+ 705              		.loc 1 104 5 view .LVU175
+ 706              	.LBB24:
+ 707              	.LBI24:
+  94:sk6812.c      ****   colors[((sequence - 1) * 3) + R_OFFSET] = r;
+ 708              		.loc 1 94 6 view .LVU176
+ 709              	.LBB25:
+  95:sk6812.c      ****   colors[((sequence - 1) * 3) + G_OFFSET] = g;
+ 710              		.loc 1 95 3 view .LVU177
+  96:sk6812.c      ****   colors[((sequence - 1) * 3) + B_OFFSET] = b;
+ 711              		.loc 1 96 3 view .LVU178
+ 712              	.LBE25:
+ 713              	.LBE24:
+ 101:sk6812.c      ****   uint32_t led;
+ 714              		.loc 1 101 30 is_stmt 0 view .LVU179
+ 715 0000 08B5     		push	{r3, lr}
+ 716              	.LCFI3:
+ 717              		.cfi_def_cfa_offset 8
+ 718              		.cfi_offset 3, -8
+ 719              		.cfi_offset 14, -4
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 18
+
+
+ 720              	.LBB27:
+ 721              	.LBB26:
+  96:sk6812.c      ****   colors[((sequence - 1) * 3) + B_OFFSET] = b;
+ 722              		.loc 1 96 43 view .LVU180
+ 723 0002 064B     		ldr	r3, .L20
+ 724 0004 0022     		movs	r2, #0
+ 725 0006 23F8032C 		strh	r2, [r3, #-3]	@ unaligned
+  97:sk6812.c      ****   sk6812_send_colors();
+ 726              		.loc 1 97 3 is_stmt 1 view .LVU181
+  97:sk6812.c      ****   sk6812_send_colors();
+ 727              		.loc 1 97 43 is_stmt 0 view .LVU182
+ 728 000a 03F8012C 		strb	r2, [r3, #-1]
+  98:sk6812.c      **** }
+ 729              		.loc 1 98 3 is_stmt 1 view .LVU183
+ 730 000e FFF7FEFF 		bl	sk6812_send_colors
+ 731              	.LVL18:
+  98:sk6812.c      **** }
+ 732              		.loc 1 98 3 is_stmt 0 view .LVU184
+ 733              	.LBE26:
+ 734              	.LBE27:
+ 103:sk6812.c      ****     sk6812_set(led, 0, 0, 0);
+ 735              		.loc 1 103 35 is_stmt 1 view .LVU185
+ 103:sk6812.c      ****     sk6812_set(led, 0, 0, 0);
+ 736              		.loc 1 103 17 view .LVU186
+ 105:sk6812.c      ****   }
+ 106:sk6812.c      ****   sk6812_send_colors();
+ 737              		.loc 1 106 3 view .LVU187
+ 107:sk6812.c      **** }...
+ 738              		.loc 1 107 1 is_stmt 0 view .LVU188
+ 739 0012 BDE80840 		pop	{r3, lr}
+ 740              	.LCFI4:
+ 741              		.cfi_restore 14
+ 742              		.cfi_restore 3
+ 743              		.cfi_def_cfa_offset 0
+ 106:sk6812.c      ****   sk6812_send_colors();
+ 744              		.loc 1 106 3 view .LVU189
+ 745 0016 FFF7FEBF 		b	sk6812_send_colors
+ 746              	.LVL19:
+ 747              	.L21:
+ 748 001a 00BF     		.align	2
+ 749              	.L20:
+ 750 001c 00000000 		.word	.LANCHOR0
+ 751              		.cfi_endproc
+ 752              	.LFE120:
+ 754              		.global	colors
+ 755              		.section	.bss.colors,"aw",%nobits
+ 756              		.align	2
+ 757              		.set	.LANCHOR0,. + 0
+ 760              	colors:
+ 761 0000 000000   		.space	3
+ 762              		.text
+ 763              	.Letext0:
+ 764              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
+ 765              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
+ 766              		.file 4 "lib/GD32F4xx/Include/gd32f4xx_gpio.h"
+ 767              		.file 5 "lib/GD32F4xx/Include/gd32f4xx_dbg.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s 			page 19
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 sk6812.c
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s:18     .text.sk6812_send_colors:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s:25     .text.sk6812_send_colors:0000000000000000 sk6812_send_colors
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s:627    .text.sk6812_send_colors:0000000000000138 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s:633    .text.sk6812_set:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s:640    .text.sk6812_set:0000000000000000 sk6812_set
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s:683    .text.sk6812_set:0000000000000020 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s:688    .text.sk6812_initialize:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s:695    .text.sk6812_initialize:0000000000000000 sk6812_initialize
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s:750    .text.sk6812_initialize:000000000000001c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s:760    .bss.colors:0000000000000000 colors
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccw9lify.s:756    .bss.colors:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+gpio_bit_set
+gpio_bit_reset

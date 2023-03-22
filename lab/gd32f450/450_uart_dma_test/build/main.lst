@@ -1,0 +1,554 @@
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 2
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"main.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.uart_init,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.global	uart_init
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	uart_init:
+  26              	.LFB117:
+  27              		.file 1 "main.c"
+   1:main.c        **** #include "gd32f4xx.h"
+   2:main.c        **** #include "stdint.h"
+   3:main.c        **** 
+   4:main.c        **** // pc7 - rx, pc6 - tx, pd15 - rede
+   5:main.c        **** // usart5 AF8
+   6:main.c        **** //dma1 channel6
+   7:main.c        **** 
+   8:main.c        **** void uart_init(void);
+   9:main.c        **** void dma_send_message(void);
+  10:main.c        **** 
+  11:main.c        **** uint8_t txbuffer[] = "Hello Zhenya";
+  12:main.c        **** 
+  13:main.c        **** int main() {
+  14:main.c        ****   rcu_periph_clock_enable(RCU_GPIOA);
+  15:main.c        ****   rcu_periph_clock_enable(RCU_GPIOB);
+  16:main.c        ****   rcu_periph_clock_enable(RCU_GPIOC);
+  17:main.c        ****   rcu_periph_clock_enable(RCU_GPIOD);
+  18:main.c        ****   rcu_periph_clock_enable(RCU_GPIOE);
+  19:main.c        **** 
+  20:main.c        ****   uart_init();
+  21:main.c        **** 
+  22:main.c        ****   while (1) {
+  23:main.c        ****     for(uint32_t x = 0; x < 2000; x++);
+  24:main.c        ****     dma_send_message();
+  25:main.c        ****   }
+  26:main.c        **** }
+  27:main.c        **** 
+  28:main.c        **** void uart_init() {
+  28              		.loc 1 28 18 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 2
+
+
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  29:main.c        ****   /* enable USART clock */
+  30:main.c        ****   rcu_periph_clock_enable(RCU_USART5);
+  32              		.loc 1 30 3 view .LVU1
+  28:main.c        ****   /* enable USART clock */
+  33              		.loc 1 28 18 is_stmt 0 view .LVU2
+  34 0000 38B5     		push	{r3, r4, r5, lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 16
+  37              		.cfi_offset 3, -16
+  38              		.cfi_offset 4, -12
+  39              		.cfi_offset 5, -8
+  40              		.cfi_offset 14, -4
+  31:main.c        **** 
+  32:main.c        ****   /* connect port to USARTx_Tx */
+  33:main.c        ****   gpio_af_set(GPIOC, GPIO_AF_8, GPIO_PIN_6);
+  41              		.loc 1 33 3 view .LVU3
+  42 0002 1E4C     		ldr	r4, .L4
+  34:main.c        **** 
+  35:main.c        ****   /* connect port to USARTx_Rx */
+  36:main.c        ****   gpio_af_set(GPIOC, GPIO_AF_8, GPIO_PIN_7);
+  37:main.c        **** 
+  38:main.c        **** 
+  39:main.c        ****   /* configure USART Tx as alternate function push-pull */
+  40:main.c        ****   gpio_mode_set(GPIOC, GPIO_MODE_AF, GPIO_PUPD_PULLUP,
+  41:main.c        ****                 GPIO_PIN_6);
+  42:main.c        ****   gpio_output_options_set(GPIOC, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ,
+  43:main.c        ****                           GPIO_PIN_6);
+  44:main.c        **** 
+  45:main.c        ****   /* configure USART Rx as alternate function push-pull */
+  46:main.c        ****   gpio_mode_set(GPIOC, GPIO_MODE_AF, GPIO_PUPD_PULLUP,
+  47:main.c        ****                 GPIO_PIN_7);
+  48:main.c        ****   gpio_output_options_set(GPIOC, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ,
+  49:main.c        ****                           GPIO_PIN_7);
+  50:main.c        **** 
+  51:main.c        ****   /* USART configure */
+  52:main.c        ****   usart_deinit(USART5);
+  43              		.loc 1 52 3 view .LVU4
+  44 0004 1E4D     		ldr	r5, .L4+4
+  30:main.c        **** 
+  45              		.loc 1 30 3 view .LVU5
+  46 0006 41F20510 		movw	r0, #4357
+  47 000a FFF7FEFF 		bl	rcu_periph_clock_enable
+  48              	.LVL0:
+  33:main.c        **** 
+  49              		.loc 1 33 3 is_stmt 1 view .LVU6
+  50 000e 2046     		mov	r0, r4
+  51 0010 4022     		movs	r2, #64
+  52 0012 0821     		movs	r1, #8
+  53 0014 FFF7FEFF 		bl	gpio_af_set
+  54              	.LVL1:
+  36:main.c        **** 
+  55              		.loc 1 36 3 view .LVU7
+  56 0018 2046     		mov	r0, r4
+  57 001a 8022     		movs	r2, #128
+  58 001c 0821     		movs	r1, #8
+  59 001e FFF7FEFF 		bl	gpio_af_set
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 3
+
+
+  60              	.LVL2:
+  40:main.c        ****                 GPIO_PIN_6);
+  61              		.loc 1 40 3 view .LVU8
+  62 0022 2046     		mov	r0, r4
+  63 0024 4023     		movs	r3, #64
+  64 0026 0122     		movs	r2, #1
+  65 0028 0221     		movs	r1, #2
+  66 002a FFF7FEFF 		bl	gpio_mode_set
+  67              	.LVL3:
+  42:main.c        ****                           GPIO_PIN_6);
+  68              		.loc 1 42 3 view .LVU9
+  69 002e 2046     		mov	r0, r4
+  70 0030 4023     		movs	r3, #64
+  71 0032 0222     		movs	r2, #2
+  72 0034 0021     		movs	r1, #0
+  73 0036 FFF7FEFF 		bl	gpio_output_options_set
+  74              	.LVL4:
+  46:main.c        ****                 GPIO_PIN_7);
+  75              		.loc 1 46 3 view .LVU10
+  76 003a 2046     		mov	r0, r4
+  77 003c 8023     		movs	r3, #128
+  78 003e 0122     		movs	r2, #1
+  79 0040 0221     		movs	r1, #2
+  80 0042 FFF7FEFF 		bl	gpio_mode_set
+  81              	.LVL5:
+  48:main.c        ****                           GPIO_PIN_7);
+  82              		.loc 1 48 3 view .LVU11
+  83 0046 8023     		movs	r3, #128
+  84 0048 0222     		movs	r2, #2
+  85 004a 0021     		movs	r1, #0
+  86 004c 2046     		mov	r0, r4
+  87 004e FFF7FEFF 		bl	gpio_output_options_set
+  88              	.LVL6:
+  89              		.loc 1 52 3 view .LVU12
+  90 0052 2846     		mov	r0, r5
+  91 0054 FFF7FEFF 		bl	usart_deinit
+  92              	.LVL7:
+  53:main.c        ****   usart_baudrate_set(USART5, 1000000U);
+  93              		.loc 1 53 3 view .LVU13
+  94 0058 2846     		mov	r0, r5
+  95 005a 0A49     		ldr	r1, .L4+8
+  96 005c FFF7FEFF 		bl	usart_baudrate_set
+  97              	.LVL8:
+  54:main.c        ****   usart_receive_config(USART5, USART_RECEIVE_ENABLE);
+  98              		.loc 1 54 3 view .LVU14
+  99 0060 2846     		mov	r0, r5
+ 100 0062 0421     		movs	r1, #4
+ 101 0064 FFF7FEFF 		bl	usart_receive_config
+ 102              	.LVL9:
+  55:main.c        ****   usart_transmit_config(USART5, USART_TRANSMIT_ENABLE);
+ 103              		.loc 1 55 3 view .LVU15
+ 104 0068 2846     		mov	r0, r5
+ 105 006a 0821     		movs	r1, #8
+ 106 006c FFF7FEFF 		bl	usart_transmit_config
+ 107              	.LVL10:
+  56:main.c        ****   usart_enable(USART5);
+ 108              		.loc 1 56 3 view .LVU16
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 4
+
+
+ 109 0070 2846     		mov	r0, r5
+  57:main.c        **** }
+ 110              		.loc 1 57 1 is_stmt 0 view .LVU17
+ 111 0072 BDE83840 		pop	{r3, r4, r5, lr}
+ 112              	.LCFI1:
+ 113              		.cfi_restore 14
+ 114              		.cfi_restore 5
+ 115              		.cfi_restore 4
+ 116              		.cfi_restore 3
+ 117              		.cfi_def_cfa_offset 0
+  56:main.c        ****   usart_enable(USART5);
+ 118              		.loc 1 56 3 view .LVU18
+ 119 0076 FFF7FEBF 		b	usart_enable
+ 120              	.LVL11:
+ 121              	.L5:
+ 122 007a 00BF     		.align	2
+ 123              	.L4:
+ 124 007c 00080240 		.word	1073874944
+ 125 0080 00140140 		.word	1073812480
+ 126 0084 40420F00 		.word	1000000
+ 127              		.cfi_endproc
+ 128              	.LFE117:
+ 130              		.section	.text.dma_send_message,"ax",%progbits
+ 131              		.align	1
+ 132              		.p2align 2,,3
+ 133              		.global	dma_send_message
+ 134              		.syntax unified
+ 135              		.thumb
+ 136              		.thumb_func
+ 138              	dma_send_message:
+ 139              	.LFB118:
+  58:main.c        **** 
+  59:main.c        **** void dma_send_message() {
+ 140              		.loc 1 59 25 is_stmt 1 view -0
+ 141              		.cfi_startproc
+ 142              		@ args = 0, pretend = 0, frame = 40
+ 143              		@ frame_needed = 0, uses_anonymous_args = 0
+  60:main.c        ****   dma_single_data_parameter_struct dma_init_struct;
+ 144              		.loc 1 60 3 view .LVU20
+  61:main.c        ****     /* enable DMA1 */
+  62:main.c        ****     rcu_periph_clock_enable(RCU_DMA1);
+ 145              		.loc 1 62 5 view .LVU21
+  59:main.c        ****   dma_single_data_parameter_struct dma_init_struct;
+ 146              		.loc 1 59 25 is_stmt 0 view .LVU22
+ 147 0000 30B5     		push	{r4, r5, lr}
+ 148              	.LCFI2:
+ 149              		.cfi_def_cfa_offset 12
+ 150              		.cfi_offset 4, -12
+ 151              		.cfi_offset 5, -8
+ 152              		.cfi_offset 14, -4
+ 153              		.loc 1 62 5 view .LVU23
+ 154 0002 40F61640 		movw	r0, #3094
+  59:main.c        ****   dma_single_data_parameter_struct dma_init_struct;
+ 155              		.loc 1 59 25 view .LVU24
+ 156 0006 8BB0     		sub	sp, sp, #44
+ 157              	.LCFI3:
+ 158              		.cfi_def_cfa_offset 56
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 5
+
+
+ 159              		.loc 1 62 5 view .LVU25
+ 160 0008 FFF7FEFF 		bl	rcu_periph_clock_enable
+ 161              	.LVL12:
+  63:main.c        **** 
+  64:main.c        ****     /* deinitialize DMA channel7(USART0 TX) */
+  65:main.c        ****     dma_deinit(DMA1, DMA_CH6);
+ 162              		.loc 1 65 5 is_stmt 1 view .LVU26
+  66:main.c        ****     dma_init_struct.direction = DMA_MEMORY_TO_PERIPH;
+ 163              		.loc 1 66 31 is_stmt 0 view .LVU27
+ 164 000c 4024     		movs	r4, #64
+  65:main.c        ****     dma_init_struct.direction = DMA_MEMORY_TO_PERIPH;
+ 165              		.loc 1 65 5 view .LVU28
+ 166 000e 1B48     		ldr	r0, .L11
+ 167 0010 0621     		movs	r1, #6
+ 168              		.loc 1 66 31 view .LVU29
+ 169 0012 0D25     		movs	r5, #13
+  65:main.c        ****     dma_init_struct.direction = DMA_MEMORY_TO_PERIPH;
+ 170              		.loc 1 65 5 view .LVU30
+ 171 0014 FFF7FEFF 		bl	dma_deinit
+ 172              	.LVL13:
+ 173              		.loc 1 66 5 is_stmt 1 view .LVU31
+  67:main.c        ****     dma_init_struct.memory0_addr = (uint32_t)txbuffer;
+ 174              		.loc 1 67 5 view .LVU32
+  66:main.c        ****     dma_init_struct.direction = DMA_MEMORY_TO_PERIPH;
+ 175              		.loc 1 66 31 is_stmt 0 view .LVU33
+ 176 0018 CDE90645 		strd	r4, [sp, #24]
+ 177              		.loc 1 67 36 view .LVU34
+ 178 001c 1849     		ldr	r1, .L11+4
+  68:main.c        ****     dma_init_struct.memory_inc = DMA_MEMORY_INCREASE_ENABLE;
+  69:main.c        ****     dma_init_struct.periph_memory_width = DMA_PERIPH_WIDTH_8BIT;
+  70:main.c        ****     dma_init_struct.number = sizeof(txbuffer);
+  71:main.c        ****     dma_init_struct.periph_addr = (uint32_t)&USART_DATA(USART5);
+ 179              		.loc 1 71 33 view .LVU35
+ 180 001e 194C     		ldr	r4, .L11+8
+  72:main.c        ****     dma_init_struct.periph_inc = DMA_PERIPH_INCREASE_DISABLE;
+  73:main.c        ****     dma_init_struct.priority = DMA_PRIORITY_ULTRA_HIGH;
+  74:main.c        ****     dma_single_data_mode_init(DMA1, DMA_CH6, &dma_init_struct);
+ 181              		.loc 1 74 5 view .LVU36
+ 182 0020 1648     		ldr	r0, .L11
+  67:main.c        ****     dma_init_struct.memory_inc = DMA_MEMORY_INCREASE_ENABLE;
+ 183              		.loc 1 67 34 view .LVU37
+ 184 0022 0291     		str	r1, [sp, #8]
+  68:main.c        ****     dma_init_struct.memory_inc = DMA_MEMORY_INCREASE_ENABLE;
+ 185              		.loc 1 68 5 is_stmt 1 view .LVU38
+  68:main.c        ****     dma_init_struct.memory_inc = DMA_MEMORY_INCREASE_ENABLE;
+ 186              		.loc 1 68 32 is_stmt 0 view .LVU39
+ 187 0024 0023     		movs	r3, #0
+ 188              		.loc 1 74 5 view .LVU40
+ 189 0026 6A46     		mov	r2, sp
+  69:main.c        ****     dma_init_struct.number = sizeof(txbuffer);
+ 190              		.loc 1 69 41 view .LVU41
+ 191 0028 CDE90333 		strd	r3, r3, [sp, #12]
+  70:main.c        ****     dma_init_struct.periph_addr = (uint32_t)&USART_DATA(USART5);
+ 192              		.loc 1 70 5 is_stmt 1 view .LVU42
+  71:main.c        ****     dma_init_struct.periph_inc = DMA_PERIPH_INCREASE_DISABLE;
+ 193              		.loc 1 71 5 view .LVU43
+ 194              		.loc 1 74 5 is_stmt 0 view .LVU44
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 6
+
+
+ 195 002c 0621     		movs	r1, #6
+  73:main.c        ****     dma_single_data_mode_init(DMA1, DMA_CH6, &dma_init_struct);
+ 196              		.loc 1 73 30 view .LVU45
+ 197 002e 4FF44033 		mov	r3, #196608
+  71:main.c        ****     dma_init_struct.periph_inc = DMA_PERIPH_INCREASE_DISABLE;
+ 198              		.loc 1 71 33 view .LVU46
+ 199 0032 0094     		str	r4, [sp]
+  72:main.c        ****     dma_init_struct.priority = DMA_PRIORITY_ULTRA_HIGH;
+ 200              		.loc 1 72 5 is_stmt 1 view .LVU47
+  72:main.c        ****     dma_init_struct.priority = DMA_PRIORITY_ULTRA_HIGH;
+ 201              		.loc 1 72 32 is_stmt 0 view .LVU48
+ 202 0034 0124     		movs	r4, #1
+  73:main.c        ****     dma_single_data_mode_init(DMA1, DMA_CH6, &dma_init_struct);
+ 203              		.loc 1 73 30 view .LVU49
+ 204 0036 0893     		str	r3, [sp, #32]
+  72:main.c        ****     dma_init_struct.priority = DMA_PRIORITY_ULTRA_HIGH;
+ 205              		.loc 1 72 32 view .LVU50
+ 206 0038 0194     		str	r4, [sp, #4]
+  73:main.c        ****     dma_single_data_mode_init(DMA1, DMA_CH6, &dma_init_struct);
+ 207              		.loc 1 73 5 is_stmt 1 view .LVU51
+ 208              		.loc 1 74 5 view .LVU52
+ 209 003a FFF7FEFF 		bl	dma_single_data_mode_init
+ 210              	.LVL14:
+  75:main.c        ****     /* configure DMA mode */
+  76:main.c        ****     dma_circulation_disable(DMA1, DMA_CH6);
+ 211              		.loc 1 76 5 view .LVU53
+ 212 003e 0F48     		ldr	r0, .L11
+  77:main.c        ****     dma_channel_subperipheral_select(DMA1, DMA_CH6, DMA_SUBPERI5);
+  78:main.c        ****     /* enable DMA channel7 */
+  79:main.c        ****     dma_channel_enable(DMA1, DMA_CH6);
+  80:main.c        **** 
+  81:main.c        ****     /* USART DMA enable for transmission and reception */
+  82:main.c        ****     usart_dma_transmit_config(USART5, USART_DENT_ENABLE);
+  83:main.c        ****     usart_dma_receive_config(USART5, USART_DENR_ENABLE);
+  84:main.c        **** 
+  85:main.c        ****     /* wait DMA channel transfer complete */
+  86:main.c        ****     while(RESET == dma_flag_get(DMA1, DMA_CH6, DMA_FLAG_FTF));
+ 213              		.loc 1 86 20 is_stmt 0 view .LVU54
+ 214 0040 0E4C     		ldr	r4, .L11
+  76:main.c        ****     dma_channel_subperipheral_select(DMA1, DMA_CH6, DMA_SUBPERI5);
+ 215              		.loc 1 76 5 view .LVU55
+ 216 0042 0621     		movs	r1, #6
+ 217 0044 FFF7FEFF 		bl	dma_circulation_disable
+ 218              	.LVL15:
+  77:main.c        ****     dma_channel_subperipheral_select(DMA1, DMA_CH6, DMA_SUBPERI5);
+ 219              		.loc 1 77 5 is_stmt 1 view .LVU56
+ 220 0048 0522     		movs	r2, #5
+ 221 004a 0C48     		ldr	r0, .L11
+ 222 004c 0621     		movs	r1, #6
+ 223 004e FFF7FEFF 		bl	dma_channel_subperipheral_select
+ 224              	.LVL16:
+  79:main.c        **** 
+ 225              		.loc 1 79 5 view .LVU57
+ 226 0052 0A48     		ldr	r0, .L11
+ 227 0054 0621     		movs	r1, #6
+ 228 0056 FFF7FEFF 		bl	dma_channel_enable
+ 229              	.LVL17:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 7
+
+
+  82:main.c        ****     usart_dma_receive_config(USART5, USART_DENR_ENABLE);
+ 230              		.loc 1 82 5 view .LVU58
+ 231 005a 0B48     		ldr	r0, .L11+12
+ 232 005c 8021     		movs	r1, #128
+ 233 005e FFF7FEFF 		bl	usart_dma_transmit_config
+ 234              	.LVL18:
+  83:main.c        **** 
+ 235              		.loc 1 83 5 view .LVU59
+ 236 0062 0948     		ldr	r0, .L11+12
+ 237 0064 4021     		movs	r1, #64
+ 238 0066 FFF7FEFF 		bl	usart_dma_receive_config
+ 239              	.LVL19:
+ 240              		.loc 1 86 5 view .LVU60
+ 241              	.L7:
+ 242              		.loc 1 86 62 discriminator 1 view .LVU61
+ 243              		.loc 1 86 10 discriminator 1 view .LVU62
+ 244              		.loc 1 86 20 is_stmt 0 discriminator 1 view .LVU63
+ 245 006a 2022     		movs	r2, #32
+ 246 006c 0621     		movs	r1, #6
+ 247 006e 2046     		mov	r0, r4
+ 248 0070 FFF7FEFF 		bl	dma_flag_get
+ 249              	.LVL20:
+ 250              		.loc 1 86 10 discriminator 1 view .LVU64
+ 251 0074 0028     		cmp	r0, #0
+ 252 0076 F8D0     		beq	.L7
+  87:main.c        **** }...
+ 253              		.loc 1 87 1 view .LVU65
+ 254 0078 0BB0     		add	sp, sp, #44
+ 255              	.LCFI4:
+ 256              		.cfi_def_cfa_offset 12
+ 257              		@ sp needed
+ 258 007a 30BD     		pop	{r4, r5, pc}
+ 259              	.L12:
+ 260              		.align	2
+ 261              	.L11:
+ 262 007c 00640240 		.word	1073898496
+ 263 0080 00000000 		.word	.LANCHOR0
+ 264 0084 04140140 		.word	1073812484
+ 265 0088 00140140 		.word	1073812480
+ 266              		.cfi_endproc
+ 267              	.LFE118:
+ 269              		.section	.text.startup.main,"ax",%progbits
+ 270              		.align	1
+ 271              		.p2align 2,,3
+ 272              		.global	main
+ 273              		.syntax unified
+ 274              		.thumb
+ 275              		.thumb_func
+ 277              	main:
+ 278              	.LFB116:
+  13:main.c        **** int main() {
+ 279              		.loc 1 13 12 is_stmt 1 view -0
+ 280              		.cfi_startproc
+ 281              		@ args = 0, pretend = 0, frame = 0
+ 282              		@ frame_needed = 0, uses_anonymous_args = 0
+  14:main.c        ****   rcu_periph_clock_enable(RCU_GPIOA);
+ 283              		.loc 1 14 3 view .LVU67
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 8
+
+
+  13:main.c        **** int main() {
+ 284              		.loc 1 13 12 is_stmt 0 view .LVU68
+ 285 0000 08B5     		push	{r3, lr}
+ 286              	.LCFI5:
+ 287              		.cfi_def_cfa_offset 8
+ 288              		.cfi_offset 3, -8
+ 289              		.cfi_offset 14, -4
+  14:main.c        ****   rcu_periph_clock_enable(RCU_GPIOA);
+ 290              		.loc 1 14 3 view .LVU69
+ 291 0002 4FF44060 		mov	r0, #3072
+ 292 0006 FFF7FEFF 		bl	rcu_periph_clock_enable
+ 293              	.LVL21:
+  15:main.c        ****   rcu_periph_clock_enable(RCU_GPIOB);
+ 294              		.loc 1 15 3 is_stmt 1 view .LVU70
+ 295 000a 40F60140 		movw	r0, #3073
+ 296 000e FFF7FEFF 		bl	rcu_periph_clock_enable
+ 297              	.LVL22:
+  16:main.c        ****   rcu_periph_clock_enable(RCU_GPIOC);
+ 298              		.loc 1 16 3 view .LVU71
+ 299 0012 40F60240 		movw	r0, #3074
+ 300 0016 FFF7FEFF 		bl	rcu_periph_clock_enable
+ 301              	.LVL23:
+  17:main.c        ****   rcu_periph_clock_enable(RCU_GPIOD);
+ 302              		.loc 1 17 3 view .LVU72
+ 303 001a 40F60340 		movw	r0, #3075
+ 304 001e FFF7FEFF 		bl	rcu_periph_clock_enable
+ 305              	.LVL24:
+  18:main.c        ****   rcu_periph_clock_enable(RCU_GPIOE);
+ 306              		.loc 1 18 3 view .LVU73
+ 307 0022 40F60440 		movw	r0, #3076
+ 308 0026 FFF7FEFF 		bl	rcu_periph_clock_enable
+ 309              	.LVL25:
+  20:main.c        ****   uart_init();
+ 310              		.loc 1 20 3 view .LVU74
+ 311 002a FFF7FEFF 		bl	uart_init
+ 312              	.LVL26:
+ 313              	.L15:
+  22:main.c        ****   while (1) {
+ 314              		.loc 1 22 3 view .LVU75
+  23:main.c        ****     for(uint32_t x = 0; x < 2000; x++);
+ 315              		.loc 1 23 5 view .LVU76
+ 316              	.LBB2:
+  23:main.c        ****     for(uint32_t x = 0; x < 2000; x++);
+ 317              		.loc 1 23 9 view .LVU77
+  23:main.c        ****     for(uint32_t x = 0; x < 2000; x++);
+ 318              		.loc 1 23 25 view .LVU78
+ 319              	.LBE2:
+  13:main.c        **** int main() {
+ 320              		.loc 1 13 12 is_stmt 0 view .LVU79
+ 321 002e 4FF4FA63 		mov	r3, #2000
+ 322              	.LVL27:
+ 323              	.L14:
+ 324              	.LBB3:
+  23:main.c        ****     for(uint32_t x = 0; x < 2000; x++);
+ 325              		.loc 1 23 39 is_stmt 1 discriminator 3 view .LVU80
+  23:main.c        ****     for(uint32_t x = 0; x < 2000; x++);
+ 326              		.loc 1 23 35 discriminator 3 view .LVU81
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 9
+
+
+  23:main.c        ****     for(uint32_t x = 0; x < 2000; x++);
+ 327              		.loc 1 23 25 discriminator 3 view .LVU82
+  23:main.c        ****     for(uint32_t x = 0; x < 2000; x++);
+ 328              		.loc 1 23 5 is_stmt 0 discriminator 3 view .LVU83
+ 329 0032 013B     		subs	r3, r3, #1
+ 330 0034 FDD1     		bne	.L14
+ 331              	.LBE3:
+  24:main.c        ****     dma_send_message();
+ 332              		.loc 1 24 5 is_stmt 1 view .LVU84
+ 333 0036 FFF7FEFF 		bl	dma_send_message
+ 334              	.LVL28:
+  22:main.c        ****   while (1) {
+ 335              		.loc 1 22 9 view .LVU85
+  23:main.c        ****     for(uint32_t x = 0; x < 2000; x++);
+ 336              		.loc 1 23 5 is_stmt 0 view .LVU86
+ 337 003a F8E7     		b	.L15
+ 338              		.cfi_endproc
+ 339              	.LFE116:
+ 341              		.global	txbuffer
+ 342              		.section	.data.txbuffer,"aw"
+ 343              		.align	2
+ 344              		.set	.LANCHOR0,. + 0
+ 347              	txbuffer:
+ 348 0000 48656C6C 		.ascii	"Hello Zhenya\000"
+ 348      6F205A68 
+ 348      656E7961 
+ 348      00
+ 349              		.text
+ 350              	.Letext0:
+ 351              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
+ 352              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
+ 353              		.file 4 "lib/CMSIS/GD/GD32F4xx/Include/gd32f4xx.h"
+ 354              		.file 5 "lib/GD32F4xx/Include/gd32f4xx_rcu.h"
+ 355              		.file 6 "lib/GD32F4xx/Include/gd32f4xx_dma.h"
+ 356              		.file 7 "lib/GD32F4xx/Include/gd32f4xx_usart.h"
+ 357              		.file 8 "lib/GD32F4xx/Include/gd32f4xx_gpio.h"
+ 358              		.file 9 "lib/GD32F4xx/Include/gd32f4xx_dbg.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 10
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 main.c
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:18     .text.uart_init:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:25     .text.uart_init:0000000000000000 uart_init
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:124    .text.uart_init:000000000000007c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:131    .text.dma_send_message:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:138    .text.dma_send_message:0000000000000000 dma_send_message
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:262    .text.dma_send_message:000000000000007c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:270    .text.startup.main:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:277    .text.startup.main:0000000000000000 main
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:347    .data.txbuffer:0000000000000000 txbuffer
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:343    .data.txbuffer:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+rcu_periph_clock_enable
+gpio_af_set
+gpio_mode_set
+gpio_output_options_set
+usart_deinit
+usart_baudrate_set
+usart_receive_config
+usart_transmit_config
+usart_enable
+dma_deinit
+dma_single_data_mode_init
+dma_circulation_disable
+dma_channel_subperipheral_select
+dma_channel_enable
+usart_dma_transmit_config
+usart_dma_receive_config
+dma_flag_get

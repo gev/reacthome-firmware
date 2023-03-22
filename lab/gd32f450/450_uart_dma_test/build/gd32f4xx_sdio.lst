@@ -1,0 +1,2638 @@
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 1
+
+
+   1              		.cpu cortex-m4
+   2              		.arch armv7e-m
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 2
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.file	"gd32f4xx_sdio.c"
+  14              		.text
+  15              	.Ltext0:
+  16              		.cfi_sections	.debug_frame
+  17              		.section	.text.sdio_deinit,"ax",%progbits
+  18              		.align	1
+  19              		.p2align 2,,3
+  20              		.global	sdio_deinit
+  21              		.syntax unified
+  22              		.thumb
+  23              		.thumb_func
+  25              	sdio_deinit:
+  26              	.LFB116:
+  27              		.file 1 "lib/GD32F4xx/Source/gd32f4xx_sdio.c"
+   1:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+   2:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \file    gd32f4xx_sdio.c
+   3:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief   SDIO driver
+   4:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+   5:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \version 2016-08-15, V1.0.0, firmware for GD32F4xx
+   6:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \version 2018-12-12, V2.0.1, firmware for GD32F4xx
+   7:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \version 2020-09-30, V2.1.0, firmware for GD32F4xx
+   8:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+   9:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+  10:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+  11:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*
+  12:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     Copyright (c) 2022, GigaDevice Semiconductor Inc.
+  13:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+  14:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     Redistribution and use in source and binary forms, with or without modification,
+  15:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** are permitted provided that the following conditions are met:
+  16:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+  17:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     1. Redistributions of source code must retain the above copyright notice, this
+  18:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****        list of conditions and the following disclaimer.
+  19:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     2. Redistributions in binary form must reproduce the above copyright notice,
+  20:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****        this list of conditions and the following disclaimer in the documentation
+  21:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****        and/or other materials provided with the distribution.
+  22:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     3. Neither the name of the copyright holder nor the names of its contributors
+  23:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****        may be used to endorse or promote products derived from this software without
+  24:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****        specific prior written permission.
+  25:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+  26:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  27:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  28:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  29:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  30:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+  31:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 2
+
+
+  32:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+  33:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  34:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+  35:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** OF SUCH DAMAGE.
+  36:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+  37:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+  38:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** #include "gd32f4xx_sdio.h"
+  39:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+  40:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+  41:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    deinitialize the SDIO
+  42:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+  43:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+  44:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+  45:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+  46:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_deinit(void)
+  47:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+  28              		.loc 1 47 1 view -0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 0, uses_anonymous_args = 0
+  48:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     rcu_periph_reset_enable(RCU_SDIORST);
+  32              		.loc 1 48 5 view .LVU1
+  47:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     rcu_periph_reset_enable(RCU_SDIORST);
+  33              		.loc 1 47 1 is_stmt 0 view .LVU2
+  34 0000 08B5     		push	{r3, lr}
+  35              	.LCFI0:
+  36              		.cfi_def_cfa_offset 8
+  37              		.cfi_offset 3, -8
+  38              		.cfi_offset 14, -4
+  39              		.loc 1 48 5 view .LVU3
+  40 0002 40F60B10 		movw	r0, #2315
+  41 0006 FFF7FEFF 		bl	rcu_periph_reset_enable
+  42              	.LVL0:
+  49:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     rcu_periph_reset_disable(RCU_SDIORST);
+  43              		.loc 1 49 5 is_stmt 1 view .LVU4
+  50:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+  44              		.loc 1 50 1 is_stmt 0 view .LVU5
+  45 000a BDE80840 		pop	{r3, lr}
+  46              	.LCFI1:
+  47              		.cfi_restore 14
+  48              		.cfi_restore 3
+  49              		.cfi_def_cfa_offset 0
+  49:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     rcu_periph_reset_disable(RCU_SDIORST);
+  50              		.loc 1 49 5 view .LVU6
+  51 000e 40F60B10 		movw	r0, #2315
+  52 0012 FFF7FEBF 		b	rcu_periph_reset_disable
+  53              	.LVL1:
+  54              		.cfi_endproc
+  55              	.LFE116:
+  57 0016 00BF     		.section	.text.sdio_clock_config,"ax",%progbits
+  58              		.align	1
+  59              		.p2align 2,,3
+  60              		.global	sdio_clock_config
+  61              		.syntax unified
+  62              		.thumb
+  63              		.thumb_func
+  65              	sdio_clock_config:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 3
+
+
+  66              	.LVL2:
+  67              	.LFB117:
+  51:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+  52:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+  53:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    configure the SDIO clock
+  54:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  clock_edge: SDIO_CLK clock edge
+  55:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****                 only one parameter can be selected which is shown as below:
+  56:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_SDIOCLKEDGE_RISING: select the rising edge of the SDIOCLK to generate SDIO_C
+  57:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_SDIOCLKEDGE_FALLING: select the falling edge of the SDIOCLK to generate SDIO
+  58:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  clock_bypass: clock bypass
+  59:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****                 only one parameter can be selected which is shown as below:
+  60:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_CLOCKBYPASS_ENABLE: clock bypass
+  61:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_CLOCKBYPASS_DISABLE: no bypass
+  62:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  clock_powersave: SDIO_CLK clock dynamic switch on/off for power saving
+  63:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****                 only one parameter can be selected which is shown as below:
+  64:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_CLOCKPWRSAVE_ENABLE: SDIO_CLK closed when bus is idle
+  65:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_CLOCKPWRSAVE_DISABLE: SDIO_CLK clock is always on
+  66:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  clock_division: clock division, less than 512
+  67:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+  68:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+  69:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+  70:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_clock_config(uint32_t clock_edge, uint32_t clock_bypass, uint32_t clock_powersave, uint16
+  71:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+  68              		.loc 1 71 1 is_stmt 1 view -0
+  69              		.cfi_startproc
+  70              		@ args = 0, pretend = 0, frame = 0
+  71              		@ frame_needed = 0, uses_anonymous_args = 0
+  72              		@ link register save eliminated.
+  72:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     uint32_t clock_config = 0U;
+  73              		.loc 1 72 5 view .LVU8
+  73:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     clock_config = SDIO_CLKCTL;
+  74              		.loc 1 73 5 view .LVU9
+  71:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     uint32_t clock_config = 0U;
+  75              		.loc 1 71 1 is_stmt 0 view .LVU10
+  76 0000 30B4     		push	{r4, r5}
+  77              	.LCFI2:
+  78              		.cfi_def_cfa_offset 8
+  79              		.cfi_offset 4, -8
+  80              		.cfi_offset 5, -4
+  81              		.loc 1 73 18 view .LVU11
+  82 0002 0B4C     		ldr	r4, .L7
+  83 0004 D4F8045C 		ldr	r5, [r4, #3076]
+  84              	.LVL3:
+  74:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     /* reset the CLKEDGE, CLKBYP, CLKPWRSAV, DIV */
+  75:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     clock_config &= ~(SDIO_CLKCTL_CLKEDGE | SDIO_CLKCTL_CLKBYP | SDIO_CLKCTL_CLKPWRSAV | SDIO_CLKCT
+  85              		.loc 1 75 5 is_stmt 1 view .LVU12
+  86              		.loc 1 75 18 is_stmt 0 view .LVU13
+  87 0008 0A4C     		ldr	r4, .L7+4
+  76:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     /* if the clock division is greater or equal to 256, set the DIV[8] */
+  77:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     if(clock_division >= 256U) {
+  88              		.loc 1 77 7 view .LVU14
+  89 000a FF2B     		cmp	r3, #255
+  75:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     /* if the clock division is greater or equal to 256, set the DIV[8] */
+  90              		.loc 1 75 18 view .LVU15
+  91 000c 04EA0504 		and	r4, r4, r5
+  92              	.LVL4:
+  93              		.loc 1 77 5 is_stmt 1 view .LVU16
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 4
+
+
+  94              		.loc 1 77 7 is_stmt 0 view .LVU17
+  95 0010 04D9     		bls	.L5
+  78:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         clock_config |= SDIO_CLKCTL_DIV8;
+  96              		.loc 1 78 9 is_stmt 1 view .LVU18
+  79:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         clock_division -= 256U;
+  97              		.loc 1 79 24 is_stmt 0 view .LVU19
+  98 0012 A3F58073 		sub	r3, r3, #256
+  99              	.LVL5:
+  78:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         clock_config |= SDIO_CLKCTL_DIV8;
+ 100              		.loc 1 78 22 view .LVU20
+ 101 0016 44F00044 		orr	r4, r4, #-2147483648
+ 102              	.LVL6:
+ 103              		.loc 1 79 9 is_stmt 1 view .LVU21
+ 104              		.loc 1 79 24 is_stmt 0 view .LVU22
+ 105 001a 9BB2     		uxth	r3, r3
+ 106              	.LVL7:
+ 107              	.L5:
+  80:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     }
+  81:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     /* configure the SDIO_CLKCTL according to the parameters */
+  82:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     clock_config |= (clock_edge | clock_bypass | clock_powersave | clock_division);
+ 108              		.loc 1 82 5 is_stmt 1 view .LVU23
+ 109 001c 1143     		orrs	r1, r1, r2
+ 110              	.LVL8:
+ 111              		.loc 1 82 5 is_stmt 0 view .LVU24
+ 112 001e 0143     		orrs	r1, r1, r0
+ 113 0020 2143     		orrs	r1, r1, r4
+  83:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CLKCTL = clock_config;
+ 114              		.loc 1 83 17 view .LVU25
+ 115 0022 034A     		ldr	r2, .L7
+ 116              	.LVL9:
+  82:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CLKCTL = clock_config;
+ 117              		.loc 1 82 18 view .LVU26
+ 118 0024 0B43     		orrs	r3, r3, r1
+ 119              	.LVL10:
+ 120              		.loc 1 83 5 is_stmt 1 view .LVU27
+  84:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 121              		.loc 1 84 1 is_stmt 0 view .LVU28
+ 122 0026 30BC     		pop	{r4, r5}
+ 123              	.LCFI3:
+ 124              		.cfi_restore 5
+ 125              		.cfi_restore 4
+ 126              		.cfi_def_cfa_offset 0
+  83:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CLKCTL = clock_config;
+ 127              		.loc 1 83 17 view .LVU29
+ 128 0028 C2F8043C 		str	r3, [r2, #3076]
+ 129              		.loc 1 84 1 view .LVU30
+ 130 002c 7047     		bx	lr
+ 131              	.L8:
+ 132 002e 00BF     		.align	2
+ 133              	.L7:
+ 134 0030 00200140 		.word	1073815552
+ 135 0034 00D9FF7F 		.word	2147473664
+ 136              		.cfi_endproc
+ 137              	.LFE117:
+ 139              		.section	.text.sdio_hardware_clock_enable,"ax",%progbits
+ 140              		.align	1
+ 141              		.p2align 2,,3
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 5
+
+
+ 142              		.global	sdio_hardware_clock_enable
+ 143              		.syntax unified
+ 144              		.thumb
+ 145              		.thumb_func
+ 147              	sdio_hardware_clock_enable:
+ 148              	.LFB118:
+  85:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+  86:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+  87:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    enable hardware clock control
+  88:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+  89:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+  90:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+  91:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+  92:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_hardware_clock_enable(void)
+  93:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 149              		.loc 1 93 1 is_stmt 1 view -0
+ 150              		.cfi_startproc
+ 151              		@ args = 0, pretend = 0, frame = 0
+ 152              		@ frame_needed = 0, uses_anonymous_args = 0
+ 153              		@ link register save eliminated.
+  94:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CLKCTL |= SDIO_CLKCTL_HWCLKEN;
+ 154              		.loc 1 94 5 view .LVU32
+ 155              		.loc 1 94 17 is_stmt 0 view .LVU33
+ 156 0000 034A     		ldr	r2, .L10
+ 157 0002 D2F8043C 		ldr	r3, [r2, #3076]
+ 158 0006 43F48043 		orr	r3, r3, #16384
+ 159 000a C2F8043C 		str	r3, [r2, #3076]
+  95:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 160              		.loc 1 95 1 view .LVU34
+ 161 000e 7047     		bx	lr
+ 162              	.L11:
+ 163              		.align	2
+ 164              	.L10:
+ 165 0010 00200140 		.word	1073815552
+ 166              		.cfi_endproc
+ 167              	.LFE118:
+ 169              		.section	.text.sdio_hardware_clock_disable,"ax",%progbits
+ 170              		.align	1
+ 171              		.p2align 2,,3
+ 172              		.global	sdio_hardware_clock_disable
+ 173              		.syntax unified
+ 174              		.thumb
+ 175              		.thumb_func
+ 177              	sdio_hardware_clock_disable:
+ 178              	.LFB119:
+  96:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+  97:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+  98:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    disable hardware clock control
+  99:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 100:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 101:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 102:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 103:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_hardware_clock_disable(void)
+ 104:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 179              		.loc 1 104 1 is_stmt 1 view -0
+ 180              		.cfi_startproc
+ 181              		@ args = 0, pretend = 0, frame = 0
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 6
+
+
+ 182              		@ frame_needed = 0, uses_anonymous_args = 0
+ 183              		@ link register save eliminated.
+ 105:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CLKCTL &= ~SDIO_CLKCTL_HWCLKEN;
+ 184              		.loc 1 105 5 view .LVU36
+ 185              		.loc 1 105 17 is_stmt 0 view .LVU37
+ 186 0000 034A     		ldr	r2, .L13
+ 187 0002 D2F8043C 		ldr	r3, [r2, #3076]
+ 188 0006 23F48043 		bic	r3, r3, #16384
+ 189 000a C2F8043C 		str	r3, [r2, #3076]
+ 106:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 190              		.loc 1 106 1 view .LVU38
+ 191 000e 7047     		bx	lr
+ 192              	.L14:
+ 193              		.align	2
+ 194              	.L13:
+ 195 0010 00200140 		.word	1073815552
+ 196              		.cfi_endproc
+ 197              	.LFE119:
+ 199              		.section	.text.sdio_bus_mode_set,"ax",%progbits
+ 200              		.align	1
+ 201              		.p2align 2,,3
+ 202              		.global	sdio_bus_mode_set
+ 203              		.syntax unified
+ 204              		.thumb
+ 205              		.thumb_func
+ 207              	sdio_bus_mode_set:
+ 208              	.LVL11:
+ 209              	.LFB120:
+ 107:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 108:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 109:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    set different SDIO card bus mode
+ 110:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  bus_mode: SDIO card bus mode
+ 111:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****                 only one parameter can be selected which is shown as below:
+ 112:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_BUSMODE_1BIT: 1-bit SDIO card bus mode
+ 113:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_BUSMODE_4BIT: 4-bit SDIO card bus mode
+ 114:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_BUSMODE_8BIT: 8-bit SDIO card bus mode
+ 115:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 116:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 117:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 118:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_bus_mode_set(uint32_t bus_mode)
+ 119:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 210              		.loc 1 119 1 is_stmt 1 view -0
+ 211              		.cfi_startproc
+ 212              		@ args = 0, pretend = 0, frame = 0
+ 213              		@ frame_needed = 0, uses_anonymous_args = 0
+ 214              		@ link register save eliminated.
+ 120:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     /* reset the SDIO card bus mode bits and set according to bus_mode */
+ 121:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CLKCTL &= ~SDIO_CLKCTL_BUSMODE;
+ 215              		.loc 1 121 5 view .LVU40
+ 216              		.loc 1 121 17 is_stmt 0 view .LVU41
+ 217 0000 064B     		ldr	r3, .L16
+ 218 0002 D3F8041C 		ldr	r1, [r3, #3076]
+ 219 0006 21F4C051 		bic	r1, r1, #6144
+ 220 000a C3F8041C 		str	r1, [r3, #3076]
+ 122:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CLKCTL |= bus_mode;
+ 221              		.loc 1 122 5 is_stmt 1 view .LVU42
+ 222              		.loc 1 122 17 is_stmt 0 view .LVU43
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 7
+
+
+ 223 000e D3F8042C 		ldr	r2, [r3, #3076]
+ 224 0012 0243     		orrs	r2, r2, r0
+ 225 0014 C3F8042C 		str	r2, [r3, #3076]
+ 123:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 226              		.loc 1 123 1 view .LVU44
+ 227 0018 7047     		bx	lr
+ 228              	.L17:
+ 229 001a 00BF     		.align	2
+ 230              	.L16:
+ 231 001c 00200140 		.word	1073815552
+ 232              		.cfi_endproc
+ 233              	.LFE120:
+ 235              		.section	.text.sdio_power_state_set,"ax",%progbits
+ 236              		.align	1
+ 237              		.p2align 2,,3
+ 238              		.global	sdio_power_state_set
+ 239              		.syntax unified
+ 240              		.thumb
+ 241              		.thumb_func
+ 243              	sdio_power_state_set:
+ 244              	.LVL12:
+ 245              	.LFB121:
+ 124:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 125:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 126:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    set the SDIO power state
+ 127:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  power_state: SDIO power state
+ 128:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****                 only one parameter can be selected which is shown as below:
+ 129:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_POWER_ON: SDIO power on
+ 130:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_POWER_OFF: SDIO power off
+ 131:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 132:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 133:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 134:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_power_state_set(uint32_t power_state)
+ 135:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 246              		.loc 1 135 1 is_stmt 1 view -0
+ 247              		.cfi_startproc
+ 248              		@ args = 0, pretend = 0, frame = 0
+ 249              		@ frame_needed = 0, uses_anonymous_args = 0
+ 250              		@ link register save eliminated.
+ 136:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_PWRCTL = power_state;
+ 251              		.loc 1 136 5 view .LVU46
+ 252              		.loc 1 136 17 is_stmt 0 view .LVU47
+ 253 0000 014B     		ldr	r3, .L19
+ 254 0002 C3F8000C 		str	r0, [r3, #3072]
+ 137:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 255              		.loc 1 137 1 view .LVU48
+ 256 0006 7047     		bx	lr
+ 257              	.L20:
+ 258              		.align	2
+ 259              	.L19:
+ 260 0008 00200140 		.word	1073815552
+ 261              		.cfi_endproc
+ 262              	.LFE121:
+ 264              		.section	.text.sdio_power_state_get,"ax",%progbits
+ 265              		.align	1
+ 266              		.p2align 2,,3
+ 267              		.global	sdio_power_state_get
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 8
+
+
+ 268              		.syntax unified
+ 269              		.thumb
+ 270              		.thumb_func
+ 272              	sdio_power_state_get:
+ 273              	.LFB122:
+ 138:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 139:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 140:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    get the SDIO power state
+ 141:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 142:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 143:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     SDIO power state
+ 144:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_POWER_ON: SDIO power on
+ 145:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_POWER_OFF: SDIO power off
+ 146:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 147:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** uint32_t sdio_power_state_get(void)
+ 148:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 274              		.loc 1 148 1 is_stmt 1 view -0
+ 275              		.cfi_startproc
+ 276              		@ args = 0, pretend = 0, frame = 0
+ 277              		@ frame_needed = 0, uses_anonymous_args = 0
+ 278              		@ link register save eliminated.
+ 149:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     return SDIO_PWRCTL;
+ 279              		.loc 1 149 5 view .LVU50
+ 280              		.loc 1 149 12 is_stmt 0 view .LVU51
+ 281 0000 014B     		ldr	r3, .L22
+ 282 0002 D3F8000C 		ldr	r0, [r3, #3072]
+ 150:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 283              		.loc 1 150 1 view .LVU52
+ 284 0006 7047     		bx	lr
+ 285              	.L23:
+ 286              		.align	2
+ 287              	.L22:
+ 288 0008 00200140 		.word	1073815552
+ 289              		.cfi_endproc
+ 290              	.LFE122:
+ 292              		.section	.text.sdio_clock_enable,"ax",%progbits
+ 293              		.align	1
+ 294              		.p2align 2,,3
+ 295              		.global	sdio_clock_enable
+ 296              		.syntax unified
+ 297              		.thumb
+ 298              		.thumb_func
+ 300              	sdio_clock_enable:
+ 301              	.LFB123:
+ 151:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 152:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 153:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    enable SDIO_CLK clock output
+ 154:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 155:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 156:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 157:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 158:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_clock_enable(void)
+ 159:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 302              		.loc 1 159 1 is_stmt 1 view -0
+ 303              		.cfi_startproc
+ 304              		@ args = 0, pretend = 0, frame = 0
+ 305              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 9
+
+
+ 306              		@ link register save eliminated.
+ 160:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CLKCTL |= SDIO_CLKCTL_CLKEN;
+ 307              		.loc 1 160 5 view .LVU54
+ 308              		.loc 1 160 17 is_stmt 0 view .LVU55
+ 309 0000 034A     		ldr	r2, .L25
+ 310 0002 D2F8043C 		ldr	r3, [r2, #3076]
+ 311 0006 43F48073 		orr	r3, r3, #256
+ 312 000a C2F8043C 		str	r3, [r2, #3076]
+ 161:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 313              		.loc 1 161 1 view .LVU56
+ 314 000e 7047     		bx	lr
+ 315              	.L26:
+ 316              		.align	2
+ 317              	.L25:
+ 318 0010 00200140 		.word	1073815552
+ 319              		.cfi_endproc
+ 320              	.LFE123:
+ 322              		.section	.text.sdio_clock_disable,"ax",%progbits
+ 323              		.align	1
+ 324              		.p2align 2,,3
+ 325              		.global	sdio_clock_disable
+ 326              		.syntax unified
+ 327              		.thumb
+ 328              		.thumb_func
+ 330              	sdio_clock_disable:
+ 331              	.LFB124:
+ 162:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 163:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 164:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    disable SDIO_CLK clock output
+ 165:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 166:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 167:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 168:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 169:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_clock_disable(void)
+ 170:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 332              		.loc 1 170 1 is_stmt 1 view -0
+ 333              		.cfi_startproc
+ 334              		@ args = 0, pretend = 0, frame = 0
+ 335              		@ frame_needed = 0, uses_anonymous_args = 0
+ 336              		@ link register save eliminated.
+ 171:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CLKCTL &= ~SDIO_CLKCTL_CLKEN;
+ 337              		.loc 1 171 5 view .LVU58
+ 338              		.loc 1 171 17 is_stmt 0 view .LVU59
+ 339 0000 034A     		ldr	r2, .L28
+ 340 0002 D2F8043C 		ldr	r3, [r2, #3076]
+ 341 0006 23F48073 		bic	r3, r3, #256
+ 342 000a C2F8043C 		str	r3, [r2, #3076]
+ 172:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 343              		.loc 1 172 1 view .LVU60
+ 344 000e 7047     		bx	lr
+ 345              	.L29:
+ 346              		.align	2
+ 347              	.L28:
+ 348 0010 00200140 		.word	1073815552
+ 349              		.cfi_endproc
+ 350              	.LFE124:
+ 352              		.section	.text.sdio_command_response_config,"ax",%progbits
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 10
+
+
+ 353              		.align	1
+ 354              		.p2align 2,,3
+ 355              		.global	sdio_command_response_config
+ 356              		.syntax unified
+ 357              		.thumb
+ 358              		.thumb_func
+ 360              	sdio_command_response_config:
+ 361              	.LVL13:
+ 362              	.LFB125:
+ 173:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 174:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 175:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    configure the command and response
+ 176:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  cmd_index: command index, refer to the related specifications
+ 177:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  cmd_argument: command argument, refer to the related specifications
+ 178:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  response_type: response type
+ 179:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****                 only one parameter can be selected which is shown as below:
+ 180:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_RESPONSETYPE_NO: no response
+ 181:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_RESPONSETYPE_SHORT: short response
+ 182:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_RESPONSETYPE_LONG: long response
+ 183:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 184:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 185:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 186:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_command_response_config(uint32_t cmd_index, uint32_t cmd_argument, uint32_t response_type
+ 187:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 363              		.loc 1 187 1 is_stmt 1 view -0
+ 364              		.cfi_startproc
+ 365              		@ args = 0, pretend = 0, frame = 0
+ 366              		@ frame_needed = 0, uses_anonymous_args = 0
+ 367              		@ link register save eliminated.
+ 188:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     uint32_t cmd_config = 0U;
+ 368              		.loc 1 188 5 view .LVU62
+ 189:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     /* disable the CSM */
+ 190:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CMDCTL &= ~SDIO_CMDCTL_CSMEN;
+ 369              		.loc 1 190 5 view .LVU63
+ 370              		.loc 1 190 17 is_stmt 0 view .LVU64
+ 371 0000 0C4B     		ldr	r3, .L32
+ 187:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     uint32_t cmd_config = 0U;
+ 372              		.loc 1 187 1 view .LVU65
+ 373 0002 30B4     		push	{r4, r5}
+ 374              	.LCFI4:
+ 375              		.cfi_def_cfa_offset 8
+ 376              		.cfi_offset 4, -8
+ 377              		.cfi_offset 5, -4
+ 378              		.loc 1 190 17 view .LVU66
+ 379 0004 D3F80C4C 		ldr	r4, [r3, #3084]
+ 380 0008 24F48064 		bic	r4, r4, #1024
+ 381 000c C3F80C4C 		str	r4, [r3, #3084]
+ 191:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     /* reset the command index, command argument and response type */
+ 192:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CMDAGMT &= ~SDIO_CMDAGMT_CMDAGMT;
+ 382              		.loc 1 192 5 is_stmt 1 view .LVU67
+ 383              		.loc 1 192 18 is_stmt 0 view .LVU68
+ 384 0010 0024     		movs	r4, #0
+ 385 0012 D3F8085C 		ldr	r5, [r3, #3080]
+ 386 0016 C3F8084C 		str	r4, [r3, #3080]
+ 193:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CMDAGMT = cmd_argument;
+ 387              		.loc 1 193 5 is_stmt 1 view .LVU69
+ 388              		.loc 1 193 18 is_stmt 0 view .LVU70
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 11
+
+
+ 389 001a C3F8081C 		str	r1, [r3, #3080]
+ 194:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     cmd_config = SDIO_CMDCTL;
+ 390              		.loc 1 194 5 is_stmt 1 view .LVU71
+ 391              		.loc 1 194 16 is_stmt 0 view .LVU72
+ 392 001e D3F80C1C 		ldr	r1, [r3, #3084]
+ 393              	.LVL14:
+ 195:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     cmd_config &= ~(SDIO_CMDCTL_CMDIDX | SDIO_CMDCTL_CMDRESP);
+ 394              		.loc 1 195 5 is_stmt 1 view .LVU73
+ 196:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     /* configure SDIO_CMDCTL and SDIO_CMDAGMT according to the parameters */
+ 197:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     cmd_config |= (cmd_index | response_type);
+ 395              		.loc 1 197 5 view .LVU74
+ 195:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     cmd_config &= ~(SDIO_CMDCTL_CMDIDX | SDIO_CMDCTL_CMDRESP);
+ 396              		.loc 1 195 16 is_stmt 0 view .LVU75
+ 397 0022 21F0FF01 		bic	r1, r1, #255
+ 398              	.LVL15:
+ 195:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     cmd_config &= ~(SDIO_CMDCTL_CMDIDX | SDIO_CMDCTL_CMDRESP);
+ 399              		.loc 1 195 16 view .LVU76
+ 400 0026 1143     		orrs	r1, r1, r2
+ 401              	.LVL16:
+ 402              		.loc 1 197 16 view .LVU77
+ 403 0028 0143     		orrs	r1, r1, r0
+ 404              	.LVL17:
+ 198:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CMDCTL = cmd_config;
+ 405              		.loc 1 198 5 is_stmt 1 view .LVU78
+ 199:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 406              		.loc 1 199 1 is_stmt 0 view .LVU79
+ 407 002a 30BC     		pop	{r4, r5}
+ 408              	.LCFI5:
+ 409              		.cfi_restore 5
+ 410              		.cfi_restore 4
+ 411              		.cfi_def_cfa_offset 0
+ 198:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CMDCTL = cmd_config;
+ 412              		.loc 1 198 17 view .LVU80
+ 413 002c C3F80C1C 		str	r1, [r3, #3084]
+ 414              	.LVL18:
+ 415              		.loc 1 199 1 view .LVU81
+ 416 0030 7047     		bx	lr
+ 417              	.L33:
+ 418 0032 00BF     		.align	2
+ 419              	.L32:
+ 420 0034 00200140 		.word	1073815552
+ 421              		.cfi_endproc
+ 422              	.LFE125:
+ 424              		.section	.text.sdio_wait_type_set,"ax",%progbits
+ 425              		.align	1
+ 426              		.p2align 2,,3
+ 427              		.global	sdio_wait_type_set
+ 428              		.syntax unified
+ 429              		.thumb
+ 430              		.thumb_func
+ 432              	sdio_wait_type_set:
+ 433              	.LVL19:
+ 434              	.LFB126:
+ 200:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 201:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 202:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    set the command state machine wait type
+ 203:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  wait_type: wait type
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 12
+
+
+ 204:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****                 only one parameter can be selected which is shown as below:
+ 205:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_WAITTYPE_NO: not wait interrupt
+ 206:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_WAITTYPE_INTERRUPT: wait interrupt
+ 207:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_WAITTYPE_DATAEND: wait the end of data transfer
+ 208:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 209:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 210:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 211:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_wait_type_set(uint32_t wait_type)
+ 212:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 435              		.loc 1 212 1 is_stmt 1 view -0
+ 436              		.cfi_startproc
+ 437              		@ args = 0, pretend = 0, frame = 0
+ 438              		@ frame_needed = 0, uses_anonymous_args = 0
+ 439              		@ link register save eliminated.
+ 213:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     /* reset INTWAIT and WAITDEND */
+ 214:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CMDCTL &= ~(SDIO_CMDCTL_INTWAIT | SDIO_CMDCTL_WAITDEND);
+ 440              		.loc 1 214 5 view .LVU83
+ 441              		.loc 1 214 17 is_stmt 0 view .LVU84
+ 442 0000 064B     		ldr	r3, .L35
+ 443 0002 D3F80C1C 		ldr	r1, [r3, #3084]
+ 444 0006 21F44071 		bic	r1, r1, #768
+ 445 000a C3F80C1C 		str	r1, [r3, #3084]
+ 215:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     /* set the wait type according to wait_type */
+ 216:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CMDCTL |= wait_type;
+ 446              		.loc 1 216 5 is_stmt 1 view .LVU85
+ 447              		.loc 1 216 17 is_stmt 0 view .LVU86
+ 448 000e D3F80C2C 		ldr	r2, [r3, #3084]
+ 449 0012 0243     		orrs	r2, r2, r0
+ 450 0014 C3F80C2C 		str	r2, [r3, #3084]
+ 217:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 451              		.loc 1 217 1 view .LVU87
+ 452 0018 7047     		bx	lr
+ 453              	.L36:
+ 454 001a 00BF     		.align	2
+ 455              	.L35:
+ 456 001c 00200140 		.word	1073815552
+ 457              		.cfi_endproc
+ 458              	.LFE126:
+ 460              		.section	.text.sdio_csm_enable,"ax",%progbits
+ 461              		.align	1
+ 462              		.p2align 2,,3
+ 463              		.global	sdio_csm_enable
+ 464              		.syntax unified
+ 465              		.thumb
+ 466              		.thumb_func
+ 468              	sdio_csm_enable:
+ 469              	.LFB127:
+ 218:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 219:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 220:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    enable the CSM(command state machine)
+ 221:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 222:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 223:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 224:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 225:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_csm_enable(void)
+ 226:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 470              		.loc 1 226 1 is_stmt 1 view -0
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 13
+
+
+ 471              		.cfi_startproc
+ 472              		@ args = 0, pretend = 0, frame = 0
+ 473              		@ frame_needed = 0, uses_anonymous_args = 0
+ 474              		@ link register save eliminated.
+ 227:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CMDCTL |= SDIO_CMDCTL_CSMEN;
+ 475              		.loc 1 227 5 view .LVU89
+ 476              		.loc 1 227 17 is_stmt 0 view .LVU90
+ 477 0000 034A     		ldr	r2, .L38
+ 478 0002 D2F80C3C 		ldr	r3, [r2, #3084]
+ 479 0006 43F48063 		orr	r3, r3, #1024
+ 480 000a C2F80C3C 		str	r3, [r2, #3084]
+ 228:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 481              		.loc 1 228 1 view .LVU91
+ 482 000e 7047     		bx	lr
+ 483              	.L39:
+ 484              		.align	2
+ 485              	.L38:
+ 486 0010 00200140 		.word	1073815552
+ 487              		.cfi_endproc
+ 488              	.LFE127:
+ 490              		.section	.text.sdio_csm_disable,"ax",%progbits
+ 491              		.align	1
+ 492              		.p2align 2,,3
+ 493              		.global	sdio_csm_disable
+ 494              		.syntax unified
+ 495              		.thumb
+ 496              		.thumb_func
+ 498              	sdio_csm_disable:
+ 499              	.LFB128:
+ 229:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 230:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 231:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    disable the CSM(command state machine)
+ 232:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 233:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 234:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 235:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 236:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_csm_disable(void)
+ 237:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 500              		.loc 1 237 1 is_stmt 1 view -0
+ 501              		.cfi_startproc
+ 502              		@ args = 0, pretend = 0, frame = 0
+ 503              		@ frame_needed = 0, uses_anonymous_args = 0
+ 504              		@ link register save eliminated.
+ 238:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CMDCTL &= ~SDIO_CMDCTL_CSMEN;
+ 505              		.loc 1 238 5 view .LVU93
+ 506              		.loc 1 238 17 is_stmt 0 view .LVU94
+ 507 0000 034A     		ldr	r2, .L41
+ 508 0002 D2F80C3C 		ldr	r3, [r2, #3084]
+ 509 0006 23F48063 		bic	r3, r3, #1024
+ 510 000a C2F80C3C 		str	r3, [r2, #3084]
+ 239:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 511              		.loc 1 239 1 view .LVU95
+ 512 000e 7047     		bx	lr
+ 513              	.L42:
+ 514              		.align	2
+ 515              	.L41:
+ 516 0010 00200140 		.word	1073815552
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 14
+
+
+ 517              		.cfi_endproc
+ 518              	.LFE128:
+ 520              		.section	.text.sdio_command_index_get,"ax",%progbits
+ 521              		.align	1
+ 522              		.p2align 2,,3
+ 523              		.global	sdio_command_index_get
+ 524              		.syntax unified
+ 525              		.thumb
+ 526              		.thumb_func
+ 528              	sdio_command_index_get:
+ 529              	.LFB129:
+ 240:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 241:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 242:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    get the last response command index
+ 243:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 244:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 245:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     last response command index
+ 246:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 247:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** uint8_t sdio_command_index_get(void)
+ 248:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 530              		.loc 1 248 1 is_stmt 1 view -0
+ 531              		.cfi_startproc
+ 532              		@ args = 0, pretend = 0, frame = 0
+ 533              		@ frame_needed = 0, uses_anonymous_args = 0
+ 534              		@ link register save eliminated.
+ 249:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     return (uint8_t)SDIO_RSPCMDIDX;
+ 535              		.loc 1 249 5 view .LVU97
+ 536              		.loc 1 249 21 is_stmt 0 view .LVU98
+ 537 0000 024B     		ldr	r3, .L44
+ 538 0002 D3F8100C 		ldr	r0, [r3, #3088]
+ 250:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 539              		.loc 1 250 1 view .LVU99
+ 540 0006 C0B2     		uxtb	r0, r0
+ 541 0008 7047     		bx	lr
+ 542              	.L45:
+ 543 000a 00BF     		.align	2
+ 544              	.L44:
+ 545 000c 00200140 		.word	1073815552
+ 546              		.cfi_endproc
+ 547              	.LFE129:
+ 549              		.section	.text.sdio_response_get,"ax",%progbits
+ 550              		.align	1
+ 551              		.p2align 2,,3
+ 552              		.global	sdio_response_get
+ 553              		.syntax unified
+ 554              		.thumb
+ 555              		.thumb_func
+ 557              	sdio_response_get:
+ 558              	.LVL20:
+ 559              	.LFB130:
+ 251:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 252:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 253:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    get the response for the last received command
+ 254:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  sdio_responsex: SDIO response
+ 255:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****                 only one parameter can be selected which is shown as below:
+ 256:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg       SDIO_RESPONSE0: card response[31:0]/card response[127:96]
+ 257:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg       SDIO_RESPONSE1: card response[95:64]
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 15
+
+
+ 258:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg       SDIO_RESPONSE2: card response[63:32]
+ 259:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg       SDIO_RESPONSE3: card response[31:1], plus bit 0
+ 260:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 261:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     response for the last received command
+ 262:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 263:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** uint32_t sdio_response_get(uint32_t sdio_responsex)
+ 264:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 560              		.loc 1 264 1 is_stmt 1 view -0
+ 561              		.cfi_startproc
+ 562              		@ args = 0, pretend = 0, frame = 0
+ 563              		@ frame_needed = 0, uses_anonymous_args = 0
+ 564              		@ link register save eliminated.
+ 265:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     uint32_t resp_content = 0U;
+ 565              		.loc 1 265 5 view .LVU101
+ 266:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     switch(sdio_responsex) {
+ 566              		.loc 1 266 5 view .LVU102
+ 567 0000 0328     		cmp	r0, #3
+ 568 0002 13D8     		bhi	.L53
+ 569 0004 DFE800F0 		tbb	[pc, r0]
+ 570              	.L49:
+ 571 0008 0E       		.byte	(.L52-.L49)/2
+ 572 0009 0A       		.byte	(.L51-.L49)/2
+ 573 000a 06       		.byte	(.L50-.L49)/2
+ 574 000b 02       		.byte	(.L48-.L49)/2
+ 575              		.p2align 1
+ 576              	.L48:
+ 267:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     case SDIO_RESPONSE0:
+ 268:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         resp_content = SDIO_RESP0;
+ 269:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         break;
+ 270:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     case SDIO_RESPONSE1:
+ 271:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         resp_content = SDIO_RESP1;
+ 272:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         break;
+ 273:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     case SDIO_RESPONSE2:
+ 274:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         resp_content = SDIO_RESP2;
+ 275:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         break;
+ 276:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     case SDIO_RESPONSE3:
+ 277:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         resp_content = SDIO_RESP3;
+ 577              		.loc 1 277 9 view .LVU103
+ 578              		.loc 1 277 22 is_stmt 0 view .LVU104
+ 579 000c 084B     		ldr	r3, .L54
+ 580 000e D3F8200C 		ldr	r0, [r3, #3104]
+ 581              	.LVL21:
+ 278:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         break;
+ 582              		.loc 1 278 9 is_stmt 1 view .LVU105
+ 583 0012 7047     		bx	lr
+ 584              	.LVL22:
+ 585              	.L50:
+ 274:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         break;
+ 586              		.loc 1 274 9 view .LVU106
+ 274:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         break;
+ 587              		.loc 1 274 22 is_stmt 0 view .LVU107
+ 588 0014 064B     		ldr	r3, .L54
+ 589 0016 D3F81C0C 		ldr	r0, [r3, #3100]
+ 590              	.LVL23:
+ 275:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     case SDIO_RESPONSE3:
+ 591              		.loc 1 275 9 is_stmt 1 view .LVU108
+ 592 001a 7047     		bx	lr
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 16
+
+
+ 593              	.LVL24:
+ 594              	.L51:
+ 271:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         break;
+ 595              		.loc 1 271 9 view .LVU109
+ 271:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         break;
+ 596              		.loc 1 271 22 is_stmt 0 view .LVU110
+ 597 001c 044B     		ldr	r3, .L54
+ 598 001e D3F8180C 		ldr	r0, [r3, #3096]
+ 599              	.LVL25:
+ 272:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     case SDIO_RESPONSE2:
+ 600              		.loc 1 272 9 is_stmt 1 view .LVU111
+ 601 0022 7047     		bx	lr
+ 602              	.LVL26:
+ 603              	.L52:
+ 268:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         break;
+ 604              		.loc 1 268 9 view .LVU112
+ 268:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         break;
+ 605              		.loc 1 268 22 is_stmt 0 view .LVU113
+ 606 0024 024B     		ldr	r3, .L54
+ 607 0026 D3F8140C 		ldr	r0, [r3, #3092]
+ 608              	.LVL27:
+ 269:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     case SDIO_RESPONSE1:
+ 609              		.loc 1 269 9 is_stmt 1 view .LVU114
+ 610 002a 7047     		bx	lr
+ 611              	.LVL28:
+ 612              	.L53:
+ 266:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     case SDIO_RESPONSE0:
+ 613              		.loc 1 266 5 is_stmt 0 view .LVU115
+ 614 002c 0020     		movs	r0, #0
+ 615              	.LVL29:
+ 279:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     default:
+ 280:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         break;
+ 281:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     }
+ 282:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     return resp_content;
+ 616              		.loc 1 282 5 is_stmt 1 view .LVU116
+ 283:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 617              		.loc 1 283 1 is_stmt 0 view .LVU117
+ 618 002e 7047     		bx	lr
+ 619              	.L55:
+ 620              		.align	2
+ 621              	.L54:
+ 622 0030 00200140 		.word	1073815552
+ 623              		.cfi_endproc
+ 624              	.LFE130:
+ 626              		.section	.text.sdio_data_config,"ax",%progbits
+ 627              		.align	1
+ 628              		.p2align 2,,3
+ 629              		.global	sdio_data_config
+ 630              		.syntax unified
+ 631              		.thumb
+ 632              		.thumb_func
+ 634              	sdio_data_config:
+ 635              	.LVL30:
+ 636              	.LFB131:
+ 284:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 285:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 286:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    configure the data timeout, data length and data block size
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 17
+
+
+ 287:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  data_timeout: data timeout period in card bus clock periods
+ 288:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  data_length: number of data bytes to be transferred
+ 289:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  data_blocksize: size of data block for block transfer
+ 290:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****                 only one parameter can be selected which is shown as below:
+ 291:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_DATABLOCKSIZE_1BYTE: block size = 1 byte
+ 292:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_DATABLOCKSIZE_2BYTES: block size = 2 bytes
+ 293:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_DATABLOCKSIZE_4BYTES: block size = 4 bytes
+ 294:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_DATABLOCKSIZE_8BYTES: block size = 8 bytes
+ 295:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_DATABLOCKSIZE_16BYTES: block size = 16 bytes
+ 296:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_DATABLOCKSIZE_32BYTES: block size = 32 bytes
+ 297:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_DATABLOCKSIZE_64BYTES: block size = 64 bytes
+ 298:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_DATABLOCKSIZE_128BYTES: block size = 128 bytes
+ 299:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_DATABLOCKSIZE_256BYTES: block size = 256 bytes
+ 300:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_DATABLOCKSIZE_512BYTES: block size = 512 bytes
+ 301:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_DATABLOCKSIZE_1024BYTES: block size = 1024 bytes
+ 302:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_DATABLOCKSIZE_2048BYTES: block size = 2048 bytes
+ 303:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_DATABLOCKSIZE_4096BYTES: block size = 4096 bytes
+ 304:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_DATABLOCKSIZE_8192BYTES: block size = 8192 bytes
+ 305:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_DATABLOCKSIZE_16384BYTES: block size = 16384 bytes
+ 306:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 307:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 308:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 309:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_data_config(uint32_t data_timeout, uint32_t data_length, uint32_t data_blocksize)
+ 310:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 637              		.loc 1 310 1 is_stmt 1 view -0
+ 638              		.cfi_startproc
+ 639              		@ args = 0, pretend = 0, frame = 0
+ 640              		@ frame_needed = 0, uses_anonymous_args = 0
+ 641              		@ link register save eliminated.
+ 311:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     /* reset data timeout, data length and data block size */
+ 312:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_DATATO &= ~SDIO_DATATO_DATATO;
+ 642              		.loc 1 312 5 view .LVU119
+ 643              		.loc 1 312 17 is_stmt 0 view .LVU120
+ 644 0000 0E4B     		ldr	r3, .L58
+ 310:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     /* reset data timeout, data length and data block size */
+ 645              		.loc 1 310 1 view .LVU121
+ 646 0002 30B4     		push	{r4, r5}
+ 647              	.LCFI6:
+ 648              		.cfi_def_cfa_offset 8
+ 649              		.cfi_offset 4, -8
+ 650              		.cfi_offset 5, -4
+ 651              		.loc 1 312 17 view .LVU122
+ 652 0004 0024     		movs	r4, #0
+ 653 0006 D3F8245C 		ldr	r5, [r3, #3108]
+ 654 000a C3F8244C 		str	r4, [r3, #3108]
+ 313:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_DATALEN &= ~SDIO_DATALEN_DATALEN;
+ 655              		.loc 1 313 5 is_stmt 1 view .LVU123
+ 656              		.loc 1 313 18 is_stmt 0 view .LVU124
+ 657 000e D3F8284C 		ldr	r4, [r3, #3112]
+ 658 0012 04F07E44 		and	r4, r4, #-33554432
+ 659 0016 C3F8284C 		str	r4, [r3, #3112]
+ 314:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_DATACTL &= ~SDIO_DATACTL_BLKSZ;
+ 660              		.loc 1 314 5 is_stmt 1 view .LVU125
+ 661              		.loc 1 314 18 is_stmt 0 view .LVU126
+ 662 001a D3F82C4C 		ldr	r4, [r3, #3116]
+ 663 001e 24F0F004 		bic	r4, r4, #240
+ 664 0022 C3F82C4C 		str	r4, [r3, #3116]
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 18
+
+
+ 315:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     /* configure the related parameters of data */
+ 316:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_DATATO = data_timeout;
+ 665              		.loc 1 316 5 is_stmt 1 view .LVU127
+ 666              		.loc 1 316 17 is_stmt 0 view .LVU128
+ 667 0026 C3F8240C 		str	r0, [r3, #3108]
+ 317:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_DATALEN = data_length;
+ 668              		.loc 1 317 5 is_stmt 1 view .LVU129
+ 669              		.loc 1 317 18 is_stmt 0 view .LVU130
+ 670 002a C3F8281C 		str	r1, [r3, #3112]
+ 318:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_DATACTL |= data_blocksize;
+ 671              		.loc 1 318 5 is_stmt 1 view .LVU131
+ 672              		.loc 1 318 18 is_stmt 0 view .LVU132
+ 673 002e D3F82C1C 		ldr	r1, [r3, #3116]
+ 674              	.LVL31:
+ 675              		.loc 1 318 18 view .LVU133
+ 676 0032 1143     		orrs	r1, r1, r2
+ 319:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 677              		.loc 1 319 1 view .LVU134
+ 678 0034 30BC     		pop	{r4, r5}
+ 679              	.LCFI7:
+ 680              		.cfi_restore 5
+ 681              		.cfi_restore 4
+ 682              		.cfi_def_cfa_offset 0
+ 318:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_DATACTL |= data_blocksize;
+ 683              		.loc 1 318 18 view .LVU135
+ 684 0036 C3F82C1C 		str	r1, [r3, #3116]
+ 685              	.LVL32:
+ 686              		.loc 1 319 1 view .LVU136
+ 687 003a 7047     		bx	lr
+ 688              	.L59:
+ 689              		.align	2
+ 690              	.L58:
+ 691 003c 00200140 		.word	1073815552
+ 692              		.cfi_endproc
+ 693              	.LFE131:
+ 695              		.section	.text.sdio_data_transfer_config,"ax",%progbits
+ 696              		.align	1
+ 697              		.p2align 2,,3
+ 698              		.global	sdio_data_transfer_config
+ 699              		.syntax unified
+ 700              		.thumb
+ 701              		.thumb_func
+ 703              	sdio_data_transfer_config:
+ 704              	.LVL33:
+ 705              	.LFB132:
+ 320:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 321:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 322:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    configure the data transfer mode and direction
+ 323:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  transfer_mode: mode of data transfer
+ 324:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****                 only one parameter can be selected which is shown as below:
+ 325:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg       SDIO_TRANSMODE_BLOCK: block transfer
+ 326:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg       SDIO_TRANSMODE_STREAM: stream transfer or SDIO multibyte transfer
+ 327:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  transfer_direction: data transfer direction, read or write
+ 328:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****                 only one parameter can be selected which is shown as below:
+ 329:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg       SDIO_TRANSDIRECTION_TOCARD: write data to card
+ 330:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg       SDIO_TRANSDIRECTION_TOSDIO: read data from card
+ 331:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 19
+
+
+ 332:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 333:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 334:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_data_transfer_config(uint32_t transfer_mode, uint32_t transfer_direction)
+ 335:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 706              		.loc 1 335 1 is_stmt 1 view -0
+ 707              		.cfi_startproc
+ 708              		@ args = 0, pretend = 0, frame = 0
+ 709              		@ frame_needed = 0, uses_anonymous_args = 0
+ 710              		@ link register save eliminated.
+ 336:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     uint32_t data_trans = 0U;
+ 711              		.loc 1 336 5 view .LVU138
+ 337:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     /* reset the data transfer mode, transfer direction and set according to the parameters */
+ 338:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     data_trans = SDIO_DATACTL;
+ 712              		.loc 1 338 5 view .LVU139
+ 713              		.loc 1 338 16 is_stmt 0 view .LVU140
+ 714 0000 044A     		ldr	r2, .L61
+ 715 0002 D2F82C3C 		ldr	r3, [r2, #3116]
+ 716              	.LVL34:
+ 339:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     data_trans &= ~(SDIO_DATACTL_TRANSMOD | SDIO_DATACTL_DATADIR);
+ 717              		.loc 1 339 5 is_stmt 1 view .LVU141
+ 340:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     data_trans |= (transfer_mode | transfer_direction);
+ 718              		.loc 1 340 5 view .LVU142
+ 339:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     data_trans &= ~(SDIO_DATACTL_TRANSMOD | SDIO_DATACTL_DATADIR);
+ 719              		.loc 1 339 16 is_stmt 0 view .LVU143
+ 720 0006 23F00603 		bic	r3, r3, #6
+ 721              	.LVL35:
+ 339:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     data_trans &= ~(SDIO_DATACTL_TRANSMOD | SDIO_DATACTL_DATADIR);
+ 722              		.loc 1 339 16 view .LVU144
+ 723 000a 0B43     		orrs	r3, r3, r1
+ 724              	.LVL36:
+ 725              		.loc 1 340 16 view .LVU145
+ 726 000c 0343     		orrs	r3, r3, r0
+ 727              	.LVL37:
+ 341:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_DATACTL = data_trans;
+ 728              		.loc 1 341 5 is_stmt 1 view .LVU146
+ 729              		.loc 1 341 18 is_stmt 0 view .LVU147
+ 730 000e C2F82C3C 		str	r3, [r2, #3116]
+ 342:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 731              		.loc 1 342 1 view .LVU148
+ 732 0012 7047     		bx	lr
+ 733              	.L62:
+ 734              		.align	2
+ 735              	.L61:
+ 736 0014 00200140 		.word	1073815552
+ 737              		.cfi_endproc
+ 738              	.LFE132:
+ 740              		.section	.text.sdio_dsm_enable,"ax",%progbits
+ 741              		.align	1
+ 742              		.p2align 2,,3
+ 743              		.global	sdio_dsm_enable
+ 744              		.syntax unified
+ 745              		.thumb
+ 746              		.thumb_func
+ 748              	sdio_dsm_enable:
+ 749              	.LFB133:
+ 343:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 344:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 20
+
+
+ 345:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    enable the DSM(data state machine) for data transfer
+ 346:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 347:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 348:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 349:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 350:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_dsm_enable(void)
+ 351:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 750              		.loc 1 351 1 is_stmt 1 view -0
+ 751              		.cfi_startproc
+ 752              		@ args = 0, pretend = 0, frame = 0
+ 753              		@ frame_needed = 0, uses_anonymous_args = 0
+ 754              		@ link register save eliminated.
+ 352:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_DATACTL |= SDIO_DATACTL_DATAEN;
+ 755              		.loc 1 352 5 view .LVU150
+ 756              		.loc 1 352 18 is_stmt 0 view .LVU151
+ 757 0000 034A     		ldr	r2, .L64
+ 758 0002 D2F82C3C 		ldr	r3, [r2, #3116]
+ 759 0006 43F00103 		orr	r3, r3, #1
+ 760 000a C2F82C3C 		str	r3, [r2, #3116]
+ 353:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 761              		.loc 1 353 1 view .LVU152
+ 762 000e 7047     		bx	lr
+ 763              	.L65:
+ 764              		.align	2
+ 765              	.L64:
+ 766 0010 00200140 		.word	1073815552
+ 767              		.cfi_endproc
+ 768              	.LFE133:
+ 770              		.section	.text.sdio_dsm_disable,"ax",%progbits
+ 771              		.align	1
+ 772              		.p2align 2,,3
+ 773              		.global	sdio_dsm_disable
+ 774              		.syntax unified
+ 775              		.thumb
+ 776              		.thumb_func
+ 778              	sdio_dsm_disable:
+ 779              	.LFB134:
+ 354:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 355:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 356:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    disable the DSM(data state machine)
+ 357:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 358:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 359:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 360:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 361:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_dsm_disable(void)
+ 362:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 780              		.loc 1 362 1 is_stmt 1 view -0
+ 781              		.cfi_startproc
+ 782              		@ args = 0, pretend = 0, frame = 0
+ 783              		@ frame_needed = 0, uses_anonymous_args = 0
+ 784              		@ link register save eliminated.
+ 363:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_DATACTL &= ~SDIO_DATACTL_DATAEN;
+ 785              		.loc 1 363 5 view .LVU154
+ 786              		.loc 1 363 18 is_stmt 0 view .LVU155
+ 787 0000 034A     		ldr	r2, .L67
+ 788 0002 D2F82C3C 		ldr	r3, [r2, #3116]
+ 789 0006 23F00103 		bic	r3, r3, #1
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 21
+
+
+ 790 000a C2F82C3C 		str	r3, [r2, #3116]
+ 364:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 791              		.loc 1 364 1 view .LVU156
+ 792 000e 7047     		bx	lr
+ 793              	.L68:
+ 794              		.align	2
+ 795              	.L67:
+ 796 0010 00200140 		.word	1073815552
+ 797              		.cfi_endproc
+ 798              	.LFE134:
+ 800              		.section	.text.sdio_data_write,"ax",%progbits
+ 801              		.align	1
+ 802              		.p2align 2,,3
+ 803              		.global	sdio_data_write
+ 804              		.syntax unified
+ 805              		.thumb
+ 806              		.thumb_func
+ 808              	sdio_data_write:
+ 809              	.LVL38:
+ 810              	.LFB135:
+ 365:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 366:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 367:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    write data(one word) to the transmit FIFO
+ 368:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  data: 32-bit data write to card
+ 369:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 370:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 371:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 372:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_data_write(uint32_t data)
+ 373:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 811              		.loc 1 373 1 is_stmt 1 view -0
+ 812              		.cfi_startproc
+ 813              		@ args = 0, pretend = 0, frame = 0
+ 814              		@ frame_needed = 0, uses_anonymous_args = 0
+ 815              		@ link register save eliminated.
+ 374:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_FIFO = data;
+ 816              		.loc 1 374 5 view .LVU158
+ 817              		.loc 1 374 15 is_stmt 0 view .LVU159
+ 818 0000 014B     		ldr	r3, .L70
+ 819 0002 C3F8800C 		str	r0, [r3, #3200]
+ 375:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 820              		.loc 1 375 1 view .LVU160
+ 821 0006 7047     		bx	lr
+ 822              	.L71:
+ 823              		.align	2
+ 824              	.L70:
+ 825 0008 00200140 		.word	1073815552
+ 826              		.cfi_endproc
+ 827              	.LFE135:
+ 829              		.section	.text.sdio_data_read,"ax",%progbits
+ 830              		.align	1
+ 831              		.p2align 2,,3
+ 832              		.global	sdio_data_read
+ 833              		.syntax unified
+ 834              		.thumb
+ 835              		.thumb_func
+ 837              	sdio_data_read:
+ 838              	.LFB136:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 22
+
+
+ 376:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 377:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 378:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    read data(one word) from the receive FIFO
+ 379:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 380:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 381:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     received data
+ 382:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 383:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** uint32_t sdio_data_read(void)
+ 384:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 839              		.loc 1 384 1 is_stmt 1 view -0
+ 840              		.cfi_startproc
+ 841              		@ args = 0, pretend = 0, frame = 0
+ 842              		@ frame_needed = 0, uses_anonymous_args = 0
+ 843              		@ link register save eliminated.
+ 385:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     return SDIO_FIFO;
+ 844              		.loc 1 385 5 view .LVU162
+ 845              		.loc 1 385 12 is_stmt 0 view .LVU163
+ 846 0000 014B     		ldr	r3, .L73
+ 847 0002 D3F8800C 		ldr	r0, [r3, #3200]
+ 386:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 848              		.loc 1 386 1 view .LVU164
+ 849 0006 7047     		bx	lr
+ 850              	.L74:
+ 851              		.align	2
+ 852              	.L73:
+ 853 0008 00200140 		.word	1073815552
+ 854              		.cfi_endproc
+ 855              	.LFE136:
+ 857              		.section	.text.sdio_data_counter_get,"ax",%progbits
+ 858              		.align	1
+ 859              		.p2align 2,,3
+ 860              		.global	sdio_data_counter_get
+ 861              		.syntax unified
+ 862              		.thumb
+ 863              		.thumb_func
+ 865              	sdio_data_counter_get:
+ 866              	.LFB137:
+ 387:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 388:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 389:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    get the number of remaining data bytes to be transferred to card
+ 390:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 391:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 392:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     number of remaining data bytes to be transferred
+ 393:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 394:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** uint32_t sdio_data_counter_get(void)
+ 395:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 867              		.loc 1 395 1 is_stmt 1 view -0
+ 868              		.cfi_startproc
+ 869              		@ args = 0, pretend = 0, frame = 0
+ 870              		@ frame_needed = 0, uses_anonymous_args = 0
+ 871              		@ link register save eliminated.
+ 396:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     return SDIO_DATACNT;
+ 872              		.loc 1 396 5 view .LVU166
+ 873              		.loc 1 396 12 is_stmt 0 view .LVU167
+ 874 0000 014B     		ldr	r3, .L76
+ 875 0002 D3F8300C 		ldr	r0, [r3, #3120]
+ 397:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 23
+
+
+ 876              		.loc 1 397 1 view .LVU168
+ 877 0006 7047     		bx	lr
+ 878              	.L77:
+ 879              		.align	2
+ 880              	.L76:
+ 881 0008 00200140 		.word	1073815552
+ 882              		.cfi_endproc
+ 883              	.LFE137:
+ 885              		.section	.text.sdio_fifo_counter_get,"ax",%progbits
+ 886              		.align	1
+ 887              		.p2align 2,,3
+ 888              		.global	sdio_fifo_counter_get
+ 889              		.syntax unified
+ 890              		.thumb
+ 891              		.thumb_func
+ 893              	sdio_fifo_counter_get:
+ 894              	.LFB138:
+ 398:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 399:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 400:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    get the number of words remaining to be written or read from FIFO
+ 401:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 402:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 403:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     remaining number of words
+ 404:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 405:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** uint32_t sdio_fifo_counter_get(void)
+ 406:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 895              		.loc 1 406 1 is_stmt 1 view -0
+ 896              		.cfi_startproc
+ 897              		@ args = 0, pretend = 0, frame = 0
+ 898              		@ frame_needed = 0, uses_anonymous_args = 0
+ 899              		@ link register save eliminated.
+ 407:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     return SDIO_FIFOCNT;
+ 900              		.loc 1 407 5 view .LVU170
+ 901              		.loc 1 407 12 is_stmt 0 view .LVU171
+ 902 0000 014B     		ldr	r3, .L79
+ 903 0002 D3F8480C 		ldr	r0, [r3, #3144]
+ 408:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 904              		.loc 1 408 1 view .LVU172
+ 905 0006 7047     		bx	lr
+ 906              	.L80:
+ 907              		.align	2
+ 908              	.L79:
+ 909 0008 00200140 		.word	1073815552
+ 910              		.cfi_endproc
+ 911              	.LFE138:
+ 913              		.section	.text.sdio_dma_enable,"ax",%progbits
+ 914              		.align	1
+ 915              		.p2align 2,,3
+ 916              		.global	sdio_dma_enable
+ 917              		.syntax unified
+ 918              		.thumb
+ 919              		.thumb_func
+ 921              	sdio_dma_enable:
+ 922              	.LFB139:
+ 409:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 410:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 411:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    enable the DMA request for SDIO
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 24
+
+
+ 412:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 413:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 414:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 415:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 416:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_dma_enable(void)
+ 417:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 923              		.loc 1 417 1 is_stmt 1 view -0
+ 924              		.cfi_startproc
+ 925              		@ args = 0, pretend = 0, frame = 0
+ 926              		@ frame_needed = 0, uses_anonymous_args = 0
+ 927              		@ link register save eliminated.
+ 418:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_DATACTL |= SDIO_DATACTL_DMAEN;
+ 928              		.loc 1 418 5 view .LVU174
+ 929              		.loc 1 418 18 is_stmt 0 view .LVU175
+ 930 0000 034A     		ldr	r2, .L82
+ 931 0002 D2F82C3C 		ldr	r3, [r2, #3116]
+ 932 0006 43F00803 		orr	r3, r3, #8
+ 933 000a C2F82C3C 		str	r3, [r2, #3116]
+ 419:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 934              		.loc 1 419 1 view .LVU176
+ 935 000e 7047     		bx	lr
+ 936              	.L83:
+ 937              		.align	2
+ 938              	.L82:
+ 939 0010 00200140 		.word	1073815552
+ 940              		.cfi_endproc
+ 941              	.LFE139:
+ 943              		.section	.text.sdio_dma_disable,"ax",%progbits
+ 944              		.align	1
+ 945              		.p2align 2,,3
+ 946              		.global	sdio_dma_disable
+ 947              		.syntax unified
+ 948              		.thumb
+ 949              		.thumb_func
+ 951              	sdio_dma_disable:
+ 952              	.LFB140:
+ 420:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 421:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 422:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    disable the DMA request for SDIO
+ 423:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 424:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 425:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 426:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 427:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_dma_disable(void)
+ 428:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 953              		.loc 1 428 1 is_stmt 1 view -0
+ 954              		.cfi_startproc
+ 955              		@ args = 0, pretend = 0, frame = 0
+ 956              		@ frame_needed = 0, uses_anonymous_args = 0
+ 957              		@ link register save eliminated.
+ 429:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_DATACTL &= ~SDIO_DATACTL_DMAEN;
+ 958              		.loc 1 429 5 view .LVU178
+ 959              		.loc 1 429 18 is_stmt 0 view .LVU179
+ 960 0000 034A     		ldr	r2, .L85
+ 961 0002 D2F82C3C 		ldr	r3, [r2, #3116]
+ 962 0006 23F00803 		bic	r3, r3, #8
+ 963 000a C2F82C3C 		str	r3, [r2, #3116]
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 25
+
+
+ 430:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 964              		.loc 1 430 1 view .LVU180
+ 965 000e 7047     		bx	lr
+ 966              	.L86:
+ 967              		.align	2
+ 968              	.L85:
+ 969 0010 00200140 		.word	1073815552
+ 970              		.cfi_endproc
+ 971              	.LFE140:
+ 973              		.section	.text.sdio_flag_get,"ax",%progbits
+ 974              		.align	1
+ 975              		.p2align 2,,3
+ 976              		.global	sdio_flag_get
+ 977              		.syntax unified
+ 978              		.thumb
+ 979              		.thumb_func
+ 981              	sdio_flag_get:
+ 982              	.LVL39:
+ 983              	.LFB141:
+ 431:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 432:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 433:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    get the flags state of SDIO
+ 434:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  flag: flags state of SDIO
+ 435:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****                 one or more parameters can be selected which are shown as below:
+ 436:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_CCRCERR: command response received (CRC check failed) flag
+ 437:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_DTCRCERR: data block sent/received (CRC check failed) flag
+ 438:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_CMDTMOUT: command response timeout flag
+ 439:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_DTTMOUT: data timeout flag
+ 440:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_TXURE: transmit FIFO underrun error occurs flag
+ 441:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_RXORE: received FIFO overrun error occurs flag
+ 442:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_CMDRECV: command response received (CRC check passed) flag
+ 443:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_CMDSEND: command sent (no response required) flag
+ 444:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_DTEND: data end (data counter, SDIO_DATACNT, is zero) flag
+ 445:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_STBITE: start bit error in the bus flag
+ 446:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_DTBLKEND: data block sent/received (CRC check passed) flag
+ 447:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_CMDRUN: command transmission in progress flag
+ 448:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_TXRUN: data transmission in progress flag
+ 449:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_RXRUN: data reception in progress flag
+ 450:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_TFH: transmit FIFO is half empty flag: at least 8 words can be written 
+ 451:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_RFH: receive FIFO is half full flag: at least 8 words can be read in th
+ 452:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_TFF: transmit FIFO is full flag
+ 453:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_RFF: receive FIFO is full flag
+ 454:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_TFE: transmit FIFO is empty flag
+ 455:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_RFE: receive FIFO is empty flag
+ 456:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_TXDTVAL: data is valid in transmit FIFO flag
+ 457:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_RXDTVAL: data is valid in receive FIFO flag
+ 458:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_SDIOINT: SD I/O interrupt received flag
+ 459:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_ATAEND: CE-ATA command completion signal received (only for CMD61) flag
+ 460:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 461:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     FlagStatus: SET or RESET
+ 462:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 463:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** FlagStatus sdio_flag_get(uint32_t flag)
+ 464:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 984              		.loc 1 464 1 is_stmt 1 view -0
+ 985              		.cfi_startproc
+ 986              		@ args = 0, pretend = 0, frame = 0
+ 987              		@ frame_needed = 0, uses_anonymous_args = 0
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 26
+
+
+ 988              		@ link register save eliminated.
+ 465:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     FlagStatus temp_flag = RESET;
+ 989              		.loc 1 465 5 view .LVU182
+ 466:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     if(RESET != (SDIO_STAT & flag)) {
+ 990              		.loc 1 466 5 view .LVU183
+ 991              		.loc 1 466 18 is_stmt 0 view .LVU184
+ 992 0000 034B     		ldr	r3, .L88
+ 993 0002 D3F8343C 		ldr	r3, [r3, #3124]
+ 994              	.LVL40:
+ 467:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         temp_flag = SET;
+ 468:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     }
+ 469:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     return temp_flag;
+ 995              		.loc 1 469 5 is_stmt 1 view .LVU185
+ 466:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     if(RESET != (SDIO_STAT & flag)) {
+ 996              		.loc 1 466 7 is_stmt 0 view .LVU186
+ 997 0006 0342     		tst	r3, r0
+ 470:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 998              		.loc 1 470 1 view .LVU187
+ 999 0008 14BF     		ite	ne
+ 1000 000a 0120     		movne	r0, #1
+ 1001              	.LVL41:
+ 1002              		.loc 1 470 1 view .LVU188
+ 1003 000c 0020     		moveq	r0, #0
+ 1004 000e 7047     		bx	lr
+ 1005              	.L89:
+ 1006              		.align	2
+ 1007              	.L88:
+ 1008 0010 00200140 		.word	1073815552
+ 1009              		.cfi_endproc
+ 1010              	.LFE141:
+ 1012              		.section	.text.sdio_flag_clear,"ax",%progbits
+ 1013              		.align	1
+ 1014              		.p2align 2,,3
+ 1015              		.global	sdio_flag_clear
+ 1016              		.syntax unified
+ 1017              		.thumb
+ 1018              		.thumb_func
+ 1020              	sdio_flag_clear:
+ 1021              	.LVL42:
+ 1022              	.LFB142:
+ 471:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 472:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 473:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    clear the pending flags of SDIO
+ 474:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  flag: flags state of SDIO
+ 475:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****                 one or more parameters can be selected which are shown as below:
+ 476:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_CCRCERR: command response received (CRC check failed) flag
+ 477:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_DTCRCERR: data block sent/received (CRC check failed) flag
+ 478:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_CMDTMOUT: command response timeout flag
+ 479:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_DTTMOUT: data timeout flag
+ 480:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_TXURE: transmit FIFO underrun error occurs flag
+ 481:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_RXORE: received FIFO overrun error occurs flag
+ 482:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_CMDRECV: command response received (CRC check passed) flag
+ 483:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_CMDSEND: command sent (no response required) flag
+ 484:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_DTEND: data end (data counter, SDIO_DATACNT, is zero) flag
+ 485:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_STBITE: start bit error in the bus flag
+ 486:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_DTBLKEND: data block sent/received (CRC check passed) flag
+ 487:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_SDIOINT: SD I/O interrupt received flag
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 27
+
+
+ 488:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_FLAG_ATAEND: CE-ATA command completion signal received (only for CMD61) flag
+ 489:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 490:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 491:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 492:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_flag_clear(uint32_t flag)
+ 493:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 1023              		.loc 1 493 1 is_stmt 1 view -0
+ 1024              		.cfi_startproc
+ 1025              		@ args = 0, pretend = 0, frame = 0
+ 1026              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1027              		@ link register save eliminated.
+ 494:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_INTC = flag;
+ 1028              		.loc 1 494 5 view .LVU190
+ 1029              		.loc 1 494 15 is_stmt 0 view .LVU191
+ 1030 0000 014B     		ldr	r3, .L91
+ 1031 0002 C3F8380C 		str	r0, [r3, #3128]
+ 495:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 1032              		.loc 1 495 1 view .LVU192
+ 1033 0006 7047     		bx	lr
+ 1034              	.L92:
+ 1035              		.align	2
+ 1036              	.L91:
+ 1037 0008 00200140 		.word	1073815552
+ 1038              		.cfi_endproc
+ 1039              	.LFE142:
+ 1041              		.section	.text.sdio_interrupt_enable,"ax",%progbits
+ 1042              		.align	1
+ 1043              		.p2align 2,,3
+ 1044              		.global	sdio_interrupt_enable
+ 1045              		.syntax unified
+ 1046              		.thumb
+ 1047              		.thumb_func
+ 1049              	sdio_interrupt_enable:
+ 1050              	.LVL43:
+ 1051              	.LFB143:
+ 496:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 497:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 498:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    enable the SDIO interrupt
+ 499:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  int_flag: interrupt flags state of SDIO
+ 500:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****                 one or more parameters can be selected which are shown as below:
+ 501:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_CCRCERR: SDIO CCRCERR interrupt
+ 502:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_DTCRCERR: SDIO DTCRCERR interrupt
+ 503:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_CMDTMOUT: SDIO CMDTMOUT interrupt
+ 504:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_DTTMOUT: SDIO DTTMOUT interrupt
+ 505:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_TXURE: SDIO TXURE interrupt
+ 506:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_RXORE: SDIO RXORE interrupt
+ 507:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_CMDRECV: SDIO CMDRECV interrupt
+ 508:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_CMDSEND: SDIO CMDSEND interrupt
+ 509:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_DTEND: SDIO DTEND interrupt
+ 510:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_STBITE: SDIO STBITE interrupt
+ 511:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_DTBLKEND: SDIO DTBLKEND interrupt
+ 512:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_CMDRUN: SDIO CMDRUN interrupt
+ 513:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_TXRUN: SDIO TXRUN interrupt
+ 514:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_RXRUN: SDIO RXRUN interrupt
+ 515:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_TFH: SDIO TFH interrupt
+ 516:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_RFH: SDIO RFH interrupt
+ 517:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_TFF: SDIO TFF interrupt
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 28
+
+
+ 518:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_RFF: SDIO RFF interrupt
+ 519:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_TFE: SDIO TFE interrupt
+ 520:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_RFE: SDIO RFE interrupt
+ 521:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_TXDTVAL: SDIO TXDTVAL interrupt
+ 522:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_RXDTVAL: SDIO RXDTVAL interrupt
+ 523:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_SDIOINT: SDIO SDIOINT interrupt
+ 524:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_ATAEND: SDIO ATAEND interrupt
+ 525:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 526:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 527:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 528:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_interrupt_enable(uint32_t int_flag)
+ 529:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 1052              		.loc 1 529 1 is_stmt 1 view -0
+ 1053              		.cfi_startproc
+ 1054              		@ args = 0, pretend = 0, frame = 0
+ 1055              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1056              		@ link register save eliminated.
+ 530:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_INTEN |= int_flag;
+ 1057              		.loc 1 530 5 view .LVU194
+ 1058              		.loc 1 530 16 is_stmt 0 view .LVU195
+ 1059 0000 034A     		ldr	r2, .L94
+ 1060 0002 D2F83C3C 		ldr	r3, [r2, #3132]
+ 1061 0006 0343     		orrs	r3, r3, r0
+ 1062 0008 C2F83C3C 		str	r3, [r2, #3132]
+ 531:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 1063              		.loc 1 531 1 view .LVU196
+ 1064 000c 7047     		bx	lr
+ 1065              	.L95:
+ 1066 000e 00BF     		.align	2
+ 1067              	.L94:
+ 1068 0010 00200140 		.word	1073815552
+ 1069              		.cfi_endproc
+ 1070              	.LFE143:
+ 1072              		.section	.text.sdio_interrupt_disable,"ax",%progbits
+ 1073              		.align	1
+ 1074              		.p2align 2,,3
+ 1075              		.global	sdio_interrupt_disable
+ 1076              		.syntax unified
+ 1077              		.thumb
+ 1078              		.thumb_func
+ 1080              	sdio_interrupt_disable:
+ 1081              	.LVL44:
+ 1082              	.LFB144:
+ 532:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 533:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 534:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    disable the SDIO interrupt
+ 535:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  int_flag: interrupt flags state of SDIO
+ 536:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****                 one or more parameters can be selected which are shown as below:
+ 537:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_CCRCERR: SDIO CCRCERR interrupt
+ 538:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_DTCRCERR: SDIO DTCRCERR interrupt
+ 539:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_CMDTMOUT: SDIO CMDTMOUT interrupt
+ 540:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_DTTMOUT: SDIO DTTMOUT interrupt
+ 541:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_TXURE: SDIO TXURE interrupt
+ 542:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_RXORE: SDIO RXORE interrupt
+ 543:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_CMDRECV: SDIO CMDRECV interrupt
+ 544:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_CMDSEND: SDIO CMDSEND interrupt
+ 545:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_DTEND: SDIO DTEND interrupt
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 29
+
+
+ 546:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_STBITE: SDIO STBITE interrupt
+ 547:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_DTBLKEND: SDIO DTBLKEND interrupt
+ 548:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_CMDRUN: SDIO CMDRUN interrupt
+ 549:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_TXRUN: SDIO TXRUN interrupt
+ 550:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_RXRUN: SDIO RXRUN interrupt
+ 551:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_TFH: SDIO TFH interrupt
+ 552:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_RFH: SDIO RFH interrupt
+ 553:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_TFF: SDIO TFF interrupt
+ 554:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_RFF: SDIO RFF interrupt
+ 555:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_TFE: SDIO TFE interrupt
+ 556:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_RFE: SDIO RFE interrupt
+ 557:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_TXDTVAL: SDIO TXDTVAL interrupt
+ 558:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_RXDTVAL: SDIO RXDTVAL interrupt
+ 559:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_SDIOINT: SDIO SDIOINT interrupt
+ 560:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_ATAEND: SDIO ATAEND interrupt
+ 561:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 562:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 563:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 564:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_interrupt_disable(uint32_t int_flag)
+ 565:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 1083              		.loc 1 565 1 is_stmt 1 view -0
+ 1084              		.cfi_startproc
+ 1085              		@ args = 0, pretend = 0, frame = 0
+ 1086              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1087              		@ link register save eliminated.
+ 566:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_INTEN &= ~int_flag;
+ 1088              		.loc 1 566 5 view .LVU198
+ 1089              		.loc 1 566 16 is_stmt 0 view .LVU199
+ 1090 0000 034A     		ldr	r2, .L97
+ 1091 0002 D2F83C3C 		ldr	r3, [r2, #3132]
+ 1092 0006 23EA0003 		bic	r3, r3, r0
+ 1093 000a C2F83C3C 		str	r3, [r2, #3132]
+ 567:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 1094              		.loc 1 567 1 view .LVU200
+ 1095 000e 7047     		bx	lr
+ 1096              	.L98:
+ 1097              		.align	2
+ 1098              	.L97:
+ 1099 0010 00200140 		.word	1073815552
+ 1100              		.cfi_endproc
+ 1101              	.LFE144:
+ 1103              		.section	.text.sdio_interrupt_flag_get,"ax",%progbits
+ 1104              		.align	1
+ 1105              		.p2align 2,,3
+ 1106              		.global	sdio_interrupt_flag_get
+ 1107              		.syntax unified
+ 1108              		.thumb
+ 1109              		.thumb_func
+ 1111              	sdio_interrupt_flag_get:
+ 1112              	.LFB163:
+ 1113              		.cfi_startproc
+ 1114              		@ args = 0, pretend = 0, frame = 0
+ 1115              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1116              		@ link register save eliminated.
+ 1117 0000 034B     		ldr	r3, .L100
+ 1118 0002 D3F8343C 		ldr	r3, [r3, #3124]
+ 1119 0006 1842     		tst	r0, r3
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 30
+
+
+ 1120 0008 14BF     		ite	ne
+ 1121 000a 0120     		movne	r0, #1
+ 1122 000c 0020     		moveq	r0, #0
+ 1123 000e 7047     		bx	lr
+ 1124              	.L101:
+ 1125              		.align	2
+ 1126              	.L100:
+ 1127 0010 00200140 		.word	1073815552
+ 1128              		.cfi_endproc
+ 1129              	.LFE163:
+ 1131              		.section	.text.sdio_interrupt_flag_clear,"ax",%progbits
+ 1132              		.align	1
+ 1133              		.p2align 2,,3
+ 1134              		.global	sdio_interrupt_flag_clear
+ 1135              		.syntax unified
+ 1136              		.thumb
+ 1137              		.thumb_func
+ 1139              	sdio_interrupt_flag_clear:
+ 1140              	.LFB165:
+ 1141              		.cfi_startproc
+ 1142              		@ args = 0, pretend = 0, frame = 0
+ 1143              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1144              		@ link register save eliminated.
+ 1145 0000 014B     		ldr	r3, .L103
+ 1146 0002 C3F8380C 		str	r0, [r3, #3128]
+ 1147 0006 7047     		bx	lr
+ 1148              	.L104:
+ 1149              		.align	2
+ 1150              	.L103:
+ 1151 0008 00200140 		.word	1073815552
+ 1152              		.cfi_endproc
+ 1153              	.LFE165:
+ 1155              		.section	.text.sdio_readwait_enable,"ax",%progbits
+ 1156              		.align	1
+ 1157              		.p2align 2,,3
+ 1158              		.global	sdio_readwait_enable
+ 1159              		.syntax unified
+ 1160              		.thumb
+ 1161              		.thumb_func
+ 1163              	sdio_readwait_enable:
+ 1164              	.LFB147:
+ 568:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 569:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 570:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    get the interrupt flags state of SDIO
+ 571:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  int_flag: interrupt flags state of SDIO
+ 572:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****                 one or more parameters can be selected which are shown as below:
+ 573:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_CCRCERR: SDIO CCRCERR interrupt flag
+ 574:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_DTCRCERR: SDIO DTCRCERR interrupt flag
+ 575:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_CMDTMOUT: SDIO CMDTMOUT interrupt flag
+ 576:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_DTTMOUT: SDIO DTTMOUT interrupt flag
+ 577:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_TXURE: SDIO TXURE interrupt flag
+ 578:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_RXORE: SDIO RXORE interrupt flag
+ 579:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_CMDRECV: SDIO CMDRECV interrupt flag
+ 580:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_CMDSEND: SDIO CMDSEND interrupt flag
+ 581:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_DTEND: SDIO DTEND interrupt flag
+ 582:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_STBITE: SDIO STBITE interrupt flag
+ 583:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_DTBLKEND: SDIO DTBLKEND interrupt flag
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 31
+
+
+ 584:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_CMDRUN: SDIO CMDRUN interrupt flag
+ 585:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_TXRUN: SDIO TXRUN interrupt flag
+ 586:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_RXRUN: SDIO RXRUN interrupt flag
+ 587:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_TFH: SDIO TFH interrupt flag
+ 588:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_RFH: SDIO RFH interrupt flag
+ 589:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_TFF: SDIO TFF interrupt flag
+ 590:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_RFF: SDIO RFF interrupt flag
+ 591:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_TFE: SDIO TFE interrupt flag
+ 592:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_RFE: SDIO RFE interrupt flag
+ 593:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_TXDTVAL: SDIO TXDTVAL interrupt flag
+ 594:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_RXDTVAL: SDIO RXDTVAL interrupt flag
+ 595:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_SDIOINT: SDIO SDIOINT interrupt flag
+ 596:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_ATAEND: SDIO ATAEND interrupt flag
+ 597:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 598:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     FlagStatus: SET or RESET
+ 599:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 600:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** FlagStatus sdio_interrupt_flag_get(uint32_t int_flag)
+ 601:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 602:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     FlagStatus temp_flag = RESET;
+ 603:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     if(RESET != (SDIO_STAT & int_flag)) {
+ 604:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         temp_flag = SET;
+ 605:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     }
+ 606:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     return temp_flag;
+ 607:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 608:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 609:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 610:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    clear the interrupt pending flags of SDIO
+ 611:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  int_flag: interrupt flags state of SDIO
+ 612:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****                 one or more parameters can be selected which are shown as below:
+ 613:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_CCRCERR: command response received (CRC check failed) flag
+ 614:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_DTCRCERR: data block sent/received (CRC check failed) flag
+ 615:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_CMDTMOUT: command response timeout flag
+ 616:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_DTTMOUT: data timeout flag
+ 617:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_TXURE: transmit FIFO underrun error occurs flag
+ 618:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_RXORE: received FIFO overrun error occurs flag
+ 619:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_CMDRECV: command response received (CRC check passed) flag
+ 620:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_CMDSEND: command sent (no response required) flag
+ 621:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_DTEND: data end (data counter, SDIO_DATACNT, is zero) flag
+ 622:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_STBITE: start bit error in the bus flag
+ 623:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_DTBLKEND: data block sent/received (CRC check passed) flag
+ 624:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_SDIOINT: SD I/O interrupt received flag
+ 625:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_INT_FLAG_ATAEND: CE-ATA command completion signal received (only for CMD61) 
+ 626:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 627:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 628:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 629:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_interrupt_flag_clear(uint32_t int_flag)
+ 630:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 631:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_INTC = int_flag;
+ 632:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 633:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 634:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 635:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    enable the read wait mode(SD I/O only)
+ 636:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 637:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 638:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 639:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 640:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_readwait_enable(void)
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 32
+
+
+ 641:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 1165              		.loc 1 641 1 is_stmt 1 view -0
+ 1166              		.cfi_startproc
+ 1167              		@ args = 0, pretend = 0, frame = 0
+ 1168              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1169              		@ link register save eliminated.
+ 642:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_DATACTL |= SDIO_DATACTL_RWEN;
+ 1170              		.loc 1 642 5 view .LVU202
+ 1171              		.loc 1 642 18 is_stmt 0 view .LVU203
+ 1172 0000 034A     		ldr	r2, .L106
+ 1173 0002 D2F82C3C 		ldr	r3, [r2, #3116]
+ 1174 0006 43F48073 		orr	r3, r3, #256
+ 1175 000a C2F82C3C 		str	r3, [r2, #3116]
+ 643:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 1176              		.loc 1 643 1 view .LVU204
+ 1177 000e 7047     		bx	lr
+ 1178              	.L107:
+ 1179              		.align	2
+ 1180              	.L106:
+ 1181 0010 00200140 		.word	1073815552
+ 1182              		.cfi_endproc
+ 1183              	.LFE147:
+ 1185              		.section	.text.sdio_readwait_disable,"ax",%progbits
+ 1186              		.align	1
+ 1187              		.p2align 2,,3
+ 1188              		.global	sdio_readwait_disable
+ 1189              		.syntax unified
+ 1190              		.thumb
+ 1191              		.thumb_func
+ 1193              	sdio_readwait_disable:
+ 1194              	.LFB148:
+ 644:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 645:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 646:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    disable the read wait mode(SD I/O only)
+ 647:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 648:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 649:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 650:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 651:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_readwait_disable(void)
+ 652:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 1195              		.loc 1 652 1 is_stmt 1 view -0
+ 1196              		.cfi_startproc
+ 1197              		@ args = 0, pretend = 0, frame = 0
+ 1198              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1199              		@ link register save eliminated.
+ 653:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_DATACTL &= ~SDIO_DATACTL_RWEN;
+ 1200              		.loc 1 653 5 view .LVU206
+ 1201              		.loc 1 653 18 is_stmt 0 view .LVU207
+ 1202 0000 034A     		ldr	r2, .L109
+ 1203 0002 D2F82C3C 		ldr	r3, [r2, #3116]
+ 1204 0006 23F48073 		bic	r3, r3, #256
+ 1205 000a C2F82C3C 		str	r3, [r2, #3116]
+ 654:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 1206              		.loc 1 654 1 view .LVU208
+ 1207 000e 7047     		bx	lr
+ 1208              	.L110:
+ 1209              		.align	2
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 33
+
+
+ 1210              	.L109:
+ 1211 0010 00200140 		.word	1073815552
+ 1212              		.cfi_endproc
+ 1213              	.LFE148:
+ 1215              		.section	.text.sdio_stop_readwait_enable,"ax",%progbits
+ 1216              		.align	1
+ 1217              		.p2align 2,,3
+ 1218              		.global	sdio_stop_readwait_enable
+ 1219              		.syntax unified
+ 1220              		.thumb
+ 1221              		.thumb_func
+ 1223              	sdio_stop_readwait_enable:
+ 1224              	.LFB149:
+ 655:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 656:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 657:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    enable the function that stop the read wait process(SD I/O only)
+ 658:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 659:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 660:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 661:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 662:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_stop_readwait_enable(void)
+ 663:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 1225              		.loc 1 663 1 is_stmt 1 view -0
+ 1226              		.cfi_startproc
+ 1227              		@ args = 0, pretend = 0, frame = 0
+ 1228              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1229              		@ link register save eliminated.
+ 664:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_DATACTL |= SDIO_DATACTL_RWSTOP;
+ 1230              		.loc 1 664 5 view .LVU210
+ 1231              		.loc 1 664 18 is_stmt 0 view .LVU211
+ 1232 0000 034A     		ldr	r2, .L112
+ 1233 0002 D2F82C3C 		ldr	r3, [r2, #3116]
+ 1234 0006 43F40073 		orr	r3, r3, #512
+ 1235 000a C2F82C3C 		str	r3, [r2, #3116]
+ 665:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 1236              		.loc 1 665 1 view .LVU212
+ 1237 000e 7047     		bx	lr
+ 1238              	.L113:
+ 1239              		.align	2
+ 1240              	.L112:
+ 1241 0010 00200140 		.word	1073815552
+ 1242              		.cfi_endproc
+ 1243              	.LFE149:
+ 1245              		.section	.text.sdio_stop_readwait_disable,"ax",%progbits
+ 1246              		.align	1
+ 1247              		.p2align 2,,3
+ 1248              		.global	sdio_stop_readwait_disable
+ 1249              		.syntax unified
+ 1250              		.thumb
+ 1251              		.thumb_func
+ 1253              	sdio_stop_readwait_disable:
+ 1254              	.LFB150:
+ 666:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 667:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 668:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    disable the function that stop the read wait process(SD I/O only)
+ 669:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 670:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 34
+
+
+ 671:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 672:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 673:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_stop_readwait_disable(void)
+ 674:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 1255              		.loc 1 674 1 is_stmt 1 view -0
+ 1256              		.cfi_startproc
+ 1257              		@ args = 0, pretend = 0, frame = 0
+ 1258              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1259              		@ link register save eliminated.
+ 675:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_DATACTL &= ~SDIO_DATACTL_RWSTOP;
+ 1260              		.loc 1 675 5 view .LVU214
+ 1261              		.loc 1 675 18 is_stmt 0 view .LVU215
+ 1262 0000 034A     		ldr	r2, .L115
+ 1263 0002 D2F82C3C 		ldr	r3, [r2, #3116]
+ 1264 0006 23F40073 		bic	r3, r3, #512
+ 1265 000a C2F82C3C 		str	r3, [r2, #3116]
+ 676:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 1266              		.loc 1 676 1 view .LVU216
+ 1267 000e 7047     		bx	lr
+ 1268              	.L116:
+ 1269              		.align	2
+ 1270              	.L115:
+ 1271 0010 00200140 		.word	1073815552
+ 1272              		.cfi_endproc
+ 1273              	.LFE150:
+ 1275              		.section	.text.sdio_readwait_type_set,"ax",%progbits
+ 1276              		.align	1
+ 1277              		.p2align 2,,3
+ 1278              		.global	sdio_readwait_type_set
+ 1279              		.syntax unified
+ 1280              		.thumb
+ 1281              		.thumb_func
+ 1283              	sdio_readwait_type_set:
+ 1284              	.LVL45:
+ 1285              	.LFB151:
+ 677:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 678:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 679:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    set the read wait type(SD I/O only)
+ 680:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  readwait_type: SD I/O read wait type
+ 681:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****                 only one parameter can be selected which is shown as below:
+ 682:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_READWAITTYPE_CLK: read wait control by stopping SDIO_CLK
+ 683:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****       \arg        SDIO_READWAITTYPE_DAT2: read wait control using SDIO_DAT[2]
+ 684:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 685:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 686:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 687:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_readwait_type_set(uint32_t readwait_type)
+ 688:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 1286              		.loc 1 688 1 is_stmt 1 view -0
+ 1287              		.cfi_startproc
+ 1288              		@ args = 0, pretend = 0, frame = 0
+ 1289              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1290              		@ link register save eliminated.
+ 689:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     if(SDIO_READWAITTYPE_CLK == readwait_type) {
+ 1291              		.loc 1 689 5 view .LVU218
+ 690:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         SDIO_DATACTL |= SDIO_DATACTL_RWTYPE;
+ 1292              		.loc 1 690 22 is_stmt 0 view .LVU219
+ 1293 0000 064A     		ldr	r2, .L120
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 35
+
+
+ 1294 0002 D2F82C3C 		ldr	r3, [r2, #3116]
+ 689:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     if(SDIO_READWAITTYPE_CLK == readwait_type) {
+ 1295              		.loc 1 689 7 view .LVU220
+ 1296 0006 B0F5806F 		cmp	r0, #1024
+ 1297              		.loc 1 690 9 is_stmt 1 view .LVU221
+ 1298              		.loc 1 690 22 is_stmt 0 view .LVU222
+ 1299 000a 0CBF     		ite	eq
+ 1300 000c 43F48063 		orreq	r3, r3, #1024
+ 691:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     } else {
+ 692:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****         SDIO_DATACTL &= ~SDIO_DATACTL_RWTYPE;
+ 1301              		.loc 1 692 9 is_stmt 1 view .LVU223
+ 1302              		.loc 1 692 22 is_stmt 0 view .LVU224
+ 1303 0010 23F48063 		bicne	r3, r3, #1024
+ 1304 0014 C2F82C3C 		str	r3, [r2, #3116]
+ 693:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     }
+ 694:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 1305              		.loc 1 694 1 view .LVU225
+ 1306 0018 7047     		bx	lr
+ 1307              	.L121:
+ 1308 001a 00BF     		.align	2
+ 1309              	.L120:
+ 1310 001c 00200140 		.word	1073815552
+ 1311              		.cfi_endproc
+ 1312              	.LFE151:
+ 1314              		.section	.text.sdio_operation_enable,"ax",%progbits
+ 1315              		.align	1
+ 1316              		.p2align 2,,3
+ 1317              		.global	sdio_operation_enable
+ 1318              		.syntax unified
+ 1319              		.thumb
+ 1320              		.thumb_func
+ 1322              	sdio_operation_enable:
+ 1323              	.LFB152:
+ 695:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 696:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 697:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    enable the SD I/O mode specific operation(SD I/O only)
+ 698:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 699:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 700:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 701:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 702:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_operation_enable(void)
+ 703:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 1324              		.loc 1 703 1 is_stmt 1 view -0
+ 1325              		.cfi_startproc
+ 1326              		@ args = 0, pretend = 0, frame = 0
+ 1327              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1328              		@ link register save eliminated.
+ 704:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_DATACTL |= SDIO_DATACTL_IOEN;
+ 1329              		.loc 1 704 5 view .LVU227
+ 1330              		.loc 1 704 18 is_stmt 0 view .LVU228
+ 1331 0000 034A     		ldr	r2, .L123
+ 1332 0002 D2F82C3C 		ldr	r3, [r2, #3116]
+ 1333 0006 43F40063 		orr	r3, r3, #2048
+ 1334 000a C2F82C3C 		str	r3, [r2, #3116]
+ 705:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 1335              		.loc 1 705 1 view .LVU229
+ 1336 000e 7047     		bx	lr
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 36
+
+
+ 1337              	.L124:
+ 1338              		.align	2
+ 1339              	.L123:
+ 1340 0010 00200140 		.word	1073815552
+ 1341              		.cfi_endproc
+ 1342              	.LFE152:
+ 1344              		.section	.text.sdio_operation_disable,"ax",%progbits
+ 1345              		.align	1
+ 1346              		.p2align 2,,3
+ 1347              		.global	sdio_operation_disable
+ 1348              		.syntax unified
+ 1349              		.thumb
+ 1350              		.thumb_func
+ 1352              	sdio_operation_disable:
+ 1353              	.LFB153:
+ 706:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 707:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 708:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    disable the SD I/O mode specific operation(SD I/O only)
+ 709:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 710:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 711:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 712:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 713:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_operation_disable(void)
+ 714:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 1354              		.loc 1 714 1 is_stmt 1 view -0
+ 1355              		.cfi_startproc
+ 1356              		@ args = 0, pretend = 0, frame = 0
+ 1357              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1358              		@ link register save eliminated.
+ 715:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_DATACTL &= ~SDIO_DATACTL_IOEN;
+ 1359              		.loc 1 715 5 view .LVU231
+ 1360              		.loc 1 715 18 is_stmt 0 view .LVU232
+ 1361 0000 034A     		ldr	r2, .L126
+ 1362 0002 D2F82C3C 		ldr	r3, [r2, #3116]
+ 1363 0006 23F40063 		bic	r3, r3, #2048
+ 1364 000a C2F82C3C 		str	r3, [r2, #3116]
+ 716:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 1365              		.loc 1 716 1 view .LVU233
+ 1366 000e 7047     		bx	lr
+ 1367              	.L127:
+ 1368              		.align	2
+ 1369              	.L126:
+ 1370 0010 00200140 		.word	1073815552
+ 1371              		.cfi_endproc
+ 1372              	.LFE153:
+ 1374              		.section	.text.sdio_suspend_enable,"ax",%progbits
+ 1375              		.align	1
+ 1376              		.p2align 2,,3
+ 1377              		.global	sdio_suspend_enable
+ 1378              		.syntax unified
+ 1379              		.thumb
+ 1380              		.thumb_func
+ 1382              	sdio_suspend_enable:
+ 1383              	.LFB154:
+ 717:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 718:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 719:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    enable the SD I/O suspend operation(SD I/O only)
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 37
+
+
+ 720:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 721:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 722:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 723:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 724:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_suspend_enable(void)
+ 725:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 1384              		.loc 1 725 1 is_stmt 1 view -0
+ 1385              		.cfi_startproc
+ 1386              		@ args = 0, pretend = 0, frame = 0
+ 1387              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1388              		@ link register save eliminated.
+ 726:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CMDCTL |= SDIO_CMDCTL_SUSPEND;
+ 1389              		.loc 1 726 5 view .LVU235
+ 1390              		.loc 1 726 17 is_stmt 0 view .LVU236
+ 1391 0000 034A     		ldr	r2, .L129
+ 1392 0002 D2F80C3C 		ldr	r3, [r2, #3084]
+ 1393 0006 43F40063 		orr	r3, r3, #2048
+ 1394 000a C2F80C3C 		str	r3, [r2, #3084]
+ 727:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 1395              		.loc 1 727 1 view .LVU237
+ 1396 000e 7047     		bx	lr
+ 1397              	.L130:
+ 1398              		.align	2
+ 1399              	.L129:
+ 1400 0010 00200140 		.word	1073815552
+ 1401              		.cfi_endproc
+ 1402              	.LFE154:
+ 1404              		.section	.text.sdio_suspend_disable,"ax",%progbits
+ 1405              		.align	1
+ 1406              		.p2align 2,,3
+ 1407              		.global	sdio_suspend_disable
+ 1408              		.syntax unified
+ 1409              		.thumb
+ 1410              		.thumb_func
+ 1412              	sdio_suspend_disable:
+ 1413              	.LFB155:
+ 728:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 729:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 730:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    disable the SD I/O suspend operation(SD I/O only)
+ 731:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 732:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 733:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 734:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 735:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_suspend_disable(void)
+ 736:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 1414              		.loc 1 736 1 is_stmt 1 view -0
+ 1415              		.cfi_startproc
+ 1416              		@ args = 0, pretend = 0, frame = 0
+ 1417              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1418              		@ link register save eliminated.
+ 737:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CMDCTL &= ~SDIO_CMDCTL_SUSPEND;
+ 1419              		.loc 1 737 5 view .LVU239
+ 1420              		.loc 1 737 17 is_stmt 0 view .LVU240
+ 1421 0000 034A     		ldr	r2, .L132
+ 1422 0002 D2F80C3C 		ldr	r3, [r2, #3084]
+ 1423 0006 23F40063 		bic	r3, r3, #2048
+ 1424 000a C2F80C3C 		str	r3, [r2, #3084]
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 38
+
+
+ 738:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 1425              		.loc 1 738 1 view .LVU241
+ 1426 000e 7047     		bx	lr
+ 1427              	.L133:
+ 1428              		.align	2
+ 1429              	.L132:
+ 1430 0010 00200140 		.word	1073815552
+ 1431              		.cfi_endproc
+ 1432              	.LFE155:
+ 1434              		.section	.text.sdio_ceata_command_enable,"ax",%progbits
+ 1435              		.align	1
+ 1436              		.p2align 2,,3
+ 1437              		.global	sdio_ceata_command_enable
+ 1438              		.syntax unified
+ 1439              		.thumb
+ 1440              		.thumb_func
+ 1442              	sdio_ceata_command_enable:
+ 1443              	.LFB156:
+ 739:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 740:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 741:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    enable the CE-ATA command(CE-ATA only)
+ 742:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 743:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 744:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 745:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 746:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_ceata_command_enable(void)
+ 747:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 1444              		.loc 1 747 1 is_stmt 1 view -0
+ 1445              		.cfi_startproc
+ 1446              		@ args = 0, pretend = 0, frame = 0
+ 1447              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1448              		@ link register save eliminated.
+ 748:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CMDCTL |= SDIO_CMDCTL_ATAEN;
+ 1449              		.loc 1 748 5 view .LVU243
+ 1450              		.loc 1 748 17 is_stmt 0 view .LVU244
+ 1451 0000 034A     		ldr	r2, .L135
+ 1452 0002 D2F80C3C 		ldr	r3, [r2, #3084]
+ 1453 0006 43F48043 		orr	r3, r3, #16384
+ 1454 000a C2F80C3C 		str	r3, [r2, #3084]
+ 749:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 1455              		.loc 1 749 1 view .LVU245
+ 1456 000e 7047     		bx	lr
+ 1457              	.L136:
+ 1458              		.align	2
+ 1459              	.L135:
+ 1460 0010 00200140 		.word	1073815552
+ 1461              		.cfi_endproc
+ 1462              	.LFE156:
+ 1464              		.section	.text.sdio_ceata_command_disable,"ax",%progbits
+ 1465              		.align	1
+ 1466              		.p2align 2,,3
+ 1467              		.global	sdio_ceata_command_disable
+ 1468              		.syntax unified
+ 1469              		.thumb
+ 1470              		.thumb_func
+ 1472              	sdio_ceata_command_disable:
+ 1473              	.LFB157:
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 39
+
+
+ 750:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 751:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 752:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    disable the CE-ATA command(CE-ATA only)
+ 753:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 754:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 755:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 756:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 757:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_ceata_command_disable(void)
+ 758:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 1474              		.loc 1 758 1 is_stmt 1 view -0
+ 1475              		.cfi_startproc
+ 1476              		@ args = 0, pretend = 0, frame = 0
+ 1477              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1478              		@ link register save eliminated.
+ 759:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CMDCTL &= ~SDIO_CMDCTL_ATAEN;
+ 1479              		.loc 1 759 5 view .LVU247
+ 1480              		.loc 1 759 17 is_stmt 0 view .LVU248
+ 1481 0000 034A     		ldr	r2, .L138
+ 1482 0002 D2F80C3C 		ldr	r3, [r2, #3084]
+ 1483 0006 23F48043 		bic	r3, r3, #16384
+ 1484 000a C2F80C3C 		str	r3, [r2, #3084]
+ 760:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 1485              		.loc 1 760 1 view .LVU249
+ 1486 000e 7047     		bx	lr
+ 1487              	.L139:
+ 1488              		.align	2
+ 1489              	.L138:
+ 1490 0010 00200140 		.word	1073815552
+ 1491              		.cfi_endproc
+ 1492              	.LFE157:
+ 1494              		.section	.text.sdio_ceata_interrupt_enable,"ax",%progbits
+ 1495              		.align	1
+ 1496              		.p2align 2,,3
+ 1497              		.global	sdio_ceata_interrupt_enable
+ 1498              		.syntax unified
+ 1499              		.thumb
+ 1500              		.thumb_func
+ 1502              	sdio_ceata_interrupt_enable:
+ 1503              	.LFB158:
+ 761:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 762:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 763:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    enable the CE-ATA interrupt(CE-ATA only)
+ 764:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 765:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 766:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 767:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 768:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_ceata_interrupt_enable(void)
+ 769:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 1504              		.loc 1 769 1 is_stmt 1 view -0
+ 1505              		.cfi_startproc
+ 1506              		@ args = 0, pretend = 0, frame = 0
+ 1507              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1508              		@ link register save eliminated.
+ 770:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CMDCTL &= ~SDIO_CMDCTL_NINTEN;
+ 1509              		.loc 1 770 5 view .LVU251
+ 1510              		.loc 1 770 17 is_stmt 0 view .LVU252
+ 1511 0000 034A     		ldr	r2, .L141
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 40
+
+
+ 1512 0002 D2F80C3C 		ldr	r3, [r2, #3084]
+ 1513 0006 23F40053 		bic	r3, r3, #8192
+ 1514 000a C2F80C3C 		str	r3, [r2, #3084]
+ 771:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 1515              		.loc 1 771 1 view .LVU253
+ 1516 000e 7047     		bx	lr
+ 1517              	.L142:
+ 1518              		.align	2
+ 1519              	.L141:
+ 1520 0010 00200140 		.word	1073815552
+ 1521              		.cfi_endproc
+ 1522              	.LFE158:
+ 1524              		.section	.text.sdio_ceata_interrupt_disable,"ax",%progbits
+ 1525              		.align	1
+ 1526              		.p2align 2,,3
+ 1527              		.global	sdio_ceata_interrupt_disable
+ 1528              		.syntax unified
+ 1529              		.thumb
+ 1530              		.thumb_func
+ 1532              	sdio_ceata_interrupt_disable:
+ 1533              	.LFB159:
+ 772:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 773:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 774:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    disable the CE-ATA interrupt(CE-ATA only)
+ 775:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 776:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 777:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 778:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 779:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_ceata_interrupt_disable(void)
+ 780:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 1534              		.loc 1 780 1 is_stmt 1 view -0
+ 1535              		.cfi_startproc
+ 1536              		@ args = 0, pretend = 0, frame = 0
+ 1537              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1538              		@ link register save eliminated.
+ 781:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CMDCTL |= SDIO_CMDCTL_NINTEN;
+ 1539              		.loc 1 781 5 view .LVU255
+ 1540              		.loc 1 781 17 is_stmt 0 view .LVU256
+ 1541 0000 034A     		ldr	r2, .L144
+ 1542 0002 D2F80C3C 		ldr	r3, [r2, #3084]
+ 1543 0006 43F40053 		orr	r3, r3, #8192
+ 1544 000a C2F80C3C 		str	r3, [r2, #3084]
+ 782:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 1545              		.loc 1 782 1 view .LVU257
+ 1546 000e 7047     		bx	lr
+ 1547              	.L145:
+ 1548              		.align	2
+ 1549              	.L144:
+ 1550 0010 00200140 		.word	1073815552
+ 1551              		.cfi_endproc
+ 1552              	.LFE159:
+ 1554              		.section	.text.sdio_ceata_command_completion_enable,"ax",%progbits
+ 1555              		.align	1
+ 1556              		.p2align 2,,3
+ 1557              		.global	sdio_ceata_command_completion_enable
+ 1558              		.syntax unified
+ 1559              		.thumb
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 41
+
+
+ 1560              		.thumb_func
+ 1562              	sdio_ceata_command_completion_enable:
+ 1563              	.LFB160:
+ 783:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 784:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 785:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    enable the CE-ATA command completion signal(CE-ATA only)
+ 786:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 787:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 788:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 789:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 790:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_ceata_command_completion_enable(void)
+ 791:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 1564              		.loc 1 791 1 is_stmt 1 view -0
+ 1565              		.cfi_startproc
+ 1566              		@ args = 0, pretend = 0, frame = 0
+ 1567              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1568              		@ link register save eliminated.
+ 792:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CMDCTL |= SDIO_CMDCTL_ENCMDC;
+ 1569              		.loc 1 792 5 view .LVU259
+ 1570              		.loc 1 792 17 is_stmt 0 view .LVU260
+ 1571 0000 034A     		ldr	r2, .L147
+ 1572 0002 D2F80C3C 		ldr	r3, [r2, #3084]
+ 1573 0006 43F48053 		orr	r3, r3, #4096
+ 1574 000a C2F80C3C 		str	r3, [r2, #3084]
+ 793:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 1575              		.loc 1 793 1 view .LVU261
+ 1576 000e 7047     		bx	lr
+ 1577              	.L148:
+ 1578              		.align	2
+ 1579              	.L147:
+ 1580 0010 00200140 		.word	1073815552
+ 1581              		.cfi_endproc
+ 1582              	.LFE160:
+ 1584              		.section	.text.sdio_ceata_command_completion_disable,"ax",%progbits
+ 1585              		.align	1
+ 1586              		.p2align 2,,3
+ 1587              		.global	sdio_ceata_command_completion_disable
+ 1588              		.syntax unified
+ 1589              		.thumb
+ 1590              		.thumb_func
+ 1592              	sdio_ceata_command_completion_disable:
+ 1593              	.LFB161:
+ 794:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** 
+ 795:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** /*!
+ 796:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \brief    disable the CE-ATA command completion signal(CE-ATA only)
+ 797:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[in]  none
+ 798:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \param[out] none
+ 799:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     \retval     none
+ 800:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** */
+ 801:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** void sdio_ceata_command_completion_disable(void)
+ 802:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** {
+ 1594              		.loc 1 802 1 is_stmt 1 view -0
+ 1595              		.cfi_startproc
+ 1596              		@ args = 0, pretend = 0, frame = 0
+ 1597              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1598              		@ link register save eliminated.
+ 803:lib/GD32F4xx/Source/gd32f4xx_sdio.c ****     SDIO_CMDCTL &= ~SDIO_CMDCTL_ENCMDC;
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 42
+
+
+ 1599              		.loc 1 803 5 view .LVU263
+ 1600              		.loc 1 803 17 is_stmt 0 view .LVU264
+ 1601 0000 034A     		ldr	r2, .L150
+ 1602 0002 D2F80C3C 		ldr	r3, [r2, #3084]
+ 1603 0006 23F48053 		bic	r3, r3, #4096
+ 1604 000a C2F80C3C 		str	r3, [r2, #3084]
+ 804:lib/GD32F4xx/Source/gd32f4xx_sdio.c **** }
+ 1605              		.loc 1 804 1 view .LVU265
+ 1606 000e 7047     		bx	lr
+ 1607              	.L151:
+ 1608              		.align	2
+ 1609              	.L150:
+ 1610 0010 00200140 		.word	1073815552
+ 1611              		.cfi_endproc
+ 1612              	.LFE161:
+ 1614              		.text
+ 1615              	.Letext0:
+ 1616              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
+ 1617              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
+ 1618              		.file 4 "lib/CMSIS/GD/GD32F4xx/Include/gd32f4xx.h"
+ 1619              		.file 5 "lib/GD32F4xx/Include/gd32f4xx_rcu.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 43
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 gd32f4xx_sdio.c
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:18     .text.sdio_deinit:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:25     .text.sdio_deinit:0000000000000000 sdio_deinit
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:58     .text.sdio_clock_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:65     .text.sdio_clock_config:0000000000000000 sdio_clock_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:134    .text.sdio_clock_config:0000000000000030 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:140    .text.sdio_hardware_clock_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:147    .text.sdio_hardware_clock_enable:0000000000000000 sdio_hardware_clock_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:165    .text.sdio_hardware_clock_enable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:170    .text.sdio_hardware_clock_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:177    .text.sdio_hardware_clock_disable:0000000000000000 sdio_hardware_clock_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:195    .text.sdio_hardware_clock_disable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:200    .text.sdio_bus_mode_set:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:207    .text.sdio_bus_mode_set:0000000000000000 sdio_bus_mode_set
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:231    .text.sdio_bus_mode_set:000000000000001c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:236    .text.sdio_power_state_set:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:243    .text.sdio_power_state_set:0000000000000000 sdio_power_state_set
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:260    .text.sdio_power_state_set:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:265    .text.sdio_power_state_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:272    .text.sdio_power_state_get:0000000000000000 sdio_power_state_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:288    .text.sdio_power_state_get:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:293    .text.sdio_clock_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:300    .text.sdio_clock_enable:0000000000000000 sdio_clock_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:318    .text.sdio_clock_enable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:323    .text.sdio_clock_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:330    .text.sdio_clock_disable:0000000000000000 sdio_clock_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:348    .text.sdio_clock_disable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:353    .text.sdio_command_response_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:360    .text.sdio_command_response_config:0000000000000000 sdio_command_response_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:420    .text.sdio_command_response_config:0000000000000034 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:425    .text.sdio_wait_type_set:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:432    .text.sdio_wait_type_set:0000000000000000 sdio_wait_type_set
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:456    .text.sdio_wait_type_set:000000000000001c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:461    .text.sdio_csm_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:468    .text.sdio_csm_enable:0000000000000000 sdio_csm_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:486    .text.sdio_csm_enable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:491    .text.sdio_csm_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:498    .text.sdio_csm_disable:0000000000000000 sdio_csm_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:516    .text.sdio_csm_disable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:521    .text.sdio_command_index_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:528    .text.sdio_command_index_get:0000000000000000 sdio_command_index_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:545    .text.sdio_command_index_get:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:550    .text.sdio_response_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:557    .text.sdio_response_get:0000000000000000 sdio_response_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:571    .text.sdio_response_get:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:575    .text.sdio_response_get:000000000000000c $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:622    .text.sdio_response_get:0000000000000030 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:627    .text.sdio_data_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:634    .text.sdio_data_config:0000000000000000 sdio_data_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:691    .text.sdio_data_config:000000000000003c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:696    .text.sdio_data_transfer_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:703    .text.sdio_data_transfer_config:0000000000000000 sdio_data_transfer_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:736    .text.sdio_data_transfer_config:0000000000000014 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:741    .text.sdio_dsm_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:748    .text.sdio_dsm_enable:0000000000000000 sdio_dsm_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:766    .text.sdio_dsm_enable:0000000000000010 $d
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 44
+
+
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:771    .text.sdio_dsm_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:778    .text.sdio_dsm_disable:0000000000000000 sdio_dsm_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:796    .text.sdio_dsm_disable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:801    .text.sdio_data_write:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:808    .text.sdio_data_write:0000000000000000 sdio_data_write
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:825    .text.sdio_data_write:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:830    .text.sdio_data_read:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:837    .text.sdio_data_read:0000000000000000 sdio_data_read
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:853    .text.sdio_data_read:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:858    .text.sdio_data_counter_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:865    .text.sdio_data_counter_get:0000000000000000 sdio_data_counter_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:881    .text.sdio_data_counter_get:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:886    .text.sdio_fifo_counter_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:893    .text.sdio_fifo_counter_get:0000000000000000 sdio_fifo_counter_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:909    .text.sdio_fifo_counter_get:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:914    .text.sdio_dma_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:921    .text.sdio_dma_enable:0000000000000000 sdio_dma_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:939    .text.sdio_dma_enable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:944    .text.sdio_dma_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:951    .text.sdio_dma_disable:0000000000000000 sdio_dma_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:969    .text.sdio_dma_disable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:974    .text.sdio_flag_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:981    .text.sdio_flag_get:0000000000000000 sdio_flag_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1008   .text.sdio_flag_get:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1013   .text.sdio_flag_clear:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1020   .text.sdio_flag_clear:0000000000000000 sdio_flag_clear
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1037   .text.sdio_flag_clear:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1042   .text.sdio_interrupt_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1049   .text.sdio_interrupt_enable:0000000000000000 sdio_interrupt_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1068   .text.sdio_interrupt_enable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1073   .text.sdio_interrupt_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1080   .text.sdio_interrupt_disable:0000000000000000 sdio_interrupt_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1099   .text.sdio_interrupt_disable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1104   .text.sdio_interrupt_flag_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1111   .text.sdio_interrupt_flag_get:0000000000000000 sdio_interrupt_flag_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1127   .text.sdio_interrupt_flag_get:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1132   .text.sdio_interrupt_flag_clear:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1139   .text.sdio_interrupt_flag_clear:0000000000000000 sdio_interrupt_flag_clear
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1151   .text.sdio_interrupt_flag_clear:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1156   .text.sdio_readwait_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1163   .text.sdio_readwait_enable:0000000000000000 sdio_readwait_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1181   .text.sdio_readwait_enable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1186   .text.sdio_readwait_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1193   .text.sdio_readwait_disable:0000000000000000 sdio_readwait_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1211   .text.sdio_readwait_disable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1216   .text.sdio_stop_readwait_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1223   .text.sdio_stop_readwait_enable:0000000000000000 sdio_stop_readwait_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1241   .text.sdio_stop_readwait_enable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1246   .text.sdio_stop_readwait_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1253   .text.sdio_stop_readwait_disable:0000000000000000 sdio_stop_readwait_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1271   .text.sdio_stop_readwait_disable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1276   .text.sdio_readwait_type_set:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1283   .text.sdio_readwait_type_set:0000000000000000 sdio_readwait_type_set
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1310   .text.sdio_readwait_type_set:000000000000001c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1315   .text.sdio_operation_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1322   .text.sdio_operation_enable:0000000000000000 sdio_operation_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1340   .text.sdio_operation_enable:0000000000000010 $d
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s 			page 45
+
+
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1345   .text.sdio_operation_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1352   .text.sdio_operation_disable:0000000000000000 sdio_operation_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1370   .text.sdio_operation_disable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1375   .text.sdio_suspend_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1382   .text.sdio_suspend_enable:0000000000000000 sdio_suspend_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1400   .text.sdio_suspend_enable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1405   .text.sdio_suspend_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1412   .text.sdio_suspend_disable:0000000000000000 sdio_suspend_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1430   .text.sdio_suspend_disable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1435   .text.sdio_ceata_command_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1442   .text.sdio_ceata_command_enable:0000000000000000 sdio_ceata_command_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1460   .text.sdio_ceata_command_enable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1465   .text.sdio_ceata_command_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1472   .text.sdio_ceata_command_disable:0000000000000000 sdio_ceata_command_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1490   .text.sdio_ceata_command_disable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1495   .text.sdio_ceata_interrupt_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1502   .text.sdio_ceata_interrupt_enable:0000000000000000 sdio_ceata_interrupt_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1520   .text.sdio_ceata_interrupt_enable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1525   .text.sdio_ceata_interrupt_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1532   .text.sdio_ceata_interrupt_disable:0000000000000000 sdio_ceata_interrupt_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1550   .text.sdio_ceata_interrupt_disable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1555   .text.sdio_ceata_command_completion_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1562   .text.sdio_ceata_command_completion_enable:0000000000000000 sdio_ceata_command_completion_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1580   .text.sdio_ceata_command_completion_enable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1585   .text.sdio_ceata_command_completion_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1592   .text.sdio_ceata_command_completion_disable:0000000000000000 sdio_ceata_command_completion_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccdas6Wt.s:1610   .text.sdio_ceata_command_completion_disable:0000000000000010 $d
+
+UNDEFINED SYMBOLS
+rcu_periph_reset_enable
+rcu_periph_reset_disable
