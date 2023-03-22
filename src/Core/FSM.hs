@@ -3,10 +3,13 @@ module Core.FSM where
 import           Ivory.Language
 import           Ivory.Stdlib
 
+
+
 transit :: a -> b -> (a, b)
 transit = (,)
 
 (|->) = transit
+
 
 
 runFSM :: (IvoryStore a, IvoryVar (ref s (Stored a)), IvoryRef ref, IvoryEq a)
@@ -15,7 +18,7 @@ runFSM :: (IvoryStore a, IvoryVar (ref s (Stored a)), IvoryRef ref, IvoryEq a)
            -> t
            -> p
            -> Ivory eff ()
-runFSM f hs r v = do
-    p <- deref (f r)
-    let go (w, h) = w ==? p ==> h r v
-    cond_ $ go <$> hs
+runFSM f ts st i = do
+    p <- deref (f st)
+    let go (w, h) = w ==? p ==> h st i
+    cond_ $ go <$> ts
