@@ -1,12 +1,12 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Protocol.RBUS.Slave.Rx (receive) where
+module Protocol.RS485.RBUS.Slave.Rx (receive) where
 
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Protocol.RBUS
-import           Protocol.RBUS.Slave
+import           Protocol.RS485.RBUS
+import           Protocol.RS485.RBUS.Slave
 import           Util.CRC16
 
 

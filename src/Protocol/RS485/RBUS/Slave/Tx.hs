@@ -1,12 +1,12 @@
 {-# LANGUAGE RankNTypes      #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Protocol.RBUS.Slave.Tx where
+module Protocol.RS485.RBUS.Slave.Tx where
 import           Data.Buffer
 import           GHC.TypeNats
 import           Ivory.Language
-import           Protocol.RBUS
-import           Protocol.RBUS.Slave
+import           Protocol.RS485.RBUS
+import           Protocol.RS485.RBUS.Slave
 import           Util.CRC16
 
 

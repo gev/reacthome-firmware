@@ -1,5 +1,5 @@
 {-# LANGUAGE DataKinds #-}
-module Protocol.RBUS where
+module Protocol.RS485.RBUS where
 
 import           Data.Buffer
 import           Data.Record

@@ -2,10 +2,10 @@ module Formula.Relay12 where
 
 import           Core.Formula
 import           Device.GD32F3x0
-import           Feature.Relays  (relays)
+import           Feature.Relays       (relays)
 import           Interface.RS485
 import           Ivory.Language
-import           Transport.RBUS
+import           Transport.RS485.RBUS
 
 
 relay12 :: Formula GD32F3x0

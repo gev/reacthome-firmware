@@ -8,7 +8,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
 
-module Protocol.RBUS.Slave where
+module Protocol.RS485.RBUS.Slave where
 
 import           Control.Monad.Writer
 import           Core.Context
@@ -19,7 +19,7 @@ import           Data.Value
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Protocol.RBUS
+import           Protocol.RS485.RBUS
 import           Util.CRC16
 
 

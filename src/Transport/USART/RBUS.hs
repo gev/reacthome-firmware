@@ -1,15 +1,15 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Transport.PBUS where
+module Transport.USART.RBUS where
 
 import           Control.Monad.RWS (MonadWriter)
 import           Core.Context      (Context)
 import           Core.Transport
 
-data PBUS = PBUS
+data RBUS = RBUS
 
-instance Transport PBUS where
+instance Transport RBUS where
     transmit = undefined
 
-pbus :: MonadWriter Context m => m PBUS
-pbus = pure PBUS
+rbus :: MonadWriter Context m => m RBUS
+rbus = pure RBUS

@@ -1,6 +1,6 @@
 {-# LANGUAGE DataKinds #-}
 
-module Transport.RBUS.Data where
+module Transport.RS485.RBUS.Data where
 
 import           Data.Buffer
 import           Data.Concurrent.Queue
@@ -8,7 +8,7 @@ import           Data.Value
 import           Interface.RS485
 import           Interface.SystemClock
 import           Ivory.Language
-import           Protocol.RBUS.Slave
+import           Protocol.RS485.RBUS.Slave
 
 
 data RBUS = RBUS

@@ -4,19 +4,19 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
 
-module Transport.RBUS.Tx where
+module Transport.RS485.RBUS.Tx where
 
 import           Data.Buffer
 import           Data.Concurrent.Queue
 import           GHC.TypeNats
-import qualified Interface.RS485        as RS
+import qualified Interface.RS485              as RS
 import           Interface.SystemClock
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Protocol.RBUS          (messageTTL)
-import           Protocol.RBUS.Slave
-import           Protocol.RBUS.Slave.Tx
-import           Transport.RBUS.Data
+import           Protocol.RS485.RBUS          (messageTTL)
+import           Protocol.RS485.RBUS.Slave
+import           Protocol.RS485.RBUS.Slave.Tx
+import           Transport.RS485.RBUS.Data
 
 
 txHandle :: RBUS -> Ivory eff ()

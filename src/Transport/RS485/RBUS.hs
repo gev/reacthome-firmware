@@ -2,13 +2,13 @@
 {-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RankNTypes       #-}
 
-module Transport.RBUS    where
+module Transport.RS485.RBUS    where
 
-import           Control.Monad.Reader  (MonadReader, asks)
-import           Control.Monad.Writer  (MonadWriter)
+import           Control.Monad.Reader      (MonadReader, asks)
+import           Control.Monad.Writer      (MonadWriter)
 import           Core.Context
 import           Core.Dispatcher
-import qualified Core.Domain           as D
+import qualified Core.Domain               as D
 import           Core.Handler
 import           Core.Task
 import           Core.Transport
@@ -16,15 +16,15 @@ import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Data.Value
 import           Interface.Mac
-import           Interface.MCU         (MCU (peripherals, systemClock), mac)
+import           Interface.MCU             (MCU (peripherals, systemClock), mac)
 import           Interface.RS485
-import           Interface.SystemClock (getSystemTime)
+import           Interface.SystemClock     (getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Protocol.RBUS.Slave   (slave)
-import           Transport.RBUS.Data
-import           Transport.RBUS.Rx
-import           Transport.RBUS.Tx
+import           Protocol.RS485.RBUS.Slave (slave)
+import           Transport.RS485.RBUS.Data
+import           Transport.RS485.RBUS.Rx
+import           Transport.RS485.RBUS.Tx
 
 
 rbus :: (MonadWriter Context m, MonadReader (D.Domain p t) m)
