@@ -2,6 +2,7 @@
 
 module Protocol.RS485.RBUS.Slave.Rx (receive) where
 
+import           Core.FSM
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
@@ -11,12 +12,12 @@ import           Util.CRC16
 
 
 receive :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receive = runReceive state
-    [ go readyToReceive     receivePreamble
-    , go receivingMessage   receiveMessage
-    , go receivingConfirm   receiveConfirm
-    , go receivingDiscovery receiveDiscovery
-    , go receivingPing      receivePing
+receive = runFSM state
+    [ readyToReceive     |-> receivePreamble
+    , receivingMessage   |-> receiveMessage
+    , receivingConfirm   |-> receiveConfirm
+    , receivingDiscovery |-> receiveDiscovery
+    , receivingPing      |-> receivePing
     ]
 
 
@@ -39,11 +40,11 @@ receivePreamble (Slave {..}) v =
 
 
 receiveDiscovery :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receiveDiscovery = runReceive phase
-    [ go waitingData    receiveDiscoveryMac
-    , go waitingAddress receiveDiscoveryAddress
-    , go waitingMsbCRC  receiveMsbCRC
-    , go waitingLsbCRC  receiveDiscoveryLsbCRC
+receiveDiscovery = runFSM phase
+    [ waitingData    |-> receiveDiscoveryMac
+    , waitingAddress |-> receiveDiscoveryAddress
+    , waitingMsbCRC  |-> receiveMsbCRC
+    , waitingLsbCRC  |-> receiveDiscoveryLsbCRC
     ]
 
 receiveDiscoveryMac :: Slave n -> Uint8 -> Ivory eff ()
@@ -77,10 +78,10 @@ receiveDiscoveryLsbCRC s@(Slave {..}) = receiveLsbCRC s $ do
 
 
 receivePing :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receivePing = runReceive phase
-    [ go waitingAddress $ receiveAddress waitingMsbCRC
-    , go waitingMsbCRC    receiveMsbCRC
-    , go waitingLsbCRC    receivePingLsbCRC
+receivePing = runFSM phase
+    [ waitingAddress   |-> receiveAddress waitingMsbCRC
+    , waitingMsbCRC    |-> receiveMsbCRC
+    , waitingLsbCRC    |-> receivePingLsbCRC
     ]
 
 receivePingLsbCRC :: Slave n -> Uint8 -> Ivory eff ()
@@ -90,10 +91,10 @@ receivePingLsbCRC r@(Slave {..}) =
 
 
 receiveConfirm :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receiveConfirm = runReceive phase
-    [ go waitingAddress $ receiveAddress waitingMsbCRC
-    , go waitingMsbCRC    receiveMsbCRC
-    , go waitingLsbCRC    receiveConfirmLsbCRC
+receiveConfirm = runFSM phase
+    [ waitingAddress   |-> receiveAddress waitingMsbCRC
+    , waitingMsbCRC    |-> receiveMsbCRC
+    , waitingLsbCRC    |-> receiveConfirmLsbCRC
     ]
 
 receiveConfirmLsbCRC :: Slave n -> Uint8 -> Ivory eff ()
@@ -103,13 +104,13 @@ receiveConfirmLsbCRC r =
 
 
 receiveMessage :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receiveMessage = runReceive phase
-    [ go waitingAddress $ receiveAddress waitingTid
-    , go waitingTid       receiveMessageTid
-    , go waitingSize      receiveMessageSize
-    , go waitingData      receiveMessageData
-    , go waitingMsbCRC    receiveMsbCRC
-    , go waitingLsbCRC    receiveMessageLsbCRC
+receiveMessage = runFSM phase
+    [ waitingAddress   |-> receiveAddress waitingTid
+    , waitingTid       |-> receiveMessageTid
+    , waitingSize      |-> receiveMessageSize
+    , waitingData      |-> receiveMessageData
+    , waitingMsbCRC    |-> receiveMsbCRC
+    , waitingLsbCRC    |-> receiveMessageLsbCRC
     ]
 
 receiveMessageTid :: Slave n -> Uint8 -> Ivory eff ()
