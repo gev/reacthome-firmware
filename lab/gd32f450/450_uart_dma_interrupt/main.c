@@ -30,7 +30,6 @@ int main() {
   rcu_periph_clock_enable(RCU_DMA1);
   /* USART DMA enable for transmission and reception */
   usart_dma_transmit_config(USART5, USART_DENT_ENABLE);
-  usart_dma_receive_config(USART5, USART_DENR_ENABLE);
 
   nvic_irq_enable(DMA1_Channel6_IRQn, 0, 0);
 
