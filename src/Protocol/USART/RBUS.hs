@@ -25,6 +25,7 @@ newtype Preamble = Preamble
 
 preamble = Preamble { message = 0xa5 }
 
+
 readyToReceive      = 0x00 :: Uint8
 receivingMessage    = 0x01 :: Uint8
 
@@ -33,7 +34,6 @@ waitingSize         = 0x02 :: Uint8
 waitingData         = 0x03 :: Uint8
 waitingMsbCRC       = 0x04 :: Uint8
 waitingLsbCRC       = 0x05 :: Uint8
-
 
 
 
@@ -55,13 +55,9 @@ data RBUS n = RBUS
 
 rbus :: (MonadWriter Context m, KnownNat n)
       => String
-      -> Buffer 6 Uint8
-      -> Value Uint8
       -> (Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ())
-      -> (forall eff. Ivory eff ())
-      -> (forall eff. Ivory eff ())
       -> m (RBUS n)
-rbus n mac model onMessage onConfirm onDiscovery = do
+rbus n onMessage = do
     let name = "protocol_" <> n
     state    <- value      (name <> "_state"     )   readyToReceive
     phase    <- value      (name <> "_phase"     )   waitingTid
@@ -80,9 +76,8 @@ rbus n mac model onMessage onConfirm onDiscovery = do
 
 
 
-
-calcCRC16 :: KnownNat n => Buffer n Uint8 -> Ivory (ProcEffects s ()) ()
-calcCRC16 buff = do
+calcCRC :: KnownNat n => Buffer n Uint8 -> Ivory (ProcEffects s ()) ()
+calcCRC buff = do
     let size     = arrayLen buff :: Uint16
     let s_2      = toIx $ size - 2
     let s_1      = toIx $ size - 1

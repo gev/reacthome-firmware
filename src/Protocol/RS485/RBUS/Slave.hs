@@ -116,6 +116,8 @@ initPing (Slave {..}) =
         store (buffPing ! 1) =<< deref address
         calcCRC buffPing
 
+
+
 calcCRC :: KnownNat n => Buffer n Uint8 -> Ivory (ProcEffects s ()) ()
 calcCRC buff = do
     let size     = arrayLen buff :: Uint16
