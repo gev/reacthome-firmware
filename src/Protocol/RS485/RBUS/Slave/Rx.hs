@@ -11,6 +11,7 @@ import           Protocol.RS485.RBUS.Slave
 import           Util.CRC16
 
 
+
 receive :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receive = runFSM state
     [ readyToReceive     |-> receivePreamble
@@ -21,21 +22,24 @@ receive = runFSM state
     ]
 
 
+
 receivePreamble :: Slave n -> Uint8 -> Ivory eff ()
-receivePreamble (Slave {..}) v =
-    cond_ [ go discovery receivingDiscovery waitingData
-          , go ping      receivingPing      waitingAddress
-          , go confirm   receivingConfirm   waitingAddress
-          , go message   receivingMessage   waitingAddress
-          ]
-    where go f s p = v ==? f rxPreamble
-                       ==> do store state s
-                              store phase p
-                              store index 0
-                              store size 0
-                              store (crc ~> msb) initCRC
-                              store (crc ~> lsb) initCRC
-                              updateCRC crc  v
+receivePreamble = runTransit rxPreamble
+    [ discovery |-> start receivingDiscovery waitingData
+    , ping      |-> start receivingPing      waitingAddress
+    , confirm   |-> start receivingConfirm   waitingAddress
+    , message   |-> start receivingMessage   waitingAddress
+    ]
+
+start :: Uint8 -> Uint8 -> Slave n -> Uint8 -> Ivory eff ()
+start s p (Slave {..}) v = do
+    store state s
+    store phase p
+    store index 0
+    store size  0
+    store (crc ~> msb) initCRC
+    store (crc ~> lsb) initCRC
+    updateCRC crc v
 
 
 
