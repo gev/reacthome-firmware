@@ -1,27 +1,25 @@
 {-# LANGUAGE RankNTypes      #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Protocol.RS485.RBUS.Slave.Tx where
+module Protocol.USART.RBUS.Tx where
 
 import           Data.Buffer
 import           GHC.TypeNats
 import           Ivory.Language
-import           Protocol.RS485.RBUS
-import           Protocol.RS485.RBUS.Slave
+import           Protocol.USART.RBUS
 import           Util.CRC16
 
 
 transmitMessage :: KnownNat l
                 => Buffer l Uint8
-                -> Slave n
+                -> RBUS n
                 -> (Uint8 -> forall eff. Ivory eff ())
                 -> Ivory (ProcEffects s ()) ()
-transmitMessage payload (Slave {..}) transmit = do
+transmitMessage payload (RBUS {..}) transmit = do
     crc <- local $ istruct initCRC16
     let transmit' :: Uint8 -> Ivory eff ()
         transmit' v = updateCRC16 crc v >> transmit v
-    transmit' $ message txPreamble
-    transmit' =<< deref address
+    transmit' $ message preamble
     id <- deref tidTx
     transmit' id
     store tidTx $ id + 1
@@ -31,15 +29,6 @@ transmitMessage payload (Slave {..}) transmit = do
     transmit =<< deref (crc ~> lsb)
 
 
-
-transmitDiscovery :: Slave n -> (Uint8 -> Ivory (AllowBreak eff) ()) -> Ivory eff ()
-transmitDiscovery = transmit' . buffDisc
-
-transmitPing :: Slave n -> (Uint8 -> Ivory (AllowBreak eff) ()) -> Ivory eff ()
-transmitPing = transmit' . buffPing
-
-transmitConfirm :: Slave n -> (Uint8 -> Ivory (AllowBreak eff) ()) -> Ivory eff ()
-transmitConfirm = transmit' . buffConf
 
 transmit' :: KnownNat n
           => Buffer n Uint8

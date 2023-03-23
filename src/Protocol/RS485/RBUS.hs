@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+
 module Protocol.RS485.RBUS where
 
 import           Data.Buffer
@@ -6,7 +7,6 @@ import           Data.Record
 import           Data.Value     (Value)
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Util.CRC16
 
 
 
@@ -45,6 +45,3 @@ waitingSize         = 0x02 :: Uint8
 waitingData         = 0x03 :: Uint8
 waitingMsbCRC       = 0x04 :: Uint8
 waitingLsbCRC       = 0x05 :: Uint8
-
-updateCRC :: Record CRC16 -> Uint8 -> Ivory eff ()
-updateCRC = updateCRC16

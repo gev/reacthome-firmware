@@ -39,7 +39,7 @@ start s p (Slave {..}) v = do
     store size  0
     store (crc ~> msb) initCRC
     store (crc ~> lsb) initCRC
-    updateCRC crc v
+    updateCRC16 crc v
 
 
 
@@ -60,7 +60,7 @@ receiveDiscoveryMac (Slave {..}) v = do
     ifte_ (v ==? m)
           (do store index' $ i + 1
               i <- deref index'
-              updateCRC crc v
+              updateCRC16 crc v
               when (i ==? arrayLen mac')
                    (store phase waitingAddress)
           )
@@ -69,7 +69,7 @@ receiveDiscoveryMac (Slave {..}) v = do
 receiveDiscoveryAddress :: Slave n -> Uint8 -> Ivory eff ()
 receiveDiscoveryAddress (Slave {..}) v = do
     store tmp v
-    updateCRC crc v
+    updateCRC16 crc v
     store phase waitingMsbCRC
 
 receiveDiscoveryLsbCRC :: Slave n -> Uint8 -> Ivory eff ()
@@ -120,13 +120,13 @@ receiveMessage = runFSM phase
 receiveMessageTid :: Slave n -> Uint8 -> Ivory eff ()
 receiveMessageTid (Slave {..}) v = do
     store tmp v
-    updateCRC crc v
+    updateCRC16 crc v
     store phase waitingSize
 
 receiveMessageSize :: Slave n -> Uint8 -> Ivory eff ()
 receiveMessageSize (Slave {..}) v = do
     store size v
-    updateCRC crc v
+    updateCRC16 crc v
     store phase waitingData
 
 receiveMessageData :: KnownNat n => Slave n -> Uint8 -> Ivory eff ()
@@ -135,7 +135,7 @@ receiveMessageData (Slave {..}) v = do
     s <- deref size
     store (buff ! toIx i) v
     store index $ i + 1
-    updateCRC crc v
+    updateCRC16 crc v
     i <- deref index
     when (i ==? s)
          (store phase waitingMsbCRC)
@@ -155,7 +155,7 @@ receiveAddress :: Uint8 -> Slave n -> Uint8 -> Ivory eff ()
 receiveAddress p (Slave {..}) v = do
     a <- deref address
     ifte_ (v==? a .|| v ==? broadcastAddress)
-          (updateCRC crc v >> store phase p)
+          (updateCRC16 crc v >> store phase p)
           (store state readyToReceive)
 
 receiveMsbCRC :: Slave n -> Uint8 -> Ivory eff ()

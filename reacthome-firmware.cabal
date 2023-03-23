@@ -85,6 +85,8 @@ executable reacthome-firmware
                     , Protocol.RS485.RBUS.Slave.Rx
                     , Protocol.RS485.RBUS.Slave.Tx
                     , Protocol.USART.RBUS
+                    , Protocol.USART.RBUS.Rx
+                    , Protocol.USART.RBUS.Tx
 
                     , Transport.RS485.RBUS
                     , Transport.RS485.RBUS.Data
