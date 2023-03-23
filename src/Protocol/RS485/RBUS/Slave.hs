@@ -64,8 +64,8 @@ slave :: (MonadWriter Context m, KnownNat n)
       -> (forall eff. Ivory eff ())
       -> (forall eff. Ivory eff ())
       -> m (Slave n)
-slave n mac model version onMessage onConfirm onDiscovery = do
-    let name = "protocol_" <> n
+slave id mac model version onMessage onConfirm onDiscovery = do
+    let name = "protocol_" <> id
     address  <- value      (name <> "_address"   )   broadcastAddress
     state    <- value      (name <> "_state"     )   readyToReceive
     phase    <- value      (name <> "_phase"     )   waitingAddress

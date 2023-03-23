@@ -57,8 +57,8 @@ rbus :: (MonadWriter Context m, KnownNat n)
       => String
       -> (Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ())
       -> m (RBUS n)
-rbus n onMessage = do
-    let name = "protocol_" <> n
+rbus id onMessage = do
+    let name = "protocol_" <> id
     state    <- value      (name <> "_state"     )   readyToReceive
     phase    <- value      (name <> "_phase"     )   waitingTid
     index    <- value      (name <> "_index"     )   0
@@ -68,11 +68,11 @@ rbus n onMessage = do
     tidTx    <- value      (name <> "_tid_tx"    )   0
     crc      <- makeCRC16  (name <> "_crc"       )
     tmp      <- value      (name <> "_tmp"       )   0
-    let slave = RBUS { name, state, phase, index, size
+    let rbus  = RBUS { name, state, phase, index, size
                      , buff, tidRx, tidTx, crc, tmp
                      , onMessage
                      }
-    pure slave
+    pure rbus
 
 
 
