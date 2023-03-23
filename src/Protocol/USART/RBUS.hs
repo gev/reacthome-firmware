@@ -73,15 +73,3 @@ rbus id onMessage = do
                      , onMessage
                      }
     pure rbus
-
-
-
-calcCRC :: KnownNat n => Buffer n Uint8 -> Ivory (ProcEffects s ()) ()
-calcCRC buff = do
-    let size     = arrayLen buff :: Uint16
-    let s_2      = toIx $ size - 2
-    let s_1      = toIx $ size - 1
-    crc <- local $ istruct initCRC16
-    for s_2 $ \ix -> updateCRC16 crc =<< deref (buff ! ix)
-    store (buff ! s_2)  =<< deref (crc ~> msb)
-    store (buff ! s_1) =<< deref (crc ~> lsb)

@@ -14,11 +14,14 @@ module Util.CRC16
     , updateCRC16
     , msb, lsb
     , makeCRC16
+    , calcCRC16
     ) where
 
 import           Control.Monad.Writer
 import           Core.Context
+import           Data.Buffer
 import           Data.Record
+import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Language.Syntax (Struct)
@@ -121,8 +124,21 @@ crc16_lsb = constArea "crc16_lsb" $ iarray $ map ival [
     ]
 
 
+
 makeCRC16 :: MonadWriter Context m => String -> m (Record CRC16)
 makeCRC16 name = do
     addModule inclCRC16
     addStruct (Proxy :: Proxy CRC16)
     record name initCRC16
+
+
+
+calcCRC16 :: KnownNat n => Buffer n Uint8 -> Ivory (ProcEffects s ()) ()
+calcCRC16 buff = do
+    let size     = arrayLen buff :: Uint16
+    let s_2      = toIx $ size - 2
+    let s_1      = toIx $ size - 1
+    crc <- local $ istruct initCRC16
+    for s_2 $ \ix -> updateCRC16 crc =<< deref (buff ! ix)
+    store (buff ! s_2)  =<< deref (crc ~> msb)
+    store (buff ! s_1) =<< deref (crc ~> lsb)

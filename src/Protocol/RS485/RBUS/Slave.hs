@@ -100,33 +100,21 @@ initDisc (Slave {..}) =
         store (buffDisc ! 7) =<< deref model
         store (buffDisc ! 8) =<< deref (version ~> major)
         store (buffDisc ! 9) =<< deref (version ~> minor)
-        calcCRC buffDisc
+        calcCRC16 buffDisc
 
 initConf :: Slave n -> Def('[] :-> ())
 initConf (Slave {..}) =
     proc (name <> "_init_conf_tx") $ body $ do
         store (buffConf ! 0) $ confirm txPreamble
         store (buffConf ! 1) =<< deref address
-        calcCRC buffConf
+        calcCRC16 buffConf
 
 initPing :: Slave n -> Def('[] :-> ())
 initPing (Slave {..}) =
     proc (name <> "_init_ping_tx") $ body $ do
         store (buffPing ! 0) $ ping txPreamble
         store (buffPing ! 1) =<< deref address
-        calcCRC buffPing
-
-
-
-calcCRC :: KnownNat n => Buffer n Uint8 -> Ivory (ProcEffects s ()) ()
-calcCRC buff = do
-    let size     = arrayLen buff :: Uint16
-    let s_2      = toIx $ size - 2
-    let s_1      = toIx $ size - 1
-    crc <- local $ istruct initCRC16
-    for s_2 $ \ix -> updateCRC16 crc =<< deref (buff ! ix)
-    store (buff ! s_2)  =<< deref (crc ~> msb)
-    store (buff ! s_1) =<< deref (crc ~> lsb)
+        calcCRC16 buffPing
 
 
 
