@@ -14,6 +14,9 @@ import           Ivory.Language.Module
 
 
 
+{-
+    TODO: abstract Formula to the type class
+-}
 data Formula p where
     Formula :: Transport t
             => { name       ::  String
