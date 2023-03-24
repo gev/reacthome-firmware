@@ -1,5 +1,6 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RankNTypes            #-}
 
 module Core.Handler where
 
@@ -8,5 +9,5 @@ import           Core.Context
 import           Ivory.Language
 
 
-class Handler h where
-    addHandler :: h -> MonadWriter Context m => m ()
+class Handler h t where
+    addHandler :: h t -> MonadWriter Context m => m ()

@@ -1,9 +1,10 @@
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE FlexibleContexts  #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE NamedFieldPuns    #-}
-{-# LANGUAGE RankNTypes        #-}
-{-# LANGUAGE TypeOperators     #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE RankNTypes            #-}
+{-# LANGUAGE TypeOperators         #-}
 
 module Device.GD32F3x0.SysTick where
 
@@ -27,7 +28,7 @@ sysTick freq = do
         initSysTick' =  proc "systick_init" $ body $ sysTickConfig freq
 
 
-instance Handler (HandleTimer SysTick) where
+instance Handler HandleTimer SysTick where
     addHandler (HandleTimer {timer = (SysTick ticks), handle}) = do
         addProc handleIRQ'
         where

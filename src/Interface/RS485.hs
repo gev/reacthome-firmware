@@ -1,11 +1,12 @@
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE FlexibleContexts  #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GADTs             #-}
-{-# LANGUAGE NamedFieldPuns    #-}
-{-# LANGUAGE RankNTypes        #-}
-{-# LANGUAGE RecordWildCards   #-}
-{-# LANGUAGE TypeOperators     #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE GADTs                 #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE RankNTypes            #-}
+{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE TypeOperators         #-}
 
 module Interface.RS485 where
 
@@ -75,6 +76,6 @@ setParity (RS485 {..}) = I.setParity usart
 
 
 
-instance Handler (HandleRS485 RS485) where
+instance Handler HandleRS485 RS485 where
     addHandler (HandleRS485 (RS485 {..}) onReceive onTransmit) = do
         addHandler $ I.HandleUSART usart onReceive onTransmit (reset rede)

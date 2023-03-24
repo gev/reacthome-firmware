@@ -1,10 +1,11 @@
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE FlexibleContexts  #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE NamedFieldPuns    #-}
-{-# LANGUAGE RankNTypes        #-}
-{-# LANGUAGE RecordWildCards   #-}
-{-# LANGUAGE TypeOperators     #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE RankNTypes            #-}
+{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE TypeOperators         #-}
 
 module Device.GD32F3x0.Timer where
 
@@ -65,7 +66,7 @@ instance I.Counter Timer where
 
 
 
-instance Handler (I.HandleTimer Timer) where
+instance Handler I.HandleTimer Timer where
     addHandler (I.HandleTimer {I.timer = Timer {..}, handle}) = do
         addProc initTimerIRQ'
         addModule $ makeIRQHandler timer handleIRQ'

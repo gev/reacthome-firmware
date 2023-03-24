@@ -1,11 +1,12 @@
-{-# LANGUAGE DataKinds          #-}
-{-# LANGUAGE FlexibleContexts   #-}
-{-# LANGUAGE FlexibleInstances  #-}
-{-# LANGUAGE NamedFieldPuns     #-}
-{-# LANGUAGE NumericUnderscores #-}
-{-# LANGUAGE RankNTypes         #-}
-{-# LANGUAGE RecordWildCards    #-}
-{-# LANGUAGE TypeOperators      #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE NumericUnderscores    #-}
+{-# LANGUAGE RankNTypes            #-}
+{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE TypeOperators         #-}
 
 module Device.GD32F4xx.USART where
 
@@ -73,7 +74,7 @@ mkUSART usart rcu usartIRQ dmaPer dmaCh dmaIRQn dmaIRQc rx tx = do
 
 
 
-instance Handler (I.HandleUSART USART) where
+instance Handler I.HandleUSART USART where
     addHandler (I.HandleUSART (USART {..}) onReceive onTransmit onDrain) = do
         addModule $ makeIRQHandler usart (handleUSART usart onReceive onDrain)
         addModule $ makeIRQHandler dmaIRQc (handleDMA dmaPer dmaCh usart onTransmit)

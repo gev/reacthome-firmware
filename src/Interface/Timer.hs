@@ -15,4 +15,4 @@ data HandleTimer t = HandleTimer
     }
 
 
-class Handler (HandleTimer t) => Timer t
+class Handler HandleTimer t => Timer t
