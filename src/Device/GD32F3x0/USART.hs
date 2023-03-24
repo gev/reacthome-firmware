@@ -10,10 +10,13 @@
 
 module Device.GD32F3x0.USART where
 
+import qualified Control.Monad                 as M
 import           Control.Monad.Writer          (MonadWriter)
 import           Core.Context
 import           Core.Handler
+import           Data.Maybe
 import qualified Device.GD32F3x0.GPIO          as G
+import           Interface.USART               (HandleUSART (onDrain))
 import qualified Interface.USART               as I
 import           Ivory.Language
 import           Ivory.Stdlib
@@ -74,16 +77,17 @@ mkUSART usart rcu usartIRQ dma dmaIRQn dmaIRQc rx tx = do
 instance Handler I.HandleUSART USART where
     addHandler (I.HandleUSART (USART {..}) onReceive onTransmit onDrain) = do
         addModule $ makeIRQHandler usart (handleUSART usart onReceive onDrain)
-        addModule $ makeIRQHandler dmaIRQc (handleDMA dma usart onTransmit)
+        addModule $ makeIRQHandler dmaIRQc (handleDMA dma usart onTransmit onDrain)
 
 
-handleDMA :: DMA_CHANNEL -> USART_PERIPH -> Ivory eff () -> Ivory eff ()
-handleDMA dma usart onTransmit = do
+handleDMA :: DMA_CHANNEL -> USART_PERIPH -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
+handleDMA dma usart onTransmit onDrain = do
     f <- getInterruptFlagDMA    dma   DMA_INT_FLAG_FTF
     when f $ do
         clearInterruptFlagDMA   dma   DMA_INT_FLAG_G
-        disableInterrupt        usart USART_INT_RBNE
-        enableInterrupt         usart USART_INT_TC
+        M.when (isJust onDrain) $ do
+            disableInterrupt    usart USART_INT_RBNE
+            enableInterrupt     usart USART_INT_TC
         onTransmit
 
 
