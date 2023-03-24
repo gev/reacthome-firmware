@@ -58,6 +58,12 @@ instance ExtDef USART_INT_FLAG Uint32
 data USART_PERIPH
     = USART0
     | USART1
+    | USART2
+    | USART5
+    | UART3
+    | UART4
+    | UART6
+    | UART7
     deriving (Show, Enum, Bounded)
 instance ExtDef USART_PERIPH Uint32
 
