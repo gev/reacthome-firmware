@@ -1,1 +1,1 @@
-JLinkExe ip 192.168.31.178 -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink
+JLinkExe ip 192.168.88.154 -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink
