@@ -78,4 +78,4 @@ setParity (RS485 {..}) = I.setParity usart
 
 instance Handler HandleRS485 RS485 where
     addHandler (HandleRS485 (RS485 {..}) onReceive onTransmit) = do
-        addHandler $ I.HandleUSART usart onReceive onTransmit (reset rede)
+        addHandler $ I.HandleUSART usart onReceive onTransmit (Just $ reset rede)

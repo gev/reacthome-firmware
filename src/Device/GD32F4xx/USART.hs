@@ -90,10 +90,18 @@ handleDMA dmaPer dmaCh usart onTransmit = do
         onTransmit
 
 
-handleUSART :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+handleUSART :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Maybe (Ivory eff ()) -> Ivory eff ()
 handleUSART usart onReceive onDrain = do
+    handleReceive usart onReceive
+    mapM_ (handleDrain usart) onDrain
+
+handleReceive :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
+handleReceive usart onReceive = do
     rbne <- getInterruptFlag    usart USART_INT_FLAG_RBNE
     when rbne $ onReceive =<< S.receiveData usart
+
+handleDrain :: USART_PERIPH -> Ivory eff () -> Ivory eff ()
+handleDrain usart onDrain = do
     tc <- getInterruptFlag      usart USART_INT_FLAG_TC
     when tc $ do
         clearInterruptFlag      usart USART_INT_FLAG_TC
