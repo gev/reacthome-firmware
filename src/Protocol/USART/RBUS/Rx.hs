@@ -12,7 +12,7 @@ import           Util.CRC16
 
 
 receive :: KnownNat n => RBUS n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receive = runFSM state
+receive = runState state
     [ readyToReceive     |-> receivePreamble
     , receivingMessage   |-> receiveMessage
     ]
@@ -20,7 +20,7 @@ receive = runFSM state
 
 
 receivePreamble :: RBUS n -> Uint8 -> Ivory eff ()
-receivePreamble = runTransit preamble
+receivePreamble = runInput preamble
     [ message   |-> start receivingMessage waitingTid
     ]
 
@@ -37,7 +37,7 @@ start s p (RBUS {..}) v = do
 
 
 receiveMessage :: KnownNat n => RBUS n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receiveMessage = runFSM phase
+receiveMessage = runState phase
     [ waitingTid       |-> receiveMessageTid
     , waitingSize      |-> receiveMessageSize
     , waitingData      |-> receiveMessageData

@@ -13,7 +13,7 @@ import           Util.CRC16
 
 
 receive :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receive = runFSM state
+receive = runState state
     [ readyToReceive     |-> receivePreamble
     , receivingMessage   |-> receiveMessage
     , receivingConfirm   |-> receiveConfirm
@@ -24,7 +24,7 @@ receive = runFSM state
 
 
 receivePreamble :: Slave n -> Uint8 -> Ivory eff ()
-receivePreamble = runTransit rxPreamble
+receivePreamble = runInput rxPreamble
     [ discovery |-> start receivingDiscovery waitingData
     , ping      |-> start receivingPing      waitingAddress
     , confirm   |-> start receivingConfirm   waitingAddress
@@ -44,7 +44,7 @@ start s p (Slave {..}) v = do
 
 
 receiveDiscovery :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receiveDiscovery = runFSM phase
+receiveDiscovery = runState phase
     [ waitingData    |-> receiveDiscoveryMac
     , waitingAddress |-> receiveDiscoveryAddress
     , waitingMsbCRC  |-> receiveMsbCRC
@@ -82,7 +82,7 @@ receiveDiscoveryLsbCRC s@(Slave {..}) = receiveLsbCRC s $ do
 
 
 receivePing :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receivePing = runFSM phase
+receivePing = runState phase
     [ waitingAddress   |-> receiveAddress waitingMsbCRC
     , waitingMsbCRC    |-> receiveMsbCRC
     , waitingLsbCRC    |-> receivePingLsbCRC
@@ -95,7 +95,7 @@ receivePingLsbCRC r@(Slave {..}) =
 
 
 receiveConfirm :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receiveConfirm = runFSM phase
+receiveConfirm = runState phase
     [ waitingAddress   |-> receiveAddress waitingMsbCRC
     , waitingMsbCRC    |-> receiveMsbCRC
     , waitingLsbCRC    |-> receiveConfirmLsbCRC
@@ -108,7 +108,7 @@ receiveConfirmLsbCRC r =
 
 
 receiveMessage :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receiveMessage = runFSM phase
+receiveMessage = runState phase
     [ waitingAddress   |-> receiveAddress waitingTid
     , waitingTid       |-> receiveMessageTid
     , waitingSize      |-> receiveMessageSize
