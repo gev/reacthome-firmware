@@ -82,7 +82,22 @@ data GPIO_PIN
 instance ExtDef GPIO_PIN Uint32
 
 data GPIO_AF
-    = GPIO_AF_1
+    = GPIO_AF_0
+    | GPIO_AF_1
+    | GPIO_AF_2
+    | GPIO_AF_3
+    | GPIO_AF_4
+    | GPIO_AF_5
+    | GPIO_AF_6
+    | GPIO_AF_7
+    | GPIO_AF_8
+    | GPIO_AF_9
+    | GPIO_AF_10
+    | GPIO_AF_11
+    | GPIO_AF_12
+    | GPIO_AF_13
+    | GPIO_AF_14
+    | GPIO_AF_15
     deriving (Show, Enum, Bounded)
 instance ExtDef GPIO_AF Uint32
 
