@@ -59,7 +59,7 @@ mkUSART usart rcu usartIRQ dmaPer dmaCh dmaIRQn dmaIRQc rx tx = do
     where
         initUSART' :: Def ('[] ':-> ())
         initUSART' = proc (show usart <> "_init") $ body $ do
-            enablePeriphClock   RCU_DMA
+            enablePeriphClock   RCU_DMA1
             enableIrqNvic       usartIRQ 0 0
             enableIrqNvic       dmaIRQn  1 0
             enablePeriphClock   rcu
