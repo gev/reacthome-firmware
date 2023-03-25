@@ -27,7 +27,7 @@ import           Transport.RS485.RBUS.Rx
 import           Transport.RS485.RBUS.Tx
 
 
-rbus :: (MonadWriter Context m, MonadReader (D.Domain p t) m)
+rbus :: (MonadWriter Context m, MonadReader (D.Domain p RBUS) m)
      => m RS485 -> m RBUS
 rbus rs485 = do
 

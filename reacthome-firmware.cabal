@@ -93,6 +93,9 @@ executable reacthome-firmware
                     , Transport.RS485.RBUS.Rx
                     , Transport.RS485.RBUS.Tx
                     , Transport.USART.RBUS
+                    , Transport.USART.RBUS.Data
+                    , Transport.USART.RBUS.Rx
+                    , Transport.USART.RBUS.Tx
 
                     , Device.GD32F3x0
                     , Device.GD32F3x0.GPIO
