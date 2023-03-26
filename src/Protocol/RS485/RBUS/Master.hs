@@ -3,8 +3,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE RecordWildCards  #-}
-{-# LANGUAGE TypeOperators    #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
 
@@ -12,7 +10,7 @@ module Protocol.RS485.RBUS.Master where
 
 import           Control.Monad.Writer
 import           Core.Context
-import           Core.Version              (Version, major, minor, version_)
+import           Core.Version         (Version, major, minor, version_)
 import           Data.Buffer
 import           Data.Record
 import           Data.Value
@@ -21,7 +19,6 @@ import           Interface.Mac
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Protocol.RS485.RBUS
-import           Protocol.RS485.RBUS.Slave (Slave (mac))
 import           Util.CRC16
 
 
