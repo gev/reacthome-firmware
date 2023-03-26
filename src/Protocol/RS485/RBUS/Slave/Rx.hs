@@ -25,7 +25,7 @@ receive = runState state
 
 receivePreamble :: Slave n -> Uint8 -> Ivory eff ()
 receivePreamble = runInput rxPreamble
-    [ discovery |-> start receivingDiscovery waitingData
+    [ discovery |-> start receivingDiscovery waitingMac
     , ping      |-> start receivingPing      waitingAddress
     , confirm   |-> start receivingConfirm   waitingAddress
     , message   |-> start receivingMessage   waitingAddress
@@ -45,7 +45,7 @@ start s p (Slave {..}) v = do
 
 receiveDiscovery :: KnownNat n => Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receiveDiscovery = runState phase
-    [ waitingData    |-> receiveDiscoveryMac
+    [ waitingMac     |-> receiveDiscoveryMac
     , waitingAddress |-> receiveDiscoveryAddress
     , waitingMsbCRC  |-> receiveMsbCRC
     , waitingLsbCRC  |-> receiveDiscoveryLsbCRC
@@ -53,15 +53,13 @@ receiveDiscovery = runState phase
 
 receiveDiscoveryMac :: Slave n -> Uint8 -> Ivory eff ()
 receiveDiscoveryMac (Slave {..}) v = do
-    let mac'   =  mac
-    let index' =  index
-    i <- deref index'
-    m <- deref $ mac' ! toIx i
+    i <- deref index
+    m <- deref $ mac ! toIx i
     ifte_ (v ==? m)
-          (do store index' $ i + 1
-              i <- deref index'
+          (do store index $ i + 1
+              i <- deref index
               updateCRC16 crc v
-              when (i ==? arrayLen mac')
+              when (i ==? arrayLen mac)
                    (store phase waitingAddress)
           )
           (store state readyToReceive)

@@ -17,6 +17,7 @@ import           Data.Buffer
 import           Data.Record
 import           Data.Value
 import           GHC.TypeNats
+import           Interface.Mac
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Protocol.RS485.RBUS
@@ -26,23 +27,23 @@ import           Util.CRC16
 
 data Slave n = Slave
     { name          :: String
-    , mac           :: Buffer  6 Uint8
-    , model         :: Value     Uint8
+    , mac           :: Mac
+    , model         :: Value       Uint8
     , version       :: Version
-    , address       :: Value     Uint8
-    , state         :: Value     Uint8
-    , phase         :: Value     Uint8
-    , index         :: Value     Uint8
-    , size          :: Value     Uint8
-    , buff          :: Buffer  n Uint8
-    , buffConf      :: Buffer  4 Uint8
-    , buffPing      :: Buffer  4 Uint8
-    , buffDisc      :: Buffer 12 Uint8
-    , tidRx         :: Value     Sint16
-    , tidTx         :: Value     Uint8
-    , crc           :: Record    CRC16
-    , tmp           :: Value     Uint8
-    , onMessage     :: Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ()
+    , address       :: Value       Uint8
+    , state         :: Value       Uint8
+    , phase         :: Value       Uint8
+    , index         :: Value       Uint8
+    , size          :: Value       Uint8
+    , buff          :: Buffer   n  Uint8
+    , buffConf      :: Buffer   4  Uint8
+    , buffPing      :: Buffer   4  Uint8
+    , buffDisc      :: Buffer  12  Uint8
+    , tidRx         :: Value       Sint16
+    , tidTx         :: Value       Uint8
+    , crc           :: Record      CRC16
+    , tmp           :: Value       Uint8
+    , onMessage     :: Buffer   n  Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ()
     , onConfirm     :: forall eff. Ivory eff ()
     , onDiscovery   :: forall eff. Ivory eff ()
     }
@@ -79,8 +80,8 @@ slave id mac model version onMessage onConfirm onDiscovery = do
     tidTx    <- value      (name <> "_tid_tx"    )   0
     crc      <- makeCRC16  (name <> "_crc"       )
     tmp      <- value      (name <> "_tmp"       )   0
-    let slave = Slave { name, mac, model, version
-                      , address, state, phase, index, size
+    let slave = Slave { name, mac, model, version, address
+                      , state, phase, index, size
                       , buff, buffConf, buffPing, buffDisc
                       , tidRx, tidTx, crc, tmp
                       , onMessage, onConfirm, onDiscovery
