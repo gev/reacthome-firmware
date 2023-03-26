@@ -32,17 +32,17 @@ transmitMessage payload (Slave {..}) transmit = do
 
 
 transmitDiscovery :: Slave n -> (Uint8 -> Ivory (AllowBreak eff) ()) -> Ivory eff ()
-transmitDiscovery = transmit' . buffDisc
+transmitDiscovery = transmit . buffDisc
 
 transmitPing :: Slave n -> (Uint8 -> Ivory (AllowBreak eff) ()) -> Ivory eff ()
-transmitPing = transmit' . buffPing
+transmitPing = transmit . buffPing
 
 transmitConfirm :: Slave n -> (Uint8 -> Ivory (AllowBreak eff) ()) -> Ivory eff ()
-transmitConfirm = transmit' . buffConf
+transmitConfirm = transmit . buffConf
 
-transmit' :: KnownNat n
-          => Buffer n Uint8
-          -> (Uint8 -> Ivory (AllowBreak eff) ())
-          -> Ivory eff ()
-transmit' buff transmit =
+transmit :: KnownNat n
+    => Buffer n Uint8
+    -> (Uint8 -> Ivory (AllowBreak eff) ())
+    -> Ivory eff ()
+transmit buff transmit =
     arrayMap $ \ix -> transmit =<< deref (buff ! ix)

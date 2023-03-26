@@ -1,3 +1,4 @@
+{-# LANGUAGE NamedFieldPuns  #-}
 {-# LANGUAGE RankNTypes      #-}
 {-# LANGUAGE RecordWildCards #-}
 
@@ -20,15 +21,15 @@ transmitMessage :: KnownNat l
                 -> (Uint8 -> forall eff. Ivory eff ())
                 -> Ivory (ProcEffects s ()) ()
 transmitMessage address' payload (Master {..}) =
-    transmit' $ \tx -> do
-        tx $ message txPreamble
-        tx address'
+    run $ \transmit -> do
+        transmit $ message txPreamble
+        transmit address'
         let tidTx' = tidTx ! toIx address'
         id <- deref tidTx'
-        tx id
+        transmit id
         store tidTx' $ id + 1
-        tx $ arrayLen payload
-        arrayMap $ \ix -> tx =<< deref (payload ! ix)
+        transmit $ arrayLen payload
+        arrayMap $ \ix -> transmit =<< deref (payload ! ix)
 
 
 
@@ -37,11 +38,11 @@ transmitDiscovery :: Mac
                   -> Master n
                   -> (Uint8 -> forall eff. Ivory eff ())
                   -> Ivory (ProcEffects s ()) ()
-transmitDiscovery mac' address' (Master {..}) =
-    transmit' $ \tx -> do
-        tx $ discovery txPreamble
-        arrayMap $ \ix -> tx =<< deref (mac' ! ix)
-        tx address'
+transmitDiscovery mac' address' m =
+    run $ \transmit -> do
+        transmit $ discovery txPreamble
+        arrayMap $ \ix -> transmit =<< deref (mac' ! ix)
+        transmit address'
 
 
 
@@ -49,10 +50,10 @@ transmitPing :: Uint8
              -> Master n
              -> (Uint8 -> forall eff. Ivory eff ())
              -> Ivory (ProcEffects s ()) ()
-transmitPing address' (Master {..}) =
-    transmit' $ \tx -> do
-        tx $ ping txPreamble
-        tx address'
+transmitPing address' m =
+    run $ \transmit -> do
+        transmit $ ping txPreamble
+        transmit address'
 
 
 
@@ -60,17 +61,17 @@ transmitConfirm :: Uint8
                 -> Master n
                 -> (Uint8 -> forall eff. Ivory eff ())
                 -> Ivory (ProcEffects s ()) ()
-transmitConfirm address' (Master {..}) =
-    transmit' $ \tx -> do
-        tx $ confirm txPreamble
-        tx address'
+transmitConfirm address' m =
+    run $ \transmit -> do
+        transmit $ confirm txPreamble
+        transmit address'
 
 
 
-transmit' :: ((Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) ())
-          -> (Uint8 -> forall eff. Ivory eff ())
-          -> Ivory (ProcEffects s ()) ()
-transmit' tx transmit = do
+run :: ((Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) ())
+    -> (Uint8 -> forall eff. Ivory eff ())
+    -> Ivory (ProcEffects s ()) ()
+run tx transmit = do
     crc <- local $ istruct initCRC16
     tx $ \v -> updateCRC16 crc v >> transmit v
     transmit =<< deref (crc ~> msb)
