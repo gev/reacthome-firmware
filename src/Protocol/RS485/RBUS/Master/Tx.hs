@@ -12,26 +12,23 @@ import           Protocol.RS485.RBUS.Master
 import           Util.CRC16
 
 
+
 transmitMessage :: KnownNat l
                 => Uint8
                 -> Buffer l Uint8
                 -> Master n
                 -> (Uint8 -> forall eff. Ivory eff ())
                 -> Ivory (ProcEffects s ()) ()
-transmitMessage address' payload (Master {..}) transmit = do
-    crc <- local $ istruct initCRC16
-    let transmit' :: Uint8 -> Ivory eff ()
-        transmit' v = updateCRC16 crc v >> transmit v
-    transmit' $ message txPreamble
-    transmit' address'
-    let tidTx' = tidTx ! toIx address'
-    id <- deref tidTx'
-    transmit' id
-    store tidTx' $ id + 1
-    transmit' $ arrayLen payload
-    arrayMap $ \ix -> transmit' =<< deref (payload ! ix)
-    transmit =<< deref (crc ~> msb)
-    transmit =<< deref (crc ~> lsb)
+transmitMessage address' payload (Master {..}) =
+    transmit' $ \tx -> do
+        tx $ message txPreamble
+        tx address'
+        let tidTx' = tidTx ! toIx address'
+        id <- deref tidTx'
+        tx id
+        store tidTx' $ id + 1
+        tx $ arrayLen payload
+        arrayMap $ \ix -> tx =<< deref (payload ! ix)
 
 
 
@@ -40,15 +37,11 @@ transmitDiscovery :: Mac
                   -> Master n
                   -> (Uint8 -> forall eff. Ivory eff ())
                   -> Ivory (ProcEffects s ()) ()
-transmitDiscovery mac' address' (Master {..}) transmit = do
-    crc <- local $ istruct initCRC16
-    let transmit' :: Uint8 -> Ivory eff ()
-        transmit' v = updateCRC16 crc v >> transmit v
-    transmit' $ discovery txPreamble
-    arrayMap $ \ix -> transmit' =<< deref (mac' ! ix)
-    transmit' address'
-    transmit =<< deref (crc ~> msb)
-    transmit =<< deref (crc ~> lsb)
+transmitDiscovery mac' address' (Master {..}) =
+    transmit' $ \tx -> do
+        tx $ discovery txPreamble
+        arrayMap $ \ix -> tx =<< deref (mac' ! ix)
+        tx address'
 
 
 
@@ -56,25 +49,29 @@ transmitPing :: Uint8
              -> Master n
              -> (Uint8 -> forall eff. Ivory eff ())
              -> Ivory (ProcEffects s ()) ()
-transmitPing address' (Master {..}) transmit = do
-    crc <- local $ istruct initCRC16
-    let transmit' :: Uint8 -> Ivory eff ()
-        transmit' v = updateCRC16 crc v >> transmit v
-    transmit' $ ping txPreamble
-    transmit' address'
-    transmit =<< deref (crc ~> msb)
-    transmit =<< deref (crc ~> lsb)
+transmitPing address' (Master {..}) =
+    transmit' $ \tx -> do
+        tx $ ping txPreamble
+        tx address'
+
 
 
 transmitConfirm :: Uint8
                 -> Master n
                 -> (Uint8 -> forall eff. Ivory eff ())
                 -> Ivory (ProcEffects s ()) ()
-transmitConfirm address' (Master {..}) transmit = do
+transmitConfirm address' (Master {..}) =
+    transmit' $ \tx -> do
+        tx $ confirm txPreamble
+        tx address'
+
+
+
+transmit' :: ((Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) ())
+          -> (Uint8 -> forall eff. Ivory eff ())
+          -> Ivory (ProcEffects s ()) ()
+transmit' tx transmit = do
     crc <- local $ istruct initCRC16
-    let transmit' :: Uint8 -> Ivory eff ()
-        transmit' v = updateCRC16 crc v >> transmit v
-    transmit' $ confirm txPreamble
-    transmit' address'
+    tx $ \v -> updateCRC16 crc v >> transmit v
     transmit =<< deref (crc ~> msb)
     transmit =<< deref (crc ~> lsb)
