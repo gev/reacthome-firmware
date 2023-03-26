@@ -5,6 +5,7 @@
 
 module Core.Version
     ( Version
+    , version_
     , version
     , major
     , minor
@@ -29,6 +30,12 @@ type Version = Record VersionStruct
         minor :: Uint8;
     }
 |]
+
+
+version_ :: MonadWriter Context m => String -> m Version
+version_ name = do
+    addStruct (Proxy :: Proxy VersionStruct)
+    record_ name
 
 
 version :: MonadWriter Context m => String -> (Uint8, Uint8) -> m Version
