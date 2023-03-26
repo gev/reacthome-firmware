@@ -11,6 +11,7 @@ import           Protocol.RS485.RBUS.Slave
 import           Util.CRC16
 
 
+
 transmitMessage :: KnownNat l
                 => Buffer l Uint8
                 -> Slave n
