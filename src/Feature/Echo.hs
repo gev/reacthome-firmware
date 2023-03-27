@@ -20,9 +20,8 @@ import           Ivory.Language
 import           Ivory.Stdlib
 
 
-data Echo = Echo
-    { buff :: Buffer 10 Uint8
-    , transmit :: forall n. KnownNat n
+newtype Echo = Echo
+    { transmit :: forall n. KnownNat n
                => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
 
@@ -30,15 +29,12 @@ data Echo = Echo
 
 echo :: (MonadWriter Context m, MonadReader (Domain p t) m, T.Transport t) => m Feature
 echo = do
-    buff       <- buffer "echo"
     transport  <- asks D.transport
-    pure . Feature $ Echo {buff, transmit = T.transmit transport}
+    pure . Feature $ Echo {transmit = T.transmit transport}
 
 
 
 instance Controller Echo where
-    handle (Echo {..}) request n = do
-        pure [ true ==> do
-                arrayCopy buff request 0 (safeCast n)
-                transmit buff
+    handle (Echo {..}) buff n = do
+        pure [ true ==> transmit buff
              ]
