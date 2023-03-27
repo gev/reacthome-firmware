@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RankNTypes       #-}
 {-# LANGUAGE RecordWildCards  #-}
 
@@ -12,15 +13,18 @@ import           Core.Controller
 import           Core.Domain
 import qualified Core.Domain          as D
 import           Core.Feature
+import           Core.Task
 import qualified Core.Transport       as T
 import           Data.Buffer
+import           Data.Value
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
 
 
-newtype Echo = Echo
-    { transmit :: forall n s. KnownNat n
+data Echo = Echo
+    { buff     :: Buffer 10 Uint8
+    , transmit :: forall n s. KnownNat n
                => Buffer n Uint8
                -> Ivory (ProcEffects s ()) ()
     }
@@ -31,11 +35,18 @@ echo :: ( MonadWriter Context m
         , T.Transport t
         ) => m Feature
 echo = do
+    buff <- values "echo_buffer" [9,8,7,6,5,4,3,2,1,0]
     transport  <- asks D.transport
-    pure . Feature $ Echo { transmit = T.transmit transport }
+    let echo = Echo { buff, transmit = T.transmit transport }
+    addTask $ echoTask echo
+    pure $ Feature echo
+
+
+echoTask :: Echo -> Task
+echoTask (Echo {..}) = delay 100 "echo_tx" $ transmit buff
 
 
 instance Controller Echo where
-    handle (Echo {..}) buff n = do
-        pure [ true ==> transmit buff
+    handle (Echo {..}) request n = do
+        pure [ true ==> transmit request
              ]
