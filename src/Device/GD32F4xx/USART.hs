@@ -33,6 +33,7 @@ data USART = USART
     { usart     :: USART_PERIPH
     , rcu       :: RCU_PERIPH
     , usartIRQ  :: IRQn
+    , dmaRcu    :: RCU_PERIPH
     , dmaPer    :: DMA_PERIPH
     , dmaCh     :: DMA_CHANNEL
     , dmaSubPer :: DMA_SUBPERIPH
@@ -48,6 +49,7 @@ mkUSART :: MonadWriter Context m
         => USART_PERIPH
         -> RCU_PERIPH
         -> IRQn
+        -> RCU_PERIPH
         -> DMA_PERIPH
         -> DMA_CHANNEL
         -> DMA_SUBPERIPH
@@ -56,15 +58,15 @@ mkUSART :: MonadWriter Context m
         -> G.Port
         -> G.Port
         -> m USART
-mkUSART usart rcu usartIRQ dmaPer dmaCh dmaSubPer dmaIRQn dmaIRQc rx tx = do
+mkUSART usart rcu usartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn dmaIRQc rx tx = do
     addInit $ G.initPort rx
     addInit $ G.initPort tx
     addInit initUSART'
-    pure USART { usart, rcu, usartIRQ, dmaPer, dmaCh, dmaSubPer, dmaIRQn, dmaIRQc, rx, tx }
+    pure USART { usart, rcu, usartIRQ, dmaRcu, dmaPer, dmaCh, dmaSubPer, dmaIRQn, dmaIRQc, rx, tx }
     where
         initUSART' :: Def ('[] ':-> ())
         initUSART' = proc (show usart <> "_init") $ body $ do
-            enablePeriphClock   RCU_DMA1
+            enablePeriphClock   dmaRcu
             enableIrqNvic       usartIRQ 0 0
             enableIrqNvic       dmaIRQn  1 0
             enablePeriphClock   rcu
