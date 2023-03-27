@@ -208,7 +208,7 @@ typedef struct
 }dma_multi_data_parameter_struct;
 
 /* DMA singledata mode initialize struct */
-typedef struct
+typedef struct dma_single_data_parameter_struct
 {
     uint32_t periph_addr;                           /*!< peripheral base address */
     uint32_t periph_inc;                            /*!< peripheral increasing mode */  
