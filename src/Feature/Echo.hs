@@ -20,9 +20,9 @@ import           Ivory.Stdlib
 
 
 newtype Echo = Echo
-    { transmit :: forall n. KnownNat n
+    { transmit :: forall n s. KnownNat n
                => Buffer n Uint8
-               -> forall s. Ivory (ProcEffects s ()) ()
+               -> Ivory (ProcEffects s ()) ()
     }
 
 
