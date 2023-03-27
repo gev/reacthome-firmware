@@ -215,10 +215,11 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
                           USART1_IRQn
                           DMA0
                           DMA_CH1
-                          DMA0_Channel0_IRQn
-                          DMA0_Channel0
-                          (pa_3 $ AF GPIO_AF_1)
-                          (pa_2 $ AF GPIO_AF_1)
+                          DMA_SUBPERI5
+                          DMA1_Channel6_IRQn
+                          DMA1_Channel6
+                          (pc_7 $ AF GPIO_AF_8)
+                          (pc_6 $ AF GPIO_AF_8)
 
     , in_pa_0   = input pa_0
     , in_pa_1   = input pa_1

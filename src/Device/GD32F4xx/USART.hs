@@ -30,15 +30,16 @@ import           Support.Device.GD32F4xx.USART as S
 
 
 data USART = USART
-    { usart    :: USART_PERIPH
-    , rcu      :: RCU_PERIPH
-    , usartIRQ :: IRQn
-    , dmaPer   :: DMA_PERIPH
-    , dmaCh    :: DMA_CHANNEL
-    , dmaIRQn  :: IRQn
-    , dmaIRQc  :: DMA_CHANNEL_IRQ
-    , rx       :: G.Port
-    , tx       :: G.Port
+    { usart     :: USART_PERIPH
+    , rcu       :: RCU_PERIPH
+    , usartIRQ  :: IRQn
+    , dmaPer    :: DMA_PERIPH
+    , dmaCh     :: DMA_CHANNEL
+    , dmaSubPer :: DMA_SUBPERIPH
+    , dmaIRQn   :: IRQn
+    , dmaIRQc   :: DMA_CHANNEL_IRQ
+    , rx        :: G.Port
+    , tx        :: G.Port
     }
 
 
@@ -49,16 +50,17 @@ mkUSART :: MonadWriter Context m
         -> IRQn
         -> DMA_PERIPH
         -> DMA_CHANNEL
+        -> DMA_SUBPERIPH
         -> IRQn
         -> DMA_CHANNEL_IRQ
         -> G.Port
         -> G.Port
         -> m USART
-mkUSART usart rcu usartIRQ dmaPer dmaCh dmaIRQn dmaIRQc rx tx = do
+mkUSART usart rcu usartIRQ dmaPer dmaCh dmaSubPer dmaIRQn dmaIRQc rx tx = do
     addInit $ G.initPort rx
     addInit $ G.initPort tx
     addInit initUSART'
-    pure USART { usart, rcu, usartIRQ, dmaPer, dmaCh, dmaIRQn, dmaIRQc, rx, tx }
+    pure USART { usart, rcu, usartIRQ, dmaPer, dmaCh, dmaSubPer, dmaIRQn, dmaIRQc, rx, tx }
     where
         initUSART' :: Def ('[] ':-> ())
         initUSART' = proc (show usart <> "_init") $ body $ do
@@ -85,9 +87,9 @@ instance Handler I.HandleUSART USART where
 
 handleDMA :: DMA_PERIPH -> DMA_CHANNEL -> USART_PERIPH -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
 handleDMA dmaPer dmaCh usart onTransmit onDrain = do
-    f <- getInterruptFlagDMA    dmaPer dmaCh DMA_INTF_FTF
+    f <- getInterruptFlagDMA    dmaPer dmaCh DMA_INT_FLAG_FTF
     when f $ do
-        clearInterruptFlagDMA   dmaPer dmaCh DMA_INTF_FTF
+        clearInterruptFlagDMA   dmaPer dmaCh DMA_INT_FLAG_FTF
         M.when (isJust onDrain) $ do
             disableInterrupt    usart USART_INT_RBNE
             enableInterrupt     usart USART_INT_TC
@@ -125,12 +127,10 @@ instance I.USART USART where
     setParity     u p  = S.configParity  (usart u) (coerceParity p)
 
 
-{-
-    TODO: selectChannelSubperipheralDMA ?!?!?
--}
+
     transmit (USART {..}) buff n = do
         deinitDMA dmaPer dmaCh
-        p <- tdata (def usart)
+        p <- udata (def usart)
         m <- castArrayToUint32 buff
         initSingleDMA dmaPer dmaCh dmaInitParam { dmaPeriphAddr = p
                                                 , dmaMemoryAddr = m
@@ -140,7 +140,7 @@ instance I.USART USART where
                                                 -}
                                                 }
         disableCirculationDMA dmaPer dmaCh
-        selectChannelSubperipheralDMA dmaPer dmaCh DMA_SUBPERI7
+        selectChannelSubperipheralDMA dmaPer dmaCh dmaSubPer
         transmitDMA usart USART_DENT_ENABLE
         enableInterruptDMA dmaPer dmaCh DMA_CHXCTL_FTFIE
         enableChannelDMA dmaPer dmaCh
