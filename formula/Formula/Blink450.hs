@@ -12,6 +12,6 @@ blink450 = Formula { name       = "blink450"
                    , model      = 0xff
                    , version    = (1, 0)
                    , shouldInit = false
-                   , transport  = rbus usart_1
+                   , transport  = rbus usart_5
                    , features   = [ blink 1 out_pd_12 ]
                    }

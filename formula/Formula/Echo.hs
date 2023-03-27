@@ -12,6 +12,6 @@ echo = Formula { name       = "echo"
                , model      = 0xff
                , version    = (1, 0)
                , shouldInit = false
-               , transport  = rbus usart_1
+               , transport  = rbus usart_5
                , features   = [ E.echo ]
                }

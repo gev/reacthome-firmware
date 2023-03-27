@@ -33,7 +33,7 @@ type OutputW = forall m. MonadWriter Context m => m Output
 
 
 data GD32F4xx = GD32F4xx
-    { usart_1   :: USARTW
+    { usart_5   :: USARTW
 
     , in_pa_0   :: InputW
     , in_pa_1   :: InputW
@@ -210,12 +210,12 @@ data GD32F4xx = GD32F4xx
 
 gd32f4xx :: String -> String -> MCUmod GD32F4xx
 gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
-    { usart_1   = mkUSART USART1
-                          RCU_USART1
+    { usart_5   = mkUSART USART5
+                          RCU_USART5
                           USART1_IRQn
                           RCU_DMA1
-                          DMA0
-                          DMA_CH1
+                          DMA1
+                          DMA_CH6
                           DMA_SUBPERI5
                           DMA1_Channel6_IRQn
                           DMA1_Channel6
