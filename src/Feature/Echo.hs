@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RankNTypes       #-}
 {-# LANGUAGE RecordWildCards  #-}
 
@@ -22,16 +21,18 @@ import           Ivory.Stdlib
 
 newtype Echo = Echo
     { transmit :: forall n. KnownNat n
-               => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
+               => Buffer n Uint8
+               -> forall s. Ivory (ProcEffects s ()) ()
     }
 
 
-
-echo :: (MonadWriter Context m, MonadReader (Domain p t) m, T.Transport t) => m Feature
+echo :: ( MonadWriter Context m
+        , MonadReader (Domain p t) m
+        , T.Transport t
+        ) => m Feature
 echo = do
     transport  <- asks D.transport
-    pure . Feature $ Echo {transmit = T.transmit transport}
-
+    pure . Feature $ Echo { transmit = T.transmit transport }
 
 
 instance Controller Echo where
