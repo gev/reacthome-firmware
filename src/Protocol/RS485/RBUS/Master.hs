@@ -10,7 +10,8 @@ module Protocol.RS485.RBUS.Master where
 
 import           Control.Monad.Writer
 import           Core.Context
-import           Core.Version         (Version, major, minor, version_)
+import           Core.Version                        (Version, major, minor,
+                                                      version_)
 import           Data.Buffer
 import           Data.Record
 import           Data.Value
@@ -19,6 +20,7 @@ import           Interface.Mac
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Protocol.RS485.RBUS
+import           Protocol.RS485.RBUS.Master.MacTable
 import           Util.CRC16
 
 
@@ -38,6 +40,7 @@ data Master n = Master
     , tidTx         :: Values  255 Uint8
     , crc           :: Record      CRC16
     , tmp           :: Value       Uint8
+    , table         :: MacTable
     , onMessage     :: Buffer   n  Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ()
     , onConfirm     :: forall eff. Ivory eff ()
     , onDiscovery   :: forall eff. Mac -> Value Uint8 -> Version -> Ivory eff ()
@@ -74,9 +77,10 @@ master id onMessage onConfirm onDiscovery onPing = do
     tidTx    <- values     (name <> "_tid_tx" )   $ replicate 255   0
     crc      <- makeCRC16  (name <> "_crc"    )
     tmp      <- value      (name <> "_tmp"    )   0
+    table    <- macTable
     let master = Master { name, mac, model, version, address
                         , state, phase, index, size
-                        , buff, tidRx, tidTx, crc, tmp
+                        , buff, tidRx, tidTx, crc, tmp, table
                         , onMessage, onConfirm, onDiscovery, onPing
                         }
     pure master
