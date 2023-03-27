@@ -8,6 +8,7 @@ import           Device.GD32F3x0
 import           Device.GD32F4xx
 import           Formula.Blink330
 import           Formula.Blink450
+import           Formula.Echo
 import           Formula.Relay12
 
 
@@ -17,4 +18,5 @@ main = do
                      , relay12
                      ]
     gcc gd32f450vgt6 [ blink450
+                     , echo
                      ]

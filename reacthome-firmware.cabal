@@ -60,11 +60,13 @@ executable reacthome-firmware
                     , Endpoint.Groups
 
                     , Feature.Blink
+                    , Feature.Echo
                     , Feature.Relay
                     , Feature.Relays
 
                     , Formula.Blink330
                     , Formula.Blink450
+                    , Formula.Echo
                     , Formula.Relay12
 
                     , Interface.Counter
