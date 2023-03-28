@@ -212,7 +212,7 @@ gd32f4xx :: String -> String -> MCUmod GD32F4xx
 gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
     { usart_5   = mkUSART USART5
                           RCU_USART5
-                          USART1_IRQn
+                          USART5_IRQn
                           RCU_DMA1
                           DMA1
                           DMA_CH6
