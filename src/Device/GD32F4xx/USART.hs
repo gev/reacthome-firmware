@@ -73,7 +73,7 @@ mkUSART usart rcu usartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn dmaIRQc rx tx =
             deinitUSART         usart
             configReceive       usart USART_RECEIVE_ENABLE
             configTransmit      usart USART_TRANSMIT_ENABLE
-            setBaudrate         usart 1_000_000
+            setBaudrate         usart 2_000_000
             setWordLength       usart USART_WL_8BIT
             configParity        usart USART_PM_NONE
             enableInterrupt     usart USART_INT_RBNE

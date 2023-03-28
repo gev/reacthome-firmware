@@ -38,7 +38,7 @@ echo = do
     buff <- values "echo_buffer" [9,8,7,6,5,4,3,2,1,0]
     transport  <- asks D.transport
     let echo = Echo { buff, transmit = T.transmit transport }
-    addTask $ echoTask echo
+    -- addTask $ echoTask echo
     pure $ Feature echo
 
 
