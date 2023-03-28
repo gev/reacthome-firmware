@@ -135,7 +135,7 @@ io m p = p $ MF m
 
 
 initPort :: Port -> Def ('[] ':-> ())
-initPort (Port {..}) = proc (show gpio <> "_" <> show pin <>"_init") $ body $ do
+initPort Port{..} = proc (show gpio <> "_" <> show pin <>"_init") $ body $ do
     enablePeriphClock rcu
     setOutputOptions gpio GPIO_OTYPE_PP GPIO_OSPEED_50MHZ pin
     case mode of

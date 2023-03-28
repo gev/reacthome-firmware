@@ -94,7 +94,7 @@ slave id mac model version onMessage onConfirm onDiscovery = do
 
 
 initDisc :: Slave n -> Def('[] :-> ())
-initDisc (Slave {..}) =
+initDisc Slave{..} =
     proc (name <> "_init_disc_tx") $ body $ do
         store (buffDisc ! 0) $ discovery txPreamble
         arrayCopy buffDisc mac 1 $ arrayLen mac
@@ -104,14 +104,14 @@ initDisc (Slave {..}) =
         calcCRC16 buffDisc
 
 initConf :: Slave n -> Def('[] :-> ())
-initConf (Slave {..}) =
+initConf Slave{..} =
     proc (name <> "_init_conf_tx") $ body $ do
         store (buffConf ! 0) $ confirm txPreamble
         store (buffConf ! 1) =<< deref address
         calcCRC16 buffConf
 
 initPing :: Slave n -> Def('[] :-> ())
-initPing (Slave {..}) =
+initPing Slave{..} =
     proc (name <> "_init_ping_tx") $ body $ do
         store (buffPing ! 0) $ ping txPreamble
         store (buffPing ! 1) =<< deref address
@@ -120,6 +120,6 @@ initPing (Slave {..}) =
 
 
 hasAddress :: Slave n -> Ivory eff IBool
-hasAddress (Slave {..}) = do
+hasAddress Slave{..} = do
     a <- deref address
     pure $ a /=? broadcastAddress

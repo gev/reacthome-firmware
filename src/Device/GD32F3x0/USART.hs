@@ -75,7 +75,7 @@ mkUSART usart rcu usartIRQ dma dmaIRQn dmaIRQc rx tx = do
 
 
 instance Handler I.HandleUSART USART where
-    addHandler (I.HandleUSART (USART {..}) onReceive onTransmit onDrain) = do
+    addHandler (I.HandleUSART USART{..} onReceive onTransmit onDrain) = do
         addModule $ makeIRQHandler usart (handleUSART usart onReceive onDrain)
         addModule $ makeIRQHandler dmaIRQc (handleDMA dma usart onTransmit onDrain)
 
@@ -122,7 +122,7 @@ instance I.USART USART where
     setParity     u p  = S.configParity  (usart u) (coerceParity p)
 
 
-    transmit (USART {..}) buff n = do
+    transmit USART{..} buff n = do
         deinitDMA dma
         p <- tdata (def usart)
         m <- castArrayToUint32 buff

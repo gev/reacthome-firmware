@@ -19,11 +19,11 @@ import           Transport.USART.RBUS.Data
 
 
 txHandle :: RBUS -> Ivory eff ()
-txHandle (RBUS {..}) = store txLock false
+txHandle RBUS{..} = store txLock false
 
 
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()
-txTask r@(RBUS {..}) = do
+txTask r@RBUS{..} = do
     locked <- deref txLock
     when (iNot locked) $
         pop msgQueue $ \i -> do
@@ -39,7 +39,7 @@ txTask r@(RBUS {..}) = do
             transmit r size
 
 transmit :: RBUS -> Uint16 -> Ivory (ProcEffects s ()) ()
-transmit (RBUS {..}) size = do
+transmit RBUS{..} size = do
     let array = toCArray txBuff
     U.transmit usart array size
     store txLock true
@@ -47,7 +47,7 @@ transmit (RBUS {..}) size = do
 
 
 toQueue :: KnownNat l => RBUS -> Buffer l Uint8 -> Ivory (ProcEffects s ()) ()
-toQueue (RBUS {..}) buff = push msgQueue $ \i -> do
+toQueue RBUS{..} buff = push msgQueue $ \i -> do
     index <- deref msgIndex
     size <- run protocol (transmitMessage buff) msgBuff index
     store msgIndex $ index + size

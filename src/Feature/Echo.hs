@@ -43,10 +43,10 @@ echo = do
 
 
 echoTask :: Echo -> Task
-echoTask (Echo {..}) = delay 100 "echo_tx" $ transmit buff
+echoTask Echo{..} = delay 100 "echo_tx" $ transmit buff
 
 
 instance Controller Echo where
-    handle (Echo {..}) request n = do
+    handle Echo{..} request n = do
         pure [ true ==> transmit request
              ]

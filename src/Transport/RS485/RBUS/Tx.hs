@@ -20,11 +20,11 @@ import           Transport.RS485.RBUS.Data
 
 
 txHandle :: RBUS -> Ivory eff ()
-txHandle (RBUS {..}) = store txLock false
+txHandle RBUS{..} = store txLock false
 
 
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()
-txTask r@(RBUS {..}) = do
+txTask r@RBUS{..} = do
     locked <- deref txLock
     when (iNot locked) $ do
         ts <- getSystemTime clock
@@ -46,7 +46,7 @@ txTask r@(RBUS {..}) = do
 
 
 doConfirm :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
-doConfirm r@(RBUS {..}) t1 = do
+doConfirm r@RBUS{..} t1 = do
     t0 <- deref timestamp
     when (t1 - t0 >? 0)
          (do store shouldConfirm false
@@ -56,7 +56,7 @@ doConfirm r@(RBUS {..}) t1 = do
 
 
 doTransmitMessage :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
-doTransmitMessage r@(RBUS {..}) ts = peek msgQueue $ \i -> do
+doTransmitMessage r@RBUS{..} ts = peek msgQueue $ \i -> do
     let ix = toIx i
     ttl <- deref $ msgTTL ! ix
     ifte_ (ttl >? 0)
@@ -76,20 +76,20 @@ doTransmitMessage r@(RBUS {..}) ts = peek msgQueue $ \i -> do
 
 
 doPing :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
-doPing r@(RBUS {..}) t1 = do
+doPing r@RBUS{..} t1 = do
     t0 <- deref timestamp
     when (t1 - t0 >? 1000)
          (store timestamp t1 >> ping r)
 
 
 doDiscovery :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
-doDiscovery r@(RBUS {..}) t1 = do
+doDiscovery r@RBUS{..} t1 = do
     t0 <- deref timestamp
     when (t1 - t0 >? 1000)
          (store timestamp t1 >> discovery r)
 
 
-doRequestInit r@(RBUS {..}) t1 = do
+doRequestInit r@RBUS{..} t1 = do
     t0 <- deref timestamp
     when (t1 - t0 >? 1000)
          (store timestamp t1 >> toQueue r initBuff)
@@ -110,7 +110,7 @@ confirm = toRS transmitConfirm
 toRS :: (Slave 255 -> (Uint8 -> Ivory eff ()) -> Ivory (ProcEffects s ()) ())
      -> RBUS
      -> Ivory (ProcEffects s ()) ()
-toRS transmit r@(RBUS {..}) = do
+toRS transmit r@RBUS{..} = do
     locked <- deref txLock
     when (iNot locked)
          (rsTransmit r =<< run protocol transmit txBuff 0)
@@ -120,7 +120,7 @@ toRS transmit r@(RBUS {..}) = do
     TODO: potential message overwriting in the msgBuff
 --}
 toQueue :: KnownNat l => RBUS -> Buffer l Uint8 -> Ivory (ProcEffects s ()) ()
-toQueue (RBUS {..}) buff = push msgQueue $ \i -> do
+toQueue RBUS{..} buff = push msgQueue $ \i -> do
     index <- deref msgIndex
     size <- run protocol (transmitMessage buff) msgBuff index
     store msgIndex $ index + size
@@ -131,7 +131,7 @@ toQueue (RBUS {..}) buff = push msgQueue $ \i -> do
 
 
 rsTransmit :: RBUS -> Uint16 -> Ivory (ProcEffects s ()) ()
-rsTransmit (RBUS {..}) size = do
+rsTransmit RBUS{..} size = do
     let array = toCArray txBuff
     RS.transmit rs array size
     store txLock true

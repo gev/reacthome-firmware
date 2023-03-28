@@ -19,7 +19,7 @@ transmitMessage :: KnownNat l
                 -> Master n
                 -> (Uint8 -> forall eff. Ivory eff ())
                 -> Ivory (ProcEffects s ()) ()
-transmitMessage address' payload (Master {..}) =
+transmitMessage address' payload Master{..} =
     run $ \transmit -> do
         transmit $ message txPreamble
         transmit address'

@@ -50,16 +50,16 @@ relay n out = do
 
 
 turnOn :: Relay -> Ivory eff ()
-turnOn (Relay {..}) =
+turnOn Relay{..} =
     store state true >> store (payload ! 2) 1
 
 
 turnOff :: Relay -> Ivory eff ()
-turnOff (Relay {..}) = store state false >> store (payload ! 2) 0
+turnOff Relay{..} = store state false >> store (payload ! 2) 0
 
 
 manage :: Relay -> Ivory eff ()
-manage (Relay {..}) = do
+manage Relay{..} = do
     s <- deref state
     ifte_ s (set   out)
             (reset out)

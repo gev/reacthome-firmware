@@ -15,7 +15,7 @@ transmitMessage :: KnownNat l
                 -> RBUS n
                 -> (Uint8 -> forall eff. Ivory eff ())
                 -> Ivory (ProcEffects s ()) ()
-transmitMessage payload (RBUS {..}) transmit = do
+transmitMessage payload RBUS{..} transmit = do
     crc <- local $ istruct initCRC16
     let transmit' :: Uint8 -> Ivory eff ()
         transmit' v = updateCRC16 crc v >> transmit v

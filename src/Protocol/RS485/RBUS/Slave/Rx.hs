@@ -32,7 +32,7 @@ receivePreamble = runInput rxPreamble
     ]
 
 start :: Uint8 -> Uint8 -> Slave n -> Uint8 -> Ivory eff ()
-start s p (Slave {..}) v = do
+start s p Slave{..} v = do
     store state s
     store phase p
     store index 0
@@ -52,7 +52,7 @@ receiveDiscovery = runState phase
     ]
 
 receiveDiscoveryMac :: Slave n -> Uint8 -> Ivory eff ()
-receiveDiscoveryMac (Slave {..}) v = do
+receiveDiscoveryMac Slave{..} v = do
     i <- deref index
     m <- deref $ mac ! toIx i
     ifte_ (v ==? m)
@@ -65,13 +65,13 @@ receiveDiscoveryMac (Slave {..}) v = do
           (store state readyToReceive)
 
 receiveDiscoveryAddress :: Slave n -> Uint8 -> Ivory eff ()
-receiveDiscoveryAddress (Slave {..}) v = do
+receiveDiscoveryAddress Slave{..} v = do
     store tmp v
     updateCRC16 crc v
     store phase waitingMsbCRC
 
 receiveDiscoveryLsbCRC :: Slave n -> Uint8 -> Ivory eff ()
-receiveDiscoveryLsbCRC s@(Slave {..}) = receiveLsbCRC s $ do
+receiveDiscoveryLsbCRC s@Slave{..} = receiveLsbCRC s $ do
     store address =<< deref tmp
     call_ $ initConf s
     call_ $ initPing s
@@ -87,7 +87,7 @@ receivePing = runState phase
     ]
 
 receivePingLsbCRC :: Slave n -> Uint8 -> Ivory eff ()
-receivePingLsbCRC r@(Slave {..}) =
+receivePingLsbCRC r@Slave{..} =
     receiveLsbCRC r $ store address broadcastAddress
 
 
@@ -116,19 +116,19 @@ receiveMessage = runState phase
     ]
 
 receiveMessageTid :: Slave n -> Uint8 -> Ivory eff ()
-receiveMessageTid (Slave {..}) v = do
+receiveMessageTid Slave{..} v = do
     store tmp v
     updateCRC16 crc v
     store phase waitingSize
 
 receiveMessageSize :: Slave n -> Uint8 -> Ivory eff ()
-receiveMessageSize (Slave {..}) v = do
+receiveMessageSize Slave{..} v = do
     store size v
     updateCRC16 crc v
     store phase waitingData
 
 receiveMessageData :: KnownNat n => Slave n -> Uint8 -> Ivory eff ()
-receiveMessageData (Slave {..}) v = do
+receiveMessageData Slave{..} v = do
     i <- deref index
     s <- deref size
     store (buff ! toIx i) v
@@ -139,7 +139,7 @@ receiveMessageData (Slave {..}) v = do
          (store phase waitingMsbCRC)
 
 receiveMessageLsbCRC :: Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receiveMessageLsbCRC r@(Slave {..}) v = do
+receiveMessageLsbCRC r@Slave{..} v = do
     tmp'   <- deref tmp
     size'  <- deref size
     tidRx' <- deref tidRx
@@ -150,21 +150,21 @@ receiveMessageLsbCRC r@(Slave {..}) v = do
 
 
 receiveAddress :: Uint8 -> Slave n -> Uint8 -> Ivory eff ()
-receiveAddress p (Slave {..}) v = do
+receiveAddress p Slave{..} v = do
     a <- deref address
     ifte_ (v==? a .|| v ==? broadcastAddress)
           (updateCRC16 crc v >> store phase p)
           (store state readyToReceive)
 
 receiveMsbCRC :: Slave n -> Uint8 -> Ivory eff ()
-receiveMsbCRC (Slave {..}) v = do
+receiveMsbCRC Slave{..} v = do
     b <- deref $ crc ~> msb
     ifte_ (b ==? v)
           (store phase waitingLsbCRC)
           (store state readyToReceive)
 
 receiveLsbCRC :: Slave n -> Ivory eff () -> Uint8 -> Ivory eff ()
-receiveLsbCRC (Slave {..}) complete v = do
+receiveLsbCRC Slave{..} complete v = do
     b <- deref $ crc ~> lsb
     when (b ==? v) complete
     store state readyToReceive

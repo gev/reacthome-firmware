@@ -43,7 +43,7 @@ queue id = do
 
 
 push :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
-push (Queue {..}) handle =
+push Queue{..} handle =
     down producerS $ do
         x <- deref producerIx
         handle x
@@ -52,7 +52,7 @@ push (Queue {..}) handle =
 
 
 pop :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
-pop (Queue {..}) handle =
+pop Queue{..} handle =
     down consumerS $ do
         x <- deref consumerIx
         handle x
@@ -61,14 +61,14 @@ pop (Queue {..}) handle =
 
 
 peek :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
-peek (Queue {..}) handle = do
+peek Queue{..} handle = do
     check consumerS $ do
         x <- deref consumerIx
         handle x
 
 
 remove :: Queue n -> Ivory eff ()
-remove (Queue {..}) =
+remove Queue{..} =
     down consumerS $ do
         x <- deref consumerIx
         store consumerIx $ x + 1
@@ -76,5 +76,5 @@ remove (Queue {..}) =
 
 
 size :: Queue n -> Ivory eff Uint16
-size (Queue {..}) =
+size Queue{..} =
     (-) <$> deref producerIx <*> deref consumerIx

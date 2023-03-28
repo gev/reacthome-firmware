@@ -45,4 +45,4 @@ getSystemTime = deref . time
 
 
 instance Counter SystemClock where
-    readCounter (SystemClock {..}) = readCounter counter
+    readCounter SystemClock{..} = readCounter counter

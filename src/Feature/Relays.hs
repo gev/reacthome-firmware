@@ -81,7 +81,7 @@ relays outs = do
 
 
 manage :: Relays -> Ivory eff ()
-manage (Relays {..}) = do
+manage Relays{..} = do
     R.runRelays getRelays $ \rs -> do
         arrayMap $ \ix -> do
             let r = addrOf rs ! ix
@@ -116,7 +116,7 @@ manageRelay r o ix timestamp setOut delay = do
 
 
 sync :: Relays -> Ivory (ProcEffects s ()) ()
-sync rs@(Relays {..}) = do
+sync rs@Relays{..} = do
     i <- deref current
     syncRelays rs i
     syncGroups rs i
@@ -125,7 +125,7 @@ sync rs@(Relays {..}) = do
 
 
 syncRelays :: Relays -> Uint8 -> Ivory (ProcEffects s ()) ()
-syncRelays (Relays {..}) i =
+syncRelays Relays{..} i =
     R.runRelays getRelays $ \rs -> do
         let r = addrOf rs ! toIx i
         synced <- deref $ r ~> R.synced
@@ -136,7 +136,7 @@ syncRelays (Relays {..}) i =
 
 
 syncGroups :: Relays -> Uint8 -> Ivory (ProcEffects s ()) ()
-syncGroups (Relays {..}) i =
+syncGroups Relays{..} i =
     G.runGroups getGroups $ \gs -> do
         let g = addrOf gs ! toIx i
         synced <- deref $ g ~> G.synced
@@ -166,7 +166,7 @@ onDo :: KnownNat l
      -> Ref Global ('Array l ('Stored Uint8))
      -> Uint8
      -> Ivory (ProcEffects s ()) ()
-onDo (Relays {..}) buff size = do
+onDo Relays{..} buff size = do
     index <- deref $ buff ! 1
     when (index >=? 1 .&& index <=? n) $
         R.runRelays getRelays $ \rs -> do
@@ -242,7 +242,7 @@ onGroup :: KnownNat n
         -> Buffer n Uint8
         -> Uint8
         -> Ivory eff ()
-onGroup (Relays {..}) buff size =
+onGroup Relays{..} buff size =
     when (size >=? 7) $ do
         index <- unpack buff 1
         when (index >=? 1 .&& index <=? n) $
@@ -262,7 +262,7 @@ onInit :: KnownNat n
         -> Buffer n Uint8
         -> Uint8
         -> Ivory (ProcEffects s ()) ()
-onInit rs@(Relays {..}) buff size =
+onInit rs@Relays{..} buff size =
     when (size >=? 5 * n + 6 * n) $ do
         offset <- local $ ival 1
         initGroups rs buff offset
@@ -276,7 +276,7 @@ initGroups :: KnownNat n
            -> Buffer n Uint8
            -> Ref s (Stored (Ix n))
            -> Ivory eff ()
-initGroups (Relays {..}) buff offset =
+initGroups Relays{..} buff offset =
     G.runGroups getGroups $ \gs ->
         arrayMap $ \ix -> do
             offset' <- deref offset
@@ -292,7 +292,7 @@ initRelays :: KnownNat n
            -> Buffer n Uint8
            -> Ref s (Stored (Ix n))
            -> Ivory eff ()
-initRelays (Relays {..}) buff offset =
+initRelays Relays{..} buff offset =
     R.runRelays getRelays $ \rs ->
         arrayMap $ \ix -> do
             offset' <- deref offset

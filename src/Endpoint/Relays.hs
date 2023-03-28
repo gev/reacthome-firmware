@@ -59,7 +59,7 @@ relays name n = do
 
 
 message :: Relays -> Uint8 -> Ivory eff (Buffer 8 Uint8)
-message (Relays {..}) i = do
+message Relays{..} i = do
     runRelays $ \r -> do
         let relay = addrOf r ! toIx i
         pack   payload 0 (0 :: Uint8)

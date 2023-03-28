@@ -59,23 +59,23 @@ transmit :: RS485
          -> Ref r (CArray (Stored Uint16))
          -> Uint16
          -> Ivory (ProcEffects s ()) ()
-transmit (RS485 {..}) buffer length =
+transmit RS485{..} buffer length =
     set rede >> I.transmit usart buffer length
 
 setBaudrate :: RS485 -> Uint32 -> Ivory eff ()
-setBaudrate (RS485 {..}) = I.setBaudrate usart
+setBaudrate RS485{..} = I.setBaudrate usart
 
 setWordLength :: RS485 -> I.WordLength -> Ivory eff ()
-setWordLength (RS485 {..}) = I.setWordLength usart
+setWordLength RS485{..} = I.setWordLength usart
 
 setStopBit :: RS485 -> I.StopBit -> Ivory eff ()
-setStopBit (RS485 {..}) = I.setStopBit usart
+setStopBit RS485{..} = I.setStopBit usart
 
 setParity :: RS485 -> I.Parity -> Ivory eff ()
-setParity (RS485 {..}) = I.setParity usart
+setParity RS485{..} = I.setParity usart
 
 
 
 instance Handler HandleRS485 RS485 where
-    addHandler (HandleRS485 (RS485 {..}) onReceive onTransmit) = do
+    addHandler (HandleRS485 RS485{..} onReceive onTransmit) = do
         addHandler $ I.HandleUSART usart onReceive onTransmit (Just $ reset rede)

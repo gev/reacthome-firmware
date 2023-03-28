@@ -66,7 +66,7 @@ instance I.Counter Timer where
 
 
 instance Handler I.HandleTimer Timer where
-    addHandler (I.HandleTimer {I.timer = Timer {..}, handle}) = do
+    addHandler (I.HandleTimer {I.timer = Timer{..}, handle}) = do
         addProc initTimerIRQ'
         addModule $ makeIRQHandler timer handleIRQ'
         where

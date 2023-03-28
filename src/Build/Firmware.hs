@@ -20,7 +20,7 @@ import           Ivory.Language.Module
 
 
 cook :: Writer Context (MCU p) -> Formula p -> ModuleDef
-cook mcu (Formula {..}) = do
+cook mcu Formula{..} = do
 
     inclModule
     incl  init
@@ -65,9 +65,9 @@ generate moduleDef name = runCompiler
 
 build :: Shake c
       => c -> MCUmod p -> [Formula p] -> IO ()
-build config (MCUmod {..}) formulas =
+build config MCUmod{..} formulas =
     shake config =<< mapM run formulas
     where
-        run f@(Formula {..}) = do
+        run f@Formula{..} = do
             generate (cook mcu f) name
             pure name

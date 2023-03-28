@@ -82,7 +82,7 @@ mkUSART usart rcu usartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn dmaIRQc rx tx =
 
 
 instance Handler I.HandleUSART USART where
-    addHandler (I.HandleUSART (USART {..}) onReceive onTransmit onDrain) = do
+    addHandler (I.HandleUSART USART{..} onReceive onTransmit onDrain) = do
         addModule $ makeIRQHandler usart (handleUSART usart onReceive onDrain)
         addModule $ makeIRQHandler dmaIRQc (handleDMA dmaPer dmaCh usart onTransmit onDrain)
 
@@ -130,7 +130,7 @@ instance I.USART USART where
 
 
 
-    transmit (USART {..}) buff n = do
+    transmit USART{..} buff n = do
         deinitDMA dmaPer dmaCh
         p <- udata (def usart)
         m <- castArrayToUint32 buff

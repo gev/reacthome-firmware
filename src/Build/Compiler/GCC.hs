@@ -47,9 +47,9 @@ source = dropDirectory1 . dropExtension
 
 instance Shake GCC where
 
-    key (GCC {..}) = mconcat cflags
+    key GCC{..} = mconcat cflags
 
-    shake (GCC {..}) ns = shakeArgs shakeOptions{shakeFiles="build"} $ do
+    shake GCC{..} ns = shakeArgs shakeOptions{shakeFiles="build"} $ do
 
         want $ target ns ["hex", "bin"]
 

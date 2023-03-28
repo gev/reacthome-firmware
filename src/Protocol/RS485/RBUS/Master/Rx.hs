@@ -33,7 +33,7 @@ receivePreamble = runInput rxPreamble
     ]
 
 start :: Uint8 -> Uint8 -> Master n -> Uint8 -> Ivory eff ()
-start s p (Master {..}) v = do
+start s p Master{..} v = do
     store state s
     store phase p
     store index 0
@@ -55,7 +55,7 @@ receiveDiscovery = runState phase
     ]
 
 receiveDiscoveryMac :: Master n -> Uint8 -> Ivory eff ()
-receiveDiscoveryMac (Master {..}) v = do
+receiveDiscoveryMac Master{..} v = do
     i <- deref index
     store (mac ! toIx i) v
     store index $ i + 1
@@ -65,25 +65,25 @@ receiveDiscoveryMac (Master {..}) v = do
          (store phase waitingModel)
 
 receiveDiscoveryModel :: Master n -> Uint8 -> Ivory eff ()
-receiveDiscoveryModel (Master {..}) v = do
+receiveDiscoveryModel Master{..} v = do
     store model v
     updateCRC16 crc v
     store phase waitingMajorVersion
 
 receiveDiscoveryMajorVersion :: Master n -> Uint8 -> Ivory eff ()
-receiveDiscoveryMajorVersion (Master {..}) v = do
+receiveDiscoveryMajorVersion Master{..} v = do
     store (version ~> major) v
     updateCRC16 crc v
     store phase waitingMinorVersion
 
 receiveDiscoveryMinorVersion :: Master n -> Uint8 -> Ivory eff ()
-receiveDiscoveryMinorVersion (Master {..}) v = do
+receiveDiscoveryMinorVersion Master{..} v = do
     store (version ~> minor) v
     updateCRC16 crc v
     store phase waitingMsbCRC
 
 receiveDiscoveryLsbCRC :: Master n -> Uint8 -> Ivory eff ()
-receiveDiscoveryLsbCRC s@(Master {..}) = receiveLsbCRC s $ do
+receiveDiscoveryLsbCRC s@Master{..} = receiveLsbCRC s $ do
     {-
         TODO: register mac, model, version and address
     -}
@@ -131,19 +131,19 @@ receiveMessage = runState phase
     ]
 
 receiveMessageTid :: Master n -> Uint8 -> Ivory eff ()
-receiveMessageTid (Master {..}) v = do
+receiveMessageTid Master{..} v = do
     store tmp v
     updateCRC16 crc v
     store phase waitingSize
 
 receiveMessageSize :: Master n -> Uint8 -> Ivory eff ()
-receiveMessageSize (Master {..}) v = do
+receiveMessageSize Master{..} v = do
     store size v
     updateCRC16 crc v
     store phase waitingData
 
 receiveMessageData :: KnownNat n => Master n -> Uint8 -> Ivory eff ()
-receiveMessageData (Master {..}) v = do
+receiveMessageData Master{..} v = do
     i <- deref index
     s <- deref size
     store (buff ! toIx i) v
@@ -154,7 +154,7 @@ receiveMessageData (Master {..}) v = do
          (store phase waitingMsbCRC)
 
 receiveMessageLsbCRC :: Master n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receiveMessageLsbCRC r@(Master {..}) v = do
+receiveMessageLsbCRC r@Master{..} v = do
     tmp'       <- deref tmp
     size'      <- deref size
     address'   <- deref address
@@ -167,20 +167,20 @@ receiveMessageLsbCRC r@(Master {..}) v = do
 
 
 receiveAddress :: Uint8 -> Master n -> Uint8 -> Ivory eff ()
-receiveAddress p (Master {..}) v = do
+receiveAddress p Master{..} v = do
     store phase p
     store address v
     updateCRC16 crc v
 
 receiveMsbCRC :: Master n -> Uint8 -> Ivory eff ()
-receiveMsbCRC (Master {..}) v = do
+receiveMsbCRC Master{..} v = do
     b <- deref $ crc ~> msb
     ifte_ (b ==? v)
           (store phase waitingLsbCRC)
           (store state readyToReceive)
 
 receiveLsbCRC :: Master n -> Ivory eff () -> Uint8 -> Ivory eff ()
-receiveLsbCRC (Master {..}) complete v = do
+receiveLsbCRC Master{..} complete v = do
     b <- deref $ crc ~> lsb
     when (b ==? v) complete
     store state readyToReceive
