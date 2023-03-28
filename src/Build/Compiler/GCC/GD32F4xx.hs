@@ -35,7 +35,7 @@ instance Compiler GCC GD32F4xx where
                     -- , "-fms-extensions"
                     , "-ffunction-sections"
                     , "-Wall"
-                    , "-O0"
+                    , "-O3"
                     ]
 
         , ld      = "-Tsupport/device/gd32f4xx/gd32f450-470.ld"
