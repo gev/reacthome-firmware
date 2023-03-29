@@ -106,14 +106,14 @@ data GD32F3x0 = GD32F3x0
 
 gd32f3x0 :: String -> String -> MCUmod GD32F3x0
 gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
-    { uart_1   = mkUART USART1
-                          RCU_USART1
-                          USART1_IRQn
-                          DMA_CH3
-                          DMA_Channel3_4_IRQn
-                          DMA_Channel3_4
-                          (pa_3 $ AF GPIO_AF_1)
-                          (pa_2 $ AF GPIO_AF_1)
+    { uart_1    = mkUART USART1
+                         RCU_USART1
+                         USART1_IRQn
+                         DMA_CH3
+                         DMA_Channel3_4_IRQn
+                         DMA_Channel3_4
+                         (pa_3 $ AF GPIO_AF_1)
+                         (pa_2 $ AF GPIO_AF_1)
 
     , in_pa_0   = input pa_0
     , in_pa_1   = input pa_1
