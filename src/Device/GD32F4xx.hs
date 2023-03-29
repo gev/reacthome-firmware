@@ -33,7 +33,11 @@ type OutputW = forall m. MonadWriter Context m => m Output
 
 
 data GD32F4xx = GD32F4xx
-    { usart_5   :: USARTW
+    { usart_0   :: USARTW
+    , usart_1   :: USARTW
+    , usart_2   :: USARTW
+    , usart_5   :: USARTW
+    , usart_7   :: USARTW
 
     , in_pa_0   :: InputW
     , in_pa_1   :: InputW
@@ -210,7 +214,43 @@ data GD32F4xx = GD32F4xx
 
 gd32f4xx :: String -> String -> MCUmod GD32F4xx
 gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
-    { usart_5   = mkUSART USART5
+    { usart_0   = mkUSART USART0
+                          RCU_USART0
+                          USART0_IRQn
+                          RCU_DMA1
+                          DMA1
+                          DMA_CH7
+                          DMA_SUBPERI4
+                          DMA1_Channel7_IRQn
+                          DMA1_Channel7
+                          (pa_10 $ AF GPIO_AF_7)
+                          (pa_9 $ AF GPIO_AF_7)
+
+    , usart_1   = mkUSART USART1
+                          RCU_USART1
+                          USART1_IRQn
+                          RCU_DMA0
+                          DMA0
+                          DMA_CH6
+                          DMA_SUBPERI4
+                          DMA0_Channel6_IRQn
+                          DMA0_Channel6
+                          (pd_6 $ AF GPIO_AF_7)
+                          (pd_5 $ AF GPIO_AF_7)
+
+    , usart_2   = mkUSART USART2
+                          RCU_USART2
+                          USART2_IRQn
+                          RCU_DMA0
+                          DMA0
+                          DMA_CH3
+                          DMA_SUBPERI4
+                          DMA0_Channel3_IRQn
+                          DMA0_Channel3
+                          (pc_11 $ AF GPIO_AF_7)
+                          (pc_10 $ AF GPIO_AF_7)
+
+    , usart_5   = mkUSART USART5
                           RCU_USART5
                           USART5_IRQn
                           RCU_DMA1
@@ -221,6 +261,19 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
                           DMA1_Channel6
                           (pc_7 $ AF GPIO_AF_8)
                           (pc_6 $ AF GPIO_AF_8)
+
+    , usart_7   = mkUSART UART7
+                          RCU_UART7
+                          UART7_IRQn
+                          RCU_DMA0
+                          DMA0
+                          DMA_CH0
+                          DMA_SUBPERI5
+                          DMA0_Channel0_IRQn
+                          DMA0_Channel0
+                          (pe_0 $ AF GPIO_AF_8)
+                          (pe_1 $ AF GPIO_AF_8)
+
 
     , in_pa_0   = input pa_0
     , in_pa_1   = input pa_1

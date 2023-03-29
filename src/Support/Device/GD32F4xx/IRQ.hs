@@ -20,9 +20,28 @@ data IRQn
     | TIMER2_IRQn
     | USART0_IRQn
     | USART1_IRQn
+    | USART2_IRQn
     | USART5_IRQn
+    | UART3_IRQn
+    | UART4_IRQn
+    | UART6_IRQn
+    | UART7_IRQn
     | DMA0_Channel0_IRQn
+    | DMA0_Channel1_IRQn
+    | DMA0_Channel2_IRQn
+    | DMA0_Channel3_IRQn
+    | DMA0_Channel4_IRQn
+    | DMA0_Channel5_IRQn
+    | DMA0_Channel6_IRQn
+    | DMA0_Channel7_IRQn
+    | DMA1_Channel0_IRQn
+    | DMA1_Channel1_IRQn
+    | DMA1_Channel2_IRQn
+    | DMA1_Channel3_IRQn
+    | DMA1_Channel4_IRQn
+    | DMA1_Channel5_IRQn
     | DMA1_Channel6_IRQn
+    | DMA1_Channel7_IRQn
     deriving (Show, Enum, Bounded)
 instance ExtDef IRQn Uint8
 
