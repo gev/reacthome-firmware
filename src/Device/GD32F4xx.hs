@@ -8,7 +8,6 @@ import           Core.Context
 import           Device.GD32F4xx.GPIO
 import           Device.GD32F4xx.GPIO.Input
 import           Device.GD32F4xx.GPIO.Output
-import           Device.GD32F4xx.GPIOs.Outputs
 import           Device.GD32F4xx.Mac           (makeMac)
 import           Device.GD32F4xx.SystemClock   as G
 import           Device.GD32F4xx.SysTick

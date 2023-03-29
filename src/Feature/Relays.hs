@@ -9,35 +9,36 @@
 
 module Feature.Relays where
 
-import           Control.Monad.Reader    (MonadReader, asks)
-import           Control.Monad.Writer    (MonadWriter)
+import           Control.Monad         (zipWithM_)
+import           Control.Monad.Reader  (MonadReader, asks)
+import           Control.Monad.Writer  (MonadWriter)
 import           Core.Context
 import           Core.Controller
-import qualified Core.Domain             as D
+import qualified Core.Domain           as D
 import           Core.Feature
 import           Core.Task
-import qualified Core.Transport          as T
+import qualified Core.Transport        as T
 import           Data.Buffer
 import           Data.Index
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
-import qualified Endpoint.Groups         as G
-import qualified Endpoint.Relays         as R
+import qualified Endpoint.Groups       as G
+import qualified Endpoint.Relays       as R
 import           GHC.TypeNats
-import           Interface.GPIOs.Outputs as I
-import           Interface.MCU           (MCU, peripherals, systemClock)
-import           Interface.SystemClock   (SystemClock, getSystemTime)
+import           Interface.GPIO.Output
+import           Interface.MCU         (MCU, peripherals, systemClock)
+import           Interface.SystemClock (SystemClock, getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
 
 
 
-data Relays = forall os. Outputs os => Relays
+data Relays = forall o. Output o => Relays
     { n          :: Uint8
     , getRelays  :: R.Relays
     , getGroups  :: G.Groups
-    , getOutputs :: os
+    , getOutputs :: [o]
     , shouldInit :: Value IBool
     , clock      :: SystemClock
     , current    :: Index Uint8
@@ -47,7 +48,7 @@ data Relays = forall os. Outputs os => Relays
 
 
 
-relays :: (MonadWriter Context m, MonadReader (D.Domain p t) m, MakeOutputs o os, T.Transport t)
+relays :: (MonadWriter Context m, MonadReader (D.Domain p t) m, T.Transport t, Output o)
        => [p -> m o] -> m Feature
 relays outs = do
     mcu        <- asks D.mcu
@@ -58,51 +59,46 @@ relays outs = do
     getRelays  <- R.relays "relays" n
     getGroups  <- G.groups "groups" n
     current    <- index "current_relay"
-    getOutputs <- makeOutputs "relays_outputs" os
     let clock   = systemClock mcu
-
     let relays  = Relays { n = fromIntegral n
                          , getRelays
                          , getGroups
-                         , getOutputs
+                         , getOutputs = os
                          , shouldInit
                          , clock
                          , current
                          , transmit = T.transmit transport
                          }
-
-    let feature = Feature relays
-
     addTask $ delay 10 "relays_manage" $ manage relays
     addTask $ delay  5 "relays_sync"   $ sync relays
-
-    pure feature
+    pure $ Feature relays
 
 
 
 manage :: Relays -> Ivory eff ()
-manage Relays{..} = do
-    R.runRelays getRelays $ \rs -> do
-        arrayMap $ \ix -> do
+manage Relays{..} = zipWithM_ go getOutputs (iterate (+1) 0)
+    where
+        go :: Output o => o -> Sint32 -> Ivory eff ()
+        go output i = R.runRelays getRelays $ \rs -> do
+            let ix = toIx i
             let r = addrOf rs ! ix
-            let run = manageRelay r getOutputs ix $ getSystemTime clock
+            let run = manageRelay r output $ getSystemTime clock
             isOn <- deref $ r ~> R.state
             ifte_ isOn
-                (run I.set   R.delayOff)
-                (run I.reset R.delayOn )
+                (run set   R.delayOff)
+                (run reset R.delayOn )
 
 
 
-manageRelay :: (KnownNat n, Outputs os)
+manageRelay :: Output o
             => Ref Global (Struct R.RelayStruct)
-            -> os
-            -> Ix n
+            -> o
             -> Ivory eff Uint32
-            -> (os -> (forall n. KnownNat n => Ix n) -> Ivory eff ())
+            -> (o -> Ivory eff ())
             -> Label R.RelayStruct ('Stored Uint32)
             -> Ivory eff ()
-manageRelay r o ix timestamp setOut delay = do
-    setOut o $ toIx $ fromIx ix
+manageRelay r o timestamp setOut delay = do
+    setOut o
     delay' <- deref $ r ~> delay
     when (delay' >? 0) $ do
         t0 <- deref $ r ~> R.timestamp

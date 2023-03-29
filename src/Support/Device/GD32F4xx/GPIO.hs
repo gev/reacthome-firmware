@@ -15,9 +15,7 @@ module Support.Device.GD32F4xx.GPIO
     , setMode
     , setOutputOptions
     , setBit
-    , gpio_bit_set
     , resetBit
-    , gpio_bit_reset
     , setAF
     , inclGPIO
     ) where

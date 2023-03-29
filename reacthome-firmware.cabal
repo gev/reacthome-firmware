@@ -72,8 +72,6 @@ executable reacthome-firmware
                     , Interface.Counter
                     , Interface.GPIO.Input
                     , Interface.GPIO.Output
-                    , Interface.GPIOs.Inputs
-                    , Interface.GPIOs.Outputs
                     , Interface.Mac
                     , Interface.MCU
                     , Interface.SystemClock
@@ -106,9 +104,6 @@ executable reacthome-firmware
                     , Device.GD32F3x0.GPIO
                     , Device.GD32F3x0.GPIO.Input
                     , Device.GD32F3x0.GPIO.Output
-                    , Device.GD32F3x0.GPIOs
-                    , Device.GD32F3x0.GPIOs.Inputs
-                    , Device.GD32F3x0.GPIOs.Outputs
                     , Device.GD32F3x0.Mac
                     , Device.GD32F3x0.SysTick
                     , Device.GD32F3x0.SystemClock
@@ -119,9 +114,6 @@ executable reacthome-firmware
                     , Device.GD32F4xx.GPIO
                     , Device.GD32F4xx.GPIO.Input
                     , Device.GD32F4xx.GPIO.Output
-                    , Device.GD32F4xx.GPIOs
-                    , Device.GD32F4xx.GPIOs.Inputs
-                    , Device.GD32F4xx.GPIOs.Outputs
                     , Device.GD32F4xx.Mac
                     , Device.GD32F4xx.SysTick
                     , Device.GD32F4xx.SystemClock
