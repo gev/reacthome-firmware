@@ -1,4 +1,4 @@
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 1
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc6PHMA8.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 1
   46              	.LVL2:
   11:main.c        **** 
   12:main.c        **** 	gpio_mode_set(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_8);
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 2
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc6PHMA8.s 			page 2
 
 
   47              		.loc 1 12 2 view .LVU4
@@ -118,7 +118,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 1
   93 0076 FFF7FEFF 		bl	gpio_output_options_set
   94              	.LVL9:
   21:main.c        **** 
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 3
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc6PHMA8.s 			page 3
 
 
   22:main.c        **** 	sk6812_initialize();
@@ -178,7 +178,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 1
  135 0098 0133     		adds	r3, r3, #1
  136              	.LVL16:
  137              	.L4:
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 4
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc6PHMA8.s 			page 4
 
 
   28:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
@@ -238,7 +238,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 1
  182              	.LVL22:
   34:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
  183              		.loc 1 34 3 is_stmt 1 view .LVU41
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 5
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc6PHMA8.s 			page 5
 
 
  184              	.LBB5:
@@ -298,7 +298,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 1
   37:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
  228              		.loc 1 37 23 is_stmt 1 discriminator 1 view .LVU59
   37:main.c        **** 		for(uint32_t x = 0; x < 15000000; x++)
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 6
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc6PHMA8.s 			page 6
 
 
  229              		.loc 1 37 3 is_stmt 0 discriminator 1 view .LVU60
@@ -358,7 +358,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 1
  274              	.LBB8:
  275              		.loc 1 43 7 view .LVU75
  276              		.loc 1 43 16 is_stmt 0 view .LVU76
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 7
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc6PHMA8.s 			page 7
 
 
  277 010c 0023     		movs	r3, #0
@@ -418,7 +418,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 1
  319              		.loc 1 46 3 is_stmt 0 discriminator 1 view .LVU93
  320 012a 314A     		ldr	r2, .L34+8
  321 012c 9342     		cmp	r3, r2
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 8
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc6PHMA8.s 			page 8
 
 
  322 012e FBD9     		bls	.L17
@@ -478,7 +478,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 1
  367 0154 0023     		movs	r3, #0
  368              		.loc 1 52 3 view .LVU110
  369 0156 00E0     		b	.L20
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 9
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc6PHMA8.s 			page 9
 
 
  370              	.LVL47:
@@ -538,7 +538,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 1
  412 0176 FBD3     		bcc	.L23
  413              	.LBE12:
   57:main.c        **** 		sk6812_set(1, 127, 127, 0);
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 10
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc6PHMA8.s 			page 10
 
 
  414              		.loc 1 57 3 is_stmt 1 view .LVU127
@@ -598,7 +598,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 1
  460              	.LVL59:
  461              	.L27:
   62:main.c        **** 		;
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 11
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc6PHMA8.s 			page 11
 
 
  462              		.loc 1 62 3 is_stmt 1 discriminator 3 view .LVU144
@@ -658,7 +658,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 1
  504              		.loc 1 66 3 is_stmt 1 view .LVU160
  505 01c0 7F23     		movs	r3, #127
  506              	.LVL65:
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 12
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc6PHMA8.s 			page 12
 
 
  507              		.loc 1 66 3 is_stmt 0 view .LVU161
@@ -718,7 +718,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 1
  549 01e4 0023     		movs	r3, #0
   25:main.c        **** 		;
  550              		.loc 1 25 3 view .LVU177
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 13
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc6PHMA8.s 			page 13
 
 
  551 01e6 4CE7     		b	.L2
@@ -735,18 +735,18 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 1
  563              	.Letext0:
  564              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
  565              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
- 566              		.file 4 "lib/CMSIS/GD/GD32F3x0/Include/system_gd32f3x0.h"
- 567              		.file 5 "lib/GD32F3x0/Include/gd32f3x0_rcu.h"
- 568              		.file 6 "lib/GD32F3x0/Include/gd32f3x0_gpio.h"
+ 566              		.file 4 "../../../support/device/gd32f3x0/inc/system_gd32f3x0.h"
+ 567              		.file 5 "../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_rcu.h"
+ 568              		.file 6 "../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_gpio.h"
  569              		.file 7 "sk6812.h"
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s 			page 14
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc6PHMA8.s 			page 14
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 main.c
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s:18     .text.main:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s:24     .text.main:0000000000000000 main
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLTyaMv.s:555    .text.main:00000000000001e8 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc6PHMA8.s:18     .text.main:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc6PHMA8.s:24     .text.main:0000000000000000 main
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc6PHMA8.s:555    .text.main:00000000000001e8 $d
 
 UNDEFINED SYMBOLS
 SystemInit

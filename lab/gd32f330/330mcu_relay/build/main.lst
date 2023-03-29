@@ -1,4 +1,4 @@
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccQmFFs.s 			page 1
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cclpmSku.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccQmFFs.s 			page 1
   48              		.loc 1 8 2 view .LVU4
   49 000c 2346     		mov	r3, r4
   50 000e 0022     		movs	r2, #0
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccQmFFs.s 			page 2
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cclpmSku.s 			page 2
 
 
   51 0010 FFF7FEFF 		bl	gpio_mode_set
@@ -118,7 +118,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccQmFFs.s 			page 1
   17:main.c        ****   gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_5);
   99              		.loc 1 17 3 view .LVU12
  100 0020 2023     		movs	r3, #32
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccQmFFs.s 			page 3
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cclpmSku.s 			page 3
 
 
  101 0022 0322     		movs	r2, #3
@@ -178,7 +178,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccQmFFs.s 			page 1
  143              		.loc 1 25 10 view .LVU22
  144              		.loc 1 25 19 is_stmt 0 view .LVU23
  145 005e 0023     		movs	r3, #0
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccQmFFs.s 			page 4
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cclpmSku.s 			page 4
 
 
  146              		.loc 1 25 5 view .LVU24
@@ -238,7 +238,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccQmFFs.s 			page 1
   30:main.c        ****     gpio_bit_reset(GPIOA, GPIO_PIN_7);
  188              		.loc 1 30 5 is_stmt 1 view .LVU40
  189 0080 8021     		movs	r1, #128
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccQmFFs.s 			page 5
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cclpmSku.s 			page 5
 
 
  190 0082 4FF09040 		mov	r0, #1207959552
@@ -298,7 +298,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccQmFFs.s 			page 1
  231              		.align	2
  232              	.L14:
  233 00a4 FF2C3101 		.word	19999999
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccQmFFs.s 			page 6
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cclpmSku.s 			page 6
 
 
  234              	.LBE6:
@@ -308,18 +308,18 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccQmFFs.s 			page 1
  239              	.Letext0:
  240              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
  241              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
- 242              		.file 4 "lib/GD32F3x0/Include/gd32f3x0_rcu.h"
- 243              		.file 5 "lib/GD32F3x0/Include/gd32f3x0_gpio.h"
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccQmFFs.s 			page 7
+ 242              		.file 4 "../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_rcu.h"
+ 243              		.file 5 "../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_gpio.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cclpmSku.s 			page 7
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 main.c
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccQmFFs.s:18     .text.init_pin_out:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccQmFFs.s:24     .text.init_pin_out:0000000000000000 init_pin_out
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccQmFFs.s:67     .text.main:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccQmFFs.s:73     .text.main:0000000000000000 main
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cccQmFFs.s:233    .text.main:00000000000000a4 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cclpmSku.s:18     .text.init_pin_out:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cclpmSku.s:24     .text.init_pin_out:0000000000000000 init_pin_out
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cclpmSku.s:67     .text.main:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cclpmSku.s:73     .text.main:0000000000000000 main
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cclpmSku.s:233    .text.main:00000000000000a4 $d
 
 UNDEFINED SYMBOLS
 gpio_mode_set

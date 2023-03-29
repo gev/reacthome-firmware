@@ -36,37 +36,37 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
-lib/CMSIS/GD/GD32F3x0/Source/system_gd32f3x0.c \
-lib/GD32F3x0/Source/gd32f3x0_adc.c \
-lib/GD32F3x0/Source/gd32f3x0_cec.c \
-lib/GD32F3x0/Source/gd32f3x0_cmp.c \
-lib/GD32F3x0/Source/gd32f3x0_crc.c \
-lib/GD32F3x0/Source/gd32f3x0_ctc.c \
-lib/GD32F3x0/Source/gd32f3x0_dac.c \
-lib/GD32F3x0/Source/gd32f3x0_dbg.c \
-lib/GD32F3x0/Source/gd32f3x0_dma.c \
-lib/GD32F3x0/Source/gd32f3x0_exti.c \
-lib/GD32F3x0/Source/gd32f3x0_fmc.c \
-lib/GD32F3x0/Source/gd32f3x0_fwdgt.c \
-lib/GD32F3x0/Source/gd32f3x0_gpio.c \
-lib/GD32F3x0/Source/gd32f3x0_i2c.c \
-lib/GD32F3x0/Source/gd32f3x0_misc.c \
-lib/GD32F3x0/Source/gd32f3x0_pmu.c \
-lib/GD32F3x0/Source/gd32f3x0_rcu.c \
-lib/GD32F3x0/Source/gd32f3x0_rtc.c \
-lib/GD32F3x0/Source/gd32f3x0_spi.c \
-lib/GD32F3x0/Source/gd32f3x0_syscfg.c \
-lib/GD32F3x0/Source/gd32f3x0_timer.c \
-lib/GD32F3x0/Source/gd32f3x0_tsi.c \
-lib/GD32F3x0/Source/gd32f3x0_usart.c \
-lib/GD32F3x0/Source/gd32f3x0_wwdgt.c \
+../../../support/device/gd32f3x0/src/system_gd32f3x0.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_adc.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_cec.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_cmp.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_crc.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_ctc.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_dac.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_dbg.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_dma.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_exti.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fmc.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_gpio.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_i2c.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_misc.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_pmu.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_rcu.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_rtc.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_spi.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_syscfg.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_timer.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_tsi.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_usart.c \
+../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_wwdgt.c \
 main.c \
 sk6812.c
 
 
 # ASM sources
 ASM_SOURCES =  \
-lib/CMSIS/GD/GD32F3x0/Source/ARM/startup_gd32f3x0.s
+../../../support/device/gd32f3x0/src/startup_gd32f3x0.s
 
 #######################################
 # binaries
@@ -118,10 +118,9 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
--Ilib \
--Ilib/CMSIS \
--Ilib/CMSIS/GD/GD32F3x0/Include \
--Ilib/GD32F3x0/Include \
+-I../../../support/device/gd32f3x0/inc \
+-I../../../support/CMSIS/inc \
+-I../../../support/device/gd32f3x0/peripherals/inc \
 -I.
 
 
@@ -143,7 +142,7 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 # LDFLAGS
 #######################################
 # link script
-LDSCRIPT = FLASH.ld
+LDSCRIPT = ../../../support/device/gd32f3x0/gd32f3x0.ld
 
 # libraries
 LIBS = -lc -lm -lnosys 

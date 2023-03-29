@@ -1,45 +1,56 @@
-build/system_gd32f3x0.o: lib/CMSIS/GD/GD32F3x0/Source/system_gd32f3x0.c \
- lib/CMSIS/GD/GD32F3x0/Include/gd32f3x0.h lib/CMSIS/core_cm4.h \
- lib/CMSIS/core_cmInstr.h lib/CMSIS/core_cmFunc.h \
- lib/CMSIS/core_cm4_simd.h \
- lib/CMSIS/GD/GD32F3x0/Include/system_gd32f3x0.h lib/gd32f3x0_libopt.h \
- lib/GD32F3x0/Include/gd32f3x0_adc.h lib/GD32F3x0/Include/gd32f3x0_crc.h \
- lib/GD32F3x0/Include/gd32f3x0_ctc.h lib/GD32F3x0/Include/gd32f3x0_dbg.h \
- lib/GD32F3x0/Include/gd32f3x0_dma.h lib/GD32F3x0/Include/gd32f3x0_exti.h \
- lib/GD32F3x0/Include/gd32f3x0_fmc.h lib/GD32F3x0/Include/gd32f3x0_gpio.h \
- lib/GD32F3x0/Include/gd32f3x0_syscfg.h \
- lib/GD32F3x0/Include/gd32f3x0_i2c.h \
- lib/GD32F3x0/Include/gd32f3x0_fwdgt.h \
- lib/GD32F3x0/Include/gd32f3x0_pmu.h lib/GD32F3x0/Include/gd32f3x0_rcu.h \
- lib/GD32F3x0/Include/gd32f3x0_rtc.h lib/GD32F3x0/Include/gd32f3x0_spi.h \
- lib/GD32F3x0/Include/gd32f3x0_timer.h \
- lib/GD32F3x0/Include/gd32f3x0_usart.h \
- lib/GD32F3x0/Include/gd32f3x0_wwdgt.h \
- lib/GD32F3x0/Include/gd32f3x0_misc.h lib/GD32F3x0/Include/gd32f3x0_tsi.h
-lib/CMSIS/GD/GD32F3x0/Include/gd32f3x0.h:
-lib/CMSIS/core_cm4.h:
-lib/CMSIS/core_cmInstr.h:
-lib/CMSIS/core_cmFunc.h:
-lib/CMSIS/core_cm4_simd.h:
-lib/CMSIS/GD/GD32F3x0/Include/system_gd32f3x0.h:
-lib/gd32f3x0_libopt.h:
-lib/GD32F3x0/Include/gd32f3x0_adc.h:
-lib/GD32F3x0/Include/gd32f3x0_crc.h:
-lib/GD32F3x0/Include/gd32f3x0_ctc.h:
-lib/GD32F3x0/Include/gd32f3x0_dbg.h:
-lib/GD32F3x0/Include/gd32f3x0_dma.h:
-lib/GD32F3x0/Include/gd32f3x0_exti.h:
-lib/GD32F3x0/Include/gd32f3x0_fmc.h:
-lib/GD32F3x0/Include/gd32f3x0_gpio.h:
-lib/GD32F3x0/Include/gd32f3x0_syscfg.h:
-lib/GD32F3x0/Include/gd32f3x0_i2c.h:
-lib/GD32F3x0/Include/gd32f3x0_fwdgt.h:
-lib/GD32F3x0/Include/gd32f3x0_pmu.h:
-lib/GD32F3x0/Include/gd32f3x0_rcu.h:
-lib/GD32F3x0/Include/gd32f3x0_rtc.h:
-lib/GD32F3x0/Include/gd32f3x0_spi.h:
-lib/GD32F3x0/Include/gd32f3x0_timer.h:
-lib/GD32F3x0/Include/gd32f3x0_usart.h:
-lib/GD32F3x0/Include/gd32f3x0_wwdgt.h:
-lib/GD32F3x0/Include/gd32f3x0_misc.h:
-lib/GD32F3x0/Include/gd32f3x0_tsi.h:
+build/system_gd32f3x0.o: \
+ ../../../support/device/gd32f3x0/src/system_gd32f3x0.c \
+ ../../../support/device/gd32f3x0/inc/gd32f3x0.h \
+ ../../../support/CMSIS/inc/core_cm4.h \
+ ../../../support/CMSIS/inc/core_cmInstr.h \
+ ../../../support/CMSIS/inc/core_cmFunc.h \
+ ../../../support/CMSIS/inc/core_cm4_simd.h \
+ ../../../support/device/gd32f3x0/inc/system_gd32f3x0.h \
+ ../../../support/device/gd32f3x0/inc/gd32f3x0_libopt.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_adc.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_crc.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_ctc.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_dbg.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_dma.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_exti.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_fmc.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_gpio.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_syscfg.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_i2c.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_fwdgt.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_pmu.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_rcu.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_rtc.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_spi.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_timer.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_usart.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_wwdgt.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_misc.h \
+ ../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_tsi.h
+../../../support/device/gd32f3x0/inc/gd32f3x0.h:
+../../../support/CMSIS/inc/core_cm4.h:
+../../../support/CMSIS/inc/core_cmInstr.h:
+../../../support/CMSIS/inc/core_cmFunc.h:
+../../../support/CMSIS/inc/core_cm4_simd.h:
+../../../support/device/gd32f3x0/inc/system_gd32f3x0.h:
+../../../support/device/gd32f3x0/inc/gd32f3x0_libopt.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_adc.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_crc.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_ctc.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_dbg.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_dma.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_exti.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_fmc.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_gpio.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_syscfg.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_i2c.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_fwdgt.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_pmu.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_rcu.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_rtc.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_spi.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_timer.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_usart.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_wwdgt.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_misc.h:
+../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_tsi.h:

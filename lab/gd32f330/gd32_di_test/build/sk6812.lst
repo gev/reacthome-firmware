@@ -1,4 +1,4 @@
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
   30:sk6812.c      ****   asm(" nop");
   31:sk6812.c      ****   asm(" nop");
   32:sk6812.c      **** 
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 2
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 2
 
 
   33:sk6812.c      ****   asm(" nop");
@@ -118,7 +118,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
   75:sk6812.c      ****   uint8_t bit;
   39              		.loc 1 75 3 view .LVU2
   76:sk6812.c      ****   for (byte = 0; byte < RGB_NUMBER * 3; byte++) {
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 3
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 3
 
 
   40              		.loc 1 76 3 view .LVU3
@@ -178,7 +178,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
   80              	.LVL3:
   87:sk6812.c      ****         asm(" nop");
   81              		.loc 1 87 9 view .LVU13
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 4
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 4
 
 
   82              		.syntax unified
@@ -238,7 +238,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
   19:sk6812.c      ****   asm(" nop");
  126              		.loc 1 19 3 view .LVU24
  127              	@ 19 "sk6812.c" 1
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 5
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 5
 
 
  128 0034 00BF     		 nop
@@ -298,7 +298,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
  171              	@ 31 "sk6812.c" 1
  172 004a 00BF     		 nop
  173              	@ 0 "" 2
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 6
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 6
 
 
   33:sk6812.c      ****   asm(" nop");
@@ -358,7 +358,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
  217              	@ 0 "" 2
   45:sk6812.c      **** 
  218              		.loc 1 45 3 view .LVU47
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 7
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 7
 
 
  219              	@ 45 "sk6812.c" 1
@@ -418,7 +418,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
  262              		.loc 1 58 3 view .LVU58
  263              	@ 58 "sk6812.c" 1
  264 0078 00BF     		 nop
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 8
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 8
 
 
  265              	@ 0 "" 2
@@ -478,7 +478,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
  308 008e 00BF     		 nop
  309              	@ 0 "" 2
  310              		.thumb
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 9
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 9
 
 
  311              		.syntax unified
@@ -538,7 +538,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
  352              	@ 0 "" 2
   12:sk6812.c      ****   asm(" nop");
  353              		.loc 1 12 3 view .LVU83
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 10
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 10
 
 
  354              	@ 12 "sk6812.c" 1
@@ -598,7 +598,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
  397              		.loc 1 24 3 view .LVU94
  398              	@ 24 "sk6812.c" 1
  399 00c8 00BF     		 nop
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 11
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 11
 
 
  400              	@ 0 "" 2
@@ -658,7 +658,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
  443 00de 00BF     		 nop
  444              	@ 0 "" 2
   37:sk6812.c      ****   asm(" nop");
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 12
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 12
 
 
  445              		.loc 1 37 3 view .LVU106
@@ -718,7 +718,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
   50:sk6812.c      ****   asm(" nop");
  489              		.loc 1 50 3 view .LVU117
  490              	@ 50 "sk6812.c" 1
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 13
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 13
 
 
  491 00f6 00BF     		 nop
@@ -778,7 +778,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
  534              	@ 62 "sk6812.c" 1
  535 010c 00BF     		 nop
  536              	@ 0 "" 2
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 14
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 14
 
 
   63:sk6812.c      **** 
@@ -838,7 +838,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
  580              		.syntax unified
  581              	@ 6 "sk6812.c" 1
  582 0126 00BF     		 nop
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 15
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 15
 
 
  583              	@ 0 "" 2
@@ -898,7 +898,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
  624              		.cfi_endproc
  625              	.LFE118:
  627              		.section	.text.sk6812_set,"ax",%progbits
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 16
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 16
 
 
  628              		.align	1
@@ -958,7 +958,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
  676              	.LVL14:
  677              	.L15:
  678              		.loc 1 99 38 is_stmt 1 discriminator 3 view .LVU168
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 17
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 17
 
 
  679              		.loc 1 99 34 discriminator 3 view .LVU169
@@ -1018,7 +1018,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
  729 000a 1946     		mov	r1, r3
  730 000c E0B2     		uxtb	r0, r4
  731 000e FFF7FEFF 		bl	sk6812_set
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 18
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 18
 
 
  732              	.LVL18:
@@ -1057,24 +1057,24 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 1
  760              	.Letext0:
  761              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
  762              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
- 763              		.file 4 "lib/GD32F3x0/Include/gd32f3x0_dbg.h"
- 764              		.file 5 "lib/GD32F3x0/Include/gd32f3x0_rcu.h"
- 765              		.file 6 "lib/GD32F3x0/Include/gd32f3x0_gpio.h"
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s 			page 19
+ 763              		.file 4 "../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_dbg.h"
+ 764              		.file 5 "../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_rcu.h"
+ 765              		.file 6 "../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_gpio.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s 			page 19
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 sk6812.c
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s:18     .text.sk6812_send_colors:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s:24     .text.sk6812_send_colors:0000000000000000 sk6812_send_colors
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s:622    .text.sk6812_send_colors:000000000000013c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s:628    .text.sk6812_set:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s:634    .text.sk6812_set:0000000000000000 sk6812_set
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s:695    .text.sk6812_set:000000000000002c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s:700    .text.sk6812_initialize:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s:706    .text.sk6812_initialize:0000000000000000 sk6812_initialize
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s:757    .bss.colors:0000000000000000 colors
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc49Wdsq.s:753    .bss.colors:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s:18     .text.sk6812_send_colors:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s:24     .text.sk6812_send_colors:0000000000000000 sk6812_send_colors
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s:622    .text.sk6812_send_colors:000000000000013c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s:628    .text.sk6812_set:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s:634    .text.sk6812_set:0000000000000000 sk6812_set
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s:695    .text.sk6812_set:000000000000002c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s:700    .text.sk6812_initialize:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s:706    .text.sk6812_initialize:0000000000000000 sk6812_initialize
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s:757    .bss.colors:0000000000000000 colors
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc7pCwWU.s:753    .bss.colors:0000000000000000 $d
 
 UNDEFINED SYMBOLS
 gpio_bit_set

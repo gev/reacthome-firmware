@@ -114,8 +114,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000      0x138 build/gd32f3x0_adc.o
  .debug_ranges  0x0000000000000000      0x128 build/gd32f3x0_adc.o
- .debug_line    0x0000000000000000      0xa0f build/gd32f3x0_adc.o
- .debug_str     0x0000000000000000      0x7b1 build/gd32f3x0_adc.o
+ .debug_line    0x0000000000000000      0xa4f build/gd32f3x0_adc.o
+ .debug_str     0x0000000000000000      0x7d8 build/gd32f3x0_adc.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_adc.o
  .debug_frame   0x0000000000000000      0x278 build/gd32f3x0_adc.o
  .ARM.attributes
@@ -124,7 +124,7 @@ Discarded input sections
  .data          0x0000000000000000        0x0 build/gd32f3x0_cec.o
  .bss           0x0000000000000000        0x0 build/gd32f3x0_cec.o
  .debug_line    0x0000000000000000        0x0 build/gd32f3x0_cec.o
- .debug_str     0x0000000000000000       0xf5 build/gd32f3x0_cec.o
+ .debug_str     0x0000000000000000      0x11c build/gd32f3x0_cec.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_cec.o
  .ARM.attributes
                 0x0000000000000000       0x2e build/gd32f3x0_cec.o
@@ -159,8 +159,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0x70 build/gd32f3x0_cmp.o
  .debug_ranges  0x0000000000000000       0x60 build/gd32f3x0_cmp.o
- .debug_line    0x0000000000000000      0x35f build/gd32f3x0_cmp.o
- .debug_str     0x0000000000000000      0x47f build/gd32f3x0_cmp.o
+ .debug_line    0x0000000000000000      0x398 build/gd32f3x0_cmp.o
+ .debug_str     0x0000000000000000      0x4a6 build/gd32f3x0_cmp.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_cmp.o
  .debug_frame   0x0000000000000000       0xcc build/gd32f3x0_cmp.o
  .ARM.attributes
@@ -200,8 +200,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0x80 build/gd32f3x0_crc.o
  .debug_ranges  0x0000000000000000       0x70 build/gd32f3x0_crc.o
- .debug_line    0x0000000000000000      0x369 build/gd32f3x0_crc.o
- .debug_str     0x0000000000000000      0x370 build/gd32f3x0_crc.o
+ .debug_line    0x0000000000000000      0x386 build/gd32f3x0_crc.o
+ .debug_str     0x0000000000000000      0x397 build/gd32f3x0_crc.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_crc.o
  .debug_frame   0x0000000000000000       0xe0 build/gd32f3x0_crc.o
  .ARM.attributes
@@ -257,8 +257,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0xc0 build/gd32f3x0_ctc.o
  .debug_ranges  0x0000000000000000       0xb0 build/gd32f3x0_ctc.o
- .debug_line    0x0000000000000000      0x433 build/gd32f3x0_ctc.o
- .debug_str     0x0000000000000000      0x5c1 build/gd32f3x0_ctc.o
+ .debug_line    0x0000000000000000      0x473 build/gd32f3x0_ctc.o
+ .debug_str     0x0000000000000000      0x5e8 build/gd32f3x0_ctc.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_ctc.o
  .debug_frame   0x0000000000000000      0x168 build/gd32f3x0_ctc.o
  .ARM.attributes
@@ -267,7 +267,7 @@ Discarded input sections
  .data          0x0000000000000000        0x0 build/gd32f3x0_dac.o
  .bss           0x0000000000000000        0x0 build/gd32f3x0_dac.o
  .debug_line    0x0000000000000000        0x0 build/gd32f3x0_dac.o
- .debug_str     0x0000000000000000       0xf5 build/gd32f3x0_dac.o
+ .debug_str     0x0000000000000000      0x11c build/gd32f3x0_dac.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_dac.o
  .ARM.attributes
                 0x0000000000000000       0x2e build/gd32f3x0_dac.o
@@ -292,8 +292,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0x48 build/gd32f3x0_dbg.o
  .debug_ranges  0x0000000000000000       0x38 build/gd32f3x0_dbg.o
- .debug_line    0x0000000000000000      0x1a3 build/gd32f3x0_dbg.o
- .debug_str     0x0000000000000000      0x2d7 build/gd32f3x0_dbg.o
+ .debug_line    0x0000000000000000      0x1dc build/gd32f3x0_dbg.o
+ .debug_str     0x0000000000000000      0x2fe build/gd32f3x0_dbg.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_dbg.o
  .debug_frame   0x0000000000000000       0x70 build/gd32f3x0_dbg.o
  .ARM.attributes
@@ -355,14 +355,14 @@ Discarded input sections
                 0x0000000000000000       0x70 build/gd32f3x0_dma.o
  .text.dma_interrupt_flag_clear
                 0x0000000000000000       0x14 build/gd32f3x0_dma.o
- .debug_info    0x0000000000000000      0x85d build/gd32f3x0_dma.o
- .debug_abbrev  0x0000000000000000      0x1b2 build/gd32f3x0_dma.o
+ .debug_info    0x0000000000000000      0x861 build/gd32f3x0_dma.o
+ .debug_abbrev  0x0000000000000000      0x1b4 build/gd32f3x0_dma.o
  .debug_loc     0x0000000000000000      0x6e1 build/gd32f3x0_dma.o
  .debug_aranges
                 0x0000000000000000       0xf0 build/gd32f3x0_dma.o
  .debug_ranges  0x0000000000000000       0xe0 build/gd32f3x0_dma.o
- .debug_line    0x0000000000000000      0x636 build/gd32f3x0_dma.o
- .debug_str     0x0000000000000000      0x533 build/gd32f3x0_dma.o
+ .debug_line    0x0000000000000000      0x676 build/gd32f3x0_dma.o
+ .debug_str     0x0000000000000000      0x55a build/gd32f3x0_dma.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_dma.o
  .debug_frame   0x0000000000000000      0x1d8 build/gd32f3x0_dma.o
  .ARM.attributes
@@ -400,8 +400,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0x78 build/gd32f3x0_exti.o
  .debug_ranges  0x0000000000000000       0x68 build/gd32f3x0_exti.o
- .debug_line    0x0000000000000000      0x32f build/gd32f3x0_exti.o
- .debug_str     0x0000000000000000      0x423 build/gd32f3x0_exti.o
+ .debug_line    0x0000000000000000      0x36f build/gd32f3x0_exti.o
+ .debug_str     0x0000000000000000      0x44a build/gd32f3x0_exti.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_exti.o
  .debug_frame   0x0000000000000000       0xdc build/gd32f3x0_exti.o
  .ARM.attributes
@@ -478,8 +478,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000      0x118 build/gd32f3x0_fmc.o
  .debug_ranges  0x0000000000000000      0x108 build/gd32f3x0_fmc.o
- .debug_line    0x0000000000000000      0xafd build/gd32f3x0_fmc.o
- .debug_str     0x0000000000000000      0x4d4 build/gd32f3x0_fmc.o
+ .debug_line    0x0000000000000000      0xb3d build/gd32f3x0_fmc.o
+ .debug_str     0x0000000000000000      0x4fb build/gd32f3x0_fmc.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_fmc.o
  .debug_frame   0x0000000000000000      0x2cc build/gd32f3x0_fmc.o
  .ARM.attributes
@@ -511,8 +511,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0x60 build/gd32f3x0_fwdgt.o
  .debug_ranges  0x0000000000000000       0x50 build/gd32f3x0_fwdgt.o
- .debug_line    0x0000000000000000      0x3ce build/gd32f3x0_fwdgt.o
- .debug_str     0x0000000000000000      0x2f0 build/gd32f3x0_fwdgt.o
+ .debug_line    0x0000000000000000      0x3f2 build/gd32f3x0_fwdgt.o
+ .debug_str     0x0000000000000000      0x317 build/gd32f3x0_fwdgt.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_fwdgt.o
  .debug_frame   0x0000000000000000       0xa0 build/gd32f3x0_fwdgt.o
  .ARM.attributes
@@ -611,8 +611,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000      0x110 build/gd32f3x0_i2c.o
  .debug_ranges  0x0000000000000000      0x100 build/gd32f3x0_i2c.o
- .debug_line    0x0000000000000000      0x835 build/gd32f3x0_i2c.o
- .debug_str     0x0000000000000000      0x95b build/gd32f3x0_i2c.o
+ .debug_line    0x0000000000000000      0x875 build/gd32f3x0_i2c.o
+ .debug_str     0x0000000000000000      0x982 build/gd32f3x0_i2c.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_i2c.o
  .debug_frame   0x0000000000000000      0x22c build/gd32f3x0_i2c.o
  .ARM.attributes
@@ -683,8 +683,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0xb8 build/gd32f3x0_pmu.o
  .debug_ranges  0x0000000000000000       0xa8 build/gd32f3x0_pmu.o
- .debug_line    0x0000000000000000      0x57d build/gd32f3x0_pmu.o
- .debug_str     0x0000000000000000      0x5b0 build/gd32f3x0_pmu.o
+ .debug_line    0x0000000000000000      0x5ce build/gd32f3x0_pmu.o
+ .debug_str     0x0000000000000000      0x5d7 build/gd32f3x0_pmu.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_pmu.o
  .debug_frame   0x0000000000000000      0x170 build/gd32f3x0_pmu.o
  .ARM.attributes
@@ -848,8 +848,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000      0x110 build/gd32f3x0_rtc.o
  .debug_ranges  0x0000000000000000      0x100 build/gd32f3x0_rtc.o
- .debug_line    0x0000000000000000      0xc2a build/gd32f3x0_rtc.o
- .debug_str     0x0000000000000000      0x7dd build/gd32f3x0_rtc.o
+ .debug_line    0x0000000000000000      0xc6a build/gd32f3x0_rtc.o
+ .debug_str     0x0000000000000000      0x804 build/gd32f3x0_rtc.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_rtc.o
  .debug_frame   0x0000000000000000      0x25c build/gd32f3x0_rtc.o
  .ARM.attributes
@@ -935,8 +935,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000      0x138 build/gd32f3x0_spi.o
  .debug_ranges  0x0000000000000000      0x128 build/gd32f3x0_spi.o
- .debug_line    0x0000000000000000      0x6c4 build/gd32f3x0_spi.o
- .debug_str     0x0000000000000000      0x6b9 build/gd32f3x0_spi.o
+ .debug_line    0x0000000000000000      0x704 build/gd32f3x0_spi.o
+ .debug_str     0x0000000000000000      0x6e0 build/gd32f3x0_spi.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_spi.o
  .debug_frame   0x0000000000000000      0x258 build/gd32f3x0_spi.o
  .ARM.attributes
@@ -972,8 +972,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0x70 build/gd32f3x0_syscfg.o
  .debug_ranges  0x0000000000000000       0x60 build/gd32f3x0_syscfg.o
- .debug_line    0x0000000000000000      0x2d3 build/gd32f3x0_syscfg.o
- .debug_str     0x0000000000000000      0x485 build/gd32f3x0_syscfg.o
+ .debug_line    0x0000000000000000      0x313 build/gd32f3x0_syscfg.o
+ .debug_str     0x0000000000000000      0x4ac build/gd32f3x0_syscfg.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_syscfg.o
  .debug_frame   0x0000000000000000       0xc8 build/gd32f3x0_syscfg.o
  .ARM.attributes
@@ -1127,14 +1127,14 @@ Discarded input sections
                 0x0000000000000000       0x22 build/gd32f3x0_timer.o
  .text.timer_output_value_selection_config
                 0x0000000000000000       0x22 build/gd32f3x0_timer.o
- .debug_info    0x0000000000000000     0x180c build/gd32f3x0_timer.o
- .debug_abbrev  0x0000000000000000      0x208 build/gd32f3x0_timer.o
+ .debug_info    0x0000000000000000     0x1810 build/gd32f3x0_timer.o
+ .debug_abbrev  0x0000000000000000      0x219 build/gd32f3x0_timer.o
  .debug_loc     0x0000000000000000      0xf07 build/gd32f3x0_timer.o
  .debug_aranges
                 0x0000000000000000      0x260 build/gd32f3x0_timer.o
  .debug_ranges  0x0000000000000000      0x250 build/gd32f3x0_timer.o
- .debug_line    0x0000000000000000     0x1593 build/gd32f3x0_timer.o
- .debug_str     0x0000000000000000      0xef9 build/gd32f3x0_timer.o
+ .debug_line    0x0000000000000000     0x15d3 build/gd32f3x0_timer.o
+ .debug_str     0x0000000000000000      0xf20 build/gd32f3x0_timer.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_timer.o
  .debug_frame   0x0000000000000000      0x4f8 build/gd32f3x0_timer.o
  .ARM.attributes
@@ -1218,8 +1218,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000      0x130 build/gd32f3x0_tsi.o
  .debug_ranges  0x0000000000000000      0x120 build/gd32f3x0_tsi.o
- .debug_line    0x0000000000000000      0x7c0 build/gd32f3x0_tsi.o
- .debug_str     0x0000000000000000      0x6b5 build/gd32f3x0_tsi.o
+ .debug_line    0x0000000000000000      0x800 build/gd32f3x0_tsi.o
+ .debug_str     0x0000000000000000      0x6dc build/gd32f3x0_tsi.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_tsi.o
  .debug_frame   0x0000000000000000      0x26c build/gd32f3x0_tsi.o
  .ARM.attributes
@@ -1373,8 +1373,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000      0x248 build/gd32f3x0_usart.o
  .debug_ranges  0x0000000000000000      0x238 build/gd32f3x0_usart.o
- .debug_line    0x0000000000000000      0xc8c build/gd32f3x0_usart.o
- .debug_str     0x0000000000000000      0xfae build/gd32f3x0_usart.o
+ .debug_line    0x0000000000000000      0xccc build/gd32f3x0_usart.o
+ .debug_str     0x0000000000000000      0xfd5 build/gd32f3x0_usart.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_usart.o
  .debug_frame   0x0000000000000000      0x49c build/gd32f3x0_usart.o
  .ARM.attributes
@@ -1402,8 +1402,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0x50 build/gd32f3x0_wwdgt.o
  .debug_ranges  0x0000000000000000       0x40 build/gd32f3x0_wwdgt.o
- .debug_line    0x0000000000000000      0x1f2 build/gd32f3x0_wwdgt.o
- .debug_str     0x0000000000000000      0x3b9 build/gd32f3x0_wwdgt.o
+ .debug_line    0x0000000000000000      0x232 build/gd32f3x0_wwdgt.o
+ .debug_str     0x0000000000000000      0x3e0 build/gd32f3x0_wwdgt.o
  .comment       0x0000000000000000       0x4a build/gd32f3x0_wwdgt.o
  .debug_frame   0x0000000000000000       0x88 build/gd32f3x0_wwdgt.o
  .ARM.attributes
@@ -1549,7 +1549,7 @@ LOAD /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtn
                 0x0000000008000000                g_pfnVectors
                 0x0000000008000150                . = ALIGN (0x4)
 
-.text           0x0000000008000150      0x718
+.text           0x0000000008000150      0x720
                 0x0000000008000150                . = ALIGN (0x4)
  *(.text)
  .text          0x0000000008000150       0x40 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtbegin.o
@@ -1596,124 +1596,125 @@ LOAD /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtn
  .text.pin_init_input
                 0x00000000080007d2       0x1a build/gpio.o
                 0x00000000080007d2                pin_init_input
- .text.pin_get  0x00000000080007ec       0x14 build/gpio.o
+ .text.pin_get  0x00000000080007ec       0x1a build/gpio.o
                 0x00000000080007ec                pin_get
+ *fill*         0x0000000008000806        0x2 
  .text.Reset_Handler
-                0x0000000008000800       0x4c build/startup_gd32f3x0.o
-                0x0000000008000800                Reset_Handler
+                0x0000000008000808       0x4c build/startup_gd32f3x0.o
+                0x0000000008000808                Reset_Handler
  .text.Default_Handler
-                0x000000000800084c        0x2 build/startup_gd32f3x0.o
-                0x000000000800084c                FMC_IRQHandler
-                0x000000000800084c                DebugMon_Handler
-                0x000000000800084c                LVD_IRQHandler
-                0x000000000800084c                TSI_IRQHandler
-                0x000000000800084c                HardFault_Handler
-                0x000000000800084c                SysTick_Handler
-                0x000000000800084c                TIMER15_IRQHandler
-                0x000000000800084c                PendSV_Handler
-                0x000000000800084c                NMI_Handler
-                0x000000000800084c                USBFS_WKUP_IRQHandler
-                0x000000000800084c                TIMER5_DAC_IRQHandler
-                0x000000000800084c                USBFS_IRQHandler
-                0x000000000800084c                I2C0_EV_IRQHandler
-                0x000000000800084c                I2C2_EV_IRQHandler
-                0x000000000800084c                ADC_CMP_IRQHandler
-                0x000000000800084c                UsageFault_Handler
-                0x000000000800084c                SPI1_IRQHandler
-                0x000000000800084c                DMA_Channel3_4_IRQHandler
-                0x000000000800084c                TIMER14_IRQHandler
-                0x000000000800084c                TIMER16_IRQHandler
-                0x000000000800084c                EXTI2_3_IRQHandler
-                0x000000000800084c                I2C0_ER_IRQHandler
-                0x000000000800084c                RTC_IRQHandler
-                0x000000000800084c                TIMER0_CC_IRQHandler
-                0x000000000800084c                USART0_IRQHandler
-                0x000000000800084c                TIMER1_IRQHandler
-                0x000000000800084c                TIMER13_IRQHandler
-                0x000000000800084c                I2C1_EV_IRQHandler
-                0x000000000800084c                EXTI4_15_IRQHandler
-                0x000000000800084c                Default_Handler
-                0x000000000800084c                CEC_IRQHandler
-                0x000000000800084c                DMA_Channel5_6_IRQHandler
-                0x000000000800084c                TIMER0_BRK_UP_TRG_COM_IRQHandler
-                0x000000000800084c                EXTI0_1_IRQHandler
-                0x000000000800084c                SPI2_IRQHandler
-                0x000000000800084c                MemManage_Handler
-                0x000000000800084c                SVC_Handler
-                0x000000000800084c                DMA_Channel1_2_IRQHandler
-                0x000000000800084c                RCU_IRQHandler
-                0x000000000800084c                SPI0_IRQHandler
-                0x000000000800084c                I2C2_ER_IRQHandler
-                0x000000000800084c                DMA_Channel0_IRQHandler
-                0x000000000800084c                BusFault_Handler
-                0x000000000800084c                USART1_IRQHandler
-                0x000000000800084c                I2C1_ER_IRQHandler
-                0x000000000800084c                TIMER2_IRQHandler
+                0x0000000008000854        0x2 build/startup_gd32f3x0.o
+                0x0000000008000854                FMC_IRQHandler
+                0x0000000008000854                DebugMon_Handler
+                0x0000000008000854                LVD_IRQHandler
+                0x0000000008000854                TSI_IRQHandler
+                0x0000000008000854                HardFault_Handler
+                0x0000000008000854                SysTick_Handler
+                0x0000000008000854                TIMER15_IRQHandler
+                0x0000000008000854                PendSV_Handler
+                0x0000000008000854                NMI_Handler
+                0x0000000008000854                USBFS_WKUP_IRQHandler
+                0x0000000008000854                TIMER5_DAC_IRQHandler
+                0x0000000008000854                USBFS_IRQHandler
+                0x0000000008000854                I2C0_EV_IRQHandler
+                0x0000000008000854                I2C2_EV_IRQHandler
+                0x0000000008000854                ADC_CMP_IRQHandler
+                0x0000000008000854                UsageFault_Handler
+                0x0000000008000854                SPI1_IRQHandler
+                0x0000000008000854                DMA_Channel3_4_IRQHandler
+                0x0000000008000854                TIMER14_IRQHandler
+                0x0000000008000854                TIMER16_IRQHandler
+                0x0000000008000854                EXTI2_3_IRQHandler
+                0x0000000008000854                I2C0_ER_IRQHandler
+                0x0000000008000854                RTC_IRQHandler
+                0x0000000008000854                TIMER0_CC_IRQHandler
+                0x0000000008000854                USART0_IRQHandler
+                0x0000000008000854                TIMER1_IRQHandler
+                0x0000000008000854                TIMER13_IRQHandler
+                0x0000000008000854                I2C1_EV_IRQHandler
+                0x0000000008000854                EXTI4_15_IRQHandler
+                0x0000000008000854                Default_Handler
+                0x0000000008000854                CEC_IRQHandler
+                0x0000000008000854                DMA_Channel5_6_IRQHandler
+                0x0000000008000854                TIMER0_BRK_UP_TRG_COM_IRQHandler
+                0x0000000008000854                EXTI0_1_IRQHandler
+                0x0000000008000854                SPI2_IRQHandler
+                0x0000000008000854                MemManage_Handler
+                0x0000000008000854                SVC_Handler
+                0x0000000008000854                DMA_Channel1_2_IRQHandler
+                0x0000000008000854                RCU_IRQHandler
+                0x0000000008000854                SPI0_IRQHandler
+                0x0000000008000854                I2C2_ER_IRQHandler
+                0x0000000008000854                DMA_Channel0_IRQHandler
+                0x0000000008000854                BusFault_Handler
+                0x0000000008000854                USART1_IRQHandler
+                0x0000000008000854                I2C1_ER_IRQHandler
+                0x0000000008000854                TIMER2_IRQHandler
  *(.glue_7)
- .glue_7        0x000000000800084e        0x0 linker stubs
+ .glue_7        0x0000000008000856        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x000000000800084e        0x0 linker stubs
+ .glue_7t       0x0000000008000856        0x0 linker stubs
  *(.eh_frame)
- *fill*         0x000000000800084e        0x2 
- .eh_frame      0x0000000008000850        0x0 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtbegin.o
+ *fill*         0x0000000008000856        0x2 
+ .eh_frame      0x0000000008000858        0x0 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtbegin.o
  *(.init)
- .init          0x0000000008000850        0x4 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crti.o
-                0x0000000008000850                _init
- .init          0x0000000008000854        0x8 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtn.o
+ .init          0x0000000008000858        0x4 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crti.o
+                0x0000000008000858                _init
+ .init          0x000000000800085c        0x8 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtn.o
  *(.fini)
- .fini          0x000000000800085c        0x4 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crti.o
-                0x000000000800085c                _fini
- .fini          0x0000000008000860        0x8 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtn.o
-                0x0000000008000868                . = ALIGN (0x4)
-                0x0000000008000868                _etext = .
+ .fini          0x0000000008000864        0x4 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crti.o
+                0x0000000008000864                _fini
+ .fini          0x0000000008000868        0x8 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtn.o
+                0x0000000008000870                . = ALIGN (0x4)
+                0x0000000008000870                _etext = .
 
-.vfp11_veneer   0x0000000008000868        0x0
- .vfp11_veneer  0x0000000008000868        0x0 linker stubs
+.vfp11_veneer   0x0000000008000870        0x0
+ .vfp11_veneer  0x0000000008000870        0x0 linker stubs
 
-.v4_bx          0x0000000008000868        0x0
- .v4_bx         0x0000000008000868        0x0 linker stubs
+.v4_bx          0x0000000008000870        0x0
+ .v4_bx         0x0000000008000870        0x0 linker stubs
 
-.iplt           0x0000000008000868        0x0
- .iplt          0x0000000008000868        0x0 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtbegin.o
+.iplt           0x0000000008000870        0x0
+ .iplt          0x0000000008000870        0x0 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtbegin.o
 
-.rel.dyn        0x0000000008000868        0x0
- .rel.iplt      0x0000000008000868        0x0 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtbegin.o
+.rel.dyn        0x0000000008000870        0x0
+ .rel.iplt      0x0000000008000870        0x0 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtbegin.o
 
-.rodata         0x0000000008000868        0x0
-                0x0000000008000868                . = ALIGN (0x4)
+.rodata         0x0000000008000870        0x0
+                0x0000000008000870                . = ALIGN (0x4)
  *(.rodata)
  *(.rodata*)
-                0x0000000008000868                . = ALIGN (0x4)
+                0x0000000008000870                . = ALIGN (0x4)
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
 
-.ARM            0x0000000008000868        0x0
-                0x0000000008000868                __exidx_start = .
+.ARM            0x0000000008000870        0x0
+                0x0000000008000870                __exidx_start = .
  *(.ARM.exidx*)
-                0x0000000008000868                __exidx_end = .
+                0x0000000008000870                __exidx_end = .
 
-.preinit_array  0x0000000008000868        0x0
-                0x0000000008000868                PROVIDE (__preinit_array_start = .)
+.preinit_array  0x0000000008000870        0x0
+                0x0000000008000870                PROVIDE (__preinit_array_start = .)
  *(.preinit_array*)
-                0x0000000008000868                PROVIDE (__preinit_array_end = .)
+                0x0000000008000870                PROVIDE (__preinit_array_end = .)
 
-.init_array     0x0000000008000868        0x4
-                0x0000000008000868                PROVIDE (__init_array_start = .)
+.init_array     0x0000000008000870        0x4
+                0x0000000008000870                PROVIDE (__init_array_start = .)
  *(SORT_BY_NAME(.init_array.*))
  *(.init_array*)
- .init_array    0x0000000008000868        0x4 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtbegin.o
-                0x000000000800086c                PROVIDE (__init_array_end = .)
+ .init_array    0x0000000008000870        0x4 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtbegin.o
+                0x0000000008000874                PROVIDE (__init_array_end = .)
 
-.fini_array     0x000000000800086c        0x4
+.fini_array     0x0000000008000874        0x4
                 [!provide]                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_NAME(.fini_array.*))
  *(.fini_array*)
- .fini_array    0x000000000800086c        0x4 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtbegin.o
+ .fini_array    0x0000000008000874        0x4 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtbegin.o
                 [!provide]                        PROVIDE (__fini_array_end = .)
-                0x0000000008000870                _sidata = LOADADDR (.data)
+                0x0000000008000878                _sidata = LOADADDR (.data)
 
-.data           0x0000000020000000       0x20 load address 0x0000000008000870
+.data           0x0000000020000000       0x20 load address 0x0000000008000878
                 0x0000000020000000                . = ALIGN (0x4)
                 0x0000000020000000                _sdata = .
  *(.data)
@@ -1729,11 +1730,11 @@ LOAD /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtn
                 0x0000000020000020                . = ALIGN (0x4)
                 0x0000000020000020                _edata = .
 
-.igot.plt       0x0000000020000020        0x0 load address 0x0000000008000890
+.igot.plt       0x0000000020000020        0x0 load address 0x0000000008000898
  .igot.plt      0x0000000020000020        0x0 /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtbegin.o
                 0x0000000020000020                . = ALIGN (0x4)
 
-.bss            0x0000000020000020       0x24 load address 0x0000000008000890
+.bss            0x0000000020000020       0x24 load address 0x0000000008000898
                 0x0000000020000020                _sbss = .
                 0x0000000020000020                __bss_start__ = _sbss
  *(.bss)
@@ -1748,7 +1749,7 @@ LOAD /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtn
                 0x0000000020000044                __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x0000000020000044      0x604 load address 0x0000000008000890
+                0x0000000020000044      0x604 load address 0x0000000008000898
                 0x0000000020000048                . = ALIGN (0x8)
  *fill*         0x0000000020000044        0x4 
                 [!provide]                        PROVIDE (end = .)
@@ -1795,15 +1796,15 @@ LOAD /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-
 LOAD /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/nofp/libm.a
 LOAD /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/libgcc.a
 
-.debug_info     0x0000000000000000     0x2dba
+.debug_info     0x0000000000000000     0x2d9a
  .debug_info    0x0000000000000000      0x34c build/system_gd32f3x0.o
  .debug_info    0x000000000000034c      0x6ff build/gd32f3x0_gpio.o
  .debug_info    0x0000000000000a4b      0x60c build/gd32f3x0_misc.o
  .debug_info    0x0000000000001057     0x1083 build/gd32f3x0_rcu.o
  .debug_info    0x00000000000020da      0x4a1 build/main.o
  .debug_info    0x000000000000257b      0x370 build/sk6812.o
- .debug_info    0x00000000000028eb      0x4ad build/gpio.o
- .debug_info    0x0000000000002d98       0x22 build/startup_gd32f3x0.o
+ .debug_info    0x00000000000028eb      0x48d build/gpio.o
+ .debug_info    0x0000000000002d78       0x22 build/startup_gd32f3x0.o
 
 .debug_abbrev   0x0000000000000000      0xb4e
  .debug_abbrev  0x0000000000000000      0x1bb build/system_gd32f3x0.o
@@ -1852,33 +1853,33 @@ LOAD /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/libg
  .debug_ranges  0x0000000000000290       0x40 build/gpio.o
  .debug_ranges  0x00000000000002d0       0x20 build/startup_gd32f3x0.o
 
-.debug_line     0x0000000000000000     0x21ea
- .debug_line    0x0000000000000000      0x622 build/system_gd32f3x0.o
- .debug_line    0x0000000000000622      0x569 build/gd32f3x0_gpio.o
- .debug_line    0x0000000000000b8b      0x260 build/gd32f3x0_misc.o
- .debug_line    0x0000000000000deb      0xd59 build/gd32f3x0_rcu.o
- .debug_line    0x0000000000001b44      0x189 build/main.o
- .debug_line    0x0000000000001ccd      0x2db build/sk6812.o
- .debug_line    0x0000000000001fa8      0x1d3 build/gpio.o
- .debug_line    0x000000000000217b       0x6f build/startup_gd32f3x0.o
+.debug_line     0x0000000000000000     0x2317
+ .debug_line    0x0000000000000000      0x64d build/system_gd32f3x0.o
+ .debug_line    0x000000000000064d      0x5a9 build/gd32f3x0_gpio.o
+ .debug_line    0x0000000000000bf6      0x28e build/gd32f3x0_misc.o
+ .debug_line    0x0000000000000e84      0xd99 build/gd32f3x0_rcu.o
+ .debug_line    0x0000000000001c1d      0x1ac build/main.o
+ .debug_line    0x0000000000001dc9      0x2f7 build/sk6812.o
+ .debug_line    0x00000000000020c0      0x1c3 build/gpio.o
+ .debug_line    0x0000000000002283       0x94 build/startup_gd32f3x0.o
 
-.debug_str      0x0000000000000000     0x14e0
- .debug_str     0x0000000000000000      0x2ef build/system_gd32f3x0.o
-                                        0x356 (size before relaxing)
- .debug_str     0x00000000000002ef      0x2fd build/gd32f3x0_gpio.o
-                                        0x49d (size before relaxing)
- .debug_str     0x00000000000005ec      0x20f build/gd32f3x0_misc.o
-                                        0x3a1 (size before relaxing)
- .debug_str     0x00000000000007fb      0xbbf build/gd32f3x0_rcu.o
-                                        0xf13 (size before relaxing)
- .debug_str     0x00000000000013ba       0x59 build/main.o
-                                        0x337 (size before relaxing)
- .debug_str     0x0000000000001413       0x42 build/sk6812.o
-                                        0x2cf (size before relaxing)
- .debug_str     0x0000000000001455       0x6a build/gpio.o
+.debug_str      0x0000000000000000     0x1564
+ .debug_str     0x0000000000000000      0x301 build/system_gd32f3x0.o
+                                        0x368 (size before relaxing)
+ .debug_str     0x0000000000000301      0x31a build/gd32f3x0_gpio.o
+                                        0x4c4 (size before relaxing)
+ .debug_str     0x000000000000061b      0x22c build/gd32f3x0_misc.o
+                                        0x3c8 (size before relaxing)
+ .debug_str     0x0000000000000847      0xbdc build/gd32f3x0_rcu.o
+                                        0xf3a (size before relaxing)
+ .debug_str     0x0000000000001423       0x59 build/main.o
+                                        0x341 (size before relaxing)
+ .debug_str     0x000000000000147c       0x42 build/sk6812.o
+                                        0x2d9 (size before relaxing)
+ .debug_str     0x00000000000014be       0x60 build/gpio.o
                                         0x353 (size before relaxing)
- .debug_str     0x00000000000014bf       0x21 build/startup_gd32f3x0.o
-                                         0x63 (size before relaxing)
+ .debug_str     0x000000000000151e       0x46 build/startup_gd32f3x0.o
+                                         0x92 (size before relaxing)
 
 .comment        0x0000000000000000       0x49
  .comment       0x0000000000000000       0x49 build/system_gd32f3x0.o

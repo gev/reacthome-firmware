@@ -1,4 +1,4 @@
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 1
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 1
   16:main.c        ****   time_set = (((float)1000000) / ((float)FREQ) / ((float)100 / x));
   41              		.loc 1 16 3 is_stmt 1 view .LVU2
   42              		.loc 1 16 62 is_stmt 0 view .LVU3
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 2
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s 			page 2
 
 
   43 0002 FFF7FEFF 		bl	__aeabi_i2f
@@ -118,7 +118,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 1
   28:main.c        **** pin dim_220v = {GPIOB, GPIO_PIN_2};
   29:main.c        **** pin dim_220v_1 = {GPIOA, GPIO_PIN_6};
   30:main.c        **** 
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 3
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s 			page 3
 
 
   31:main.c        **** void pin_init_out(pin x) {
@@ -178,7 +178,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 1
  138              		@ args = 0, pretend = 0, frame = 8
  139              		@ frame_needed = 0, uses_anonymous_args = 0
  140 0000 00B5     		push	{lr}
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 4
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s 			page 4
 
 
  141              	.LCFI4:
@@ -238,7 +238,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 1
  197              		.global	pin_reset
  198              		.syntax unified
  199              		.thumb
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 5
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s 			page 5
 
 
  200              		.thumb_func
@@ -298,7 +298,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 1
  251              		.loc 1 43 5 discriminator 1 view .LVU28
   42:main.c        ****   while (TIMER_CNT(TIMER1) - start_tick < time)
  252              		.loc 1 42 9 discriminator 1 view .LVU29
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 6
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s 			page 6
 
 
   42:main.c        ****   while (TIMER_CNT(TIMER1) - start_tick < time)
@@ -358,7 +358,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 1
  299 0012 0D4B     		ldr	r3, .L19+4
  300 0014 1888     		ldrh	r0, [r3]
  301 0016 FFF7FEFF 		bl	delay_us
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 7
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s 			page 7
 
 
  302              	.LVL15:
@@ -418,7 +418,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 1
  348              		.syntax unified
  349              		.thumb
  350              		.thumb_func
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 8
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s 			page 8
 
 
  352              	timer_config:
@@ -478,7 +478,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 1
   73:main.c        ****   //   timer_initpara.clockdivision     = TIMER_CKDIV_DIV1;
   74:main.c        ****   timer_init(TIMER1, &timer_initpara);
  390              		.loc 1 74 3 is_stmt 1 view .LVU62
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 9
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s 			page 9
 
 
  391 002c 6946     		mov	r1, sp
@@ -538,7 +538,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 1
  437 0016 1146     		mov	r1, r2
  438 0018 4FF09040 		mov	r0, #1207959552
  439 001c FFF7FEFF 		bl	gpio_mode_set
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 10
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s 			page 10
 
 
  440              	.LVL25:
@@ -598,7 +598,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 1
  479              		@ args = 0, pretend = 0, frame = 0
  480              		@ frame_needed = 0, uses_anonymous_args = 0
  481 0000 08B5     		push	{r3, lr}
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 11
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s 			page 11
 
 
  482              	.LCFI18:
@@ -658,7 +658,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 1
  113:main.c        ****   init_null_detect();
  525              		.loc 1 113 3 view .LVU84
  526 004e FFF7FEFF 		bl	init_null_detect
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 12
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s 			page 12
 
 
  527              	.LVL39:
@@ -718,7 +718,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 1
  565 0002 0220     		movs	r0, #2
  566 0004 FFF7FEFF 		bl	exti_interrupt_flag_get
  567              	.LVL40:
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 13
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s 			page 13
 
 
  568              		.loc 1 130 6 view .LVU91
@@ -778,7 +778,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 1
  611              		.global	x
  612              		.global	dim_220v_1
  613              		.global	dim_220v
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 14
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s 			page 14
 
 
  614              		.global	rede
@@ -838,7 +838,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 1
  688 0004 10000000 		.word	16
  689              		.section	.data.time_pause,"aw"
  690              		.align	2
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 15
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s 			page 15
 
 
  691              		.set	.LANCHOR7,. + 0
@@ -848,66 +848,66 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 1
  697              	.Letext0:
  698              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
  699              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
- 700              		.file 4 "lib/CMSIS/GD/GD32F3x0/Include/gd32f3x0.h"
- 701              		.file 5 "lib/GD32F3x0/Include/gd32f3x0_dbg.h"
- 702              		.file 6 "lib/GD32F3x0/Include/gd32f3x0_exti.h"
- 703              		.file 7 "lib/GD32F3x0/Include/gd32f3x0_rcu.h"
- 704              		.file 8 "lib/GD32F3x0/Include/gd32f3x0_timer.h"
- 705              		.file 9 "lib/GD32F3x0/Include/gd32f3x0_gpio.h"
- 706              		.file 10 "lib/GD32F3x0/Include/gd32f3x0_misc.h"
- 707              		.file 11 "lib/GD32F3x0/Include/gd32f3x0_syscfg.h"
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 16
+ 700              		.file 4 "../../../support/device/gd32f3x0/inc/gd32f3x0.h"
+ 701              		.file 5 "../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_dbg.h"
+ 702              		.file 6 "../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_exti.h"
+ 703              		.file 7 "../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_rcu.h"
+ 704              		.file 8 "../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_timer.h"
+ 705              		.file 9 "../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_gpio.h"
+ 706              		.file 10 "../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_misc.h"
+ 707              		.file 11 "../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_syscfg.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s 			page 16
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 main.c
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:21     .text.fill:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:27     .text.fill:0000000000000000 fill
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:72     .text.fill:000000000000002c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:80     .text.pin_init_out:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:86     .text.pin_init_out:0000000000000000 pin_init_out
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:128    .text.pin_toggle:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:134    .text.pin_toggle:0000000000000000 pin_toggle
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:162    .text.pin_set:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:168    .text.pin_set:0000000000000000 pin_set
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:196    .text.pin_reset:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:202    .text.pin_reset:0000000000000000 pin_reset
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:230    .text.delay_us:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:236    .text.delay_us:0000000000000000 delay_us
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:267    .text.dim_few_sec:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:273    .text.dim_few_sec:0000000000000000 dim_few_sec
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:337    .text.dim_few_sec:0000000000000044 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:346    .text.timer_config:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:352    .text.timer_config:0000000000000000 timer_config
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:409    .text.init_null_detect:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:415    .text.init_null_detect:0000000000000000 init_null_detect
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:468    .text.main:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:474    .text.main:0000000000000000 main
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:536    .text.main:0000000000000054 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:544    .text.EXTI0_1_IRQHandler:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:550    .text.EXTI0_1_IRQHandler:0000000000000000 EXTI0_1_IRQHandler
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:603    .text.EXTI0_1_IRQHandler:000000000000003c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:636    .bss.up_or_down:0000000000000000 up_or_down
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:694    .data.time_pause:0000000000000000 time_pause
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:648    .data.brighlest:0000000000000000 brighlest
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:643    .bss.x:0000000000000000 x
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:670    .data.dim_220v_1:0000000000000000 dim_220v_1
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:662    .data.dim_220v:0000000000000000 dim_220v
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:686    .data.rede:0000000000000000 rede
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:678    .data.dim_4:0000000000000000 dim_4
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:655    .data.dim_1:0000000000000000 dim_1
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:624    .bss.time_reset:0000000000000000 time_reset
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:631    .bss.time_set:0000000000000000 time_set
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:620    .bss.time_reset:0000000000000000 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:627    .bss.time_set:0000000000000000 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:637    .bss.up_or_down:0000000000000000 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:639    .bss.x:0000000000000000 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:651    .data.dim_1:0000000000000000 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:659    .data.dim_220v:0000000000000000 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:666    .data.dim_220v_1:0000000000000000 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:674    .data.dim_4:0000000000000000 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:682    .data.rede:0000000000000000 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s:690    .data.time_pause:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:21     .text.fill:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:27     .text.fill:0000000000000000 fill
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:72     .text.fill:000000000000002c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:80     .text.pin_init_out:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:86     .text.pin_init_out:0000000000000000 pin_init_out
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:128    .text.pin_toggle:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:134    .text.pin_toggle:0000000000000000 pin_toggle
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:162    .text.pin_set:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:168    .text.pin_set:0000000000000000 pin_set
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:196    .text.pin_reset:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:202    .text.pin_reset:0000000000000000 pin_reset
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:230    .text.delay_us:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:236    .text.delay_us:0000000000000000 delay_us
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:267    .text.dim_few_sec:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:273    .text.dim_few_sec:0000000000000000 dim_few_sec
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:337    .text.dim_few_sec:0000000000000044 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:346    .text.timer_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:352    .text.timer_config:0000000000000000 timer_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:409    .text.init_null_detect:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:415    .text.init_null_detect:0000000000000000 init_null_detect
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:468    .text.main:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:474    .text.main:0000000000000000 main
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:536    .text.main:0000000000000054 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:544    .text.EXTI0_1_IRQHandler:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:550    .text.EXTI0_1_IRQHandler:0000000000000000 EXTI0_1_IRQHandler
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:603    .text.EXTI0_1_IRQHandler:000000000000003c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:636    .bss.up_or_down:0000000000000000 up_or_down
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:694    .data.time_pause:0000000000000000 time_pause
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:648    .data.brighlest:0000000000000000 brighlest
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:643    .bss.x:0000000000000000 x
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:670    .data.dim_220v_1:0000000000000000 dim_220v_1
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:662    .data.dim_220v:0000000000000000 dim_220v
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:686    .data.rede:0000000000000000 rede
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:678    .data.dim_4:0000000000000000 dim_4
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:655    .data.dim_1:0000000000000000 dim_1
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:624    .bss.time_reset:0000000000000000 time_reset
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:631    .bss.time_set:0000000000000000 time_set
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:620    .bss.time_reset:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:627    .bss.time_set:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:637    .bss.up_or_down:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:639    .bss.x:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:651    .data.dim_1:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:659    .data.dim_220v:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:666    .data.dim_220v_1:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:674    .data.dim_4:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:682    .data.rede:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s:690    .data.time_pause:0000000000000000 $d
 
 UNDEFINED SYMBOLS
 __aeabi_i2f
@@ -916,7 +916,7 @@ __aeabi_f2uiz
 gpio_mode_set
 gpio_output_options_set
 gpio_bit_toggle
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccABOyRj.s 			page 17
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccih7p5O.s 			page 17
 
 
 gpio_bit_set

@@ -1,4 +1,4 @@
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s 			page 1
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s 			page 1
   43 000a 0446     		mov	r4, r0
   44 000c 0D46     		mov	r5, r1
   45 000e 0B46     		mov	r3, r1
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s 			page 2
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s 			page 2
 
 
   46 0010 0022     		movs	r2, #0
@@ -118,7 +118,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s 			page 1
   97              	.LVL2:
   19:gpio.c        ****   gpio_output_options_set(x.port, GPIO_OTYPE_OD, GPIO_OSPEED_MAX, x.num);
   98              		.loc 1 19 3 view .LVU6
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s 			page 3
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s 			page 3
 
 
   99 0018 2B46     		mov	r3, r5
@@ -178,7 +178,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s 			page 1
  151              		.section	.text.pin_toggle,"ax",%progbits
  152              		.align	1
  153              		.global	pin_toggle
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s 			page 4
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s 			page 4
 
 
  154              		.syntax unified
@@ -238,7 +238,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s 			page 1
  208 000a FFF7FEFF 		bl	gpio_bit_set
  209              	.LVL6:
  210              		.loc 1 27 52 is_stmt 0 view .LVU16
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s 			page 5
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s 			page 5
 
 
  211 000e 03B0     		add	sp, sp, #12
@@ -298,7 +298,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s 			page 1
  267              	.LCFI18:
  268              		.cfi_def_cfa_offset 4
  269              		.cfi_offset 14, -4
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s 			page 6
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s 			page 6
 
 
  270 0002 83B0     		sub	sp, sp, #12
@@ -311,108 +311,110 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s 			page 1
  277 000a FFF7FEFF 		bl	gpio_input_bit_get
  278              	.LVL8:
  279              		.loc 1 29 65 view .LVU23
- 280 000e 03B0     		add	sp, sp, #12
- 281              	.LCFI20:
- 282              		.cfi_def_cfa_offset 4
- 283              		@ sp needed
- 284 0010 5DF804FB 		ldr	pc, [sp], #4
- 285              		.cfi_endproc
- 286              	.LFE122:
- 288              		.global	one_wire
- 289              		.global	rede
- 290              		.global	dim_4
- 291              		.global	dim_1
- 292              		.global	di_4
- 293              		.global	di_3
- 294              		.global	di_2
- 295              		.global	di_1
- 296              		.section	.data.di_1,"aw"
- 297              		.align	2
- 300              	di_1:
- 301 0000 00040048 		.word	1207960576
- 302 0004 10000000 		.word	16
- 303              		.section	.data.di_2,"aw"
- 304              		.align	2
- 307              	di_2:
- 308 0000 00040048 		.word	1207960576
- 309 0004 80000000 		.word	128
- 310              		.section	.data.di_3,"aw"
- 311              		.align	2
- 314              	di_3:
- 315 0000 00040048 		.word	1207960576
- 316 0004 40000000 		.word	64
- 317              		.section	.data.di_4,"aw"
- 318              		.align	2
- 321              	di_4:
- 322 0000 00040048 		.word	1207960576
- 323 0004 20000000 		.word	32
- 324              		.section	.data.dim_1,"aw"
- 325              		.align	2
- 328              	dim_1:
- 329 0000 00000048 		.word	1207959552
- 330 0004 00020000 		.word	512
- 331              		.section	.data.dim_4,"aw"
- 332              		.align	2
- 335              	dim_4:
- 336 0000 00000048 		.word	1207959552
- 337 0004 00100000 		.word	4096
- 338              		.section	.data.one_wire,"aw"
- 339              		.align	2
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s 			page 7
+ 280 000e 0038     		subs	r0, r0, #0
+ 281 0010 18BF     		it	ne
+ 282 0012 0120     		movne	r0, #1
+ 283 0014 03B0     		add	sp, sp, #12
+ 284              	.LCFI20:
+ 285              		.cfi_def_cfa_offset 4
+ 286              		@ sp needed
+ 287 0016 5DF804FB 		ldr	pc, [sp], #4
+ 288              		.cfi_endproc
+ 289              	.LFE122:
+ 291              		.global	one_wire
+ 292              		.global	rede
+ 293              		.global	dim_4
+ 294              		.global	dim_1
+ 295              		.global	di_4
+ 296              		.global	di_3
+ 297              		.global	di_2
+ 298              		.global	di_1
+ 299              		.section	.data.di_1,"aw"
+ 300              		.align	2
+ 303              	di_1:
+ 304 0000 00040048 		.word	1207960576
+ 305 0004 10000000 		.word	16
+ 306              		.section	.data.di_2,"aw"
+ 307              		.align	2
+ 310              	di_2:
+ 311 0000 00040048 		.word	1207960576
+ 312 0004 80000000 		.word	128
+ 313              		.section	.data.di_3,"aw"
+ 314              		.align	2
+ 317              	di_3:
+ 318 0000 00040048 		.word	1207960576
+ 319 0004 40000000 		.word	64
+ 320              		.section	.data.di_4,"aw"
+ 321              		.align	2
+ 324              	di_4:
+ 325 0000 00040048 		.word	1207960576
+ 326 0004 20000000 		.word	32
+ 327              		.section	.data.dim_1,"aw"
+ 328              		.align	2
+ 331              	dim_1:
+ 332 0000 00000048 		.word	1207959552
+ 333 0004 00020000 		.word	512
+ 334              		.section	.data.dim_4,"aw"
+ 335              		.align	2
+ 338              	dim_4:
+ 339 0000 00000048 		.word	1207959552
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s 			page 7
 
 
- 342              	one_wire:
- 343 0000 00000048 		.word	1207959552
- 344 0004 00800000 		.word	32768
- 345              		.section	.data.rede,"aw"
- 346              		.align	2
- 349              	rede:
- 350 0000 00000048 		.word	1207959552
- 351 0004 10000000 		.word	16
- 352              		.text
- 353              	.Letext0:
- 354              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
- 355              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
- 356              		.file 4 "lib/CMSIS/GD/GD32F3x0/Include/gd32f3x0.h"
- 357              		.file 5 "lib/GD32F3x0/Include/gd32f3x0_dbg.h"
- 358              		.file 6 "lib/GD32F3x0/Include/gd32f3x0_rcu.h"
- 359              		.file 7 "lib/GD32F3x0/Include/gd32f3x0_gpio.h"
- 360              		.file 8 "gpio.h"
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s 			page 8
+ 340 0004 00100000 		.word	4096
+ 341              		.section	.data.one_wire,"aw"
+ 342              		.align	2
+ 345              	one_wire:
+ 346 0000 00000048 		.word	1207959552
+ 347 0004 00800000 		.word	32768
+ 348              		.section	.data.rede,"aw"
+ 349              		.align	2
+ 352              	rede:
+ 353 0000 00000048 		.word	1207959552
+ 354 0004 10000000 		.word	16
+ 355              		.text
+ 356              	.Letext0:
+ 357              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
+ 358              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
+ 359              		.file 4 "../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_dbg.h"
+ 360              		.file 5 "../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_rcu.h"
+ 361              		.file 6 "../../../support/device/gd32f3x0/peripherals/inc/gd32f3x0_gpio.h"
+ 362              		.file 7 "gpio.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s 			page 8
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 gpio.c
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:18     .text.pin_init_output:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:24     .text.pin_init_output:0000000000000000 pin_init_output
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:67     .text.pin_init_output_OD:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:73     .text.pin_init_output_OD:0000000000000000 pin_init_output_OD
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:115    .text.pin_init_input:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:121    .text.pin_init_input:0000000000000000 pin_init_input
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:152    .text.pin_toggle:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:158    .text.pin_toggle:0000000000000000 pin_toggle
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:186    .text.pin_set:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:192    .text.pin_set:0000000000000000 pin_set
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:220    .text.pin_reset:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:226    .text.pin_reset:0000000000000000 pin_reset
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:254    .text.pin_get:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:260    .text.pin_get:0000000000000000 pin_get
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:342    .data.one_wire:0000000000000000 one_wire
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:349    .data.rede:0000000000000000 rede
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:335    .data.dim_4:0000000000000000 dim_4
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:328    .data.dim_1:0000000000000000 dim_1
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:321    .data.di_4:0000000000000000 di_4
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:314    .data.di_3:0000000000000000 di_3
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:307    .data.di_2:0000000000000000 di_2
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:300    .data.di_1:0000000000000000 di_1
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:297    .data.di_1:0000000000000000 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:304    .data.di_2:0000000000000000 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:311    .data.di_3:0000000000000000 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:318    .data.di_4:0000000000000000 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:325    .data.dim_1:0000000000000000 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:332    .data.dim_4:0000000000000000 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:339    .data.one_wire:0000000000000000 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccLANaeF.s:346    .data.rede:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:18     .text.pin_init_output:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:24     .text.pin_init_output:0000000000000000 pin_init_output
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:67     .text.pin_init_output_OD:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:73     .text.pin_init_output_OD:0000000000000000 pin_init_output_OD
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:115    .text.pin_init_input:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:121    .text.pin_init_input:0000000000000000 pin_init_input
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:152    .text.pin_toggle:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:158    .text.pin_toggle:0000000000000000 pin_toggle
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:186    .text.pin_set:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:192    .text.pin_set:0000000000000000 pin_set
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:220    .text.pin_reset:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:226    .text.pin_reset:0000000000000000 pin_reset
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:254    .text.pin_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:260    .text.pin_get:0000000000000000 pin_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:345    .data.one_wire:0000000000000000 one_wire
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:352    .data.rede:0000000000000000 rede
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:338    .data.dim_4:0000000000000000 dim_4
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:331    .data.dim_1:0000000000000000 dim_1
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:324    .data.di_4:0000000000000000 di_4
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:317    .data.di_3:0000000000000000 di_3
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:310    .data.di_2:0000000000000000 di_2
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:303    .data.di_1:0000000000000000 di_1
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:300    .data.di_1:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:307    .data.di_2:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:314    .data.di_3:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:321    .data.di_4:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:328    .data.dim_1:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:335    .data.dim_4:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:342    .data.one_wire:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4mKIyP.s:349    .data.rede:0000000000000000 $d
 
 UNDEFINED SYMBOLS
 gpio_mode_set

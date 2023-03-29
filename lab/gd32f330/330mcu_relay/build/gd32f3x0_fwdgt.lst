@@ -1,4 +1,4 @@
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -25,69 +25,69 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
   22              		.thumb_func
   24              	fwdgt_write_enable:
   25              	.LFB116:
-  26              		.file 1 "lib/GD32F3x0/Source/gd32f3x0_fwdgt.c"
-   1:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** /*!
-   2:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \file    gd32f3x0_fwdgt.c
-   3:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \brief   FWDGT driver
-   4:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
-   5:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \version 2017-06-06, V1.0.0, firmware for GD32F3x0
-   6:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \version 2019-06-01, V2.0.0, firmware for GD32F3x0
-   7:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \version 2020-09-30, V2.1.0, firmware for GD32F3x0
-   8:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \version 2022-01-06, V2.2.0, firmware for GD32F3x0
-   9:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** */
-  10:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
-  11:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** /*
-  12:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     Copyright (c) 2022, GigaDevice Semiconductor Inc.
-  13:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
-  14:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     Redistribution and use in source and binary forms, with or without modification,
-  15:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** are permitted provided that the following conditions are met:
-  16:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
-  17:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     1. Redistributions of source code must retain the above copyright notice, this
-  18:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****        list of conditions and the following disclaimer.
-  19:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     2. Redistributions in binary form must reproduce the above copyright notice,
-  20:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****        this list of conditions and the following disclaimer in the documentation
-  21:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****        and/or other materials provided with the distribution.
-  22:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     3. Neither the name of the copyright holder nor the names of its contributors
-  23:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****        may be used to endorse or promote products derived from this software without
-  24:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****        specific prior written permission.
-  25:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
-  26:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  27:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-  28:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-  29:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-  30:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-  31:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-  32:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 2
+  26              		.file 1 "../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c"
+   1:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** /*!
+   2:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \file    gd32f3x0_fwdgt.c
+   3:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \brief   FWDGT driver
+   4:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+   5:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \version 2017-06-06, V1.0.0, firmware for GD32F3x0
+   6:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \version 2019-06-01, V2.0.0, firmware for GD32F3x0
+   7:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \version 2020-09-30, V2.1.0, firmware for GD32F3x0
+   8:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \version 2022-01-06, V2.2.0, firmware for GD32F3x0
+   9:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** */
+  10:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+  11:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** /*
+  12:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     Copyright (c) 2022, GigaDevice Semiconductor Inc.
+  13:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+  14:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     Redistribution and use in source and binary forms, with or without modification,
+  15:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** are permitted provided that the following conditions are met:
+  16:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+  17:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     1. Redistributions of source code must retain the above copyright notice, this
+  18:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****        list of conditions and the following disclaimer.
+  19:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     2. Redistributions in binary form must reproduce the above copyright notice,
+  20:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****        this list of conditions and the following disclaimer in the documentation
+  21:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****        and/or other materials provided with the distribution.
+  22:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     3. Neither the name of the copyright holder nor the names of its contributors
+  23:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****        may be used to endorse or promote products derived from this software without
+  24:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****        specific prior written permission.
+  25:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+  26:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  27:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  28:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  29:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  30:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+  31:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+  32:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s 			page 2
 
 
-  33:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-  34:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
-  35:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** OF SUCH DAMAGE.
-  36:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** */
-  37:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
-  38:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** #include "gd32f3x0_fwdgt.h"
-  39:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
-  40:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** /*!
-  41:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \brief      enable write access to FWDGT_PSC,FWDGT_RLD and FWDGT_WND
-  42:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[in]  none
-  43:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[out] none
-  44:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \retval     none
-  45:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** */
-  46:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** void fwdgt_write_enable(void)
-  47:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** {
+  33:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  34:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+  35:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** OF SUCH DAMAGE.
+  36:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** */
+  37:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+  38:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** #include "gd32f3x0_fwdgt.h"
+  39:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+  40:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** /*!
+  41:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \brief      enable write access to FWDGT_PSC,FWDGT_RLD and FWDGT_WND
+  42:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[in]  none
+  43:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[out] none
+  44:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \retval     none
+  45:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** */
+  46:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** void fwdgt_write_enable(void)
+  47:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** {
   27              		.loc 1 47 1 view -0
   28              		.cfi_startproc
   29              		@ args = 0, pretend = 0, frame = 0
   30              		@ frame_needed = 0, uses_anonymous_args = 0
   31              		@ link register save eliminated.
-  48:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     FWDGT_CTL = FWDGT_WRITEACCESS_ENABLE;
+  48:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     FWDGT_CTL = FWDGT_WRITEACCESS_ENABLE;
   32              		.loc 1 48 5 view .LVU1
   33              		.loc 1 48 15 is_stmt 0 view .LVU2
   34 0000 024B     		ldr	r3, .L2
   35 0002 45F25552 		movw	r2, #21845
   36 0006 1A60     		str	r2, [r3]
-  49:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** }
+  49:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** }
   37              		.loc 1 49 1 view .LVU3
   38 0008 7047     		bx	lr
   39              	.L3:
@@ -104,30 +104,30 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
   51              		.thumb_func
   53              	fwdgt_write_disable:
   54              	.LFB117:
-  50:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
-  51:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** /*!
-  52:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \brief      disable write access to FWDGT_PSC,FWDGT_RLD and FWDGT_WND
-  53:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[in]  none
-  54:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[out] none
-  55:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \retval     none
-  56:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** */
-  57:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** void fwdgt_write_disable(void)
-  58:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** {
+  50:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+  51:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** /*!
+  52:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \brief      disable write access to FWDGT_PSC,FWDGT_RLD and FWDGT_WND
+  53:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[in]  none
+  54:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[out] none
+  55:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \retval     none
+  56:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** */
+  57:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** void fwdgt_write_disable(void)
+  58:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** {
   55              		.loc 1 58 1 is_stmt 1 view -0
   56              		.cfi_startproc
   57              		@ args = 0, pretend = 0, frame = 0
   58              		@ frame_needed = 0, uses_anonymous_args = 0
   59              		@ link register save eliminated.
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 3
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s 			page 3
 
 
-  59:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     FWDGT_CTL = FWDGT_WRITEACCESS_DISABLE;
+  59:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     FWDGT_CTL = FWDGT_WRITEACCESS_DISABLE;
   60              		.loc 1 59 5 view .LVU5
   61              		.loc 1 59 15 is_stmt 0 view .LVU6
   62 0000 014B     		ldr	r3, .L5
   63 0002 0022     		movs	r2, #0
   64 0004 1A60     		str	r2, [r3]
-  60:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** }
+  60:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** }
   65              		.loc 1 60 1 view .LVU7
   66 0006 7047     		bx	lr
   67              	.L6:
@@ -144,27 +144,27 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
   79              		.thumb_func
   81              	fwdgt_enable:
   82              	.LFB118:
-  61:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
-  62:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** /*!
-  63:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \brief      start the free watchdog timer counter
-  64:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[in]  none
-  65:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[out] none
-  66:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \retval     none
-  67:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** */
-  68:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** void fwdgt_enable(void)
-  69:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** {
+  61:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+  62:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** /*!
+  63:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \brief      start the free watchdog timer counter
+  64:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[in]  none
+  65:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[out] none
+  66:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \retval     none
+  67:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** */
+  68:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** void fwdgt_enable(void)
+  69:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** {
   83              		.loc 1 69 1 is_stmt 1 view -0
   84              		.cfi_startproc
   85              		@ args = 0, pretend = 0, frame = 0
   86              		@ frame_needed = 0, uses_anonymous_args = 0
   87              		@ link register save eliminated.
-  70:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     FWDGT_CTL = FWDGT_KEY_ENABLE;
+  70:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     FWDGT_CTL = FWDGT_KEY_ENABLE;
   88              		.loc 1 70 5 view .LVU9
   89              		.loc 1 70 15 is_stmt 0 view .LVU10
   90 0000 024B     		ldr	r3, .L8
   91 0002 4CF6CC42 		movw	r2, #52428
   92 0006 1A60     		str	r2, [r3]
-  71:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** }
+  71:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** }
   93              		.loc 1 71 1 view .LVU11
   94 0008 7047     		bx	lr
   95              	.L9:
@@ -178,57 +178,57 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  104              		.global	fwdgt_prescaler_value_config
  105              		.syntax unified
  106              		.thumb
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 4
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s 			page 4
 
 
  107              		.thumb_func
  109              	fwdgt_prescaler_value_config:
  110              	.LVL0:
  111              	.LFB119:
-  72:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
-  73:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** /*!
-  74:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \brief      configure the free watchdog timer counter prescaler value
-  75:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[in]  prescaler_value: specify prescaler value
-  76:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****                 only one parameter can be selected which is shown as below:
-  77:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV4: FWDGT prescaler set to 4
-  78:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV8: FWDGT prescaler set to 8
-  79:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV16: FWDGT prescaler set to 16
-  80:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV32: FWDGT prescaler set to 32
-  81:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV64: FWDGT prescaler set to 64
-  82:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV128: FWDGT prescaler set to 128
-  83:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV256: FWDGT prescaler set to 256
-  84:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[out] none
-  85:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \retval     ErrStatus: ERROR or SUCCESS
-  86:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** */
-  87:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** ErrStatus fwdgt_prescaler_value_config(uint16_t prescaler_value)
-  88:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** {
+  72:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+  73:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** /*!
+  74:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \brief      configure the free watchdog timer counter prescaler value
+  75:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[in]  prescaler_value: specify prescaler value
+  76:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****                 only one parameter can be selected which is shown as below:
+  77:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV4: FWDGT prescaler set to 4
+  78:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV8: FWDGT prescaler set to 8
+  79:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV16: FWDGT prescaler set to 16
+  80:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV32: FWDGT prescaler set to 32
+  81:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV64: FWDGT prescaler set to 64
+  82:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV128: FWDGT prescaler set to 128
+  83:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV256: FWDGT prescaler set to 256
+  84:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[out] none
+  85:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \retval     ErrStatus: ERROR or SUCCESS
+  86:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** */
+  87:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** ErrStatus fwdgt_prescaler_value_config(uint16_t prescaler_value)
+  88:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** {
  112              		.loc 1 88 1 is_stmt 1 view -0
  113              		.cfi_startproc
  114              		@ args = 0, pretend = 0, frame = 0
  115              		@ frame_needed = 0, uses_anonymous_args = 0
  116              		@ link register save eliminated.
-  89:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     uint32_t timeout = FWDGT_PSC_TIMEOUT;
+  89:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     uint32_t timeout = FWDGT_PSC_TIMEOUT;
  117              		.loc 1 89 5 view .LVU13
-  90:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     uint32_t flag_status = RESET;
+  90:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     uint32_t flag_status = RESET;
  118              		.loc 1 90 5 view .LVU14
-  91:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
-  92:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     /* enable write access to FWDGT_PSC */
-  93:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     FWDGT_CTL = FWDGT_WRITEACCESS_ENABLE;
+  91:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+  92:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     /* enable write access to FWDGT_PSC */
+  93:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     FWDGT_CTL = FWDGT_WRITEACCESS_ENABLE;
  119              		.loc 1 93 5 view .LVU15
  120              		.loc 1 93 15 is_stmt 0 view .LVU16
  121 0000 094B     		ldr	r3, .L15
  122 0002 45F25552 		movw	r2, #21845
  123 0006 1A60     		str	r2, [r3]
-  89:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     uint32_t flag_status = RESET;
+  89:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     uint32_t flag_status = RESET;
  124              		.loc 1 89 14 view .LVU17
  125 0008 084A     		ldr	r2, .L15+4
  126              	.LVL1:
  127              	.L12:
-  94:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
-  95:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     /* wait until the PUD flag to be reset */
-  96:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     do {
+  94:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+  95:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     /* wait until the PUD flag to be reset */
+  96:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     do {
  128              		.loc 1 96 5 is_stmt 1 discriminator 2 view .LVU18
-  97:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****         flag_status = FWDGT_STAT & FWDGT_STAT_PUD;
+  97:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****         flag_status = FWDGT_STAT & FWDGT_STAT_PUD;
  129              		.loc 1 97 9 discriminator 2 view .LVU19
  130              		.loc 1 97 23 is_stmt 0 discriminator 2 view .LVU20
  131 000a 074B     		ldr	r3, .L15
@@ -236,9 +236,9 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  133              		.loc 1 97 21 discriminator 2 view .LVU21
  134 000e 03F00103 		and	r3, r3, #1
  135              	.LVL2:
-  98:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     } while((--timeout > 0U) && ((uint32_t)RESET != flag_status));
+  98:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     } while((--timeout > 0U) && ((uint32_t)RESET != flag_status));
  136              		.loc 1 98 12 is_stmt 1 discriminator 2 view .LVU22
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 5
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s 			page 5
 
 
  137              		.loc 1 98 5 is_stmt 0 discriminator 2 view .LVU23
@@ -250,24 +250,24 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  143 0016 002B     		cmp	r3, #0
  144 0018 F7D1     		bne	.L12
  145              	.L11:
-  99:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 100:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     if((uint32_t)RESET != flag_status) {
+  99:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 100:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     if((uint32_t)RESET != flag_status) {
  146              		.loc 1 100 5 is_stmt 1 view .LVU26
  147              		.loc 1 100 7 is_stmt 0 view .LVU27
  148 001a 1BB9     		cbnz	r3, .L14
- 101:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****         return ERROR;
- 102:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     }
- 103:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 104:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     /* configure FWDGT */
- 105:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     FWDGT_PSC = (uint32_t)prescaler_value;
+ 101:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****         return ERROR;
+ 102:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     }
+ 103:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 104:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     /* configure FWDGT */
+ 105:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     FWDGT_PSC = (uint32_t)prescaler_value;
  149              		.loc 1 105 5 is_stmt 1 view .LVU28
  150              		.loc 1 105 15 is_stmt 0 view .LVU29
  151 001c 024B     		ldr	r3, .L15
  152              	.LVL4:
  153              		.loc 1 105 15 view .LVU30
  154 001e 5860     		str	r0, [r3, #4]
- 106:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 107:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     return SUCCESS;
+ 106:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 107:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     return SUCCESS;
  155              		.loc 1 107 5 is_stmt 1 view .LVU31
  156              		.loc 1 107 12 is_stmt 0 view .LVU32
  157 0020 0120     		movs	r0, #1
@@ -276,11 +276,11 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  160 0022 7047     		bx	lr
  161              	.LVL6:
  162              	.L14:
- 101:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****         return ERROR;
+ 101:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****         return ERROR;
  163              		.loc 1 101 16 view .LVU34
  164 0024 0020     		movs	r0, #0
  165              	.LVL7:
- 108:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** }
+ 108:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** }
  166              		.loc 1 108 1 view .LVU35
  167 0026 7047     		bx	lr
  168              	.L16:
@@ -298,46 +298,46 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  181              		.thumb_func
  183              	fwdgt_reload_value_config:
  184              	.LVL8:
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 6
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s 			page 6
 
 
  185              	.LFB120:
- 109:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 110:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** /*!
- 111:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \brief      configure the free watchdog timer counter reload value
- 112:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[in]  reload_value: specify reload value(0x0000 - 0x0FFF)
- 113:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[out] none
- 114:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \retval     ErrStatus: ERROR or SUCCESS
- 115:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** */
- 116:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** ErrStatus fwdgt_reload_value_config(uint16_t reload_value)
- 117:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** {
+ 109:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 110:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** /*!
+ 111:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \brief      configure the free watchdog timer counter reload value
+ 112:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[in]  reload_value: specify reload value(0x0000 - 0x0FFF)
+ 113:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[out] none
+ 114:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \retval     ErrStatus: ERROR or SUCCESS
+ 115:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** */
+ 116:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** ErrStatus fwdgt_reload_value_config(uint16_t reload_value)
+ 117:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** {
  186              		.loc 1 117 1 is_stmt 1 view -0
  187              		.cfi_startproc
  188              		@ args = 0, pretend = 0, frame = 0
  189              		@ frame_needed = 0, uses_anonymous_args = 0
  190              		@ link register save eliminated.
- 118:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     uint32_t timeout = FWDGT_RLD_TIMEOUT;
+ 118:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     uint32_t timeout = FWDGT_RLD_TIMEOUT;
  191              		.loc 1 118 5 view .LVU37
- 119:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     uint32_t flag_status = RESET;
+ 119:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     uint32_t flag_status = RESET;
  192              		.loc 1 119 5 view .LVU38
- 120:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 121:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     /* enable write access to FWDGT_RLD */
- 122:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     FWDGT_CTL = FWDGT_WRITEACCESS_ENABLE;
+ 120:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 121:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     /* enable write access to FWDGT_RLD */
+ 122:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     FWDGT_CTL = FWDGT_WRITEACCESS_ENABLE;
  193              		.loc 1 122 5 view .LVU39
  194              		.loc 1 122 15 is_stmt 0 view .LVU40
  195 0000 0A4B     		ldr	r3, .L22
  196 0002 45F25552 		movw	r2, #21845
  197 0006 1A60     		str	r2, [r3]
- 118:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     uint32_t flag_status = RESET;
+ 118:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     uint32_t flag_status = RESET;
  198              		.loc 1 118 14 view .LVU41
  199 0008 094A     		ldr	r2, .L22+4
  200              	.LVL9:
  201              	.L19:
- 123:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 124:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     /* wait until the RUD flag to be reset */
- 125:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     do {
+ 123:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 124:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     /* wait until the RUD flag to be reset */
+ 125:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     do {
  202              		.loc 1 125 5 is_stmt 1 discriminator 2 view .LVU42
- 126:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****         flag_status = FWDGT_STAT & FWDGT_STAT_RUD;
+ 126:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****         flag_status = FWDGT_STAT & FWDGT_STAT_RUD;
  203              		.loc 1 126 9 discriminator 2 view .LVU43
  204              		.loc 1 126 23 is_stmt 0 discriminator 2 view .LVU44
  205 000a 084B     		ldr	r3, .L22
@@ -345,7 +345,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  207              		.loc 1 126 21 discriminator 2 view .LVU45
  208 000e 03F00203 		and	r3, r3, #2
  209              	.LVL10:
- 127:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     } while((--timeout > 0U) && ((uint32_t)RESET != flag_status));
+ 127:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     } while((--timeout > 0U) && ((uint32_t)RESET != flag_status));
  210              		.loc 1 127 12 is_stmt 1 discriminator 2 view .LVU46
  211              		.loc 1 127 5 is_stmt 0 discriminator 2 view .LVU47
  212 0012 013A     		subs	r2, r2, #1
@@ -356,18 +356,18 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  217 0016 002B     		cmp	r3, #0
  218 0018 F7D1     		bne	.L19
  219              	.L18:
- 128:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 129:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     if((uint32_t)RESET != flag_status) {
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 7
+ 128:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 129:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     if((uint32_t)RESET != flag_status) {
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s 			page 7
 
 
  220              		.loc 1 129 5 is_stmt 1 view .LVU50
  221              		.loc 1 129 7 is_stmt 0 view .LVU51
  222 001a 2BB9     		cbnz	r3, .L21
- 130:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****         return ERROR;
- 131:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     }
- 132:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 133:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     FWDGT_RLD = RLD_RLD(reload_value);
+ 130:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****         return ERROR;
+ 131:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     }
+ 132:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 133:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     FWDGT_RLD = RLD_RLD(reload_value);
  223              		.loc 1 133 5 is_stmt 1 view .LVU52
  224              		.loc 1 133 17 is_stmt 0 view .LVU53
  225 001c C0F30B00 		ubfx	r0, r0, #0, #12
@@ -377,19 +377,19 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  229              	.LVL13:
  230              		.loc 1 133 15 view .LVU55
  231 0022 9860     		str	r0, [r3, #8]
- 134:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 135:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     return SUCCESS;
+ 134:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 135:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     return SUCCESS;
  232              		.loc 1 135 5 is_stmt 1 view .LVU56
  233              		.loc 1 135 12 is_stmt 0 view .LVU57
  234 0024 0120     		movs	r0, #1
  235 0026 7047     		bx	lr
  236              	.LVL14:
  237              	.L21:
- 130:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****         return ERROR;
+ 130:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****         return ERROR;
  238              		.loc 1 130 16 view .LVU58
  239 0028 0020     		movs	r0, #0
  240              	.LVL15:
- 136:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** }
+ 136:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** }
  241              		.loc 1 136 1 view .LVU59
  242 002a 7047     		bx	lr
  243              	.L23:
@@ -408,45 +408,45 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  258              	fwdgt_window_value_config:
  259              	.LVL16:
  260              	.LFB121:
- 137:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 138:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** /*!
- 139:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \brief      configure the free watchdog timer counter window value
- 140:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[in]  window_value: specify window value(0x0000 - 0x0FFF)
- 141:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[out] none
- 142:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \retval     ErrStatus: ERROR or SUCCESS
- 143:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** */
- 144:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** ErrStatus fwdgt_window_value_config(uint16_t window_value)
- 145:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** {
+ 137:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 138:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** /*!
+ 139:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \brief      configure the free watchdog timer counter window value
+ 140:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[in]  window_value: specify window value(0x0000 - 0x0FFF)
+ 141:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[out] none
+ 142:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \retval     ErrStatus: ERROR or SUCCESS
+ 143:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** */
+ 144:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** ErrStatus fwdgt_window_value_config(uint16_t window_value)
+ 145:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** {
  261              		.loc 1 145 1 is_stmt 1 view -0
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 8
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s 			page 8
 
 
  262              		.cfi_startproc
  263              		@ args = 0, pretend = 0, frame = 0
  264              		@ frame_needed = 0, uses_anonymous_args = 0
  265              		@ link register save eliminated.
- 146:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     uint32_t time_index = FWDGT_WND_TIMEOUT;
+ 146:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     uint32_t time_index = FWDGT_WND_TIMEOUT;
  266              		.loc 1 146 5 view .LVU61
- 147:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     uint32_t flag_status = RESET;
+ 147:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     uint32_t flag_status = RESET;
  267              		.loc 1 147 5 view .LVU62
- 148:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 149:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     /* enable write access to FWDGT_WND */
- 150:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     FWDGT_CTL = FWDGT_WRITEACCESS_ENABLE;
+ 148:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 149:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     /* enable write access to FWDGT_WND */
+ 150:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     FWDGT_CTL = FWDGT_WRITEACCESS_ENABLE;
  268              		.loc 1 150 5 view .LVU63
  269              		.loc 1 150 15 is_stmt 0 view .LVU64
  270 0000 0A4B     		ldr	r3, .L29
  271 0002 45F25552 		movw	r2, #21845
  272 0006 1A60     		str	r2, [r3]
- 146:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     uint32_t flag_status = RESET;
+ 146:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     uint32_t flag_status = RESET;
  273              		.loc 1 146 14 view .LVU65
  274 0008 094A     		ldr	r2, .L29+4
  275              	.LVL17:
  276              	.L26:
- 151:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 152:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     /* wait until the WUD flag to be reset */
- 153:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     do {
+ 151:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 152:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     /* wait until the WUD flag to be reset */
+ 153:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     do {
  277              		.loc 1 153 5 is_stmt 1 discriminator 2 view .LVU66
- 154:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****         flag_status = FWDGT_STAT & FWDGT_STAT_WUD;
+ 154:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****         flag_status = FWDGT_STAT & FWDGT_STAT_WUD;
  278              		.loc 1 154 9 discriminator 2 view .LVU67
  279              		.loc 1 154 23 is_stmt 0 discriminator 2 view .LVU68
  280 000a 084B     		ldr	r3, .L29
@@ -454,7 +454,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  282              		.loc 1 154 21 discriminator 2 view .LVU69
  283 000e 03F00403 		and	r3, r3, #4
  284              	.LVL18:
- 155:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     } while((--time_index > 0U) && (RESET != flag_status));
+ 155:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     } while((--time_index > 0U) && (RESET != flag_status));
  285              		.loc 1 155 12 is_stmt 1 discriminator 2 view .LVU70
  286              		.loc 1 155 5 is_stmt 0 discriminator 2 view .LVU71
  287 0012 013A     		subs	r2, r2, #1
@@ -465,20 +465,20 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  292 0016 002B     		cmp	r3, #0
  293 0018 F7D1     		bne	.L26
  294              	.L25:
- 156:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 157:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     if(RESET != flag_status) {
+ 156:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 157:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     if(RESET != flag_status) {
  295              		.loc 1 157 5 is_stmt 1 view .LVU74
  296              		.loc 1 157 7 is_stmt 0 view .LVU75
  297 001a 2BB9     		cbnz	r3, .L28
- 158:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****         return ERROR;
- 159:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     }
- 160:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 161:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     FWDGT_WND = WND_WND(window_value);
+ 158:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****         return ERROR;
+ 159:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     }
+ 160:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 161:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     FWDGT_WND = WND_WND(window_value);
  298              		.loc 1 161 5 is_stmt 1 view .LVU76
  299              		.loc 1 161 17 is_stmt 0 view .LVU77
  300 001c C0F30B00 		ubfx	r0, r0, #0, #12
  301              	.LVL20:
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 9
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s 			page 9
 
 
  302              		.loc 1 161 15 view .LVU78
@@ -486,19 +486,19 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  304              	.LVL21:
  305              		.loc 1 161 15 view .LVU79
  306 0022 1861     		str	r0, [r3, #16]
- 162:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 163:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     return SUCCESS;
+ 162:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 163:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     return SUCCESS;
  307              		.loc 1 163 5 is_stmt 1 view .LVU80
  308              		.loc 1 163 12 is_stmt 0 view .LVU81
  309 0024 0120     		movs	r0, #1
  310 0026 7047     		bx	lr
  311              	.LVL22:
  312              	.L28:
- 158:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****         return ERROR;
+ 158:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****         return ERROR;
  313              		.loc 1 158 16 view .LVU82
  314 0028 0020     		movs	r0, #0
  315              	.LVL23:
- 164:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** }
+ 164:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** }
  316              		.loc 1 164 1 view .LVU83
  317 002a 7047     		bx	lr
  318              	.L30:
@@ -516,29 +516,29 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  331              		.thumb_func
  333              	fwdgt_counter_reload:
  334              	.LFB122:
- 165:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 166:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** /*!
- 167:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \brief      reload the counter of FWDGT
- 168:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[in]  none
- 169:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[out] none
- 170:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \retval     none
- 171:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** */
- 172:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** void fwdgt_counter_reload(void)
- 173:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** {
+ 165:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 166:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** /*!
+ 167:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \brief      reload the counter of FWDGT
+ 168:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[in]  none
+ 169:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[out] none
+ 170:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \retval     none
+ 171:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** */
+ 172:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** void fwdgt_counter_reload(void)
+ 173:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** {
  335              		.loc 1 173 1 is_stmt 1 view -0
  336              		.cfi_startproc
  337              		@ args = 0, pretend = 0, frame = 0
  338              		@ frame_needed = 0, uses_anonymous_args = 0
  339              		@ link register save eliminated.
- 174:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     FWDGT_CTL = FWDGT_KEY_RELOAD;
+ 174:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     FWDGT_CTL = FWDGT_KEY_RELOAD;
  340              		.loc 1 174 5 view .LVU85
  341              		.loc 1 174 15 is_stmt 0 view .LVU86
  342 0000 024B     		ldr	r3, .L32
  343 0002 4AF6AA22 		movw	r2, #43690
  344 0006 1A60     		str	r2, [r3]
- 175:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** }
+ 175:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** }
  345              		.loc 1 175 1 view .LVU87
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 10
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s 			page 10
 
 
  346 0008 7047     		bx	lr
@@ -557,54 +557,54 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  361              	fwdgt_config:
  362              	.LVL24:
  363              	.LFB123:
- 176:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 177:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** /*!
- 178:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \brief      configure counter reload value, and prescaler divider value
- 179:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[in]  reload_value: specify reload value(0x0000 - 0x0FFF)
- 180:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[in]  prescaler_div: FWDGT prescaler value
- 181:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****                 only one parameter can be selected which is shown as below:
- 182:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV4: FWDGT prescaler set to 4
- 183:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV8: FWDGT prescaler set to 8
- 184:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV16: FWDGT prescaler set to 16
- 185:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV32: FWDGT prescaler set to 32
- 186:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV64: FWDGT prescaler set to 64
- 187:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV128: FWDGT prescaler set to 128
- 188:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV256: FWDGT prescaler set to 256
- 189:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[out] none
- 190:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \retval     ErrStatus: ERROR or SUCCESS
- 191:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** */
- 192:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** ErrStatus fwdgt_config(uint16_t reload_value, uint8_t prescaler_div)
- 193:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** {
+ 176:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 177:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** /*!
+ 178:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \brief      configure counter reload value, and prescaler divider value
+ 179:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[in]  reload_value: specify reload value(0x0000 - 0x0FFF)
+ 180:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[in]  prescaler_div: FWDGT prescaler value
+ 181:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****                 only one parameter can be selected which is shown as below:
+ 182:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV4: FWDGT prescaler set to 4
+ 183:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV8: FWDGT prescaler set to 8
+ 184:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV16: FWDGT prescaler set to 16
+ 185:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV32: FWDGT prescaler set to 32
+ 186:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV64: FWDGT prescaler set to 64
+ 187:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV128: FWDGT prescaler set to 128
+ 188:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****       \arg        FWDGT_PSC_DIV256: FWDGT prescaler set to 256
+ 189:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[out] none
+ 190:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \retval     ErrStatus: ERROR or SUCCESS
+ 191:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** */
+ 192:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** ErrStatus fwdgt_config(uint16_t reload_value, uint8_t prescaler_div)
+ 193:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** {
  364              		.loc 1 193 1 is_stmt 1 view -0
  365              		.cfi_startproc
  366              		@ args = 0, pretend = 0, frame = 0
  367              		@ frame_needed = 0, uses_anonymous_args = 0
  368              		@ link register save eliminated.
- 194:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     uint32_t timeout = FWDGT_PSC_TIMEOUT;
+ 194:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     uint32_t timeout = FWDGT_PSC_TIMEOUT;
  369              		.loc 1 194 5 view .LVU89
- 195:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     uint32_t flag_status = RESET;
+ 195:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     uint32_t flag_status = RESET;
  370              		.loc 1 195 5 view .LVU90
- 196:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 197:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     /* enable write access to FWDGT_PSC,and FWDGT_RLD */
- 198:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     FWDGT_CTL = FWDGT_WRITEACCESS_ENABLE;
+ 196:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 197:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     /* enable write access to FWDGT_PSC,and FWDGT_RLD */
+ 198:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     FWDGT_CTL = FWDGT_WRITEACCESS_ENABLE;
  371              		.loc 1 198 5 view .LVU91
  372              		.loc 1 198 15 is_stmt 0 view .LVU92
  373 0000 134A     		ldr	r2, .L42
  374 0002 45F25553 		movw	r3, #21845
  375 0006 1360     		str	r3, [r2]
- 194:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     uint32_t flag_status = RESET;
+ 194:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     uint32_t flag_status = RESET;
  376              		.loc 1 194 14 view .LVU93
  377 0008 124A     		ldr	r2, .L42+4
  378              	.LVL25:
  379              	.L36:
- 199:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 11
+ 199:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s 			page 11
 
 
- 200:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     /* wait until the PUD flag to be reset */
- 201:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     do {
+ 200:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     /* wait until the PUD flag to be reset */
+ 201:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     do {
  380              		.loc 1 201 5 is_stmt 1 discriminator 2 view .LVU94
- 202:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****         flag_status = FWDGT_STAT & FWDGT_STAT_PUD;
+ 202:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****         flag_status = FWDGT_STAT & FWDGT_STAT_PUD;
  381              		.loc 1 202 9 discriminator 2 view .LVU95
  382              		.loc 1 202 23 is_stmt 0 discriminator 2 view .LVU96
  383 000a 114B     		ldr	r3, .L42
@@ -612,7 +612,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  385              		.loc 1 202 21 discriminator 2 view .LVU97
  386 000e 03F00103 		and	r3, r3, #1
  387              	.LVL26:
- 203:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     } while((--timeout > 0U) && (RESET != flag_status));
+ 203:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     } while((--timeout > 0U) && (RESET != flag_status));
  388              		.loc 1 203 12 is_stmt 1 discriminator 2 view .LVU98
  389              		.loc 1 203 5 is_stmt 0 discriminator 2 view .LVU99
  390 0012 013A     		subs	r2, r2, #1
@@ -623,34 +623,34 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  395 0016 002B     		cmp	r3, #0
  396 0018 F7D1     		bne	.L36
  397              	.L35:
- 204:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 205:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     if(RESET != flag_status) {
+ 204:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 205:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     if(RESET != flag_status) {
  398              		.loc 1 205 5 is_stmt 1 view .LVU102
  399              		.loc 1 205 7 is_stmt 0 view .LVU103
  400 001a A3B9     		cbnz	r3, .L40
- 206:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****         return ERROR;
- 207:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     }
- 208:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 209:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     /* configure FWDGT */
- 210:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     FWDGT_PSC = (uint32_t)prescaler_div;
+ 206:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****         return ERROR;
+ 207:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     }
+ 208:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 209:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     /* configure FWDGT */
+ 210:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     FWDGT_PSC = (uint32_t)prescaler_div;
  401              		.loc 1 210 5 is_stmt 1 view .LVU104
  402              		.loc 1 210 15 is_stmt 0 view .LVU105
  403 001c 0C4B     		ldr	r3, .L42
  404              	.LVL28:
  405              		.loc 1 210 15 view .LVU106
  406 001e 5960     		str	r1, [r3, #4]
- 211:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 212:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     timeout = FWDGT_RLD_TIMEOUT;
+ 211:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 212:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     timeout = FWDGT_RLD_TIMEOUT;
  407              		.loc 1 212 5 is_stmt 1 view .LVU107
  408              	.LVL29:
  409              		.loc 1 212 13 is_stmt 0 view .LVU108
  410 0020 0C4A     		ldr	r2, .L42+4
  411              	.LVL30:
  412              	.L39:
- 213:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     /* wait until the RUD flag to be reset */
- 214:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     do {
+ 213:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     /* wait until the RUD flag to be reset */
+ 214:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     do {
  413              		.loc 1 214 5 is_stmt 1 discriminator 2 view .LVU109
- 215:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****         flag_status = FWDGT_STAT & FWDGT_STAT_RUD;
+ 215:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****         flag_status = FWDGT_STAT & FWDGT_STAT_RUD;
  414              		.loc 1 215 9 discriminator 2 view .LVU110
  415              		.loc 1 215 23 is_stmt 0 discriminator 2 view .LVU111
  416 0022 0B4B     		ldr	r3, .L42
@@ -658,10 +658,10 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  418              		.loc 1 215 21 discriminator 2 view .LVU112
  419 0026 03F00203 		and	r3, r3, #2
  420              	.LVL31:
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 12
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s 			page 12
 
 
- 216:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     } while((--timeout > 0U) && (RESET != flag_status));
+ 216:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     } while((--timeout > 0U) && (RESET != flag_status));
  421              		.loc 1 216 12 is_stmt 1 discriminator 2 view .LVU113
  422              		.loc 1 216 5 is_stmt 0 discriminator 2 view .LVU114
  423 002a 013A     		subs	r2, r2, #1
@@ -672,15 +672,15 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  428 002e 002B     		cmp	r3, #0
  429 0030 F7D1     		bne	.L39
  430              	.L38:
- 217:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 218:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     if(RESET != flag_status) {
+ 217:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 218:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     if(RESET != flag_status) {
  431              		.loc 1 218 5 is_stmt 1 view .LVU117
  432              		.loc 1 218 7 is_stmt 0 view .LVU118
  433 0032 53B9     		cbnz	r3, .L41
- 219:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****         return ERROR;
- 220:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     }
- 221:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 222:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     FWDGT_RLD = RLD_RLD(reload_value);
+ 219:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****         return ERROR;
+ 220:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     }
+ 221:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 222:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     FWDGT_RLD = RLD_RLD(reload_value);
  434              		.loc 1 222 5 is_stmt 1 view .LVU119
  435              		.loc 1 222 17 is_stmt 0 view .LVU120
  436 0034 C0F30B00 		ubfx	r0, r0, #0, #12
@@ -690,40 +690,40 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  440              	.LVL34:
  441              		.loc 1 222 15 view .LVU122
  442 003a 9060     		str	r0, [r2, #8]
- 223:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 224:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     /* reload the counter */
- 225:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     FWDGT_CTL = FWDGT_KEY_RELOAD;
+ 223:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 224:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     /* reload the counter */
+ 225:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     FWDGT_CTL = FWDGT_KEY_RELOAD;
  443              		.loc 1 225 5 is_stmt 1 view .LVU123
  444              		.loc 1 225 15 is_stmt 0 view .LVU124
  445 003c 4AF6AA23 		movw	r3, #43690
  446              	.LVL35:
  447              		.loc 1 225 15 view .LVU125
  448 0040 1360     		str	r3, [r2]
- 226:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 227:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     return SUCCESS;
+ 226:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 227:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     return SUCCESS;
  449              		.loc 1 227 5 is_stmt 1 view .LVU126
  450              		.loc 1 227 12 is_stmt 0 view .LVU127
  451 0042 0120     		movs	r0, #1
  452 0044 7047     		bx	lr
  453              	.LVL36:
  454              	.L40:
- 206:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     }
+ 206:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     }
  455              		.loc 1 206 16 view .LVU128
  456 0046 0020     		movs	r0, #0
  457              	.LVL37:
- 206:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     }
+ 206:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     }
  458              		.loc 1 206 16 view .LVU129
  459 0048 7047     		bx	lr
  460              	.LVL38:
  461              	.L41:
- 219:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     }
+ 219:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     }
  462              		.loc 1 219 16 view .LVU130
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 13
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s 			page 13
 
 
  463 004a 0020     		movs	r0, #0
  464              	.LVL39:
- 228:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** }
+ 228:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** }
  465              		.loc 1 228 1 view .LVU131
  466 004c 7047     		bx	lr
  467              	.L43:
@@ -742,25 +742,25 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  482              	fwdgt_flag_get:
  483              	.LVL40:
  484              	.LFB124:
- 229:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** 
- 230:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** /*!
- 231:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \brief      get flag state of FWDGT
- 232:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[in]  flag: flag to get
- 233:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****                 only one parameter can be selected which is shown as below:
- 234:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****       \arg        FWDGT_FLAG_PUD: a write operation to FWDGT_PSC register is on going
- 235:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****       \arg        FWDGT_FLAG_RUD: a write operation to FWDGT_RLD register is on going
- 236:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****       \arg        FWDGT_FLAG_WUD: a write operation to FWDGT_WND register is on going
- 237:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \param[out] none
- 238:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     \retval     FlagStatus: SET or RESET
- 239:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** */
- 240:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** FlagStatus fwdgt_flag_get(uint16_t flag)
- 241:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** {
+ 229:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** 
+ 230:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** /*!
+ 231:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \brief      get flag state of FWDGT
+ 232:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[in]  flag: flag to get
+ 233:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****                 only one parameter can be selected which is shown as below:
+ 234:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****       \arg        FWDGT_FLAG_PUD: a write operation to FWDGT_PSC register is on going
+ 235:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****       \arg        FWDGT_FLAG_RUD: a write operation to FWDGT_RLD register is on going
+ 236:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****       \arg        FWDGT_FLAG_WUD: a write operation to FWDGT_WND register is on going
+ 237:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \param[out] none
+ 238:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     \retval     FlagStatus: SET or RESET
+ 239:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** */
+ 240:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** FlagStatus fwdgt_flag_get(uint16_t flag)
+ 241:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** {
  485              		.loc 1 241 1 is_stmt 1 view -0
  486              		.cfi_startproc
  487              		@ args = 0, pretend = 0, frame = 0
  488              		@ frame_needed = 0, uses_anonymous_args = 0
  489              		@ link register save eliminated.
- 242:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     if(FWDGT_STAT & flag) {
+ 242:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     if(FWDGT_STAT & flag) {
  490              		.loc 1 242 5 view .LVU133
  491              		.loc 1 242 8 is_stmt 0 view .LVU134
  492 0000 034B     		ldr	r3, .L47
@@ -768,9 +768,9 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  494              		.loc 1 242 7 view .LVU135
  495 0004 1842     		tst	r0, r3
  496 0006 01D1     		bne	.L46
- 243:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****         return SET;
- 244:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     }
- 245:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****     return RESET;
+ 243:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****         return SET;
+ 244:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     }
+ 245:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****     return RESET;
  497              		.loc 1 245 12 view .LVU136
  498 0008 0020     		movs	r0, #0
  499              	.LVL41:
@@ -778,14 +778,14 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  501 000a 7047     		bx	lr
  502              	.LVL42:
  503              	.L46:
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 14
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s 			page 14
 
 
- 243:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c ****         return SET;
+ 243:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c ****         return SET;
  504              		.loc 1 243 16 view .LVU138
  505 000c 0120     		movs	r0, #1
  506              	.LVL43:
- 246:lib/GD32F3x0/Source/gd32f3x0_fwdgt.c **** }
+ 246:../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c **** }
  507              		.loc 1 246 1 view .LVU139
  508 000e 7047     		bx	lr
  509              	.L48:
@@ -798,38 +798,38 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 1
  517              	.Letext0:
  518              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
  519              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
- 520              		.file 4 "lib/CMSIS/GD/GD32F3x0/Include/gd32f3x0.h"
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s 			page 15
+ 520              		.file 4 "../../../support/device/gd32f3x0/inc/gd32f3x0.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s 			page 15
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 gd32f3x0_fwdgt.c
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:18     .text.fwdgt_write_enable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:24     .text.fwdgt_write_enable:0000000000000000 fwdgt_write_enable
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:42     .text.fwdgt_write_enable:000000000000000c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:47     .text.fwdgt_write_disable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:53     .text.fwdgt_write_disable:0000000000000000 fwdgt_write_disable
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:70     .text.fwdgt_write_disable:0000000000000008 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:75     .text.fwdgt_enable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:81     .text.fwdgt_enable:0000000000000000 fwdgt_enable
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:98     .text.fwdgt_enable:000000000000000c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:103    .text.fwdgt_prescaler_value_config:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:109    .text.fwdgt_prescaler_value_config:0000000000000000 fwdgt_prescaler_value_config
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:171    .text.fwdgt_prescaler_value_config:0000000000000028 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:177    .text.fwdgt_reload_value_config:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:183    .text.fwdgt_reload_value_config:0000000000000000 fwdgt_reload_value_config
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:246    .text.fwdgt_reload_value_config:000000000000002c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:252    .text.fwdgt_window_value_config:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:258    .text.fwdgt_window_value_config:0000000000000000 fwdgt_window_value_config
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:321    .text.fwdgt_window_value_config:000000000000002c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:327    .text.fwdgt_counter_reload:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:333    .text.fwdgt_counter_reload:0000000000000000 fwdgt_counter_reload
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:350    .text.fwdgt_counter_reload:000000000000000c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:355    .text.fwdgt_config:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:361    .text.fwdgt_config:0000000000000000 fwdgt_config
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:470    .text.fwdgt_config:0000000000000050 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:476    .text.fwdgt_flag_get:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:482    .text.fwdgt_flag_get:0000000000000000 fwdgt_flag_get
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cchUpYnS.s:512    .text.fwdgt_flag_get:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:18     .text.fwdgt_write_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:24     .text.fwdgt_write_enable:0000000000000000 fwdgt_write_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:42     .text.fwdgt_write_enable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:47     .text.fwdgt_write_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:53     .text.fwdgt_write_disable:0000000000000000 fwdgt_write_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:70     .text.fwdgt_write_disable:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:75     .text.fwdgt_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:81     .text.fwdgt_enable:0000000000000000 fwdgt_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:98     .text.fwdgt_enable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:103    .text.fwdgt_prescaler_value_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:109    .text.fwdgt_prescaler_value_config:0000000000000000 fwdgt_prescaler_value_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:171    .text.fwdgt_prescaler_value_config:0000000000000028 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:177    .text.fwdgt_reload_value_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:183    .text.fwdgt_reload_value_config:0000000000000000 fwdgt_reload_value_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:246    .text.fwdgt_reload_value_config:000000000000002c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:252    .text.fwdgt_window_value_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:258    .text.fwdgt_window_value_config:0000000000000000 fwdgt_window_value_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:321    .text.fwdgt_window_value_config:000000000000002c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:327    .text.fwdgt_counter_reload:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:333    .text.fwdgt_counter_reload:0000000000000000 fwdgt_counter_reload
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:350    .text.fwdgt_counter_reload:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:355    .text.fwdgt_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:361    .text.fwdgt_config:0000000000000000 fwdgt_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:470    .text.fwdgt_config:0000000000000050 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:476    .text.fwdgt_flag_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:482    .text.fwdgt_flag_get:0000000000000000 fwdgt_flag_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccX3BNCa.s:512    .text.fwdgt_flag_get:0000000000000010 $d
 
 NO UNDEFINED SYMBOLS
