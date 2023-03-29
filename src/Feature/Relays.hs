@@ -76,10 +76,10 @@ relays outs = do
 
 
 manage :: Relays -> Ivory eff ()
-manage Relays{..} = zipWithM_ go getOutputs (iterate (+1) 0)
+manage Relays{..} = zipWithM_ zip getOutputs (iterate (+1) 0)
     where
-        go :: Output o => o -> Sint32 -> Ivory eff ()
-        go output i = R.runRelays getRelays $ \rs -> do
+        zip :: Output o => o -> Sint32 -> Ivory eff ()
+        zip output i = R.runRelays getRelays $ \rs -> do
             let ix = toIx i
             let r = addrOf rs ! ix
             let run = manageRelay r output $ getSystemTime clock
