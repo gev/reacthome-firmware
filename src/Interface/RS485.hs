@@ -17,7 +17,7 @@ import           Core.Domain           as D
 import           Core.Handler
 import           Interface.GPIO.Output
 import           Interface.MCU
-import qualified Interface.UART       as I
+import qualified Interface.UART        as I
 import           Ivory.Language
 
 
@@ -25,7 +25,7 @@ import           Ivory.Language
 data RS485 where
     RS485 :: (I.UART u, Output o)
           => { n     :: Int
-             , uart :: u
+             , uart  :: u
              , rede  :: o
              }
             -> RS485

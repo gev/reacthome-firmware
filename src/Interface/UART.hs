@@ -11,7 +11,7 @@ import           Ivory.Language.Module
 
 
 data HandleUART u = HandleUART
-    { uart      :: u
+    { uart       :: u
     , onReceive  :: Uint16 -> forall eff. Ivory eff ()
     , onTransmit :: forall eff. Ivory eff ()
     , onDrain    :: forall eff. Maybe (Ivory eff ())

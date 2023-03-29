@@ -83,7 +83,7 @@ mkUART uart rcu uartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn dmaIRQc rx tx = do
 
 instance Handler I.HandleUART UART where
     addHandler (I.HandleUART UART{..} onReceive onTransmit onDrain) = do
-        addModule $ makeIRQHandler uart (handleUSART uart onReceive onDrain)
+        addModule $ makeIRQHandler uart (handleUART uart onReceive onDrain)
         addModule $ makeIRQHandler dmaIRQc (handleDMA dmaPer dmaCh uart onTransmit onDrain)
 
 
@@ -98,8 +98,8 @@ handleDMA dmaPer dmaCh uart onTransmit onDrain = do
         onTransmit
 
 
-handleUSART :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Maybe (Ivory eff ()) -> Ivory eff ()
-handleUSART uart onReceive onDrain = do
+handleUART :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Maybe (Ivory eff ()) -> Ivory eff ()
+handleUART uart onReceive onDrain = do
     handleReceive uart onReceive
     mapM_ (handleDrain uart) onDrain
 
