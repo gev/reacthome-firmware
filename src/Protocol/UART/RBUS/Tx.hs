@@ -1,12 +1,12 @@
 {-# LANGUAGE RankNTypes      #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Protocol.USART.RBUS.Tx where
+module Protocol.UART.RBUS.Tx where
 
 import           Data.Buffer
 import           GHC.TypeNats
 import           Ivory.Language
-import           Protocol.USART.RBUS
+import           Protocol.UART.RBUS
 import           Util.CRC16
 
 

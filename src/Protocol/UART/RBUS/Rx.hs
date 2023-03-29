@@ -1,12 +1,12 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Protocol.USART.RBUS.Rx (receive) where
+module Protocol.UART.RBUS.Rx (receive) where
 
 import           Core.FSM
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Protocol.USART.RBUS
+import           Protocol.UART.RBUS
 import           Util.CRC16
 
 

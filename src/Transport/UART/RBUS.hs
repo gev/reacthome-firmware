@@ -2,7 +2,7 @@
 {-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RankNTypes       #-}
 
-module Transport.USART.RBUS    where
+module Transport.UART.RBUS    where
 
 import           Control.Monad.Reader      (MonadReader, asks)
 import           Control.Monad.Writer      (MonadWriter)
@@ -18,18 +18,18 @@ import           Data.Value
 import           Interface.Mac
 import           Interface.MCU             (MCU (peripherals, systemClock), mac)
 import           Interface.SystemClock     (getSystemTime)
-import           Interface.USART           (HandleUSART (HandleUSART), USART)
+import           Interface.UART           (HandleUART (HandleUART), UART)
 import           Ivory.Language
 import           Ivory.Stdlib
-import qualified Protocol.USART.RBUS       as U
-import           Transport.USART.RBUS.Data
-import           Transport.USART.RBUS.Rx
-import           Transport.USART.RBUS.Tx
+import qualified Protocol.UART.RBUS       as U
+import           Transport.UART.RBUS.Data
+import           Transport.UART.RBUS.Rx
+import           Transport.UART.RBUS.Tx
 
 
-rbus :: (MonadWriter Context m, MonadReader (D.Domain p RBUS) m, USART u)
+rbus :: (MonadWriter Context m, MonadReader (D.Domain p RBUS) m, UART u)
      => (p -> m u) -> m RBUS
-rbus usart' = do
+rbus uart' = do
 
     mcu           <- asks D.mcu
     features      <- asks D.features
@@ -37,7 +37,7 @@ rbus usart' = do
     let name       = "rbus_usart"
     let clock      = systemClock mcu
 
-    usart         <- usart' $ peripherals mcu
+    uart         <- uart' $ peripherals mcu
     rxBuff        <- buffer (name <> "_rx")
     rxQueue       <- queue  (name <> "_rx")
     msgOffset     <- buffer (name <> "_msg_offset")
@@ -59,13 +59,13 @@ rbus usart' = do
 
     protocol <- U.rbus name onMessage
 
-    let rbus = RBUS { name, clock, usart, protocol
+    let rbus = RBUS { name, clock, uart, protocol
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgQueue, msgBuff, msgIndex
                     , txBuff, txLock
                     }
 
-    addHandler $ HandleUSART usart (rxHandle rbus) (txHandle rbus) Nothing
+    addHandler $ HandleUART uart (rxHandle rbus) (txHandle rbus) Nothing
 
     addTask $ yeld    (name <> "_rx"  ) $ rxTask rbus
     addTask $ delay 1 (name <> "_tx"  ) $ txTask rbus

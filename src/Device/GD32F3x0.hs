@@ -12,7 +12,7 @@ import           Device.GD32F3x0.Mac           (makeMac)
 import           Device.GD32F3x0.SystemClock   as G
 import           Device.GD32F3x0.SysTick
 import           Device.GD32F3x0.Timer
-import           Device.GD32F3x0.USART
+import           Device.GD32F3x0.UART
 import           Interface.Mac                 (Mac)
 import           Interface.MCU
 import           Interface.SystemClock         (SystemClock, systemClock)
@@ -25,14 +25,14 @@ import           Support.Device.GD32F3x0.USART
 
 
 
-type USARTW  = forall m. MonadWriter Context m => m USART
+type UARTW   = forall m. MonadWriter Context m => m UART
 type InputW  = forall m. MonadWriter Context m => m Input
 type OutputW = forall m. MonadWriter Context m => m Output
 
 
 
 data GD32F3x0 = GD32F3x0
-    { usart_1   :: USARTW
+    { uart_1    :: UARTW
 
     , in_pa_0   :: InputW
     , in_pa_1   :: InputW
@@ -106,7 +106,7 @@ data GD32F3x0 = GD32F3x0
 
 gd32f3x0 :: String -> String -> MCUmod GD32F3x0
 gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
-    { usart_1   = mkUSART USART1
+    { uart_1   = mkUART USART1
                           RCU_USART1
                           USART1_IRQn
                           DMA_CH3

@@ -4,18 +4,18 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
 
-module Transport.USART.RBUS.Tx where
+module Transport.UART.RBUS.Tx where
 
 import           Data.Buffer
 import           Data.Concurrent.Queue
 import           GHC.TypeNats
 import           Interface.SystemClock
-import qualified Interface.USART           as U
+import qualified Interface.UART           as U
 import           Ivory.Language
 import           Ivory.Stdlib
-import qualified Protocol.USART.RBUS       as U
-import           Protocol.USART.RBUS.Tx
-import           Transport.USART.RBUS.Data
+import qualified Protocol.UART.RBUS       as U
+import           Protocol.UART.RBUS.Tx
+import           Transport.UART.RBUS.Data
 
 
 txHandle :: RBUS -> Ivory eff ()
@@ -41,7 +41,7 @@ txTask r@RBUS{..} = do
 transmit :: RBUS -> Uint16 -> Ivory (ProcEffects s ()) ()
 transmit RBUS{..} size = do
     let array = toCArray txBuff
-    U.transmit usart array size
+    U.transmit uart array size
     store txLock true
 
 

@@ -13,6 +13,6 @@ blink330 = Formula { name       = "blink330"
                    , model      = 0xff
                    , version    = (1, 0)
                    , shouldInit = false
-                   , transport  = rbus $ rs485 1 usart_1 out_pa_4
+                   , transport  = rbus $ rs485 1 uart_1 out_pa_4
                    , features   = [ blink 1 out_pa_15 ]
                    }

@@ -5,7 +5,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
 
-module Protocol.USART.RBUS where
+module Protocol.UART.RBUS where
 
 import           Control.Monad.Writer
 import           Core.Context

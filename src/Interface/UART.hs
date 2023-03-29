@@ -2,7 +2,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RankNTypes       #-}
 
-module Interface.USART where
+module Interface.UART where
 
 import           Core.Context
 import           Core.Handler
@@ -10,8 +10,8 @@ import           Ivory.Language
 import           Ivory.Language.Module
 
 
-data HandleUSART u = HandleUSART
-    { usart      :: u
+data HandleUART u = HandleUART
+    { uart      :: u
     , onReceive  :: Uint16 -> forall eff. Ivory eff ()
     , onTransmit :: forall eff. Ivory eff ()
     , onDrain    :: forall eff. Maybe (Ivory eff ())
@@ -33,7 +33,7 @@ data StopBit
     | SB_1_5b
     | SB_2b
 
-class Handler HandleUSART u => USART u where
+class Handler HandleUART u => UART u where
 
     setBaudrate   :: u -> Uint32     -> Ivory eff ()
     setWordLength :: u -> WordLength -> Ivory eff ()

@@ -17,15 +17,15 @@ import           Core.Domain           as D
 import           Core.Handler
 import           Interface.GPIO.Output
 import           Interface.MCU
-import qualified Interface.USART       as I
+import qualified Interface.UART       as I
 import           Ivory.Language
 
 
 
 data RS485 where
-    RS485 :: (I.USART u, Output o)
+    RS485 :: (I.UART u, Output o)
           => { n     :: Int
-             , usart :: u
+             , uart :: u
              , rede  :: o
              }
             -> RS485
@@ -40,18 +40,18 @@ data HandleRS485 r = HandleRS485
 
 
 
-rs485 :: (MonadWriter Context m, MonadReader (D.Domain p t) m, I.USART u, Output o)
+rs485 :: (MonadWriter Context m, MonadReader (D.Domain p t) m, I.UART u, Output o)
       => Int -> (p -> m u) -> (p -> m o) -> m RS485
-rs485 n usart' rede' = do
+rs485 n uart' rede' = do
     mcu'        <- asks D.mcu
-    usart       <- usart' $ peripherals mcu'
+    uart       <- uart' $ peripherals mcu'
     rede        <- rede'  $ peripherals mcu'
 
     let initRS485' :: Def ('[] ':-> ())
         initRS485' = proc ("rs485_" <> show n <> "_init") $ body
                                                           $ reset rede
     addInit initRS485'
-    pure RS485 { n, usart, rede }
+    pure RS485 { n, uart, rede }
 
 
 
@@ -60,22 +60,22 @@ transmit :: RS485
          -> Uint16
          -> Ivory (ProcEffects s ()) ()
 transmit RS485{..} buffer length =
-    set rede >> I.transmit usart buffer length
+    set rede >> I.transmit uart buffer length
 
 setBaudrate :: RS485 -> Uint32 -> Ivory eff ()
-setBaudrate RS485{..} = I.setBaudrate usart
+setBaudrate RS485{..} = I.setBaudrate uart
 
 setWordLength :: RS485 -> I.WordLength -> Ivory eff ()
-setWordLength RS485{..} = I.setWordLength usart
+setWordLength RS485{..} = I.setWordLength uart
 
 setStopBit :: RS485 -> I.StopBit -> Ivory eff ()
-setStopBit RS485{..} = I.setStopBit usart
+setStopBit RS485{..} = I.setStopBit uart
 
 setParity :: RS485 -> I.Parity -> Ivory eff ()
-setParity RS485{..} = I.setParity usart
+setParity RS485{..} = I.setParity uart
 
 
 
 instance Handler HandleRS485 RS485 where
     addHandler (HandleRS485 RS485{..} onReceive onTransmit) = do
-        addHandler $ I.HandleUSART usart onReceive onTransmit (Just $ reset rede)
+        addHandler $ I.HandleUART uart onReceive onTransmit (Just $ reset rede)

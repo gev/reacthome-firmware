@@ -13,7 +13,7 @@ relay12 = Formula { name       = "relay12"
                   , model      = 0xae
                   , version    = (3, 0)
                   , shouldInit = true
-                  , transport  = rbus $ rs485 1 usart_1 out_pa_4
+                  , transport  = rbus $ rs485 1 uart_1 out_pa_4
                   , features   = [ relays [ out_pb_0
                                           , out_pa_5
                                           , out_pa_6

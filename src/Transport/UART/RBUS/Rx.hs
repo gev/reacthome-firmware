@@ -1,11 +1,11 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Transport.USART.RBUS.Rx    where
+module Transport.UART.RBUS.Rx    where
 
 import           Data.Concurrent.Queue
 import           Ivory.Language
-import           Protocol.USART.RBUS.Rx
-import           Transport.USART.RBUS.Data
+import           Protocol.UART.RBUS.Rx
+import           Transport.UART.RBUS.Data
 
 
 rxHandle :: RBUS -> Uint16 -> Ivory eff ()

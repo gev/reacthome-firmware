@@ -1,22 +1,22 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE GADTs     #-}
 
-module Transport.USART.RBUS.Data where
+module Transport.UART.RBUS.Data where
 
 import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Data.Value
 import           Interface.SystemClock
-import           Interface.USART
+import           Interface.UART
 import           Ivory.Language
-import qualified Protocol.USART.RBUS   as U
+import qualified Protocol.UART.RBUS   as U
 
 
 data RBUS where
-     RBUS :: USART u
+     RBUS :: UART u
           => { name          :: String
              , clock         :: SystemClock
-             , usart         :: u
+             , uart         :: u
              , protocol      :: U.RBUS   255
              , rxBuff        :: Buffer   64 Uint16
              , rxQueue       :: Queue    64
