@@ -1,5 +1,6 @@
-/.VSCodeCounter
-/build
-/dist-newstyle
-/firmware
+*/.vscode
+.VSCodeCounter
+build
+dist-newstyle
+firmware
 .DS_Store
