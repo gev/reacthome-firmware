@@ -61,7 +61,6 @@ executable reacthome-firmware
 
                     , Feature.Blink
                     , Feature.Echo
-                    , Feature.Relay
                     , Feature.Relays
 
                     , Formula.Blink330
