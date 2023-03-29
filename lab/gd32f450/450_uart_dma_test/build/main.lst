@@ -1,4 +1,4 @@
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 1
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -58,7 +58,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 1
   28              		.loc 1 28 18 view -0
   29              		.cfi_startproc
   30              		@ args = 0, pretend = 0, frame = 0
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 2
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s 			page 2
 
 
   31              		@ frame_needed = 0, uses_anonymous_args = 0
@@ -118,7 +118,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 1
   57 001a 8022     		movs	r2, #128
   58 001c 0821     		movs	r1, #8
   59 001e FFF7FEFF 		bl	gpio_af_set
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 3
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s 			page 3
 
 
   60              	.LVL2:
@@ -178,7 +178,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 1
  107              	.LVL10:
   56:main.c        ****   usart_enable(USART5);
  108              		.loc 1 56 3 view .LVU16
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 4
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s 			page 4
 
 
  109 0070 2846     		mov	r0, r5
@@ -238,7 +238,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 1
  156 0006 8BB0     		sub	sp, sp, #44
  157              	.LCFI3:
  158              		.cfi_def_cfa_offset 56
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 5
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s 			page 5
 
 
  159              		.loc 1 62 5 view .LVU25
@@ -298,7 +298,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 1
   71:main.c        ****     dma_init_struct.periph_inc = DMA_PERIPH_INCREASE_DISABLE;
  193              		.loc 1 71 5 view .LVU43
  194              		.loc 1 74 5 is_stmt 0 view .LVU44
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 6
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s 			page 6
 
 
  195 002c 0621     		movs	r1, #6
@@ -358,7 +358,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 1
  227 0054 0621     		movs	r1, #6
  228 0056 FFF7FEFF 		bl	dma_channel_enable
  229              	.LVL17:
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 7
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s 			page 7
 
 
   82:main.c        ****     usart_dma_receive_config(USART5, USART_DENR_ENABLE);
@@ -418,7 +418,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 1
  282              		@ frame_needed = 0, uses_anonymous_args = 0
   14:main.c        ****   rcu_periph_clock_enable(RCU_GPIOA);
  283              		.loc 1 14 3 view .LVU67
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 8
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s 			page 8
 
 
   13:main.c        **** int main() {
@@ -478,7 +478,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 1
  325              		.loc 1 23 39 is_stmt 1 discriminator 3 view .LVU80
   23:main.c        ****     for(uint32_t x = 0; x < 2000; x++);
  326              		.loc 1 23 35 discriminator 3 view .LVU81
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 9
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s 			page 9
 
 
   23:main.c        ****     for(uint32_t x = 0; x < 2000; x++);
@@ -512,27 +512,27 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 1
  350              	.Letext0:
  351              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
  352              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
- 353              		.file 4 "lib/CMSIS/GD/GD32F4xx/Include/gd32f4xx.h"
- 354              		.file 5 "lib/GD32F4xx/Include/gd32f4xx_rcu.h"
- 355              		.file 6 "lib/GD32F4xx/Include/gd32f4xx_dma.h"
- 356              		.file 7 "lib/GD32F4xx/Include/gd32f4xx_usart.h"
- 357              		.file 8 "lib/GD32F4xx/Include/gd32f4xx_gpio.h"
- 358              		.file 9 "lib/GD32F4xx/Include/gd32f4xx_dbg.h"
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s 			page 10
+ 353              		.file 4 "../../../support/device/gd32f4xx/inc/gd32f4xx.h"
+ 354              		.file 5 "../../../support/device/gd32f4xx/peripherals/inc/gd32f4xx_rcu.h"
+ 355              		.file 6 "../../../support/device/gd32f4xx/peripherals/inc/gd32f4xx_dma.h"
+ 356              		.file 7 "../../../support/device/gd32f4xx/peripherals/inc/gd32f4xx_usart.h"
+ 357              		.file 8 "../../../support/device/gd32f4xx/peripherals/inc/gd32f4xx_gpio.h"
+ 358              		.file 9 "../../../support/device/gd32f4xx/peripherals/inc/gd32f4xx_dbg.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s 			page 10
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 main.c
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:18     .text.uart_init:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:25     .text.uart_init:0000000000000000 uart_init
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:124    .text.uart_init:000000000000007c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:131    .text.dma_send_message:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:138    .text.dma_send_message:0000000000000000 dma_send_message
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:262    .text.dma_send_message:000000000000007c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:270    .text.startup.main:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:277    .text.startup.main:0000000000000000 main
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:347    .data.txbuffer:0000000000000000 txbuffer
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cctsriPO.s:343    .data.txbuffer:0000000000000000 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s:18     .text.uart_init:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s:25     .text.uart_init:0000000000000000 uart_init
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s:124    .text.uart_init:000000000000007c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s:131    .text.dma_send_message:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s:138    .text.dma_send_message:0000000000000000 dma_send_message
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s:262    .text.dma_send_message:000000000000007c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s:270    .text.startup.main:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s:277    .text.startup.main:0000000000000000 main
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s:347    .data.txbuffer:0000000000000000 txbuffer
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccto7I2R.s:343    .data.txbuffer:0000000000000000 $d
 
 UNDEFINED SYMBOLS
 rcu_periph_clock_enable

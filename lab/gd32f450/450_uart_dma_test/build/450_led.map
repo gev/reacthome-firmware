@@ -79,7 +79,7 @@ Discarded input sections
                 0x0000000000000000       0x40 build/gd32f4xx_adc.o
  .text.adc_channel_length_config
                 0x0000000000000000       0x3c build/gd32f4xx_adc.o
- .text.adc_regular_channel_config
+ .text.adc_routine_channel_config
                 0x0000000000000000       0xa8 build/gd32f4xx_adc.o
  .text.adc_inserted_channel_config
                 0x0000000000000000       0x6c build/gd32f4xx_adc.o
@@ -93,7 +93,7 @@ Discarded input sections
                 0x0000000000000000       0x20 build/gd32f4xx_adc.o
  .text.adc_end_of_conversion_config
                 0x0000000000000000       0x1c build/gd32f4xx_adc.o
- .text.adc_regular_data_read
+ .text.adc_routine_data_read
                 0x0000000000000000        0x8 build/gd32f4xx_adc.o
  .text.adc_inserted_data_read
                 0x0000000000000000       0x28 build/gd32f4xx_adc.o
@@ -101,7 +101,7 @@ Discarded input sections
                 0x0000000000000000        0xc build/gd32f4xx_adc.o
  .text.adc_watchdog_single_channel_enable
                 0x0000000000000000       0x18 build/gd32f4xx_adc.o
- .text.adc_watchdog_group_channel_enable
+ .text.adc_watchdog_sequence_channel_enable
                 0x0000000000000000       0x38 build/gd32f4xx_adc.o
  .text.adc_watchdog_disable
                 0x0000000000000000       0x2c build/gd32f4xx_adc.o
@@ -111,7 +111,7 @@ Discarded input sections
                 0x0000000000000000        0xc build/gd32f4xx_adc.o
  .text.adc_flag_clear
                 0x0000000000000000        0xc build/gd32f4xx_adc.o
- .text.adc_regular_software_startconv_flag_get
+ .text.adc_routine_software_startconv_flag_get
                 0x0000000000000000        0x8 build/gd32f4xx_adc.o
  .text.adc_inserted_software_startconv_flag_get
                 0x0000000000000000        0x8 build/gd32f4xx_adc.o
@@ -133,7 +133,7 @@ Discarded input sections
                 0x0000000000000000       0x14 build/gd32f4xx_adc.o
  .text.adc_sync_dma_request_after_last_disable
                 0x0000000000000000       0x14 build/gd32f4xx_adc.o
- .text.adc_sync_regular_data_read
+ .text.adc_sync_routine_data_read
                 0x0000000000000000        0xc build/gd32f4xx_adc.o
  .debug_info    0x0000000000000000      0xe8f build/gd32f4xx_adc.o
  .debug_abbrev  0x0000000000000000      0x23b build/gd32f4xx_adc.o
@@ -141,8 +141,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000      0x180 build/gd32f4xx_adc.o
  .debug_ranges  0x0000000000000000      0x170 build/gd32f4xx_adc.o
- .debug_line    0x0000000000000000      0xc53 build/gd32f4xx_adc.o
- .debug_str     0x0000000000000000      0xb3f build/gd32f4xx_adc.o
+ .debug_line    0x0000000000000000      0xc93 build/gd32f4xx_adc.o
+ .debug_str     0x0000000000000000      0xb68 build/gd32f4xx_adc.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_adc.o
  .debug_frame   0x0000000000000000      0x32c build/gd32f4xx_adc.o
  .ARM.attributes
@@ -338,8 +338,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000      0x290 build/gd32f4xx_enet.o
  .debug_ranges  0x0000000000000000      0x478 build/gd32f4xx_enet.o
- .debug_line    0x0000000000000000     0x2b39 build/gd32f4xx_enet.o
- .debug_str     0x0000000000000000     0x23fe build/gd32f4xx_enet.o
+ .debug_line    0x0000000000000000     0x2b79 build/gd32f4xx_enet.o
+ .debug_str     0x0000000000000000     0x2429 build/gd32f4xx_enet.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_enet.o
  .debug_frame   0x0000000000000000      0x674 build/gd32f4xx_enet.o
  .ARM.attributes
@@ -367,8 +367,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0x50 build/gd32f4xx_iref.o
  .debug_ranges  0x0000000000000000       0x40 build/gd32f4xx_iref.o
- .debug_line    0x0000000000000000      0x1d3 build/gd32f4xx_iref.o
- .debug_str     0x0000000000000000      0x579 build/gd32f4xx_iref.o
+ .debug_line    0x0000000000000000      0x20c build/gd32f4xx_iref.o
+ .debug_str     0x0000000000000000      0x5a4 build/gd32f4xx_iref.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_iref.o
  .debug_frame   0x0000000000000000       0x8c build/gd32f4xx_iref.o
  .ARM.attributes
@@ -520,14 +520,14 @@ Discarded input sections
                 0x0000000000000000       0x14 build/gd32f4xx_timer.o
  .text.timer_interrupt_flag_clear
                 0x0000000000000000        0x8 build/gd32f4xx_timer.o
- .debug_info    0x0000000000000000     0x1ca7 build/gd32f4xx_timer.o
- .debug_abbrev  0x0000000000000000      0x2d9 build/gd32f4xx_timer.o
+ .debug_info    0x0000000000000000     0x1cab build/gd32f4xx_timer.o
+ .debug_abbrev  0x0000000000000000      0x2ea build/gd32f4xx_timer.o
  .debug_loc     0x0000000000000000     0x1513 build/gd32f4xx_timer.o
  .debug_aranges
                 0x0000000000000000      0x250 build/gd32f4xx_timer.o
  .debug_ranges  0x0000000000000000      0x2e0 build/gd32f4xx_timer.o
- .debug_line    0x0000000000000000     0x17f2 build/gd32f4xx_timer.o
- .debug_str     0x0000000000000000     0x10b4 build/gd32f4xx_timer.o
+ .debug_line    0x0000000000000000     0x1832 build/gd32f4xx_timer.o
+ .debug_str     0x0000000000000000     0x10df build/gd32f4xx_timer.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_timer.o
  .debug_frame   0x0000000000000000      0x58c build/gd32f4xx_timer.o
  .ARM.attributes
@@ -540,7 +540,7 @@ Discarded input sections
  .text.can_struct_para_init
                 0x0000000000000000       0x64 build/gd32f4xx_can.o
  .text.can_init
-                0x0000000000000000      0x10c build/gd32f4xx_can.o
+                0x0000000000000000      0x100 build/gd32f4xx_can.o
  .text.can_filter_init
                 0x0000000000000000       0xe8 build/gd32f4xx_can.o
  .text.can1_filter_start_bank
@@ -593,8 +593,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0xe8 build/gd32f4xx_can.o
  .debug_ranges  0x0000000000000000       0xd8 build/gd32f4xx_can.o
- .debug_line    0x0000000000000000      0xcd8 build/gd32f4xx_can.o
- .debug_str     0x0000000000000000     0x1035 build/gd32f4xx_can.o
+ .debug_line    0x0000000000000000      0xd16 build/gd32f4xx_can.o
+ .debug_str     0x0000000000000000     0x1060 build/gd32f4xx_can.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_can.o
  .debug_frame   0x0000000000000000      0x1f0 build/gd32f4xx_can.o
  .ARM.attributes
@@ -637,7 +637,9 @@ Discarded input sections
  .text.exmc_sdram_struct_para_init
                 0x0000000000000000       0x38 build/gd32f4xx_exmc.o
  .text.exmc_sdram_init
-                0x0000000000000000       0xfc build/gd32f4xx_exmc.o
+                0x0000000000000000      0x100 build/gd32f4xx_exmc.o
+ .text.exmc_sdram_struct_command_para_init
+                0x0000000000000000       0x10 build/gd32f4xx_exmc.o
  .text.exmc_sqpipsram_deinit
                 0x0000000000000000       0x24 build/gd32f4xx_exmc.o
  .text.exmc_sqpipsram_struct_para_init
@@ -692,16 +694,16 @@ Discarded input sections
                 0x0000000000000000       0x34 build/gd32f4xx_exmc.o
  .text.exmc_interrupt_flag_clear
                 0x0000000000000000       0x28 build/gd32f4xx_exmc.o
- .debug_info    0x0000000000000000     0x106f build/gd32f4xx_exmc.o
+ .debug_info    0x0000000000000000     0x109b build/gd32f4xx_exmc.o
  .debug_abbrev  0x0000000000000000      0x1ec build/gd32f4xx_exmc.o
  .debug_loc     0x0000000000000000      0xc9b build/gd32f4xx_exmc.o
  .debug_aranges
-                0x0000000000000000      0x180 build/gd32f4xx_exmc.o
- .debug_ranges  0x0000000000000000      0x170 build/gd32f4xx_exmc.o
- .debug_line    0x0000000000000000      0xda0 build/gd32f4xx_exmc.o
- .debug_str     0x0000000000000000      0xd35 build/gd32f4xx_exmc.o
+                0x0000000000000000      0x188 build/gd32f4xx_exmc.o
+ .debug_ranges  0x0000000000000000      0x178 build/gd32f4xx_exmc.o
+ .debug_line    0x0000000000000000      0xe0a build/gd32f4xx_exmc.o
+ .debug_str     0x0000000000000000      0xd84 build/gd32f4xx_exmc.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_exmc.o
- .debug_frame   0x0000000000000000      0x384 build/gd32f4xx_exmc.o
+ .debug_frame   0x0000000000000000      0x394 build/gd32f4xx_exmc.o
  .ARM.attributes
                 0x0000000000000000       0x2e build/gd32f4xx_exmc.o
  .text          0x0000000000000000        0x0 build/gd32f4xx_misc.o
@@ -727,8 +729,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0x50 build/gd32f4xx_misc.o
  .debug_ranges  0x0000000000000000       0x58 build/gd32f4xx_misc.o
- .debug_line    0x0000000000000000      0x2b0 build/gd32f4xx_misc.o
- .debug_str     0x0000000000000000      0x3b3 build/gd32f4xx_misc.o
+ .debug_line    0x0000000000000000      0x2de build/gd32f4xx_misc.o
+ .debug_str     0x0000000000000000      0x3de build/gd32f4xx_misc.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_misc.o
  .debug_frame   0x0000000000000000       0x8c build/gd32f4xx_misc.o
  .ARM.attributes
@@ -794,8 +796,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0xe8 build/gd32f4xx_tli.o
  .debug_ranges  0x0000000000000000       0xd8 build/gd32f4xx_tli.o
- .debug_line    0x0000000000000000      0x706 build/gd32f4xx_tli.o
- .debug_str     0x0000000000000000      0xae0 build/gd32f4xx_tli.o
+ .debug_line    0x0000000000000000      0x746 build/gd32f4xx_tli.o
+ .debug_str     0x0000000000000000      0xb0b build/gd32f4xx_tli.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_tli.o
  .debug_frame   0x0000000000000000      0x200 build/gd32f4xx_tli.o
  .ARM.attributes
@@ -823,8 +825,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0x50 build/gd32f4xx_crc.o
  .debug_ranges  0x0000000000000000       0x40 build/gd32f4xx_crc.o
- .debug_line    0x0000000000000000      0x1e5 build/gd32f4xx_crc.o
- .debug_str     0x0000000000000000      0x283 build/gd32f4xx_crc.o
+ .debug_line    0x0000000000000000      0x202 build/gd32f4xx_crc.o
+ .debug_str     0x0000000000000000      0x2ae build/gd32f4xx_crc.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_crc.o
  .debug_frame   0x0000000000000000       0x80 build/gd32f4xx_crc.o
  .ARM.attributes
@@ -862,8 +864,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0x70 build/gd32f4xx_exti.o
  .debug_ranges  0x0000000000000000       0x60 build/gd32f4xx_exti.o
- .debug_line    0x0000000000000000      0x355 build/gd32f4xx_exti.o
- .debug_str     0x0000000000000000      0x40d build/gd32f4xx_exti.o
+ .debug_line    0x0000000000000000      0x395 build/gd32f4xx_exti.o
+ .debug_str     0x0000000000000000      0x438 build/gd32f4xx_exti.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_exti.o
  .debug_frame   0x0000000000000000       0xf0 build/gd32f4xx_exti.o
  .ARM.attributes
@@ -898,7 +900,7 @@ Discarded input sections
  .text.pmu_to_deepsleepmode
                 0x0000000000000000       0xc4 build/gd32f4xx_pmu.o
  .text.pmu_to_standbymode
-                0x0000000000000000       0x30 build/gd32f4xx_pmu.o
+                0x0000000000000000       0x54 build/gd32f4xx_pmu.o
  .text.pmu_wakeup_pin_enable
                 0x0000000000000000       0x10 build/gd32f4xx_pmu.o
  .text.pmu_wakeup_pin_disable
@@ -915,16 +917,16 @@ Discarded input sections
                 0x0000000000000000       0x24 build/gd32f4xx_pmu.o
  .bss.reg_snap.0
                 0x0000000000000000       0x10 build/gd32f4xx_pmu.o
- .debug_info    0x0000000000000000      0x8e8 build/gd32f4xx_pmu.o
- .debug_abbrev  0x0000000000000000      0x27c build/gd32f4xx_pmu.o
- .debug_loc     0x0000000000000000      0x16c build/gd32f4xx_pmu.o
+ .debug_info    0x0000000000000000      0x8ae build/gd32f4xx_pmu.o
+ .debug_abbrev  0x0000000000000000      0x298 build/gd32f4xx_pmu.o
+ .debug_loc     0x0000000000000000      0x198 build/gd32f4xx_pmu.o
  .debug_aranges
                 0x0000000000000000       0xc0 build/gd32f4xx_pmu.o
  .debug_ranges  0x0000000000000000       0xc8 build/gd32f4xx_pmu.o
- .debug_line    0x0000000000000000      0x5de build/gd32f4xx_pmu.o
- .debug_str     0x0000000000000000      0x7ad build/gd32f4xx_pmu.o
+ .debug_line    0x0000000000000000      0x641 build/gd32f4xx_pmu.o
+ .debug_str     0x0000000000000000      0x7c9 build/gd32f4xx_pmu.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_pmu.o
- .debug_frame   0x0000000000000000      0x17c build/gd32f4xx_pmu.o
+ .debug_frame   0x0000000000000000      0x188 build/gd32f4xx_pmu.o
  .ARM.attributes
                 0x0000000000000000       0x2e build/gd32f4xx_pmu.o
  .text          0x0000000000000000        0x0 build/gd32f4xx_trng.o
@@ -954,8 +956,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0x58 build/gd32f4xx_trng.o
  .debug_ranges  0x0000000000000000       0x48 build/gd32f4xx_trng.o
- .debug_line    0x0000000000000000      0x212 build/gd32f4xx_trng.o
- .debug_str     0x0000000000000000      0x61f build/gd32f4xx_trng.o
+ .debug_line    0x0000000000000000      0x252 build/gd32f4xx_trng.o
+ .debug_str     0x0000000000000000      0x64a build/gd32f4xx_trng.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_trng.o
  .debug_frame   0x0000000000000000       0xac build/gd32f4xx_trng.o
  .ARM.attributes
@@ -976,8 +978,6 @@ Discarded input sections
  .text.ctc_hardware_trim_mode_config
                 0x0000000000000000       0x20 build/gd32f4xx_ctc.o
  .text.ctc_refsource_polarity_config
-                0x0000000000000000       0x20 build/gd32f4xx_ctc.o
- .text.ctc_usbsof_signal_select
                 0x0000000000000000       0x20 build/gd32f4xx_ctc.o
  .text.ctc_refsource_signal_select
                 0x0000000000000000       0x20 build/gd32f4xx_ctc.o
@@ -1007,16 +1007,16 @@ Discarded input sections
                 0x0000000000000000       0x14 build/gd32f4xx_ctc.o
  .text.ctc_flag_clear
                 0x0000000000000000       0x28 build/gd32f4xx_ctc.o
- .debug_info    0x0000000000000000      0x698 build/gd32f4xx_ctc.o
+ .debug_info    0x0000000000000000      0x66d build/gd32f4xx_ctc.o
  .debug_abbrev  0x0000000000000000      0x240 build/gd32f4xx_ctc.o
  .debug_loc     0x0000000000000000      0x19f build/gd32f4xx_ctc.o
  .debug_aranges
-                0x0000000000000000       0xc0 build/gd32f4xx_ctc.o
- .debug_ranges  0x0000000000000000       0xb0 build/gd32f4xx_ctc.o
- .debug_line    0x0000000000000000      0x405 build/gd32f4xx_ctc.o
- .debug_str     0x0000000000000000      0x7cc build/gd32f4xx_ctc.o
+                0x0000000000000000       0xb8 build/gd32f4xx_ctc.o
+ .debug_ranges  0x0000000000000000       0xa8 build/gd32f4xx_ctc.o
+ .debug_line    0x0000000000000000      0x421 build/gd32f4xx_ctc.o
+ .debug_str     0x0000000000000000      0x7d7 build/gd32f4xx_ctc.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_ctc.o
- .debug_frame   0x0000000000000000      0x17c build/gd32f4xx_ctc.o
+ .debug_frame   0x0000000000000000      0x16c build/gd32f4xx_ctc.o
  .ARM.attributes
                 0x0000000000000000       0x2e build/gd32f4xx_ctc.o
  .text          0x0000000000000000        0x0 build/gd32f4xx_fmc.o
@@ -1101,8 +1101,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000      0x138 build/gd32f4xx_fmc.o
  .debug_ranges  0x0000000000000000      0xd58 build/gd32f4xx_fmc.o
- .debug_line    0x0000000000000000     0x1ecb build/gd32f4xx_fmc.o
- .debug_str     0x0000000000000000      0x595 build/gd32f4xx_fmc.o
+ .debug_line    0x0000000000000000     0x1f0b build/gd32f4xx_fmc.o
+ .debug_str     0x0000000000000000      0x5c0 build/gd32f4xx_fmc.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_fmc.o
  .debug_frame   0x0000000000000000      0x384 build/gd32f4xx_fmc.o
  .ARM.attributes
@@ -1156,18 +1156,6 @@ Discarded input sections
                 0x0000000000000000       0x24 build/gd32f4xx_rcu.o
  .text.rcu_tli_clock_div_config
                 0x0000000000000000       0x18 build/gd32f4xx_rcu.o
- .text.rcu_flag_get
-                0x0000000000000000       0x1c build/gd32f4xx_rcu.o
- .text.rcu_all_reset_flag_clear
-                0x0000000000000000       0x14 build/gd32f4xx_rcu.o
- .text.rcu_interrupt_flag_get
-                0x0000000000000000       0x1c build/gd32f4xx_rcu.o
- .text.rcu_interrupt_flag_clear
-                0x0000000000000000       0x1c build/gd32f4xx_rcu.o
- .text.rcu_interrupt_enable
-                0x0000000000000000       0x1c build/gd32f4xx_rcu.o
- .text.rcu_interrupt_disable
-                0x0000000000000000       0x20 build/gd32f4xx_rcu.o
  .text.rcu_lxtal_drive_capability_config
                 0x0000000000000000       0x18 build/gd32f4xx_rcu.o
  .text.rcu_osci_stab_wait
@@ -1180,22 +1168,34 @@ Discarded input sections
                 0x0000000000000000       0x48 build/gd32f4xx_rcu.o
  .text.rcu_osci_bypass_mode_disable
                 0x0000000000000000       0x48 build/gd32f4xx_rcu.o
- .text.rcu_hxtal_clock_monitor_enable
-                0x0000000000000000       0x14 build/gd32f4xx_rcu.o
- .text.rcu_hxtal_clock_monitor_disable
-                0x0000000000000000       0x14 build/gd32f4xx_rcu.o
  .text.rcu_irc16m_adjust_value_set
                 0x0000000000000000       0x1c build/gd32f4xx_rcu.o
- .text.rcu_voltage_key_unlock
-                0x0000000000000000       0x14 build/gd32f4xx_rcu.o
- .text.rcu_deepsleep_voltage_set
-                0x0000000000000000       0x10 build/gd32f4xx_rcu.o
  .text.rcu_spread_spectrum_config
                 0x0000000000000000       0x20 build/gd32f4xx_rcu.o
  .text.rcu_spread_spectrum_enable
                 0x0000000000000000       0x14 build/gd32f4xx_rcu.o
  .text.rcu_spread_spectrum_disable
                 0x0000000000000000       0x14 build/gd32f4xx_rcu.o
+ .text.rcu_hxtal_clock_monitor_enable
+                0x0000000000000000       0x14 build/gd32f4xx_rcu.o
+ .text.rcu_hxtal_clock_monitor_disable
+                0x0000000000000000       0x14 build/gd32f4xx_rcu.o
+ .text.rcu_voltage_key_unlock
+                0x0000000000000000       0x14 build/gd32f4xx_rcu.o
+ .text.rcu_deepsleep_voltage_set
+                0x0000000000000000       0x10 build/gd32f4xx_rcu.o
+ .text.rcu_flag_get
+                0x0000000000000000       0x1c build/gd32f4xx_rcu.o
+ .text.rcu_all_reset_flag_clear
+                0x0000000000000000       0x14 build/gd32f4xx_rcu.o
+ .text.rcu_interrupt_flag_get
+                0x0000000000000000       0x1c build/gd32f4xx_rcu.o
+ .text.rcu_interrupt_flag_clear
+                0x0000000000000000       0x1c build/gd32f4xx_rcu.o
+ .text.rcu_interrupt_enable
+                0x0000000000000000       0x1c build/gd32f4xx_rcu.o
+ .text.rcu_interrupt_disable
+                0x0000000000000000       0x20 build/gd32f4xx_rcu.o
  .text          0x0000000000000000        0x0 build/gd32f4xx_usart.o
  .data          0x0000000000000000        0x0 build/gd32f4xx_usart.o
  .bss           0x0000000000000000        0x0 build/gd32f4xx_usart.o
@@ -1370,8 +1370,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000      0x108 build/gd32f4xx_dac.o
  .debug_ranges  0x0000000000000000       0xf8 build/gd32f4xx_dac.o
- .debug_line    0x0000000000000000      0x706 build/gd32f4xx_dac.o
- .debug_str     0x0000000000000000      0x887 build/gd32f4xx_dac.o
+ .debug_line    0x0000000000000000      0x746 build/gd32f4xx_dac.o
+ .debug_str     0x0000000000000000      0x8b2 build/gd32f4xx_dac.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_dac.o
  .debug_frame   0x0000000000000000      0x22c build/gd32f4xx_dac.o
  .ARM.attributes
@@ -1385,22 +1385,26 @@ Discarded input sections
                 0x0000000000000000        0xc build/gd32f4xx_fwdgt.o
  .text.fwdgt_enable
                 0x0000000000000000       0x10 build/gd32f4xx_fwdgt.o
+ .text.fwdgt_prescaler_value_config
+                0x0000000000000000       0x38 build/gd32f4xx_fwdgt.o
+ .text.fwdgt_reload_value_config
+                0x0000000000000000       0x38 build/gd32f4xx_fwdgt.o
  .text.fwdgt_counter_reload
                 0x0000000000000000       0x10 build/gd32f4xx_fwdgt.o
  .text.fwdgt_config
                 0x0000000000000000       0x60 build/gd32f4xx_fwdgt.o
  .text.fwdgt_flag_get
                 0x0000000000000000       0x14 build/gd32f4xx_fwdgt.o
- .debug_info    0x0000000000000000      0x20d build/gd32f4xx_fwdgt.o
+ .debug_info    0x0000000000000000      0x2c4 build/gd32f4xx_fwdgt.o
  .debug_abbrev  0x0000000000000000       0xfe build/gd32f4xx_fwdgt.o
- .debug_loc     0x0000000000000000      0x121 build/gd32f4xx_fwdgt.o
+ .debug_loc     0x0000000000000000      0x248 build/gd32f4xx_fwdgt.o
  .debug_aranges
-                0x0000000000000000       0x48 build/gd32f4xx_fwdgt.o
- .debug_ranges  0x0000000000000000       0x38 build/gd32f4xx_fwdgt.o
- .debug_line    0x0000000000000000      0x286 build/gd32f4xx_fwdgt.o
- .debug_str     0x0000000000000000      0x289 build/gd32f4xx_fwdgt.o
+                0x0000000000000000       0x58 build/gd32f4xx_fwdgt.o
+ .debug_ranges  0x0000000000000000       0x48 build/gd32f4xx_fwdgt.o
+ .debug_line    0x0000000000000000      0x3d4 build/gd32f4xx_fwdgt.o
+ .debug_str     0x0000000000000000      0x2fb build/gd32f4xx_fwdgt.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_fwdgt.o
- .debug_frame   0x0000000000000000       0x80 build/gd32f4xx_fwdgt.o
+ .debug_frame   0x0000000000000000       0xac build/gd32f4xx_fwdgt.o
  .ARM.attributes
                 0x0000000000000000       0x2e build/gd32f4xx_fwdgt.o
  .text          0x0000000000000000        0x0 build/gd32f4xx_rtc.o
@@ -1496,8 +1500,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000      0x168 build/gd32f4xx_rtc.o
  .debug_ranges  0x0000000000000000      0x250 build/gd32f4xx_rtc.o
- .debug_line    0x0000000000000000     0x15d6 build/gd32f4xx_rtc.o
- .debug_str     0x0000000000000000      0x8be build/gd32f4xx_rtc.o
+ .debug_line    0x0000000000000000     0x1616 build/gd32f4xx_rtc.o
+ .debug_str     0x0000000000000000      0x8e9 build/gd32f4xx_rtc.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_rtc.o
  .debug_frame   0x0000000000000000      0x3fc build/gd32f4xx_rtc.o
  .ARM.attributes
@@ -1510,25 +1514,25 @@ Discarded input sections
  .text.wwdgt_enable
                 0x0000000000000000       0x14 build/gd32f4xx_wwdgt.o
  .text.wwdgt_counter_update
-                0x0000000000000000       0x1c build/gd32f4xx_wwdgt.o
+                0x0000000000000000       0x10 build/gd32f4xx_wwdgt.o
  .text.wwdgt_config
-                0x0000000000000000       0x38 build/gd32f4xx_wwdgt.o
+                0x0000000000000000       0x1c build/gd32f4xx_wwdgt.o
  .text.wwdgt_flag_get
                 0x0000000000000000       0x10 build/gd32f4xx_wwdgt.o
  .text.wwdgt_flag_clear
-                0x0000000000000000       0x14 build/gd32f4xx_wwdgt.o
+                0x0000000000000000       0x10 build/gd32f4xx_wwdgt.o
  .text.wwdgt_interrupt_enable
                 0x0000000000000000       0x14 build/gd32f4xx_wwdgt.o
- .debug_info    0x0000000000000000      0x40c build/gd32f4xx_wwdgt.o
- .debug_abbrev  0x0000000000000000      0x16e build/gd32f4xx_wwdgt.o
- .debug_loc     0x0000000000000000      0x15d build/gd32f4xx_wwdgt.o
+ .debug_info    0x0000000000000000      0x3cf build/gd32f4xx_wwdgt.o
+ .debug_abbrev  0x0000000000000000      0x146 build/gd32f4xx_wwdgt.o
+ .debug_loc     0x0000000000000000       0x9b build/gd32f4xx_wwdgt.o
  .debug_aranges
                 0x0000000000000000       0x50 build/gd32f4xx_wwdgt.o
  .debug_ranges  0x0000000000000000       0x40 build/gd32f4xx_wwdgt.o
- .debug_line    0x0000000000000000      0x229 build/gd32f4xx_wwdgt.o
- .debug_str     0x0000000000000000      0x5af build/gd32f4xx_wwdgt.o
+ .debug_line    0x0000000000000000      0x238 build/gd32f4xx_wwdgt.o
+ .debug_str     0x0000000000000000      0x5ca build/gd32f4xx_wwdgt.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_wwdgt.o
- .debug_frame   0x0000000000000000       0x98 build/gd32f4xx_wwdgt.o
+ .debug_frame   0x0000000000000000       0x8c build/gd32f4xx_wwdgt.o
  .ARM.attributes
                 0x0000000000000000       0x2e build/gd32f4xx_wwdgt.o
  .text          0x0000000000000000        0x0 build/gd32f4xx_dbg.o
@@ -1556,8 +1560,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0x58 build/gd32f4xx_dbg.o
  .debug_ranges  0x0000000000000000       0x48 build/gd32f4xx_dbg.o
- .debug_line    0x0000000000000000      0x1e5 build/gd32f4xx_dbg.o
- .debug_str     0x0000000000000000      0x3ae build/gd32f4xx_dbg.o
+ .debug_line    0x0000000000000000      0x21e build/gd32f4xx_dbg.o
+ .debug_str     0x0000000000000000      0x3d9 build/gd32f4xx_dbg.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_dbg.o
  .debug_frame   0x0000000000000000       0x90 build/gd32f4xx_dbg.o
  .ARM.attributes
@@ -1690,8 +1694,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000      0x178 build/gd32f4xx_sdio.o
  .debug_ranges  0x0000000000000000      0x168 build/gd32f4xx_sdio.o
- .debug_line    0x0000000000000000      0x709 build/gd32f4xx_sdio.o
- .debug_str     0x0000000000000000      0xa2f build/gd32f4xx_sdio.o
+ .debug_line    0x0000000000000000      0x749 build/gd32f4xx_sdio.o
+ .debug_str     0x0000000000000000      0xa5a build/gd32f4xx_sdio.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_sdio.o
  .debug_frame   0x0000000000000000      0x320 build/gd32f4xx_sdio.o
  .ARM.attributes
@@ -1747,8 +1751,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0xc0 build/gd32f4xx_dci.o
  .debug_ranges  0x0000000000000000       0xb0 build/gd32f4xx_dci.o
- .debug_line    0x0000000000000000      0x405 build/gd32f4xx_dci.o
- .debug_str     0x0000000000000000      0x78e build/gd32f4xx_dci.o
+ .debug_line    0x0000000000000000      0x445 build/gd32f4xx_dci.o
+ .debug_str     0x0000000000000000      0x7b9 build/gd32f4xx_dci.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_dci.o
  .debug_frame   0x0000000000000000      0x184 build/gd32f4xx_dci.o
  .ARM.attributes
@@ -1838,8 +1842,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000      0x148 build/gd32f4xx_i2c.o
  .debug_ranges  0x0000000000000000      0x138 build/gd32f4xx_i2c.o
- .debug_line    0x0000000000000000      0x8f0 build/gd32f4xx_i2c.o
- .debug_str     0x0000000000000000      0xd89 build/gd32f4xx_i2c.o
+ .debug_line    0x0000000000000000      0x930 build/gd32f4xx_i2c.o
+ .debug_str     0x0000000000000000      0xdb4 build/gd32f4xx_i2c.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_i2c.o
  .debug_frame   0x0000000000000000      0x2d8 build/gd32f4xx_i2c.o
  .ARM.attributes
@@ -1903,17 +1907,17 @@ Discarded input sections
                 0x0000000000000000        0xc build/gd32f4xx_spi.o
  .text.i2s_full_duplex_mode_config
                 0x0000000000000000       0x28 build/gd32f4xx_spi.o
- .text.qspi_enable
+ .text.spi_quad_enable
                 0x0000000000000000       0x10 build/gd32f4xx_spi.o
- .text.qspi_disable
+ .text.spi_quad_disable
                 0x0000000000000000       0x10 build/gd32f4xx_spi.o
- .text.qspi_write_enable
+ .text.spi_quad_write_enable
                 0x0000000000000000       0x10 build/gd32f4xx_spi.o
- .text.qspi_read_enable
+ .text.spi_quad_read_enable
                 0x0000000000000000       0x10 build/gd32f4xx_spi.o
- .text.qspi_io23_output_enable
+ .text.spi_quad_io23_output_enable
                 0x0000000000000000       0x10 build/gd32f4xx_spi.o
- .text.qspi_io23_output_disable
+ .text.spi_quad_io23_output_disable
                 0x0000000000000000       0x10 build/gd32f4xx_spi.o
  .text.spi_i2s_interrupt_enable
                 0x0000000000000000       0x2c build/gd32f4xx_spi.o
@@ -1931,8 +1935,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000      0x150 build/gd32f4xx_spi.o
  .debug_ranges  0x0000000000000000      0x140 build/gd32f4xx_spi.o
- .debug_line    0x0000000000000000      0x8b2 build/gd32f4xx_spi.o
- .debug_str     0x0000000000000000      0x9dd build/gd32f4xx_spi.o
+ .debug_line    0x0000000000000000      0x8f2 build/gd32f4xx_spi.o
+ .debug_str     0x0000000000000000      0xa20 build/gd32f4xx_spi.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_spi.o
  .debug_frame   0x0000000000000000      0x2ec build/gd32f4xx_spi.o
  .ARM.attributes
@@ -2055,8 +2059,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0xd8 build/gd32f4xx_ipa.o
  .debug_ranges  0x0000000000000000       0xc8 build/gd32f4xx_ipa.o
- .debug_line    0x0000000000000000      0x738 build/gd32f4xx_ipa.o
- .debug_str     0x0000000000000000      0xae6 build/gd32f4xx_ipa.o
+ .debug_line    0x0000000000000000      0x778 build/gd32f4xx_ipa.o
+ .debug_str     0x0000000000000000      0xb11 build/gd32f4xx_ipa.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_ipa.o
  .debug_frame   0x0000000000000000      0x1fc build/gd32f4xx_ipa.o
  .ARM.attributes
@@ -2086,8 +2090,8 @@ Discarded input sections
  .debug_aranges
                 0x0000000000000000       0x58 build/gd32f4xx_syscfg.o
  .debug_ranges  0x0000000000000000       0x48 build/gd32f4xx_syscfg.o
- .debug_line    0x0000000000000000      0x2b6 build/gd32f4xx_syscfg.o
- .debug_str     0x0000000000000000      0x64f build/gd32f4xx_syscfg.o
+ .debug_line    0x0000000000000000      0x2f6 build/gd32f4xx_syscfg.o
+ .debug_str     0x0000000000000000      0x67a build/gd32f4xx_syscfg.o
  .comment       0x0000000000000000       0x4a build/gd32f4xx_syscfg.o
  .debug_frame   0x0000000000000000       0x9c build/gd32f4xx_syscfg.o
  .ARM.attributes
@@ -2563,35 +2567,35 @@ LOAD /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtn
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x0000000000000000     0x4cfe
+.debug_info     0x0000000000000000     0x4d0a
  *(.debug_info .gnu.linkonce.wi.*)
- .debug_info    0x0000000000000000      0x2b2 build/system_gd32f4xx.o
- .debug_info    0x00000000000002b2     0x173d build/gd32f4xx_rcu.o
- .debug_info    0x00000000000019ef     0x131d build/gd32f4xx_usart.o
- .debug_info    0x0000000000002d0c      0x8ba build/gd32f4xx_gpio.o
- .debug_info    0x00000000000035c6      0xe71 build/gd32f4xx_dma.o
- .debug_info    0x0000000000004437      0x8a5 build/main.o
- .debug_info    0x0000000000004cdc       0x22 build/startup_gd32f450_470.o
+ .debug_info    0x0000000000000000      0x2b6 build/system_gd32f4xx.o
+ .debug_info    0x00000000000002b6     0x173d build/gd32f4xx_rcu.o
+ .debug_info    0x00000000000019f3     0x131d build/gd32f4xx_usart.o
+ .debug_info    0x0000000000002d10      0x8ba build/gd32f4xx_gpio.o
+ .debug_info    0x00000000000035ca      0xe75 build/gd32f4xx_dma.o
+ .debug_info    0x000000000000443f      0x8a9 build/main.o
+ .debug_info    0x0000000000004ce8       0x22 build/startup_gd32f450_470.o
 
-.debug_abbrev   0x0000000000000000      0xd21
+.debug_abbrev   0x0000000000000000      0xd36
  *(.debug_abbrev)
- .debug_abbrev  0x0000000000000000      0x17e build/system_gd32f4xx.o
- .debug_abbrev  0x000000000000017e      0x2ff build/gd32f4xx_rcu.o
- .debug_abbrev  0x000000000000047d      0x2b3 build/gd32f4xx_usart.o
- .debug_abbrev  0x0000000000000730      0x235 build/gd32f4xx_gpio.o
- .debug_abbrev  0x0000000000000965      0x21d build/gd32f4xx_dma.o
- .debug_abbrev  0x0000000000000b82      0x18d build/main.o
- .debug_abbrev  0x0000000000000d0f       0x12 build/startup_gd32f450_470.o
+ .debug_abbrev  0x0000000000000000      0x180 build/system_gd32f4xx.o
+ .debug_abbrev  0x0000000000000180      0x2ff build/gd32f4xx_rcu.o
+ .debug_abbrev  0x000000000000047f      0x2b3 build/gd32f4xx_usart.o
+ .debug_abbrev  0x0000000000000732      0x235 build/gd32f4xx_gpio.o
+ .debug_abbrev  0x0000000000000967      0x22e build/gd32f4xx_dma.o
+ .debug_abbrev  0x0000000000000b95      0x18f build/main.o
+ .debug_abbrev  0x0000000000000d24       0x12 build/startup_gd32f450_470.o
 
-.debug_line     0x0000000000000000     0x3261
+.debug_line     0x0000000000000000     0x3407
  *(.debug_line)
- .debug_line    0x0000000000000000      0x392 build/system_gd32f4xx.o
- .debug_line    0x0000000000000392      0xbe1 build/gd32f4xx_rcu.o
- .debug_line    0x0000000000000f73      0xa8e build/gd32f4xx_usart.o
- .debug_line    0x0000000000001a01      0xa6b build/gd32f4xx_gpio.o
- .debug_line    0x000000000000246c      0xb09 build/gd32f4xx_dma.o
- .debug_line    0x0000000000002f75      0x278 build/main.o
- .debug_line    0x00000000000031ed       0x74 build/startup_gd32f450_470.o
+ .debug_line    0x0000000000000000      0x3f0 build/system_gd32f4xx.o
+ .debug_line    0x00000000000003f0      0xc21 build/gd32f4xx_rcu.o
+ .debug_line    0x0000000000001011      0xace build/gd32f4xx_usart.o
+ .debug_line    0x0000000000001adf      0xaab build/gd32f4xx_gpio.o
+ .debug_line    0x000000000000258a      0xb49 build/gd32f4xx_dma.o
+ .debug_line    0x00000000000030d3      0x29b build/main.o
+ .debug_line    0x000000000000336e       0x99 build/startup_gd32f450_470.o
 
 .debug_frame    0x0000000000000000      0xbd8
  *(.debug_frame)
@@ -2602,31 +2606,31 @@ LOAD /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtn
  .debug_frame   0x0000000000000904      0x268 build/gd32f4xx_dma.o
  .debug_frame   0x0000000000000b6c       0x6c build/main.o
 
-.debug_str      0x0000000000000000     0x2854
+.debug_str      0x0000000000000000     0x2906
  *(.debug_str)
- .debug_str     0x0000000000000000      0x252 build/system_gd32f4xx.o
-                                        0x2b5 (size before relaxing)
- .debug_str     0x0000000000000252     0x149f build/gd32f4xx_rcu.o
-                                       0x167c (size before relaxing)
- .debug_str     0x00000000000016f1      0x9a3 build/gd32f4xx_usart.o
-                                        0xee3 (size before relaxing)
- .debug_str     0x0000000000002094      0x17a build/gd32f4xx_gpio.o
-                                        0x67b (size before relaxing)
- .debug_str     0x000000000000220e      0x5e1 build/gd32f4xx_dma.o
-                                        0x7cf (size before relaxing)
- .debug_str     0x00000000000027ef       0x40 build/main.o
-                                        0x76e (size before relaxing)
- .debug_str     0x000000000000282f       0x25 build/startup_gd32f450_470.o
-                                         0x68 (size before relaxing)
+ .debug_str     0x0000000000000000      0x26b build/system_gd32f4xx.o
+                                        0x2ce (size before relaxing)
+ .debug_str     0x000000000000026b     0x14bc build/gd32f4xx_rcu.o
+                                       0x16a7 (size before relaxing)
+ .debug_str     0x0000000000001727      0x9c0 build/gd32f4xx_usart.o
+                                        0xf0e (size before relaxing)
+ .debug_str     0x00000000000020e7      0x197 build/gd32f4xx_gpio.o
+                                        0x6a6 (size before relaxing)
+ .debug_str     0x000000000000227e      0x5fe build/gd32f4xx_dma.o
+                                        0x7fa (size before relaxing)
+ .debug_str     0x000000000000287c       0x40 build/main.o
+                                        0x77c (size before relaxing)
+ .debug_str     0x00000000000028bc       0x4a build/startup_gd32f450_470.o
+                                         0x9b (size before relaxing)
 
-.debug_loc      0x0000000000000000     0x39b3
+.debug_loc      0x0000000000000000     0x39b5
  *(.debug_loc)
- .debug_loc     0x0000000000000000      0x1a0 build/system_gd32f4xx.o
- .debug_loc     0x00000000000001a0     0x100f build/gd32f4xx_rcu.o
- .debug_loc     0x00000000000011af      0x989 build/gd32f4xx_usart.o
- .debug_loc     0x0000000000001b38      0x9f8 build/gd32f4xx_gpio.o
- .debug_loc     0x0000000000002530     0x13e9 build/gd32f4xx_dma.o
- .debug_loc     0x0000000000003919       0x9a build/main.o
+ .debug_loc     0x0000000000000000      0x1a2 build/system_gd32f4xx.o
+ .debug_loc     0x00000000000001a2     0x100f build/gd32f4xx_rcu.o
+ .debug_loc     0x00000000000011b1      0x989 build/gd32f4xx_usart.o
+ .debug_loc     0x0000000000001b3a      0x9f8 build/gd32f4xx_gpio.o
+ .debug_loc     0x0000000000002532     0x13e9 build/gd32f4xx_dma.o
+ .debug_loc     0x000000000000391b       0x9a build/main.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -2645,14 +2649,14 @@ LOAD /Applications/ARM/bin/../lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/crtn
 OUTPUT(build/450_led.elf elf32-littlearm)
 LOAD linker stubs
 
-.debug_ranges   0x0000000000000000      0x608
- .debug_ranges  0x0000000000000000       0x50 build/system_gd32f4xx.o
- .debug_ranges  0x0000000000000050      0x220 build/gd32f4xx_rcu.o
- .debug_ranges  0x0000000000000270      0x1b8 build/gd32f4xx_usart.o
- .debug_ranges  0x0000000000000428       0x80 build/gd32f4xx_gpio.o
- .debug_ranges  0x00000000000004a8      0x108 build/gd32f4xx_dma.o
- .debug_ranges  0x00000000000005b0       0x38 build/main.o
- .debug_ranges  0x00000000000005e8       0x20 build/startup_gd32f450_470.o
+.debug_ranges   0x0000000000000000      0x5f0
+ .debug_ranges  0x0000000000000000       0x38 build/system_gd32f4xx.o
+ .debug_ranges  0x0000000000000038      0x220 build/gd32f4xx_rcu.o
+ .debug_ranges  0x0000000000000258      0x1b8 build/gd32f4xx_usart.o
+ .debug_ranges  0x0000000000000410       0x80 build/gd32f4xx_gpio.o
+ .debug_ranges  0x0000000000000490      0x108 build/gd32f4xx_dma.o
+ .debug_ranges  0x0000000000000598       0x38 build/main.o
+ .debug_ranges  0x00000000000005d0       0x20 build/startup_gd32f450_470.o
 
 Cross Reference Table
 
@@ -2824,10 +2828,10 @@ adc_interrupt_flag_get                            build/gd32f4xx_adc.o
 adc_oversample_mode_config                        build/gd32f4xx_adc.o
 adc_oversample_mode_disable                       build/gd32f4xx_adc.o
 adc_oversample_mode_enable                        build/gd32f4xx_adc.o
-adc_regular_channel_config                        build/gd32f4xx_adc.o
-adc_regular_data_read                             build/gd32f4xx_adc.o
-adc_regular_software_startconv_flag_get           build/gd32f4xx_adc.o
 adc_resolution_config                             build/gd32f4xx_adc.o
+adc_routine_channel_config                        build/gd32f4xx_adc.o
+adc_routine_data_read                             build/gd32f4xx_adc.o
+adc_routine_software_startconv_flag_get           build/gd32f4xx_adc.o
 adc_software_trigger_enable                       build/gd32f4xx_adc.o
 adc_special_function_config                       build/gd32f4xx_adc.o
 adc_sync_delay_config                             build/gd32f4xx_adc.o
@@ -2835,9 +2839,9 @@ adc_sync_dma_config                               build/gd32f4xx_adc.o
 adc_sync_dma_request_after_last_disable           build/gd32f4xx_adc.o
 adc_sync_dma_request_after_last_enable            build/gd32f4xx_adc.o
 adc_sync_mode_config                              build/gd32f4xx_adc.o
-adc_sync_regular_data_read                        build/gd32f4xx_adc.o
+adc_sync_routine_data_read                        build/gd32f4xx_adc.o
 adc_watchdog_disable                              build/gd32f4xx_adc.o
-adc_watchdog_group_channel_enable                 build/gd32f4xx_adc.o
+adc_watchdog_sequence_channel_enable              build/gd32f4xx_adc.o
 adc_watchdog_single_channel_disable               build/gd32f4xx_adc.o
 adc_watchdog_single_channel_enable                build/gd32f4xx_adc.o
 adc_watchdog_threshold_config                     build/gd32f4xx_adc.o
@@ -2896,7 +2900,6 @@ ctc_refsource_polarity_config                     build/gd32f4xx_ctc.o
 ctc_refsource_prescaler_config                    build/gd32f4xx_ctc.o
 ctc_refsource_signal_select                       build/gd32f4xx_ctc.o
 ctc_software_refsource_pulse_generate             build/gd32f4xx_ctc.o
-ctc_usbsof_signal_select                          build/gd32f4xx_ctc.o
 dac_concurrent_data_set                           build/gd32f4xx_dac.o
 dac_concurrent_disable                            build/gd32f4xx_dac.o
 dac_concurrent_enable                             build/gd32f4xx_dac.o
@@ -3122,6 +3125,7 @@ exmc_sdram_init                                   build/gd32f4xx_exmc.o
 exmc_sdram_readsample_config                      build/gd32f4xx_exmc.o
 exmc_sdram_readsample_enable                      build/gd32f4xx_exmc.o
 exmc_sdram_refresh_count_set                      build/gd32f4xx_exmc.o
+exmc_sdram_struct_command_para_init               build/gd32f4xx_exmc.o
 exmc_sdram_struct_para_init                       build/gd32f4xx_exmc.o
 exmc_sdram_write_protection_config                build/gd32f4xx_exmc.o
 exmc_sqpipsram_deinit                             build/gd32f4xx_exmc.o
@@ -3168,6 +3172,8 @@ fwdgt_config                                      build/gd32f4xx_fwdgt.o
 fwdgt_counter_reload                              build/gd32f4xx_fwdgt.o
 fwdgt_enable                                      build/gd32f4xx_fwdgt.o
 fwdgt_flag_get                                    build/gd32f4xx_fwdgt.o
+fwdgt_prescaler_value_config                      build/gd32f4xx_fwdgt.o
+fwdgt_reload_value_config                         build/gd32f4xx_fwdgt.o
 fwdgt_write_disable                               build/gd32f4xx_fwdgt.o
 fwdgt_write_enable                                build/gd32f4xx_fwdgt.o
 g_pfnVectors                                      build/startup_gd32f450_470.o
@@ -3315,12 +3321,6 @@ pmu_to_sleepmode                                  build/gd32f4xx_pmu.o
 pmu_to_standbymode                                build/gd32f4xx_pmu.o
 pmu_wakeup_pin_disable                            build/gd32f4xx_pmu.o
 pmu_wakeup_pin_enable                             build/gd32f4xx_pmu.o
-qspi_disable                                      build/gd32f4xx_spi.o
-qspi_enable                                       build/gd32f4xx_spi.o
-qspi_io23_output_disable                          build/gd32f4xx_spi.o
-qspi_io23_output_enable                           build/gd32f4xx_spi.o
-qspi_read_enable                                  build/gd32f4xx_spi.o
-qspi_write_enable                                 build/gd32f4xx_spi.o
 rcu_ahb_clock_config                              build/gd32f4xx_rcu.o
 rcu_all_reset_flag_clear                          build/gd32f4xx_rcu.o
 rcu_apb1_clock_config                             build/gd32f4xx_rcu.o
@@ -3529,6 +3529,12 @@ spi_nss_internal_high                             build/gd32f4xx_spi.o
 spi_nss_internal_low                              build/gd32f4xx_spi.o
 spi_nss_output_disable                            build/gd32f4xx_spi.o
 spi_nss_output_enable                             build/gd32f4xx_spi.o
+spi_quad_disable                                  build/gd32f4xx_spi.o
+spi_quad_enable                                   build/gd32f4xx_spi.o
+spi_quad_io23_output_disable                      build/gd32f4xx_spi.o
+spi_quad_io23_output_enable                       build/gd32f4xx_spi.o
+spi_quad_read_enable                              build/gd32f4xx_spi.o
+spi_quad_write_enable                             build/gd32f4xx_spi.o
 spi_struct_para_init                              build/gd32f4xx_spi.o
 spi_ti_mode_disable                               build/gd32f4xx_spi.o
 spi_ti_mode_enable                                build/gd32f4xx_spi.o

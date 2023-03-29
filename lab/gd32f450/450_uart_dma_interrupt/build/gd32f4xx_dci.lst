@@ -1,4 +1,4 @@
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -26,64 +26,64 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
   23              		.thumb_func
   25              	dci_deinit:
   26              	.LFB116:
-  27              		.file 1 "lib/GD32F4xx/Source/gd32f4xx_dci.c"
-   1:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
-   2:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \file    gd32f4xx_dci.c
-   3:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief   DCI driver
-   4:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
-   5:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-   6:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-   7:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-   8:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \version 2022-03-09, V3.0.0, firmware for GD32F4xx
-   9:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
-  10:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
-  11:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*
-  12:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     Copyright (c) 2022, GigaDevice Semiconductor Inc.
-  13:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
-  14:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     Redistribution and use in source and binary forms, with or without modification,
-  15:lib/GD32F4xx/Source/gd32f4xx_dci.c **** are permitted provided that the following conditions are met:
-  16:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
-  17:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     1. Redistributions of source code must retain the above copyright notice, this
-  18:lib/GD32F4xx/Source/gd32f4xx_dci.c ****        list of conditions and the following disclaimer.
-  19:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     2. Redistributions in binary form must reproduce the above copyright notice,
-  20:lib/GD32F4xx/Source/gd32f4xx_dci.c ****        this list of conditions and the following disclaimer in the documentation
-  21:lib/GD32F4xx/Source/gd32f4xx_dci.c ****        and/or other materials provided with the distribution.
-  22:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     3. Neither the name of the copyright holder nor the names of its contributors
-  23:lib/GD32F4xx/Source/gd32f4xx_dci.c ****        may be used to endorse or promote products derived from this software without
-  24:lib/GD32F4xx/Source/gd32f4xx_dci.c ****        specific prior written permission.
-  25:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
-  26:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  27:lib/GD32F4xx/Source/gd32f4xx_dci.c **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-  28:lib/GD32F4xx/Source/gd32f4xx_dci.c **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-  29:lib/GD32F4xx/Source/gd32f4xx_dci.c **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-  30:lib/GD32F4xx/Source/gd32f4xx_dci.c **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-  31:lib/GD32F4xx/Source/gd32f4xx_dci.c **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 2
+  27              		.file 1 "../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c"
+   1:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+   2:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \file    gd32f4xx_dci.c
+   3:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief   DCI driver
+   4:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+   5:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \version 2016-08-15, V1.0.0, firmware for GD32F4xx
+   6:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \version 2018-12-12, V2.0.0, firmware for GD32F4xx
+   7:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \version 2020-09-30, V2.1.0, firmware for GD32F4xx
+   8:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+   9:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+  10:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+  11:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*
+  12:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     Copyright (c) 2022, GigaDevice Semiconductor Inc.
+  13:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+  14:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     Redistribution and use in source and binary forms, with or without modification,
+  15:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** are permitted provided that the following conditions are met:
+  16:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+  17:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     1. Redistributions of source code must retain the above copyright notice, this
+  18:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****        list of conditions and the following disclaimer.
+  19:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     2. Redistributions in binary form must reproduce the above copyright notice,
+  20:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****        this list of conditions and the following disclaimer in the documentation
+  21:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****        and/or other materials provided with the distribution.
+  22:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     3. Neither the name of the copyright holder nor the names of its contributors
+  23:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****        may be used to endorse or promote products derived from this software without
+  24:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****        specific prior written permission.
+  25:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+  26:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  27:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  28:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  29:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  30:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+  31:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 2
 
 
-  32:lib/GD32F4xx/Source/gd32f4xx_dci.c **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-  33:lib/GD32F4xx/Source/gd32f4xx_dci.c **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-  34:lib/GD32F4xx/Source/gd32f4xx_dci.c **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
-  35:lib/GD32F4xx/Source/gd32f4xx_dci.c **** OF SUCH DAMAGE.
-  36:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
-  37:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
-  38:lib/GD32F4xx/Source/gd32f4xx_dci.c **** #include "gd32f4xx_dci.h"
-  39:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
-  40:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
-  41:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    DCI deinit
-  42:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  none
-  43:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
-  44:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     none
-  45:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
-  46:lib/GD32F4xx/Source/gd32f4xx_dci.c **** void dci_deinit(void)
-  47:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+  32:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+  33:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  34:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+  35:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** OF SUCH DAMAGE.
+  36:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+  37:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+  38:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** #include "gd32f4xx_dci.h"
+  39:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+  40:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+  41:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    DCI deinit
+  42:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  none
+  43:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+  44:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     none
+  45:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+  46:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** void dci_deinit(void)
+  47:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
   28              		.loc 1 47 1 view -0
   29              		.cfi_startproc
   30              		@ args = 0, pretend = 0, frame = 0
   31              		@ frame_needed = 0, uses_anonymous_args = 0
-  48:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     rcu_periph_reset_enable(RCU_DCIRST);
+  48:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     rcu_periph_reset_enable(RCU_DCIRST);
   32              		.loc 1 48 5 view .LVU1
-  47:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     rcu_periph_reset_enable(RCU_DCIRST);
+  47:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     rcu_periph_reset_enable(RCU_DCIRST);
   33              		.loc 1 47 1 is_stmt 0 view .LVU2
   34 0000 08B5     		push	{r3, lr}
   35              	.LCFI0:
@@ -94,16 +94,16 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
   40 0002 4FF4A060 		mov	r0, #1280
   41 0006 FFF7FEFF 		bl	rcu_periph_reset_enable
   42              	.LVL0:
-  49:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     rcu_periph_reset_disable(RCU_DCIRST);
+  49:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     rcu_periph_reset_disable(RCU_DCIRST);
   43              		.loc 1 49 5 is_stmt 1 view .LVU4
-  50:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+  50:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
   44              		.loc 1 50 1 is_stmt 0 view .LVU5
   45 000a BDE80840 		pop	{r3, lr}
   46              	.LCFI1:
   47              		.cfi_restore 14
   48              		.cfi_restore 3
   49              		.cfi_def_cfa_offset 0
-  49:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     rcu_periph_reset_disable(RCU_DCIRST);
+  49:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     rcu_periph_reset_disable(RCU_DCIRST);
   50              		.loc 1 49 5 view .LVU6
   51 000e 4FF4A060 		mov	r0, #1280
   52 0012 FFF7FEBF 		b	rcu_periph_reset_disable
@@ -118,44 +118,44 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
   62              		.thumb
   63              		.thumb_func
   65              	dci_init:
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 3
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 3
 
 
   66              	.LVL2:
   67              	.LFB117:
-  51:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
-  52:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
-  53:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    initialize DCI registers
-  54:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  dci_struct: DCI parameter initialization structure
-  55:lib/GD32F4xx/Source/gd32f4xx_dci.c ****                 members of the structure and the member values are shown as below:
-  56:lib/GD32F4xx/Source/gd32f4xx_dci.c ****                 capture_mode    : DCI_CAPTURE_MODE_CONTINUOUS, DCI_CAPTURE_MODE_SNAPSHOT
-  57:lib/GD32F4xx/Source/gd32f4xx_dci.c ****                 colck_polarity  : DCI_CK_POLARITY_FALLING, DCI_CK_POLARITY_RISING
-  58:lib/GD32F4xx/Source/gd32f4xx_dci.c ****                 hsync_polarity  : DCI_HSYNC_POLARITY_LOW, DCI_HSYNC_POLARITY_HIGH
-  59:lib/GD32F4xx/Source/gd32f4xx_dci.c ****                 vsync_polarity  : DCI_VSYNC_POLARITY_LOW, DCI_VSYNC_POLARITY_HIGH
-  60:lib/GD32F4xx/Source/gd32f4xx_dci.c ****                 frame_rate      : DCI_FRAME_RATE_ALL, DCI_FRAME_RATE_1_2, DCI_FRAME_RATE_1_4
-  61:lib/GD32F4xx/Source/gd32f4xx_dci.c ****                 interface_format: DCI_INTERFACE_FORMAT_8BITS, DCI_INTERFACE_FORMAT_10BITS,
-  62:lib/GD32F4xx/Source/gd32f4xx_dci.c ****                                       DCI_INTERFACE_FORMAT_12BITS, DCI_INTERFACE_FORMAT_14BITS
-  63:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
-  64:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     none
-  65:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
-  66:lib/GD32F4xx/Source/gd32f4xx_dci.c **** void dci_init(dci_parameter_struct *dci_struct)
-  67:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+  51:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+  52:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+  53:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    initialize DCI registers
+  54:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  dci_struct: DCI parameter initialization structure
+  55:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****                 members of the structure and the member values are shown as below:
+  56:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****                 capture_mode    : DCI_CAPTURE_MODE_CONTINUOUS, DCI_CAPTURE_MODE_SNAPSHOT
+  57:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****                 colck_polarity  : DCI_CK_POLARITY_FALLING, DCI_CK_POLARITY_RISING
+  58:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****                 hsync_polarity  : DCI_HSYNC_POLARITY_LOW, DCI_HSYNC_POLARITY_HIGH
+  59:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****                 vsync_polarity  : DCI_VSYNC_POLARITY_LOW, DCI_VSYNC_POLARITY_HIGH
+  60:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****                 frame_rate      : DCI_FRAME_RATE_ALL, DCI_FRAME_RATE_1_2, DCI_FRAME_RATE_1_4
+  61:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****                 interface_format: DCI_INTERFACE_FORMAT_8BITS, DCI_INTERFACE_FORMAT_10BITS,
+  62:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****                                       DCI_INTERFACE_FORMAT_12BITS, DCI_INTERFACE_FORMAT_14BITS
+  63:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+  64:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     none
+  65:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+  66:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** void dci_init(dci_parameter_struct *dci_struct)
+  67:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
   68              		.loc 1 67 1 is_stmt 1 view -0
   69              		.cfi_startproc
   70              		@ args = 0, pretend = 0, frame = 0
   71              		@ frame_needed = 0, uses_anonymous_args = 0
   72              		@ link register save eliminated.
-  68:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     uint32_t reg = 0U;
+  68:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     uint32_t reg = 0U;
   73              		.loc 1 68 5 view .LVU8
-  69:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     /* disable capture function and DCI */
-  70:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_CTL &= ~(DCI_CTL_CAP | DCI_CTL_DCIEN);
+  69:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     /* disable capture function and DCI */
+  70:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_CTL &= ~(DCI_CTL_CAP | DCI_CTL_DCIEN);
   74              		.loc 1 70 5 view .LVU9
   75              		.loc 1 70 13 is_stmt 0 view .LVU10
   76 0000 0A4A     		ldr	r2, .L6
   77 0002 1368     		ldr	r3, [r2]
   78 0004 23F48043 		bic	r3, r3, #16384
   79 0008 23F00103 		bic	r3, r3, #1
-  67:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     uint32_t reg = 0U;
+  67:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     uint32_t reg = 0U;
   80              		.loc 1 67 1 view .LVU11
   81 000c 30B4     		push	{r4, r5}
   82              	.LCFI2:
@@ -164,44 +164,44 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
   85              		.cfi_offset 5, -4
   86              		.loc 1 70 13 view .LVU12
   87 000e 1360     		str	r3, [r2]
-  71:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     /* configure DCI parameter */
-  72:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     reg |= dci_struct->capture_mode;
+  71:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     /* configure DCI parameter */
+  72:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     reg |= dci_struct->capture_mode;
   88              		.loc 1 72 5 is_stmt 1 view .LVU13
   89              	.LVL3:
-  73:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     reg |= dci_struct->clock_polarity;
+  73:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     reg |= dci_struct->clock_polarity;
   90              		.loc 1 73 5 view .LVU14
   91              		.loc 1 73 9 is_stmt 0 view .LVU15
   92 0010 D0E90034 		ldrd	r3, r4, [r0]
-  74:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     reg |= dci_struct->hsync_polarity;
+  74:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     reg |= dci_struct->hsync_polarity;
   93              		.loc 1 74 9 view .LVU16
   94 0014 8168     		ldr	r1, [r0, #8]
-  73:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     reg |= dci_struct->clock_polarity;
+  73:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     reg |= dci_struct->clock_polarity;
   95              		.loc 1 73 9 view .LVU17
   96 0016 2343     		orrs	r3, r3, r4
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 4
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 4
 
 
   97              	.LVL4:
   98              		.loc 1 74 5 is_stmt 1 view .LVU18
-  75:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     reg |= dci_struct->vsync_polarity;
-  76:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     reg |= dci_struct->frame_rate;
+  75:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     reg |= dci_struct->vsync_polarity;
+  76:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     reg |= dci_struct->frame_rate;
   99              		.loc 1 76 9 is_stmt 0 view .LVU19
  100 0018 D0E90354 		ldrd	r5, r4, [r0, #12]
-  74:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     reg |= dci_struct->hsync_polarity;
+  74:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     reg |= dci_struct->hsync_polarity;
  101              		.loc 1 74 9 view .LVU20
  102 001c 0B43     		orrs	r3, r3, r1
  103              	.LVL5:
-  75:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     reg |= dci_struct->vsync_polarity;
+  75:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     reg |= dci_struct->vsync_polarity;
  104              		.loc 1 75 5 is_stmt 1 view .LVU21
-  75:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     reg |= dci_struct->vsync_polarity;
+  75:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     reg |= dci_struct->vsync_polarity;
  105              		.loc 1 75 9 is_stmt 0 view .LVU22
  106 001e 2B43     		orrs	r3, r3, r5
  107              	.LVL6:
  108              		.loc 1 76 5 is_stmt 1 view .LVU23
-  77:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     reg |= dci_struct->interface_format;
+  77:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     reg |= dci_struct->interface_format;
  109              		.loc 1 77 9 is_stmt 0 view .LVU24
  110 0020 4169     		ldr	r1, [r0, #20]
-  76:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     reg |= dci_struct->interface_format;
+  76:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     reg |= dci_struct->interface_format;
  111              		.loc 1 76 9 view .LVU25
  112 0022 2343     		orrs	r3, r3, r4
  113              	.LVL7:
@@ -209,17 +209,17 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  115              		.loc 1 77 9 is_stmt 0 view .LVU27
  116 0024 0B43     		orrs	r3, r3, r1
  117              	.LVL8:
-  78:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
-  79:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_CTL = reg;
+  78:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+  79:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_CTL = reg;
  118              		.loc 1 79 5 is_stmt 1 view .LVU28
-  80:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+  80:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  119              		.loc 1 80 1 is_stmt 0 view .LVU29
  120 0026 30BC     		pop	{r4, r5}
  121              	.LCFI3:
  122              		.cfi_restore 5
  123              		.cfi_restore 4
  124              		.cfi_def_cfa_offset 0
-  79:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+  79:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  125              		.loc 1 79 13 view .LVU30
  126 0028 1360     		str	r3, [r2]
  127              		.loc 1 80 1 view .LVU31
@@ -238,32 +238,32 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  141              		.thumb
  142              		.thumb_func
  144              	dci_enable:
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 5
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 5
 
 
  145              	.LFB118:
-  81:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
-  82:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
-  83:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    enable DCI function
-  84:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  none
-  85:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
-  86:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     none
-  87:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
-  88:lib/GD32F4xx/Source/gd32f4xx_dci.c **** void dci_enable(void)
-  89:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+  81:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+  82:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+  83:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    enable DCI function
+  84:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  none
+  85:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+  86:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     none
+  87:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+  88:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** void dci_enable(void)
+  89:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  146              		.loc 1 89 1 is_stmt 1 view -0
  147              		.cfi_startproc
  148              		@ args = 0, pretend = 0, frame = 0
  149              		@ frame_needed = 0, uses_anonymous_args = 0
  150              		@ link register save eliminated.
-  90:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_CTL |= DCI_CTL_DCIEN;
+  90:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_CTL |= DCI_CTL_DCIEN;
  151              		.loc 1 90 5 view .LVU33
  152              		.loc 1 90 13 is_stmt 0 view .LVU34
  153 0000 024A     		ldr	r2, .L9
  154 0002 1368     		ldr	r3, [r2]
  155 0004 43F48043 		orr	r3, r3, #16384
  156 0008 1360     		str	r3, [r2]
-  91:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+  91:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  157              		.loc 1 91 1 view .LVU35
  158 000a 7047     		bx	lr
  159              	.L10:
@@ -281,31 +281,31 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  172              		.thumb_func
  174              	dci_disable:
  175              	.LFB119:
-  92:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
-  93:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
-  94:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    disable DCI function
-  95:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  none
-  96:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
-  97:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     none
-  98:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
-  99:lib/GD32F4xx/Source/gd32f4xx_dci.c **** void dci_disable(void)
- 100:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+  92:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+  93:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+  94:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    disable DCI function
+  95:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  none
+  96:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+  97:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     none
+  98:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+  99:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** void dci_disable(void)
+ 100:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  176              		.loc 1 100 1 is_stmt 1 view -0
  177              		.cfi_startproc
  178              		@ args = 0, pretend = 0, frame = 0
  179              		@ frame_needed = 0, uses_anonymous_args = 0
  180              		@ link register save eliminated.
- 101:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_CTL &= ~DCI_CTL_DCIEN;
+ 101:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_CTL &= ~DCI_CTL_DCIEN;
  181              		.loc 1 101 5 view .LVU37
  182              		.loc 1 101 13 is_stmt 0 view .LVU38
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 6
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 6
 
 
  183 0000 024A     		ldr	r2, .L12
  184 0002 1368     		ldr	r3, [r2]
  185 0004 23F48043 		bic	r3, r3, #16384
  186 0008 1360     		str	r3, [r2]
- 102:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+ 102:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  187              		.loc 1 102 1 view .LVU39
  188 000a 7047     		bx	lr
  189              	.L13:
@@ -323,28 +323,28 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  202              		.thumb_func
  204              	dci_capture_enable:
  205              	.LFB120:
- 103:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
- 104:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
- 105:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    enable DCI capture
- 106:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  none
- 107:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
- 108:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     none
- 109:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
- 110:lib/GD32F4xx/Source/gd32f4xx_dci.c **** void dci_capture_enable(void)
- 111:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+ 103:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+ 104:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+ 105:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    enable DCI capture
+ 106:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  none
+ 107:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+ 108:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     none
+ 109:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+ 110:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** void dci_capture_enable(void)
+ 111:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  206              		.loc 1 111 1 is_stmt 1 view -0
  207              		.cfi_startproc
  208              		@ args = 0, pretend = 0, frame = 0
  209              		@ frame_needed = 0, uses_anonymous_args = 0
  210              		@ link register save eliminated.
- 112:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_CTL |= DCI_CTL_CAP;
+ 112:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_CTL |= DCI_CTL_CAP;
  211              		.loc 1 112 5 view .LVU41
  212              		.loc 1 112 13 is_stmt 0 view .LVU42
  213 0000 024A     		ldr	r2, .L15
  214 0002 1368     		ldr	r3, [r2]
  215 0004 43F00103 		orr	r3, r3, #1
  216 0008 1360     		str	r3, [r2]
- 113:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+ 113:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  217              		.loc 1 113 1 view .LVU43
  218 000a 7047     		bx	lr
  219              	.L16:
@@ -358,35 +358,35 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  228              		.p2align 2,,3
  229              		.global	dci_capture_disable
  230              		.syntax unified
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 7
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 7
 
 
  231              		.thumb
  232              		.thumb_func
  234              	dci_capture_disable:
  235              	.LFB121:
- 114:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
- 115:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
- 116:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    disable DCI capture
- 117:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  none
- 118:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
- 119:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     none
- 120:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
- 121:lib/GD32F4xx/Source/gd32f4xx_dci.c **** void dci_capture_disable(void)
- 122:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+ 114:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+ 115:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+ 116:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    disable DCI capture
+ 117:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  none
+ 118:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+ 119:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     none
+ 120:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+ 121:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** void dci_capture_disable(void)
+ 122:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  236              		.loc 1 122 1 is_stmt 1 view -0
  237              		.cfi_startproc
  238              		@ args = 0, pretend = 0, frame = 0
  239              		@ frame_needed = 0, uses_anonymous_args = 0
  240              		@ link register save eliminated.
- 123:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_CTL &= ~DCI_CTL_CAP;
+ 123:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_CTL &= ~DCI_CTL_CAP;
  241              		.loc 1 123 5 view .LVU45
  242              		.loc 1 123 13 is_stmt 0 view .LVU46
  243 0000 024A     		ldr	r2, .L18
  244 0002 1368     		ldr	r3, [r2]
  245 0004 23F00103 		bic	r3, r3, #1
  246 0008 1360     		str	r3, [r2]
- 124:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+ 124:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  247              		.loc 1 124 1 view .LVU47
  248 000a 7047     		bx	lr
  249              	.L19:
@@ -404,31 +404,31 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  262              		.thumb_func
  264              	dci_jpeg_enable:
  265              	.LFB122:
- 125:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
- 126:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
- 127:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    enable DCI jpeg mode
- 128:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  none
- 129:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
- 130:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     none
- 131:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
- 132:lib/GD32F4xx/Source/gd32f4xx_dci.c **** void dci_jpeg_enable(void)
- 133:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+ 125:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+ 126:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+ 127:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    enable DCI jpeg mode
+ 128:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  none
+ 129:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+ 130:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     none
+ 131:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+ 132:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** void dci_jpeg_enable(void)
+ 133:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  266              		.loc 1 133 1 is_stmt 1 view -0
  267              		.cfi_startproc
  268              		@ args = 0, pretend = 0, frame = 0
  269              		@ frame_needed = 0, uses_anonymous_args = 0
  270              		@ link register save eliminated.
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 8
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 8
 
 
- 134:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_CTL |= DCI_CTL_JM;
+ 134:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_CTL |= DCI_CTL_JM;
  271              		.loc 1 134 5 view .LVU49
  272              		.loc 1 134 13 is_stmt 0 view .LVU50
  273 0000 024A     		ldr	r2, .L21
  274 0002 1368     		ldr	r3, [r2]
  275 0004 43F00803 		orr	r3, r3, #8
  276 0008 1360     		str	r3, [r2]
- 135:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+ 135:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  277              		.loc 1 135 1 view .LVU51
  278 000a 7047     		bx	lr
  279              	.L22:
@@ -446,28 +446,28 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  292              		.thumb_func
  294              	dci_jpeg_disable:
  295              	.LFB123:
- 136:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
- 137:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
- 138:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    disable DCI jpeg mode
- 139:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  none
- 140:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
- 141:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     none
- 142:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
- 143:lib/GD32F4xx/Source/gd32f4xx_dci.c **** void dci_jpeg_disable(void)
- 144:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+ 136:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+ 137:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+ 138:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    disable DCI jpeg mode
+ 139:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  none
+ 140:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+ 141:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     none
+ 142:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+ 143:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** void dci_jpeg_disable(void)
+ 144:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  296              		.loc 1 144 1 is_stmt 1 view -0
  297              		.cfi_startproc
  298              		@ args = 0, pretend = 0, frame = 0
  299              		@ frame_needed = 0, uses_anonymous_args = 0
  300              		@ link register save eliminated.
- 145:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_CTL &= ~DCI_CTL_JM;
+ 145:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_CTL &= ~DCI_CTL_JM;
  301              		.loc 1 145 5 view .LVU53
  302              		.loc 1 145 13 is_stmt 0 view .LVU54
  303 0000 024A     		ldr	r2, .L24
  304 0002 1368     		ldr	r3, [r2]
  305 0004 23F00803 		bic	r3, r3, #8
  306 0008 1360     		str	r3, [r2]
- 146:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+ 146:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  307              		.loc 1 146 1 view .LVU55
  308 000a 7047     		bx	lr
  309              	.L25:
@@ -478,7 +478,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  314              	.LFE123:
  316              		.section	.text.dci_crop_window_enable,"ax",%progbits
  317              		.align	1
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 9
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 9
 
 
  318              		.p2align 2,,3
@@ -488,28 +488,28 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  322              		.thumb_func
  324              	dci_crop_window_enable:
  325              	.LFB124:
- 147:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
- 148:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
- 149:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    enable cropping window function
- 150:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  none
- 151:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
- 152:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     none
- 153:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
- 154:lib/GD32F4xx/Source/gd32f4xx_dci.c **** void dci_crop_window_enable(void)
- 155:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+ 147:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+ 148:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+ 149:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    enable cropping window function
+ 150:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  none
+ 151:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+ 152:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     none
+ 153:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+ 154:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** void dci_crop_window_enable(void)
+ 155:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  326              		.loc 1 155 1 is_stmt 1 view -0
  327              		.cfi_startproc
  328              		@ args = 0, pretend = 0, frame = 0
  329              		@ frame_needed = 0, uses_anonymous_args = 0
  330              		@ link register save eliminated.
- 156:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_CTL |= DCI_CTL_WDEN;
+ 156:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_CTL |= DCI_CTL_WDEN;
  331              		.loc 1 156 5 view .LVU57
  332              		.loc 1 156 13 is_stmt 0 view .LVU58
  333 0000 024A     		ldr	r2, .L27
  334 0002 1368     		ldr	r3, [r2]
  335 0004 43F00403 		orr	r3, r3, #4
  336 0008 1360     		str	r3, [r2]
- 157:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+ 157:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  337              		.loc 1 157 1 view .LVU59
  338 000a 7047     		bx	lr
  339              	.L28:
@@ -527,31 +527,31 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  352              		.thumb_func
  354              	dci_crop_window_disable:
  355              	.LFB125:
- 158:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
- 159:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
- 160:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    disable cropping window function
- 161:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  none
- 162:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
- 163:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     none
- 164:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
- 165:lib/GD32F4xx/Source/gd32f4xx_dci.c **** void dci_crop_window_disable(void)
- 166:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+ 158:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+ 159:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+ 160:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    disable cropping window function
+ 161:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  none
+ 162:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+ 163:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     none
+ 164:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+ 165:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** void dci_crop_window_disable(void)
+ 166:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  356              		.loc 1 166 1 is_stmt 1 view -0
  357              		.cfi_startproc
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 10
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 10
 
 
  358              		@ args = 0, pretend = 0, frame = 0
  359              		@ frame_needed = 0, uses_anonymous_args = 0
  360              		@ link register save eliminated.
- 167:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_CTL &= ~DCI_CTL_WDEN;
+ 167:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_CTL &= ~DCI_CTL_WDEN;
  361              		.loc 1 167 5 view .LVU61
  362              		.loc 1 167 13 is_stmt 0 view .LVU62
  363 0000 024A     		ldr	r2, .L30
  364 0002 1368     		ldr	r3, [r2]
  365 0004 23F00403 		bic	r3, r3, #4
  366 0008 1360     		str	r3, [r2]
- 168:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+ 168:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  367              		.loc 1 168 1 view .LVU63
  368 000a 7047     		bx	lr
  369              	.L31:
@@ -570,26 +570,26 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  384              	dci_crop_window_config:
  385              	.LVL9:
  386              	.LFB126:
- 169:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
- 170:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
- 171:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    configure DCI cropping window
- 172:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  start_x: window horizontal start position
- 173:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  start_y: window vertical start position
- 174:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  size_width: window horizontal size
- 175:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  size_height: window vertical size
- 176:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
- 177:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     none
- 178:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
- 179:lib/GD32F4xx/Source/gd32f4xx_dci.c **** void dci_crop_window_config(uint16_t start_x, uint16_t start_y, uint16_t size_width, uint16_t size_
- 180:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+ 169:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+ 170:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+ 171:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    configure DCI cropping window
+ 172:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  start_x: window horizontal start position
+ 173:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  start_y: window vertical start position
+ 174:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  size_width: window horizontal size
+ 175:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  size_height: window vertical size
+ 176:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+ 177:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     none
+ 178:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+ 179:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** void dci_crop_window_config(uint16_t start_x, uint16_t start_y, uint16_t size_width, uint16_t size_
+ 180:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  387              		.loc 1 180 1 is_stmt 1 view -0
  388              		.cfi_startproc
  389              		@ args = 0, pretend = 0, frame = 0
  390              		@ frame_needed = 0, uses_anonymous_args = 0
  391              		@ link register save eliminated.
- 181:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_CWSPOS = ((uint32_t)start_x | ((uint32_t)start_y << 16));
+ 181:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_CWSPOS = ((uint32_t)start_x | ((uint32_t)start_y << 16));
  392              		.loc 1 181 5 view .LVU65
- 180:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_CWSPOS = ((uint32_t)start_x | ((uint32_t)start_y << 16));
+ 180:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_CWSPOS = ((uint32_t)start_x | ((uint32_t)start_y << 16));
  393              		.loc 1 180 1 is_stmt 0 view .LVU66
  394 0000 10B4     		push	{r4}
  395              	.LCFI4:
@@ -598,22 +598,22 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  398              		.loc 1 181 16 view .LVU67
  399 0002 044C     		ldr	r4, .L34
  400              		.loc 1 181 37 view .LVU68
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 11
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 11
 
 
  401 0004 40EA0140 		orr	r0, r0, r1, lsl #16
  402              	.LVL10:
- 182:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_CWSZ = ((uint32_t)size_width | ((uint32_t)size_height << 16));
+ 182:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_CWSZ = ((uint32_t)size_width | ((uint32_t)size_height << 16));
  403              		.loc 1 182 38 view .LVU69
  404 0008 42EA0342 		orr	r2, r2, r3, lsl #16
  405              	.LVL11:
- 181:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_CWSPOS = ((uint32_t)start_x | ((uint32_t)start_y << 16));
+ 181:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_CWSPOS = ((uint32_t)start_x | ((uint32_t)start_y << 16));
  406              		.loc 1 181 16 view .LVU70
  407 000c 2062     		str	r0, [r4, #32]
  408              		.loc 1 182 5 is_stmt 1 view .LVU71
  409              		.loc 1 182 14 is_stmt 0 view .LVU72
  410 000e 6262     		str	r2, [r4, #36]
- 183:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+ 183:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  411              		.loc 1 183 1 view .LVU73
  412 0010 10BC     		pop	{r4}
  413              	.LCFI5:
@@ -635,30 +635,30 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  430              		.thumb_func
  432              	dci_embedded_sync_enable:
  433              	.LFB127:
- 184:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
- 185:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
- 186:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    enable embedded synchronous mode
- 187:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  none
- 188:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
- 189:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     none
- 190:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
- 191:lib/GD32F4xx/Source/gd32f4xx_dci.c **** void dci_embedded_sync_enable(void)
- 192:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+ 184:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+ 185:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+ 186:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    enable embedded synchronous mode
+ 187:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  none
+ 188:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+ 189:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     none
+ 190:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+ 191:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** void dci_embedded_sync_enable(void)
+ 192:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  434              		.loc 1 192 1 is_stmt 1 view -0
  435              		.cfi_startproc
  436              		@ args = 0, pretend = 0, frame = 0
  437              		@ frame_needed = 0, uses_anonymous_args = 0
  438              		@ link register save eliminated.
- 193:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_CTL |= DCI_CTL_ESM;
+ 193:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_CTL |= DCI_CTL_ESM;
  439              		.loc 1 193 5 view .LVU75
  440              		.loc 1 193 13 is_stmt 0 view .LVU76
  441 0000 024A     		ldr	r2, .L37
  442 0002 1368     		ldr	r3, [r2]
  443 0004 43F01003 		orr	r3, r3, #16
  444 0008 1360     		str	r3, [r2]
- 194:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+ 194:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  445              		.loc 1 194 1 view .LVU77
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 12
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 12
 
 
  446 000a 7047     		bx	lr
@@ -677,28 +677,28 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  460              		.thumb_func
  462              	dci_embedded_sync_disable:
  463              	.LFB128:
- 195:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
- 196:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
- 197:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    disble embedded synchronous mode
- 198:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  none
- 199:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
- 200:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     none
- 201:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
- 202:lib/GD32F4xx/Source/gd32f4xx_dci.c **** void dci_embedded_sync_disable(void)
- 203:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+ 195:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+ 196:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+ 197:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    disble embedded synchronous mode
+ 198:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  none
+ 199:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+ 200:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     none
+ 201:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+ 202:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** void dci_embedded_sync_disable(void)
+ 203:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  464              		.loc 1 203 1 is_stmt 1 view -0
  465              		.cfi_startproc
  466              		@ args = 0, pretend = 0, frame = 0
  467              		@ frame_needed = 0, uses_anonymous_args = 0
  468              		@ link register save eliminated.
- 204:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_CTL &= ~DCI_CTL_ESM;
+ 204:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_CTL &= ~DCI_CTL_ESM;
  469              		.loc 1 204 5 view .LVU79
  470              		.loc 1 204 13 is_stmt 0 view .LVU80
  471 0000 024A     		ldr	r2, .L40
  472 0002 1368     		ldr	r3, [r2]
  473 0004 23F01003 		bic	r3, r3, #16
  474 0008 1360     		str	r3, [r2]
- 205:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+ 205:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  475              		.loc 1 205 1 view .LVU81
  476 000a 7047     		bx	lr
  477              	.L41:
@@ -717,26 +717,26 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  492              	dci_sync_codes_config:
  493              	.LVL12:
  494              	.LFB129:
- 206:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 13
+ 206:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 13
 
 
- 207:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    config synchronous codes in embedded synchronous mode
- 208:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  frame_start: frame start code in embedded synchronous mode
- 209:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  line_start: line start code in embedded synchronous mode
- 210:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  line_end: line end code in embedded synchronous mode
- 211:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  frame_end: frame end code in embedded synchronous mode
- 212:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
- 213:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     none
- 214:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
- 215:lib/GD32F4xx/Source/gd32f4xx_dci.c **** void dci_sync_codes_config(uint8_t frame_start, uint8_t line_start, uint8_t line_end, uint8_t frame
- 216:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+ 207:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    config synchronous codes in embedded synchronous mode
+ 208:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  frame_start: frame start code in embedded synchronous mode
+ 209:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  line_start: line start code in embedded synchronous mode
+ 210:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  line_end: line end code in embedded synchronous mode
+ 211:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  frame_end: frame end code in embedded synchronous mode
+ 212:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+ 213:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     none
+ 214:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+ 215:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** void dci_sync_codes_config(uint8_t frame_start, uint8_t line_start, uint8_t line_end, uint8_t frame
+ 216:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  495              		.loc 1 216 1 is_stmt 1 view -0
  496              		.cfi_startproc
  497              		@ args = 0, pretend = 0, frame = 0
  498              		@ frame_needed = 0, uses_anonymous_args = 0
  499              		@ link register save eliminated.
- 217:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_SC = ((uint32_t)frame_start | ((uint32_t)line_start << 8) | ((uint32_t)line_end << 16) | ((
+ 217:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_SC = ((uint32_t)frame_start | ((uint32_t)line_start << 8) | ((uint32_t)line_end << 16) | ((
  500              		.loc 1 217 5 view .LVU83
  501              		.loc 1 217 119 is_stmt 0 view .LVU84
  502 0000 1B06     		lsls	r3, r3, #24
@@ -751,7 +751,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  511 000a 43EA0123 		orr	r3, r3, r1, lsl #8
  512              		.loc 1 217 12 view .LVU88
  513 000e 9361     		str	r3, [r2, #24]
- 218:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+ 218:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  514              		.loc 1 218 1 view .LVU89
  515 0010 7047     		bx	lr
  516              	.L44:
@@ -770,27 +770,27 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  531              	dci_sync_codes_unmask_config:
  532              	.LVL15:
  533              	.LFB130:
- 219:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
- 220:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
- 221:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    config synchronous codes unmask in embedded synchronous mode
- 222:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  frame_start: frame start code unmask bits in embedded synchronous mode
- 223:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  line_start: line start code unmask bits in embedded synchronous mode
- 224:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  line_end: line end code unmask bits in embedded synchronous mode
- 225:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  frame_end: frame end code unmask bits in embedded synchronous mode
- 226:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 14
+ 219:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+ 220:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+ 221:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    config synchronous codes unmask in embedded synchronous mode
+ 222:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  frame_start: frame start code unmask bits in embedded synchronous mode
+ 223:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  line_start: line start code unmask bits in embedded synchronous mode
+ 224:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  line_end: line end code unmask bits in embedded synchronous mode
+ 225:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  frame_end: frame end code unmask bits in embedded synchronous mode
+ 226:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 14
 
 
- 227:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     none
- 228:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
- 229:lib/GD32F4xx/Source/gd32f4xx_dci.c **** void dci_sync_codes_unmask_config(uint8_t frame_start, uint8_t line_start, uint8_t line_end, uint8_
- 230:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+ 227:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     none
+ 228:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+ 229:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** void dci_sync_codes_unmask_config(uint8_t frame_start, uint8_t line_start, uint8_t line_end, uint8_
+ 230:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  534              		.loc 1 230 1 is_stmt 1 view -0
  535              		.cfi_startproc
  536              		@ args = 0, pretend = 0, frame = 0
  537              		@ frame_needed = 0, uses_anonymous_args = 0
  538              		@ link register save eliminated.
- 231:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_SCUMSK = ((uint32_t)frame_start | ((uint32_t)line_start << 8) | ((uint32_t)line_end << 16) 
+ 231:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_SCUMSK = ((uint32_t)frame_start | ((uint32_t)line_start << 8) | ((uint32_t)line_end << 16) 
  539              		.loc 1 231 5 view .LVU91
  540              		.loc 1 231 123 is_stmt 0 view .LVU92
  541 0000 1B06     		lsls	r3, r3, #24
@@ -805,7 +805,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  550 000a 43EA0123 		orr	r3, r3, r1, lsl #8
  551              		.loc 1 231 16 view .LVU96
  552 000e D361     		str	r3, [r2, #28]
- 232:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+ 232:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  553              		.loc 1 232 1 view .LVU97
  554 0010 7047     		bx	lr
  555              	.L47:
@@ -823,29 +823,29 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  568              		.thumb_func
  570              	dci_data_read:
  571              	.LFB131:
- 233:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
- 234:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
- 235:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    read DCI data register
- 236:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  none
- 237:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
- 238:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     data
- 239:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
- 240:lib/GD32F4xx/Source/gd32f4xx_dci.c **** uint32_t dci_data_read(void)
- 241:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+ 233:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+ 234:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+ 235:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    read DCI data register
+ 236:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  none
+ 237:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+ 238:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     data
+ 239:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+ 240:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** uint32_t dci_data_read(void)
+ 241:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  572              		.loc 1 241 1 is_stmt 1 view -0
  573              		.cfi_startproc
  574              		@ args = 0, pretend = 0, frame = 0
  575              		@ frame_needed = 0, uses_anonymous_args = 0
  576              		@ link register save eliminated.
- 242:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     return DCI_DATA;
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 15
+ 242:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     return DCI_DATA;
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 15
 
 
  577              		.loc 1 242 5 view .LVU99
  578              		.loc 1 242 12 is_stmt 0 view .LVU100
  579 0000 014B     		ldr	r3, .L49
  580 0002 986A     		ldr	r0, [r3, #40]
- 243:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+ 243:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  581              		.loc 1 243 1 view .LVU101
  582 0004 7047     		bx	lr
  583              	.L50:
@@ -864,41 +864,41 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  598              	dci_flag_get:
  599              	.LVL18:
  600              	.LFB132:
- 244:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
- 245:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
- 246:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    get specified flag
- 247:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  flag:
- 248:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_FLAG_HS: HS line status
- 249:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_FLAG_VS: VS line status
- 250:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_FLAG_FV:FIFO valid
- 251:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_FLAG_EF: end of frame flag
- 252:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_FLAG_OVR: FIFO overrun flag
- 253:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_FLAG_ESE: embedded synchronous error flag
- 254:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_FLAG_VSYNC: vsync flag
- 255:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_FLAG_EL: end of line flag
- 256:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
- 257:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     FlagStatus: SET or RESET
- 258:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
- 259:lib/GD32F4xx/Source/gd32f4xx_dci.c **** FlagStatus dci_flag_get(uint32_t flag)
- 260:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+ 244:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+ 245:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+ 246:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    get specified flag
+ 247:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  flag:
+ 248:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_FLAG_HS: HS line status
+ 249:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_FLAG_VS: VS line status
+ 250:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_FLAG_FV:FIFO valid
+ 251:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_FLAG_EF: end of frame flag
+ 252:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_FLAG_OVR: FIFO overrun flag
+ 253:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_FLAG_ESE: embedded synchronous error flag
+ 254:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_FLAG_VSYNC: vsync flag
+ 255:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_FLAG_EL: end of line flag
+ 256:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+ 257:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     FlagStatus: SET or RESET
+ 258:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+ 259:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** FlagStatus dci_flag_get(uint32_t flag)
+ 260:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  601              		.loc 1 260 1 is_stmt 1 view -0
  602              		.cfi_startproc
  603              		@ args = 0, pretend = 0, frame = 0
  604              		@ frame_needed = 0, uses_anonymous_args = 0
  605              		@ link register save eliminated.
- 261:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     uint32_t stat = 0U;
+ 261:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     uint32_t stat = 0U;
  606              		.loc 1 261 5 view .LVU103
- 262:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
- 263:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     if(flag >> 31) {
+ 262:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+ 263:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     if(flag >> 31) {
  607              		.loc 1 263 5 view .LVU104
- 264:lib/GD32F4xx/Source/gd32f4xx_dci.c ****         /* get flag status from DCI_STAT1 register */
- 265:lib/GD32F4xx/Source/gd32f4xx_dci.c ****         stat = DCI_STAT1;
+ 264:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****         /* get flag status from DCI_STAT1 register */
+ 265:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****         stat = DCI_STAT1;
  608              		.loc 1 265 14 is_stmt 0 view .LVU105
  609 0000 044B     		ldr	r3, .L54
- 263:lib/GD32F4xx/Source/gd32f4xx_dci.c ****         /* get flag status from DCI_STAT1 register */
+ 263:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****         /* get flag status from DCI_STAT1 register */
  610              		.loc 1 263 7 view .LVU106
  611 0002 0028     		cmp	r0, #0
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 16
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 16
 
 
  612              		.loc 1 265 9 is_stmt 1 view .LVU107
@@ -906,24 +906,24 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  614 0004 B4BF     		ite	lt
  615 0006 9B68     		ldrlt	r3, [r3, #8]
  616              	.LVL19:
- 266:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     } else {
- 267:lib/GD32F4xx/Source/gd32f4xx_dci.c ****         /* get flag status from DCI_STAT0 register */
- 268:lib/GD32F4xx/Source/gd32f4xx_dci.c ****         stat = DCI_STAT0;
+ 266:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     } else {
+ 267:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****         /* get flag status from DCI_STAT0 register */
+ 268:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****         stat = DCI_STAT0;
  617              		.loc 1 268 9 is_stmt 1 view .LVU109
  618              		.loc 1 268 14 is_stmt 0 view .LVU110
  619 0008 5B68     		ldrge	r3, [r3, #4]
  620              	.LVL20:
- 269:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     }
- 270:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
- 271:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     if(flag & stat) {
+ 269:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     }
+ 270:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+ 271:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     if(flag & stat) {
  621              		.loc 1 271 5 is_stmt 1 view .LVU111
  622              		.loc 1 271 7 is_stmt 0 view .LVU112
  623 000a 0342     		tst	r3, r0
- 272:lib/GD32F4xx/Source/gd32f4xx_dci.c ****         return SET;
- 273:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     } else {
- 274:lib/GD32F4xx/Source/gd32f4xx_dci.c ****         return RESET;
- 275:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     }
- 276:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+ 272:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****         return SET;
+ 273:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     } else {
+ 274:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****         return RESET;
+ 275:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     }
+ 276:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  624              		.loc 1 276 1 view .LVU113
  625 000c 14BF     		ite	ne
  626 000e 0120     		movne	r0, #1
@@ -947,36 +947,36 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  646              	dci_interrupt_enable:
  647              	.LVL22:
  648              	.LFB133:
- 277:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
- 278:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
- 279:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    enable specified DCI interrupt
- 280:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  interrupt:
- 281:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_EF: end of frame interrupt
- 282:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_OVR: FIFO overrun interrupt
- 283:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_ESE: embedded synchronous error interrupt
- 284:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_VSYNC: vsync interrupt
- 285:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_EL: end of line interrupt
- 286:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
- 287:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     none
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 17
+ 277:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+ 278:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+ 279:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    enable specified DCI interrupt
+ 280:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  interrupt:
+ 281:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_EF: end of frame interrupt
+ 282:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_OVR: FIFO overrun interrupt
+ 283:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_ESE: embedded synchronous error interrupt
+ 284:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_VSYNC: vsync interrupt
+ 285:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_EL: end of line interrupt
+ 286:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+ 287:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     none
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 17
 
 
- 288:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
- 289:lib/GD32F4xx/Source/gd32f4xx_dci.c **** void dci_interrupt_enable(uint32_t interrupt)
- 290:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+ 288:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+ 289:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** void dci_interrupt_enable(uint32_t interrupt)
+ 290:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  649              		.loc 1 290 1 is_stmt 1 view -0
  650              		.cfi_startproc
  651              		@ args = 0, pretend = 0, frame = 0
  652              		@ frame_needed = 0, uses_anonymous_args = 0
  653              		@ link register save eliminated.
- 291:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_INTEN |= interrupt;
+ 291:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_INTEN |= interrupt;
  654              		.loc 1 291 5 view .LVU116
  655              		.loc 1 291 15 is_stmt 0 view .LVU117
  656 0000 024A     		ldr	r2, .L57
  657 0002 D368     		ldr	r3, [r2, #12]
  658 0004 0343     		orrs	r3, r3, r0
  659 0006 D360     		str	r3, [r2, #12]
- 292:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+ 292:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  660              		.loc 1 292 1 view .LVU118
  661 0008 7047     		bx	lr
  662              	.L58:
@@ -995,36 +995,36 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  677              	dci_interrupt_disable:
  678              	.LVL23:
  679              	.LFB134:
- 293:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
- 294:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
- 295:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    disable specified DCI interrupt
- 296:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  interrupt:
- 297:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_EF: end of frame interrupt
- 298:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_OVR: FIFO overrun interrupt
- 299:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_ESE: embedded synchronous error interrupt
- 300:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_VSYNC: vsync interrupt
- 301:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_EL: end of line interrupt
- 302:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
- 303:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     none
- 304:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
- 305:lib/GD32F4xx/Source/gd32f4xx_dci.c **** void dci_interrupt_disable(uint32_t interrupt)
- 306:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+ 293:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+ 294:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+ 295:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    disable specified DCI interrupt
+ 296:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  interrupt:
+ 297:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_EF: end of frame interrupt
+ 298:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_OVR: FIFO overrun interrupt
+ 299:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_ESE: embedded synchronous error interrupt
+ 300:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_VSYNC: vsync interrupt
+ 301:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_EL: end of line interrupt
+ 302:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+ 303:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     none
+ 304:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+ 305:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** void dci_interrupt_disable(uint32_t interrupt)
+ 306:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  680              		.loc 1 306 1 is_stmt 1 view -0
  681              		.cfi_startproc
  682              		@ args = 0, pretend = 0, frame = 0
  683              		@ frame_needed = 0, uses_anonymous_args = 0
  684              		@ link register save eliminated.
- 307:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_INTEN &= ~interrupt;
+ 307:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_INTEN &= ~interrupt;
  685              		.loc 1 307 5 view .LVU120
  686              		.loc 1 307 15 is_stmt 0 view .LVU121
  687 0000 024A     		ldr	r2, .L60
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 18
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 18
 
 
  688 0002 D368     		ldr	r3, [r2, #12]
  689 0004 23EA0003 		bic	r3, r3, r0
  690 0008 D360     		str	r3, [r2, #12]
- 308:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+ 308:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  691              		.loc 1 308 1 view .LVU122
  692 000a 7047     		bx	lr
  693              	.L61:
@@ -1043,33 +1043,33 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  708              	dci_interrupt_flag_clear:
  709              	.LVL24:
  710              	.LFB135:
- 309:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
- 310:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
- 311:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    clear specified interrupt flag
- 312:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  int_flag:
- 313:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_EF: end of frame interrupt
- 314:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_OVR: FIFO overrun interrupt
- 315:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_ESE: embedded synchronous error interrupt
- 316:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_VSYNC: vsync interrupt
- 317:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_EL: end of line interrupt
- 318:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
- 319:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     none
- 320:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
- 321:lib/GD32F4xx/Source/gd32f4xx_dci.c **** void dci_interrupt_flag_clear(uint32_t int_flag)
- 322:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+ 309:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+ 310:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+ 311:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    clear specified interrupt flag
+ 312:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  int_flag:
+ 313:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_EF: end of frame interrupt
+ 314:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_OVR: FIFO overrun interrupt
+ 315:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_ESE: embedded synchronous error interrupt
+ 316:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_VSYNC: vsync interrupt
+ 317:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_EL: end of line interrupt
+ 318:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+ 319:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     none
+ 320:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+ 321:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** void dci_interrupt_flag_clear(uint32_t int_flag)
+ 322:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  711              		.loc 1 322 1 is_stmt 1 view -0
  712              		.cfi_startproc
  713              		@ args = 0, pretend = 0, frame = 0
  714              		@ frame_needed = 0, uses_anonymous_args = 0
  715              		@ link register save eliminated.
- 323:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     DCI_INTC |= int_flag;
+ 323:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     DCI_INTC |= int_flag;
  716              		.loc 1 323 5 view .LVU124
  717              		.loc 1 323 14 is_stmt 0 view .LVU125
  718 0000 024A     		ldr	r2, .L63
  719 0002 5369     		ldr	r3, [r2, #20]
  720 0004 0343     		orrs	r3, r3, r0
  721 0006 5361     		str	r3, [r2, #20]
- 324:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+ 324:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  722              		.loc 1 324 1 view .LVU126
  723 0008 7047     		bx	lr
  724              	.L64:
@@ -1078,7 +1078,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  727 000c 00000550 		.word	1342504960
  728              		.cfi_endproc
  729              	.LFE135:
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 19
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 19
 
 
  731              		.section	.text.dci_interrupt_flag_get,"ax",%progbits
@@ -1091,37 +1091,37 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  739              	dci_interrupt_flag_get:
  740              	.LVL25:
  741              	.LFB136:
- 325:lib/GD32F4xx/Source/gd32f4xx_dci.c **** 
- 326:lib/GD32F4xx/Source/gd32f4xx_dci.c **** /*!
- 327:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \brief    get specified interrupt flag
- 328:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[in]  int_flag:
- 329:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_FLAG_EF: end of frame interrupt flag
- 330:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_FLAG_OVR: FIFO overrun interrupt flag
- 331:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_FLAG_ESE: embedded synchronous error interrupt flag
- 332:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_FLAG_VSYNC: vsync interrupt flag
- 333:lib/GD32F4xx/Source/gd32f4xx_dci.c ****       \arg         DCI_INT_FLAG_EL: end of line interrupt flag
- 334:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \param[out] none
- 335:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     \retval     FlagStatus: SET or RESET
- 336:lib/GD32F4xx/Source/gd32f4xx_dci.c **** */
- 337:lib/GD32F4xx/Source/gd32f4xx_dci.c **** FlagStatus dci_interrupt_flag_get(uint32_t int_flag)
- 338:lib/GD32F4xx/Source/gd32f4xx_dci.c **** {
+ 325:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** 
+ 326:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** /*!
+ 327:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \brief    get specified interrupt flag
+ 328:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[in]  int_flag:
+ 329:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_FLAG_EF: end of frame interrupt flag
+ 330:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_FLAG_OVR: FIFO overrun interrupt flag
+ 331:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_FLAG_ESE: embedded synchronous error interrupt flag
+ 332:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_FLAG_VSYNC: vsync interrupt flag
+ 333:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****       \arg         DCI_INT_FLAG_EL: end of line interrupt flag
+ 334:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \param[out] none
+ 335:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     \retval     FlagStatus: SET or RESET
+ 336:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** */
+ 337:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** FlagStatus dci_interrupt_flag_get(uint32_t int_flag)
+ 338:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** {
  742              		.loc 1 338 1 is_stmt 1 view -0
  743              		.cfi_startproc
  744              		@ args = 0, pretend = 0, frame = 0
  745              		@ frame_needed = 0, uses_anonymous_args = 0
  746              		@ link register save eliminated.
- 339:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     if(RESET == (DCI_INTF & int_flag)) {
+ 339:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     if(RESET == (DCI_INTF & int_flag)) {
  747              		.loc 1 339 5 view .LVU128
  748              		.loc 1 339 18 is_stmt 0 view .LVU129
  749 0000 034B     		ldr	r3, .L66
  750 0002 1B69     		ldr	r3, [r3, #16]
  751              		.loc 1 339 7 view .LVU130
  752 0004 0342     		tst	r3, r0
- 340:lib/GD32F4xx/Source/gd32f4xx_dci.c ****         return RESET;
- 341:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     } else {
- 342:lib/GD32F4xx/Source/gd32f4xx_dci.c ****         return SET;
- 343:lib/GD32F4xx/Source/gd32f4xx_dci.c ****     }
- 344:lib/GD32F4xx/Source/gd32f4xx_dci.c **** }
+ 340:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****         return RESET;
+ 341:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     } else {
+ 342:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****         return SET;
+ 343:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c ****     }
+ 344:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c **** }
  753              		.loc 1 344 1 view .LVU131
  754 0006 14BF     		ite	ne
  755 0008 0120     		movne	r0, #1
@@ -1138,83 +1138,83 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 1
  767              		.text
  768              	.Letext0:
  769              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 20
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 20
 
 
  770              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
- 771              		.file 4 "lib/CMSIS/GD/GD32F4xx/Include/gd32f4xx.h"
- 772              		.file 5 "lib/GD32F4xx/Include/gd32f4xx_rcu.h"
- 773              		.file 6 "lib/GD32F4xx/Include/gd32f4xx_dci.h"
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 21
+ 771              		.file 4 "../../../support/device/gd32f4xx/inc/gd32f4xx.h"
+ 772              		.file 5 "../../../support/device/gd32f4xx/peripherals/inc/gd32f4xx_rcu.h"
+ 773              		.file 6 "../../../support/device/gd32f4xx/peripherals/inc/gd32f4xx_dci.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 21
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 gd32f4xx_dci.c
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:18     .text.dci_deinit:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:25     .text.dci_deinit:0000000000000000 dci_deinit
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:58     .text.dci_init:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:65     .text.dci_init:0000000000000000 dci_init
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:132    .text.dci_init:000000000000002c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:137    .text.dci_enable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:144    .text.dci_enable:0000000000000000 dci_enable
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:162    .text.dci_enable:000000000000000c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:167    .text.dci_disable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:174    .text.dci_disable:0000000000000000 dci_disable
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:192    .text.dci_disable:000000000000000c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:197    .text.dci_capture_enable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:204    .text.dci_capture_enable:0000000000000000 dci_capture_enable
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:222    .text.dci_capture_enable:000000000000000c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:227    .text.dci_capture_disable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:234    .text.dci_capture_disable:0000000000000000 dci_capture_disable
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:252    .text.dci_capture_disable:000000000000000c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:257    .text.dci_jpeg_enable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:264    .text.dci_jpeg_enable:0000000000000000 dci_jpeg_enable
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:282    .text.dci_jpeg_enable:000000000000000c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:287    .text.dci_jpeg_disable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:294    .text.dci_jpeg_disable:0000000000000000 dci_jpeg_disable
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:312    .text.dci_jpeg_disable:000000000000000c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:317    .text.dci_crop_window_enable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:324    .text.dci_crop_window_enable:0000000000000000 dci_crop_window_enable
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:342    .text.dci_crop_window_enable:000000000000000c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:347    .text.dci_crop_window_disable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:354    .text.dci_crop_window_disable:0000000000000000 dci_crop_window_disable
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:372    .text.dci_crop_window_disable:000000000000000c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:377    .text.dci_crop_window_config:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:384    .text.dci_crop_window_config:0000000000000000 dci_crop_window_config
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:420    .text.dci_crop_window_config:0000000000000014 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:425    .text.dci_embedded_sync_enable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:432    .text.dci_embedded_sync_enable:0000000000000000 dci_embedded_sync_enable
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:450    .text.dci_embedded_sync_enable:000000000000000c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:455    .text.dci_embedded_sync_disable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:462    .text.dci_embedded_sync_disable:0000000000000000 dci_embedded_sync_disable
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:480    .text.dci_embedded_sync_disable:000000000000000c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:485    .text.dci_sync_codes_config:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:492    .text.dci_sync_codes_config:0000000000000000 dci_sync_codes_config
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:519    .text.dci_sync_codes_config:0000000000000014 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:524    .text.dci_sync_codes_unmask_config:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:531    .text.dci_sync_codes_unmask_config:0000000000000000 dci_sync_codes_unmask_config
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:558    .text.dci_sync_codes_unmask_config:0000000000000014 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:563    .text.dci_data_read:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:570    .text.dci_data_read:0000000000000000 dci_data_read
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:586    .text.dci_data_read:0000000000000008 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:591    .text.dci_flag_get:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:598    .text.dci_flag_get:0000000000000000 dci_flag_get
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:634    .text.dci_flag_get:0000000000000014 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:639    .text.dci_interrupt_enable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:646    .text.dci_interrupt_enable:0000000000000000 dci_interrupt_enable
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:665    .text.dci_interrupt_enable:000000000000000c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:670    .text.dci_interrupt_disable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:677    .text.dci_interrupt_disable:0000000000000000 dci_interrupt_disable
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s 			page 22
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:18     .text.dci_deinit:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:25     .text.dci_deinit:0000000000000000 dci_deinit
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:58     .text.dci_init:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:65     .text.dci_init:0000000000000000 dci_init
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:132    .text.dci_init:000000000000002c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:137    .text.dci_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:144    .text.dci_enable:0000000000000000 dci_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:162    .text.dci_enable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:167    .text.dci_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:174    .text.dci_disable:0000000000000000 dci_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:192    .text.dci_disable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:197    .text.dci_capture_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:204    .text.dci_capture_enable:0000000000000000 dci_capture_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:222    .text.dci_capture_enable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:227    .text.dci_capture_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:234    .text.dci_capture_disable:0000000000000000 dci_capture_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:252    .text.dci_capture_disable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:257    .text.dci_jpeg_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:264    .text.dci_jpeg_enable:0000000000000000 dci_jpeg_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:282    .text.dci_jpeg_enable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:287    .text.dci_jpeg_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:294    .text.dci_jpeg_disable:0000000000000000 dci_jpeg_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:312    .text.dci_jpeg_disable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:317    .text.dci_crop_window_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:324    .text.dci_crop_window_enable:0000000000000000 dci_crop_window_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:342    .text.dci_crop_window_enable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:347    .text.dci_crop_window_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:354    .text.dci_crop_window_disable:0000000000000000 dci_crop_window_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:372    .text.dci_crop_window_disable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:377    .text.dci_crop_window_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:384    .text.dci_crop_window_config:0000000000000000 dci_crop_window_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:420    .text.dci_crop_window_config:0000000000000014 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:425    .text.dci_embedded_sync_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:432    .text.dci_embedded_sync_enable:0000000000000000 dci_embedded_sync_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:450    .text.dci_embedded_sync_enable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:455    .text.dci_embedded_sync_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:462    .text.dci_embedded_sync_disable:0000000000000000 dci_embedded_sync_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:480    .text.dci_embedded_sync_disable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:485    .text.dci_sync_codes_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:492    .text.dci_sync_codes_config:0000000000000000 dci_sync_codes_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:519    .text.dci_sync_codes_config:0000000000000014 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:524    .text.dci_sync_codes_unmask_config:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:531    .text.dci_sync_codes_unmask_config:0000000000000000 dci_sync_codes_unmask_config
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:558    .text.dci_sync_codes_unmask_config:0000000000000014 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:563    .text.dci_data_read:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:570    .text.dci_data_read:0000000000000000 dci_data_read
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:586    .text.dci_data_read:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:591    .text.dci_flag_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:598    .text.dci_flag_get:0000000000000000 dci_flag_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:634    .text.dci_flag_get:0000000000000014 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:639    .text.dci_interrupt_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:646    .text.dci_interrupt_enable:0000000000000000 dci_interrupt_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:665    .text.dci_interrupt_enable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:670    .text.dci_interrupt_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:677    .text.dci_interrupt_disable:0000000000000000 dci_interrupt_disable
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s 			page 22
 
 
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:696    .text.dci_interrupt_disable:000000000000000c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:701    .text.dci_interrupt_flag_clear:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:708    .text.dci_interrupt_flag_clear:0000000000000000 dci_interrupt_flag_clear
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:727    .text.dci_interrupt_flag_clear:000000000000000c $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:732    .text.dci_interrupt_flag_get:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:739    .text.dci_interrupt_flag_get:0000000000000000 dci_interrupt_flag_get
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//cc4ommxl.s:763    .text.dci_interrupt_flag_get:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:696    .text.dci_interrupt_disable:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:701    .text.dci_interrupt_flag_clear:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:708    .text.dci_interrupt_flag_clear:0000000000000000 dci_interrupt_flag_clear
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:727    .text.dci_interrupt_flag_clear:000000000000000c $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:732    .text.dci_interrupt_flag_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:739    .text.dci_interrupt_flag_get:0000000000000000 dci_interrupt_flag_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccmWRylY.s:763    .text.dci_interrupt_flag_get:0000000000000010 $d
 
 UNDEFINED SYMBOLS
 rcu_periph_reset_enable

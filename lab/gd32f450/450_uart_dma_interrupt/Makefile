@@ -36,43 +36,43 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
-lib/CMSIS/GD/GD32F4xx/Source/system_gd32f4xx.c \
-lib/GD32F4xx/Source/gd32f4xx_adc.c   \
-lib/GD32F4xx/Source/gd32f4xx_enet.c  \
-lib/GD32F4xx/Source/gd32f4xx_iref.c  \
-lib/GD32F4xx/Source/gd32f4xx_timer.c \
-lib/GD32F4xx/Source/gd32f4xx_can.c   \
-lib/GD32F4xx/Source/gd32f4xx_exmc.c  \
-lib/GD32F4xx/Source/gd32f4xx_misc.c  \
-lib/GD32F4xx/Source/gd32f4xx_tli.c   \
-lib/GD32F4xx/Source/gd32f4xx_crc.c   \
-lib/GD32F4xx/Source/gd32f4xx_exti.c  \
-lib/GD32F4xx/Source/gd32f4xx_pmu.c   \
-lib/GD32F4xx/Source/gd32f4xx_trng.c  \
-lib/GD32F4xx/Source/gd32f4xx_ctc.c   \
-lib/GD32F4xx/Source/gd32f4xx_fmc.c   \
-lib/GD32F4xx/Source/gd32f4xx_rcu.c   \
-lib/GD32F4xx/Source/gd32f4xx_usart.c \
-lib/GD32F4xx/Source/gd32f4xx_dac.c   \
-lib/GD32F4xx/Source/gd32f4xx_fwdgt.c \
-lib/GD32F4xx/Source/gd32f4xx_rtc.c   \
-lib/GD32F4xx/Source/gd32f4xx_wwdgt.c \
-lib/GD32F4xx/Source/gd32f4xx_dbg.c   \
-lib/GD32F4xx/Source/gd32f4xx_gpio.c  \
-lib/GD32F4xx/Source/gd32f4xx_sdio.c  \
-lib/GD32F4xx/Source/gd32f4xx_dci.c   \
-lib/GD32F4xx/Source/gd32f4xx_i2c.c   \
-lib/GD32F4xx/Source/gd32f4xx_spi.c   \
-lib/GD32F4xx/Source/gd32f4xx_dma.c   \
-lib/GD32F4xx/Source/gd32f4xx_ipa.c   \
-lib/GD32F4xx/Source/gd32f4xx_syscfg.c\
+../../../support/device/gd32f4xx/src/system_gd32f4xx.c \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_adc.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_enet.c  \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_iref.c  \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_timer.c \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_can.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_exmc.c  \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_misc.c  \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_tli.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_crc.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_exti.c  \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_pmu.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c  \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_ctc.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_fmc.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_rcu.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_usart.c \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dac.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_fwdgt.c \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_rtc.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_wwdgt.c \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dbg.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_gpio.c  \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_sdio.c  \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_i2c.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_spi.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dma.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_ipa.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_syscfg.c\
 main.c \
 
 
 
 # ASM sources
 ASM_SOURCES =  \
-lib/CMSIS/GD/GD32F4xx/Source/ARM/startup_gd32f450_470.s
+../../../support/device/gd32f4xx/src/startup_gd32f450_470.s
 
 #######################################
 # binaries
@@ -124,11 +124,11 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
--Ilib \
--Ilib/CMSIS \
--Ilib/CMSIS/GD/GD32F4xx/Include \
--Ilib/GD32F4xx/Include \
+-I../../../support/device/gd32f4xx/inc \
+-I../../../support/CMSIS/inc \
+-I../../../support/device/gd32f4xx/peripherals/inc \
 -I.
+
 
 
 # compile gcc flags
@@ -149,7 +149,7 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 # LDFLAGS
 #######################################
 # link script
-LDSCRIPT = gd32f450-470.ld
+LDSCRIPT = ../../../support/device/gd32f4xx/gd32f450-470.ld
 
 # libraries
 LIBS = -lc -lm -lnosys 

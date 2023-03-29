@@ -1,4 +1,4 @@
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 1
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s 			page 1
 
 
    1              		.cpu cortex-m4
@@ -26,64 +26,64 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 1
   23              		.thumb_func
   25              	trng_deinit:
   26              	.LFB116:
-  27              		.file 1 "lib/GD32F4xx/Source/gd32f4xx_trng.c"
-   1:lib/GD32F4xx/Source/gd32f4xx_trng.c **** /*!
-   2:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \file    gd32f4xx_trng.c
-   3:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \brief   TRNG driver
-   4:lib/GD32F4xx/Source/gd32f4xx_trng.c **** 
-   5:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-   6:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-   7:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-   8:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \version 2022-03-09, V3.0.0, firmware for GD32F4xx
-   9:lib/GD32F4xx/Source/gd32f4xx_trng.c **** */
-  10:lib/GD32F4xx/Source/gd32f4xx_trng.c **** 
-  11:lib/GD32F4xx/Source/gd32f4xx_trng.c **** /*
-  12:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     Copyright (c) 2022, GigaDevice Semiconductor Inc.
-  13:lib/GD32F4xx/Source/gd32f4xx_trng.c **** 
-  14:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     Redistribution and use in source and binary forms, with or without modification,
-  15:lib/GD32F4xx/Source/gd32f4xx_trng.c **** are permitted provided that the following conditions are met:
-  16:lib/GD32F4xx/Source/gd32f4xx_trng.c **** 
-  17:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     1. Redistributions of source code must retain the above copyright notice, this
-  18:lib/GD32F4xx/Source/gd32f4xx_trng.c ****        list of conditions and the following disclaimer.
-  19:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     2. Redistributions in binary form must reproduce the above copyright notice,
-  20:lib/GD32F4xx/Source/gd32f4xx_trng.c ****        this list of conditions and the following disclaimer in the documentation
-  21:lib/GD32F4xx/Source/gd32f4xx_trng.c ****        and/or other materials provided with the distribution.
-  22:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     3. Neither the name of the copyright holder nor the names of its contributors
-  23:lib/GD32F4xx/Source/gd32f4xx_trng.c ****        may be used to endorse or promote products derived from this software without
-  24:lib/GD32F4xx/Source/gd32f4xx_trng.c ****        specific prior written permission.
-  25:lib/GD32F4xx/Source/gd32f4xx_trng.c **** 
-  26:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  27:lib/GD32F4xx/Source/gd32f4xx_trng.c **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-  28:lib/GD32F4xx/Source/gd32f4xx_trng.c **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-  29:lib/GD32F4xx/Source/gd32f4xx_trng.c **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-  30:lib/GD32F4xx/Source/gd32f4xx_trng.c **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-  31:lib/GD32F4xx/Source/gd32f4xx_trng.c **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 2
+  27              		.file 1 "../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c"
+   1:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** /*!
+   2:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \file    gd32f4xx_trng.c
+   3:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \brief   TRNG driver
+   4:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** 
+   5:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \version 2016-08-15, V1.0.0, firmware for GD32F4xx
+   6:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \version 2018-12-12, V2.0.0, firmware for GD32F4xx
+   7:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \version 2020-09-30, V2.1.0, firmware for GD32F4xx
+   8:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+   9:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** */
+  10:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** 
+  11:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** /*
+  12:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     Copyright (c) 2022, GigaDevice Semiconductor Inc.
+  13:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** 
+  14:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     Redistribution and use in source and binary forms, with or without modification,
+  15:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** are permitted provided that the following conditions are met:
+  16:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** 
+  17:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     1. Redistributions of source code must retain the above copyright notice, this
+  18:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****        list of conditions and the following disclaimer.
+  19:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     2. Redistributions in binary form must reproduce the above copyright notice,
+  20:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****        this list of conditions and the following disclaimer in the documentation
+  21:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****        and/or other materials provided with the distribution.
+  22:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     3. Neither the name of the copyright holder nor the names of its contributors
+  23:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****        may be used to endorse or promote products derived from this software without
+  24:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****        specific prior written permission.
+  25:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** 
+  26:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  27:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  28:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+  29:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+  30:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+  31:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s 			page 2
 
 
-  32:lib/GD32F4xx/Source/gd32f4xx_trng.c **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-  33:lib/GD32F4xx/Source/gd32f4xx_trng.c **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-  34:lib/GD32F4xx/Source/gd32f4xx_trng.c **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
-  35:lib/GD32F4xx/Source/gd32f4xx_trng.c **** OF SUCH DAMAGE.
-  36:lib/GD32F4xx/Source/gd32f4xx_trng.c **** */
-  37:lib/GD32F4xx/Source/gd32f4xx_trng.c **** 
-  38:lib/GD32F4xx/Source/gd32f4xx_trng.c **** #include "gd32f4xx_trng.h"
-  39:lib/GD32F4xx/Source/gd32f4xx_trng.c **** 
-  40:lib/GD32F4xx/Source/gd32f4xx_trng.c **** /*!
-  41:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \brief    deinitialize the TRNG
-  42:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \param[in]  none
-  43:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \param[out] none
-  44:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \retval     none
-  45:lib/GD32F4xx/Source/gd32f4xx_trng.c **** */
-  46:lib/GD32F4xx/Source/gd32f4xx_trng.c **** void trng_deinit(void)
-  47:lib/GD32F4xx/Source/gd32f4xx_trng.c **** {
+  32:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+  33:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  34:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+  35:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** OF SUCH DAMAGE.
+  36:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** */
+  37:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** 
+  38:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** #include "gd32f4xx_trng.h"
+  39:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** 
+  40:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** /*!
+  41:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \brief      reset TRNG
+  42:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \param[in]  none
+  43:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \param[out] none
+  44:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \retval     none
+  45:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** */
+  46:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** void trng_deinit(void)
+  47:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** {
   28              		.loc 1 47 1 view -0
   29              		.cfi_startproc
   30              		@ args = 0, pretend = 0, frame = 0
   31              		@ frame_needed = 0, uses_anonymous_args = 0
-  48:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     rcu_periph_reset_enable(RCU_TRNGRST);
+  48:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     rcu_periph_reset_enable(RCU_TRNGRST);
   32              		.loc 1 48 5 view .LVU1
-  47:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     rcu_periph_reset_enable(RCU_TRNGRST);
+  47:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     rcu_periph_reset_enable(RCU_TRNGRST);
   33              		.loc 1 47 1 is_stmt 0 view .LVU2
   34 0000 08B5     		push	{r3, lr}
   35              	.LCFI0:
@@ -94,16 +94,16 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 1
   40 0002 40F20650 		movw	r0, #1286
   41 0006 FFF7FEFF 		bl	rcu_periph_reset_enable
   42              	.LVL0:
-  49:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     rcu_periph_reset_disable(RCU_TRNGRST);
+  49:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     rcu_periph_reset_disable(RCU_TRNGRST);
   43              		.loc 1 49 5 is_stmt 1 view .LVU4
-  50:lib/GD32F4xx/Source/gd32f4xx_trng.c **** }
+  50:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** }
   44              		.loc 1 50 1 is_stmt 0 view .LVU5
   45 000a BDE80840 		pop	{r3, lr}
   46              	.LCFI1:
   47              		.cfi_restore 14
   48              		.cfi_restore 3
   49              		.cfi_def_cfa_offset 0
-  49:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     rcu_periph_reset_disable(RCU_TRNGRST);
+  49:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     rcu_periph_reset_disable(RCU_TRNGRST);
   50              		.loc 1 49 5 view .LVU6
   51 000e 40F20650 		movw	r0, #1286
   52 0012 FFF7FEBF 		b	rcu_periph_reset_disable
@@ -118,32 +118,32 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 1
   62              		.thumb
   63              		.thumb_func
   65              	trng_enable:
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 3
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s 			page 3
 
 
   66              	.LFB117:
-  51:lib/GD32F4xx/Source/gd32f4xx_trng.c **** 
-  52:lib/GD32F4xx/Source/gd32f4xx_trng.c **** /*!
-  53:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \brief    enable the TRNG interface
-  54:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \param[in]  none
-  55:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \param[out] none
-  56:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \retval     none
-  57:lib/GD32F4xx/Source/gd32f4xx_trng.c **** */
-  58:lib/GD32F4xx/Source/gd32f4xx_trng.c **** void trng_enable(void)
-  59:lib/GD32F4xx/Source/gd32f4xx_trng.c **** {
+  51:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** 
+  52:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** /*!
+  53:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \brief      enable TRNG 
+  54:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \param[in]  none
+  55:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \param[out] none
+  56:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \retval     none
+  57:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** */
+  58:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** void trng_enable(void)
+  59:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** {
   67              		.loc 1 59 1 is_stmt 1 view -0
   68              		.cfi_startproc
   69              		@ args = 0, pretend = 0, frame = 0
   70              		@ frame_needed = 0, uses_anonymous_args = 0
   71              		@ link register save eliminated.
-  60:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     TRNG_CTL |= TRNG_CTL_TRNGEN;
+  60:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     TRNG_CTL |= TRNG_CTL_TRNGEN;
   72              		.loc 1 60 5 view .LVU8
   73              		.loc 1 60 14 is_stmt 0 view .LVU9
   74 0000 034A     		ldr	r2, .L5
   75 0002 D2F80038 		ldr	r3, [r2, #2048]
   76 0006 43F00403 		orr	r3, r3, #4
   77 000a C2F80038 		str	r3, [r2, #2048]
-  61:lib/GD32F4xx/Source/gd32f4xx_trng.c **** }
+  61:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** }
   78              		.loc 1 61 1 view .LVU10
   79 000e 7047     		bx	lr
   80              	.L6:
@@ -161,31 +161,31 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 1
   93              		.thumb_func
   95              	trng_disable:
   96              	.LFB118:
-  62:lib/GD32F4xx/Source/gd32f4xx_trng.c **** 
-  63:lib/GD32F4xx/Source/gd32f4xx_trng.c **** /*!
-  64:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \brief    disable the TRNG interface
-  65:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \param[in]  none
-  66:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \param[out] none
-  67:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \retval     none
-  68:lib/GD32F4xx/Source/gd32f4xx_trng.c **** */
-  69:lib/GD32F4xx/Source/gd32f4xx_trng.c **** void trng_disable(void)
-  70:lib/GD32F4xx/Source/gd32f4xx_trng.c **** {
+  62:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** 
+  63:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** /*!
+  64:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \brief      disable TRNG 
+  65:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \param[in]  none
+  66:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \param[out] none
+  67:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \retval     none
+  68:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** */
+  69:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** void trng_disable(void)
+  70:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** {
   97              		.loc 1 70 1 is_stmt 1 view -0
   98              		.cfi_startproc
   99              		@ args = 0, pretend = 0, frame = 0
  100              		@ frame_needed = 0, uses_anonymous_args = 0
  101              		@ link register save eliminated.
-  71:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     TRNG_CTL &= ~TRNG_CTL_TRNGEN;
+  71:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     TRNG_CTL &= ~TRNG_CTL_TRNGEN;
  102              		.loc 1 71 5 view .LVU12
  103              		.loc 1 71 14 is_stmt 0 view .LVU13
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 4
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s 			page 4
 
 
  104 0000 034A     		ldr	r2, .L8
  105 0002 D2F80038 		ldr	r3, [r2, #2048]
  106 0006 23F00403 		bic	r3, r3, #4
  107 000a C2F80038 		str	r3, [r2, #2048]
-  72:lib/GD32F4xx/Source/gd32f4xx_trng.c **** }
+  72:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** }
  108              		.loc 1 72 1 view .LVU14
  109 000e 7047     		bx	lr
  110              	.L9:
@@ -203,26 +203,26 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 1
  123              		.thumb_func
  125              	trng_get_true_random_data:
  126              	.LFB119:
-  73:lib/GD32F4xx/Source/gd32f4xx_trng.c **** 
-  74:lib/GD32F4xx/Source/gd32f4xx_trng.c **** /*!
-  75:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \brief    get the true random data
-  76:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \param[in]  none
-  77:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \param[out] none
-  78:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \retval     the generated random data
-  79:lib/GD32F4xx/Source/gd32f4xx_trng.c **** */
-  80:lib/GD32F4xx/Source/gd32f4xx_trng.c **** uint32_t trng_get_true_random_data(void)
-  81:lib/GD32F4xx/Source/gd32f4xx_trng.c **** {
+  73:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** 
+  74:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** /*!
+  75:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \brief      get the true random data
+  76:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \param[in]  none
+  77:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \param[out] none
+  78:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \retval     uint32_t: 0x0-0xFFFFFFFF
+  79:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** */
+  80:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** uint32_t trng_get_true_random_data(void)
+  81:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** {
  127              		.loc 1 81 1 is_stmt 1 view -0
  128              		.cfi_startproc
  129              		@ args = 0, pretend = 0, frame = 0
  130              		@ frame_needed = 0, uses_anonymous_args = 0
  131              		@ link register save eliminated.
-  82:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     return (TRNG_DATA);
+  82:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     return (TRNG_DATA);
  132              		.loc 1 82 5 view .LVU16
  133              		.loc 1 82 13 is_stmt 0 view .LVU17
  134 0000 014B     		ldr	r3, .L11
  135 0002 D3F80808 		ldr	r0, [r3, #2056]
-  83:lib/GD32F4xx/Source/gd32f4xx_trng.c **** }
+  83:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** }
  136              		.loc 1 83 1 view .LVU18
  137 0006 7047     		bx	lr
  138              	.L12:
@@ -238,33 +238,33 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 1
  149              		.syntax unified
  150              		.thumb
  151              		.thumb_func
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 5
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s 			page 5
 
 
  153              	trng_interrupt_enable:
  154              	.LFB120:
-  84:lib/GD32F4xx/Source/gd32f4xx_trng.c **** 
-  85:lib/GD32F4xx/Source/gd32f4xx_trng.c **** /*!
-  86:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \brief    enable the TRNG interrupt
-  87:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \param[in]  none
-  88:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \param[out] none
-  89:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \retval     none
-  90:lib/GD32F4xx/Source/gd32f4xx_trng.c **** */
-  91:lib/GD32F4xx/Source/gd32f4xx_trng.c **** void trng_interrupt_enable(void)
-  92:lib/GD32F4xx/Source/gd32f4xx_trng.c **** {
+  84:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** 
+  85:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** /*!
+  86:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \brief      enable TRNG interrupt
+  87:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \param[in]  none
+  88:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \param[out] none
+  89:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \retval     none
+  90:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** */
+  91:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** void trng_interrupt_enable(void)
+  92:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** {
  155              		.loc 1 92 1 is_stmt 1 view -0
  156              		.cfi_startproc
  157              		@ args = 0, pretend = 0, frame = 0
  158              		@ frame_needed = 0, uses_anonymous_args = 0
  159              		@ link register save eliminated.
-  93:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     TRNG_CTL |= TRNG_CTL_IE;
+  93:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     TRNG_CTL |= TRNG_CTL_TRNGIE;
  160              		.loc 1 93 5 view .LVU20
  161              		.loc 1 93 14 is_stmt 0 view .LVU21
  162 0000 034A     		ldr	r2, .L14
  163 0002 D2F80038 		ldr	r3, [r2, #2048]
  164 0006 43F00803 		orr	r3, r3, #8
  165 000a C2F80038 		str	r3, [r2, #2048]
-  94:lib/GD32F4xx/Source/gd32f4xx_trng.c **** }
+  94:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** }
  166              		.loc 1 94 1 view .LVU22
  167 000e 7047     		bx	lr
  168              	.L15:
@@ -282,23 +282,23 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 1
  181              		.thumb_func
  183              	trng_interrupt_disable:
  184              	.LFB121:
-  95:lib/GD32F4xx/Source/gd32f4xx_trng.c **** 
-  96:lib/GD32F4xx/Source/gd32f4xx_trng.c **** /*!
-  97:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \brief    disable the TRNG interrupt
-  98:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \param[in]  none
-  99:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \param[out] none
- 100:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \retval     none
- 101:lib/GD32F4xx/Source/gd32f4xx_trng.c **** */
- 102:lib/GD32F4xx/Source/gd32f4xx_trng.c **** void trng_interrupt_disable(void)
- 103:lib/GD32F4xx/Source/gd32f4xx_trng.c **** {
+  95:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** 
+  96:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** /*!
+  97:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \brief      disable TRNG interrupt
+  98:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \param[in]  none
+  99:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \param[out] none
+ 100:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \retval     none
+ 101:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** */
+ 102:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** void trng_interrupt_disable(void)
+ 103:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** {
  185              		.loc 1 103 1 is_stmt 1 view -0
  186              		.cfi_startproc
  187              		@ args = 0, pretend = 0, frame = 0
  188              		@ frame_needed = 0, uses_anonymous_args = 0
  189              		@ link register save eliminated.
- 104:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     TRNG_CTL &= ~TRNG_CTL_IE;
+ 104:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     TRNG_CTL &= ~TRNG_CTL_TRNGIE;
  190              		.loc 1 104 5 view .LVU24
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 6
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s 			page 6
 
 
  191              		.loc 1 104 14 is_stmt 0 view .LVU25
@@ -306,7 +306,7 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 1
  193 0002 D2F80038 		ldr	r3, [r2, #2048]
  194 0006 23F00803 		bic	r3, r3, #8
  195 000a C2F80038 		str	r3, [r2, #2048]
- 105:lib/GD32F4xx/Source/gd32f4xx_trng.c **** }
+ 105:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** }
  196              		.loc 1 105 1 view .LVU26
  197 000e 7047     		bx	lr
  198              	.L18:
@@ -325,40 +325,40 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 1
  213              	trng_flag_get:
  214              	.LVL2:
  215              	.LFB122:
- 106:lib/GD32F4xx/Source/gd32f4xx_trng.c **** 
- 107:lib/GD32F4xx/Source/gd32f4xx_trng.c **** /*!
- 108:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \brief    get the trng status flags
- 109:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \param[in]  flag: trng status flag, refer to trng_flag_enum
- 110:lib/GD32F4xx/Source/gd32f4xx_trng.c ****                 only one parameter can be selected which is shown as below:
- 111:lib/GD32F4xx/Source/gd32f4xx_trng.c ****       \arg        TRNG_FLAG_DRDY: Random Data ready status
- 112:lib/GD32F4xx/Source/gd32f4xx_trng.c ****       \arg        TRNG_FLAG_CECS: Clock error current status
- 113:lib/GD32F4xx/Source/gd32f4xx_trng.c ****       \arg        TRNG_FLAG_SECS: Seed error current status
- 114:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \param[out] none
- 115:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \retval     FlagStatus: SET or RESET
- 116:lib/GD32F4xx/Source/gd32f4xx_trng.c **** */
- 117:lib/GD32F4xx/Source/gd32f4xx_trng.c **** FlagStatus trng_flag_get(trng_flag_enum flag)
- 118:lib/GD32F4xx/Source/gd32f4xx_trng.c **** {
+ 106:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** 
+ 107:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** /*!
+ 108:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \brief      get TRNG flag status
+ 109:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \param[in]  flag: TRNG flag
+ 110:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****                 only one parameter can be selected which is shown as below:
+ 111:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****       \arg        TRNG_FLAG_DRDY: random Data ready status
+ 112:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****       \arg        TRNG_FLAG_CECS: clock error current status
+ 113:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****       \arg        TRNG_FLAG_SECS: seed error current status
+ 114:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \param[out] none
+ 115:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \retval     FlagStatus: SET or RESET
+ 116:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** */
+ 117:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** FlagStatus trng_flag_get(trng_flag_enum flag)
+ 118:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** {
  216              		.loc 1 118 1 is_stmt 1 view -0
  217              		.cfi_startproc
  218              		@ args = 0, pretend = 0, frame = 0
  219              		@ frame_needed = 0, uses_anonymous_args = 0
  220              		@ link register save eliminated.
- 119:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     if(RESET != (TRNG_STAT & flag)) {
+ 119:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     if(RESET != (TRNG_STAT & flag)) {
  221              		.loc 1 119 5 view .LVU28
  222              		.loc 1 119 18 is_stmt 0 view .LVU29
  223 0000 034B     		ldr	r3, .L20
  224 0002 D3F80438 		ldr	r3, [r3, #2052]
  225              		.loc 1 119 7 view .LVU30
  226 0006 1842     		tst	r0, r3
- 120:lib/GD32F4xx/Source/gd32f4xx_trng.c ****         return SET;
- 121:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     } else {
- 122:lib/GD32F4xx/Source/gd32f4xx_trng.c ****         return RESET;
- 123:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     }
- 124:lib/GD32F4xx/Source/gd32f4xx_trng.c **** }
+ 120:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****         return SET;
+ 121:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     } else {
+ 122:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****         return RESET;
+ 123:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     }
+ 124:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** }
  227              		.loc 1 124 1 view .LVU31
  228 0008 14BF     		ite	ne
  229 000a 0120     		movne	r0, #1
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 7
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s 			page 7
 
 
  230              	.LVL3:
@@ -407,52 +407,52 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 1
  277              	trng_interrupt_flag_clear:
  278              	.LVL4:
  279              	.LFB124:
- 125:lib/GD32F4xx/Source/gd32f4xx_trng.c **** 
- 126:lib/GD32F4xx/Source/gd32f4xx_trng.c **** /*!
- 127:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \brief    get the trng interrupt flags
- 128:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \param[in]  int_flag: trng interrupt flag, refer to trng_int_flag_enum
- 129:lib/GD32F4xx/Source/gd32f4xx_trng.c ****                 only one parameter can be selected which is shown as below:
- 130:lib/GD32F4xx/Source/gd32f4xx_trng.c ****       \arg        TRNG_INT_FLAG_CEIF: clock error interrupt flag
- 131:lib/GD32F4xx/Source/gd32f4xx_trng.c ****       \arg        TRNG_INT_FLAG_SEIF: Seed error interrupt flag
- 132:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \param[out] none
- 133:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \retval     FlagStatus: SET or RESET
- 134:lib/GD32F4xx/Source/gd32f4xx_trng.c **** */
- 135:lib/GD32F4xx/Source/gd32f4xx_trng.c **** FlagStatus trng_interrupt_flag_get(trng_int_flag_enum int_flag)
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 8
+ 125:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** 
+ 126:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** /*!
+ 127:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \brief      get TRNG interrupt flag status
+ 128:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \param[in]  int_flag: TRNG interrupt flag
+ 129:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****                 only one parameter can be selected which is shown as below:
+ 130:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****       \arg        TRNG_INT_FLAG_CEIF: clock error interrupt flag
+ 131:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****       \arg        TRNG_INT_FLAG_SEIF: seed error interrupt flag
+ 132:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \param[out] none
+ 133:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \retval     FlagStatus: SET or RESET
+ 134:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** */
+ 135:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** FlagStatus trng_interrupt_flag_get(trng_int_flag_enum int_flag)
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s 			page 8
 
 
- 136:lib/GD32F4xx/Source/gd32f4xx_trng.c **** {
- 137:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     if(RESET != (TRNG_STAT & int_flag)) {
- 138:lib/GD32F4xx/Source/gd32f4xx_trng.c ****         return SET;
- 139:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     } else {
- 140:lib/GD32F4xx/Source/gd32f4xx_trng.c ****         return RESET;
- 141:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     }
- 142:lib/GD32F4xx/Source/gd32f4xx_trng.c **** }
- 143:lib/GD32F4xx/Source/gd32f4xx_trng.c **** 
- 144:lib/GD32F4xx/Source/gd32f4xx_trng.c **** /*!
- 145:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \brief    clear the trng interrupt flags
- 146:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \param[in]  int_flag: trng interrupt flag, refer to trng_int_flag_enum
- 147:lib/GD32F4xx/Source/gd32f4xx_trng.c ****                 only one parameter can be selected which is shown as below:
- 148:lib/GD32F4xx/Source/gd32f4xx_trng.c ****       \arg        TRNG_INT_FLAG_CEIF: clock error interrupt flag
- 149:lib/GD32F4xx/Source/gd32f4xx_trng.c ****       \arg        TRNG_INT_FLAG_SEIF: Seed error interrupt flag
- 150:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \param[out] none
- 151:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     \retval     none
- 152:lib/GD32F4xx/Source/gd32f4xx_trng.c **** */
- 153:lib/GD32F4xx/Source/gd32f4xx_trng.c **** void trng_interrupt_flag_clear(trng_int_flag_enum int_flag)
- 154:lib/GD32F4xx/Source/gd32f4xx_trng.c **** {
+ 136:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** {
+ 137:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     if(RESET != (TRNG_STAT & int_flag)) {
+ 138:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****         return SET;
+ 139:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     } else {
+ 140:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****         return RESET;
+ 141:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     }
+ 142:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** }
+ 143:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** 
+ 144:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** /*!
+ 145:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \brief      clear TRNG interrupt flag status
+ 146:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \param[in]  int_flag: TRNG interrupt flag
+ 147:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****                 only one parameter can be selected which is shown as below:
+ 148:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****       \arg        TRNG_INT_FLAG_CEIF: clock error interrupt flag
+ 149:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****       \arg        TRNG_INT_FLAG_SEIF: seed error interrupt flag
+ 150:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \param[out] none
+ 151:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     \retval     none
+ 152:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** */
+ 153:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** void trng_interrupt_flag_clear(trng_int_flag_enum int_flag)
+ 154:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** {
  280              		.loc 1 154 1 is_stmt 1 view -0
  281              		.cfi_startproc
  282              		@ args = 0, pretend = 0, frame = 0
  283              		@ frame_needed = 0, uses_anonymous_args = 0
  284              		@ link register save eliminated.
- 155:lib/GD32F4xx/Source/gd32f4xx_trng.c ****     TRNG_STAT &= ~(uint32_t)int_flag;
+ 155:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c ****     TRNG_STAT &= ~(uint32_t)int_flag;
  285              		.loc 1 155 5 view .LVU34
  286              		.loc 1 155 15 is_stmt 0 view .LVU35
  287 0000 034A     		ldr	r2, .L26
  288 0002 D2F80438 		ldr	r3, [r2, #2052]
  289 0006 23EA0003 		bic	r3, r3, r0
  290 000a C2F80438 		str	r3, [r2, #2052]
- 156:lib/GD32F4xx/Source/gd32f4xx_trng.c **** }
+ 156:../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c **** }
  291              		.loc 1 156 1 view .LVU36
  292 000e 7047     		bx	lr
  293              	.L27:
@@ -465,40 +465,40 @@ ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 1
  301              	.Letext0:
  302              		.file 2 "/Applications/ARM/arm-none-eabi/include/machine/_default_types.h"
  303              		.file 3 "/Applications/ARM/arm-none-eabi/include/sys/_stdint.h"
- 304              		.file 4 "lib/CMSIS/GD/GD32F4xx/Include/gd32f4xx.h"
- 305              		.file 5 "lib/GD32F4xx/Include/gd32f4xx_rcu.h"
- 306              		.file 6 "lib/GD32F4xx/Include/gd32f4xx_trng.h"
-ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s 			page 9
+ 304              		.file 4 "../../../support/device/gd32f4xx/inc/gd32f4xx.h"
+ 305              		.file 5 "../../../support/device/gd32f4xx/peripherals/inc/gd32f4xx_rcu.h"
+ 306              		.file 6 "../../../support/device/gd32f4xx/peripherals/inc/gd32f4xx_trng.h"
+ARM GAS  /var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s 			page 9
 
 
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 gd32f4xx_trng.c
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:18     .text.trng_deinit:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:25     .text.trng_deinit:0000000000000000 trng_deinit
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:58     .text.trng_enable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:65     .text.trng_enable:0000000000000000 trng_enable
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:83     .text.trng_enable:0000000000000010 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:88     .text.trng_disable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:95     .text.trng_disable:0000000000000000 trng_disable
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:113    .text.trng_disable:0000000000000010 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:118    .text.trng_get_true_random_data:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:125    .text.trng_get_true_random_data:0000000000000000 trng_get_true_random_data
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:141    .text.trng_get_true_random_data:0000000000000008 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:146    .text.trng_interrupt_enable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:153    .text.trng_interrupt_enable:0000000000000000 trng_interrupt_enable
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:171    .text.trng_interrupt_enable:0000000000000010 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:176    .text.trng_interrupt_disable:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:183    .text.trng_interrupt_disable:0000000000000000 trng_interrupt_disable
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:201    .text.trng_interrupt_disable:0000000000000010 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:206    .text.trng_flag_get:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:213    .text.trng_flag_get:0000000000000000 trng_flag_get
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:237    .text.trng_flag_get:0000000000000010 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:242    .text.trng_interrupt_flag_get:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:249    .text.trng_interrupt_flag_get:0000000000000000 trng_interrupt_flag_get
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:265    .text.trng_interrupt_flag_get:0000000000000010 $d
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:270    .text.trng_interrupt_flag_clear:0000000000000000 $t
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:277    .text.trng_interrupt_flag_clear:0000000000000000 trng_interrupt_flag_clear
-/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccD6bo9J.s:296    .text.trng_interrupt_flag_clear:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:18     .text.trng_deinit:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:25     .text.trng_deinit:0000000000000000 trng_deinit
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:58     .text.trng_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:65     .text.trng_enable:0000000000000000 trng_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:83     .text.trng_enable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:88     .text.trng_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:95     .text.trng_disable:0000000000000000 trng_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:113    .text.trng_disable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:118    .text.trng_get_true_random_data:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:125    .text.trng_get_true_random_data:0000000000000000 trng_get_true_random_data
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:141    .text.trng_get_true_random_data:0000000000000008 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:146    .text.trng_interrupt_enable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:153    .text.trng_interrupt_enable:0000000000000000 trng_interrupt_enable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:171    .text.trng_interrupt_enable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:176    .text.trng_interrupt_disable:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:183    .text.trng_interrupt_disable:0000000000000000 trng_interrupt_disable
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:201    .text.trng_interrupt_disable:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:206    .text.trng_flag_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:213    .text.trng_flag_get:0000000000000000 trng_flag_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:237    .text.trng_flag_get:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:242    .text.trng_interrupt_flag_get:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:249    .text.trng_interrupt_flag_get:0000000000000000 trng_interrupt_flag_get
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:265    .text.trng_interrupt_flag_get:0000000000000010 $d
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:270    .text.trng_interrupt_flag_clear:0000000000000000 $t
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:277    .text.trng_interrupt_flag_clear:0000000000000000 trng_interrupt_flag_clear
+/var/folders/_f/88qcw_5n2jl40jjphvxyt7wh0000gn/T//ccH7fQoj.s:296    .text.trng_interrupt_flag_clear:0000000000000010 $d
 
 UNDEFINED SYMBOLS
 rcu_periph_reset_enable
