@@ -43,15 +43,15 @@ data UART = UART
 
 
 mkUART :: MonadWriter Context m
-        => USART_PERIPH
-        -> RCU_PERIPH
-        -> IRQn
-        -> DMA_CHANNEL
-        -> IRQn
-        -> DMA_CHANNEL_IRQ
-        -> G.Port
-        -> G.Port
-        -> m UART
+       => USART_PERIPH
+       -> RCU_PERIPH
+       -> IRQn
+       -> DMA_CHANNEL
+       -> IRQn
+       -> DMA_CHANNEL_IRQ
+       -> G.Port
+       -> G.Port
+       -> m UART
 mkUART uart rcu uartIRQ dma dmaIRQn dmaIRQc rx tx = do
     addInit $ G.initPort rx
     addInit $ G.initPort tx
