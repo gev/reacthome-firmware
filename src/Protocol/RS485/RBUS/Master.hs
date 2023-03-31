@@ -20,7 +20,7 @@ import           Interface.Mac
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Protocol.RS485.RBUS
-import           Protocol.RS485.RBUS.Master.MacTable
+import           Protocol.RS485.RBUS.Master.MacTable (MacTable, macTable)
 import           Util.CRC16
 
 
@@ -64,20 +64,20 @@ master :: (MonadWriter Context m, KnownNat n)
        -> m (Master n)
 master id onMessage onConfirm onDiscovery onPing = do
     let name = "protocol_" <> id
-    mac      <- buffer     (name <> "_mac"    )
-    model    <- value_     (name <> "_model"  )
-    version  <- version_   (name <> "_version")
-    address  <- value_     (name <> "_address")
-    state    <- value      (name <> "_state"  )   readyToReceive
-    phase    <- value      (name <> "_phase"  )   waitingAddress
-    index    <- value      (name <> "_index"  )   0
-    size     <- value      (name <> "_size"   )   0
-    buff     <- buffer     (name <> "_message")
-    tidRx    <- values     (name <> "_tid_rx" )   $ replicate 255 (-1)
-    tidTx    <- values     (name <> "_tid_tx" )   $ replicate 255   0
-    crc      <- makeCRC16  (name <> "_crc"    )
-    tmp      <- value      (name <> "_tmp"    )   0
-    table    <- macTable
+    mac      <- buffer     (name <> "_mac"      )
+    model    <- value_     (name <> "_model"    )
+    version  <- version_   (name <> "_version"  )
+    address  <- value_     (name <> "_address"  )
+    state    <- value      (name <> "_state"    )   readyToReceive
+    phase    <- value      (name <> "_phase"    )   waitingAddress
+    index    <- value      (name <> "_index"    )   0
+    size     <- value      (name <> "_size"     )   0
+    buff     <- buffer     (name <> "_message"  )
+    tidRx    <- values     (name <> "_tid_rx"   )   $ replicate 255 (-1)
+    tidTx    <- values     (name <> "_tid_tx"   )   $ replicate 255   0
+    crc      <- makeCRC16  (name <> "_crc"      )
+    tmp      <- value      (name <> "_tmp"      )   0
+    table    <- macTable   (name <> "_mac_table")
     let master = Master { name, mac, model, version, address
                         , state, phase, index, size
                         , buff, tidRx, tidTx, crc, tmp, table
