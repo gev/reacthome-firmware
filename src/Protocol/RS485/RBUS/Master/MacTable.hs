@@ -13,12 +13,12 @@ import           Interface.MCU
 import           Ivory.Language
 
 
-data MacTable = strutters
-    { strutters     :: Value          Uint32
-    , strutters :: Values   255   Uint8
-    , strutters     :: Matrix   255 6 Uint8
-    , strutters   :: Values   255   Uint8
-    , strutters :: Versions 255
+data MacTable = MacTable
+    { size     :: Value          Uint32
+    , tAddress :: Values   255   Uint8
+    , tMac     :: Matrix   255 6 Uint8
+    , tModel   :: Values   255   Uint8
+    , tVersion :: Versions 255
     }
 
 
