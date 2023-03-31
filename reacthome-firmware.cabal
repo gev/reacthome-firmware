@@ -152,6 +152,7 @@ executable reacthome-firmware
                     , Support.Device.GD32F4xx.SYSCFG
 
                     , Util.CRC16
+                    , Util.String
 
     build-depends:    base ^>=4.16.4.0
                     , mtl  
