@@ -51,6 +51,7 @@ executable reacthome-firmware
                     , Data.Record
                     , Data.Buffer
                     , Data.Index
+                    , Data.Matrix
                     , Data.Serialize
                     , Data.Concurrent.Semaphore
                     , Data.Concurrent.Queue
