@@ -62,11 +62,13 @@ executable reacthome-firmware
                     , Feature.Blink
                     , Feature.Echo
                     , Feature.Relays
+                    , Feature.RS485.RBUS
 
                     , Formula.Blink330
                     , Formula.Blink450
                     , Formula.Echo
                     , Formula.Relay12
+                    , Formula.Server
 
                     , Interface.Counter
                     , Interface.GPIO.Input
