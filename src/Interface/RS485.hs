@@ -43,9 +43,9 @@ data HandleRS485 r = HandleRS485
 rs485 :: (MonadWriter Context m, MonadReader (D.Domain p t) m, I.UART u, Output o)
       => Int -> (p -> m u) -> (p -> m o) -> m RS485
 rs485 n uart' rede' = do
-    mcu'        <- asks D.mcu
-    uart       <- uart' $ peripherals mcu'
-    rede        <- rede'  $ peripherals mcu'
+    mcu' <- asks D.mcu
+    uart <- uart' $ peripherals mcu'
+    rede <- rede' $ peripherals mcu'
 
     let initRS485' :: Def ('[] ':-> ())
         initRS485' = proc ("rs485_" <> show n <> "_init") $ body
