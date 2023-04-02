@@ -84,11 +84,7 @@ module Support.Device.GD32F3x0.Timer
     , inclTimer
     ) where
 
-import           Data.Function                 ((&))
-import           Data.Maybe
 import           Ivory.Language
-import           Ivory.Language.Module
-import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
 
 
