@@ -6,13 +6,13 @@
 {-# HLINT ignore "Use camelCase" #-}
 
 module Support.Device.GD32F3x0.GPIO
-    ( GPIO_PERIPH (..)
-    , GPIO_MODE   (..)
-    , GPIO_PUPD   (..)
-    , GPIO_OTYPE  (..)
-    , GPIO_SPEED  (..)
-    , GPIO_PIN    (..)
-    , GPIO_AF     (..)
+    ( GPIO_PERIPH
+    , GPIO_MODE
+    , GPIO_PUPD
+    , GPIO_OTYPE
+    , GPIO_SPEED
+    , GPIO_PIN
+    , GPIO_AF
     , setMode
     , setOutputOptions
     , setBit
@@ -22,7 +22,6 @@ module Support.Device.GD32F3x0.GPIO
     ) where
 
 import           Ivory.Language                hiding (setBit)
-import           Ivory.Language.Module
 import           Ivory.Support.Device.GD32F3x0
 
 
