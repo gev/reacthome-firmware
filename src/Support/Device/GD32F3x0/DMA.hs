@@ -69,11 +69,41 @@ module Support.Device.GD32F3x0.DMA
     , inclDMA
     ) where
 
-import           Data.Function                 ((&))
 import           Ivory.Language
-import           Ivory.Language.Module
-import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
+
+
+
+type DMA_PARAM_STRUCT  = "dma_parameter_struct"
+type DMA_PARAM s = Ref s (Struct DMA_PARAM_STRUCT)
+
+[ivory|
+    struct dma_parameter_struct
+        { periph_addr  :: Stored Uint32
+        ; periph_width :: Stored DMA_PERIPH_WIDTH
+        ; periph_inc   :: Stored DMA_PERIPH_INC
+        ; memory_addr  :: Stored Uint32
+        ; memory_width :: Stored DMA_MEMORY_WIDTH
+        ; memory_inc   :: Stored DMA_MEMORY_INC
+        ; direction    :: Stored DMA_DIRECTION
+        ; number       :: Stored Uint16
+        ; priority     :: Stored DMA_PRIORITY
+        }
+|]
+
+dmaParam :: Init (Struct DMA_PARAM_STRUCT)
+dmaParam =
+    istruct
+        [ periph_addr  .= ival 0
+        , periph_width .= ival dma_peripheral_width_8bit
+        , periph_inc   .= ival dma_periph_increase_disable
+        , memory_addr  .= ival 0
+        , memory_width .= ival dma_memory_width_8bit
+        , memory_inc   .= ival dma_memory_increase_disable
+        , direction    .= ival dma_peripheral_to_memory
+        , number       .= ival 0
+        , priority     .= ival dma_priority_low
+        ]
 
 
 
@@ -154,39 +184,6 @@ newtype DMA_INT = DMA_INT Uint32
     deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
 
 dma_int_ftf = DMA_INT $ ext "DMA_INT_FTF"
-
-
-
-type DMA_PARAM_STRUCT  = "dma_parameter_struct"
-type DMA_PARAM s = Ref s (Struct DMA_PARAM_STRUCT)
-
-[ivory|
-    struct dma_parameter_struct
-        { periph_addr  :: Stored Uint32
-        ; periph_width :: Stored DMA_PERIPH_WIDTH
-        ; periph_inc   :: Stored DMA_PERIPH_INC
-        ; memory_addr  :: Stored Uint32
-        ; memory_width :: Stored DMA_MEMORY_WIDTH
-        ; memory_inc   :: Stored DMA_MEMORY_INC
-        ; direction    :: Stored DMA_DIRECTION
-        ; number       :: Stored Uint16
-        ; priority     :: Stored DMA_PRIORITY
-        }
-|]
-
-dmaParam :: Init (Struct DMA_PARAM_STRUCT)
-dmaParam =
-    istruct
-        [ periph_addr  .= ival 0
-        , periph_width .= ival dma_peripheral_width_8bit
-        , periph_inc   .= ival dma_periph_increase_disable
-        , memory_addr  .= ival 0
-        , memory_width .= ival dma_memory_width_8bit
-        , memory_inc   .= ival dma_memory_increase_disable
-        , direction    .= ival dma_peripheral_to_memory
-        , number       .= ival 0
-        , priority     .= ival dma_priority_low
-        ]
 
 
 
