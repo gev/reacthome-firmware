@@ -148,7 +148,6 @@ timerOcParam =
 
 
 
-
 newtype TIMER_PERIPH = TIMER_PERIPH Uint32
     deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
 
