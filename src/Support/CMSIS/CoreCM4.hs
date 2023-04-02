@@ -13,6 +13,13 @@ module Support.CMSIS.CoreCM4
 
 import           Control.Monad
 import           Ivory.Language
+import           Ivory.Language.Proc
+import           Ivory.Language.Syntax
+
+
+
+fun :: ProcType f => Sym -> Def f
+fun = (`importProc` "core_cm4.h")
 
 
 
@@ -20,35 +27,35 @@ sysTickConfig :: Uint32 -> Ivory eff ()
 sysTickConfig = call_ sysTick_Config
 
 sysTick_Config :: Def ('[Uint32] :-> ())
-sysTick_Config = importProc "SysTick_Config" "core_cm4.h"
+sysTick_Config = fun "SysTick_Config"
 
 
 nop :: Int -> Ivory eff ()
 nop n = replicateM_ n (call_ __NOP)
 
 __NOP :: Def ('[] :-> ())
-__NOP = importProc "__NOP" "core_cm4.h"
+__NOP = fun "__NOP"
 
 
 isb :: Ivory eff ()
 isb = call_ __ISB
 
 __ISB :: Def ('[] :-> ())
-__ISB = importProc "__ISB" "core_cm4.h"
+__ISB = fun "__ISB"
 
 
 dsb :: Ivory eff ()
 dsb = call_ __DSB
 
 __DSB :: Def ('[] :-> ())
-__DSB = importProc "__DSB" "core_cm4.h"
+__DSB = fun "__DSB"
 
 
 dmb :: Ivory eff ()
 dmb = call_ __DMB
 
 __DMB :: Def ('[] :-> ())
-__DMB = importProc "__DMB" "core_cm4.h"
+__DMB = fun "__DMB"
 
 
 
