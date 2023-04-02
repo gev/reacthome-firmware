@@ -13,10 +13,6 @@ module Support.CMSIS.CoreCM4
 
 import           Control.Monad
 import           Ivory.Language
-import           Ivory.Language.Module
-import           Ivory.Language.Proc
-import           Ivory.Language.Syntax
-import           Ivory.Support
 
 
 
