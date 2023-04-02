@@ -10,8 +10,6 @@ module Support.Device.GD32F3x0.DBG
     ) where
 
 import           Ivory.Language
-import           Ivory.Language.Module
-import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
 
 
