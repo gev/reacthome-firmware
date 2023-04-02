@@ -15,7 +15,7 @@ import           Support.Device.GD32F4xx.IRQ
 
 
 enableIrqNvic :: IRQn -> Uint8 -> Uint8 -> Ivory eff ()
-enableIrqNvic irqn = call_ nvic_irq_enable (def irqn)
+enableIrqNvic = call_ nvic_irq_enable
 
 nvic_irq_enable :: Def ('[IRQn, Uint8, Uint8] :-> ())
 nvic_irq_enable = fun "nvic_irq_enable"
