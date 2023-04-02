@@ -120,10 +120,48 @@ gpio_pin_13 = GPIO_PIN $ ext "GPIO_PIN_13"
 gpio_pin_14 = GPIO_PIN $ ext "GPIO_PIN_14"
 gpio_pin_15 = GPIO_PIN $ ext "GPIO_PIN_15"
 
+
+
 newtype GPIO_AF = GPIO_AF Uint32
     deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
 
 gpio_af_1  = GPIO_PIN $ ext "GPIO_AF_1"
+
+
+
+setMode :: GPIO_PERIPH -> GPIO_MODE -> GPIO_PUPD -> GPIO_PIN -> Ivory eff ()
+setMode = call_ gpio_mode_set
+
+gpio_mode_set :: Def ('[GPIO_PERIPH, GPIO_MODE, GPIO_PUPD, GPIO_PIN] :-> ())
+gpio_mode_set = fun "gpio_mode_set"
+
+
+setOutputOptions :: GPIO_PERIPH -> GPIO_OTYPE -> GPIO_SPEED -> GPIO_PIN -> Ivory eff ()
+setOutputOptions = call_ gpio_output_options_set
+
+gpio_output_options_set :: Def ('[GPIO_PERIPH, GPIO_OTYPE, GPIO_SPEED, GPIO_PIN] :-> ())
+gpio_output_options_set = fun "gpio_output_options_set"
+
+
+setBit :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff ()
+setBit = call_ gpio_bit_set
+
+gpio_bit_set :: Def ('[GPIO_PERIPH, GPIO_PIN] :-> ())
+gpio_bit_set = fun "gpio_bit_set"
+
+
+resetBit :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff ()
+resetBit = call_ gpio_bit_reset
+
+gpio_bit_reset :: Def ('[GPIO_PERIPH, GPIO_PIN] :-> ())
+gpio_bit_reset = fun "gpio_bit_reset"
+
+
+setAF :: GPIO_PERIPH -> GPIO_AF -> GPIO_PIN -> Ivory eff ()
+setAF = call_ gpio_af_set
+
+gpio_af_set :: Def ('[GPIO_PERIPH, GPIO_AF, GPIO_PIN] :-> ())
+gpio_af_set = fun "gpio_af_set"
 
 
 
@@ -167,39 +205,3 @@ inclGPIO = do
     incl gpio_af_set
     incl gpio_bit_reset
     incl gpio_bit_set
-
-
-
-setMode :: GPIO_PERIPH -> GPIO_MODE -> GPIO_PUPD -> GPIO_PIN -> Ivory eff ()
-setMode = call_ gpio_mode_set
-
-gpio_mode_set :: Def ('[GPIO_PERIPH, GPIO_MODE, GPIO_PUPD, GPIO_PIN] :-> ())
-gpio_mode_set = fun "gpio_mode_set"
-
-
-setOutputOptions :: GPIO_PERIPH -> GPIO_OTYPE -> GPIO_SPEED -> GPIO_PIN -> Ivory eff ()
-setOutputOptions = call_ gpio_output_options_set
-
-gpio_output_options_set :: Def ('[GPIO_PERIPH, GPIO_OTYPE, GPIO_SPEED, GPIO_PIN] :-> ())
-gpio_output_options_set = fun "gpio_output_options_set"
-
-
-setBit :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff ()
-setBit = call_ gpio_bit_set
-
-gpio_bit_set :: Def ('[GPIO_PERIPH, GPIO_PIN] :-> ())
-gpio_bit_set = fun "gpio_bit_set"
-
-
-resetBit :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff ()
-resetBit = call_ gpio_bit_reset
-
-gpio_bit_reset :: Def ('[GPIO_PERIPH, GPIO_PIN] :-> ())
-gpio_bit_reset = fun "gpio_bit_reset"
-
-
-setAF :: GPIO_PERIPH -> GPIO_AF -> GPIO_PIN -> Ivory eff ()
-setAF = call_ gpio_af_set
-
-gpio_af_set :: Def ('[GPIO_PERIPH, GPIO_AF, GPIO_PIN] :-> ())
-gpio_af_set = fun "gpio_af_set"

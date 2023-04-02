@@ -12,6 +12,7 @@ module Support.Device.GD32F3x0.IRQ
     , exti0_1_irqn
     , exti2_3_irqn
     , exti4_15_irqn
+
     , makeIRQHandler
 
     , inclIRQ
@@ -34,6 +35,15 @@ exti2_3_irqn        = IRQn $ ext "EXTI2_3_IRQn"
 exti4_15_irqn       = IRQn $ ext "EXTI4_15_IRQn"
 
 
+
+makeIRQHandler :: ExtSymbol t
+               => t
+               -> (forall s. Ivory (ProcEffects s ()) ())
+               -> ModuleDef
+makeIRQHandler t b = incl $ proc (symbol t <> "_IRQHandler") $ body b
+
+
+
 inclIRQ :: ModuleDef
 inclIRQ = do
     inclSym timer1_irqn
@@ -43,10 +53,3 @@ inclIRQ = do
     inclSym exti0_1_irqn
     inclSym exti2_3_irqn
     inclSym exti4_15_irqn
-
-
-makeIRQHandler :: ExtSymbol t
-               => t
-               -> (forall s. Ivory (ProcEffects s ()) ())
-               -> ModuleDef
-makeIRQHandler t b = incl $ proc (symbol t <> "_IRQHandler") $ body b
