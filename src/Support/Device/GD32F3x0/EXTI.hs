@@ -7,9 +7,6 @@
 
 module Support.Device.GD32F3x0.EXTI
     ( EXTI_LINE
-    , EXTI_MODE
-    , EXTI_TRIG_TYPE
-
     , exti_1
     , exti_2
     , exti_3
@@ -38,9 +35,11 @@ module Support.Device.GD32F3x0.EXTI
     , exti_26
     , exti_27
 
+    , EXTI_MODE
     , exti_interrupt
     , exti_mode
 
+    , EXTI_TRIG_TYPE
     , exti_trig_rising
     , exti_trig_falling
     , exti_trig_both

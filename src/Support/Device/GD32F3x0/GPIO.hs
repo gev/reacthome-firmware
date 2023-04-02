@@ -7,28 +7,26 @@
 
 module Support.Device.GD32F3x0.GPIO
     ( GPIO_PERIPH
-    , GPIO_MODE
-    , GPIO_PUPD
-    , GPIO_OTYPE
-    , GPIO_SPEED
-    , GPIO_PIN
-    , GPIO_AF
-
     , gpio_a
     , gpio_b
 
+    , GPIO_MODE
     , gpio_mode_input
     , gpio_mode_output
     , gpio_mode_af
 
+    , GPIO_PUPD
     , gpio_pupd_none
     , gpio_pupd_pullup
     , gpio_pupd_pulldown
 
-    , gpio_ospeed_50MHz
-
+    , GPIO_OTYPE
     , gpio_otype_pp
 
+    , GPIO_SPEED
+    , gpio_ospeed_50MHz
+
+    , GPIO_PIN
     , gpio_pin_0
     , gpio_pin_1
     , gpio_pin_2
@@ -45,6 +43,9 @@ module Support.Device.GD32F3x0.GPIO
     , gpio_pin_13
     , gpio_pin_14
     , gpio_pin_15
+
+    , GPIO_AF
+    , gpio_af_1
 
     , setMode
     , setOutputOptions
@@ -199,6 +200,8 @@ inclGPIO = do
     inclSym gpio_pin_13
     inclSym gpio_pin_14
     inclSym gpio_pin_15
+
+    inclSym gpio_af_1
 
     incl gpio_output_options_set
     incl gpio_mode_set
