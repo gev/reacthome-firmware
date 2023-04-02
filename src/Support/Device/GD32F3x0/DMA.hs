@@ -8,18 +8,11 @@
 {-# HLINT ignore "Use camelCase" #-}
 
 module Support.Device.GD32F3x0.DMA
-    ( DMA_PARAM
+    ( DMA_PARAM_STRUCT
+    , DMA_PARAM
+    , dmaParam
 
     , DMA_CHANNEL
-    , DMA_DIRECTION
-    , DMA_MEMORY_INC
-    , DMA_MEMORY_WIDTH
-    , DMA_PERIPH_INC
-    , DMA_PERIPH_WIDTH
-    , DMA_PRIORITY
-    , DMA_INT
-    , DMA_INT_FLAG
-
     , dma_ch0
     , dma_ch1
     , dma_ch2
@@ -28,34 +21,40 @@ module Support.Device.GD32F3x0.DMA
     , dma_ch5
     , dma_ch6
 
+    , DMA_DIRECTION
     , dma_peripheral_to_memory
     , dma_memory_to_peripheral
 
+    , DMA_MEMORY_INC
     , dma_memory_increase_disable
     , dma_memory_increase_enable
 
+    , DMA_MEMORY_WIDTH
     , dma_memory_width_8bit
     , dma_memory_width_16bit
     , dma_memory_width_32bit
 
+    , DMA_PERIPH_INC
     , dma_periph_increase_disable
     , dma_periph_increase_enable
 
+    , DMA_PERIPH_WIDTH
     , dma_peripheral_width_8bit
     , dma_peripheral_width_16bit
     , dma_peripheral_width_32bit
 
+    , DMA_PRIORITY
     , dma_priority_low
     , dma_priority_medium
     , dma_priority_high
     , dma_priority_ultra_high
 
+    , DMA_INT
     , dma_int_flag_ftf
     , dma_int_flag_g
 
+    , DMA_INT_FLAG
     , dma_int_ftf
-
-    , dmaParam
 
     , deinitDMA
     , initDMA

@@ -7,14 +7,13 @@
 
 module Support.Device.GD32F3x0.SYSCFG
     ( EXTI_PORT
-    , EXTI_PIN
-
     , exti_source_gpioa
     , exti_source_gpiob
     , exti_source_gpioc
     , exti_source_gpiod
     , exti_source_gpiof
 
+    , EXTI_PIN
     , exti_source_pin0
     , exti_source_pin1
     , exti_source_pin2

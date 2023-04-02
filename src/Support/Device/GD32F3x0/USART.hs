@@ -7,41 +7,40 @@
 
 module Support.Device.GD32F3x0.USART
     ( USART_PERIPH
-    , USART_WORD_LENGTH
-    , USART_STOP_BIT
-    , USART_PARITY_CFG
-    , USART_RX_CFG
-    , USART_TX_CFG
-    , USART_FLAG
-    , USART_INT
-    , USART_INT_FLAG
-    , USART_DENT
-
-
-    , usart_int_rbne
-    , usart_int_tbe
-    , usart_int_tc
-
-    , usart_int_flag_rbne
-    , usart_int_flag_tbe
-    , usart_int_flag_tc
-
     , usart0
     , usart1
 
+    , USART_WORD_LENGTH
     , usart_wl_8bit
 
+    , USART_STOP_BIT
     , usart_stb_1bit
 
+    , USART_PARITY_CFG
     , usart_pm_none
 
+    , USART_RX_CFG
     , usart_receive_enable
+
+    , USART_TX_CFG
     , usart_transmit_enable
 
+    , USART_FLAG
     , usart_flag_rbne
     , usart_flag_tbe
     , usart_flag_tc
 
+    , USART_INT
+    , usart_int_rbne
+    , usart_int_tbe
+    , usart_int_tc
+
+    , USART_INT_FLAG
+    , usart_int_flag_rbne
+    , usart_int_flag_tbe
+    , usart_int_flag_tc
+
+    , USART_DENT
     , usart_dent_enable
     , usart_dent_disable
 
