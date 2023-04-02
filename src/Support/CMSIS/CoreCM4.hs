@@ -7,6 +7,7 @@ module Support.CMSIS.CoreCM4
     , isb
     , dsb
     , dmb
+
     , inclCoreCM4
     ) where
 
@@ -18,22 +19,12 @@ import           Ivory.Language.Syntax
 import           Ivory.Support
 
 
-inclCoreCM4 :: ModuleDef
-inclCoreCM4 = do
-    incl sysTick_Config
-    incl __NOP
-    incl __ISB
-    incl __DSB
-    incl __DMB
-
-
 
 sysTickConfig :: Uint32 -> Ivory eff ()
 sysTickConfig = call_ sysTick_Config
 
 sysTick_Config :: Def ('[Uint32] :-> ())
 sysTick_Config = importProc "SysTick_Config" "core_cm4.h"
-
 
 
 nop :: Int -> Ivory eff ()
@@ -62,3 +53,13 @@ dmb = call_ __DMB
 
 __DMB :: Def ('[] :-> ())
 __DMB = importProc "__DMB" "core_cm4.h"
+
+
+
+inclCoreCM4 :: ModuleDef
+inclCoreCM4 = do
+    incl sysTick_Config
+    incl __NOP
+    incl __ISB
+    incl __DSB
+    incl __DMB
