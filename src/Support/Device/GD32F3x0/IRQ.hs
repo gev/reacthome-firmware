@@ -4,11 +4,21 @@
 
 module Support.Device.GD32F3x0.IRQ
     ( IRQn
+
+    , timer1_irqn
+    , timer2_irqn
+    , usart1_irqn
+    , dma_channel3_4_irqn
+    , exti0_1_irqn
+    , exti2_3_irqn
+    , exti4_15_irqn
     , makeIRQHandler
+
     , inclIRQ
     ) where
 
 import           Ivory.Language
+import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
 
 
@@ -35,8 +45,8 @@ inclIRQ = do
     inclSym exti4_15_irqn
 
 
-makeIRQHandler :: Show t
+makeIRQHandler :: ExtSymbol t
                => t
                -> (forall s. Ivory (ProcEffects s ()) ())
                -> ModuleDef
-makeIRQHandler t b = incl $ proc (show t <> "_IRQHandler") $ body b
+makeIRQHandler t b = incl $ proc (symbol t <> "_IRQHandler") $ body b
