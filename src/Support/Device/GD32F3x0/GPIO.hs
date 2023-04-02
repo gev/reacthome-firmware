@@ -13,11 +13,45 @@ module Support.Device.GD32F3x0.GPIO
     , GPIO_SPEED
     , GPIO_PIN
     , GPIO_AF
+
+    , gpio_a
+    , gpio_b
+
+    , gpio_mode_input
+    , gpio_mode_output
+    , gpio_mode_af
+
+    , gpio_pupd_none
+    , gpio_pupd_pullup
+    , gpio_pupd_pulldown
+
+    , gpio_ospeed_50MHz
+
+    , gpio_otype_pp
+
+    , gpio_pin_0
+    , gpio_pin_1
+    , gpio_pin_2
+    , gpio_pin_3
+    , gpio_pin_4
+    , gpio_pin_5
+    , gpio_pin_6
+    , gpio_pin_7
+    , gpio_pin_8
+    , gpio_pin_9
+    , gpio_pin_10
+    , gpio_pin_11
+    , gpio_pin_12
+    , gpio_pin_13
+    , gpio_pin_14
+    , gpio_pin_15
+
     , setMode
     , setOutputOptions
     , setBit
     , resetBit
     , setAF
+
     , inclGPIO
     ) where
 
