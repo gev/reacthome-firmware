@@ -37,9 +37,6 @@ module Support.Device.GD32F4xx.IRQ
     ) where
 
 import           Ivory.Language
-import           Ivory.Language.Module
-import           Ivory.Language.Proc
-import           Ivory.Language.Syntax
 import           Ivory.Support
 import           Ivory.Support.Device.GD32F4xx
 
