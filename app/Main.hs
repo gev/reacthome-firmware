@@ -10,6 +10,7 @@ import           Formula.Blink330
 import           Formula.Blink450
 import           Formula.Echo
 import           Formula.Relay12
+import           Formula.Server
 
 
 main :: IO ()
@@ -19,4 +20,5 @@ main = do
                      ]
     gcc gd32f450vgt6 [ blink450
                      , echo
+                     , server
                      ]
