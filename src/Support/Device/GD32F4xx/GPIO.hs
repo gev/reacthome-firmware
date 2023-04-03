@@ -75,11 +75,13 @@ module Support.Device.GD32F4xx.GPIO
     ) where
 
 import           Ivory.Language                hiding (setBit)
+import           Ivory.Support
 import           Ivory.Support.Device.GD32F4xx
 
 
 newtype GPIO_PERIPH = GPIO_PERIPH Uint32
     deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+instance ExtSymbol GPIO_PERIPH
 
 gpioa = GPIO_PERIPH $ ext "GPIOA"
 gpiob = GPIO_PERIPH $ ext "GPIOB"
@@ -123,6 +125,7 @@ gpio_otype_pp = GPIO_OTYPE $ ext "GPIO_OTYPE_PP"
 
 newtype GPIO_PIN = GPIO_PIN Uint32
     deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+instance ExtSymbol GPIO_PIN
 
 gpio_pin_0 =  GPIO_PIN $ ext "GPIO_PIN_0"
 gpio_pin_1 =  GPIO_PIN $ ext "GPIO_PIN_1"

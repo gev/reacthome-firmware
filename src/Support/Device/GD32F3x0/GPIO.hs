@@ -7,8 +7,8 @@
 
 module Support.Device.GD32F3x0.GPIO
     ( GPIO_PERIPH
-    , gpio_a
-    , gpio_b
+    , gpioa
+    , gpiob
 
     , GPIO_MODE
     , gpio_mode_input
@@ -24,7 +24,7 @@ module Support.Device.GD32F3x0.GPIO
     , gpio_otype_pp
 
     , GPIO_SPEED
-    , gpio_ospeed_50MHz
+    , gpio_ospeed_50mhz
 
     , GPIO_PIN
     , gpio_pin_0
@@ -57,15 +57,17 @@ module Support.Device.GD32F3x0.GPIO
     ) where
 
 import           Ivory.Language                hiding (setBit)
+import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
 
 
 
 newtype GPIO_PERIPH = GPIO_PERIPH Uint32
     deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+instance ExtSymbol GPIO_PERIPH
 
-gpio_a = GPIO_PERIPH $ ext "GPIOA"
-gpio_b = GPIO_PERIPH $ ext "GPIOB"
+gpioa = GPIO_PERIPH $ ext "GPIOA"
+gpiob = GPIO_PERIPH $ ext "GPIOB"
 
 
 
@@ -90,7 +92,7 @@ gpio_pupd_pulldown = GPIO_PUPD $ ext "GPIO_PUPD_PULLDOWN"
 newtype GPIO_SPEED = GPIO_SPEED Uint32
     deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
 
-gpio_ospeed_50MHz = GPIO_SPEED $ ext "GPIO_OSPEED_50MHZ"
+gpio_ospeed_50mhz = GPIO_SPEED $ ext "GPIO_OSPEED_50MHZ"
 
 
 
@@ -103,6 +105,7 @@ gpio_otype_pp = GPIO_OTYPE $ ext "GPIO_OTYPE_PP"
 
 newtype GPIO_PIN = GPIO_PIN Uint32
     deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+instance ExtSymbol GPIO_PIN
 
 gpio_pin_0  = GPIO_PIN $ ext "GPIO_PIN_0"
 gpio_pin_1  = GPIO_PIN $ ext "GPIO_PIN_1"
@@ -169,8 +172,8 @@ gpio_af_set = fun "gpio_af_set"
 inclGPIO :: ModuleDef
 inclGPIO = do
 
-    inclSym gpio_a
-    inclSym gpio_b
+    inclSym gpioa
+    inclSym gpiob
 
     inclSym gpio_mode_input
     inclSym gpio_mode_output
@@ -180,7 +183,7 @@ inclGPIO = do
     inclSym gpio_pupd_pullup
     inclSym gpio_pupd_pulldown
 
-    inclSym gpio_ospeed_50MHz
+    inclSym gpio_ospeed_50mhz
 
     inclSym gpio_otype_pp
 
