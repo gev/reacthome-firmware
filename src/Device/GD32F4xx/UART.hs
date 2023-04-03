@@ -38,7 +38,6 @@ data UART = UART
     , dmaCh     :: DMA_CHANNEL
     , dmaSubPer :: DMA_SUBPERIPH
     , dmaIRQn   :: IRQn
-    , dmaIRQc   :: DMA_CHANNEL_IRQ
     , rx        :: G.Port
     , tx        :: G.Port
     }
@@ -54,15 +53,14 @@ mkUART :: MonadWriter Context m
        -> DMA_CHANNEL
        -> DMA_SUBPERIPH
        -> IRQn
-       -> DMA_CHANNEL_IRQ
        -> G.Port
        -> G.Port
        -> m UART
-mkUART uart rcu uartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn dmaIRQc rx tx = do
+mkUART uart rcu uartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn rx tx = do
     addInit $ G.initPort rx
     addInit $ G.initPort tx
     addInit initUART'
-    pure UART { uart, rcu, uartIRQ, dmaRcu, dmaPer, dmaCh, dmaSubPer, dmaIRQn, dmaIRQc, rx, tx }
+    pure UART { uart, rcu, uartIRQ, dmaRcu, dmaPer, dmaCh, dmaSubPer, dmaIRQn, rx, tx }
     where
         initUART' :: Def ('[] ':-> ())
         initUART' = proc (show uart <> "_init") $ body $ do
