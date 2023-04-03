@@ -23,7 +23,7 @@ extFrom = flip extern
 
 
 class IvoryVar e => ExtSymbol e where
-    symbol :: e -> String
+    symbol :: e -> Sym
     symbol = sym . unwrapExpr
         where sym (ExpExtern (Extern {..})) = externSym
               sym e = error $ "Can't get a symbol of the expression: " <> show e
