@@ -54,9 +54,9 @@ module Support.Device.GD32F4xx.EXTI
     ) where
 
 import           Ivory.Language
-import           Ivory.Language.Module
-import           Ivory.Support
 import           Ivory.Support.Device.GD32F4xx
+
+
 
 newtype EXTI_LINE = EXTI_LINE Uint32
     deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
