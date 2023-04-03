@@ -31,15 +31,14 @@ data Timer = forall s. Timer
     { timer :: TIMER_PERIPH
     , rcu   :: RCU_PERIPH
     , irq   :: IRQn
-    , param :: TIMER_PARAM s
     }
 
 
 
-timer_1 :: MonadWriter Context m => TIMER_PARAM s -> m Timer
+timer_1 :: MonadWriter Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
 timer_1 = mkTimer timer1 rcu_timer1 timer1_irqn
 
-timer_2 :: MonadWriter Context m => TIMER_PARAM s -> m Timer
+timer_2 :: MonadWriter Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
 timer_2 = mkTimer timer2 rcu_timer2 timer2_irqn
 
 
@@ -48,17 +47,17 @@ mkTimer :: MonadWriter Context m
         => TIMER_PERIPH
         -> RCU_PERIPH
         -> IRQn
-        -> TIMER_PARAM s
+        -> Init (Struct TIMER_PARAM_STRUCT)
         -> m Timer
 mkTimer timer rcu irq param = do
     addInit initTimer'
-    pure Timer { timer, rcu, irq, param }
+    pure Timer { timer, rcu, irq }
     where
         initTimer' :: Def ('[] ':-> ())
         initTimer' = proc (symbol timer <> "_init") $ body $ do
             enablePeriphClock rcu
             deinitTimer       timer
-            initTimer         timer param
+            initTimer         timer =<< local param
             enableTimer       timer
 
 
