@@ -86,6 +86,7 @@ module Support.Device.GD32F4xx.Timer
     ) where
 
 import           Ivory.Language
+import           Ivory.Support
 import           Ivory.Support.Device.GD32F4xx
 
 
@@ -145,6 +146,7 @@ timerOcParam =
 
 newtype TIMER_PERIPH = TIMER_PERIPH Uint32
     deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+instance ExtSymbol TIMER_PERIPH
 
 timer0 = TIMER_PERIPH $ ext "TIMER0"
 timer1 = TIMER_PERIPH $ ext "TIMER1"
