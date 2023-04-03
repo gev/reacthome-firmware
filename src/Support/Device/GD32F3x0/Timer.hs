@@ -9,10 +9,22 @@
 module Support.Device.GD32F3x0.Timer
     ( TIMER_PARAM_STRUCT
     , TIMER_PARAM
+    , prescaler
+    , alignedmode
+    , counterdirection
+    , clockdivision
+    , period
+    , repetitioncounter
     , timerParam
 
     , TIMER_OC_PARAM_STRUCT
     , TIMER_OC_PARAM
+    , outputstate
+    , outputnstate
+    , ocpolarity
+    , ocnpolarity
+    , ocidlestate
+    , ocnidlestate
     , timerOcParam
 
     , TIMER_PERIPH
@@ -85,7 +97,7 @@ module Support.Device.GD32F3x0.Timer
     ) where
 
 import           Ivory.Language
-import           Ivory.Support                 (ExtSymbol)
+import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
 
 
@@ -104,9 +116,10 @@ type TIMER_PARAM s = Ref s (Struct TIMER_PARAM_STRUCT)
         }
 |]
 
-timerParam :: Init (Struct TIMER_PARAM_STRUCT)
-timerParam =
-    istruct
+timerParam :: [InitStruct  TIMER_PARAM_STRUCT]
+           -> Init (Struct TIMER_PARAM_STRUCT)
+timerParam p =
+    istruct $ p <+>
         [ prescaler         .= ival 0
         , alignedmode       .= ival timer_counter_edge
         , counterdirection  .= ival timer_counter_up
@@ -131,9 +144,10 @@ type TIMER_OC_PARAM s = Ref s (Struct TIMER_OC_PARAM_STRUCT)
         }
 |]
 
-timerOcParam :: Init (Struct TIMER_OC_PARAM_STRUCT)
-timerOcParam =
-    istruct
+timerOcParam :: [InitStruct  TIMER_OC_PARAM_STRUCT]
+             -> Init (Struct TIMER_OC_PARAM_STRUCT)
+timerOcParam p =
+    istruct $ p <+>
         [ outputstate  .= ival timer_ccx_enable
         , outputnstate .= ival timer_ccxn_disable
         , ocpolarity   .= ival timer_oc_polarity_high

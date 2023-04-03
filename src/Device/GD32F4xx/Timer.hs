@@ -53,10 +53,9 @@ mkTimer timer rcu irq param = do
     where
         initTimer' :: Def ('[] ':-> ())
         initTimer' = proc (symbol timer <> "_init") $ body $ do
-            param <- local $ (timerParam <> param)
             enablePeriphClock rcu
             deinitTimer       timer
-            initTimer         timer param
+            initTimer         timer =<< local param
             enableTimer       timer
 
 
