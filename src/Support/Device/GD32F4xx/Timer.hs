@@ -6,23 +6,23 @@
 {-# HLINT ignore "Use camelCase" #-}
 
 module Support.Device.GD32F4xx.Timer
-    ( TIMER_PERIPH                      (..)
-    , TIMER_ALIGNE_MODE                 (..)
-    , TIMER_COUNTER_DIRECTION           (..)
-    , TIMER_CLOCK_DIVISION              (..)
-    , TIMER_INT                         (..)
-    , TIMER_INT_FLAG                    (..)
-    , TIMER_PARAM                       (..)
-    , TIMER_CHANNEL                     (..)
-    , TIMER_COMPARE_MODE                (..)
-    , TIMER_COMPARE_SHADOW              (..)
-    , TIMER_CHANNEL_STATE               (..)
-    , TIMER_COMPL_CHANNEL_STATE         (..)
-    , TIMER_CHANNEL_POLARITY            (..)
-    , TIMER_COMPL_CHANNEL_POLARITY      (..)
-    , TIMER_CHANNEL_IDLE_STATE          (..)
-    , TIMER_COMPL_CHANNEL_IDLE_STATE    (..)
-    , TIMER_OC_PARAM                    (..)
+    ( TIMER_PERIPH                      
+    , TIMER_ALIGNE_MODE                 
+    , TIMER_COUNTER_DIRECTION           
+    , TIMER_CLOCK_DIVISION              
+    , TIMER_INT                         
+    , TIMER_INT_FLAG                    
+    , TIMER_PARAM                       
+    , TIMER_CHANNEL                     
+    , TIMER_COMPARE_MODE                
+    , TIMER_COMPARE_SHADOW              
+    , TIMER_CHANNEL_STATE               
+    , TIMER_COMPL_CHANNEL_STATE         
+    , TIMER_CHANNEL_POLARITY            
+    , TIMER_COMPL_CHANNEL_POLARITY      
+    , TIMER_CHANNEL_IDLE_STATE          
+    , TIMER_COMPL_CHANNEL_IDLE_STATE    
+    , TIMER_OC_PARAM                    
     , deinitTimer
     , enableTimer
     , enableTimerInterrupt
@@ -47,91 +47,143 @@ import           Ivory.Support
 import           Ivory.Support.Device.GD32F4xx
 
 
-data TIMER_PERIPH
-    = TIMER0
-    | TIMER1
-    | TIMER2
+newtype TIMER_PERIPH
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+TIMER0
+TIMER1
+TIMER2
     deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_PERIPH Uint32
 
-data TIMER_ALIGNE_MODE
-    = TIMER_COUNTER_EDGE
+
+
+newtype TIMER_ALIGNE_MODE
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+TIMER_COUNTER_EDGE
     deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_ALIGNE_MODE Uint16
 
-data TIMER_COUNTER_DIRECTION
-    = TIMER_COUNTER_UP
-    | TIMER_COUNTER_DOWN
+
+
+newtype TIMER_COUNTER_DIRECTION
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+TIMER_COUNTER_UP
+TIMER_COUNTER_DOWN
     deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_COUNTER_DIRECTION Uint16
 
-data TIMER_INT
-    = TIMER_INT_UP
+
+
+newtype TIMER_INT
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+TIMER_INT_UP
     deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_INT Uint32
 
-data TIMER_INT_FLAG
-    = TIMER_INT_FLAG_UP
+
+
+newtype TIMER_INT_FLAG
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+TIMER_INT_FLAG_UP
     deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_INT_FLAG Uint32
 
-data TIMER_CLOCK_DIVISION
-    = TIMER_CKDIV_DIV1
-    | TIMER_CKDIV_DIV2
-    | TIMER_CKDIV_DIV4
+newtype TIMER_CLOCK_DIVISION
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+TIMER_CKDIV_DIV1
+TIMER_CKDIV_DIV2
+TIMER_CKDIV_DIV4
     deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_CLOCK_DIVISION Uint16
 
-data TIMER_CHANNEL
-    = TIMER_CH_0
-    | TIMER_CH_1
-    | TIMER_CH_2
-    | TIMER_CH_3
+
+
+newtype TIMER_CHANNEL
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+TIMER_CH_0
+TIMER_CH_1
+TIMER_CH_2
+TIMER_CH_3
     deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_CHANNEL Uint16
 
-data TIMER_COMPARE_MODE
-    = TIMER_OC_MODE_PWM0
+
+newtype TIMER_COMPARE_MODE
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+TIMER_OC_MODE_PWM0
     deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_COMPARE_MODE Uint16
 
-data TIMER_COMPARE_SHADOW
-    = TIMER_OC_SHADOW_DISABLE
+newtype TIMER_COMPARE_SHADOW
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+TIMER_OC_SHADOW_DISABLE
     deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_COMPARE_SHADOW Uint16
---
-data TIMER_CHANNEL_STATE
-    = TIMER_CCX_ENABLE
+
+
+
+newtype TIMER_CHANNEL_STATE
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+TIMER_CCX_ENABLE
     deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_CHANNEL_STATE Uint32
 
-data TIMER_COMPL_CHANNEL_STATE
-    = TIMER_CCXN_DISABLE
+
+
+newtype TIMER_COMPL_CHANNEL_STATE
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+TIMER_CCXN_DISABLE
     deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_COMPL_CHANNEL_STATE Uint16
 
-data TIMER_CHANNEL_POLARITY
-    = TIMER_OC_POLARITY_HIGH
+
+
+newtype TIMER_CHANNEL_POLARITY
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+TIMER_OC_POLARITY_HIGH
     deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_CHANNEL_POLARITY Uint16
 
-data TIMER_COMPL_CHANNEL_POLARITY
-    = TIMER_OCN_POLARITY_HIGH
+
+
+newtype TIMER_COMPL_CHANNEL_POLARITY
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+TIMER_OCN_POLARITY_HIGH
     deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_COMPL_CHANNEL_POLARITY Uint16
 
-data TIMER_CHANNEL_IDLE_STATE
-    = TIMER_OC_IDLE_STATE_LOW
+
+
+newtype TIMER_CHANNEL_IDLE_STATE
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+TIMER_OC_IDLE_STATE_LOW
     deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_CHANNEL_IDLE_STATE Uint16
 
-data TIMER_COMPL_CHANNEL_IDLE_STATE
-    = TIMER_OCN_IDLE_STATE_LOW
+
+newtype TIMER_COMPL_CHANNEL_IDLE_STATE
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+TIMER_OCN_IDLE_STATE_LOW
     deriving (Show, Enum, Bounded)
 instance ExtDef TIMER_COMPL_CHANNEL_IDLE_STATE Uint16
 
 
-data TIMER_PARAM = TIMER_PARAM
+newtype TIMER_PARAM = TIMER_PARAM
         { timerPrescaler         :: Uint16
         , timerAlignedMode       :: TIMER_ALIGNE_MODE
         , timerCounterDirection  :: TIMER_COUNTER_DIRECTION
@@ -152,7 +204,7 @@ data TIMER_PARAM = TIMER_PARAM
 |]
 
 
-data TIMER_OC_PARAM = TIMER_OC_PARAM
+newtype TIMER_OC_PARAM = TIMER_OC_PARAM
         { timerOutputState  :: TIMER_CHANNEL_STATE
         , timerOutputnState :: TIMER_COMPL_CHANNEL_STATE
         , timerOcPolarity   :: TIMER_CHANNEL_POLARITY

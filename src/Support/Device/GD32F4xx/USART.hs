@@ -5,16 +5,16 @@
 {-# HLINT ignore "Use camelCase" #-}
 
 module Support.Device.GD32F4xx.USART
-    ( USART_PERIPH      (..)
-    , USART_WORD_LENGTH (..)
-    , USART_STOP_BIT    (..)
-    , USART_PARITY_CFG  (..)
-    , USART_RX_CFG      (..)
-    , USART_TX_CFG      (..)
-    , USART_FLAG        (..)
-    , USART_INT         (..)
-    , USART_INT_FLAG    (..)
-    , USART_DENT        (..)
+    ( USART_PERIPH      
+    , USART_WORD_LENGTH 
+    , USART_STOP_BIT    
+    , USART_PARITY_CFG  
+    , USART_RX_CFG      
+    , USART_TX_CFG      
+    , USART_FLAG        
+    , USART_INT         
+    , USART_INT_FLAG    
+    , USART_DENT        
     , deinitUSART
     , setWordLength
     , setStopBit
@@ -41,67 +41,87 @@ import           Ivory.Language.Module
 import           Ivory.Support
 import           Ivory.Support.Device.GD32F4xx
 
-data USART_INT
-    = USART_INT_RBNE
-    | USART_INT_TBE
-    | USART_INT_TC
+newtype USART_INT
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+USART_INT_RBNE
+USART_INT_TBE
+USART_INT_TC
     deriving (Show, Enum, Bounded)
 instance ExtDef USART_INT Uint32
 
-data USART_INT_FLAG
-    = USART_INT_FLAG_RBNE
-    | USART_INT_FLAG_TBE
-    | USART_INT_FLAG_TC
+newtype USART_INT_FLAG
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+USART_INT_FLAG_RBNE
+USART_INT_FLAG_TBE
+USART_INT_FLAG_TC
     deriving (Show, Enum, Bounded)
 instance ExtDef USART_INT_FLAG Uint32
 
-data USART_PERIPH
-    = USART0
-    | USART1
-    | USART2
-    | USART5
-    | UART3
-    | UART4
-    | UART6
-    | UART7
+newtype USART_PERIPH
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+USART0
+USART1
+USART2
+USART5
+UART3
+UART4
+UART6
+UART7
     deriving (Show, Enum, Bounded)
 instance ExtDef USART_PERIPH Uint32
 
-data USART_WORD_LENGTH
-    = USART_WL_8BIT
+newtype USART_WORD_LENGTH
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+USART_WL_8BIT
     deriving (Show, Enum, Bounded)
 instance ExtDef USART_WORD_LENGTH Uint32
 
-data USART_STOP_BIT
-    = USART_STB_1BIT
+newtype USART_STOP_BIT
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+USART_STB_1BIT
     deriving (Show, Enum, Bounded)
 instance ExtDef USART_STOP_BIT Uint32
 
-data USART_PARITY_CFG
-    = USART_PM_NONE
+newtype USART_PARITY_CFG
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+USART_PM_NONE
     deriving (Show, Enum, Bounded)
 instance ExtDef USART_PARITY_CFG Uint32
 
-data USART_RX_CFG
-    = USART_RECEIVE_ENABLE
+newtype USART_RX_CFG
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+USART_RECEIVE_ENABLE
     deriving (Show, Enum, Bounded)
 instance ExtDef USART_RX_CFG Uint32
 
-data USART_TX_CFG
-    = USART_TRANSMIT_ENABLE
+newtype USART_TX_CFG
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+USART_TRANSMIT_ENABLE
     deriving (Show, Enum, Bounded)
 instance ExtDef USART_TX_CFG Uint32
 
-data USART_FLAG
-    = USART_FLAG_RBNE
-    | USART_FLAG_TBE
-    | USART_FLAG_TC
+newtype USART_FLAG
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+USART_FLAG_RBNE
+USART_FLAG_TBE
+USART_FLAG_TC
     deriving (Show, Enum, Bounded)
 instance ExtDef USART_FLAG Uint32
 
-data USART_DENT
-    = USART_DENT_ENABLE
-    | USART_DENT_DISABLE
+newtype USART_DENT
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+USART_DENT_ENABLE
+USART_DENT_DISABLE
     deriving (Show, Enum, Bounded)
 instance ExtDef USART_DENT Uint32
 
