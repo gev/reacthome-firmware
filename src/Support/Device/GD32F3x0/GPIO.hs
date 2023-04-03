@@ -129,7 +129,7 @@ gpio_pin_15 = GPIO_PIN $ ext "GPIO_PIN_15"
 newtype GPIO_AF = GPIO_AF Uint32
     deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
 
-gpio_af_1  = GPIO_PIN $ ext "GPIO_AF_1"
+gpio_af_1  = GPIO_AF $ ext "GPIO_AF_1"
 
 
 
