@@ -66,6 +66,7 @@ module Support.Device.GD32F4xx.USART
     , disableInterrupt
     , getInterruptFlag
     , clearInterruptFlag
+
     , udata
 
     , inclUSART
@@ -73,6 +74,7 @@ module Support.Device.GD32F4xx.USART
 where
 
 import           Ivory.Language
+import           Ivory.Support
 import           Ivory.Support.Device.GD32F4xx
 
 
@@ -97,6 +99,7 @@ usart_int_flag_tc   = USART_INT_FLAG $ ext "USART_INT_FLAG_TC"
 
 newtype USART_PERIPH = USART_PERIPH Uint32
     deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+instance ExtSymbol USART_PERIPH
 
 usart0 = USART_PERIPH $ ext "USART0"
 usart1 = USART_PERIPH $ ext "USART1"
@@ -266,10 +269,10 @@ usart_dma_transmit_config :: Def ('[USART_PERIPH, USART_DENT] :-> ())
 usart_dma_transmit_config = fun "usart_dma_transmit_config"
 
 
-udata :: Uint32 -> Ivory eff Uint32
+udata :: USART_PERIPH -> Ivory eff Uint32
 udata = call usart_udata
 
-usart_udata :: Def ('[Uint32] :-> Uint32)
+usart_udata :: Def ('[USART_PERIPH] :-> Uint32)
 usart_udata = fun "(uint32_t) &USART_DATA"
 
 

@@ -10,6 +10,15 @@
 module Support.Device.GD32F4xx.DMA
     ( DMA_SINGLE_PARAM_STRUCT
     , DMA_SINGLE_PARAM
+    , periph_addr
+    , periph_inc
+    , memory0_addr
+    , memory_inc
+    , periph_memory_width
+    , circular_mode
+    , direction
+    , number
+    , priority
     , dmaParam
 
     , DMA_PERIPH
@@ -89,6 +98,7 @@ module Support.Device.GD32F4xx.DMA
     ) where
 
 import           Ivory.Language
+import           Ivory.Support
 import           Ivory.Support.Device.GD32F4xx
 
 
@@ -110,9 +120,9 @@ type DMA_SINGLE_PARAM s = Ref s (Struct DMA_SINGLE_PARAM_STRUCT)
         }
 |]
 
-dmaParam :: Init (Struct DMA_SINGLE_PARAM_STRUCT)
-dmaParam =
-    istruct
+dmaParam :: [InitStruct DMA_SINGLE_PARAM_STRUCT]
+         -> [InitStruct DMA_SINGLE_PARAM_STRUCT]
+dmaParam p = p <+>
         [ periph_addr         .= ival 0
         , periph_inc          .= ival dma_periph_increase_disable
         , memory0_addr        .= ival 0

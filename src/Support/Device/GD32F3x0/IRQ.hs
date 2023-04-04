@@ -25,6 +25,7 @@ import           Ivory.Support.Device.GD32F3x0
 
 newtype IRQn = IRQn Uint8
     deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+instance ExtSymbol IRQn
 
 timer1_irqn         = IRQn $ ext "TIMER1_IRQn"
 timer2_irqn         = IRQn $ ext "TIMER2_IRQn"

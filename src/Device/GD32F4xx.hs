@@ -213,65 +213,60 @@ data GD32F4xx = GD32F4xx
 
 gd32f4xx :: String -> String -> MCUmod GD32F4xx
 gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
-    { uart_0    = mkUART USART0
-                         RCU_USART0
-                         USART0_IRQn
-                         RCU_DMA1
-                         DMA1
-                         DMA_CH7
-                         DMA_SUBPERI4
-                         DMA1_Channel7_IRQn
-                         DMA1_Channel7
-                         (pa_10 $ AF GPIO_AF_7)
-                         (pa_9 $ AF GPIO_AF_7)
+    { uart_0    = mkUART usart0
+                         rcu_usart0
+                         usart0_irqn
+                         rcu_dma1
+                         dma1
+                         dma_ch7
+                         dma_subperi4
+                         dma1_channel7_irqn
+                         (pa_10 $ AF gpio_af_7)
+                         (pa_9  $ AF gpio_af_7)
 
-    , uart_1    = mkUART USART1
-                         RCU_USART1
-                         USART1_IRQn
-                         RCU_DMA0
-                         DMA0
-                         DMA_CH6
-                         DMA_SUBPERI4
-                         DMA0_Channel6_IRQn
-                         DMA0_Channel6
-                         (pd_6 $ AF GPIO_AF_7)
-                         (pd_5 $ AF GPIO_AF_7)
+    , uart_1    = mkUART usart1
+                         rcu_usart1
+                         usart1_irqn
+                         rcu_dma0
+                         dma0
+                         dma_ch6
+                         dma_subperi4
+                         dma0_channel6_irqn
+                         (pd_6 $ AF gpio_af_7)
+                         (pd_5 $ AF gpio_af_7)
 
-    , uart_2    = mkUART USART2
-                         RCU_USART2
-                         USART2_IRQn
-                         RCU_DMA0
-                         DMA0
-                         DMA_CH3
-                         DMA_SUBPERI4
-                         DMA0_Channel3_IRQn
-                         DMA0_Channel3
-                         (pc_11 $ AF GPIO_AF_7)
-                         (pc_10 $ AF GPIO_AF_7)
+    , uart_2    = mkUART usart2
+                         rcu_usart2
+                         usart2_irqn
+                         rcu_dma0
+                         dma0
+                         dma_ch3
+                         dma_subperi4
+                         dma0_channel3_irqn
+                         (pc_11 $ AF gpio_af_7)
+                         (pc_10 $ AF gpio_af_7)
 
-    , uart_5    = mkUART USART5
-                         RCU_USART5
-                          USART5_IRQn
-                          RCU_DMA1
-                          DMA1
-                          DMA_CH6
-                          DMA_SUBPERI5
-                          DMA1_Channel6_IRQn
-                          DMA1_Channel6
-                          (pc_7 $ AF GPIO_AF_8)
-                          (pc_6 $ AF GPIO_AF_8)
+    , uart_5    = mkUART usart5
+                         rcu_usart5
+                          usart5_irqn
+                          rcu_dma1
+                          dma1
+                          dma_ch6
+                          dma_subperi5
+                          dma1_channel6_irqn
+                          (pc_7 $ AF gpio_af_8)
+                          (pc_6 $ AF gpio_af_8)
 
-    , uart_7    = mkUART UART7
-                         RCU_UART7
-                         UART7_IRQn
-                         RCU_DMA0
-                         DMA0
-                         DMA_CH0
-                         DMA_SUBPERI5
-                         DMA0_Channel0_IRQn
-                         DMA0_Channel0
-                         (pe_0 $ AF GPIO_AF_8)
-                         (pe_1 $ AF GPIO_AF_8)
+    , uart_7    = mkUART uart7
+                         rcu_uart7
+                         uart7_irqn
+                         rcu_dma0
+                         dma0
+                         dma_ch0
+                         dma_subperi5
+                         dma0_channel0_irqn
+                         (pe_0 $ AF gpio_af_8)
+                         (pe_1 $ AF gpio_af_8)
 
 
     , in_pa_0   = input pa_0
