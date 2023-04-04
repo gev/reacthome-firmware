@@ -104,8 +104,7 @@ inclIRQ = do
     inclSym dma1_channel7_irqn
 
 
-makeIRQHandler :: ExtSymbol t
-               => t
+makeIRQHandler :: IRQn
                -> (forall s. Ivory (ProcEffects s ()) ())
                -> ModuleDef
-makeIRQHandler t b = incl $ proc (symbol t <> "_IRQHandler") $ body b
+makeIRQHandler t b = incl $ proc ((init . symbol) t <> "_Handler") $ body b

@@ -97,7 +97,7 @@ mkUART uart rcu uartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn rx tx = do
 
 instance Handler I.HandleUART UART where
     addHandler (I.HandleUART UART{..} onReceive onTransmit onDrain) = do
-        addModule $ makeIRQHandler uart (handleUART uart onReceive onDrain)
+        addModule $ makeIRQHandler uartIRQ (handleUART uart onReceive onDrain)
         addModule $ makeIRQHandler dmaIRQn (handleDMA dmaPer dmaCh uart onTransmit onDrain)
 
 

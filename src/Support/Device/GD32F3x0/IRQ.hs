@@ -37,11 +37,10 @@ exti4_15_irqn       = IRQn $ ext "EXTI4_15_IRQn"
 
 
 
-makeIRQHandler :: ExtSymbol t
-               => t
+makeIRQHandler :: IRQn
                -> (forall s. Ivory (ProcEffects s ()) ())
                -> ModuleDef
-makeIRQHandler t b = incl $ proc (symbol t <> "_IRQHandler") $ body b
+makeIRQHandler t b = incl $ proc ((init . symbol) t <> "Handler") $ body b
 
 
 
