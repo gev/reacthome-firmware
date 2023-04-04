@@ -67,6 +67,7 @@ module Support.Device.GD32F3x0.USART
 where
 
 import           Ivory.Language
+import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
 
 
@@ -91,6 +92,7 @@ usart_int_flag_tc   = USART_INT_FLAG $ ext "USART_INT_FLAG_TC"
 
 newtype USART_PERIPH = USART_PERIPH Uint32
     deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+instance ExtSymbol USART_PERIPH
 
 usart0 = USART_PERIPH $ ext "USART0"
 usart1 = USART_PERIPH $ ext "USART1"
@@ -261,10 +263,10 @@ usart_interrupt_flag_clear :: Def ('[USART_PERIPH, USART_INT_FLAG] :-> ())
 usart_interrupt_flag_clear = fun "usart_interrupt_flag_clear"
 
 
-tdata :: Uint32 -> Ivory eff Uint32
+tdata :: USART_PERIPH -> Ivory eff Uint32
 tdata = call usart_tdata
 
-usart_tdata :: Def ('[Uint32] :-> Uint32)
+usart_tdata :: Def ('[USART_PERIPH] :-> Uint32)
 usart_tdata = fun "(uint32_t) &USART_TDATA"
 
 

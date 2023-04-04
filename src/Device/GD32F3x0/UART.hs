@@ -15,11 +15,13 @@ import           Control.Monad.Writer          (MonadWriter)
 import           Core.Context
 import           Core.Handler
 import           Data.Maybe
+import           Data.Record
 import qualified Device.GD32F3x0.GPIO          as G
 import           Interface.UART                (HandleUART (onDrain))
 import qualified Interface.UART                as I
 import           Ivory.Language
 import           Ivory.Stdlib
+import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
 import           Support.Cast
 import           Support.Device.GD32F3x0
@@ -31,13 +33,14 @@ import           Support.Device.GD32F3x0.USART as S
 
 
 data UART = UART
-    { uart    :: USART_PERIPH
-    , rcu     :: RCU_PERIPH
-    , uartIRQ :: IRQn
-    , dma     :: DMA_CHANNEL
-    , dmaIRQn :: IRQn
-    , rx      :: G.Port
-    , tx      :: G.Port
+    { uart      :: USART_PERIPH
+    , rcu       :: RCU_PERIPH
+    , uartIRQ   :: IRQn
+    , dma       :: DMA_CHANNEL
+    , dmaIRQn   :: IRQn
+    , dmaParams :: Record DMA_PARAM_STRUCT
+    , rx        :: G.Port
+    , tx        :: G.Port
     }
 
 
@@ -50,42 +53,54 @@ mkUART :: MonadWriter Context m
        -> G.Port
        -> G.Port
        -> m UART
-mkUART uart rcu uartIRQ dma dmaIRQn dmaIRQc rx tx = do
-    addInit $ G.initPort rx
-    addInit $ G.initPort tx
-    addInit initUART'
-    pure UART { uart, rcu, uartIRQ, dma, dmaIRQn, rx, tx }
-    where
+mkUART uart rcu uartIRQ dma dmaIRQn rx tx = do
+
+    let dmaInit = dmaParam [ direction    .= ival dma_memory_to_peripheral
+                           , memory_inc   .= ival dma_memory_increase_enable
+                           , memory_width .= ival dma_memory_width_16bit
+                           , periph_inc   .= ival dma_periph_increase_disable
+                           , periph_width .= ival dma_peripheral_width_16bit
+                           , priority     .= ival dma_priority_ultra_high
+                           ]
+    dmaParams <- record (symbol uart <> "_dma_param") dmaInit
+
+    let
         initUART' :: Def ('[] ':-> ())
-        initUART' = proc (show uart <> "_init") $ body $ do
-            enablePeriphClock   RCU_DMA
+        initUART' = proc (symbol uart <> "_init") $ body $ do
+            store (dmaParams ~> periph_addr) =<< tdata uart
+            enablePeriphClock   rcu_dma
             enableIrqNvic       uartIRQ 0 0
             enableIrqNvic       dmaIRQn  1 0
             enablePeriphClock   rcu
             deinitUSART         uart
-            configReceive       uart USART_RECEIVE_ENABLE
-            configTransmit      uart USART_TRANSMIT_ENABLE
+            configReceive       uart usart_receive_enable
+            configTransmit      uart usart_transmit_enable
             setBaudrate         uart 1_000_000
-            setWordLength       uart USART_WL_8BIT
-            configParity        uart USART_PM_NONE
-            enableInterrupt     uart USART_INT_RBNE
+            setWordLength       uart usart_wl_8bit
+            configParity        uart usart_pm_none
+            enableInterrupt     uart usart_int_rbne
             enableUSART         uart
 
+    addInit $ G.initPort rx
+    addInit $ G.initPort tx
+    addInit initUART'
+
+    pure UART { uart, rcu, uartIRQ, dma, dmaIRQn, dmaParams, rx, tx }
 
 instance Handler I.HandleUART UART where
     addHandler (I.HandleUART UART{..} onReceive onTransmit onDrain) = do
         addModule $ makeIRQHandler uart (handleUART uart onReceive onDrain)
-        addModule $ makeIRQHandler dmaIRQc (handleDMA dma uart onTransmit onDrain)
+        addModule $ makeIRQHandler dmaIRQn (handleDMA dma uart onTransmit onDrain)
 
 
 handleDMA :: DMA_CHANNEL -> USART_PERIPH -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
 handleDMA dma uart onTransmit onDrain = do
-    f <- getInterruptFlagDMA    dma   DMA_INT_FLAG_FTF
+    f <- getInterruptFlagDMA    dma   dma_int_flag_ftf
     when f $ do
-        clearInterruptFlagDMA   dma   DMA_INT_FLAG_G
+        clearInterruptFlagDMA   dma   dma_int_flag_g
         M.when (isJust onDrain) $ do
-            disableInterrupt    uart USART_INT_RBNE
-            enableInterrupt     uart USART_INT_TC
+            disableInterrupt    uart usart_int_rbne
+            enableInterrupt     uart usart_int_tc
         onTransmit
 
 
@@ -96,16 +111,16 @@ handleUART uart onReceive onDrain = do
 
 handleReceive :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
 handleReceive uart onReceive = do
-    rbne <- getInterruptFlag    uart USART_INT_FLAG_RBNE
+    rbne <- getInterruptFlag    uart usart_int_flag_rbne
     when rbne $ onReceive =<< S.receiveData uart
 
 handleDrain :: USART_PERIPH -> Ivory eff () -> Ivory eff ()
 handleDrain uart onDrain = do
-    tc <- getInterruptFlag      uart USART_INT_FLAG_TC
+    tc <- getInterruptFlag      uart usart_int_flag_tc
     when tc $ do
-        clearInterruptFlag      uart USART_INT_FLAG_TC
-        disableInterrupt        uart USART_INT_TC
-        enableInterrupt         uart USART_INT_RBNE
+        clearInterruptFlag      uart usart_int_flag_tc
+        disableInterrupt        uart usart_int_tc
+        enableInterrupt         uart usart_int_rbne
         onDrain
 
 
@@ -121,17 +136,14 @@ instance I.UART UART where
 
 
     transmit UART{..} buff n = do
+        store (dmaParams ~> memory_addr) =<< castArrayToUint32 buff
+        store (dmaParams ~> number) $ safeCast n
         deinitDMA dma
-        p <- tdata (def uart)
-        m <- castArrayToUint32 buff
-        initDMA dma dmaInitParam { dmaPeriphAddr = p
-                                 , dmaMemoryAddr = m
-                                 , dmaNumber     = n
-                                 }
+        initDMA dma dmaParams
         disableCirculationDMA dma
         disableMemoryToMemoryDMA dma
-        transmitDMA uart USART_DENT_ENABLE
-        enableInterruptDMA dma DMA_INT_FTF
+        transmitDMA uart usart_dent_enable
+        enableInterruptDMA dma dma_int_ftf
         enableChannelDMA dma
 
     enable u = enableUSART (uart u)
@@ -142,20 +154,10 @@ instance I.UART UART where
     TODO: check: are DMA structure's completed?
 -}
 coerceWordLength :: I.WordLength -> USART_WORD_LENGTH
-coerceWordLength I.WL_8b = USART_WL_8BIT
+coerceWordLength I.WL_8b = usart_wl_8bit
 
 coerceStopBit :: I.StopBit -> USART_STOP_BIT
-coerceStopBit I.SB_1b = USART_STB_1BIT
+coerceStopBit I.SB_1b = usart_stb_1bit
 
 coerceParity :: I.Parity -> USART_PARITY_CFG
-coerceParity I.None = USART_PM_NONE
-
-
-dmaInitParam :: DMA_PARAM
-dmaInitParam = dmaParam { dmaDirection   = DMA_MEMORY_TO_PERIPHERAL
-                        , dmaMemoryInc   = DMA_MEMORY_INCREASE_ENABLE
-                        , dmaMemoryWidth = DMA_MEMORY_WIDTH_16BIT
-                        , dmaPeriphInc   = DMA_PERIPH_INCREASE_DISABLE
-                        , dmaPeriphWidth = DMA_PERIPHERAL_WIDTH_16BIT
-                        , dmaPriority    = DMA_PRIORITY_ULTRA_HIGH
-                        }
+coerceParity I.None = usart_pm_none

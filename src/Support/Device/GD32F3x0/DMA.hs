@@ -10,6 +10,15 @@
 module Support.Device.GD32F3x0.DMA
     ( DMA_PARAM_STRUCT
     , DMA_PARAM
+    , periph_addr
+    , periph_width
+    , periph_inc
+    , memory_addr
+    , memory_width
+    , memory_inc
+    , direction
+    , number
+    , priority
     , dmaParam
 
     , DMA_CHANNEL
@@ -69,6 +78,7 @@ module Support.Device.GD32F3x0.DMA
     ) where
 
 import           Ivory.Language
+import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
 
 
@@ -90,9 +100,9 @@ type DMA_PARAM s = Ref s (Struct DMA_PARAM_STRUCT)
         }
 |]
 
-dmaParam :: Init (Struct DMA_PARAM_STRUCT)
-dmaParam =
-    istruct
+dmaParam :: [InitStruct DMA_PARAM_STRUCT]
+         -> [InitStruct DMA_PARAM_STRUCT]
+dmaParam p = p <+>
         [ periph_addr  .= ival 0
         , periph_width .= ival dma_peripheral_width_8bit
         , periph_inc   .= ival dma_periph_increase_disable
@@ -245,6 +255,14 @@ dma_interrupt_flag_clear = fun "dma_interrupt_flag_clear"
 
 inclDMA :: ModuleDef
 inclDMA = do
+    inclSym dma_ch0
+    inclSym dma_ch1
+    inclSym dma_ch2
+    inclSym dma_ch3
+    inclSym dma_ch4
+    inclSym dma_ch5
+    inclSym dma_ch6
+
     inclSym dma_peripheral_to_memory
     inclSym dma_memory_to_peripheral
 
