@@ -1,31 +1,37 @@
 {-# LANGUAGE ImpredicativeTypes    #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RecordWildCards       #-}
 
 module Ivory.Support where
 
-import           Data.Foldable
 import           Ivory.Language
+import           Ivory.Language.Init   as I
 import           Ivory.Language.Proc
 import           Ivory.Language.Syntax
+import           Ivory.Language.Type
 
 
 type HeaderFile = String
 
-type Cast a e = a -> e
 
-
-funFrom :: ProcType t => HeaderFile -> Sym -> Def t
+funFrom :: ProcType f => HeaderFile -> Sym -> Def f
 funFrom = flip importProc
 
-class (Bounded a, Enum a, Show a, IvoryExpr e) => ExtDef a e where
-    defFrom :: HeaderFile -> Cast a e
-    defFrom h = (`extern` h) . show
 
-    inclDef :: Cast a e -> ModuleDef
-    inclDef c = traverse_ (inclSym . c) [minBound .. maxBound]
+extFrom :: IvoryExpr e => HeaderFile -> Sym -> e
+extFrom = flip extern
 
-include :: HeaderFile
-        -> ( ExtDef a e => Cast a e
-           , ProcType t => Sym -> Def t
-           )
-include h = (defFrom h, funFrom h)
+
+
+class IvoryVar e => ExtSymbol e where
+    symbol :: e -> Sym
+    symbol = sym . unwrapExpr
+        where sym (ExpExtern (Extern {..})) = externSym
+              sym e = error $ "Can't get a symbol of the expression: " <> show e
+
+
+(<+>) :: [I.InitStruct s] -> [I.InitStruct s] -> [I.InitStruct s]
+a <+> b = a <> filter (labels a) b
+    where
+        labels a i = label i `notElem` (label <$> a)
+        label (I.InitStruct [(l,_)]) = l

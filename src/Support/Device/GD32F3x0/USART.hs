@@ -1,20 +1,49 @@
-{-# LANGUAGE DataKinds             #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeOperators         #-}
+{-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE TypeOperators              #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
 
 module Support.Device.GD32F3x0.USART
-    ( USART_PERIPH      (..)
-    , USART_WORD_LENGTH (..)
-    , USART_STOP_BIT    (..)
-    , USART_PARITY_CFG  (..)
-    , USART_RX_CFG      (..)
-    , USART_TX_CFG      (..)
-    , USART_FLAG        (..)
-    , USART_INT         (..)
-    , USART_INT_FLAG    (..)
-    , USART_DENT        (..)
+    ( USART_PERIPH
+    , usart0
+    , usart1
+
+    , USART_WORD_LENGTH
+    , usart_wl_8bit
+
+    , USART_STOP_BIT
+    , usart_stb_1bit
+
+    , USART_PARITY_CFG
+    , usart_pm_none
+
+    , USART_RX_CFG
+    , usart_receive_enable
+
+    , USART_TX_CFG
+    , usart_transmit_enable
+
+    , USART_FLAG
+    , usart_flag_rbne
+    , usart_flag_tbe
+    , usart_flag_tc
+
+    , USART_INT
+    , usart_int_rbne
+    , usart_int_tbe
+    , usart_int_tc
+
+    , USART_INT_FLAG
+    , usart_int_flag_rbne
+    , usart_int_flag_tbe
+    , usart_int_flag_tc
+
+    , USART_DENT
+    , usart_dent_enable
+    , usart_dent_disable
+
     , deinitUSART
     , setWordLength
     , setStopBit
@@ -32,86 +61,245 @@ module Support.Device.GD32F3x0.USART
     , getInterruptFlag
     , clearInterruptFlag
     , tdata
+
     , inclUSART
     )
 where
 
 import           Ivory.Language
-import           Ivory.Language.Module
 import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
 
-data USART_INT
-    = USART_INT_RBNE
-    | USART_INT_TBE
-    | USART_INT_TC
-    deriving (Show, Enum, Bounded)
-instance ExtDef USART_INT Uint32
 
-data USART_INT_FLAG
-    = USART_INT_FLAG_RBNE
-    | USART_INT_FLAG_TBE
-    | USART_INT_FLAG_TC
-    deriving (Show, Enum, Bounded)
-instance ExtDef USART_INT_FLAG Uint32
 
-data USART_PERIPH
-    = USART0
-    | USART1
-    deriving (Show, Enum, Bounded)
-instance ExtDef USART_PERIPH Uint32
+newtype USART_INT = USART_INT Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
 
-data USART_WORD_LENGTH
-    = USART_WL_8BIT
-    deriving (Show, Enum, Bounded)
-instance ExtDef USART_WORD_LENGTH Uint32
+usart_int_rbne = USART_INT $ ext "USART_INT_RBNE"
+usart_int_tbe  = USART_INT $ ext "USART_INT_TBE"
+usart_int_tc   = USART_INT $ ext "USART_INT_TC"
 
-data USART_STOP_BIT
-    = USART_STB_1BIT
-    deriving (Show, Enum, Bounded)
-instance ExtDef USART_STOP_BIT Uint32
 
-data USART_PARITY_CFG
-    = USART_PM_NONE
-    deriving (Show, Enum, Bounded)
-instance ExtDef USART_PARITY_CFG Uint32
 
-data USART_RX_CFG
-    = USART_RECEIVE_ENABLE
-    deriving (Show, Enum, Bounded)
-instance ExtDef USART_RX_CFG Uint32
+newtype USART_INT_FLAG = USART_INT_FLAG Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
 
-data USART_TX_CFG
-    = USART_TRANSMIT_ENABLE
-    deriving (Show, Enum, Bounded)
-instance ExtDef USART_TX_CFG Uint32
+usart_int_flag_rbne = USART_INT_FLAG $ ext "USART_INT_FLAG_RBNE"
+usart_int_flag_tbe  = USART_INT_FLAG $ ext "USART_INT_FLAG_TBE"
+usart_int_flag_tc   = USART_INT_FLAG $ ext "USART_INT_FLAG_TC"
 
-data USART_FLAG
-    = USART_FLAG_RBNE
-    | USART_FLAG_TBE
-    | USART_FLAG_TC
-    deriving (Show, Enum, Bounded)
-instance ExtDef USART_FLAG Uint32
 
-data USART_DENT
-    = USART_DENT_ENABLE
-    | USART_DENT_DISABLE
-    deriving (Show, Enum, Bounded)
-instance ExtDef USART_DENT Uint32
+
+newtype USART_PERIPH = USART_PERIPH Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+instance ExtSymbol USART_PERIPH
+
+usart0 = USART_PERIPH $ ext "USART0"
+usart1 = USART_PERIPH $ ext "USART1"
+
+
+
+newtype USART_WORD_LENGTH = USART_WORD_LENGTH Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+usart_wl_8bit = USART_WORD_LENGTH $ ext "USART_WL_8BIT"
+
+
+
+newtype USART_STOP_BIT = USART_STOP_BIT Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+usart_stb_1bit = USART_STOP_BIT $ ext "USART_STB_1BIT"
+
+
+
+newtype USART_PARITY_CFG = USART_PARITY_CFG Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+usart_pm_none = USART_PARITY_CFG $ ext "USART_PM_NONE"
+
+
+
+newtype USART_RX_CFG = USART_RX_CFG Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+usart_receive_enable = USART_RX_CFG $ ext "USART_RECEIVE_ENABLE"
+
+
+
+newtype USART_TX_CFG = USART_TX_CFG Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+usart_transmit_enable = USART_TX_CFG $ ext "USART_TRANSMIT_ENABLE"
+
+
+
+newtype USART_FLAG = USART_FLAG Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+usart_flag_rbne = USART_FLAG $ ext "USART_FLAG_RBNE"
+usart_flag_tbe  = USART_FLAG $ ext "USART_FLAG_TBE"
+usart_flag_tc   = USART_FLAG $ ext "USART_FLAG_TC"
+
+
+
+newtype USART_DENT = USART_DENT Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+
+usart_dent_enable  = USART_DENT $ ext "USART_DENT_ENABLE"
+usart_dent_disable = USART_DENT $ ext "USART_DENT_DISABLE"
+
+
+
+deinitUSART :: USART_PERIPH -> Ivory eff ()
+deinitUSART = call_ usart_deinit
+
+usart_deinit :: Def ('[USART_PERIPH] :-> ())
+usart_deinit = fun "usart_deinit"
+
+
+setWordLength :: USART_PERIPH -> USART_WORD_LENGTH -> Ivory eff ()
+setWordLength = call_ usart_word_length_set
+
+usart_word_length_set :: Def ('[USART_PERIPH, USART_WORD_LENGTH] :-> ())
+usart_word_length_set = fun "usart_word_length_set"
+
+
+setStopBit :: USART_PERIPH -> USART_STOP_BIT -> Ivory eff ()
+setStopBit = call_ usart_stop_bit_set
+
+usart_stop_bit_set :: Def ('[USART_PERIPH, USART_STOP_BIT] :-> ())
+usart_stop_bit_set = fun "usart_stop_bit_set"
+
+
+configParity :: USART_PERIPH -> USART_PARITY_CFG -> Ivory eff ()
+configParity = call_ usart_parity_config
+
+usart_parity_config :: Def ('[USART_PERIPH, USART_PARITY_CFG] :-> ())
+usart_parity_config = fun "usart_parity_config"
+
+
+setBaudrate :: USART_PERIPH -> Uint32 -> Ivory eff ()
+setBaudrate = call_ usart_baudrate_set
+
+usart_baudrate_set :: Def ('[USART_PERIPH, Uint32] :-> ())
+usart_baudrate_set = fun "usart_baudrate_set"
+
+
+configReceive :: USART_PERIPH -> USART_RX_CFG -> Ivory eff ()
+configReceive = call_ usart_receive_config
+
+usart_receive_config :: Def ('[USART_PERIPH, USART_RX_CFG] :-> ())
+usart_receive_config = fun "usart_receive_config"
+
+
+configTransmit :: USART_PERIPH -> USART_TX_CFG -> Ivory eff ()
+configTransmit = call_ usart_transmit_config
+
+usart_transmit_config :: Def ('[USART_PERIPH, USART_TX_CFG] :-> ())
+usart_transmit_config = fun "usart_transmit_config"
+
+
+enableUSART :: USART_PERIPH -> Ivory eff ()
+enableUSART = call_ usart_enable
+
+usart_enable :: Def ('[USART_PERIPH] :-> ())
+usart_enable = fun "usart_enable"
+
+
+getFlag :: USART_PERIPH -> USART_FLAG -> Ivory eff IBool
+getFlag = call usart_flag_get
+
+usart_flag_get :: Def ('[USART_PERIPH, USART_FLAG] :-> IBool)
+usart_flag_get = fun "usart_flag_get"
+
+
+receiveData :: USART_PERIPH -> Ivory eff Uint16
+receiveData = call usart_data_receive
+
+usart_data_receive :: Def ('[USART_PERIPH] :-> Uint16)
+usart_data_receive = fun "usart_data_receive"
+
+
+transmitData :: USART_PERIPH -> Uint16 -> Ivory eff ()
+transmitData = call_ usart_data_transmit
+
+usart_data_transmit :: Def ('[USART_PERIPH, Uint16] :-> ())
+usart_data_transmit = fun "usart_data_transmit"
+
+
+enableInterrupt :: USART_PERIPH -> USART_INT -> Ivory eff ()
+enableInterrupt = call_ usart_interrupt_enable
+
+usart_interrupt_enable :: Def ('[USART_PERIPH, USART_INT] :-> ())
+usart_interrupt_enable = fun "usart_interrupt_enable"
+
+
+disableInterrupt :: USART_PERIPH -> USART_INT -> Ivory eff ()
+disableInterrupt = call_ usart_interrupt_disable
+
+usart_interrupt_disable :: Def ('[USART_PERIPH, USART_INT] :-> ())
+usart_interrupt_disable = fun "usart_interrupt_disable"
+
+
+getInterruptFlag :: USART_PERIPH -> USART_INT_FLAG -> Ivory eff IBool
+getInterruptFlag = call usart_interrupt_flag_get
+
+usart_interrupt_flag_get :: Def ('[USART_PERIPH, USART_INT_FLAG] :-> IBool)
+usart_interrupt_flag_get = fun "usart_interrupt_flag_get"
+
+
+transmitDMA :: USART_PERIPH -> USART_DENT -> Ivory eff ()
+transmitDMA = call_ usart_dma_transmit_config
+
+usart_dma_transmit_config :: Def ('[USART_PERIPH, USART_DENT] :-> ())
+usart_dma_transmit_config = fun "usart_dma_transmit_config"
+
+
+clearInterruptFlag :: USART_PERIPH -> USART_INT_FLAG -> Ivory eff ()
+clearInterruptFlag = call_ usart_interrupt_flag_clear
+
+usart_interrupt_flag_clear :: Def ('[USART_PERIPH, USART_INT_FLAG] :-> ())
+usart_interrupt_flag_clear = fun "usart_interrupt_flag_clear"
+
+
+tdata :: USART_PERIPH -> Ivory eff Uint32
+tdata = call usart_tdata
+
+usart_tdata :: Def ('[USART_PERIPH] :-> Uint32)
+usart_tdata = fun "(uint32_t) &USART_TDATA"
+
 
 
 inclUSART :: ModuleDef
-inclUSART =    do
-    inclDef (def :: Cast USART_PERIPH Uint32)
-    inclDef (def :: Cast USART_WORD_LENGTH Uint32)
-    inclDef (def :: Cast USART_STOP_BIT Uint32)
-    inclDef (def :: Cast USART_PARITY_CFG Uint32)
-    inclDef (def :: Cast USART_RX_CFG Uint32)
-    inclDef (def :: Cast USART_TX_CFG Uint32)
-    inclDef (def :: Cast USART_FLAG Uint32)
-    inclDef (def :: Cast USART_INT Uint32)
-    inclDef (def :: Cast USART_INT_FLAG Uint32)
-    inclDef (def :: Cast USART_DENT Uint32)
+inclUSART = do
+    inclSym usart_int_rbne
+    inclSym usart_int_tbe
+    inclSym usart_int_tc
+
+    inclSym usart_int_flag_rbne
+    inclSym usart_int_flag_tbe
+    inclSym usart_int_flag_tc
+
+    inclSym usart0
+    inclSym usart1
+
+    inclSym usart_wl_8bit
+
+    inclSym usart_stb_1bit
+
+    inclSym usart_pm_none
+
+    inclSym usart_receive_enable
+    inclSym usart_transmit_enable
+
+    inclSym usart_flag_rbne
+    inclSym usart_flag_tbe
+    inclSym usart_flag_tc
+
+    inclSym usart_dent_enable
+    inclSym usart_dent_disable
+
     incl usart_deinit
     incl usart_word_length_set
     incl usart_stop_bit_set
@@ -129,129 +317,3 @@ inclUSART =    do
     incl usart_dma_transmit_config
     incl usart_interrupt_flag_clear
     incl usart_tdata
-
-
-deinitUSART :: USART_PERIPH -> Ivory eff ()
-deinitUSART = call_ usart_deinit . def
-
-usart_deinit :: Def ('[Uint32] :-> ())
-usart_deinit = fun "usart_deinit"
-
-
-setWordLength :: USART_PERIPH -> USART_WORD_LENGTH -> Ivory eff ()
-setWordLength usart length =
-    call_ usart_word_length_set (def usart) (def length)
-
-usart_word_length_set :: Def ('[Uint32, Uint32] :-> ())
-usart_word_length_set = fun "usart_word_length_set"
-
-
-setStopBit :: USART_PERIPH -> USART_STOP_BIT -> Ivory eff ()
-setStopBit usart stopBit =
-    call_ usart_stop_bit_set (def usart) (def stopBit)
-
-usart_stop_bit_set :: Def ('[Uint32, Uint32] :-> ())
-usart_stop_bit_set = fun "usart_stop_bit_set"
-
-
-configParity :: USART_PERIPH -> USART_PARITY_CFG -> Ivory eff ()
-configParity usart parity =
-    call_ usart_parity_config (def usart) (def parity)
-
-usart_parity_config :: Def ('[Uint32, Uint32] :-> ())
-usart_parity_config = fun "usart_parity_config"
-
-
-setBaudrate :: USART_PERIPH -> Uint32 -> Ivory eff ()
-setBaudrate usart =
-    call_ usart_baudrate_set (def usart)
-
-usart_baudrate_set :: Def ('[Uint32, Uint32] :-> ())
-usart_baudrate_set = fun "usart_baudrate_set"
-
-
-configReceive :: USART_PERIPH -> USART_RX_CFG -> Ivory eff ()
-configReceive usart rxconfig =
-    call_ usart_receive_config (def usart) (def rxconfig)
-
-usart_receive_config :: Def ('[Uint32, Uint32] :-> ())
-usart_receive_config = fun "usart_receive_config"
-
-
-configTransmit :: USART_PERIPH -> USART_TX_CFG -> Ivory eff ()
-configTransmit usart txconfig =
-    call_ usart_transmit_config (def usart) (def txconfig)
-
-usart_transmit_config :: Def ('[Uint32, Uint32] :-> ())
-usart_transmit_config = fun "usart_transmit_config"
-
-
-enableUSART :: USART_PERIPH -> Ivory eff ()
-enableUSART = call_ usart_enable . def
-
-usart_enable :: Def ('[Uint32] :-> ())
-usart_enable = fun "usart_enable"
-
-
-getFlag :: USART_PERIPH -> USART_FLAG -> Ivory eff IBool
-getFlag usart flag =
-    call usart_flag_get (def usart) (def flag)
-
-usart_flag_get :: Def ('[Uint32, Uint32] :-> IBool)
-usart_flag_get = fun "usart_flag_get"
-
-
-receiveData :: USART_PERIPH -> Ivory eff Uint16
-receiveData = call usart_data_receive . def
-
-usart_data_receive :: Def ('[Uint32] :-> Uint16)
-usart_data_receive = fun "usart_data_receive"
-
-
-transmitData :: USART_PERIPH -> Uint16 -> Ivory eff ()
-transmitData = call_ usart_data_transmit . def
-
-usart_data_transmit :: Def ('[Uint32, Uint16] :-> ())
-usart_data_transmit = fun "usart_data_transmit"
-
-
-enableInterrupt :: USART_PERIPH -> USART_INT -> Ivory eff ()
-enableInterrupt usart int = call_ usart_interrupt_enable (def usart) (def int)
-
-usart_interrupt_enable :: Def ('[Uint32, Uint32] :-> ())
-usart_interrupt_enable = fun "usart_interrupt_enable"
-
-
-disableInterrupt :: USART_PERIPH -> USART_INT -> Ivory eff ()
-disableInterrupt usart int = call_ usart_interrupt_disable (def usart) (def int)
-
-usart_interrupt_disable :: Def ('[Uint32, Uint32] :-> ())
-usart_interrupt_disable = fun "usart_interrupt_disable"
-
-
-getInterruptFlag :: USART_PERIPH -> USART_INT_FLAG -> Ivory eff IBool
-getInterruptFlag usart flag = call usart_interrupt_flag_get (def usart) (def flag)
-
-usart_interrupt_flag_get :: Def ('[Uint32, Uint32] :-> IBool)
-usart_interrupt_flag_get = fun "usart_interrupt_flag_get"
-
-
-transmitDMA :: USART_PERIPH -> USART_DENT -> Ivory eff ()
-transmitDMA usart dent = call_ usart_dma_transmit_config (def usart) (def dent)
-
-usart_dma_transmit_config :: Def ('[Uint32, Uint32] :-> ())
-usart_dma_transmit_config = fun "usart_dma_transmit_config"
-
-
-tdata :: Uint32 -> Ivory eff Uint32
-tdata = call usart_tdata
-
-usart_tdata :: Def ('[Uint32] :-> Uint32)
-usart_tdata = fun "(uint32_t) &USART_TDATA"
-
-
-clearInterruptFlag :: USART_PERIPH -> USART_INT_FLAG -> Ivory eff ()
-clearInterruptFlag usart flag = call_ usart_interrupt_flag_clear (def usart) (def flag)
-
-usart_interrupt_flag_clear :: Def ('[Uint32, Uint32] :-> ())
-usart_interrupt_flag_clear = fun "usart_interrupt_flag_clear"
