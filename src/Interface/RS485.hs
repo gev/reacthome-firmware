@@ -24,8 +24,7 @@ import           Ivory.Language
 
 data RS485 where
     RS485 :: (I.UART u, Output o)
-          => { n     :: Int
-             , uart  :: u
+          => { uart  :: u
              , rede  :: o
              }
             -> RS485
@@ -51,7 +50,7 @@ rs485 n uart' rede' = do
         initRS485' = proc ("rs485_" <> show n <> "_init") $ body
                                                           $ reset rede
     addInit initRS485'
-    pure RS485 { n, uart, rede }
+    pure RS485 { uart, rede }
 
 
 
