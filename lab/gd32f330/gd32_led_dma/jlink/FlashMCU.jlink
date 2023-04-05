@@ -1,7 +1,7 @@
 r
 h
-loadbin build/gd32_led.bin, 0x8000000
+loadbin build/led_tim_dma.bin, 0x8000000
 g
-verifybin build/gd32_led.bin, 0x8000000
+verifybin build/led_tim_dma.bin, 0x8000000
 r
 q

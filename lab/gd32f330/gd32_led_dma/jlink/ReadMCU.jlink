@@ -1,4 +1,4 @@
-savebin build\gd32_uart_test.bin, 0x00, 0x4000
+savebin build\led_tim_dma.bin, 0x00, 0x4000
 r
 g
 q

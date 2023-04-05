@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "gd32f3x0_gpio.h": "c",
+    "gd32f3x0.h": "c",
+    "gd32f3x0_libopt.h": "c"
+  }
+}
