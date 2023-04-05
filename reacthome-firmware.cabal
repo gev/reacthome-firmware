@@ -156,6 +156,8 @@ executable reacthome-firmware
                     , Support.Device.GD32F4xx.EXTI
                     , Support.Device.GD32F4xx.SYSCFG
 
+                    , Test
+
                     , Util.CRC16
                     , Util.String
 
