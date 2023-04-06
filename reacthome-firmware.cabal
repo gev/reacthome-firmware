@@ -173,6 +173,7 @@ executable reacthome-firmware
     hs-source-dirs:   app
                     , formula
                     , src
+                    , test
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions: 
