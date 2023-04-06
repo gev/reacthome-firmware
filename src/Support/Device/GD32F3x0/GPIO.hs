@@ -63,7 +63,7 @@ import           Ivory.Support.Device.GD32F3x0
 
 
 newtype GPIO_PERIPH = GPIO_PERIPH Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 instance ExtSymbol GPIO_PERIPH
 
 gpioa = GPIO_PERIPH $ ext "GPIOA"
@@ -72,7 +72,7 @@ gpiob = GPIO_PERIPH $ ext "GPIOB"
 
 
 newtype GPIO_MODE = GPIO_MODE Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 gpio_mode_input  = GPIO_MODE $ ext "GPIO_MODE_INPUT"
 gpio_mode_output = GPIO_MODE $ ext "GPIO_MODE_OUTPUT"
@@ -81,7 +81,7 @@ gpio_mode_af     = GPIO_MODE $ ext "GPIO_MODE_AF"
 
 
 newtype GPIO_PUPD = GPIO_PUPD Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 gpio_pupd_none     = GPIO_PUPD $ ext "GPIO_PUPD_NONE"
 gpio_pupd_pullup   = GPIO_PUPD $ ext "GPIO_PUPD_PULLUP"
@@ -90,21 +90,21 @@ gpio_pupd_pulldown = GPIO_PUPD $ ext "GPIO_PUPD_PULLDOWN"
 
 
 newtype GPIO_SPEED = GPIO_SPEED Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 gpio_ospeed_50mhz = GPIO_SPEED $ ext "GPIO_OSPEED_50MHZ"
 
 
 
 newtype GPIO_OTYPE = GPIO_OTYPE Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 gpio_otype_pp = GPIO_OTYPE $ ext "GPIO_OTYPE_PP"
 
 
 
 newtype GPIO_PIN = GPIO_PIN Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 instance ExtSymbol GPIO_PIN
 
 gpio_pin_0  = GPIO_PIN $ ext "GPIO_PIN_0"
@@ -127,7 +127,7 @@ gpio_pin_15 = GPIO_PIN $ ext "GPIO_PIN_15"
 
 
 newtype GPIO_AF = GPIO_AF Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 gpio_af_1  = GPIO_AF $ ext "GPIO_AF_1"
 

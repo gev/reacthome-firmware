@@ -137,7 +137,7 @@ dmaParam p = p <+>
 
 
 newtype DMA_PERIPH = DMA_PERIPH Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 dma0 = DMA_PERIPH $ ext "DMA0"
 dma1 = DMA_PERIPH $ ext "DMA1"
@@ -145,7 +145,7 @@ dma1 = DMA_PERIPH $ ext "DMA1"
 
 
 newtype DMA_CHANNEL = DMA_CHANNEL Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 dma_ch0 = DMA_CHANNEL $ ext "DMA_CH0"
 dma_ch1 = DMA_CHANNEL $ ext "DMA_CH1"
@@ -159,7 +159,7 @@ dma_ch7 = DMA_CHANNEL $ ext "DMA_CH7"
 
 
 newtype DMA_DIRECTION = DMA_DIRECTION Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 dma_periph_to_memory = DMA_DIRECTION $ ext "DMA_PERIPH_TO_MEMORY"
 dma_memory_to_periph = DMA_DIRECTION $ ext "DMA_MEMORY_TO_PERIPH"
@@ -168,7 +168,7 @@ dma_memory_to_memory = DMA_DIRECTION $ ext "DMA_MEMORY_TO_MEMORY"
 
 
 newtype DMA_MEMORY_INC = DMA_MEMORY_INC Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 dma_memory_increase_disable = DMA_MEMORY_INC $ ext "DMA_MEMORY_INCREASE_DISABLE"
 dma_memory_increase_enable  = DMA_MEMORY_INC $ ext "DMA_MEMORY_INCREASE_ENABLE"
@@ -176,7 +176,7 @@ dma_memory_increase_enable  = DMA_MEMORY_INC $ ext "DMA_MEMORY_INCREASE_ENABLE"
 
 
 newtype DMA_MEMORY_WIDTH = DMA_MEMORY_WIDTH Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 dma_memory_width_8bit  = DMA_MEMORY_WIDTH $ ext "DMA_MEMORY_WIDTH_8BIT"
 dma_memory_width_16bit = DMA_MEMORY_WIDTH $ ext "DMA_MEMORY_WIDTH_16BIT"
@@ -185,7 +185,7 @@ dma_memory_width_32bit = DMA_MEMORY_WIDTH $ ext "DMA_MEMORY_WIDTH_32BIT"
 
 
 newtype DMA_PERIPH_INC = DMA_PERIPH_INC Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 dma_periph_increase_disable = DMA_PERIPH_INC $ ext "DMA_PERIPH_INCREASE_DISABLE"
 dma_periph_increase_enable  = DMA_PERIPH_INC $ ext "DMA_PERIPH_INCREASE_ENABLE"
@@ -194,7 +194,7 @@ dma_periph_increase_fix     = DMA_PERIPH_INC $ ext "DMA_PERIPH_INCREASE_FIX"
 
 
 newtype DMA_PERIPH_WIDTH = DMA_PERIPH_WIDTH Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 dma_periph_width_8bit  = DMA_PERIPH_WIDTH $ ext "DMA_PERIPH_WIDTH_8BIT"
 dma_periph_width_16bit = DMA_PERIPH_WIDTH $ ext "DMA_PERIPH_WIDTH_16BIT"
@@ -203,7 +203,7 @@ dma_periph_width_32bit = DMA_PERIPH_WIDTH $ ext "DMA_PERIPH_WIDTH_32BIT"
 
 
 newtype DMA_PRIORITY = DMA_PRIORITY Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 dma_priority_low        = DMA_PRIORITY $ ext "DMA_PRIORITY_LOW"
 dma_priority_medium     = DMA_PRIORITY $ ext "DMA_PRIORITY_MEDIUM"
@@ -213,21 +213,21 @@ dma_priority_ultra_high = DMA_PRIORITY $ ext "DMA_PRIORITY_ULTRA_HIGH"
 
 
 newtype DMA_INT_FLAG = DMA_INT_FLAG Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 dma_int_flag_ftf = DMA_INT_FLAG $ ext "DMA_INT_FLAG_FTF"
 
 
 
 newtype DMA_INT = DMA_INT Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 dma_chxctl_ftfie = DMA_INT $ ext "DMA_CHXCTL_FTFIE"
 
 
 
 newtype DMA_CIRCULAR_MODE = DMA_CIRCULAR_MODE Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 dma_circular_mode_enable  = DMA_CIRCULAR_MODE $ ext "DMA_CIRCULAR_MODE_ENABLE"
 dma_circular_mode_disable = DMA_CIRCULAR_MODE $ ext "DMA_CIRCULAR_MODE_DISABLE"
@@ -235,7 +235,7 @@ dma_circular_mode_disable = DMA_CIRCULAR_MODE $ ext "DMA_CIRCULAR_MODE_DISABLE"
 
 
 newtype DMA_SUBPERIPH = DMA_SUBPERIPH Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 dma_subperi0 = DMA_SUBPERIPH $ ext "DMA_SUBPERI0"
 dma_subperi1 = DMA_SUBPERIPH $ ext "DMA_SUBPERI1"

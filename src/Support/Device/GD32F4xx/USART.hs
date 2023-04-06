@@ -80,7 +80,7 @@ import           Ivory.Support.Device.GD32F4xx
 
 
 newtype USART_INT = USART_INT Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 usart_int_rbne = USART_INT $ ext "USART_INT_RBNE"
 usart_int_tbe  = USART_INT $ ext "USART_INT_TBE"
@@ -89,7 +89,7 @@ usart_int_tc   = USART_INT $ ext "USART_INT_TC"
 
 
 newtype USART_INT_FLAG = USART_INT_FLAG Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 usart_int_flag_rbne = USART_INT_FLAG $ ext "USART_INT_FLAG_RBNE"
 usart_int_flag_tbe  = USART_INT_FLAG $ ext "USART_INT_FLAG_TBE"
@@ -98,7 +98,7 @@ usart_int_flag_tc   = USART_INT_FLAG $ ext "USART_INT_FLAG_TC"
 
 
 newtype USART_PERIPH = USART_PERIPH Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 instance ExtSymbol USART_PERIPH
 
 usart0 = USART_PERIPH $ ext "USART0"
@@ -113,42 +113,42 @@ uart7  = USART_PERIPH $ ext "UART7"
 
 
 newtype USART_WORD_LENGTH = USART_WORD_LENGTH Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 usart_wl_8bit = USART_WORD_LENGTH $ ext "USART_WL_8BIT"
 
 
 
 newtype USART_STOP_BIT = USART_STOP_BIT Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 usart_stb_1bit = USART_STOP_BIT $ ext "USART_STB_1BIT"
 
 
 
 newtype USART_PARITY_CFG = USART_PARITY_CFG Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 usart_pm_none = USART_PARITY_CFG $ ext "USART_PM_NONE"
 
 
 
 newtype USART_RX_CFG = USART_RX_CFG Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 usart_receive_enable = USART_RX_CFG $ ext "USART_RECEIVE_ENABLE"
 
 
 
 newtype USART_TX_CFG = USART_TX_CFG Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 usart_transmit_enable = USART_TX_CFG$ ext "USART_TRANSMIT_ENABLE"
 
 
 
 newtype USART_FLAG = USART_FLAG Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 usart_flag_rbne = USART_FLAG $ ext "USART_FLAG_RBNE"
 usart_flag_tbe  = USART_FLAG $ ext "USART_FLAG_TBE"
@@ -157,7 +157,7 @@ usart_flag_tc   = USART_FLAG $ ext "USART_FLAG_TC"
 
 
 newtype USART_DENT = USART_DENT Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 usart_dent_enable  = USART_DENT $ ext "USART_DENT_ENABLE"
 usart_dent_disable = USART_DENT $ ext "USART_DENT_DISABLE"

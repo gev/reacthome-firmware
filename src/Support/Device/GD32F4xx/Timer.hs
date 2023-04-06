@@ -159,7 +159,7 @@ timerOcParam p =
 
 
 newtype TIMER_PERIPH = TIMER_PERIPH Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 instance ExtSymbol TIMER_PERIPH
 
 timer0 = TIMER_PERIPH $ ext "TIMER0"
@@ -169,14 +169,14 @@ timer2 = TIMER_PERIPH $ ext "TIMER2"
 
 
 newtype TIMER_ALIGNE_MODE = TIMER_ALIGNE_MODE Uint16
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_counter_edge = TIMER_ALIGNE_MODE $ ext "TIMER_COUNTER_EDGE"
 
 
 
 newtype TIMER_COUNTER_DIRECTION = TIMER_COUNTER_DIRECTION Uint16
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_counter_up   = TIMER_COUNTER_DIRECTION $ ext "TIMER_COUNTER_UP"
 timer_counter_down = TIMER_COUNTER_DIRECTION $ ext "TIMER_COUNTER_DOWN"
@@ -184,21 +184,21 @@ timer_counter_down = TIMER_COUNTER_DIRECTION $ ext "TIMER_COUNTER_DOWN"
 
 
 newtype TIMER_INT = TIMER_INT Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_int_up = TIMER_INT $ ext "TIMER_INT_UP"
 
 
 
 newtype TIMER_INT_FLAG = TIMER_INT_FLAG Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_int_flag_up = TIMER_INT_FLAG $ ext "TIMER_INT_FLAG_UP"
 
 
 
 newtype TIMER_CLOCK_DIVISION = TIMER_CLOCK_DIVISION Uint16
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_ckdiv_div1 = TIMER_CLOCK_DIVISION $ ext "TIMER_CKDIV_DIV1"
 timer_ckdiv_div2 = TIMER_CLOCK_DIVISION $ ext "TIMER_CKDIV_DIV2"
@@ -207,7 +207,7 @@ timer_ckdiv_div4 = TIMER_CLOCK_DIVISION $ ext "TIMER_CKDIV_DIV4"
 
 
 newtype TIMER_CHANNEL = TIMER_CHANNEL Uint16
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_ch_0 = TIMER_CHANNEL $ ext "TIMER_CH_0"
 timer_ch_1 = TIMER_CHANNEL $ ext "TIMER_CH_1"
@@ -217,56 +217,56 @@ timer_ch_3 = TIMER_CHANNEL $ ext "TIMER_CH_3"
 
 
 newtype TIMER_COMPARE_MODE = TIMER_COMPARE_MODE Uint16
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_oc_mode_pwm0 = TIMER_COMPARE_MODE $ ext "TIMER_OC_MODE_PWM0"
 
 
 
 newtype TIMER_COMPARE_SHADOW = TIMER_COMPARE_SHADOW Uint16
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_oc_shadow_disable = TIMER_COMPARE_SHADOW $ ext "TIMER_OC_SHADOW_DISABLE"
 
 
 
 newtype TIMER_CHANNEL_STATE = TIMER_CHANNEL_STATE Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_ccx_enable = TIMER_CHANNEL_STATE $ ext "TIMER_CCX_ENABLE"
 
 
 
 newtype TIMER_COMPL_CHANNEL_STATE = TIMER_COMPL_CHANNEL_STATE Uint16
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_ccxn_disable = TIMER_COMPL_CHANNEL_STATE $ ext "TIMER_CCXN_DISABLE"
 
 
 
 newtype TIMER_CHANNEL_POLARITY = TIMER_CHANNEL_POLARITY Uint16
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_oc_polarity_high = TIMER_CHANNEL_POLARITY $ ext "TIMER_OC_POLARITY_HIGH"
 
 
 
 newtype TIMER_COMPL_CHANNEL_POLARITY = TIMER_COMPL_CHANNEL_POLARITY Uint16
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_ocn_polarity_high = TIMER_COMPL_CHANNEL_POLARITY $ ext "TIMER_OCN_POLARITY_HIGH"
 
 
 
 newtype TIMER_CHANNEL_IDLE_STATE = TIMER_CHANNEL_IDLE_STATE Uint16
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_oc_idle_state_low = TIMER_CHANNEL_IDLE_STATE $ ext "TIMER_OC_IDLE_STATE_LOW"
 
 
 
 newtype TIMER_COMPL_CHANNEL_IDLE_STATE = TIMER_COMPL_CHANNEL_IDLE_STATE Uint16
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_ocn_idle_state_low = TIMER_COMPL_CHANNEL_IDLE_STATE $ ext "TIMER_OCN_IDLE_STATE_LOW"
 

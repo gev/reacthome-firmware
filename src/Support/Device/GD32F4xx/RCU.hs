@@ -36,7 +36,7 @@ import           Ivory.Support.Device.GD32F4xx
 
 
 newtype RCU_PERIPH = RCU_PERIPH Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 rcu_dma0   = RCU_PERIPH $ ext "RCU_DMA0"
 rcu_dma1   = RCU_PERIPH $ ext "RCU_DMA1"

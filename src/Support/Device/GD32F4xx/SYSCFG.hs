@@ -42,7 +42,7 @@ import           Ivory.Support.Device.GD32F4xx
 
 
 newtype EXTI_PORT = EXTI_PORT Uint8
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 exti_source_gpioa = EXTI_PORT $ ext "EXTI_SOURCE_GPIOA"
 exti_source_gpiob = EXTI_PORT $ ext "EXTI_SOURCE_GPIOB"
@@ -52,7 +52,7 @@ exti_source_gpiof = EXTI_PORT $ ext "EXTI_SOURCE_GPIOF"
 
 
 newtype EXTI_PIN = EXTI_PIN Uint8
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 exti_source_pin0  = EXTI_PIN $ ext "EXTI_SOURCE_PIN0"
 exti_source_pin1  = EXTI_PIN $ ext "EXTI_SOURCE_PIN1"

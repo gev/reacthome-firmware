@@ -59,7 +59,7 @@ import           Ivory.Support.Device.GD32F4xx
 
 
 newtype EXTI_LINE = EXTI_LINE Uint32
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 exti_0  = EXTI_LINE $ ext "EXTI_0"
 exti_1  = EXTI_LINE $ ext "EXTI_1"
@@ -93,7 +93,7 @@ exti_27 = EXTI_LINE $ ext "EXTI_27"
 
 
 newtype EXTI_MODE = EXTI_MODE Uint8
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 exti_interrupt = EXTI_MODE $ ext "EXTI_INTERRUPT"
 exti_event     = EXTI_MODE $ ext "EXTI_EVENT"
@@ -101,7 +101,7 @@ exti_event     = EXTI_MODE $ ext "EXTI_EVENT"
 
 
 newtype EXTI_TRIG_TYPE = EXTI_TRIG_TYPE Uint8
-    deriving (IvoryExpr, IvoryInit, IvoryVar, IvoryType)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 exti_trig_rising  = EXTI_TRIG_TYPE $ ext "EXTI_TRIG_RISING"
 exti_trig_falling = EXTI_TRIG_TYPE $ ext "EXTI_TRIG_FALLING"
