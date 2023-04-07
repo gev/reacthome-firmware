@@ -1,7 +1,6 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE NoFieldSelectors #-}
-{-# LANGUAGE RecordWildCards  #-}
-{-# LANGUAGE TypeOperators    #-}
+{-# LANGUAGE DataKinds       #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TypeOperators   #-}
 
 module Device.GD32F3x0.GPIO where
 
