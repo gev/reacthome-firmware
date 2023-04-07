@@ -1,27 +1,25 @@
-{-# LANGUAGE DataKinds   #-}
-{-# LANGUAGE QuasiQuotes #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-{-# HLINT ignore "Use camelCase" #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE NoFieldSelectors #-}
+{-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE TypeOperators    #-}
 
 module Device.GD32F3x0.GPIO where
 
 import           Core.Context
 import           Data.Record
 import           Ivory.Language
-import           Ivory.Support
-import           Support.Device.GD32F3x0.GPIO as S
+import           Ivory.Support                (ExtSymbol (symbol))
+import           Support.Device.GD32F3x0.GPIO
 import           Support.Device.GD32F3x0.RCU
 
 
-type Port = "port_struct"
 
-[ivory|
-    struct port_struct
-    { rcu  :: Stored RCU_PERIPH
-    ; gpio :: Stored GPIO_PERIPH
-    ; pin  :: Stored GPIO_PIN
+data Port = Port
+    { rcu  :: RCU_PERIPH
+    , gpio :: GPIO_PERIPH
+    , pin  :: GPIO_PIN
+    , mode :: MODE
     }
-|]
 
 
 data MODE
@@ -66,26 +64,24 @@ pb_15 = pb gpio_pin_15
 
 
 
-pa :: GPIO_PIN  -> [InitStruct Port]
-pa pin' = [ rcu .= ival rcu_gpioa
-          , pin .= ival pin'
-          ]
+pa :: GPIO_PIN -> MODE -> Port
+pa = Port rcu_gpioa gpioa
 
-pb :: GPIO_PIN -> [InitStruct Port]
-pb pin' = [ rcu .= ival rcu_gpiob
-          , pin .= ival pin'
-          ]
+pb :: GPIO_PIN -> MODE -> Port
+pb = Port rcu_gpiob gpiob
 
 
 
-initGPIO :: Record Port -> MODE -> Ivory eff ()
-initGPIO port mode = do
-    rcu'  <- deref $ port ~> rcu
-    gpio' <- deref $ port ~> gpio
-    pin'  <- deref $ port ~> pin
-    enablePeriphClock rcu'
-    setOutputOptions gpio' gpio_otype_pp gpio_ospeed_50mhz pin'
+io :: GPIO_MODE -> (MODE -> Port) -> Port
+io m p = p $ MF m
+
+
+
+initPort :: Port -> Def ('[] ':-> ())
+initPort Port{..} = proc (symbol gpio <> "_" <> symbol pin <>"_init") $ body $ do
+    enablePeriphClock rcu
+    setOutputOptions gpio gpio_otype_pp gpio_ospeed_50mhz pin
     case mode of
-        MF mode -> setMode gpio' mode gpio_pupd_none pin'
-        AF mode -> setMode gpio' gpio_mode_af gpio_pupd_none pin'
-                >> setAF gpio' mode pin'
+        (MF mode) -> setMode gpio mode gpio_pupd_none pin
+        (AF mode) -> setMode gpio gpio_mode_af gpio_pupd_none pin
+                  >> setAF gpio mode pin
