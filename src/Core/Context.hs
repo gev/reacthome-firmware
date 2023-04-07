@@ -42,7 +42,7 @@ addTask t = do
         addProc $ getTask t
 
 
-addProc :: MonadWriter Context m => Def ('[] :-> ()) -> m ()
+addProc :: MonadWriter Context m => Def p -> m ()
 addProc = addModule . incl
 
 

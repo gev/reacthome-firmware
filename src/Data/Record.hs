@@ -57,8 +57,8 @@ runRecords_ :: IvoryStruct t
             => String -> Int -> RunRecords t
 runRecords_ id = run (area id Nothing)
 
-runRecords :: IvoryStruct t => String
-           -> [[InitStruct t]] -> RunRecords t
+runRecords :: IvoryStruct t
+           => String -> [[InitStruct t]] -> RunRecords t
 runRecords id xs = run (area id . Just . iarray $ istruct <$> xs) $ length xs
 
 runRecordsFromList :: IvoryStruct t

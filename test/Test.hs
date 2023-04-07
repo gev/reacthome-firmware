@@ -30,8 +30,10 @@ instance IvoryStruct (Bar "bar") where
 b :: Label "bar" ('L.Struct "foo")
 b = Label "b"
 
-x = area "x" . Just $ istruct [f .= ival 1]
-y = area "y" . Just $ istruct [b .= istruct [f .= ival 1]]
+f' = [f .= ival 1]
+
+x = area "x" . Just $ istruct f'
+y = area "y" . Just $ istruct [b .= istruct f']
 
 
 b' = addrOf y ~> b
