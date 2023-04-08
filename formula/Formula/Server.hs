@@ -15,7 +15,8 @@ server = Formula { name       = "server"
                  , version    = (1, 0)
                  , shouldInit = false
                  , transport  = U.rbus uart_7
-                 , features   = [ F.rbus [ rs485 1 uart_0 out_pc_8
+                 , features   = [ echo
+                                , F.rbus [ rs485 1 uart_0 out_pc_8
                                          , rs485 2 uart_1 out_pd_7
                                          , rs485 3 uart_2 out_pa_15
                                          , rs485 4 uart_5 out_pd_15
