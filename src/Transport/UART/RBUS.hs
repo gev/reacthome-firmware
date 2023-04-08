@@ -1,14 +1,17 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE DataKinds          #-}
+{-# LANGUAGE FlexibleContexts   #-}
+{-# LANGUAGE NamedFieldPuns     #-}
+{-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE RankNTypes         #-}
+{-# LANGUAGE TypeOperators      #-}
 
 module Transport.UART.RBUS    where
 
-import           Control.Monad.Reader      (MonadReader, asks)
-import           Control.Monad.Writer      (MonadWriter)
+import           Control.Monad.Reader     (MonadReader, asks)
+import           Control.Monad.Writer     (MonadWriter)
 import           Core.Context
 import           Core.Dispatcher
-import qualified Core.Domain               as D
+import qualified Core.Domain              as D
 import           Core.Handler
 import           Core.Task
 import           Core.Transport
@@ -16,15 +19,19 @@ import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Data.Value
 import           Interface.Mac
-import           Interface.MCU             (MCU (peripherals, systemClock), mac)
-import           Interface.SystemClock     (getSystemTime)
-import           Interface.UART           (HandleUART (HandleUART), UART)
+import           Interface.MCU            (MCU (peripherals, systemClock), mac)
+import           Interface.SystemClock    (getSystemTime)
+import           Interface.UART           (HandleUART (HandleUART),
+                                           Parity (None),
+                                           UART (setBaudrate, setParity, setWordLength),
+                                           WordLength (WL_8b))
 import           Ivory.Language
 import           Ivory.Stdlib
 import qualified Protocol.UART.RBUS       as U
 import           Transport.UART.RBUS.Data
 import           Transport.UART.RBUS.Rx
 import           Transport.UART.RBUS.Tx
+
 
 
 rbus :: (MonadWriter Context m, MonadReader (D.Domain p RBUS) m, UART u)
@@ -38,15 +45,15 @@ rbus uart' = do
     let clock      = systemClock mcu
 
     uart         <- uart' $ peripherals mcu
-    rxBuff        <- buffer (name <> "_rx")
-    rxQueue       <- queue  (name <> "_rx")
+    rxBuff        <- buffer (name <> "_rx"        )
+    rxQueue       <- queue  (name <> "_rx"        )
     msgOffset     <- buffer (name <> "_msg_offset")
-    msgSize       <- buffer (name <> "_msg_size")
-    msgQueue      <- queue  (name <> "_msg")
-    msgBuff       <- buffer (name <> "_msg")
-    msgIndex      <- value  (name <> "_msg_index") 0
-    txBuff        <- buffer (name <> "_tx")
-    txLock        <- value  (name <> "_tx_lock") false
+    msgSize       <- buffer (name <> "_msg_size"  )
+    msgQueue      <- queue  (name <> "_msg"       )
+    msgBuff       <- buffer (name <> "_msg"       )
+    msgIndex      <- value  (name <> "_msg_index" ) 0
+    txBuff        <- buffer (name <> "_tx"        )
+    txLock        <- value  (name <> "_tx_lock"   ) false
 
     {--
         TODO: move dispatcher outside
@@ -67,8 +74,16 @@ rbus uart' = do
 
     addHandler $ HandleUART uart (rxHandle rbus) (txHandle rbus) Nothing
 
-    addTask $ yeld    (name <> "_rx"  ) $ rxTask rbus
-    addTask $ delay 1 (name <> "_tx"  ) $ txTask rbus
+    let rbusInit :: Def ('[] :-> ())
+        rbusInit = proc (name <> "_init") $ body $ do
+            setBaudrate   uart 2_000_000
+            setWordLength uart WL_8b
+            setParity     uart None
+
+    addInit rbusInit
+
+    addTask $ yeld    (name <> "_rx") $ rxTask rbus
+    addTask $ delay 1 (name <> "_tx") $ txTask rbus
 
     pure rbus
 

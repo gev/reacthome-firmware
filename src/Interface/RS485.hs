@@ -8,7 +8,12 @@
 {-# LANGUAGE RecordWildCards       #-}
 {-# LANGUAGE TypeOperators         #-}
 
-module Interface.RS485 where
+module Interface.RS485
+    ( module Interface.RS485
+    , I.WordLength (..)
+    , I.StopBit    (..)
+    , I.Parity     (..)
+    ) where
 
 import           Control.Monad.Reader
 import           Control.Monad.Writer

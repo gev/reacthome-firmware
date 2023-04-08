@@ -70,14 +70,11 @@ mkUART uart rcu uartIRQ dma dmaIRQn rx tx = do
             store (dmaParams ~> periph_addr) =<< tdata uart
             enablePeriphClock   rcu_dma
             enableIrqNvic       uartIRQ 0 0
-            enableIrqNvic       dmaIRQn  1 0
+            enableIrqNvic       dmaIRQn 1 0
             enablePeriphClock   rcu
             deinitUSART         uart
             configReceive       uart usart_receive_enable
             configTransmit      uart usart_transmit_enable
-            setBaudrate         uart 1_000_000
-            setWordLength       uart usart_wl_8bit
-            configParity        uart usart_pm_none
             enableInterrupt     uart usart_int_rbne
             enableUSART         uart
 

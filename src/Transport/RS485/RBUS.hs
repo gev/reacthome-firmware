@@ -1,6 +1,9 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE DataKinds          #-}
+{-# LANGUAGE FlexibleContexts   #-}
+{-# LANGUAGE NamedFieldPuns     #-}
+{-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE RankNTypes         #-}
+{-# LANGUAGE TypeOperators      #-}
 
 module Transport.RS485.RBUS    where
 
@@ -41,18 +44,18 @@ rbus rs485 = do
     let clock      = systemClock mcu
 
     rs            <- rs485
-    rxBuff        <- buffer (name <> "_rx")
-    rxQueue       <- queue  (name <> "_rx")
-    msgOffset     <- buffer (name <> "_msg_offset")
-    msgSize       <- buffer (name <> "_msg_size")
-    msgTTL        <- buffer (name <> "_msg_ttl")
-    msgQueue      <- queue  (name <> "_msg")
-    msgBuff       <- buffer (name <> "_msg")
-    msgIndex      <- value  (name <> "_msg_index") 0
-    txBuff        <- buffer (name <> "_tx")
-    initBuff      <- values (name <> "_init_request") [0xf2]
-    txLock        <- value  (name <> "_tx_lock") false
-    timestamp     <- value  (name <> "_timestamp") 0
+    rxBuff        <- buffer (name <> "_rx"            )
+    rxQueue       <- queue  (name <> "_rx"            )
+    msgOffset     <- buffer (name <> "_msg_offset"    )
+    msgSize       <- buffer (name <> "_msg_size"      )
+    msgTTL        <- buffer (name <> "_msg_ttl"       )
+    msgQueue      <- queue  (name <> "_msg"           )
+    msgBuff       <- buffer (name <> "_msg"           )
+    msgIndex      <- value  (name <> "_msg_index"     ) 0
+    txBuff        <- buffer (name <> "_tx"            )
+    initBuff      <- values (name <> "_init_request"  ) [0xf2]
+    txLock        <- value  (name <> "_tx_lock"       ) false
+    timestamp     <- value  (name <> "_timestamp"     ) 0
     shouldConfirm <- value  (name <> "_should_confirm") false
 
     {--
@@ -86,8 +89,15 @@ rbus rs485 = do
 
     addHandler $ HandleRS485 rs (rxHandle rbus) (txHandle rbus)
 
-    addTask $ yeld    (name <> "_rx"  ) $ rxTask rbus
-    addTask $ delay 1 (name <> "_tx"  ) $ txTask rbus
+    let rbusInit :: Def ('[] :-> ())
+        rbusInit = proc (name <> "_init") $ body $ do
+            setBaudrate   rs 1_000_000
+            setWordLength rs WL_8b
+            setParity     rs None
+
+    addInit rbusInit
+    addTask $ yeld    (name <> "_rx") $ rxTask rbus
+    addTask $ delay 1 (name <> "_tx") $ txTask rbus
 
     pure rbus
 
