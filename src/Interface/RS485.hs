@@ -10,9 +10,9 @@
 
 module Interface.RS485
     ( module Interface.RS485
-    , I.WordLength (..)
-    , I.StopBit    (..)
-    , I.Parity     (..)
+    , WordLength (..)
+    , StopBit    (..)
+    , Parity     (..)
     ) where
 
 import           Control.Monad.Reader
@@ -22,13 +22,13 @@ import           Core.Domain           as D
 import           Core.Handler
 import           Interface.GPIO.Output
 import           Interface.MCU
-import qualified Interface.UART        as I
+import           Interface.UART        as U
 import           Ivory.Language
 
 
 
 data RS485 where
-    RS485 :: (I.UART u, Output o)
+    RS485 :: (UART u, Output o)
           => { uart  :: u
              , rede  :: o
              }
@@ -44,7 +44,7 @@ data HandleRS485 r = HandleRS485
 
 
 
-rs485 :: (MonadWriter Context m, MonadReader (D.Domain p t) m, I.UART u, Output o)
+rs485 :: (MonadWriter Context m, MonadReader (D.Domain p t) m, UART u, Output o)
       => Int -> (p -> m u) -> (p -> m o) -> m RS485
 rs485 n uart' rede' = do
     mcu' <- asks D.mcu
@@ -58,28 +58,19 @@ rs485 n uart' rede' = do
     pure RS485 { uart, rede }
 
 
-
 transmit :: RS485
          -> Ref r (CArray (Stored Uint16))
          -> Uint16
          -> Ivory (ProcEffects s ()) ()
 transmit RS485{..} buffer length =
-    set rede >> I.transmit uart buffer length
+    set rede >> U.transmit uart buffer length
 
-setBaudrate :: RS485 -> Uint32 -> Ivory eff ()
-setBaudrate RS485{..} = I.setBaudrate uart
 
-setWordLength :: RS485 -> I.WordLength -> Ivory eff ()
-setWordLength RS485{..} = I.setWordLength uart
-
-setStopBit :: RS485 -> I.StopBit -> Ivory eff ()
-setStopBit RS485{..} = I.setStopBit uart
-
-setParity :: RS485 -> I.Parity -> Ivory eff ()
-setParity RS485{..} = I.setParity uart
+configureRS485 :: RS485 -> Uint32 -> WordLength -> StopBit -> Parity -> Ivory eff ()
+configureRS485 RS485{..} = configUART uart
 
 
 
 instance Handler HandleRS485 RS485 where
     addHandler (HandleRS485 RS485{..} onReceive onTransmit) = do
-        addHandler $ I.HandleUART uart onReceive onTransmit (Just $ reset rede)
+        addHandler $ HandleUART uart onReceive onTransmit (Just $ reset rede)

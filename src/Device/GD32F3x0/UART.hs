@@ -64,19 +64,13 @@ mkUART uart rcu uartIRQ dma dmaIRQn rx tx = do
                            ]
     dmaParams <- record (symbol uart <> "_dma_param") dmaInit
 
-    let
-        initUART' :: Def ('[] ':-> ())
+    let initUART' :: Def ('[] ':-> ())
         initUART' = proc (symbol uart <> "_init") $ body $ do
             store (dmaParams ~> periph_addr) =<< tdata uart
             enablePeriphClock   rcu_dma
             enableIrqNvic       uartIRQ 0 0
             enableIrqNvic       dmaIRQn 1 0
             enablePeriphClock   rcu
-            deinitUSART         uart
-            configReceive       uart usart_receive_enable
-            configTransmit      uart usart_transmit_enable
-            enableInterrupt     uart usart_int_rbne
-            enableUSART         uart
 
     addInit $ G.initPort rx
     addInit $ G.initPort tx
@@ -123,13 +117,16 @@ handleDrain uart onDrain = do
 
 
 instance I.UART UART where
-    {-
-        TODO: Should we "deinit" UART before change a configuration?
-    -}
-    setBaudrate   u    = S.setBaudrate $ uart u
-    setWordLength u wl = S.setWordLength (uart u) (coerceWordLength wl)
-    setStopBit    u sb = S.setStopBit    (uart u) (coerceStopBit sb)
-    setParity     u p  = S.configParity  (uart u) (coerceParity p)
+    configUART (UART {..}) baudrate length stop parity = do
+        deinitUSART         uart
+        configReceive       uart usart_receive_enable
+        configTransmit      uart usart_transmit_enable
+        enableInterrupt     uart usart_int_rbne
+        setBaudrate         uart baudrate
+        setWordLength       uart $ coerceWordLength length
+        setStopBit          uart $ coerceStopBit    stop
+        configParity        uart $ coerceParity     parity
+        enableUSART         uart
 
 
     transmit UART{..} buff n = do

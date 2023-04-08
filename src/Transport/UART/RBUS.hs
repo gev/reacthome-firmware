@@ -22,8 +22,8 @@ import           Interface.Mac
 import           Interface.MCU            (MCU (peripherals, systemClock), mac)
 import           Interface.SystemClock    (getSystemTime)
 import           Interface.UART           (HandleUART (HandleUART),
-                                           Parity (None),
-                                           UART (setBaudrate, setParity, setWordLength),
+                                           Parity (None), StopBit (SB_1b),
+                                           UART (configUART),
                                            WordLength (WL_8b))
 import           Ivory.Language
 import           Ivory.Stdlib
@@ -76,9 +76,7 @@ rbus uart' = do
 
     let rbusInit :: Def ('[] :-> ())
         rbusInit = proc (name <> "_init") $ body $ do
-            setBaudrate   uart 2_000_000
-            setWordLength uart WL_8b
-            setParity     uart None
+            configUART uart 2_000_000 WL_8b SB_1b None
 
     addInit rbusInit
 

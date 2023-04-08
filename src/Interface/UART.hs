@@ -35,10 +35,11 @@ data StopBit
 
 class Handler HandleUART u => UART u where
 
-    setBaudrate   :: u -> Uint32     -> Ivory eff ()
-    setWordLength :: u -> WordLength -> Ivory eff ()
-    setStopBit    :: u -> StopBit    -> Ivory eff ()
-    setParity     :: u -> Parity     -> Ivory eff ()
+    configUART    :: u -> Uint32
+                       -> WordLength
+                       -> StopBit
+                       -> Parity
+                       -> Ivory eff ()
 
     transmit      :: u -> Ref r (CArray (Stored Uint16))
                        -> Uint16

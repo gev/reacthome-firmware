@@ -91,11 +91,10 @@ rbus rs485 = do
 
     let rbusInit :: Def ('[] :-> ())
         rbusInit = proc (name <> "_init") $ body $ do
-            setBaudrate   rs 1_000_000
-            setWordLength rs WL_8b
-            setParity     rs None
+            configureRS485 rs 1_000_000 WL_8b SB_1b None
 
     addInit rbusInit
+
     addTask $ yeld    (name <> "_rx") $ rxTask rbus
     addTask $ delay 1 (name <> "_tx") $ txTask rbus
 
