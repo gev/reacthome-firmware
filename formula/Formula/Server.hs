@@ -2,6 +2,7 @@ module Formula.Server where
 
 import           Core.Formula
 import           Device.GD32F4xx
+import           Feature.Echo        (echo)
 import           Feature.RS485.RBUS  as F
 import           Interface.RS485
 import           Ivory.Language
