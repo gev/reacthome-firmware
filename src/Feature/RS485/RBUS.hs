@@ -27,16 +27,16 @@ rbus :: (MonadWriter Context m, MonadReader (Domain p t) m)
      => [m RS485] -> m Feature
 rbus rs485 = do
      let n     = length rs485
-     rbus  <- mapM rbus' rs485
+     rbus  <- zipWithM rbus' rs485 (iterate (+1) 1)
      pure $ Feature rbus
 
 
 
 rbus' :: (MonadWriter Context m, MonadReader (Domain p t) m)
-     => m RS485 -> m RBUS
-rbus' rs485 = do
+     => m RS485 -> Uint8 -> m RBUS
+rbus' rs485 n = do
      rs       <- rs485
-     let rbus  = RBUS {rs}
+     let rbus  = RBUS {n, rs}
      addHandler $ HandleRS485 rs (rxHandle rbus) (txHandle rbus)
      pure rbus
 
