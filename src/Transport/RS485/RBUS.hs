@@ -40,7 +40,7 @@ rbus rs485 = do
     shouldInit    <- asks D.shouldInit
     features      <- asks D.features
 
-    let name       = "rbus_slave"
+    let name       = "transport_rs485_rbus"
     let clock      = systemClock mcu
 
     rs            <- rs485
@@ -80,7 +80,7 @@ rbus rs485 = do
 
     protocol <- slave name (mac mcu) model version onMessage onConfirm onDiscovery
 
-    let rbus = RBUS { name, clock, rs, protocol
+    let rbus = RBUS { clock, rs, protocol
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgTTL, msgQueue, msgBuff, msgIndex
                     , txBuff, initBuff, txLock, timestamp
