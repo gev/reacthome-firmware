@@ -2,7 +2,6 @@ module Formula.Server where
 
 import           Core.Formula
 import           Device.GD32F4xx
-import           Feature.Echo        (echo)
 import           Feature.RS485.RBUS  as F
 import           Interface.RS485
 import           Ivory.Language
@@ -15,8 +14,7 @@ server = Formula { name       = "server"
                  , version    = (1, 0)
                  , shouldInit = false
                  , transport  = U.rbus uart_7
-                 , features   = [ echo
-                                , F.rbus [ rs485 1 uart_0 out_pc_8
+                 , features   = [ F.rbus [ rs485 1 uart_0 out_pc_8
                                          , rs485 2 uart_1 out_pd_7
                                          , rs485 3 uart_2 out_pa_15
                                          , rs485 4 uart_5 out_pd_15
