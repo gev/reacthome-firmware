@@ -10,7 +10,7 @@ import           Protocol.RS485.RBUS.Master
 
 
 data RBUS = RBUS
-     { n             :: Uint8
+     { index         :: Uint8
      , rs            :: RS485
      , protocol      :: Master 255
      , rxBuff        :: Buffer  64 Uint16

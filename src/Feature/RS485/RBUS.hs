@@ -19,7 +19,7 @@ import           Feature.RS485.RBUS.Rx
 import           Feature.RS485.RBUS.Tx
 import           Interface.RS485
 import           Ivory.Language
-import           Protocol.RS485.RBUS.Master
+import qualified Protocol.RS485.RBUS.Master as P
 
 
 
@@ -34,9 +34,9 @@ rbus rs485 = do
 
 rbus' :: (MonadWriter Context m, MonadReader (Domain p t) m)
      => m RS485 -> Uint8 -> m RBUS
-rbus' rs485 n = do
+rbus' rs485 index = do
      rs       <- rs485
-     let rbus  = RBUS {n, rs}
+     let rbus  = RBUS {index, rs}
      addHandler $ HandleRS485 rs (rxHandle rbus) (txHandle rbus)
      pure rbus
 
