@@ -31,7 +31,7 @@ data MCUmod p = MCUmod
 
 mkMCU :: MonadWriter Context m
       => m SystemClock
-      -> (Buffer 6 Uint8 -> forall eff. Ivory eff ())
+      -> (Buffer 6 Uint8 -> forall s. Ivory (ProcEffects s ()) ())
       -> ModuleDef
       -> p
       -> m (MCU p)

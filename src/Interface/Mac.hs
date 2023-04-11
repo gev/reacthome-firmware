@@ -19,7 +19,7 @@ type Mac = Values 6 Uint8
 
 
 makeMac :: MonadWriter Context m
-        => (Values 6 Uint8 -> forall eff. Ivory eff ())
+        => (Values 6 Uint8 -> forall s. Ivory (ProcEffects s ()) ())
         -> String
         -> m Mac
 makeMac initMac name = do

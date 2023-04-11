@@ -8,7 +8,6 @@ module Core.Domain where
 
 import           Control.Monad.Writer
 import           Core.Context
-import           Core.Context          (addModule)
 import           Core.Feature
 import           Core.Transport
 import qualified Core.Version          as V
@@ -22,6 +21,7 @@ import           Ivory.Language
 import           Support.Cast
 import           Support.Serialize
 import           Util.String
+import Support.ReadAddr
 
 
 
@@ -49,6 +49,7 @@ domain model' version' mcu shouldInit' transport features = do
     addModule inclCast
     addModule inclString
     addModule inclSerialize
+    addModule inclReadAddr
     model      <- value "model" model'
     version    <- V.version "version" version'
     shouldInit <- value "should_init" shouldInit'
