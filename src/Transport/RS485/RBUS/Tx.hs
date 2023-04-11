@@ -33,6 +33,9 @@ txTask r@RBUS{..} = do
         ifte_ hasAddress'
             (do
                 shouldInit' <- deref shouldInit
+                {-
+                    TODO: use ifte instead when?
+                -}
                 when shouldInit'
                     (doRequestInit r ts)
 
