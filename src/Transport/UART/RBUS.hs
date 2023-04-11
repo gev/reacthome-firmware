@@ -41,7 +41,7 @@ rbus uart' = do
     mcu           <- asks D.mcu
     features      <- asks D.features
 
-    let name       = "rbus_usart"
+    let name       = "transport_uart_rbus"
     let clock      = systemClock mcu
 
     uart         <- uart' $ peripherals mcu
