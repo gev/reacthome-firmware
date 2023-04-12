@@ -83,7 +83,7 @@ rbus rs485 = do
     let rbus = RBUS { clock, rs, protocol
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgTTL, msgQueue, msgBuff, msgIndex
-                    , txBuff, initBuff, txLock, timestamp
+                    , txBuff, initBuff, txLock, timestamp, timestamp' = timestamp
                     , shouldConfirm, shouldInit
                     }
 
