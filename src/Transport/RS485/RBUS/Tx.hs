@@ -32,10 +32,10 @@ txTask r@RBUS{..} = do
         hasAddress' <- hasAddress protocol
         ifte_ hasAddress'
             (do
-                shouldInit' <- deref shouldInit
                 {-
-                    TODO: use ifte instead when?
+                    TODO: Move initialization out of the RBUS protocol
                 -}
+                shouldInit' <- deref shouldInit
                 when shouldInit'
                     (doRequestInit r ts)
 
@@ -92,9 +92,10 @@ doDiscovery r@RBUS{..} t1 = do
          (store timestamp t1 >> discovery r)
 
 
+doRequestInit :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
 doRequestInit r@RBUS{..} t1 = do
     t0 <- deref timestamp
-    when (t1 - t0 >? 1000)
+    when (t1 - t0 >? 2000)
          (store timestamp t1 >> toQueue r initBuff)
 
 
