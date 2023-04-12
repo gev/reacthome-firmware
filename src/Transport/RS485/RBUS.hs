@@ -56,6 +56,7 @@ rbus rs485 = do
     initBuff      <- values (name <> "_init_request"  ) [0xf2]
     txLock        <- value  (name <> "_tx_lock"       ) false
     timestamp     <- value  (name <> "_timestamp"     ) 0
+    timestamp'    <- value  (name <> "_timestamp_"    ) 0
     shouldConfirm <- value  (name <> "_should_confirm") false
 
     {--
@@ -83,7 +84,7 @@ rbus rs485 = do
     let rbus = RBUS { clock, rs, protocol
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgTTL, msgQueue, msgBuff, msgIndex
-                    , txBuff, initBuff, txLock, timestamp, timestamp' = timestamp
+                    , txBuff, initBuff, txLock, timestamp, timestamp'
                     , shouldConfirm, shouldInit
                     }
 
