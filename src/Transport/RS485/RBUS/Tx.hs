@@ -95,7 +95,7 @@ doDiscovery r@RBUS{..} t1 = do
 doRequestInit :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
 doRequestInit r@RBUS{..} t1 = do
     t0 <- deref timestamp'
-    when (t1 - t0 >? 1000)
+    when (t1 - t0 >? 2000)
          (store timestamp' t1 >> toQueue r initBuff)
 
 
