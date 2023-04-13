@@ -1,7 +1,0 @@
-r
-h
-loadbin build/id_test.bin, 0x8000000
-g
-verifybin build/id_test.bin, 0x8000000
-r
-q
