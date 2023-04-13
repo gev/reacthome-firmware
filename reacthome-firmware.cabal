@@ -62,6 +62,9 @@ executable reacthome-firmware
                     , Feature.Blink
                     , Feature.Echo
                     , Feature.Relays
+                    , Feature.MixA
+                    , Feature.DimmerAC
+                    , Feature.DimmerDC
                     , Feature.RS485.RBUS
                     , Feature.RS485.RBUS.Data
                     , Feature.RS485.RBUS.Rx
@@ -72,6 +75,7 @@ executable reacthome-firmware
                     , Formula.Echo
                     , Formula.Relay12
                     , Formula.Server
+                    , Formula.MixA
 
                     , Interface.Counter
                     , Interface.GPIO.Input
