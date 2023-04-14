@@ -68,16 +68,16 @@ master id onMessage onConfirm onDiscovery onPing = do
     model    <- value_     (name <> "_model"    )
     version  <- version_   (name <> "_version"  )
     address  <- value_     (name <> "_address"  )
-    state    <- value      (name <> "_state"    )   readyToReceive
-    phase    <- value      (name <> "_phase"    )   waitingAddress
-    index    <- value      (name <> "_index"    )   0
-    size     <- value      (name <> "_size"     )   0
+    state    <- value      (name <> "_state"    ) readyToReceive
+    phase    <- value      (name <> "_phase"    ) waitingAddress
+    index    <- value      (name <> "_index"    ) 0
+    size     <- value      (name <> "_size"     ) 0
     buff     <- buffer     (name <> "_message"  )
-    tidRx    <- values     (name <> "_tid_rx"   )   $ replicate 255 (-1)
-    tidTx    <- values     (name <> "_tid_tx"   )   $ replicate 255   0
+    tidRx    <- values     (name <> "_tid_rx"   ) $ replicate 255 (-1)
+    tidTx    <- values     (name <> "_tid_tx"   ) $ replicate 255   0
     crc      <- makeCRC16  (name <> "_crc"      )
-    tmp      <- value      (name <> "_tmp"      )   0
-    table    <- macTable   (name <> "_mac_table")
+    tmp      <- value      (name <> "_tmp"      ) 0
+    table    <- macTable   (name <> "_mac_table") 1
     let master = Master { name, mac, model, version, address
                         , state, phase, index, size
                         , buff, tidRx, tidTx, crc, tmp, table

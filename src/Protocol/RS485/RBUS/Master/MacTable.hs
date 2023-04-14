@@ -1,19 +1,19 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE QuasiQuotes      #-}
+{-# LANGUAGE RankNTypes       #-}
 {-# LANGUAGE RecordWildCards  #-}
-{-# LANGUAGE TypeOperators    #-}
 
 module Protocol.RS485.RBUS.Master.MacTable where
 
 import           Control.Monad.Writer   (MonadWriter)
 import           Core.Context
-import           Core.Version
-import           Data.Matrix
+import           Core.Version           (Version, major, minor)
+import           Data.Record
 import           Data.Value
 import           GHC.TypeNats
-import           Interface.Mac
-import           Interface.MCU
+import           Interface.Mac          (Mac)
 import           Ivory.Language
 import           Ivory.Language.Pointer
 import           Ivory.Language.Proc
@@ -22,72 +22,124 @@ import           Util.String
 
 
 
+type MacTableRecordStruct = "mac_table_record"
+type MacTableRecord = Record MacTableRecordStruct
+type MacTableRecords n = Records n MacTableRecordStruct
+
+[ivory|
+    struct mac_table_record
+    { port    :: Stored Uint8
+    ; address :: Stored Uint8
+    ; mac     :: Array 6 (Stored Uint8)
+    ; model   :: Uint8
+    ; version :: Struct version_struct
+    }
+|]
+
+
+
 data MacTable = MacTable
     { name     :: String
-    , size     :: Value          Sint32
-    , tAddress :: Values   255   (Ix 255)
-    , tIndex   :: Values   255   (Ix 255)
-    , tMac     :: Matrix   255 6 Uint8
-    , tModel   :: Values   255   Uint8
-    , tVersion :: Versions 255
+    , ports    :: Int
+    , size     :: Value      Uint16
+    , runNext  :: RunValues  Uint8
+    , runIndex :: RunValues  Uint16
+    , runMac   :: RunRecords MacTableRecordStruct
     }
 
 
 
-macTable :: MonadWriter Context m => String -> m MacTable
-macTable id = do
-    let name = id <> "_table"
-    size     <- value     (name <> "_size"   ) 0
-    tAddress <- values_   (name <> "_address")
-    tIndex   <- values_   (name <> "_index"  )
-    tMac     <- matrix_   (name <> "_mac"    )
-    tModel   <- values_   (name <> "_model"  )
-    tVersion <- versions_ (name <> "_version")
-    addModule . incl $ getIndex
-    addModule . incl $ insertMac
-    pure MacTable {name, size, tAddress, tIndex, tMac, tModel, tVersion}
+macTable :: MonadWriter Context m => String -> Int -> m MacTable
+macTable id ports = do
+    let name      = id <> "_table"
+    let tSize     = 255 * ports
+    let runNext   = runValues   (name <> "_next"   ) (replicate ports 0)
+    let runIndex  = runValues_  (name <> "_index"  ) tSize
+    let runMac    = runRecords_ (name <> "_mac"    ) tSize
+    size         <- value       (name <> "_size"   ) 0
+
+    runNext  addArea
+    runIndex addArea
+    runMac   addArea
+
+    pure MacTable { name, ports, size, runNext, runIndex, runMac }
 
 
-
-getIndex :: Def ('[Matrix 255 6 Uint8, Value Sint32, Mac] :-> Sint32)
-getIndex = proc "mac_table_get_index" $ \table size mac -> body $ do
-        size' <- deref size
-        mid   <- local $ ival 0
-        left  <- local $ ival 0
-        right <- local $ ival size'
-        forever $ do
-            left'  <- deref left
-            right' <- deref right
-            ifte_
-                (left' <? right')
-                (do
-                    store mid $ (left' + right') ./ 2
-                    mid' <- deref mid
-                    cmp' <- memCmp (table ! toIx mid') mac
-                    cond_   [ cmp' <? 0 ==> store left (mid' + 1)
-                            , cmp' >? 0 ==> store right mid'
-                            , true      ==> ret mid'
-                            ]
-                )
+getIndex :: (KnownNat m, KnownNat n)
+         => MacTableRecords n
+         -> Values m Uint16
+         -> Value Uint16
+         -> Mac
+         -> Ivory (ProcEffects s ()) Sint32
+getIndex table index size mac' = do
+    size' <- deref size
+    mid   <- local $ ival 0
+    left  <- local $ ival 0
+    right <- local $ ival size'
+    res   <- local $ ival (-1 :: Sint32)
+    forever $ do
+        left'  <- deref left
+        right' <- deref right
+        ifte_
+            (left' <? right')
+            (do
+                store mid $ (left' + right') ./ 2
+                mid'   <- deref mid
+                index' <- deref $ index ! toIx mid'
+                cmp'   <- memCmp ((table ! toIx index') ~> mac)  mac'
+                cond_ [ cmp' <? 0 ==> store left (mid' + 1)
+                      , cmp' >? 0 ==> store right mid'
+                      , true      ==> store res (safeCast mid') >> breakOut
+                      ]
+            )
+            (do
+                store res (- (safeCast $ left' + 1))
                 breakOut
-        left' <- deref left
-        ret (-left')
+            )
+    deref res
 
 
 
-insertMac :: Def ('[Matrix 255 6 Uint8, Ix 255, Mac] :-> ())
-insertMac = proc "mac_table_insert_mac" $ \table index mac -> body $ do
-    memCpy (table ! index) mac
-    pure ()
-
-
-
-shiftMac :: Def ('[Matrix 255 6 Uint8, Ix 255, Mac] :-> ())
-shiftMac = proc "mac_table_shift_mac" $ \table index mac -> body $ do
-    memCpy (table ! index) mac
-    pure ()
-
-
+insertMac :: MacTable
+          -> Uint8
+          -> Mac
+          -> Value Uint8
+          -> Version
+          -> (Uint8 -> Ivory (ProcEffects s ()) ())
+          -> Ivory (ProcEffects s ()) ()
+insertMac MacTable{..} port mac' model' version' run = do
+    runMac $ \table -> do
+        let table' = addrOf table
+        runIndex $ \index -> do
+            let index' = addrOf index
+            i <- getIndex table' index' size mac'
+            ifte_
+                (i >=? 0)
+                (do
+                    let rec = table' ! toIx i
+                    address' <- deref $ rec ~> address
+                    run address'
+                )
+                (do
+                    let dst =     - i
+                    let src = dst - 1
+                    runNext $ \next -> do
+                        size' <- deref size
+                        let next' = addrOf next ! toIx port
+                        address' <- deref next'
+                        runIndex $ \index -> do
+                            let index' = addrOf index ! toIx (mkIndex port address')
+                            store index' size'
+                            runMac $ \rec -> do
+                                let rec' = addrOf rec ! toIx size'
+                                memCpy (rec' ~> mac  ) mac'
+                                store  (rec' ~> model) =<< deref model'
+                                store  (rec' ~> version ~> major) =<< deref (version' ~> major)
+                                store  (rec' ~> version ~> minor) =<< deref (version' ~> minor)
+                        store next' $ address' + 1
+                        store size  $ size'    + 1
+                        run address'
+                )
 
 
 -- int16_t rbus_mac_table_add_mac(rbus_mac_table_t *rbus_mac_table, mac_t *mac, rbus_device_type_t *type)
@@ -120,20 +172,38 @@ shiftMac = proc "mac_table_shift_mac" $ \table index mac -> body $ do
 --         return rbus_mac_table->mac_index[index]->address;
 --     }
 -- }
-runMac :: MacTable -> Mac -> (Ix 255 -> Ivory eff ()) -> Ivory eff ()
-runMac MacTable{..} mac run = do
-    s <- deref size
-    when (s >? 0) $ do
-        i <- call getIndex tMac size mac
-        when (i >=? 0) $
-            run =<< deref (tAddress ! toIx i)
+lookupAddress :: MacTable
+              -> Mac
+              -> (Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ())
+              -> Ivory (ProcEffects s ()) ()
+lookupAddress MacTable{..} mac run =
+    runMac $ \table -> do
+        let table' = addrOf table
+        runIndex $ \index -> do
+            let index' = addrOf index
+            i <- getIndex table' index' size mac
+            when (i >=? 0) $ do
+                let rec   = table' ! toIx i
+                port'    <- deref $ rec ~> port
+                address' <- deref $ rec ~> address
+                run port' address'
 
 
 
-runAddress :: MacTable -> Ix 255 -> (Mac -> Ivory eff ()) -> Ivory eff ()
-runAddress MacTable{..} address run = do
-    s <- deref size
-    when (s >? 0) $ do
-        i <- deref (tIndex ! address)
-        when (i >=? 0) $
-            run $ tMac ! toIx i
+lookupMac :: MacTable
+          -> Uint8
+          -> Uint8
+          -> (MacTableRecord -> Ivory eff ())
+          -> Ivory eff ()
+lookupMac MacTable{..} port address run =
+    runNext $ \next -> do
+        next' <- deref $ addrOf next ! toIx port
+        when (address <? next') $ do
+            runIndex $ \index -> do
+                i <- deref $ addrOf index ! toIx (mkIndex port address)
+                runMac $ \mac ->
+                    run $ addrOf mac ! toIx i
+
+
+mkIndex :: Uint8 -> Uint8 -> Uint16
+mkIndex port address = safeCast port `iShiftL` 8 .| safeCast address
