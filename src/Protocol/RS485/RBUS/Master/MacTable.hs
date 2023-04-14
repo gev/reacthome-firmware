@@ -61,8 +61,8 @@ insertMac :: MacTable
           -> Mac
           -> Value Uint8
           -> Version
-          -> (Uint8 -> Ivory (AllowBreak (ProcEffects s ())) ())
-          -> Ivory (AllowBreak (ProcEffects s ())) ()
+          -> (forall eff. Uint8 -> Ivory eff ())
+          -> Ivory (ProcEffects s ()) ()
 insertMac MacTable{..} mac' model' version' run = do
     address <- local $ ival 255
     next' <- deref next
