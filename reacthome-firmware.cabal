@@ -75,7 +75,8 @@ executable reacthome-firmware
                     , Formula.Echo
                     , Formula.Relay12
                     , Formula.Server
-                    , Formula.MixA
+                    , Formula.DimmerDC12
+                    , Formula.MixA6x6
 
                     , Interface.Counter
                     , Interface.GPIO.Input
