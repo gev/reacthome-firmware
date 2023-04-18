@@ -35,7 +35,7 @@ start :: Uint8 -> Uint8 -> Slave n -> Uint8 -> Ivory eff ()
 start s p Slave{..} v = do
     store state s
     store phase p
-    store index 0
+    store offset 0
     store size  0
     store (crc ~> msb) initCRC
     store (crc ~> lsb) initCRC
@@ -53,11 +53,11 @@ receiveDiscovery = runState phase
 
 receiveDiscoveryMac :: Slave n -> Uint8 -> Ivory eff ()
 receiveDiscoveryMac Slave{..} v = do
-    i <- deref index
+    i <- deref offset
     m <- deref $ mac ! toIx i
     ifte_ (v ==? m)
-          (do store index $ i + 1
-              i <- deref index
+          (do store offset $ i + 1
+              i <- deref offset
               updateCRC16 crc v
               when (i ==? arrayLen mac)
                    (store phase waitingAddress)
@@ -129,12 +129,12 @@ receiveMessageSize Slave{..} v = do
 
 receiveMessageData :: KnownNat n => Slave n -> Uint8 -> Ivory eff ()
 receiveMessageData Slave{..} v = do
-    i <- deref index
+    i <- deref offset
     s <- deref size
     store (buff ! toIx i) v
-    store index $ i + 1
+    store offset $ i + 1
     updateCRC16 crc v
-    i <- deref index
+    i <- deref offset
     when (i ==? s)
          (store phase waitingMsbCRC)
 
