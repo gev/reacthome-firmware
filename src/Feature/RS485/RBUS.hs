@@ -3,6 +3,7 @@
 {-# LANGUAGE FlexibleInstances  #-}
 {-# LANGUAGE NamedFieldPuns     #-}
 {-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE RankNTypes         #-}
 {-# LANGUAGE TypeOperators      #-}
 
 module Feature.RS485.RBUS where
@@ -66,34 +67,21 @@ rbus' rs485 index = do
     timestamp     <- value  (name <> "_timestamp"     ) 0
     shouldConfirm <- value  (name <> "_should_confirm") false
 
-
     let onMessage buff n shouldHandle = do
             store timestamp =<< getSystemTime clock
             -- when shouldHandle
             store shouldConfirm true
 
-    {-
-      TODO: Should make Init request here?
-      TODO: Should reset Tx queue when address has changed?
-    -}
-    let onDiscovery mac model version = do
-            store (txBuff ! 0) $ fromIntegral index
-            store (txBuff ! 1) =<< deref model
-            store (txBuff ! 2) =<< deref (version ~> major)
-            store (txBuff ! 3) =<< deref (version ~> minor)
-            -- T.transmit transport txBuff
-
-            store timestamp =<< getSystemTime clock
-            -- store shouldConfirm false
-
     let onConfirm = remove msgQueue
 
-    let onPing = remove msgQueue
+    let onPing mac address model version = remove msgQueue
 
+    let onDiscovery mac address model version = do
+            pure ()
 
     protocol <- P.master name onMessage onConfirm onDiscovery onPing
 
-    let rbus  = RBUS {index, clock, rs, protocol
+    let rbus = RBUS { index, clock, rs, protocol
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgTTL, msgQueue, msgBuff, msgIndex
                     , txBuff, txLock, timestamp
@@ -112,6 +100,7 @@ rbus' rs485 index = do
     -- addTask $ delay 1 (name <> "_tx") $ txTask rbus
 
     pure rbus
+
 
 
 instance Controller [RBUS]

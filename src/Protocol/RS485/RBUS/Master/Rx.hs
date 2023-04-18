@@ -9,6 +9,7 @@ import           Ivory.Language
 import           Ivory.Stdlib
 import           Protocol.RS485.RBUS
 import           Protocol.RS485.RBUS.Master
+import           Protocol.RS485.RBUS.Master.MacTable as T
 import           Util.CRC16
 
 
@@ -36,7 +37,7 @@ start :: Uint8 -> Uint8 -> Master n -> Uint8 -> Ivory eff ()
 start s p Master{..} v = do
     store state s
     store phase p
-    store index 0
+    store offset 0
     store size  0
     store (crc ~> msb) initCRC
     store (crc ~> lsb) initCRC
@@ -56,10 +57,10 @@ receiveDiscovery = runState phase
 
 receiveDiscoveryMac :: Master n -> Uint8 -> Ivory eff ()
 receiveDiscoveryMac Master{..} v = do
-    i <- deref index
+    i <- deref offset
     store (mac ! toIx i) v
-    store index $ i + 1
-    i <- deref index
+    store offset $ i + 1
+    i <- deref offset
     updateCRC16 crc v
     when (i ==? arrayLen mac)
          (store phase waitingModel)
@@ -82,12 +83,10 @@ receiveDiscoveryMinorVersion Master{..} v = do
     updateCRC16 crc v
     store phase waitingMsbCRC
 
-receiveDiscoveryLsbCRC :: Master n -> Uint8 -> Ivory eff ()
-receiveDiscoveryLsbCRC s@Master{..} = receiveLsbCRC s $ do
-    {-
-        TODO: register mac, model, version and address
-    -}
-    onDiscovery mac model version
+receiveDiscoveryLsbCRC :: Master n -> Uint8 -> Ivory (ProcEffects s ()) ()
+receiveDiscoveryLsbCRC m@Master{..} = receiveLsbCRC m $
+    insertMac table mac model version $ \address -> do
+        onDiscovery mac address model version
 
 
 
@@ -99,8 +98,10 @@ receivePing = runState phase
     ]
 
 receivePingLsbCRC :: Master n -> Uint8 -> Ivory eff ()
-receivePingLsbCRC r =
-    receiveLsbCRC r $ onPing r
+receivePingLsbCRC m@Master{..} = receiveLsbCRC m $ do
+    address' <- deref address
+    lookupMac table address' $ \rec ->
+        onPing (rec ~> T.mac) address' (rec ~> T.model) (rec ~> T.version)
 
 
 
@@ -144,17 +145,17 @@ receiveMessageSize Master{..} v = do
 
 receiveMessageData :: KnownNat n => Master n -> Uint8 -> Ivory eff ()
 receiveMessageData Master{..} v = do
-    i <- deref index
+    i <- deref offset
     s <- deref size
     store (buff ! toIx i) v
-    store index $ i + 1
+    store offset $ i + 1
     updateCRC16 crc v
-    i <- deref index
+    i <- deref offset
     when (i ==? s)
          (store phase waitingMsbCRC)
 
 receiveMessageLsbCRC :: Master n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receiveMessageLsbCRC r@Master{..} v = do
+receiveMessageLsbCRC m@Master{..} v = do
     tmp'       <- deref tmp
     size'      <- deref size
     address'   <- deref address
@@ -162,7 +163,7 @@ receiveMessageLsbCRC r@Master{..} v = do
     id         <- deref tidRx'
     let complete = do store tidRx' $ safeCast tmp'
                       onMessage buff size' $ id /=? safeCast tmp'
-    receiveLsbCRC r complete v
+    receiveLsbCRC m complete v
 
 
 

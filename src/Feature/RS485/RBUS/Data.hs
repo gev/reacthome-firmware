@@ -23,7 +23,7 @@ data RBUS = RBUS
      , msgQueue      :: Queue   32
      , msgBuff       :: Buffer 512 Uint16
      , msgIndex      :: Value      Uint16
-     , txBuff        :: Buffer 255 Uint8
+     , txBuff        :: Buffer 255 Uint16
      , txLock        :: Value      IBool
      , timestamp     :: Value      Uint32
      , shouldConfirm :: Value      IBool

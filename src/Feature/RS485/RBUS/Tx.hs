@@ -10,11 +10,13 @@ import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Feature.RS485.RBUS.Data
 import           GHC.TypeNats
-import           Interface.RS485            as RS
+import           Interface.Mac
+import qualified Interface.RS485               as RS
 import           Interface.SystemClock
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Protocol.RS485.RBUS.Master
+import           Protocol.RS485.RBUS.Master.Tx (transmitDiscovery)
 
 
 txHandle :: RBUS -> Ivory eff ()
@@ -104,18 +106,27 @@ txHandle _ = pure ()
 
 
 
--- toRS :: (Master 255 -> (Uint8 -> Ivory eff ()) -> Ivory (ProcEffects s ()) ())
---      -> RBUS
---      -> Ivory (ProcEffects s ()) ()
--- toRS transmit r@RBUS{..} = do
---     locked <- deref txLock
---     when (iNot locked)
---          (rsTransmit r =<< run protocol transmit txBuff 0)
+discovery :: Mac
+          -> Uint8
+          -> RBUS
+          -> Ivory (ProcEffects s ()) ()
+discovery mac address =
+    toRS $ transmitDiscovery mac address
 
 
--- {--
---     TODO: potential message overwriting in the msgBuff
--- --}
+
+toRS :: (Master 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) ())
+     -> RBUS
+     -> Ivory (ProcEffects s ()) ()
+toRS transmit r@RBUS{..} = do
+    locked <- deref txLock
+    when (iNot locked)
+         (rsTransmit r =<< run protocol transmit txBuff 0)
+
+
+{--
+    TODO: potential message overwriting in the msgBuff
+--}
 -- toQueue :: KnownNat l => RBUS -> Buffer l Uint8 -> Ivory (ProcEffects s ()) ()
 -- toQueue RBUS{..} buff = push msgQueue $ \i -> do
 --     index <- deref msgIndex
@@ -127,26 +138,26 @@ txHandle _ = pure ()
 --     store (msgTTL    ! ix) messageTTL
 
 
--- rsTransmit :: RBUS -> Uint16 -> Ivory (ProcEffects s ()) ()
--- rsTransmit RBUS{..} size = do
---     let array = toCArray txBuff
---     RS.transmit rs array size
---     store txLock true
+rsTransmit :: RBUS -> Uint16 -> Ivory (ProcEffects s ()) ()
+rsTransmit RBUS{..} size = do
+    let array = toCArray txBuff
+    RS.transmit rs array size
+    store txLock true
 
 
--- run :: KnownNat l
---     => Master 255
---     -> (Master 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) ())
---     -> Buffer l Uint16
---     -> Uint16
---     -> Ivory (ProcEffects s ()) Uint16
--- run protocol transmit buff offset = do
---     size  <- local $ ival 0
---     let go :: Uint8 -> Ivory eff ()
---         go v = do
---             i <- deref size
---             let ix = toIx $ offset + i
---             store (buff ! ix) $ safeCast v
---             store size $ i + 1
---     transmit protocol go
---     deref size
+run :: KnownNat l
+    => Master 255
+    -> (Master 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) ())
+    -> Buffer l Uint16
+    -> Uint16
+    -> Ivory (ProcEffects s ()) Uint16
+run protocol transmit buff offset = do
+    size  <- local $ ival 0
+    let go :: Uint8 -> Ivory eff ()
+        go v = do
+            i <- deref size
+            let ix = toIx $ offset + i
+            store (buff ! ix) $ safeCast v
+            store size $ i + 1
+    transmit protocol go
+    deref size

@@ -26,25 +26,24 @@ import           Util.CRC16
 
 
 data Master n = Master
-    { name          :: String
-    , mac           :: Mac
+    { mac           :: Mac
     , model         :: Value       Uint8
     , version       :: Version
     , address       :: Value       Uint8
     , state         :: Value       Uint8
     , phase         :: Value       Uint8
-    , index         :: Value       Uint8
+    , offset        :: Value       Uint8
     , size          :: Value       Uint8
     , buff          :: Buffer   n  Uint8
-    , tidRx         :: Values  255 Sint16
-    , tidTx         :: Values  255 Uint8
+    , tidRx         :: Values 255  Sint16
+    , tidTx         :: Values 255  Uint8
     , crc           :: Record      CRC16
     , tmp           :: Value       Uint8
     , table         :: MacTable
     , onMessage     :: Buffer   n  Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ()
     , onConfirm     :: forall eff. Ivory eff ()
-    , onDiscovery   :: forall eff. Mac -> Value Uint8 -> Version -> Ivory eff ()
-    , onPing        :: forall eff. Ivory eff ()
+    , onDiscovery   :: Mac -> Uint8 -> Value Uint8 -> Version -> forall s. Ivory (ProcEffects s ()) ()
+    , onPing        :: forall eff. Mac -> Uint8 -> Value Uint8 -> Version -> Ivory eff ()
     }
 
 
@@ -59,18 +58,18 @@ master :: (MonadWriter Context m, KnownNat n)
        => String
        -> (Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ())
        -> (forall eff. Ivory eff ())
-       -> (forall eff. Mac -> Value Uint8 -> Version -> Ivory eff ())
-       -> (forall eff. Ivory eff ())
+       -> (Mac -> Uint8 -> Value Uint8 -> Version -> forall s. Ivory (ProcEffects s ()) ())
+       -> (forall eff. Mac -> Uint8 -> Value Uint8 -> Version -> Ivory eff ())
        -> m (Master n)
 master id onMessage onConfirm onDiscovery onPing = do
-    let name = "protocol_" <> id
+    let name = id <> "_protocol_master"
     mac      <- buffer     (name <> "_mac"      )
     model    <- value_     (name <> "_model"    )
     version  <- version_   (name <> "_version"  )
     address  <- value_     (name <> "_address"  )
     state    <- value      (name <> "_state"    ) readyToReceive
     phase    <- value      (name <> "_phase"    ) waitingAddress
-    index    <- value      (name <> "_index"    ) 0
+    offset   <- value      (name <> "_offset"   ) 0
     size     <- value      (name <> "_size"     ) 0
     buff     <- buffer     (name <> "_message"  )
     tidRx    <- values     (name <> "_tid_rx"   ) $ replicate 255 (-1)
@@ -78,8 +77,8 @@ master id onMessage onConfirm onDiscovery onPing = do
     crc      <- makeCRC16  (name <> "_crc"      )
     tmp      <- value      (name <> "_tmp"      ) 0
     table    <- macTable   (name <> "_mac_table") 1
-    let master = Master { name, mac, model, version, address
-                        , state, phase, index, size
+    let master = Master { mac, model, version, address
+                        , state, phase, offset, size
                         , buff, tidRx, tidTx, crc, tmp, table
                         , onMessage, onConfirm, onDiscovery, onPing
                         }
