@@ -8,17 +8,17 @@
 
 module Feature.RS485.RBUS where
 
-import           Control.Monad              (zipWithM)
-import           Control.Monad.Reader       (MonadReader, asks)
-import           Control.Monad.Writer       (MonadWriter)
+import           Control.Monad                       (zipWithM)
+import           Control.Monad.Reader                (MonadReader, asks)
+import           Control.Monad.Writer                (MonadWriter)
 import           Core.Context
 import           Core.Controller
-import qualified Core.Domain                as D
+import qualified Core.Domain                         as D
 import           Core.Feature
-import           Core.FSM                   (transit)
+import           Core.FSM                            (transit)
 import           Core.Handler
 import           Core.Task
-import           Core.Transport             as T
+import           Core.Transport                      as T
 import           Core.Version
 import           Data.Buffer
 import           Data.Concurrent.Queue
@@ -26,13 +26,14 @@ import           Data.Value
 import           Feature.RS485.RBUS.Data
 import           Feature.RS485.RBUS.Rx
 import           Feature.RS485.RBUS.Tx
-import           Interface.MCU              (MCU (peripherals, systemClock))
+import           Interface.MCU                       (MCU (peripherals, systemClock))
 import           Interface.RS485
-import           Interface.SystemClock      (getSystemTime)
+import           Interface.SystemClock               (getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Protocol.RS485.RBUS        (broadcastAddress)
-import qualified Protocol.RS485.RBUS.Master as P
+import           Protocol.RS485.RBUS                 (broadcastAddress)
+import qualified Protocol.RS485.RBUS.Master          as P
+import           Protocol.RS485.RBUS.Master.MacTable as M
 
 
 
@@ -42,7 +43,6 @@ rbus rs485 = do
     let n     = length rs485
     rbus  <- zipWithM rbus' rs485 [1..]
     pure $ Feature rbus
-
 
 
 rbus' :: (MonadWriter Context m, MonadReader (D.Domain p t) m, Transport t)
@@ -75,10 +75,16 @@ rbus' rs485 index = do
     confirmAddress   <- value  (name <> "_address_confirm"  ) broadcastAddress
     pingAddress      <- value  (name <> "_address_ping"     ) broadcastAddress
 
-    let onMessage address buff n shouldHandle = do
-            store timestamp =<< getSystemTime clock
+    let onMessage mac address buff n shouldHandle = do
             when shouldHandle $ do
-                T.transmit transport buff $ toIx n
+                T.runTransmit transport $ \transmit -> do
+                    arrayMap $ \ix ->
+                        transmit =<< deref (mac ! ix)
+                    transmit $ fromIntegral index
+                    transmit address
+                    transmit n
+                    for (toIx n) $ \ix ->
+                        transmit =<< deref (buff ! ix)
             store confirmAddress address
             store shouldConfirm true
 

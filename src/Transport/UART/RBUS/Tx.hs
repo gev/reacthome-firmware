@@ -56,6 +56,17 @@ toQueue RBUS{..} buff size' = push msgQueue $ \i -> do
     store (msgSize   ! ix) size
 
 
+toQueue' :: RBUS -> (forall eff. (Uint8 -> forall eff. Ivory eff ()) -> Ivory eff ()) -> Ivory (ProcEffects s ()) ()
+toQueue' RBUS{..} transmit = push msgQueue $ \i -> do
+    index <- deref msgIndex
+    size <- run protocol (transmitMessage' transmit) msgBuff index
+    store msgIndex $ index + size
+    let ix = toIx i
+    store (msgOffset ! ix) index
+    store (msgSize   ! ix) size
+
+
+
 run :: KnownNat l
     => U.RBUS 255
     -> (U.RBUS 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) ())

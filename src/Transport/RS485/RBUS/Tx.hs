@@ -135,6 +135,16 @@ toQueue RBUS{..} buff size' = push msgQueue $ \i -> do
     store (msgTTL    ! ix) messageTTL
 
 
+toQueue' :: RBUS -> (forall eff. (Uint8 -> forall eff. Ivory eff ()) -> Ivory eff ()) -> Ivory (ProcEffects s ()) ()
+toQueue' RBUS{..} transmit = push msgQueue $ \i -> do
+    index <- deref msgIndex
+    size <- run protocol (transmitMessage' transmit) msgBuff index
+    store msgIndex $ index + size
+    let ix = toIx i
+    store (msgOffset ! ix) index
+    store (msgSize   ! ix) size
+
+
 rsTransmit :: RBUS -> Uint16 -> Ivory (ProcEffects s ()) ()
 rsTransmit RBUS{..} size = do
     let array = toCArray txBuff

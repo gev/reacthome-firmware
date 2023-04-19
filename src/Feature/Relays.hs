@@ -67,7 +67,7 @@ relays outs = do
                          , shouldInit
                          , clock
                          , current
-                         , transmit = T.transmit_ transport
+                         , transmit = T.transmitBuffer transport
                          }
     addTask $ delay 10 "relays_manage" $ manage relays
     addTask $ delay  5 "relays_sync"   $ sync relays
@@ -127,7 +127,7 @@ syncRelays Relays{..} i =
         synced <- deref $ r ~> R.synced
         when (iNot synced) $ do
             msg <- R.message getRelays (i .% n)
-            transmit msg 
+            transmit msg
             store (r ~> R.synced) true
 
 
@@ -139,7 +139,7 @@ syncGroups Relays{..} i =
         synced <- deref $ g ~> G.synced
         when (iNot synced) $ do
             msg <- G.message getGroups (i .% n)
-            transmit msg 
+            transmit msg
             store (g ~> G.synced) true
 
 

@@ -161,7 +161,8 @@ receiveMessageLsbCRC m@Master{..} v = do
     let tidRx'  = tidRx ! toIx address'
     id         <- deref tidRx'
     let complete = do store tidRx' $ safeCast tmp'
-                      onMessage address' buff size' $ id /=? safeCast tmp'
+                      lookupMac table address' $ \rec ->
+                        onMessage (rec ~> T.mac) address' buff size' $ id /=? safeCast tmp'
     receiveLsbCRC m complete v
 
 

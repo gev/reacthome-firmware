@@ -9,7 +9,7 @@ import           Data.Value
 import           Interface.SystemClock
 import           Interface.UART
 import           Ivory.Language
-import qualified Protocol.UART.RBUS   as U
+import qualified Protocol.UART.RBUS    as U
 
 
 data RBUS where
@@ -23,8 +23,8 @@ data RBUS where
              , msgOffset     :: Buffer   32 Uint16
              , msgSize       :: Buffer   32 Uint16
              , msgQueue      :: Queue    32
-             , msgBuff       :: Buffer 1024 Uint16
+             , msgBuff       :: Buffer 4096 Uint16
              , msgIndex      :: Value       Uint16
-             , txBuff        :: Buffer 1024 Uint16
+             , txBuff        :: Buffer  512 Uint16
              , txLock        :: Value       IBool
              } -> RBUS

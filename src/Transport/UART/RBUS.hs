@@ -80,10 +80,12 @@ rbus uart' = do
 
     addInit rbusInit
 
-    addTask $ yeld    (name <> "_rx") $ rxTask rbus
-    addTask $ delay 1 (name <> "_tx") $ txTask rbus
+    addTask $ yeld (name <> "_rx") $ rxTask rbus
+    addTask $ yeld (name <> "_tx") $ txTask rbus
 
     pure rbus
 
 instance Transport RBUS where
-    transmit r b = toQueue r b . castDefault . fromIx
+    transmitFragment r b = toQueue r b . castDefault . fromIx
+
+    runTransmit = toQueue'

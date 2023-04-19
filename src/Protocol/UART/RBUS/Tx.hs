@@ -32,10 +32,18 @@ transmitMessage payload size' RBUS{..} transmit = do
     transmit =<< deref (crc ~> lsb)
 
 
-
--- transmit' :: KnownNat n
---           => Buffer n Uint8
---           -> (Uint8 -> Ivory (AllowBreak eff) ())
---           -> Ivory eff ()
--- transmit' buff transmit =
---     arrayMap $ \ix -> transmit =<< deref (buff ! ix)
+transmitMessage' :: (forall eff. (Uint8 -> forall eff. Ivory eff ()) -> Ivory eff ())
+                 -> RBUS n
+                 -> (Uint8 -> forall eff. Ivory eff ())
+                 -> Ivory (ProcEffects s ()) ()
+transmitMessage' run RBUS{..} transmit = do
+    crc <- local $ istruct initCRC16
+    let transmit' :: Uint8 -> Ivory eff ()
+        transmit' v = updateCRC16 crc v >> transmit v
+    transmit' $ message preamble
+    id <- deref tidTx
+    transmit' id
+    store tidTx $ id + 1
+    run transmit
+    transmit =<< deref (crc ~> msb)
+    transmit =<< deref (crc ~> lsb)
