@@ -32,7 +32,7 @@ transmitMessage payload size' RBUS{..} transmit = do
     transmit =<< deref (crc ~> lsb)
 
 
-transmitMessage' :: (forall eff. (Uint8 -> forall eff. Ivory eff ()) -> Ivory eff ())
+transmitMessage' :: ((Uint8 -> forall eff. Ivory eff ()) -> forall eff. Ivory eff ())
                  -> RBUS n
                  -> (Uint8 -> forall eff. Ivory eff ())
                  -> Ivory (ProcEffects s ()) ()

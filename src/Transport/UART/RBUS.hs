@@ -88,4 +88,5 @@ rbus uart' = do
 instance Transport RBUS where
     transmitFragment r b = toQueue r b . castDefault . fromIx
 
-    runTransmit = toQueue'
+instance LazyTransport RBUS where
+    lazyTransmit = toQueue'

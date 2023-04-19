@@ -103,5 +103,3 @@ rbus rs485 = do
 
 instance Transport RBUS where
     transmitFragment r b = toQueue r b . castDefault . fromIx
-
-    runTransmit = toQueue'

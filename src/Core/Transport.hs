@@ -9,12 +9,12 @@ import           GHC.TypeNats
 import           Ivory.Language
 
 
-class Transport t where
-
-    runTransmit      :: t
+class LazyTransport t where
+    lazyTransmit     :: t
                      -> ((Uint8 -> forall eff. Ivory eff ()) -> forall eff. Ivory eff ())
                      -> Ivory (ProcEffects s ()) ()
 
+class Transport t where
     transmitFragment :: KnownNat n
                      => t
                      -> Buffer n Uint8

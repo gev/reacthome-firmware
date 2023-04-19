@@ -37,7 +37,7 @@ import           Protocol.RS485.RBUS.Master.MacTable as M
 
 
 
-rbus :: (MonadWriter Context m, MonadReader (D.Domain p t) m, Transport t)
+rbus :: (MonadWriter Context m, MonadReader (D.Domain p t) m, LazyTransport t, Transport t)
      => [m RS485] -> m Feature
 rbus rs485 = do
     let n     = length rs485
@@ -45,7 +45,7 @@ rbus rs485 = do
     pure $ Feature rbus
 
 
-rbus' :: (MonadWriter Context m, MonadReader (D.Domain p t) m, Transport t)
+rbus' :: (MonadWriter Context m, MonadReader (D.Domain p t) m, LazyTransport t, Transport t)
      => m RS485 -> Int -> m RBUS
 rbus' rs485 index = do
     rs               <- rs485
@@ -77,7 +77,7 @@ rbus' rs485 index = do
 
     let onMessage mac address buff n shouldHandle = do
             when shouldHandle $ do
-                T.runTransmit transport $ \transmit -> do
+                T.lazyTransmit transport $ \transmit -> do
                     arrayMap $ \ix ->
                         transmit =<< deref (mac ! ix)
                     transmit $ fromIntegral index
