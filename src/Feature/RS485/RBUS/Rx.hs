@@ -1,4 +1,5 @@
 {-# LANGUAGE RecordWildCards #-}
+
 module Feature.RS485.RBUS.Rx where
 
 import           Data.Concurrent.Queue

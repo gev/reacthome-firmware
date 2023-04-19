@@ -1,5 +1,7 @@
 {-# LANGUAGE RankNTypes      #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use for_" #-}
 
 module Protocol.RS485.RBUS.Slave.Tx where
 
@@ -14,10 +16,11 @@ import           Util.CRC16
 
 transmitMessage :: KnownNat l
                 => Buffer l Uint8
+                -> Uint8
                 -> Slave n
                 -> (Uint8 -> forall eff. Ivory eff ())
                 -> Ivory (ProcEffects s ()) ()
-transmitMessage payload Slave{..} transmit = do
+transmitMessage payload size' Slave{..} transmit = do
     crc <- local $ istruct initCRC16
     let transmit' v = updateCRC16 crc v >> transmit v
     transmit' $ message txPreamble
@@ -25,8 +28,8 @@ transmitMessage payload Slave{..} transmit = do
     id <- deref tidTx
     transmit' id
     store tidTx $ id + 1
-    transmit' $ arrayLen payload
-    arrayMap $ \ix -> transmit' =<< deref (payload ! ix)
+    transmit' size'
+    for (toIx size') $ \ix -> transmit' =<< deref (payload ! ix)
     transmit =<< deref (crc ~> msb)
     transmit =<< deref (crc ~> lsb)
 

@@ -3,12 +3,14 @@
 {-# LANGUAGE FlexibleInstances  #-}
 {-# LANGUAGE NamedFieldPuns     #-}
 {-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE RankNTypes         #-}
 {-# LANGUAGE TypeOperators      #-}
 
 module Feature.RS485.RBUS where
 
-import           Control.Monad.Reader
-import           Control.Monad.Writer
+import           Control.Monad              (zipWithM)
+import           Control.Monad.Reader       (MonadReader, asks)
+import           Control.Monad.Writer       (MonadWriter)
 import           Core.Context
 import           Core.Controller
 import qualified Core.Domain                as D
@@ -28,6 +30,8 @@ import           Interface.MCU              (MCU (peripherals, systemClock))
 import           Interface.RS485
 import           Interface.SystemClock      (getSystemTime)
 import           Ivory.Language
+import           Ivory.Stdlib
+import           Protocol.RS485.RBUS        (broadcastAddress)
 import qualified Protocol.RS485.RBUS.Master as P
 
 
@@ -44,60 +48,56 @@ rbus rs485 = do
 rbus' :: (MonadWriter Context m, MonadReader (D.Domain p t) m, Transport t)
      => m RS485 -> Int -> m RBUS
 rbus' rs485 index = do
-    rs            <- rs485
+    rs               <- rs485
 
-    mcu           <- asks D.mcu
-    transport     <- asks D.transport
+    mcu              <- asks D.mcu
+    transport        <- asks D.transport
 
-    let name       = "feature_rs485_rbus_" <> show index
-    let clock      = systemClock mcu
+    let name          = "feature_rs485_rbus_" <> show index
+    let clock         = systemClock mcu
 
-    rs            <- rs485
-    rxBuff        <- buffer (name <> "_rx"            )
-    rxQueue       <- queue  (name <> "_rx"            )
-    msgOffset     <- buffer (name <> "_msg_offset"    )
-    msgSize       <- buffer (name <> "_msg_size"      )
-    msgTTL        <- buffer (name <> "_msg_ttl"       )
-    msgQueue      <- queue  (name <> "_msg"           )
-    msgBuff       <- buffer (name <> "_msg"           )
-    msgIndex      <- value  (name <> "_msg_index"     ) 0
-    txBuff        <- buffer (name <> "_tx"            )
-    txLock        <- value  (name <> "_tx_lock"       ) false
-    timestamp     <- value  (name <> "_timestamp"     ) 0
-    shouldConfirm <- value  (name <> "_should_confirm") false
+    rs               <- rs485
+    rxBuff           <- buffer (name <> "_rx"               )
+    rxQueue          <- queue  (name <> "_rx"               )
+    msgOffset        <- buffer (name <> "_msg_offset"       )
+    msgSize          <- buffer (name <> "_msg_size"         )
+    msgTTL           <- buffer (name <> "_msg_ttl"          )
+    msgQueue         <- queue  (name <> "_msg"              )
+    msgBuff          <- buffer (name <> "_msg"              )
+    msgIndex         <- value  (name <> "_msg_index"        ) 0
+    txBuff           <- buffer (name <> "_tx"               )
+    txLock           <- value  (name <> "_tx_lock"          ) false
+    timestamp        <- value  (name <> "_timestamp"        ) 0
+    shouldDiscovery  <- value  (name <> "_should_discovery" ) false
+    shouldConfirm    <- value  (name <> "_should_confirm"   ) false
+    shouldPing       <- value  (name <> "_should_ping"      ) true
+    discoveryAddress <- value  (name <> "_address_discovery") broadcastAddress
+    confirmAddress   <- value  (name <> "_address_confirm"  ) broadcastAddress
+    pingAddress      <- value  (name <> "_address_ping"     ) broadcastAddress
 
-
-    let onMessage buff n shouldHandle = do
+    let onMessage address buff n shouldHandle = do
             store timestamp =<< getSystemTime clock
-            -- when shouldHandle
+            when shouldHandle $ do
+                T.transmit transport buff $ toIx n
+            store confirmAddress address
             store shouldConfirm true
-
-    {-
-      TODO: Should make Init request here?
-      TODO: Should reset Tx queue when address has changed?
-    -}
-    let onDiscovery mac model version = do
-            store (txBuff ! 0) $ fromIntegral index
-            store (txBuff ! 1) =<< deref model
-            store (txBuff ! 2) =<< deref (version ~> major)
-            store (txBuff ! 3) =<< deref (version ~> minor)
-            -- T.transmit transport txBuff
-
-            store timestamp =<< getSystemTime clock
-            -- store shouldConfirm false
 
     let onConfirm = remove msgQueue
 
-    let onPing = remove msgQueue
+    let onPing mac address model version = remove msgQueue
 
+    let onDiscovery address = do
+            store discoveryAddress address
+            store shouldDiscovery true
 
     protocol <- P.master name onMessage onConfirm onDiscovery onPing
 
-    let rbus  = RBUS {index, clock, rs, protocol
+    let rbus = RBUS { index, clock, rs, protocol
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgTTL, msgQueue, msgBuff, msgIndex
                     , txBuff, txLock, timestamp
-                    , shouldConfirm
+                    , shouldDiscovery, shouldConfirm, shouldPing
+                    , discoveryAddress, confirmAddress, pingAddress
                     }
 
     addHandler $ HandleRS485 rs (rxHandle rbus) (txHandle rbus)
@@ -108,10 +108,11 @@ rbus' rs485 index = do
 
     addInit rbusInit
 
-    addTask $ yeld    (name <> "_rx") $ rxTask rbus
-    -- addTask $ delay 1 (name <> "_tx") $ txTask rbus
+    addTask $ yeld (name <> "_rx") $ rxTask rbus
+    addTask $ yeld (name <> "_tx") $ txTask rbus
 
     pure rbus
+
 
 
 instance Controller [RBUS]

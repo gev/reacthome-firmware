@@ -11,20 +11,25 @@ import           Protocol.RS485.RBUS.Master
 
 
 data RBUS = RBUS
-     { index         :: Int
-     , clock         :: SystemClock
-     , rs            :: RS485
-     , protocol      :: Master 255
-     , rxBuff        :: Buffer  64 Uint16
-     , rxQueue       :: Queue   64
-     , msgOffset     :: Buffer  32 Uint16
-     , msgSize       :: Buffer  32 Uint16
-     , msgTTL        :: Buffer  32 Uint8
-     , msgQueue      :: Queue   32
-     , msgBuff       :: Buffer 512 Uint16
-     , msgIndex      :: Value      Uint16
-     , txBuff        :: Buffer 255 Uint8
-     , txLock        :: Value      IBool
-     , timestamp     :: Value      Uint32
-     , shouldConfirm :: Value      IBool
+     { index            :: Int
+     , clock            :: SystemClock
+     , rs               :: RS485
+     , protocol         :: Master 255
+     , rxBuff           :: Buffer  64 Uint16
+     , rxQueue          :: Queue   64
+     , msgOffset        :: Buffer  32 Uint16
+     , msgSize          :: Buffer  32 Uint16
+     , msgTTL           :: Buffer  32 Uint8
+     , msgQueue         :: Queue   32
+     , msgBuff          :: Buffer 512 Uint16
+     , msgIndex         :: Value      Uint16
+     , txBuff           :: Buffer 255 Uint16
+     , txLock           :: Value      IBool
+     , timestamp        :: Value      Uint32
+     , shouldDiscovery  :: Value      IBool
+     , shouldConfirm    :: Value      IBool
+     , shouldPing       :: Value      IBool
+     , discoveryAddress :: Value      Uint8
+     , confirmAddress   :: Value      Uint8
+     , pingAddress      :: Value      Uint8
      }

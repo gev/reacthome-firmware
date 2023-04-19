@@ -33,7 +33,7 @@ data Slave n = Slave
     , address       :: Value       Uint8
     , state         :: Value       Uint8
     , phase         :: Value       Uint8
-    , index         :: Value       Uint8
+    , offset        :: Value       Uint8
     , size          :: Value       Uint8
     , buff          :: Buffer   n  Uint8
     , buffConf      :: Buffer   4  Uint8
@@ -70,7 +70,7 @@ slave id mac model version onMessage onConfirm onDiscovery = do
     address  <- value      (name <> "_address"   )   broadcastAddress
     state    <- value      (name <> "_state"     )   readyToReceive
     phase    <- value      (name <> "_phase"     )   waitingAddress
-    index    <- value      (name <> "_index"     )   0
+    offset   <- value      (name <> "_offset"     )   0
     size     <- value      (name <> "_size"      )   0
     buff     <- buffer     (name <> "_message"   )
     buffConf <- buffer     (name <> "_confirm_tx")
@@ -81,7 +81,7 @@ slave id mac model version onMessage onConfirm onDiscovery = do
     crc      <- makeCRC16  (name <> "_crc"       )
     tmp      <- value      (name <> "_tmp"       )   0
     let slave = Slave { name, mac, model, version, address
-                      , state, phase, index, size
+                      , state, phase, offset, size
                       , buff, buffConf, buffPing, buffDisc
                       , tidRx, tidTx, crc, tmp
                       , onMessage, onConfirm, onDiscovery

@@ -75,6 +75,7 @@ executable reacthome-firmware
                     , Formula.Echo
                     , Formula.Relay12
                     , Formula.Server
+                    , Formula.DimmerAC12
                     , Formula.DimmerDC12
                     , Formula.MixA6x6
 

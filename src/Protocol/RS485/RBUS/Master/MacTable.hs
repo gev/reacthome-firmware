@@ -30,8 +30,7 @@ type MacTableRecords n = Records n MacTableRecordStruct
 
 [ivory|
     struct mac_table_record
-    { port    :: Stored Uint8
-    ; address :: Stored Uint8
+    { address :: Stored Uint8
     ; mac     :: Array 6 (Stored Uint8)
     ; model   :: Uint8
     ; version :: Struct version_struct
@@ -51,8 +50,9 @@ data MacTable = MacTable
 macTable :: MonadWriter Context m => String -> Int -> m MacTable
 macTable id ports = do
     let name      = id <> "_table"
-    next  <- value    (name <> "_next"   ) 0
-    table <- records_ (name <> "_mac"    )
+    next  <- value    (name <> "_next") 0
+    table <- records_ (name <> "_mac" )
+    addStruct (Proxy :: Proxy MacTableRecordStruct)
     pure MacTable { name, next, table }
 
 
@@ -61,7 +61,7 @@ insertMac :: MacTable
           -> Mac
           -> Value Uint8
           -> Version
-          -> (forall eff. Uint8 -> Ivory eff ())
+          -> (forall s. Uint8 -> Ivory (ProcEffects s ()) ())
           -> Ivory (ProcEffects s ()) ()
 insertMac MacTable{..} mac' model' version' run = do
     address <- local $ ival 255
@@ -75,7 +75,6 @@ insertMac MacTable{..} mac' model' version' run = do
     address' <- deref address
     ifte_
         (address' ==? 255)
-        (run address')
         (do
             let address' = next'
             let rec' = table ! toIx address'
@@ -86,6 +85,7 @@ insertMac MacTable{..} mac' model' version' run = do
             store next $ next' + 1
             run address'
         )
+        (run address')
 
 
 
@@ -94,6 +94,6 @@ lookupMac :: MacTable
           -> (MacTableRecord -> Ivory eff ())
           -> Ivory eff ()
 lookupMac MacTable{..} address run = do
-    next' <- deref next
+    next'    <- deref next
     when (address <? next') $
         run $ table ! toIx address

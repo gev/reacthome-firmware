@@ -46,10 +46,10 @@ transmit RBUS{..} size = do
 
 
 
-toQueue :: KnownNat l => RBUS -> Buffer l Uint8 -> Ivory (ProcEffects s ()) ()
-toQueue RBUS{..} buff = push msgQueue $ \i -> do
+toQueue :: KnownNat l => RBUS -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
+toQueue RBUS{..} buff size' = push msgQueue $ \i -> do
     index <- deref msgIndex
-    size <- run protocol (transmitMessage buff) msgBuff index
+    size <- run protocol (transmitMessage buff size') msgBuff index
     store msgIndex $ index + size
     let ix = toIx i
     store (msgOffset ! ix) index
