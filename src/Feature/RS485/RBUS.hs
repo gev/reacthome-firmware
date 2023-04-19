@@ -90,7 +90,16 @@ rbus' rs485 index = do
 
     let onConfirm = remove msgQueue
 
-    let onPing mac address model version = remove msgQueue
+    let onPing mac address model version = do
+            T.lazyTransmit transport $ \transmit -> do
+                arrayMap $ \ix ->
+                    transmit =<< deref (mac ! ix)
+                transmit $ fromIntegral index
+                transmit address
+                transmit 0xf0
+                transmit =<< deref model
+                transmit =<< deref (version ~> major)
+                transmit =<< deref (version ~> minor)
 
     let onDiscovery address = do
             store discoveryAddress address
