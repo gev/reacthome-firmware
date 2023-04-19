@@ -43,7 +43,7 @@ data Master n = Master
     , onMessage     :: Mac -> Uint8 -> Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ()
     , onConfirm     :: forall eff. Ivory eff ()
     , onDiscovery   :: Uint8 -> forall s. Ivory (ProcEffects s ()) ()
-    , onPing        :: forall eff. Mac -> Uint8 -> Value Uint8 -> Version -> Ivory eff ()
+    , onPing        :: Mac -> Uint8 -> Value Uint8 -> Version -> forall s. Ivory (ProcEffects s ()) ()
     }
 
 
@@ -59,7 +59,7 @@ master :: (MonadWriter Context m, KnownNat n)
        -> (Mac -> Uint8 -> Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ())
        -> (forall eff. Ivory eff ())
        -> (Uint8 -> forall s. Ivory (ProcEffects s ()) ())
-       -> (forall eff. Mac -> Uint8 -> Value Uint8 -> Version -> Ivory eff ())
+       -> (Mac -> Uint8 -> Value Uint8 -> Version -> forall s. Ivory (ProcEffects s ()) ())
        -> m (Master n)
 master id onMessage onConfirm onDiscovery onPing = do
     let name = id <> "_protocol_master"

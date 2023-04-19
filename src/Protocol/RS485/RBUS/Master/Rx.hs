@@ -96,7 +96,7 @@ receivePing = runState phase
     , waitingLsbCRC    |-> receivePingLsbCRC
     ]
 
-receivePingLsbCRC :: Master n -> Uint8 -> Ivory eff ()
+receivePingLsbCRC :: Master n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receivePingLsbCRC m@Master{..} = receiveLsbCRC m $ do
     address' <- deref address
     lookupMac table address' $ \rec ->
