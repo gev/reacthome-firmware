@@ -86,4 +86,4 @@ rbus uart' = do
     pure rbus
 
 instance Transport RBUS where
-    transmit = toQueue
+    transmit r b = toQueue r b . castDefault . fromIx

@@ -85,8 +85,7 @@ receiveDiscoveryMinorVersion Master{..} v = do
 
 receiveDiscoveryLsbCRC :: Master n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receiveDiscoveryLsbCRC m@Master{..} = receiveLsbCRC m $
-    insertMac table mac model version $ \address -> do
-        onDiscovery mac address model version
+    insertMac table mac model version onDiscovery
 
 
 
@@ -154,7 +153,7 @@ receiveMessageData Master{..} v = do
     when (i ==? s)
          (store phase waitingMsbCRC)
 
-receiveMessageLsbCRC :: Master n -> Uint8 -> Ivory (ProcEffects s ()) ()
+receiveMessageLsbCRC :: KnownNat n => Master n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receiveMessageLsbCRC m@Master{..} v = do
     tmp'       <- deref tmp
     size'      <- deref size
@@ -162,7 +161,7 @@ receiveMessageLsbCRC m@Master{..} v = do
     let tidRx'  = tidRx ! toIx address'
     id         <- deref tidRx'
     let complete = do store tidRx' $ safeCast tmp'
-                      onMessage buff size' $ id /=? safeCast tmp'
+                      onMessage address' buff size' $ id /=? safeCast tmp'
     receiveLsbCRC m complete v
 
 

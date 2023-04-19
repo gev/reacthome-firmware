@@ -40,9 +40,9 @@ data Master n = Master
     , crc           :: Record      CRC16
     , tmp           :: Value       Uint8
     , table         :: MacTable
-    , onMessage     :: Buffer   n  Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ()
+    , onMessage     :: Uint8 -> Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ()
     , onConfirm     :: forall eff. Ivory eff ()
-    , onDiscovery   :: Mac -> Uint8 -> Value Uint8 -> Version -> forall s. Ivory (ProcEffects s ()) ()
+    , onDiscovery   :: Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     , onPing        :: forall eff. Mac -> Uint8 -> Value Uint8 -> Version -> Ivory eff ()
     }
 
@@ -56,9 +56,9 @@ txPreamble = preambleMaster
 
 master :: (MonadWriter Context m, KnownNat n)
        => String
-       -> (Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ())
+       -> (Uint8 -> Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ())
        -> (forall eff. Ivory eff ())
-       -> (Mac -> Uint8 -> Value Uint8 -> Version -> forall s. Ivory (ProcEffects s ()) ())
+       -> (Uint8 -> forall s. Ivory (ProcEffects s ()) ())
        -> (forall eff. Mac -> Uint8 -> Value Uint8 -> Version -> Ivory eff ())
        -> m (Master n)
 master id onMessage onConfirm onDiscovery onPing = do

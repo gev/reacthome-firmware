@@ -1,5 +1,7 @@
 {-# LANGUAGE RankNTypes      #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use for_" #-}
 
 module Protocol.UART.RBUS.Tx where
 
@@ -12,10 +14,11 @@ import           Util.CRC16
 
 transmitMessage :: KnownNat l
                 => Buffer l Uint8
+                -> Uint8
                 -> RBUS n
                 -> (Uint8 -> forall eff. Ivory eff ())
                 -> Ivory (ProcEffects s ()) ()
-transmitMessage payload RBUS{..} transmit = do
+transmitMessage payload size' RBUS{..} transmit = do
     crc <- local $ istruct initCRC16
     let transmit' :: Uint8 -> Ivory eff ()
         transmit' v = updateCRC16 crc v >> transmit v
@@ -23,16 +26,16 @@ transmitMessage payload RBUS{..} transmit = do
     id <- deref tidTx
     transmit' id
     store tidTx $ id + 1
-    transmit' $ arrayLen payload
-    arrayMap $ \ix -> transmit' =<< deref (payload ! ix)
+    transmit' size'
+    for (toIx size') $ \ix -> transmit' =<< deref (payload ! ix)
     transmit =<< deref (crc ~> msb)
     transmit =<< deref (crc ~> lsb)
 
 
 
-transmit' :: KnownNat n
-          => Buffer n Uint8
-          -> (Uint8 -> Ivory (AllowBreak eff) ())
-          -> Ivory eff ()
-transmit' buff transmit =
-    arrayMap $ \ix -> transmit =<< deref (buff ! ix)
+-- transmit' :: KnownNat n
+--           => Buffer n Uint8
+--           -> (Uint8 -> Ivory (AllowBreak eff) ())
+--           -> Ivory eff ()
+-- transmit' buff transmit =
+--     arrayMap $ \ix -> transmit =<< deref (buff ! ix)

@@ -26,6 +26,7 @@ data Echo = Echo
     { buff     :: Buffer 10 Uint8
     , transmit :: forall n s. KnownNat n
                => Buffer n Uint8
+               -> Ix n
                -> Ivory (ProcEffects s ()) ()
     }
 
@@ -43,10 +44,10 @@ echo = do
 
 
 echoTask :: Echo -> Task
-echoTask Echo{..} = delay 100 "echo_tx" $ transmit buff
+echoTask Echo{..} = delay 100 "echo_tx" $ transmit buff $ arrayLen buff
 
 
 instance Controller Echo where
     handle Echo{..} request n = do
-        pure [ true ==> transmit request
+        pure [ true ==> transmit request (toIx n)
              ]

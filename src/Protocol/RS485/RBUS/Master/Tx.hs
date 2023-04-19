@@ -9,6 +9,7 @@ import           Interface.Mac
 import           Ivory.Language
 import           Protocol.RS485.RBUS
 import           Protocol.RS485.RBUS.Master
+import           Protocol.RS485.RBUS.Master.MacTable as T
 import           Util.CRC16
 
 
@@ -32,15 +33,14 @@ transmitMessage address' payload Master{..} =
 
 
 
-transmitDiscovery :: Mac
-                  -> Uint8
+transmitDiscovery :: Uint8
                   -> Master n
                   -> (Uint8 -> forall eff. Ivory eff ())
                   -> Ivory (ProcEffects s ()) ()
-transmitDiscovery mac' address' m =
-    run $ \transmit -> do
+transmitDiscovery address' Master{..} =
+    run $ \transmit -> lookupMac table address' $ \rec -> do
         transmit $ discovery txPreamble
-        arrayMap $ \ix -> transmit =<< deref (mac' ! ix)
+        arrayMap $ \ix -> transmit =<< deref (rec ~> T.mac ! ix)
         transmit address'
 
 

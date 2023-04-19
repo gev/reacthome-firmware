@@ -75,7 +75,6 @@ insertMac MacTable{..} mac' model' version' run = do
     address' <- deref address
     ifte_
         (address' ==? 255)
-        (run address')
         (do
             let address' = next'
             let rec' = table ! toIx address'
@@ -86,6 +85,7 @@ insertMac MacTable{..} mac' model' version' run = do
             store next $ next' + 1
             run address'
         )
+        (run address')
 
 
 
