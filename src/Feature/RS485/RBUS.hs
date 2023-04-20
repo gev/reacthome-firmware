@@ -158,7 +158,7 @@ transmitRBUS list buff size = do
                 address <- deref $ buff ! 8
                 let macTable = P.table protocol
                 lookupMac macTable address $ \rec -> do
-                    found    <- local $ ival true
+                    found <- local $ ival true
                     let mac'  = rec ~> mac
                     arrayMap $ \ix -> do
                         m1 <- deref $ mac' ! ix
@@ -166,7 +166,7 @@ transmitRBUS list buff size = do
                         when (m1 /=? m1) $ do
                             store found false
                             breakOut
-                    found'   <- deref found
+                    found' <- deref found
                     when found' $
                         toQueue r address buff 9 (size - 9)
     zipWithM_ run list (iterate (+1) 1)
