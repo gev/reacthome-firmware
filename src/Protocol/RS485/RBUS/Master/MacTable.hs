@@ -94,6 +94,6 @@ lookupMac :: MacTable
           -> (MacTableRecord -> Ivory eff ())
           -> Ivory eff ()
 lookupMac MacTable{..} address run = do
-    next'    <- deref next
+    next' <- deref next
     when (address <? next') $
         run $ table ! toIx address

@@ -7,6 +7,7 @@ import           Data.Buffer
 import           GHC.TypeNats
 import           Interface.Mac
 import           Ivory.Language
+import           Ivory.Language.Array                (IxRep)
 import           Protocol.RS485.RBUS
 import           Protocol.RS485.RBUS.Master
 import           Protocol.RS485.RBUS.Master.MacTable as T
@@ -17,10 +18,12 @@ import           Util.CRC16
 transmitMessage :: KnownNat l
                 => Uint8
                 -> Buffer l Uint8
+                -> Ix l
+                -> Uint8
                 -> Master n
                 -> (Uint8 -> forall eff. Ivory eff ())
                 -> Ivory (ProcEffects s ()) ()
-transmitMessage address' payload Master{..} =
+transmitMessage address' payload' offset' size' Master{..} =
     run $ \transmit -> do
         transmit $ message txPreamble
         transmit address'
@@ -28,8 +31,8 @@ transmitMessage address' payload Master{..} =
         id <- deref tidTx'
         transmit id
         store tidTx' $ id + 1
-        transmit $ arrayLen payload
-        arrayMap $ \ix -> transmit =<< deref (payload ! ix)
+        transmit size'
+        arrayMap $ \ix -> transmit =<< deref (payload' ! (offset' + ix))
 
 
 

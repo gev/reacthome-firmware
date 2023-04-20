@@ -96,10 +96,16 @@ toRS transmit r@RBUS{..} = do
 {--
     TODO: potential message overwriting in the msgBuff
 --}
-toQueue :: KnownNat l => RBUS -> Uint8 -> Buffer l Uint8 -> Ivory (ProcEffects s ()) ()
-toQueue RBUS{..} address buff = push msgQueue $ \i -> do
+toQueue :: KnownNat l
+        => RBUS
+        -> Uint8
+        -> Buffer l Uint8
+        -> Ix l
+        -> Uint8
+        -> Ivory (ProcEffects s ()) ()
+toQueue RBUS{..} address buff offset size = push msgQueue $ \i -> do
     index <- deref msgIndex
-    size <- run protocol (transmitMessage address buff) msgBuff index
+    size <- run protocol (transmitMessage address buff offset size) msgBuff index
     store msgIndex $ index + size
     let ix = toIx i
     store (msgOffset ! ix) index
