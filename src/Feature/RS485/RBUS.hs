@@ -157,6 +157,16 @@ transmitRBUS list buff size = do
             when (p ==? port) $ do
                 address <- deref $ buff ! 8
                 let macTable = P.table protocol
-                lookupMac macTable address $ \rec ->
-                    toQueue r address buff 9 (size - 9)
+                lookupMac macTable address $ \rec -> do
+                    found    <- local $ ival true
+                    found'   <- deref found
+                    let mac'  = rec ~> mac
+                    arrayMap $ \ix -> do
+                        m1 <- deref $ mac' ! ix
+                        m2 <- deref $ buff ! toIx (1 + fromIx ix)
+                        when (m1 /=? m1) $ do
+                            store found false
+                            breakOut
+                    when found' $
+                        toQueue r address buff 9 (size - 9)
     zipWithM_ run list (iterate (+1) 1)
