@@ -41,7 +41,7 @@ data Master n = Master
     , tmp           :: Value       Uint8
     , table         :: MacTable
     , onMessage     :: Mac -> Uint8 -> Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ()
-    , onConfirm     :: forall eff. Ivory eff ()
+    , onConfirm     :: Uint8 -> forall eff. Ivory eff ()
     , onDiscovery   :: Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     , onPing        :: Mac -> Uint8 -> Value Uint8 -> Version -> forall s. Ivory (ProcEffects s ()) ()
     }
@@ -57,7 +57,7 @@ txPreamble = preambleMaster
 master :: (MonadWriter Context m, KnownNat n)
        => String
        -> (Mac -> Uint8 -> Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ())
-       -> (forall eff. Ivory eff ())
+       -> (Uint8 -> forall eff. Ivory eff ())
        -> (Uint8 -> forall s. Ivory (ProcEffects s ()) ())
        -> (Mac -> Uint8 -> Value Uint8 -> Version -> forall s. Ivory (ProcEffects s ()) ())
        -> m (Master n)

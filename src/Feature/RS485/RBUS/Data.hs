@@ -7,6 +7,7 @@ import           Data.Value
 import           Interface.RS485
 import           Interface.SystemClock
 import           Ivory.Language
+import           Protocol.RS485.RBUS        (Preamble (confirm))
 import           Protocol.RS485.RBUS.Master
 
 
@@ -21,6 +22,7 @@ data RBUS = RBUS
      , msgSize          :: Buffer  32 Uint16
      , msgTTL           :: Buffer  32 Uint8
      , msgQueue         :: Queue   32
+     , msgConfirm       :: Values 255 IBool
      , msgBuff          :: Buffer 512 Uint16
      , msgIndex         :: Value      Uint16
      , txBuff           :: Buffer 255 Uint16

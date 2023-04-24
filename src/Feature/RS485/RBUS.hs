@@ -67,6 +67,7 @@ rbus' rs485 index = do
     rxQueue          <- queue  (name <> "_rx"               )
     msgOffset        <- buffer (name <> "_msg_offset"       )
     msgSize          <- buffer (name <> "_msg_size"         )
+    msgConfirm       <- values (name <> "_msg_confirm"      ) (replicate 255 false)
     msgTTL           <- buffer (name <> "_msg_ttl"          )
     msgQueue         <- queue  (name <> "_msg"              )
     msgBuff          <- buffer (name <> "_msg"              )
@@ -94,7 +95,7 @@ rbus' rs485 index = do
             store confirmAddress address
             store shouldConfirm true
 
-    let onConfirm = remove msgQueue
+    let onConfirm address = remove msgQueue
 
     let onPing mac address model version = do
             T.lazyTransmit transport $ \transmit -> do
@@ -116,7 +117,7 @@ rbus' rs485 index = do
 
     let rbus = RBUS { index, clock, rs, protocol
                     , rxBuff, rxQueue
-                    , msgOffset, msgSize, msgTTL, msgQueue, msgBuff, msgIndex
+                    , msgOffset, msgSize, msgConfirm, msgTTL, msgQueue, msgBuff, msgIndex
                     , txBuff, txLock, timestamp
                     , shouldDiscovery, shouldConfirm, shouldPing
                     , discoveryAddress, confirmAddress, pingAddress
@@ -130,8 +131,8 @@ rbus' rs485 index = do
 
     addInit rbusInit
 
-    addTask $ yeld (name <> "_rx") $ rxTask rbus
-    addTask $ yeld (name <> "_tx") $ txTask rbus
+    addTask $ yeld    (name <> "_rx") $ rxTask rbus
+    addTask $ delay 1 (name <> "_tx") $ txTask rbus
 
     pure rbus
 
