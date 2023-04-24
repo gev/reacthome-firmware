@@ -70,7 +70,7 @@ slave id mac model version onMessage onConfirm onDiscovery = do
     address  <- value      (name <> "_address"   )   broadcastAddress
     state    <- value      (name <> "_state"     )   readyToReceive
     phase    <- value      (name <> "_phase"     )   waitingAddress
-    offset   <- value      (name <> "_offset"     )   0
+    offset   <- value      (name <> "_offset"    )   0
     size     <- value      (name <> "_size"      )   0
     buff     <- buffer     (name <> "_message"   )
     buffConf <- buffer     (name <> "_confirm_tx")
