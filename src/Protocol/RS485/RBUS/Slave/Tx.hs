@@ -16,11 +16,10 @@ import           Util.CRC16
 
 transmitMessage :: KnownNat l
                 => Buffer l Uint8
-                -> Uint8
                 -> Slave n
                 -> (Uint8 -> forall eff. Ivory eff ())
                 -> Ivory (ProcEffects s ()) ()
-transmitMessage payload size' Slave{..} transmit = do
+transmitMessage payload Slave{..} transmit = do
     crc <- local $ istruct initCRC16
     let transmit' v = updateCRC16 crc v >> transmit v
     transmit' $ message txPreamble
@@ -28,8 +27,8 @@ transmitMessage payload size' Slave{..} transmit = do
     id <- deref tidTx
     transmit' id
     store tidTx $ id + 1
-    transmit' size'
-    for (toIx size') $ \ix -> transmit' =<< deref (payload ! ix)
+    transmit' $ arrayLen payload
+    arrayMap $ \ix -> transmit' =<< deref (payload ! ix)
     transmit =<< deref (crc ~> msb)
     transmit =<< deref (crc ~> lsb)
 
