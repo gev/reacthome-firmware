@@ -112,11 +112,9 @@ receiveConfirm = runState phase
     ]
 
 receiveConfirmLsbCRC :: Master n -> Uint8 -> Ivory eff ()
-receiveConfirmLsbCRC r =
-    {-
-        TODO: use registered, model, version and address
-    -}
-    receiveLsbCRC r $ onConfirm r
+receiveConfirmLsbCRC m@Master{..} = receiveLsbCRC m $ do
+    address' <- deref address
+    onConfirm address'
 
 
 
