@@ -32,7 +32,7 @@ transmitMessage address' payload' offset' size' Master{..} =
         transmit id
         store tidTx' $ id + 1
         transmit size'
-        arrayMap $ \ix -> transmit =<< deref (payload' ! (offset' + ix))
+        for (toIx size') $ \ix -> transmit =<< deref (payload' ! (offset' + ix))
 
 
 
