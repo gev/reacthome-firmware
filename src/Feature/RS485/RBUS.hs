@@ -84,11 +84,11 @@ rbus' rs485 index = do
     let onMessage mac address buff n shouldHandle = do
             when shouldHandle $ do
                 T.lazyTransmit transport $ \transmit -> do
+                    transmit (8 + n)
                     arrayMap $ \ix ->
                         transmit =<< deref (mac ! ix)
                     transmit $ fromIntegral index
                     transmit address
-                    transmit n
                     for (toIx n) $ \ix ->
                         transmit =<< deref (buff ! ix)
             store confirmAddress address
@@ -98,6 +98,7 @@ rbus' rs485 index = do
 
     let onPing mac address model version = do
             T.lazyTransmit transport $ \transmit -> do
+                transmit 12
                 arrayMap $ \ix ->
                     transmit =<< deref (mac ! ix)
                 transmit $ fromIntegral index

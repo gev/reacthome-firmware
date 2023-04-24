@@ -58,11 +58,7 @@ rbus uart' = do
     {--
         TODO: move dispatcher outside
     --}
-    let dispatch = makeDispatcher features
-
-    let onMessage buff n shouldHandle = do
-            when shouldHandle $ dispatch buff n
-
+    let onMessage = makeDispatcher features
 
     protocol <- U.rbus name onMessage
 

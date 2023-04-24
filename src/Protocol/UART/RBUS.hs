@@ -39,23 +39,21 @@ waitingLsbCRC       = 0x05 :: Uint8
 
 data RBUS n = RBUS
     { name          :: String
-    , state         :: Value     Uint8
-    , phase         :: Value     Uint8
-    , index         :: Value     Uint8
-    , size          :: Value     Uint8
-    , buff          :: Buffer  n Uint8
-    , tidRx         :: Value     Sint16
-    , tidTx         :: Value     Uint8
-    , crc           :: Record    CRC16
-    , tmp           :: Value     Uint8
-    , onMessage     :: Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ()
+    , state         :: Value    Uint8
+    , phase         :: Value    Uint8
+    , index         :: Value    Uint8
+    , size          :: Value    Uint8
+    , buff          :: Buffer n Uint8
+    , crc           :: Record   CRC16
+    , tmp           :: Value    Uint8
+    , onMessage     :: Buffer n Uint8 -> Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
 
 
 
 rbus :: (MonadWriter Context m, KnownNat n)
       => String
-      -> (Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ())
+      -> (Buffer n Uint8 -> Uint8 -> forall s. Ivory (ProcEffects s ()) ())
       -> m (RBUS n)
 rbus id onMessage = do
     let name = id <> "_protocol"
@@ -64,12 +62,10 @@ rbus id onMessage = do
     index    <- value      (name <> "_index"     )   0
     size     <- value      (name <> "_size"      )   0
     buff     <- buffer     (name <> "_message"   )
-    tidRx    <- value      (name <> "_tid_rx"    ) (-1)
-    tidTx    <- value      (name <> "_tid_tx"    )   0
     crc      <- makeCRC16  (name <> "_crc"       )
     tmp      <- value      (name <> "_tmp"       )   0
     let rbus  = RBUS { name, state, phase, index, size
-                     , buff, tidRx, tidTx, crc, tmp
+                     , buff, crc, tmp
                      , onMessage
                      }
     pure rbus
