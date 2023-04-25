@@ -39,11 +39,12 @@ import           Ivory.Stdlib
 import           Protocol.RS485.RBUS                 (broadcastAddress)
 import qualified Protocol.RS485.RBUS.Master          as P
 import           Protocol.RS485.RBUS.Master.MacTable as M
+import           Protocol.RS485.RBUS.Master.Rx
 import           Protocol.RS485.RBUS.Master.Tx       (transmitMessage)
 
 
 
-rbus :: (MonadWriter Context m, MonadReader (D.Domain p t) m, LazyTransport t, Transport t)
+rbus :: (MonadWriter Context m, MonadReader (D.Domain p t) m, LazyTransport t)
      => [m RS485] -> m Feature
 rbus rs485 = do
     let n   = length rs485
@@ -51,7 +52,7 @@ rbus rs485 = do
     pure $ Feature list
 
 
-rbus' :: (MonadWriter Context m, MonadReader (D.Domain p t) m, LazyTransport t, Transport t)
+rbus' :: (MonadWriter Context m, MonadReader (D.Domain p t) m, LazyTransport t)
      => m RS485 -> Int -> m RBUS
 rbus' rs485 index = do
     rs               <- rs485
@@ -75,7 +76,7 @@ rbus' rs485 index = do
     txBuff           <- buffer (name <> "_tx"               )
     rxLock           <- value  (name <> "_rx_lock"          ) false
     txLock           <- value  (name <> "_tx_lock"          ) false
-    timestamp        <- value  (name <> "_timestamp"        ) 0
+    rxTimestamp      <- value  (name <> "_timestamp_rx"     ) 0
     shouldDiscovery  <- value  (name <> "_should_discovery" ) false
     shouldConfirm    <- value  (name <> "_should_confirm"   ) false
     shouldPing       <- value  (name <> "_should_ping"      ) true
@@ -121,7 +122,9 @@ rbus' rs485 index = do
     let rbus = RBUS { index, clock, rs, protocol
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgConfirm, msgTTL, msgQueue, msgBuff, msgIndex
-                    , txBuff, rxLock,  txLock, timestamp
+                    , txBuff
+                    , rxLock, txLock
+                    , rxTimestamp
                     , shouldDiscovery, shouldConfirm, shouldPing
                     , discoveryAddress, confirmAddress, pingAddress
                     }
@@ -134,10 +137,21 @@ rbus' rs485 index = do
 
     addInit rbusInit
 
-    addTask $ yeld    (name <> "_rx") $ rxTask rbus
-    addTask $ delay 1 (name <> "_tx") $ txTask rbus
+    addTask $ yeld    (name <> "_rx"   ) $ rxTask    rbus
+    addTask $ delay 1 (name <> "_tx"   ) $ txTask    rbus
+    addTask $ yeld    (name <> "_reset") $ resetTask rbus
 
     pure rbus
+
+
+
+resetTask :: RBUS -> Ivory eff ()
+resetTask RBUS{..} = do
+    t0 <- deref rxTimestamp
+    t1 <- getSystemTime clock
+    when (t1 - t0 >? 0) $ do
+        reset protocol
+        store rxLock false
 
 
 

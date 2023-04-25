@@ -3,6 +3,7 @@
 {-# LANGUAGE NamedFieldPuns     #-}
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE RankNTypes         #-}
+{-# LANGUAGE RecordWildCards    #-}
 {-# LANGUAGE TypeOperators      #-}
 
 module Transport.UART.RBUS    where
@@ -28,6 +29,7 @@ import           Interface.UART           (HandleUART (HandleUART),
 import           Ivory.Language
 import           Ivory.Stdlib
 import qualified Protocol.UART.RBUS       as U
+import           Protocol.UART.RBUS.Rx
 import           Transport.UART.RBUS.Data
 import           Transport.UART.RBUS.Rx
 import           Transport.UART.RBUS.Tx
@@ -45,15 +47,16 @@ rbus uart' = do
     let clock      = systemClock mcu
 
     uart         <- uart' $ peripherals mcu
-    rxBuff        <- buffer (name <> "_rx"        )
-    rxQueue       <- queue  (name <> "_rx"        )
-    msgOffset     <- buffer (name <> "_msg_offset")
-    msgSize       <- buffer (name <> "_msg_size"  )
-    msgQueue      <- queue  (name <> "_msg"       )
-    msgBuff       <- buffer (name <> "_msg"       )
-    msgIndex      <- value  (name <> "_msg_index" ) 0
-    txBuff        <- buffer (name <> "_tx"        )
-    txLock        <- value  (name <> "_tx_lock"   ) false
+    rxBuff        <- buffer (name <> "_rx"          )
+    rxQueue       <- queue  (name <> "_rx"          )
+    msgOffset     <- buffer (name <> "_msg_offset"  )
+    msgSize       <- buffer (name <> "_msg_size"    )
+    msgQueue      <- queue  (name <> "_msg"         )
+    msgBuff       <- buffer (name <> "_msg"         )
+    msgIndex      <- value  (name <> "_msg_index"   ) 0
+    txBuff        <- buffer (name <> "_tx"          )
+    txLock        <- value  (name <> "_tx_lock"     ) false
+    rxTimestamp   <- value  (name <> "_timestamp_rx") 0
 
     {--
         TODO: move dispatcher outside
@@ -65,7 +68,9 @@ rbus uart' = do
     let rbus = RBUS { name, clock, uart, protocol
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgQueue, msgBuff, msgIndex
-                    , txBuff, txLock
+                    , txBuff
+                    , txLock
+                    , rxTimestamp
                     }
 
     addHandler $ HandleUART uart (rxHandle rbus) (txHandle rbus) Nothing
@@ -76,10 +81,21 @@ rbus uart' = do
 
     addInit rbusInit
 
-    addTask $ yeld (name <> "_rx") $ rxTask rbus
-    addTask $ yeld (name <> "_tx") $ txTask rbus
+    addTask $ yeld (name <> "_rx"   ) $ rxTask    rbus
+    addTask $ yeld (name <> "_tx"   ) $ txTask    rbus
+    addTask $ yeld (name <> "_reset") $ resetTask rbus
 
     pure rbus
+
+
+
+resetTask :: RBUS -> Ivory eff ()
+resetTask RBUS{..} = do
+    t0 <- deref rxTimestamp
+    t1 <- getSystemTime clock
+    when (t1 - t0 >? 0) $ reset protocol
+
+
 
 instance Transport RBUS where
     transmitFragment r b = toQueue r b . castDefault . fromIx

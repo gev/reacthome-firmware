@@ -3,15 +3,16 @@
 {-# LANGUAGE NamedFieldPuns     #-}
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE RankNTypes         #-}
+{-# LANGUAGE RecordWildCards    #-}
 {-# LANGUAGE TypeOperators      #-}
 
 module Transport.RS485.RBUS    where
 
-import           Control.Monad.Reader      (MonadReader, asks)
-import           Control.Monad.Writer      (MonadWriter)
+import           Control.Monad.Reader         (MonadReader, asks)
+import           Control.Monad.Writer         (MonadWriter)
 import           Core.Context
 import           Core.Dispatcher
-import qualified Core.Domain               as D
+import qualified Core.Domain                  as D
 import           Core.Handler
 import           Core.Task
 import           Core.Transport
@@ -19,12 +20,14 @@ import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Data.Value
 import           Interface.Mac
-import           Interface.MCU             (MCU (peripherals, systemClock), mac)
+import           Interface.MCU                (MCU (peripherals, systemClock),
+                                               mac)
 import           Interface.RS485
-import           Interface.SystemClock     (getSystemTime)
+import           Interface.SystemClock        (getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Protocol.RS485.RBUS.Slave (slave)
+import           Protocol.RS485.RBUS.Slave    (slave)
+import           Protocol.RS485.RBUS.Slave.Rx
 import           Transport.RS485.RBUS.Data
 import           Transport.RS485.RBUS.Rx
 import           Transport.RS485.RBUS.Tx
@@ -56,8 +59,9 @@ rbus rs485 = do
     initBuff      <- values (name <> "_init_request"  ) [0xf2]
     rxLock        <- value  (name <> "_rx_lock"       ) false
     txLock        <- value  (name <> "_tx_lock"       ) false
-    timestamp     <- value  (name <> "_timestamp"     ) 0
-    timestamp'    <- value  (name <> "_timestamp_"    ) 0
+    rxTimestamp   <- value  (name <> "_timestamp_rx"  ) 0
+    txTimestamp   <- value  (name <> "_timestamp_tx"  ) 0
+    initTimestamp <- value  (name <> "_timestamp_init") 0
     shouldConfirm <- value  (name <> "_should_confirm") false
 
     {--
@@ -66,7 +70,7 @@ rbus rs485 = do
     let dispatch = makeDispatcher features
 
     let onMessage buff n shouldHandle = do
-            store timestamp =<< getSystemTime clock
+            store txTimestamp =<< getSystemTime clock
             when shouldHandle $ dispatch buff n
             store shouldConfirm true
 
@@ -75,7 +79,7 @@ rbus rs485 = do
       TODO: Should reset Tx queue when address has changed?
     -}
     let onDiscovery = do
-            store timestamp =<< getSystemTime clock
+            store txTimestamp =<< getSystemTime clock
             store shouldConfirm false
 
     let onConfirm = remove msgQueue
@@ -87,7 +91,9 @@ rbus rs485 = do
     let rbus = RBUS { clock, rs, protocol
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgTTL, msgQueue, msgBuff, msgIndex
-                    , txBuff, initBuff, rxLock, txLock, timestamp, timestamp'
+                    , txBuff, initBuff
+                    , rxLock, txLock
+                    , rxTimestamp, txTimestamp, initTimestamp
                     , shouldConfirm, shouldInit
                     }
 
@@ -99,10 +105,21 @@ rbus rs485 = do
 
     addInit rbusInit
 
-    addTask $ yeld    (name <> "_rx") $ rxTask rbus
-    addTask $ delay 1 (name <> "_tx") $ txTask rbus
+    addTask $ yeld    (name <> "_rx"   ) $ rxTask    rbus
+    addTask $ delay 1 (name <> "_tx"   ) $ txTask    rbus
+    addTask $ yeld    (name <> "_reset") $ resetTask rbus
 
     pure rbus
+
+
+resetTask :: RBUS -> Ivory eff ()
+resetTask RBUS{..} = do
+    t0 <- deref rxTimestamp
+    t1 <- getSystemTime clock
+    when (t1 - t0 >? 0) $ do
+        reset protocol
+        store rxLock false
+
 
 instance Transport RBUS where
     transmitBuffer = toQueue

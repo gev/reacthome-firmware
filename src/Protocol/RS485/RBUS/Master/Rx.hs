@@ -1,6 +1,9 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Protocol.RS485.RBUS.Master.Rx (receive) where
+module Protocol.RS485.RBUS.Master.Rx
+    ( receive
+    , reset
+    ) where
 
 import           Core.FSM
 import           Core.Version
@@ -180,9 +183,14 @@ receiveMsbCRC Master{..} v = do
     store phase waitingLsbCRC
 
 receiveLsbCRC :: Master n -> Ivory eff () -> Uint8 -> Ivory eff ()
-receiveLsbCRC Master{..} complete v = do
+receiveLsbCRC m@Master{..} complete v = do
     valid' <- deref valid
     lsb'   <- deref $ crc ~> lsb
     when (valid' .&& lsb' ==? v) complete
-    store state readyToReceive
     onReceive
+    reset m
+
+
+
+reset :: Master n -> Ivory eff ()
+reset Master{..} = store state readyToReceive

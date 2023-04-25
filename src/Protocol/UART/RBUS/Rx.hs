@@ -1,6 +1,9 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Protocol.UART.RBUS.Rx (receive) where
+module Protocol.UART.RBUS.Rx
+    ( receive
+    , reset
+    ) where
 
 import           Core.FSM
 import           GHC.TypeNats
@@ -78,8 +81,13 @@ receiveMsbCRC RBUS{..} v = do
     store phase waitingLsbCRC
 
 receiveLsbCRC :: RBUS n -> Ivory eff () -> Uint8 -> Ivory eff ()
-receiveLsbCRC RBUS{..} complete v = do
+receiveLsbCRC r@RBUS{..} complete v = do
     valid' <- deref valid
     lsb'   <- deref $ crc ~> lsb
     when (valid' .&& lsb' ==? v) complete
-    store state readyToReceive
+    reset r
+
+
+
+reset :: RBUS n -> Ivory eff ()
+reset RBUS{..} = store state readyToReceive

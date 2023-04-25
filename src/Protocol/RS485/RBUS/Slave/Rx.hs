@@ -1,6 +1,9 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Protocol.RS485.RBUS.Slave.Rx (receive) where
+module Protocol.RS485.RBUS.Slave.Rx
+    ( receive
+    , reset
+    ) where
 
 import           Core.FSM
 import           GHC.TypeNats
@@ -164,9 +167,14 @@ receiveMsbCRC Slave{..} v = do
     store phase waitingLsbCRC
 
 receiveLsbCRC :: Slave n -> Ivory eff () -> Uint8 -> Ivory eff ()
-receiveLsbCRC Slave{..} complete v = do
+receiveLsbCRC s@Slave{..} complete v = do
     valid' <- deref valid
     lsb'   <- deref $ crc ~> lsb
     when (valid' .&& lsb' ==? v) complete
-    store state readyToReceive
     onReceive
+    reset s
+
+
+
+reset :: Slave n -> Ivory eff ()
+reset Slave{..} = store state readyToReceive
