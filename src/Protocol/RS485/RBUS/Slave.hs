@@ -26,26 +26,27 @@ import           Util.CRC16
 
 
 data Slave n = Slave
-    { name          :: String
-    , mac           :: Mac
-    , model         :: Value       Uint8
-    , version       :: Version
-    , address       :: Value       Uint8
-    , state         :: Value       Uint8
-    , phase         :: Value       Uint8
-    , offset        :: Value       Uint8
-    , size          :: Value       Uint8
-    , buff          :: Buffer   n  Uint8
-    , buffConf      :: Buffer   4  Uint8
-    , buffPing      :: Buffer   4  Uint8
-    , buffDisc      :: Buffer  12  Uint8
-    , tidRx         :: Value       Sint16
-    , tidTx         :: Value       Uint8
-    , crc           :: Record      CRC16
-    , tmp           :: Value       Uint8
-    , onMessage     :: Buffer   n  Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ()
-    , onConfirm     :: forall eff. Ivory eff ()
-    , onDiscovery   :: forall eff. Ivory eff ()
+    { name        :: String
+    , mac         :: Mac
+    , model       :: Value       Uint8
+    , version     :: Version
+    , address     :: Value       Uint8
+    , state       :: Value       Uint8
+    , phase       :: Value       Uint8
+    , offset      :: Value       Uint8
+    , size        :: Value       Uint8
+    , buff        :: Buffer   n  Uint8
+    , buffConf    :: Buffer   4  Uint8
+    , buffPing    :: Buffer   4  Uint8
+    , buffDisc    :: Buffer  12  Uint8
+    , tidRx       :: Value       Sint16
+    , tidTx       :: Value       Uint8
+    , crc         :: Record      CRC16
+    , valid       :: Value       IBool
+    , tmp         :: Value       Uint8
+    , onMessage   :: Buffer   n  Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ()
+    , onConfirm   :: forall eff. Ivory eff ()
+    , onDiscovery :: forall eff. Ivory eff ()
     }
 
 
@@ -67,23 +68,24 @@ slave :: (MonadWriter Context m, KnownNat n)
       -> m (Slave n)
 slave id mac model version onMessage onConfirm onDiscovery = do
     let name = id <> "_protocol_slave"
-    address  <- value      (name <> "_address"   )   broadcastAddress
-    state    <- value      (name <> "_state"     )   readyToReceive
-    phase    <- value      (name <> "_phase"     )   waitingAddress
-    offset   <- value      (name <> "_offset"    )   0
-    size     <- value      (name <> "_size"      )   0
-    buff     <- buffer     (name <> "_message"   )
-    buffConf <- buffer     (name <> "_confirm_tx")
-    buffPing <- buffer     (name <> "_ping_tx"   )
-    buffDisc <- buffer     (name <> "_disc_tx"   )
-    tidRx    <- value      (name <> "_tid_rx"    ) (-1)
-    tidTx    <- value      (name <> "_tid_tx"    )   0
-    crc      <- makeCRC16  (name <> "_crc"       )
-    tmp      <- value      (name <> "_tmp"       )   0
+    address  <- value     (name <> "_address"   )   broadcastAddress
+    state    <- value     (name <> "_state"     )   readyToReceive
+    phase    <- value     (name <> "_phase"     )   waitingAddress
+    offset   <- value     (name <> "_offset"    )   0
+    size     <- value     (name <> "_size"      )   0
+    buff     <- buffer    (name <> "_message"   )
+    buffConf <- buffer    (name <> "_confirm_tx")
+    buffPing <- buffer    (name <> "_ping_tx"   )
+    buffDisc <- buffer    (name <> "_disc_tx"   )
+    tidRx    <- value     (name <> "_tid_rx"    ) (-1)
+    tidTx    <- value     (name <> "_tid_tx"    )   0
+    crc      <- makeCRC16 (name <> "_crc"       )
+    valid    <- value     (name <> "_valid"     )   true
+    tmp      <- value     (name <> "_tmp"       )   0
     let slave = Slave { name, mac, model, version, address
                       , state, phase, offset, size
                       , buff, buffConf, buffPing, buffDisc
-                      , tidRx, tidTx, crc, tmp
+                      , tidRx, tidTx, crc, valid, tmp
                       , onMessage, onConfirm, onDiscovery
                       }
     addInit $ initDisc slave

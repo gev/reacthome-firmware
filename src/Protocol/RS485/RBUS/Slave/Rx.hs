@@ -33,10 +33,10 @@ receivePreamble = runInput rxPreamble
 
 reset :: Uint8 -> Uint8 -> Slave n -> Uint8 -> Ivory eff ()
 reset s p Slave{..} v = do
-    store state s
-    store phase p
-    store offset 0
-    store size  0
+    store state   s
+    store phase   p
+    store offset  0
+    store size    0
     store (crc ~> msb) initCRC
     store (crc ~> lsb) initCRC
     updateCRC16 crc v
@@ -62,7 +62,7 @@ receiveDiscoveryMac Slave{..} v = do
               when (i ==? arrayLen mac)
                    (store phase waitingAddress)
           )
-          (store state readyToReceive)
+          (store valid false)
 
 receiveDiscoveryAddress :: Slave n -> Uint8 -> Ivory eff ()
 receiveDiscoveryAddress Slave{..} v = do
@@ -154,17 +154,17 @@ receiveAddress p Slave{..} v = do
     a <- deref address
     ifte_ (v==? a .|| v ==? broadcastAddress)
           (updateCRC16 crc v >> store phase p)
-          (store state readyToReceive)
+          (store valid false)
 
 receiveMsbCRC :: Slave n -> Uint8 -> Ivory eff ()
 receiveMsbCRC Slave{..} v = do
-    b <- deref $ crc ~> msb
-    ifte_ (b ==? v)
-          (store phase waitingLsbCRC)
-          (store state readyToReceive)
+    msb' <- deref $ crc ~> msb
+    when (msb' /=? v) $ store valid false
+    store phase waitingLsbCRC
 
 receiveLsbCRC :: Slave n -> Ivory eff () -> Uint8 -> Ivory eff ()
 receiveLsbCRC Slave{..} complete v = do
-    b <- deref $ crc ~> lsb
-    when (b ==? v) complete
+    valid' <- deref valid
+    lsb'   <- deref $ crc ~> lsb
+    when (valid' .&& lsb' ==? v) complete
     store state readyToReceive

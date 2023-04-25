@@ -174,13 +174,13 @@ receiveAddress p Master{..} v = do
 
 receiveMsbCRC :: Master n -> Uint8 -> Ivory eff ()
 receiveMsbCRC Master{..} v = do
-    b <- deref $ crc ~> msb
-    ifte_ (b ==? v)
-          (store phase waitingLsbCRC)
-          (store state readyToReceive)
+    msb' <- deref $ crc ~> msb
+    when (msb' /=? v) $ store valid false
+    store phase waitingLsbCRC
 
 receiveLsbCRC :: Master n -> Ivory eff () -> Uint8 -> Ivory eff ()
 receiveLsbCRC Master{..} complete v = do
-    b <- deref $ crc ~> lsb
-    when (b ==? v) complete
+    valid' <- deref valid
+    lsb'   <- deref $ crc ~> lsb
+    when (valid' .&& lsb' ==? v) complete
     store state readyToReceive
