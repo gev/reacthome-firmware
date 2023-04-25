@@ -63,7 +63,7 @@ doTransmitMessage r@RBUS{..} ts = peek msgQueue $ \i -> do
                 store sx $ sx' + 1
                 store (txBuff ! dx) v
             store (msgTTL ! ix) $ ttl - 1
-            store timestamp ts
+            store tsTx ts
             rsTransmit r size
         )
         (remove msgQueue)
@@ -72,30 +72,30 @@ doTransmitMessage r@RBUS{..} ts = peek msgQueue $ \i -> do
 
 doDiscovery :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
 doDiscovery r@RBUS{..} t1 = do
-    t0 <- deref timestamp
+    t0 <- deref tsTx
     when (t1 - t0 >? 1000)
          (do
-            store timestamp t1
+            store tsTx t1
             toRS transmitDiscovery r
          )
 
 
 doConfirm :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
 doConfirm r@RBUS{..} t1 = do
-    t0 <- deref timestamp
+    t0 <- deref tsTx
     when (t1 - t0 >? 0)
          (do store shouldConfirm false
-             store timestamp t1
+             store tsTx t1
              toRS transmitConfirm r
          )
 
 
 doPing :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
 doPing r@RBUS{..} t1 = do
-    t0 <- deref timestamp
+    t0 <- deref tsTx
     when (t1 - t0 >? 1000)
          (do
-            store timestamp t1
+            store tsTx t1
             toRS transmitPing r
          )
 
@@ -103,10 +103,10 @@ doPing r@RBUS{..} t1 = do
 
 doRequestInit :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
 doRequestInit r@RBUS{..} t1 = do
-    t0 <- deref timestamp'
+    t0 <- deref tsInit
     when (t1 - t0 >? 2000)
          (do
-            store timestamp' t1
+            store tsInit t1
             toQueue r initBuff $ arrayLen initBuff
          )
 
