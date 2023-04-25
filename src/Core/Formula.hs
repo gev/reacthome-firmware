@@ -18,8 +18,7 @@ import           Ivory.Language.Module
     TODO: abstract Formula to the type class
 -}
 data Formula p where
-    Formula :: Transport t
-            => { name       ::  String
+    Formula :: { name       ::  String
                , model      ::  Uint8
                , version    :: (Uint8,  Uint8)
                , shouldInit ::  IBool

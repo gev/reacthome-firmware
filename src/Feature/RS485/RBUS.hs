@@ -44,7 +44,7 @@ import           Protocol.RS485.RBUS.Master.Tx       (transmitMessage)
 
 
 
-rbus :: (MonadWriter Context m, MonadReader (D.Domain p t) m, LazyTransport t, Transport t)
+rbus :: (MonadWriter Context m, MonadReader (D.Domain p t) m, LazyTransport t)
      => [m RS485] -> m Feature
 rbus rs485 = do
     let n   = length rs485
@@ -52,7 +52,7 @@ rbus rs485 = do
     pure $ Feature list
 
 
-rbus' :: (MonadWriter Context m, MonadReader (D.Domain p t) m, LazyTransport t, Transport t)
+rbus' :: (MonadWriter Context m, MonadReader (D.Domain p t) m, LazyTransport t)
      => m RS485 -> Int -> m RBUS
 rbus' rs485 index = do
     rs               <- rs485
