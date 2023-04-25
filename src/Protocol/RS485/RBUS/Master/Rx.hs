@@ -38,10 +38,11 @@ receivePreamble = runInput rxPreamble
 
 start :: Uint8 -> Uint8 -> Master n -> Uint8 -> Ivory eff ()
 start s p Master{..} v = do
-    store state s
-    store phase p
-    store offset 0
-    store size  0
+    store state   s
+    store phase   p
+    store offset  0
+    store size    0
+    store valid   true
     store (crc ~> msb) initCRC
     store (crc ~> lsb) initCRC
     updateCRC16 crc v

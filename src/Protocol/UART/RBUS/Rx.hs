@@ -33,6 +33,7 @@ start s p RBUS{..} v = do
     store phase   p
     store offset  0
     store size    0
+    store valid   true
     store (crc ~> msb) initCRC
     store (crc ~> lsb) initCRC
     updateCRC16 crc v
