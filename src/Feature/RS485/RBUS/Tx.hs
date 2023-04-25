@@ -29,8 +29,9 @@ txHandle RBUS{..} = store txLock false
 
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()
 txTask r@RBUS{..} = do
-    locked <- deref txLock
-    when (iNot locked) $ do
+    rxLock' <- deref rxLock
+    txLock' <- deref txLock
+    when (iNot rxLock' .&& iNot txLock') $ do
         shouldDiscovery' <- deref shouldDiscovery
         shouldConfirm'   <- deref shouldConfirm
         shouldPing'      <- deref shouldPing
@@ -97,10 +98,8 @@ doPing r@RBUS{..} = do
 toRS :: (Master 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) ())
      -> RBUS
      -> Ivory (ProcEffects s ()) ()
-toRS transmit r@RBUS{..} = do
-    locked <- deref txLock
-    when (iNot locked)
-         (rsTransmit r =<< run protocol transmit txBuff 0)
+toRS transmit r@RBUS{..} =
+    rsTransmit r =<< run protocol transmit txBuff 0
 
 
 {--

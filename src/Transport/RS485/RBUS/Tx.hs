@@ -26,8 +26,9 @@ txHandle RBUS{..} = store txLock false
 
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()
 txTask r@RBUS{..} = do
-    locked <- deref txLock
-    when (iNot locked) $ do
+    rxLock' <- deref rxLock
+    txLock' <- deref txLock
+    when (iNot rxLock' .&& iNot txLock') $ do
         ts <- getSystemTime clock
 
         hasAddress' <- hasAddress protocol
@@ -107,7 +108,7 @@ doRequestInit r@RBUS{..} t1 = do
     when (t1 - t0 >? 2000)
          (do
             store timestamp' t1
-            toQueue r initBuff $ arrayLen initBuff
+            toQueue r initBuff
          )
 
 
@@ -115,17 +116,15 @@ doRequestInit r@RBUS{..} t1 = do
 toRS :: (Slave 255 -> (Uint8 -> Ivory eff ()) -> Ivory (ProcEffects s ()) ())
      -> RBUS
      -> Ivory (ProcEffects s ()) ()
-toRS transmit r@RBUS{..} = do
-    locked <- deref txLock
-    when (iNot locked)
-         (rsTransmit r =<< run protocol transmit txBuff 0)
+toRS transmit r@RBUS{..} =
+    rsTransmit r =<< run protocol transmit txBuff 0
 
 
 {--
     TODO: potential message overwriting in the msgBuff
 --}
-toQueue :: KnownNat l => RBUS -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
-toQueue RBUS{..} buff size' = push msgQueue $ \i -> do
+toQueue :: KnownNat l => RBUS -> Buffer l Uint8 -> Ivory (ProcEffects s ()) ()
+toQueue RBUS{..} buff = push msgQueue $ \i -> do
     index <- deref msgIndex
     size <- run protocol (transmitMessage buff) msgBuff index
     store msgIndex $ index + size

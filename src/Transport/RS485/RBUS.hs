@@ -54,6 +54,7 @@ rbus rs485 = do
     msgIndex      <- value  (name <> "_msg_index"     ) 0
     txBuff        <- buffer (name <> "_tx"            )
     initBuff      <- values (name <> "_init_request"  ) [0xf2]
+    rxLock        <- value  (name <> "_rx_lock"       ) false
     txLock        <- value  (name <> "_tx_lock"       ) false
     timestamp     <- value  (name <> "_timestamp"     ) 0
     timestamp'    <- value  (name <> "_timestamp_"    ) 0
@@ -79,12 +80,14 @@ rbus rs485 = do
 
     let onConfirm = remove msgQueue
 
-    protocol <- slave name (mac mcu) model version onMessage onConfirm onDiscovery
+    let onReceive = store rxLock false
+
+    protocol <- slave name (mac mcu) model version onMessage onConfirm onDiscovery onReceive
 
     let rbus = RBUS { clock, rs, protocol
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgTTL, msgQueue, msgBuff, msgIndex
-                    , txBuff, initBuff, txLock, timestamp, timestamp'
+                    , txBuff, initBuff, rxLock, txLock, timestamp, timestamp'
                     , shouldConfirm, shouldInit
                     }
 
@@ -102,4 +105,4 @@ rbus rs485 = do
     pure rbus
 
 instance Transport RBUS where
-    transmitFragment r b = toQueue r b . castDefault . fromIx
+    transmitBuffer = toQueue
