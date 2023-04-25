@@ -47,6 +47,7 @@ data Slave n = Slave
     , onMessage   :: Buffer   n  Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ()
     , onConfirm   :: forall eff. Ivory eff ()
     , onDiscovery :: forall eff. Ivory eff ()
+    , onReceive   :: forall eff. Ivory eff ()
     }
 
 
@@ -65,8 +66,9 @@ slave :: (MonadWriter Context m, KnownNat n)
       -> (Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ())
       -> (forall eff. Ivory eff ())
       -> (forall eff. Ivory eff ())
+      -> (forall eff. Ivory eff ())
       -> m (Slave n)
-slave id mac model version onMessage onConfirm onDiscovery = do
+slave id mac model version onMessage onConfirm onDiscovery onReceive = do
     let name = id <> "_protocol_slave"
     address  <- value     (name <> "_address"   )   broadcastAddress
     state    <- value     (name <> "_state"     )   readyToReceive
@@ -86,7 +88,7 @@ slave id mac model version onMessage onConfirm onDiscovery = do
                       , state, phase, offset, size
                       , buff, buffConf, buffPing, buffDisc
                       , tidRx, tidTx, crc, valid, tmp
-                      , onMessage, onConfirm, onDiscovery
+                      , onMessage, onConfirm, onDiscovery, onReceive
                       }
     addInit $ initDisc slave
     addInit $ initConf slave

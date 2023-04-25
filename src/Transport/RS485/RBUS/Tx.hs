@@ -26,8 +26,9 @@ txHandle RBUS{..} = store txLock false
 
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()
 txTask r@RBUS{..} = do
-    locked <- deref txLock
-    when (iNot locked) $ do
+    rxLock' <- deref rxLock
+    txLock' <- deref txLock
+    when (iNot rxLock' .&& iNot txLock') $ do
         ts <- getSystemTime clock
 
         hasAddress' <- hasAddress protocol

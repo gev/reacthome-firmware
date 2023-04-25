@@ -12,6 +12,7 @@ rxHandle :: RBUS -> Uint16 -> Ivory eff ()
 rxHandle RBUS{..} value = do
     push rxQueue $ \i -> do
         store (rxBuff ! toIx i) value
+        store rxLock true
 
 
 rxTask :: RBUS -> Ivory (ProcEffects s ()) ()

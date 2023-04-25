@@ -184,3 +184,4 @@ receiveLsbCRC Master{..} complete v = do
     lsb'   <- deref $ crc ~> lsb
     when (valid' .&& lsb' ==? v) complete
     store state readyToReceive
+    onReceive
