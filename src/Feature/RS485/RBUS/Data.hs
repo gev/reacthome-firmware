@@ -27,7 +27,7 @@ data RBUS = RBUS
      , msgIndex         :: Value      Uint16
      , txBuff           :: Buffer 255 Uint16
      , txLock           :: Value      IBool
-     , timestamp        :: Value      Uint32
+     , tsRx             :: Value      Uint32
      , shouldDiscovery  :: Value      IBool
      , shouldConfirm    :: Value      IBool
      , shouldPing       :: Value      IBool

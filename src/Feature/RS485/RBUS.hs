@@ -74,7 +74,7 @@ rbus' rs485 index = do
     msgIndex         <- value  (name <> "_msg_index"        ) 0
     txBuff           <- buffer (name <> "_tx"               )
     txLock           <- value  (name <> "_tx_lock"          ) false
-    timestamp        <- value  (name <> "_timestamp"        ) 0
+    tsRx             <- value  (name <> "_timestamp_rx"        ) 0
     shouldDiscovery  <- value  (name <> "_should_discovery" ) false
     shouldConfirm    <- value  (name <> "_should_confirm"   ) false
     shouldPing       <- value  (name <> "_should_ping"      ) true
@@ -118,7 +118,7 @@ rbus' rs485 index = do
     let rbus = RBUS { index, clock, rs, protocol
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgConfirm, msgTTL, msgQueue, msgBuff, msgIndex
-                    , txBuff, txLock, timestamp
+                    , txBuff, txLock, tsRx
                     , shouldDiscovery, shouldConfirm, shouldPing
                     , discoveryAddress, confirmAddress, pingAddress
                     }
