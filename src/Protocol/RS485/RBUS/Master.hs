@@ -45,6 +45,7 @@ data Master n = Master
     , onConfirm   :: Uint8 -> forall eff. Ivory eff ()
     , onDiscovery :: Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     , onPing      :: Mac -> Uint8 -> Value Uint8 -> Version -> forall s. Ivory (ProcEffects s ()) ()
+    , onReceive   :: forall eff. Ivory eff ()
     }
 
 
@@ -61,8 +62,9 @@ master :: (MonadWriter Context m, KnownNat n)
        -> (Uint8 -> forall eff. Ivory eff ())
        -> (Uint8 -> forall s. Ivory (ProcEffects s ()) ())
        -> (Mac -> Uint8 -> Value Uint8 -> Version -> forall s. Ivory (ProcEffects s ()) ())
+       -> (forall eff. Ivory eff ())
        -> m (Master n)
-master id onMessage onConfirm onDiscovery onPing = do
+master id onMessage onConfirm onDiscovery onPing onReceive = do
     let name = id <> "_protocol_master"
     mac      <- buffer     (name <> "_mac"      )
     model    <- value_     (name <> "_model"    )
@@ -82,6 +84,6 @@ master id onMessage onConfirm onDiscovery onPing = do
     let master = Master { mac, model, version, address
                         , state, phase, offset, size
                         , buff, tidRx, tidTx, crc, valid, tmp, table
-                        , onMessage, onConfirm, onDiscovery, onPing
+                        , onMessage, onConfirm, onDiscovery, onPing, onReceive
                         }
     pure master

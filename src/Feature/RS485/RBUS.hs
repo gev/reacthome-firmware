@@ -73,6 +73,7 @@ rbus' rs485 index = do
     msgBuff          <- buffer (name <> "_msg"              )
     msgIndex         <- value  (name <> "_msg_index"        ) 0
     txBuff           <- buffer (name <> "_tx"               )
+    rxLock           <- value  (name <> "_rx_lock"          ) false
     txLock           <- value  (name <> "_tx_lock"          ) false
     timestamp        <- value  (name <> "_timestamp"        ) 0
     shouldDiscovery  <- value  (name <> "_should_discovery" ) false
@@ -113,12 +114,14 @@ rbus' rs485 index = do
             store discoveryAddress address
             store shouldDiscovery true
 
-    protocol <- P.master name onMessage onConfirm onDiscovery onPing
+    let onReceive = store rxLock false
+
+    protocol <- P.master name onMessage onConfirm onDiscovery onPing onReceive
 
     let rbus = RBUS { index, clock, rs, protocol
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgConfirm, msgTTL, msgQueue, msgBuff, msgIndex
-                    , txBuff, txLock, timestamp
+                    , txBuff, rxLock,  txLock, timestamp
                     , shouldDiscovery, shouldConfirm, shouldPing
                     , discoveryAddress, confirmAddress, pingAddress
                     }
