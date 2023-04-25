@@ -27,14 +27,14 @@ receive = runState state
 
 receivePreamble :: Master n -> Uint8 -> Ivory eff ()
 receivePreamble = runInput rxPreamble
-    [ discovery |-> start receivingDiscovery waitingMac
-    , ping      |-> start receivingPing      waitingAddress
-    , confirm   |-> start receivingConfirm   waitingAddress
-    , message   |-> start receivingMessage   waitingAddress
+    [ discovery |-> reset receivingDiscovery waitingMac
+    , ping      |-> reset receivingPing      waitingAddress
+    , confirm   |-> reset receivingConfirm   waitingAddress
+    , message   |-> reset receivingMessage   waitingAddress
     ]
 
-start :: Uint8 -> Uint8 -> Master n -> Uint8 -> Ivory eff ()
-start s p Master{..} v = do
+reset :: Uint8 -> Uint8 -> Master n -> Uint8 -> Ivory eff ()
+reset s p Master{..} v = do
     store state s
     store phase p
     store offset 0

@@ -21,11 +21,11 @@ receive = runState state
 
 receivePreamble :: RBUS n -> Uint8 -> Ivory eff ()
 receivePreamble = runInput preamble
-    [ message   |-> start receivingMessage waitingSize
+    [ message   |-> reset receivingMessage waitingSize
     ]
 
-start :: Uint8 -> Uint8 -> RBUS n -> Uint8 -> Ivory eff ()
-start s p RBUS{..} v = do
+reset :: Uint8 -> Uint8 -> RBUS n -> Uint8 -> Ivory eff ()
+reset s p RBUS{..} v = do
     store state s
     store phase p
     store index 0
