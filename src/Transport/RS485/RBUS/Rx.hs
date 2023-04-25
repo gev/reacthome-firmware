@@ -3,6 +3,7 @@
 module Transport.RS485.RBUS.Rx    where
 
 import           Data.Concurrent.Queue
+import           Interface.SystemClock
 import           Ivory.Language
 import           Protocol.RS485.RBUS.Slave.Rx
 import           Transport.RS485.RBUS.Data
@@ -11,6 +12,7 @@ import           Transport.RS485.RBUS.Data
 rxHandle :: RBUS -> Uint16 -> Ivory eff ()
 rxHandle RBUS{..} value = do
     push rxQueue $ \i -> do
+        store rxTimestamp =<< getSystemTime clock
         store (rxBuff ! toIx i) value
         store rxLock true
 
