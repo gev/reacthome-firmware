@@ -39,6 +39,7 @@ import           Ivory.Stdlib
 import           Protocol.RS485.RBUS                 (broadcastAddress)
 import qualified Protocol.RS485.RBUS.Master          as P
 import           Protocol.RS485.RBUS.Master.MacTable as M
+import           Protocol.RS485.RBUS.Master.Rx
 import           Protocol.RS485.RBUS.Master.Tx       (transmitMessage)
 
 
@@ -136,10 +137,21 @@ rbus' rs485 index = do
 
     addInit rbusInit
 
-    addTask $ yeld    (name <> "_rx") $ rxTask rbus
-    addTask $ delay 1 (name <> "_tx") $ txTask rbus
+    addTask $ yeld    (name <> "_rx"   ) $ rxTask    rbus
+    addTask $ delay 1 (name <> "_tx"   ) $ txTask    rbus
+    addTask $ yeld    (name <> "_reset") $ resetTask rbus
 
     pure rbus
+
+
+
+resetTask :: RBUS -> Ivory eff ()
+resetTask RBUS{..} = do
+    t0 <- deref rxTimestamp
+    t1 <- getSystemTime clock
+    when (t1 - t0 >? 0) $ do
+        reset protocol
+        store rxLock false
 
 
 
