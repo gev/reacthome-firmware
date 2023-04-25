@@ -24,8 +24,8 @@ txHandle RBUS{..} = store txLock false
 
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()
 txTask r@RBUS{..} = do
-    locked <- deref txLock
-    when (iNot locked) $
+    txLock' <- deref txLock
+    when (iNot txLock') $
         pop msgQueue $ \i -> do
             let ix = toIx i
             offset <- deref $ msgOffset ! ix

@@ -55,7 +55,6 @@ rbus uart' = do
     msgBuff       <- buffer (name <> "_msg"         )
     msgIndex      <- value  (name <> "_msg_index"   ) 0
     txBuff        <- buffer (name <> "_tx"          )
-    rxLock        <- value  (name <> "_rx_lock"     ) false
     txLock        <- value  (name <> "_tx_lock"     ) false
     rxTimestamp   <- value  (name <> "_timestamp_rx") 0
 
@@ -70,7 +69,7 @@ rbus uart' = do
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgQueue, msgBuff, msgIndex
                     , txBuff
-                    , rxLock, txLock
+                    , txLock
                     , rxTimestamp
                     }
 
@@ -94,9 +93,7 @@ resetTask :: RBUS -> Ivory eff ()
 resetTask RBUS{..} = do
     t0 <- deref rxTimestamp
     t1 <- getSystemTime clock
-    when (t1 - t0 >? 0) $ do
-        reset protocol
-        store rxLock false
+    when (t1 - t0 >? 0) $ reset protocol
 
 
 
