@@ -97,10 +97,8 @@ doPing r@RBUS{..} = do
 toRS :: (Master 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) ())
      -> RBUS
      -> Ivory (ProcEffects s ()) ()
-toRS transmit r@RBUS{..} = do
-    locked <- deref txLock
-    when (iNot locked)
-         (rsTransmit r =<< run protocol transmit txBuff 0)
+toRS transmit r@RBUS{..} =
+    rsTransmit r =<< run protocol transmit txBuff 0
 
 
 {--
