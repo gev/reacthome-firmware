@@ -1,6 +1,9 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Protocol.RS485.RBUS.Slave.Rx (receive) where
+module Protocol.RS485.RBUS.Slave.Rx
+    ( receive
+    , reset
+    ) where
 
 import           Core.FSM
 import           GHC.TypeNats
@@ -25,14 +28,14 @@ receive = runState state
 
 receivePreamble :: Slave n -> Uint8 -> Ivory eff ()
 receivePreamble = runInput rxPreamble
-    [ discovery |-> reset receivingDiscovery waitingMac
-    , ping      |-> reset receivingPing      waitingAddress
-    , confirm   |-> reset receivingConfirm   waitingAddress
-    , message   |-> reset receivingMessage   waitingAddress
+    [ discovery |-> start receivingDiscovery waitingMac
+    , ping      |-> start receivingPing      waitingAddress
+    , confirm   |-> start receivingConfirm   waitingAddress
+    , message   |-> start receivingMessage   waitingAddress
     ]
 
-reset :: Uint8 -> Uint8 -> Slave n -> Uint8 -> Ivory eff ()
-reset s p Slave{..} v = do
+start :: Uint8 -> Uint8 -> Slave n -> Uint8 -> Ivory eff ()
+start s p Slave{..} v = do
     store state   s
     store phase   p
     store offset  0
@@ -163,9 +166,14 @@ receiveMsbCRC Slave{..} v = do
     store phase waitingLsbCRC
 
 receiveLsbCRC :: Slave n -> Ivory eff () -> Uint8 -> Ivory eff ()
-receiveLsbCRC Slave{..} complete v = do
+receiveLsbCRC s@Slave{..} complete v = do
     valid' <- deref valid
     lsb'   <- deref $ crc ~> lsb
     when (valid' .&& lsb' ==? v) complete
-    store state readyToReceive
     onReceive
+    reset s
+
+
+
+reset :: Slave n -> Ivory eff ()
+reset Slave{..} = store state readyToReceive
