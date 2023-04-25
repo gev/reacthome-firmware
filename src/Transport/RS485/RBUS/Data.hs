@@ -26,8 +26,8 @@ data RBUS = RBUS
     , txBuff        :: Buffer 255 Uint16
     , initBuff      :: Buffer   1 Uint8
     , txLock        :: Value      IBool
-    , tsTx          :: Value      Uint32
-    , tsInit        :: Value      Uint32
+    , txTimestamp   :: Value      Uint32
+    , initTimestamp :: Value      Uint32
     , shouldConfirm :: Value      IBool
     , shouldInit    :: Value      IBool
     }

@@ -55,8 +55,8 @@ rbus rs485 = do
     txBuff        <- buffer (name <> "_tx"            )
     initBuff      <- values (name <> "_init_request"  ) [0xf2]
     txLock        <- value  (name <> "_tx_lock"       ) false
-    tsTx          <- value  (name <> "_timestamp"     ) 0
-    tsInit        <- value  (name <> "_timestamp_init"    ) 0
+    txTimestamp   <- value  (name <> "_timestamp_tx"  ) 0
+    initTimestamp <- value  (name <> "_timestamp_init") 0
     shouldConfirm <- value  (name <> "_should_confirm") false
 
     {--
@@ -65,7 +65,7 @@ rbus rs485 = do
     let dispatch = makeDispatcher features
 
     let onMessage buff n shouldHandle = do
-            store tsTx =<< getSystemTime clock
+            store txTimestamp =<< getSystemTime clock
             when shouldHandle $ dispatch buff n
             store shouldConfirm true
 
@@ -74,7 +74,7 @@ rbus rs485 = do
       TODO: Should reset Tx queue when address has changed?
     -}
     let onDiscovery = do
-            store tsTx =<< getSystemTime clock
+            store txTimestamp =<< getSystemTime clock
             store shouldConfirm false
 
     let onConfirm = remove msgQueue
@@ -84,7 +84,7 @@ rbus rs485 = do
     let rbus = RBUS { clock, rs, protocol
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgTTL, msgQueue, msgBuff, msgIndex
-                    , txBuff, initBuff, txLock, tsTx, tsInit
+                    , txBuff, initBuff, txLock, txTimestamp, initTimestamp
                     , shouldConfirm, shouldInit
                     }
 
