@@ -102,4 +102,4 @@ rbus rs485 = do
     pure rbus
 
 instance Transport RBUS where
-    transmitFragment r b = toQueue r b . castDefault . fromIx
+    transmitBuffer = toQueue
