@@ -153,9 +153,9 @@ receiveMessageLsbCRC r@Slave{..} v = do
 receiveAddress :: Uint8 -> Slave n -> Uint8 -> Ivory eff ()
 receiveAddress p Slave{..} v = do
     a <- deref address
-    ifte_ (v==? a .|| v ==? broadcastAddress)
-          (updateCRC16 crc v >> store phase p)
-          (store valid false)
+    updateCRC16 crc v
+    when (v /=? a .&& v /=? broadcastAddress) $ store valid false
+    store phase p
 
 receiveMsbCRC :: Slave n -> Uint8 -> Ivory eff ()
 receiveMsbCRC Slave{..} v = do
