@@ -26,10 +26,11 @@ receivePreamble = runInput preamble
 
 start :: Uint8 -> Uint8 -> RBUS n -> Uint8 -> Ivory eff ()
 start s p RBUS{..} v = do
-    store state s
-    store phase p
-    store index 0
-    store size  0
+    store state   s
+    store phase   p
+    store offset  0
+    store size    0
+    store valid   true
     store (crc ~> msb) initCRC
     store (crc ~> lsb) initCRC
     updateCRC16 crc v
@@ -52,12 +53,12 @@ receiveMessageSize RBUS{..} v = do
 
 receiveMessageData :: KnownNat n => RBUS n -> Uint8 -> Ivory eff ()
 receiveMessageData RBUS{..} v = do
-    i <- deref index
+    i <- deref offset
     s <- deref size
     store (buff ! toIx i) v
-    store index $ i + 1
+    store offset $ i + 1
     updateCRC16 crc v
-    i <- deref index
+    i <- deref offset
     when (i ==? s)
          (store phase waitingMsbCRC)
 
@@ -72,13 +73,13 @@ receiveMessageLsbCRC r@RBUS{..} v = do
 
 receiveMsbCRC :: RBUS n -> Uint8 -> Ivory eff ()
 receiveMsbCRC RBUS{..} v = do
-    b <- deref $ crc ~> msb
-    ifte_ (b ==? v)
-          (store phase waitingLsbCRC)
-          (store state readyToReceive)
+    msb' <- deref $ crc ~> msb
+    when (msb' /=? v) $ store valid false
+    store phase waitingLsbCRC
 
 receiveLsbCRC :: RBUS n -> Ivory eff () -> Uint8 -> Ivory eff ()
 receiveLsbCRC RBUS{..} complete v = do
-    b <- deref $ crc ~> lsb
-    when (b ==? v) complete
+    valid' <- deref valid
+    lsb'   <- deref $ crc ~> lsb
+    when (valid' .&& lsb' ==? v) complete
     store state readyToReceive

@@ -35,10 +35,11 @@ receivePreamble = runInput rxPreamble
 
 start :: Uint8 -> Uint8 -> Master n -> Uint8 -> Ivory eff ()
 start s p Master{..} v = do
-    store state s
-    store phase p
-    store offset 0
-    store size  0
+    store state   s
+    store phase   p
+    store offset  0
+    store size    0
+    store valid   true
     store (crc ~> msb) initCRC
     store (crc ~> lsb) initCRC
     updateCRC16 crc v
@@ -174,13 +175,13 @@ receiveAddress p Master{..} v = do
 
 receiveMsbCRC :: Master n -> Uint8 -> Ivory eff ()
 receiveMsbCRC Master{..} v = do
-    b <- deref $ crc ~> msb
-    ifte_ (b ==? v)
-          (store phase waitingLsbCRC)
-          (store state readyToReceive)
+    msb' <- deref $ crc ~> msb
+    when (msb' /=? v) $ store valid false
+    store phase waitingLsbCRC
 
 receiveLsbCRC :: Master n -> Ivory eff () -> Uint8 -> Ivory eff ()
 receiveLsbCRC Master{..} complete v = do
-    b <- deref $ crc ~> lsb
-    when (b ==? v) complete
+    valid' <- deref valid
+    lsb'   <- deref $ crc ~> lsb
+    when (valid' .&& lsb' ==? v) complete
     store state readyToReceive

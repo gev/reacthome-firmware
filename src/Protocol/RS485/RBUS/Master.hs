@@ -26,24 +26,25 @@ import           Util.CRC16
 
 
 data Master n = Master
-    { mac           :: Mac
-    , model         :: Value       Uint8
-    , version       :: Version
-    , address       :: Value       Uint8
-    , state         :: Value       Uint8
-    , phase         :: Value       Uint8
-    , offset        :: Value       Uint8
-    , size          :: Value       Uint8
-    , buff          :: Buffer   n  Uint8
-    , tidRx         :: Values 255  Sint16
-    , tidTx         :: Values 255  Uint8
-    , crc           :: Record      CRC16
-    , tmp           :: Value       Uint8
-    , table         :: MacTable
-    , onMessage     :: Mac -> Uint8 -> Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ()
-    , onConfirm     :: Uint8 -> forall eff. Ivory eff ()
-    , onDiscovery   :: Uint8 -> forall s. Ivory (ProcEffects s ()) ()
-    , onPing        :: Mac -> Uint8 -> Value Uint8 -> Version -> forall s. Ivory (ProcEffects s ()) ()
+    { mac         :: Mac
+    , model       :: Value       Uint8
+    , version     :: Version
+    , address     :: Value       Uint8
+    , state       :: Value       Uint8
+    , phase       :: Value       Uint8
+    , offset      :: Value       Uint8
+    , size        :: Value       Uint8
+    , buff        :: Buffer   n  Uint8
+    , tidRx       :: Values 255  Sint16
+    , tidTx       :: Values 255  Uint8
+    , crc         :: Record      CRC16
+    , valid       :: Value       IBool
+    , tmp         :: Value       Uint8
+    , table       :: MacTable
+    , onMessage   :: Mac -> Uint8 -> Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ()
+    , onConfirm   :: Uint8 -> forall eff. Ivory eff ()
+    , onDiscovery :: Uint8 -> forall s. Ivory (ProcEffects s ()) ()
+    , onPing      :: Mac -> Uint8 -> Value Uint8 -> Version -> forall s. Ivory (ProcEffects s ()) ()
     }
 
 
@@ -75,11 +76,12 @@ master id onMessage onConfirm onDiscovery onPing = do
     tidRx    <- values     (name <> "_tid_rx"   ) $ replicate 255 (-1)
     tidTx    <- values     (name <> "_tid_tx"   ) $ replicate 255   0
     crc      <- makeCRC16  (name <> "_crc"      )
+    valid    <- value     (name <> "_valid"     ) true
     tmp      <- value      (name <> "_tmp"      ) 0
     table    <- macTable   (name <> "_mac_table") 1
     let master = Master { mac, model, version, address
                         , state, phase, offset, size
-                        , buff, tidRx, tidTx, crc, tmp, table
+                        , buff, tidRx, tidTx, crc, valid, tmp, table
                         , onMessage, onConfirm, onDiscovery, onPing
                         }
     pure master
