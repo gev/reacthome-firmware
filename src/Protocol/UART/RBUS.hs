@@ -38,15 +38,16 @@ waitingLsbCRC       = 0x05 :: Uint8
 
 
 data RBUS n = RBUS
-    { name          :: String
-    , state         :: Value    Uint8
-    , phase         :: Value    Uint8
-    , index         :: Value    Uint8
-    , size          :: Value    Uint8
-    , buff          :: Buffer n Uint8
-    , crc           :: Record   CRC16
-    , tmp           :: Value    Uint8
-    , onMessage     :: Buffer n Uint8 -> Uint8 -> forall s. Ivory (ProcEffects s ()) ()
+    { name      :: String
+    , state     :: Value    Uint8
+    , phase     :: Value    Uint8
+    , offset     :: Value    Uint8
+    , size      :: Value    Uint8
+    , buff      :: Buffer n Uint8
+    , crc       :: Record   CRC16
+    , valid     :: Value    IBool
+    , tmp       :: Value    Uint8
+    , onMessage :: Buffer n Uint8 -> Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
 
 
@@ -57,15 +58,16 @@ rbus :: (MonadWriter Context m, KnownNat n)
       -> m (RBUS n)
 rbus id onMessage = do
     let name = id <> "_protocol"
-    state    <- value      (name <> "_state"     )   readyToReceive
-    phase    <- value      (name <> "_phase"     )   waitingTid
-    index    <- value      (name <> "_index"     )   0
-    size     <- value      (name <> "_size"      )   0
-    buff     <- buffer     (name <> "_message"   )
-    crc      <- makeCRC16  (name <> "_crc"       )
-    tmp      <- value      (name <> "_tmp"       )   0
-    let rbus  = RBUS { name, state, phase, index, size
-                     , buff, crc, tmp
+    state    <- value     (name <> "_state"     ) readyToReceive
+    phase    <- value     (name <> "_phase"     ) waitingTid
+    offset   <- value     (name <> "_offset"    ) 0
+    size     <- value     (name <> "_size"      ) 0
+    buff     <- buffer    (name <> "_message"   )
+    crc      <- makeCRC16 (name <> "_crc"       )
+    valid    <- value     (name <> "_valid"     ) true
+    tmp      <- value     (name <> "_tmp"       ) 0
+    let rbus  = RBUS { name, state, phase, offset, size
+                     , buff, crc, valid, tmp
                      , onMessage
                      }
     pure rbus
