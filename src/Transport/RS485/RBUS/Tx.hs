@@ -45,7 +45,7 @@ txTask r@RBUS{..} = do
 
                 shouldConfirm' <- deref shouldConfirm
                 ifte_ shouldConfirm'
-                    (doConfirm r ts)
+                    (doConfirm r)
                     (doTransmitMessage r ts >> doPing r ts)
             )
             (doDiscovery r ts)
@@ -55,7 +55,7 @@ txTask r@RBUS{..} = do
 doTransmitMessage :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
 doTransmitMessage r@RBUS{..} t1 = do
     t0 <- deref txTimestamp
-    when (t1 - t0 >? 0) $ peek msgQueue $ \i -> do
+    when (t1 - t0 >? 1) $ peek msgQueue $ \i -> do
         let ix = toIx i
         ttl <- deref $ msgTTL ! ix
         ifte_ (ttl >? 0)
@@ -85,14 +85,10 @@ doDiscovery r@RBUS{..} t1 = do
          )
 
 
-doConfirm :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
-doConfirm r@RBUS{..} t1 = do
-    t0 <- deref txTimestamp
-    when (t1 - t0 >? 0)
-         (do store shouldConfirm false
-             store txTimestamp t1
-             toRS transmitConfirm r
-         )
+doConfirm :: RBUS -> Ivory (ProcEffects s ()) ()
+doConfirm r@RBUS{..}= do
+    store shouldConfirm false
+    toRS transmitConfirm r
 
 
 doPing :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()

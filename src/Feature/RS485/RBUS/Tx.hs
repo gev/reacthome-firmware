@@ -53,7 +53,7 @@ doTransmitMessage :: RBUS -> Ivory (ProcEffects s ()) ()
 doTransmitMessage r@RBUS{..} = do
     t0 <- deref txTimestamp
     t1 <- getSystemTime clock
-    when (t1 - t0 >? 0) $ peek msgQueue $ \i -> do
+    when (t1 - t0 >? 1) $ peek msgQueue $ \i -> do
         let ix = toIx i
         ttl <- deref $ msgTTL ! ix
         ifte_ (ttl >? 0)

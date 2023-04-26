@@ -13,7 +13,8 @@ import           Protocol.RS485.RBUS.Master.Rx
 rxHandle :: RBUS -> Uint16 -> Ivory eff ()
 rxHandle RBUS{..} value = do
     store rxLock true
-    push rxQueue $ \i -> do
+    store rxTimestamp =<< getSystemTime clock
+    push rxQueue $ \i ->
         store (rxBuff ! toIx i) value
 
 
@@ -22,7 +23,6 @@ rxTask RBUS{..} =
     pop rxQueue $ \i -> do
         v <- deref $ rxBuff ! toIx i
         receive protocol $ castDefault v
-        store rxTimestamp =<< getSystemTime clock
 
 
 resetTask :: RBUS -> Ivory eff ()
