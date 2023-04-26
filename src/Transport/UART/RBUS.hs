@@ -3,7 +3,6 @@
 {-# LANGUAGE NamedFieldPuns     #-}
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE RankNTypes         #-}
-{-# LANGUAGE RecordWildCards    #-}
 {-# LANGUAGE TypeOperators      #-}
 
 module Transport.UART.RBUS    where
@@ -27,9 +26,7 @@ import           Interface.UART           (HandleUART (HandleUART),
                                            UART (configUART),
                                            WordLength (WL_8b))
 import           Ivory.Language
-import           Ivory.Stdlib
 import qualified Protocol.UART.RBUS       as U
-import           Protocol.UART.RBUS.Rx
 import           Transport.UART.RBUS.Data
 import           Transport.UART.RBUS.Rx
 import           Transport.UART.RBUS.Tx
@@ -86,14 +83,6 @@ rbus uart' = do
     addTask $ yeld (name <> "_reset") $ resetTask rbus
 
     pure rbus
-
-
-
-resetTask :: RBUS -> Ivory eff ()
-resetTask RBUS{..} = do
-    t0 <- deref rxTimestamp
-    t1 <- getSystemTime clock
-    when (t1 - t0 >? 0) $ reset protocol
 
 
 

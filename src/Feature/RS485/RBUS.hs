@@ -4,43 +4,39 @@
 {-# LANGUAGE NamedFieldPuns     #-}
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE RankNTypes         #-}
-{-# LANGUAGE RecordWildCards    #-}
 {-# LANGUAGE TypeOperators      #-}
 
 module Feature.RS485.RBUS where
 
-import           Control.Monad                       (zipWithM, zipWithM_)
-import           Control.Monad.Reader                (MonadReader, asks)
-import           Control.Monad.Writer                (MonadWriter)
+import           Control.Monad              (zipWithM)
+import           Control.Monad.Reader       (MonadReader, asks)
+import           Control.Monad.Writer       (MonadWriter)
 import           Core.Context
 import           Core.Controller
-import qualified Core.Domain                         as D
+import qualified Core.Domain                as D
 import           Core.Feature
-import           Core.FSM                            (transit)
+import           Core.FSM                   (transit)
 import           Core.Handler
 import           Core.Task
-import           Core.Transport                      as T
+import           Core.Transport             as T
 import           Core.Version
 import           Data.Buffer
 import           Data.Concurrent.Queue
-import           Data.Foldable                       (traverse_)
+import           Data.Foldable              (traverse_)
 import           Data.Value
 import           Feature.RS485.RBUS.Data
 import           Feature.RS485.RBUS.Rx
 import           Feature.RS485.RBUS.Tx
 import           GHC.TypeNats
 import           Interface.Mac
-import           Interface.MCU                       (MCU (peripherals, systemClock))
+import           Interface.MCU              (MCU (peripherals, systemClock))
 import           Interface.RS485
-import           Interface.SystemClock               (getSystemTime)
+import           Interface.SystemClock      (getSystemTime)
 import           Ivory.Language
 import           Ivory.Language.Pointer
 import           Ivory.Stdlib
-import           Protocol.RS485.RBUS                 (broadcastAddress)
-import qualified Protocol.RS485.RBUS.Master          as P
-import           Protocol.RS485.RBUS.Master.MacTable as M
-import           Protocol.RS485.RBUS.Master.Rx
-import           Protocol.RS485.RBUS.Master.Tx       (transmitMessage)
+import           Protocol.RS485.RBUS        (broadcastAddress)
+import           Protocol.RS485.RBUS.Master
 
 
 
@@ -117,7 +113,7 @@ rbus' rs485 index = do
 
     let onReceive = store rxLock false
 
-    protocol <- P.master name onMessage onConfirm onDiscovery onPing onReceive
+    protocol <- master name onMessage onConfirm onDiscovery onPing onReceive
 
     let rbus = RBUS { index, clock, rs, protocol
                     , rxBuff, rxQueue
@@ -145,16 +141,6 @@ rbus' rs485 index = do
 
 
 
-resetTask :: RBUS -> Ivory eff ()
-resetTask RBUS{..} = do
-    t0 <- deref rxTimestamp
-    t1 <- getSystemTime clock
-    when (t1 - t0 >? 0) $ do
-        reset protocol
-        store rxLock false
-
-
-
 instance Controller [RBUS] where
     handle list buff size =
         pure [ size >=? 9 ==> do
@@ -162,30 +148,3 @@ instance Controller [RBUS] where
                 cond_ [ action ==? 0xa1 ==> transmitRBUS list buff size
                       ]
              ]
-
-
-
-transmitRBUS :: KnownNat n
-             => [RBUS]
-             -> Buffer n Uint8
-             -> Uint8
-             -> Ivory (ProcEffects s ()) ()
-transmitRBUS list buff size = do
-    port <- deref $ buff ! 7
-    let run r@RBUS{..} p =
-            when (p ==? port) $ do
-                address <- deref $ buff ! 8
-                let macTable = P.table protocol
-                lookupMac macTable address $ \rec -> do
-                    found <- local $ ival true
-                    let mac'  = rec ~> mac
-                    arrayMap $ \ix -> do
-                        m1 <- deref $ mac' ! ix
-                        m2 <- deref $ buff ! toIx (1 + fromIx ix)
-                        when (m1 /=? m1) $ do
-                            store found false
-                            breakOut
-                    found' <- deref found
-                    when found' $
-                        toQueue r address buff 9 (size - 9)
-    zipWithM_ run list (iterate (+1) 1)

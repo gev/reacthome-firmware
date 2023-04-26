@@ -7,6 +7,7 @@ import           Interface.SystemClock
 import           Ivory.Language
 import           Protocol.RS485.RBUS.Slave.Rx
 import           Transport.RS485.RBUS.Data
+import Ivory.Stdlib
 
 
 rxHandle :: RBUS -> Uint16 -> Ivory eff ()
@@ -22,3 +23,12 @@ rxTask RBUS{..} =
     pop rxQueue $ \i -> do
         v <- deref $ rxBuff ! toIx i
         receive protocol $ castDefault v
+
+
+resetTask :: RBUS -> Ivory eff ()
+resetTask RBUS{..} = do
+    t0 <- deref rxTimestamp
+    t1 <- getSystemTime clock
+    when (t1 - t0 >? 0) $ do
+        reset protocol
+        store rxLock false
