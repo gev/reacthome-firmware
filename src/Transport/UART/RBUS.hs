@@ -18,9 +18,7 @@ import           Core.Transport
 import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Data.Value
-import           Interface.Mac
 import           Interface.MCU            (MCU (peripherals, systemClock), mac)
-import           Interface.SystemClock    (getSystemTime)
 import           Interface.UART           (HandleUART (HandleUART),
                                            Parity (None), StopBit (SB_1b),
                                            UART (configUART),

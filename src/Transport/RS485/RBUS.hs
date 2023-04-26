@@ -18,10 +18,8 @@ import           Core.Transport
 import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Data.Value
-import           Interface.Mac
 import           Interface.MCU             (MCU (peripherals, systemClock), mac)
 import           Interface.RS485
-import           Interface.SystemClock     (getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Protocol.RS485.RBUS.Slave (slave)
@@ -67,7 +65,6 @@ rbus rs485 = do
     let dispatch = makeDispatcher features
 
     let onMessage buff n shouldHandle = do
-            store txTimestamp =<< getSystemTime clock
             when shouldHandle $ dispatch buff n
             store shouldConfirm true
 
@@ -75,9 +72,7 @@ rbus rs485 = do
       TODO: Should make Init request here?
       TODO: Should reset Tx queue when address has changed?
     -}
-    let onDiscovery = do
-            store txTimestamp =<< getSystemTime clock
-            store shouldConfirm false
+    let onDiscovery = store shouldConfirm false
 
     let onConfirm = remove msgQueue
 

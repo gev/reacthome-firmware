@@ -15,25 +15,19 @@ import           Core.Context
 import           Core.Controller
 import qualified Core.Domain                as D
 import           Core.Feature
-import           Core.FSM                   (transit)
 import           Core.Handler
 import           Core.Task
 import           Core.Transport             as T
 import           Core.Version
 import           Data.Buffer
 import           Data.Concurrent.Queue
-import           Data.Foldable              (traverse_)
 import           Data.Value
 import           Feature.RS485.RBUS.Data
 import           Feature.RS485.RBUS.Rx
 import           Feature.RS485.RBUS.Tx
-import           GHC.TypeNats
-import           Interface.Mac
 import           Interface.MCU              (MCU (peripherals, systemClock))
 import           Interface.RS485
-import           Interface.SystemClock      (getSystemTime)
 import           Ivory.Language
-import           Ivory.Language.Pointer
 import           Ivory.Stdlib
 import           Protocol.RS485.RBUS        (broadcastAddress)
 import           Protocol.RS485.RBUS.Master
