@@ -35,6 +35,7 @@ rbus rs485 = do
     model         <- asks D.model
     version       <- asks D.version
     mcu           <- asks D.mcu
+    mustInit      <- asks D.mustInit
     shouldInit    <- asks D.shouldInit
     features      <- asks D.features
 
@@ -72,7 +73,9 @@ rbus rs485 = do
       TODO: Should make Init request here?
       TODO: Should reset Tx queue when address has changed?
     -}
-    let onDiscovery = store shouldConfirm false
+    let onDiscovery = do
+         store shouldConfirm false
+         store shouldConfirm =<< deref mustInit
 
     let onConfirm = remove msgQueue
 

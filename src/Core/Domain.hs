@@ -29,6 +29,7 @@ data Domain p t where
      Domain :: { model      :: Value Uint8
                , version    :: V.Version
                , mcu        :: I.MCU p
+               , mustInit   :: Value IBool
                , shouldInit :: Value IBool
                , transport  :: t
                , features   :: [Feature]
@@ -44,12 +45,13 @@ domain :: (MonadWriter Context m)
        -> t
        -> [Feature]
        -> m (Domain p t)
-domain model' version' mcu shouldInit' transport features = do
+domain model' version' mcu mustInit' transport features = do
     addModule inclCast
     addModule inclString
     addModule inclSerialize
     addModule inclReadAddr
     model      <- value "model" model'
     version    <- V.version "version" version'
-    shouldInit <- value "should_init" shouldInit'
-    pure Domain { model, version, mcu, shouldInit, transport, features}
+    mustInit   <- value "should_init" mustInit'
+    shouldInit <- value "should_init" mustInit'
+    pure Domain { model, version, mcu, mustInit, shouldInit, transport, features}
