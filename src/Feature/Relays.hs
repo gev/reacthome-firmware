@@ -85,8 +85,8 @@ manage Relays{..} = zipWithM_ zip getOutputs (iterate (+1) 0)
             let run = manageRelay r output $ getSystemTime clock
             isOn <- deref $ r ~> R.state
             ifte_ isOn
-                (run set   R.delayOff)
-                (run reset R.delayOn )
+                (run set   R.delayOff false)
+                (run reset R.delayOn  true)
 
 
 
@@ -96,8 +96,9 @@ manageRelay :: Output o
             -> Ivory eff Uint32
             -> (o -> Ivory eff ())
             -> Label R.RelayStruct ('Stored Uint32)
+            -> IBool
             -> Ivory eff ()
-manageRelay r o timestamp setOut delay = do
+manageRelay r o timestamp setOut delay state = do
     setOut o
     delay' <- deref $ r ~> delay
     when (delay' >? 0) $ do
@@ -105,7 +106,7 @@ manageRelay r o timestamp setOut delay = do
         t1 <- timestamp
         when (t1 - t0 >=? delay') $ do
             store (r ~> delay      ) 0
-            store (r ~> R.state    ) true
+            store (r ~> R.state    ) state
             store (r ~> R.timestamp) t1
             store (r ~> R.synced   ) false
 
@@ -172,7 +173,8 @@ onDo Relays{..} buff size = do
             let r  = addrOf rs ! ix
             action <- deref $ buff ! 2
             cond_ [ action ==? 0 ==> do
-                        store (r ~> R.state )  false
+                        store (r ~> R.timestamp) =<< getSystemTime clock
+                        store (r ~> R.state ) false
                         store (r ~> R.synced) false
                   , action ==? 1 ==> do
                         store (r ~> R.timestamp) =<< getSystemTime clock
