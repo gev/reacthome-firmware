@@ -143,14 +143,12 @@ receiveMessageData Slave{..} v = do
          (store phase waitingMsbCRC)
 
 receiveMessageLsbCRC :: Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receiveMessageLsbCRC r@Slave{..} v = do
+receiveMessageLsbCRC r@Slave{..} = receiveLsbCRC r $ do
     tmp'   <- deref tmp
     size'  <- deref size
     tidRx' <- deref tidRx
-    let complete = do store tidRx $ safeCast tmp'
-                      onMessage buff size' $ tidRx' /=? safeCast tmp'
-    receiveLsbCRC r complete v
-
+    onMessage buff size' $ tidRx' /=? safeCast tmp'
+    store tidRx $ safeCast tmp'
 
 
 receiveAddress :: Uint8 -> Slave n -> Uint8 -> Ivory eff ()

@@ -67,6 +67,7 @@ rbus' rs485 index = do
     rxLock           <- value  (name <> "_rx_lock"          ) false
     txLock           <- value  (name <> "_tx_lock"          ) false
     rxTimestamp      <- value  (name <> "_timestamp_rx"     ) 0
+    txTimestamp      <- value  (name <> "_timestamp_tx"     ) 0
     shouldDiscovery  <- value  (name <> "_should_discovery" ) false
     shouldConfirm    <- value  (name <> "_should_confirm"   ) false
     shouldPing       <- value  (name <> "_should_ping"      ) true
@@ -114,7 +115,7 @@ rbus' rs485 index = do
                     , msgOffset, msgSize, msgConfirm, msgTTL, msgQueue, msgBuff, msgIndex
                     , txBuff
                     , rxLock, txLock
-                    , rxTimestamp
+                    , rxTimestamp, txTimestamp
                     , shouldDiscovery, shouldConfirm, shouldPing
                     , discoveryAddress, confirmAddress, pingAddress
                     }
@@ -127,9 +128,9 @@ rbus' rs485 index = do
 
     addInit rbusInit
 
-    addTask $ yeld    (name <> "_rx"   ) $ rxTask    rbus
-    addTask $ delay 1 (name <> "_tx"   ) $ txTask    rbus
-    addTask $ yeld    (name <> "_reset") $ resetTask rbus
+    addTask $ yeld (name <> "_rx"   ) $ rxTask    rbus
+    addTask $ yeld (name <> "_tx"   ) $ txTask    rbus
+    addTask $ yeld (name <> "_reset") $ resetTask rbus
 
     pure rbus
 

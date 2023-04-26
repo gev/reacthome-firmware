@@ -53,23 +53,25 @@ txTask r@RBUS{..} = do
 
 
 doTransmitMessage :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
-doTransmitMessage r@RBUS{..} ts = peek msgQueue $ \i -> do
-    let ix = toIx i
-    ttl <- deref $ msgTTL ! ix
-    ifte_ (ttl >? 0)
-        (do offset <- deref $ msgOffset ! ix
-            size   <- deref $ msgSize ! ix
-            sx     <- local $ ival offset
-            for (toIx size) $ \dx -> do
-                sx' <- deref sx
-                v <- deref $ msgBuff ! toIx sx'
-                store sx $ sx' + 1
-                store (txBuff ! dx) v
-            store (msgTTL ! ix) $ ttl - 1
-            store txTimestamp ts
-            rsTransmit r size
-        )
-        (remove msgQueue)
+doTransmitMessage r@RBUS{..} t1 = do
+    t0 <- deref txTimestamp
+    when (t1 - t0 >? 0) $ peek msgQueue $ \i -> do
+        let ix = toIx i
+        ttl <- deref $ msgTTL ! ix
+        ifte_ (ttl >? 0)
+            (do offset <- deref $ msgOffset ! ix
+                size   <- deref $ msgSize ! ix
+                sx     <- local $ ival offset
+                for (toIx size) $ \dx -> do
+                    sx' <- deref sx
+                    v <- deref $ msgBuff ! toIx sx'
+                    store sx $ sx' + 1
+                    store (txBuff ! dx) v
+                store (msgTTL ! ix) $ ttl - 1
+                store txTimestamp t1
+                rsTransmit r size
+            )
+            (remove msgQueue)
 
 
 

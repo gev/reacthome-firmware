@@ -50,32 +50,36 @@ txTask r@RBUS{..} = do
 
 
 doTransmitMessage :: RBUS -> Ivory (ProcEffects s ()) ()
-doTransmitMessage r@RBUS{..} = peek msgQueue $ \i -> do
-    let ix = toIx i
-    ttl <- deref $ msgTTL ! ix
-    ifte_ (ttl >? 0)
-        (do offset        <- deref $ msgOffset ! ix
-            address       <- deref $ msgBuff ! toIx (offset + 1)
-            let confirmed  = msgConfirm ! toIx address
-            confirmed'    <- deref confirmed
-            ifte_ confirmed'
-                (do
-                    store confirmed false
-                    remove msgQueue
-                )
-                (do
-                    sx    <- local $ ival offset
-                    size  <- deref $ msgSize ! ix
-                    for (toIx size) $ \dx -> do
-                        sx' <- deref sx
-                        v <- deref $ msgBuff ! toIx sx'
-                        store sx $ sx' + 1
-                        store (txBuff ! dx) v
-                    store (msgTTL ! ix) $ ttl - 1
-                    rsTransmit r size
-                )
-        )
-        (remove msgQueue)
+doTransmitMessage r@RBUS{..} = do
+    t0 <- deref txTimestamp
+    t1 <- getSystemTime clock
+    when (t1 - t0 >? 0) $ peek msgQueue $ \i -> do
+        let ix = toIx i
+        ttl <- deref $ msgTTL ! ix
+        ifte_ (ttl >? 0)
+            (do offset        <- deref $ msgOffset ! ix
+                address       <- deref $ msgBuff ! toIx (offset + 1)
+                let confirmed  = msgConfirm ! toIx address
+                confirmed'    <- deref confirmed
+                ifte_ confirmed'
+                    (do
+                        store confirmed false
+                        remove msgQueue
+                    )
+                    (do
+                        sx    <- local $ ival offset
+                        size  <- deref $ msgSize ! ix
+                        for (toIx size) $ \dx -> do
+                            sx' <- deref sx
+                            v <- deref $ msgBuff ! toIx sx'
+                            store sx $ sx' + 1
+                            store (txBuff ! dx) v
+                        store (msgTTL ! ix) $ ttl - 1
+                        rsTransmit r size
+                    )
+            )
+            (remove msgQueue)
+        store txTimestamp t1
 
 
 
