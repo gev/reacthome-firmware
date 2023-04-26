@@ -21,7 +21,9 @@ import           Transport.RS485.RBUS.Data
 
 
 txHandle :: RBUS -> Ivory eff ()
-txHandle RBUS{..} = store txLock false
+txHandle RBUS{..} = do
+    store rxLock false
+    store txLock false
 
 
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()

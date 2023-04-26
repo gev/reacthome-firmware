@@ -168,10 +168,10 @@ receiveMsbCRC Slave{..} v = do
 
 receiveLsbCRC :: Slave n -> Ivory eff () -> Uint8 -> Ivory eff ()
 receiveLsbCRC s@Slave{..} complete v = do
+    onReceive
     valid' <- deref valid
     lsb'   <- deref $ crc ~> lsb
     when (valid' .&& lsb' ==? v) complete
-    onReceive
     reset s
 
 

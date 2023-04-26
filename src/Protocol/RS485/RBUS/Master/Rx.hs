@@ -184,10 +184,10 @@ receiveMsbCRC Master{..} v = do
 
 receiveLsbCRC :: Master n -> Ivory eff () -> Uint8 -> Ivory eff ()
 receiveLsbCRC m@Master{..} complete v = do
+    onReceive
     valid' <- deref valid
     lsb'   <- deref $ crc ~> lsb
     when (valid' .&& lsb' ==? v) complete
-    onReceive
     reset m
 
 

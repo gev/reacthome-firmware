@@ -6,6 +6,7 @@
 
 module Feature.RS485.RBUS.Tx where
 
+import           Control.Monad                       (zipWithM_)
 import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Feature.RS485.RBUS.Data
@@ -23,12 +24,13 @@ import           Protocol.RS485.RBUS.Master.Tx       (transmitConfirm,
                                                       transmitDiscovery,
                                                       transmitMessage,
                                                       transmitPing)
-import Control.Monad (zipWithM_)
 
 
 
 txHandle :: RBUS -> Ivory eff ()
-txHandle RBUS{..} = store txLock false
+txHandle RBUS{..} = do
+    store rxLock false
+    store txLock false
 
 
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()

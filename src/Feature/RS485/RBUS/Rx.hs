@@ -12,10 +12,10 @@ import           Protocol.RS485.RBUS.Master.Rx
 
 rxHandle :: RBUS -> Uint16 -> Ivory eff ()
 rxHandle RBUS{..} value = do
+    store rxLock true
+    store rxTimestamp =<< getSystemTime clock
     push rxQueue $ \i -> do
-        store rxTimestamp =<< getSystemTime clock
         store (rxBuff ! toIx i) value
-        store rxLock true
 
 
 rxTask :: RBUS -> Ivory (ProcEffects s ()) ()
