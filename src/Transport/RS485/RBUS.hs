@@ -75,7 +75,7 @@ rbus rs485 = do
     -}
     let onDiscovery = do
          store shouldConfirm false
-         store shouldInit =<< deref mustInit
+         store shouldInit mustInit
 
     let onConfirm = remove msgQueue
 
