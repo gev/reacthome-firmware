@@ -35,6 +35,7 @@ data GD32F4xx = GD32F4xx
     { uart_0    :: UARTW
     , uart_1    :: UARTW
     , uart_2    :: UARTW
+    , uart_3    :: UARTW
     , uart_5    :: UARTW
     , uart_7    :: UARTW
 
@@ -221,8 +222,8 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
                          dma_ch7
                          dma_subperi4
                          dma1_channel7_irqn
-                         (pa_10 $ AF gpio_af_7)
-                         (pa_9  $ AF gpio_af_7)
+                         (pb_7 $ AF gpio_af_7)
+                         (pb_6 $ AF gpio_af_7)
 
     , uart_1    = mkUART usart1
                          rcu_usart1
@@ -243,19 +244,30 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
                          dma_ch3
                          dma_subperi4
                          dma0_channel3_irqn
-                         (pc_11 $ AF gpio_af_7)
-                         (pc_10 $ AF gpio_af_7)
+                         (pd_9 $ AF gpio_af_7)
+                         (pd_8 $ AF gpio_af_7)
+
+    , uart_3    = mkUART uart3
+                         rcu_uart3
+                         uart3_irqn
+                         rcu_dma0
+                         dma0
+                         dma_ch4
+                         dma_subperi4
+                         dma0_channel4_irqn
+                         (pc_11 $ AF gpio_af_8)
+                         (pd_10 $ AF gpio_af_8)
 
     , uart_5    = mkUART usart5
                          rcu_usart5
-                          usart5_irqn
-                          rcu_dma1
-                          dma1
-                          dma_ch6
-                          dma_subperi5
-                          dma1_channel6_irqn
-                          (pc_7 $ AF gpio_af_8)
-                          (pc_6 $ AF gpio_af_8)
+                         usart5_irqn
+                         rcu_dma1
+                         dma1
+                         dma_ch6
+                         dma_subperi5
+                         dma1_channel6_irqn
+                         (pc_7 $ AF gpio_af_8)
+                         (pc_6 $ AF gpio_af_8)
 
     , uart_7    = mkUART uart7
                          rcu_uart7
