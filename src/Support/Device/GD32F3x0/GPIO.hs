@@ -45,6 +45,7 @@ module Support.Device.GD32F3x0.GPIO
     , gpio_pin_15
 
     , GPIO_AF
+    , gpio_af_0
     , gpio_af_1
 
     , setMode
@@ -129,6 +130,7 @@ gpio_pin_15 = GPIO_PIN $ ext "GPIO_PIN_15"
 newtype GPIO_AF = GPIO_AF Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
+gpio_af_0  = GPIO_AF $ ext "GPIO_AF_0"
 gpio_af_1  = GPIO_AF $ ext "GPIO_AF_1"
 
 
@@ -204,6 +206,7 @@ inclGPIO = do
     inclSym gpio_pin_14
     inclSym gpio_pin_15
 
+    inclSym gpio_af_0
     inclSym gpio_af_1
 
     incl gpio_output_options_set
