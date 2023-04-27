@@ -13,11 +13,11 @@ server = Formula { name       = "server"
                  , model      = 0xff
                  , version    = (1, 0)
                  , shouldInit = false
-                 , transport  = U.rbus uart_7
-                 , features   = [ F.rbus [ rs485 1 uart_0 out_pc_8
-                                         , rs485 2 uart_1 out_pd_7
-                                         , rs485 3 uart_2 out_pa_15
-                                         , rs485 4 uart_5 out_pd_15
+                 , transport  = U.rbus uart_1
+                 , features   = [ F.rbus [ rs485 1 uart_0 out_pd_1
+                                         , rs485 2 uart_2 out_pb_15
+                                         , rs485 3 uart_3 out_pc_12
+                                         , rs485 4 uart_5 out_pb_14
                                          ]
                                 ]
                  }
