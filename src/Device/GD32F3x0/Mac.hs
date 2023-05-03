@@ -9,7 +9,6 @@ import           Data.Serialize
 import           Interface.Mac
 import           Ivory.Language
 import           Support.ReadAddr
-import           Support.Device.GD32F3x0.DBG
 
 maxPrime48 :: Uint64
 maxPrime48 = 0xFFFFFFFFFFC5
