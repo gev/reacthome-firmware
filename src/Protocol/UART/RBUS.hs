@@ -29,11 +29,10 @@ preamble = Preamble { message = 0xa5 }
 readyToReceive      = 0x00 :: Uint8
 receivingMessage    = 0x01 :: Uint8
 
-waitingTid          = 0x01 :: Uint8
-waitingSize         = 0x02 :: Uint8
-waitingData         = 0x03 :: Uint8
-waitingMsbCRC       = 0x04 :: Uint8
-waitingLsbCRC       = 0x05 :: Uint8
+waitingSize         = 0x01 :: Uint8
+waitingData         = 0x02 :: Uint8
+waitingMsbCRC       = 0x03 :: Uint8
+waitingLsbCRC       = 0x04 :: Uint8
 
 
 
@@ -41,7 +40,7 @@ data RBUS n = RBUS
     { name      :: String
     , state     :: Value    Uint8
     , phase     :: Value    Uint8
-    , offset     :: Value    Uint8
+    , offset    :: Value    Uint8
     , size      :: Value    Uint8
     , buff      :: Buffer n Uint8
     , crc       :: Record   CRC16
@@ -59,7 +58,7 @@ rbus :: (MonadWriter Context m, KnownNat n)
 rbus id onMessage = do
     let name = id <> "_protocol"
     state    <- value     (name <> "_state"     ) readyToReceive
-    phase    <- value     (name <> "_phase"     ) waitingTid
+    phase    <- value     (name <> "_phase"     ) waitingSize
     offset   <- value     (name <> "_offset"    ) 0
     size     <- value     (name <> "_size"      ) 0
     buff     <- buffer    (name <> "_message"   )

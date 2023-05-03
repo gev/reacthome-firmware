@@ -41,7 +41,7 @@ rbus uart' = do
     let name       = "transport_uart_rbus"
     let clock      = systemClock mcu
 
-    uart         <- uart' $ peripherals mcu
+    uart          <- uart' $ peripherals mcu
     rxBuff        <- buffer (name <> "_rx"          )
     rxQueue       <- queue  (name <> "_rx"          )
     msgOffset     <- buffer (name <> "_msg_offset"  )

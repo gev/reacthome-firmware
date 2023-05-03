@@ -256,7 +256,7 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
                          dma_subperi4
                          dma0_channel4_irqn
                          (pc_11 $ AF gpio_af_8)
-                         (pd_10 $ AF gpio_af_8)
+                         (pc_10 $ AF gpio_af_8)
 
     , uart_5    = mkUART usart5
                          rcu_usart5
