@@ -12,7 +12,7 @@ server :: Formula GD32F4xx
 server = Formula { name       = "server"
                  , model      = 0xff
                  , version    = (1, 0)
-                 , shouldInit = false
+                 , shouldInit = true
                  , transport  = U.rbus uart_1
                  , features   = [ F.rbus [ rs485 1 uart_0 out_pd_1
                                          , rs485 2 uart_2 out_pb_15
