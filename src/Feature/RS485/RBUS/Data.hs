@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 
 module Feature.RS485.RBUS.Data where
+
 import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Data.Value
@@ -15,6 +16,9 @@ data RBUS = RBUS
      { index            :: Int
      , clock            :: SystemClock
      , rs               :: RS485
+     , isRBUS           :: Value      IBool
+     , baudrate         :: Value      Uint32
+     , lineControl      :: Value      Uint8
      , protocol         :: Master 255
      , rxBuff           :: Buffer  64 Uint16
      , rxQueue          :: Queue   64

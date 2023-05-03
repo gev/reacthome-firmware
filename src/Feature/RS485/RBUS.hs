@@ -29,7 +29,7 @@ import           Interface.MCU              (MCU (peripherals, systemClock))
 import           Interface.RS485
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Protocol.RS485.RBUS        (broadcastAddress)
+import           Protocol.RS485.RBUS
 import           Protocol.RS485.RBUS.Master
 
 
@@ -54,6 +54,9 @@ rbus' rs485 index = do
     let clock         = systemClock mcu
 
     rs               <- rs485
+    isRBUS           <- value  (name <> "_is_rbus"          ) true
+    baudrate         <- value  (name <> "_baudrate"         ) defaultBaudrate
+    lineControl      <- value  (name <> "_line_control"     ) 0
     rxBuff           <- buffer (name <> "_rx"               )
     rxQueue          <- queue  (name <> "_rx"               )
     msgOffset        <- buffer (name <> "_msg_offset"       )
@@ -110,7 +113,7 @@ rbus' rs485 index = do
 
     protocol <- master name onMessage onConfirm onDiscovery onPing onReceive
 
-    let rbus = RBUS { index, clock, rs, protocol
+    let rbus = RBUS { index, clock, rs, isRBUS, baudrate, lineControl, protocol
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgConfirm, msgTTL, msgQueue, msgBuff, msgIndex
                     , txBuff
@@ -124,7 +127,7 @@ rbus' rs485 index = do
 
     let rbusInit :: Def ('[] :-> ())
         rbusInit = proc (name <> "_init") $ body $ do
-            configureRS485 rs 1_000_000 WL_8b SB_1b None
+            configureRS485 rs defaultBaudrate WL_8b SB_1b None
 
     addInit rbusInit
 
