@@ -1,6 +1,6 @@
 /*!
     \file    main.c
-    \brief   TIMER2 dma demo
+    \brief   TIMER0 dma demo
 
     \version 2016-08-15, V1.0.0, firmware for GD32F4xx
     \version 2018-12-12, V2.0.0, firmware for GD32F4xx
@@ -38,9 +38,7 @@ OF SUCH DAMAGE.
 #include "gd32f4xx.h"
 #include <stdio.h>
 
-// #define TIMER0_CH0CV  ((uint32_t)0x040010034)
 uint16_t buffer[3]={249,499,749};
-
 
 void gpio_config(void);
 void timer_config(void);
@@ -54,12 +52,13 @@ void dma_config(void);
 */
 void gpio_config(void)
 {
-    rcu_periph_clock_enable(RCU_GPIOB);
+    rcu_periph_clock_enable(RCU_GPIOA);
 
-    gpio_mode_set(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_5);
-    gpio_output_options_set(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ,GPIO_PIN_5);
+    /*configure PA8(TIMER0 CH0) as alternate function*/
+    gpio_mode_set(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_8);
+    gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ,GPIO_PIN_8);
 
-    gpio_af_set(GPIOB, GPIO_AF_2, GPIO_PIN_5);
+    gpio_af_set(GPIOA, GPIO_AF_1, GPIO_PIN_8);
 }
 
 /*!
@@ -73,13 +72,13 @@ void dma_config(void)
     dma_single_data_parameter_struct dma_init_struct;
 
     /* enable DMA clock */
-    rcu_periph_clock_enable(RCU_DMA0);
+    rcu_periph_clock_enable(RCU_DMA1);
 
     /* initialize DMA channel5 */
-    dma_deinit(DMA0,DMA_CH5);
+    dma_deinit(DMA1,DMA_CH5);
 
     /* DMA channel5 initialize */
-    dma_init_struct.periph_addr = (uint32_t)(&TIMER_CH1CV(TIMER2)); //(uint32_t)TIMER2_CH0CV;
+    dma_init_struct.periph_addr = (uint32_t)&TIMER_CH0CV(TIMER0);
     dma_init_struct.periph_inc = DMA_PERIPH_INCREASE_DISABLE;
     dma_init_struct.memory0_addr = (uint32_t)buffer;
     dma_init_struct.memory_inc = DMA_MEMORY_INCREASE_ENABLE;
@@ -88,12 +87,11 @@ void dma_config(void)
     dma_init_struct.direction = DMA_MEMORY_TO_PERIPH;
     dma_init_struct.number = 3;
     dma_init_struct.priority = DMA_PRIORITY_ULTRA_HIGH;
-    dma_single_data_mode_init(DMA0,DMA_CH5,&dma_init_struct);
-    dma_channel_subperipheral_select(DMA0,DMA_CH5,DMA_SUBPERI5);
+    dma_single_data_mode_init(DMA1,DMA_CH5,&dma_init_struct);
+    dma_channel_subperipheral_select(DMA1,DMA_CH5,DMA_SUBPERI6);
 
     /* enable DMA channel5 */
-    dma_channel_enable(DMA0,DMA_CH5);
-
+    dma_channel_enable(DMA1,DMA_CH5);
 }
 
 /*!
@@ -104,34 +102,34 @@ void dma_config(void)
 */
 void timer_config(void)
 {
-    /* TIMER2 DMA Transfer example -------------------------------------------------
-    TIMER2CLK = 120MHz, Prescaler = 120 
-    TIMER2 counter clock = systemcoreclock/120 = 1MHz.
+    /* TIMER0 DMA Transfer example -------------------------------------------------
+    TIMER0CLK = 120MHz, Prescaler = 120 
+    TIMER0 counter clock = systemcoreclock/120 = 1MHz.
 
-    the objective is to configure TIMER2 channel 1 to generate PWM
+    the objective is to configure TIMER0 channel 1 to generate PWM
     signal with a frequency equal to 1KHz and a variable duty cycle(25%,50%,75%) that is 
     changed by the DMA after a specific number of update DMA request.
 
-    the number of this repetitive requests is defined by the TIMER2 repetition counter,
-    each 2 update requests, the TIMER2 Channel 0 duty cycle changes to the next new 
+    the number of this repetitive requests is defined by the TIMER0 repetition counter,
+    each 2 update requests, the TIMER0 Channel 0 duty cycle changes to the next new 
     value defined by the buffer . 
     -----------------------------------------------------------------------------*/
     timer_oc_parameter_struct timer_ocintpara;
     timer_parameter_struct timer_initpara;
 
-    rcu_periph_clock_enable(RCU_TIMER2);
+    rcu_periph_clock_enable(RCU_TIMER0);
     rcu_timer_clock_prescaler_config(RCU_TIMER_PSC_MUL4);
 
-    timer_deinit(TIMER2);
+    timer_deinit(TIMER0);
 
-    /* TIMER2 configuration */
+    /* TIMER0 configuration */
     timer_initpara.prescaler         = 199;
     timer_initpara.alignedmode       = TIMER_COUNTER_EDGE;
     timer_initpara.counterdirection  = TIMER_COUNTER_UP;
     timer_initpara.period            = 999;
     timer_initpara.clockdivision     = TIMER_CKDIV_DIV1;
     timer_initpara.repetitioncounter = 1;
-    timer_init(TIMER2,&timer_initpara);
+    timer_init(TIMER0,&timer_initpara);
 
     /* CH0 configuration in PWM1 mode */
     timer_ocintpara.outputstate  = TIMER_CCX_ENABLE;
@@ -140,23 +138,23 @@ void timer_config(void)
     timer_ocintpara.ocnpolarity  = TIMER_OCN_POLARITY_HIGH;
     timer_ocintpara.ocidlestate  = TIMER_OC_IDLE_STATE_HIGH;
     timer_ocintpara.ocnidlestate = TIMER_OCN_IDLE_STATE_LOW;
-    timer_channel_output_config(TIMER2,TIMER_CH_1,&timer_ocintpara);
+    timer_channel_output_config(TIMER0,TIMER_CH_0,&timer_ocintpara);
 
-    timer_channel_output_pulse_value_config(TIMER2,TIMER_CH_1,buffer[0]);
-    timer_channel_output_mode_config(TIMER2,TIMER_CH_1,TIMER_OC_MODE_PWM0);
-    timer_channel_output_shadow_config(TIMER2,TIMER_CH_1,TIMER_OC_SHADOW_DISABLE);
+    timer_channel_output_pulse_value_config(TIMER0,TIMER_CH_0,buffer[0]);
+    timer_channel_output_mode_config(TIMER0,TIMER_CH_0,TIMER_OC_MODE_PWM0);
+    timer_channel_output_shadow_config(TIMER0,TIMER_CH_0,TIMER_OC_SHADOW_DISABLE);
 
-    /* TIMER2 primary output enable */
-    timer_primary_output_config(TIMER2,ENABLE);
+    /* TIMER0 primary output enable */
+    timer_primary_output_config(TIMER0,ENABLE);
 
-    /* TIMER2 update DMA request enable */
-    timer_dma_enable(TIMER2,TIMER_DMA_UPD);
+    /* TIMER0 update DMA request enable */
+    timer_dma_enable(TIMER0,TIMER_DMA_UPD);
 
     /* auto-reload preload enable */
-    timer_auto_reload_shadow_enable(TIMER2);
+    timer_auto_reload_shadow_enable(TIMER0);
 
-    /* TIMER2 counter enable */
-    timer_enable(TIMER2);
+    /* TIMER0 counter enable */
+    timer_enable(TIMER0);
 }
 
 /*!
