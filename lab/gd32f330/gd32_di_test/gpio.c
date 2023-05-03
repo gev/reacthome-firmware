@@ -1,13 +1,21 @@
 #include "gpio.h"
 
-pin di_1 = {GPIOB, GPIO_PIN_4};
-pin di_2 = {GPIOB, GPIO_PIN_7};
-pin di_3 = {GPIOB, GPIO_PIN_6};
-pin di_4 = {GPIOB, GPIO_PIN_5};
-pin dim_1 = {GPIOA, GPIO_PIN_9};
-pin dim_4 = {GPIOA, GPIO_PIN_12};
-pin rede = {GPIOA, GPIO_PIN_4};
-pin one_wire = {GPIOA, GPIO_PIN_15};
+pin di_1  = {GPIOA, GPIO_PIN_11};
+pin di_2  = {GPIOB, GPIO_PIN_1};
+pin di_3  = {GPIOB, GPIO_PIN_0};
+pin di_4  = {GPIOA, GPIO_PIN_8};
+pin di_5  = {GPIOA, GPIO_PIN_10};
+pin di_6  = {GPIOA, GPIO_PIN_9};
+pin di_7  = {GPIOA, GPIO_PIN_12};
+pin di_8  = {GPIOB, GPIO_PIN_5};
+pin di_9  = {GPIOB, GPIO_PIN_4};
+pin di_10 = {GPIOB, GPIO_PIN_3};
+pin di_11 = {GPIOA, GPIO_PIN_15};
+pin di_12 = {GPIOA, GPIO_PIN_4};
+pin rede  = {GPIOB, GPIO_PIN_2};
+// pin dim_1 = {GPIOA, GPIO_PIN_9};
+// pin dim_4 = {GPIOA, GPIO_PIN_12};
+// pin one_wire = {GPIOA, GPIO_PIN_15};
 
 void pin_init_output(pin x) {
   gpio_mode_set(x.port, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, x.num);

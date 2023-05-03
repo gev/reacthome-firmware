@@ -25,8 +25,8 @@ typedef struct {
 pin dim_1 = {GPIOA, GPIO_PIN_9};
 pin dim_4 = {GPIOA, GPIO_PIN_12};
 pin rede = {GPIOA, GPIO_PIN_4};
-pin dim_220v = {GPIOB, GPIO_PIN_2};
-pin dim_220v_1 = {GPIOA, GPIO_PIN_6};
+pin dim_220v = {GPIOA, GPIO_PIN_2};
+pin dim_220v_1 = {GPIOA, GPIO_PIN_7};
 
 void pin_init_out(pin x) {
   gpio_mode_set(x.port, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, x.num);
@@ -78,20 +78,21 @@ void timer_config(void) {
 void init_null_detect(void) {
   /* enable the key user clock */
   rcu_periph_clock_enable(RCU_GPIOA);
+  rcu_periph_clock_enable(RCU_GPIOB);
   rcu_periph_clock_enable(RCU_CFGCMP);
 
   /* configure button pin as input */
-  gpio_mode_set(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO_PIN_1);
+  gpio_mode_set(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO_PIN_5);
 
   /* enable and set key user EXTI interrupt to the lower priority */
-  nvic_irq_enable(EXTI0_1_IRQn, 2U, 1U);
+  nvic_irq_enable(EXTI4_15_IRQn, 2U, 1U);
 
   /* connect key user EXTI line to key GPIO pin */
-  syscfg_exti_line_config(EXTI_SOURCE_GPIOA, EXTI_SOURCE_PIN1);
+  syscfg_exti_line_config(EXTI_SOURCE_GPIOA, EXTI_SOURCE_PIN5);
 
   /* configure key user EXTI line */
-  exti_init(EXTI_1, EXTI_INTERRUPT, EXTI_TRIG_RISING);
-  exti_interrupt_flag_clear(EXTI_1);
+  exti_init(EXTI_5, EXTI_INTERRUPT, EXTI_TRIG_RISING);
+  exti_interrupt_flag_clear(EXTI_5);
 }
 
 uint8_t brighlest = 100; 
@@ -103,10 +104,10 @@ int main() {
   rcu_periph_clock_enable(RCU_GPIOB);
   timer_config();
 
-  pin_init_out(dim_1);
-  pin_init_out(dim_4);
-  pin_init_out(rede);
-  pin_reset(rede);
+  // pin_init_out(dim_1);
+  // pin_init_out(dim_4);
+  // pin_init_out(rede);
+  // pin_reset(rede);
 
   pin_init_out(dim_220v_1);
   pin_reset(dim_220v_1);
@@ -126,13 +127,13 @@ int main() {
 
 
 
-void EXTI0_1_IRQHandler() {
-  if (RESET != exti_interrupt_flag_get(EXTI_1)) {
+void EXTI4_15_IRQHandler() {
+  if (RESET != exti_interrupt_flag_get(EXTI_5)) {
     delay_us(9500 - time_pause);
     pin_set(dim_220v_1);
     delay_us(time_pause);
     pin_reset(dim_220v_1);
-    exti_interrupt_flag_clear(EXTI_1);
+    exti_interrupt_flag_clear(EXTI_5);
   }
 }
     // delay_us(time_pause);
