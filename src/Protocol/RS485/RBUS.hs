@@ -1,4 +1,5 @@
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DataKinds          #-}
+{-# LANGUAGE NumericUnderscores #-}
 
 module Protocol.RS485.RBUS where
 
@@ -28,6 +29,9 @@ preambleSlave  = Preamble { discovery = 0x55
                           , confirm   = 0x5f
                           , message   = 0x50
                           }
+
+
+defaultBaudrate     = 1_000_000 :: Uint32
 
 
 messageTTL          = 16   :: Uint8

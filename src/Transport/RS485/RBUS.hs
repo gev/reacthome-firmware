@@ -22,6 +22,7 @@ import           Interface.MCU             (MCU (peripherals, systemClock), mac)
 import           Interface.RS485
 import           Ivory.Language
 import           Ivory.Stdlib
+import           Protocol.RS485.RBUS
 import           Protocol.RS485.RBUS.Slave (slave)
 import           Transport.RS485.RBUS.Data
 import           Transport.RS485.RBUS.Rx
@@ -96,7 +97,7 @@ rbus rs485 = do
 
     let rbusInit :: Def ('[] :-> ())
         rbusInit = proc (name <> "_init") $ body $ do
-            configureRS485 rs 1_000_000 WL_8b SB_1b None
+            configureRS485 rs defaultBaudrate WL_8b SB_1b None
 
     addInit rbusInit
 
