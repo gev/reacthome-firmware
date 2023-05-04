@@ -78,7 +78,7 @@ void dma_send_message() {
     /* enable DMA channel7 */
     dma_channel_enable(DMA1, DMA_CH6);
 
-я    /* USART DMA enable for transmission and reception */
+   /* USART DMA enable for transmission and reception */
     usart_dma_transmit_config(USART5, USART_DENT_ENABLE);
     usart_dma_receive_config(USART5, USART_DENR_ENABLE);
 

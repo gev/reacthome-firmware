@@ -20,7 +20,7 @@ TARGET = 450_led
 # building variables
 ######################################
 # debug build?
-DEBUG = 1
+DEBUG = 0
 # optimization
 OPT = -O3
 
@@ -200,8 +200,8 @@ erase:
 	JLinkExe -Device GD32F450VG -If SWD -Speed 1000 jlink/EraseMCU.jlink
 r_flash:
 	make
-	JLinkExe ip tunnel:69667069::jlink-europe.segger.com -Device GD32F450VG -If SWD -Speed 1000 jlink/FlashMCU.jlink
-#	JLinkExe ip 192.168.88.154 -Device GD32F450VG -If SWD -Speed 1000 jlink/FlashMCU.jlink
+#	JLinkExe ip tunnel:69667069::jlink-europe.segger.com -Device GD32F450VG -If SWD -Speed 1000 jlink/FlashMCU.jlink
+	JLinkExe ip 192.168.88.154 -Device GD32F450VG -If SWD -Speed 1000 jlink/FlashMCU.jlink
 r_erase:
 	JLinkExe ip tunnel:801031640::jlink-europe.segger.com -Device GD32F450VG -If SWD -Speed 1000 jlink/EraseMCU.jlink
 koro_flash:
