@@ -32,6 +32,8 @@ data RBUS = forall t. LazyTransport t => RBUS
      , msgBuff          :: Buffer 512 Uint16
      , msgIndex         :: Value      Uint16
      , txBuff           :: Buffer 255 Uint16
+     , rsBuff           :: Buffer 255 Uint16
+     , rsSize           :: Value      Uint8
      , rxLock           :: Value      IBool
      , txLock           :: Value      IBool
      , rxTimestamp      :: Value      Uint32

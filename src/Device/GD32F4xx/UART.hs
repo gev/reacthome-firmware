@@ -13,6 +13,7 @@ import qualified Control.Monad                 as M
 import           Control.Monad.Writer          (MonadWriter)
 import           Core.Context
 import           Core.Handler
+import           Data.Foldable
 import           Data.Maybe
 import           Data.Record
 import qualified Device.GD32F4xx.GPIO          as G
@@ -105,12 +106,14 @@ handleDMA dmaPer dmaCh uart onTransmit onDrain = do
 handleUART :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Maybe (Ivory eff ()) -> Ivory eff ()
 handleUART uart onReceive onDrain = do
     handleReceive uart onReceive
-    mapM_ (handleDrain uart) onDrain
+    traverse_ (handleDrain uart) onDrain
 
 handleReceive :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
 handleReceive uart onReceive = do
-    rbne <- getInterruptFlag    uart usart_int_flag_rbne
-    when rbne $ onReceive =<< S.receiveData uart
+    rbne  <- getInterruptFlag   uart usart_int_flag_rbne
+    when rbne $ do
+        clearInterruptFlag      uart usart_int_flag_rbne
+        onReceive =<< S.receiveData uart
 
 handleDrain :: USART_PERIPH -> Ivory eff () -> Ivory eff ()
 handleDrain uart onDrain = do
