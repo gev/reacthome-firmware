@@ -1,7 +1,9 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE GADTs     #-}
 
 module Feature.RS485.RBUS.Data where
 
+import           Core.Transport
 import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Data.Value
@@ -12,7 +14,7 @@ import           Protocol.RS485.RBUS        (Preamble (confirm))
 import           Protocol.RS485.RBUS.Master
 
 
-data RBUS = RBUS
+data RBUS = forall t. LazyTransport t => RBUS
      { index            :: Int
      , clock            :: SystemClock
      , rs               :: RS485
@@ -40,4 +42,5 @@ data RBUS = RBUS
      , discoveryAddress :: Value      Uint8
      , confirmAddress   :: Value      Uint8
      , pingAddress      :: Value      Uint8
+     , transport        :: t
      }

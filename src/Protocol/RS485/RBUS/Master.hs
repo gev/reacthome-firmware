@@ -78,7 +78,7 @@ master id onMessage onConfirm onDiscovery onPing onReceive = do
     tidRx    <- values     (name <> "_tid_rx"   ) $ replicate 255 (-1)
     tidTx    <- values     (name <> "_tid_tx"   ) $ replicate 255   0
     crc      <- makeCRC16  (name <> "_crc"      )
-    valid    <- value     (name <> "_valid"     ) true
+    valid    <- value      (name <> "_valid"    ) true
     tmp      <- value      (name <> "_tmp"      ) 0
     table    <- macTable   (name <> "_mac_table") 1
     let master = Master { mac, model, version, address

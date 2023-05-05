@@ -6,24 +6,21 @@
 
 module Feature.RS485.RBUS.Tx where
 
-import           Control.Monad                       (zipWithM_)
+import           Control.Monad                 (zipWithM_)
 import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Feature.RS485.RBUS.Data
 import           GHC.TypeNats
 import           Interface.Mac
-import qualified Interface.RS485                     as RS
+import qualified Interface.RS485               as RS
 import           Interface.SystemClock
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Protocol.RS485.RBUS                 (broadcastAddress,
-                                                      messageTTL)
-import           Protocol.RS485.RBUS.Master          as P
-import           Protocol.RS485.RBUS.Master.MacTable as T
-import           Protocol.RS485.RBUS.Master.Tx       (transmitConfirm,
-                                                      transmitDiscovery,
-                                                      transmitMessage,
-                                                      transmitPing)
+import           Protocol.RS485.RBUS           (broadcastAddress, messageTTL)
+import           Protocol.RS485.RBUS.Master    as P
+import           Protocol.RS485.RBUS.Master.Tx (transmitConfirm,
+                                                transmitDiscovery,
+                                                transmitMessage, transmitPing)
 
 
 
@@ -87,29 +84,30 @@ doDiscovery :: RBUS -> Ivory (ProcEffects s ()) ()
 doDiscovery r@RBUS{..} = do
     store shouldDiscovery false
     address' <- deref discoveryAddress
-    toRS (transmitDiscovery address') r
+    toRS (transmitDiscovery address') r 0
 
 
 doConfirm :: RBUS -> Ivory (ProcEffects s ()) ()
 doConfirm r@RBUS{..} = do
     store shouldConfirm false
     address' <- deref confirmAddress
-    toRS (transmitConfirm address') r
+    toRS (transmitConfirm address') r 0
 
 
 doPing :: RBUS -> Ivory (ProcEffects s ()) ()
 doPing r@RBUS{..} = do
     store shouldPing false
     address' <- deref pingAddress
-    toRS (transmitPing address') r
+    toRS (transmitPing address') r 0
 
 
 
 toRS :: (Master 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) ())
      -> RBUS
+     -> Uint16
      -> Ivory (ProcEffects s ()) ()
-toRS transmit r@RBUS{..} =
-    rsTransmit r =<< run protocol transmit txBuff 0
+toRS transmit r@RBUS{..} offset =
+    rsTransmit r =<< run protocol transmit txBuff offset
 
 
 {--
@@ -155,29 +153,3 @@ run protocol transmit buff offset = do
             store size $ i + 1
     transmit protocol go
     deref size
-
-
-transmitRBUS :: KnownNat n
-             => [RBUS]
-             -> Buffer n Uint8
-             -> Uint8
-             -> Ivory (ProcEffects s ()) ()
-transmitRBUS list buff size = do
-    port <- deref $ buff ! 7
-    let run r@RBUS{..} p =
-            when (p ==? port) $ do
-                address <- deref $ buff ! 8
-                let macTable = P.table protocol
-                lookupMac macTable address $ \rec -> do
-                    found <- local $ ival true
-                    let mac'  = rec ~> T.mac
-                    arrayMap $ \ix -> do
-                        m1 <- deref $ mac' ! ix
-                        m2 <- deref $ buff ! toIx (1 + fromIx ix)
-                        when (m1 /=? m1) $ do
-                            store found false
-                            breakOut
-                    found' <- deref found
-                    when found' $
-                        toQueue r address buff 9 (size - 9)
-    zipWithM_ run list (iterate (+1) 1)
