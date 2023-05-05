@@ -53,6 +53,8 @@ module Support.Device.GD32F4xx.USART
     , usart_flag_tc
     , usart_flag_ferr
     , usart_flag_nerr
+    , usart_flag_perr
+    , usart_flag_orerr
 
     , USART_DENT
     , usart_dent_enable
@@ -164,11 +166,13 @@ usart_transmit_enable = USART_TX_CFG$ ext "USART_TRANSMIT_ENABLE"
 newtype USART_FLAG = USART_FLAG Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
-usart_flag_rbne = USART_FLAG $ ext "USART_FLAG_RBNE"
-usart_flag_tbe  = USART_FLAG $ ext "USART_FLAG_TBE"
-usart_flag_tc   = USART_FLAG $ ext "USART_FLAG_TC"
+usart_flag_rbne   = USART_FLAG $ ext "USART_FLAG_RBNE"
+usart_flag_tbe    = USART_FLAG $ ext "USART_FLAG_TBE"
+usart_flag_tc     = USART_FLAG $ ext "USART_FLAG_TC"
 usart_flag_ferr   = USART_FLAG $ ext "USART_FLAG_FERR"
 usart_flag_nerr   = USART_FLAG $ ext "USART_FLAG_NERR"
+usart_flag_perr   = USART_FLAG $ ext "USART_FLAG_PERR"
+usart_flag_orerr  = USART_FLAG $ ext "USART_FLAG_ORERR"
 
 
 
@@ -348,6 +352,8 @@ inclUSART = do
     inclSym usart_flag_tc
     inclSym usart_flag_ferr
     inclSym usart_flag_nerr
+    inclSym usart_flag_perr
+    inclSym usart_flag_orerr
 
     inclSym usart_dent_enable
     inclSym usart_dent_disable

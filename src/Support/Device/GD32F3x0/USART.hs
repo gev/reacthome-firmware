@@ -37,6 +37,8 @@ module Support.Device.GD32F3x0.USART
     , usart_flag_tc
     , usart_flag_ferr
     , usart_flag_nerr
+    , usart_flag_perr
+    , usart_flag_orerr
 
     , USART_INT
     , usart_int_rbne
@@ -155,6 +157,8 @@ usart_flag_tbe    = USART_FLAG $ ext "USART_FLAG_TBE"
 usart_flag_tc     = USART_FLAG $ ext "USART_FLAG_TC"
 usart_flag_ferr   = USART_FLAG $ ext "USART_FLAG_FERR"
 usart_flag_nerr   = USART_FLAG $ ext "USART_FLAG_NERR"
+usart_flag_perr   = USART_FLAG $ ext "USART_FLAG_PERR"
+usart_flag_orerr  = USART_FLAG $ ext "USART_FLAG_ORERR"
 
 
 
@@ -326,6 +330,8 @@ inclUSART = do
     inclSym usart_flag_tc
     inclSym usart_flag_ferr
     inclSym usart_flag_nerr
+    inclSym usart_flag_perr
+    inclSym usart_flag_orerr
 
     inclSym usart_dent_enable
     inclSym usart_dent_disable
