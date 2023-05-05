@@ -28,12 +28,18 @@ module Support.Device.GD32F4xx.USART
 
     , USART_WORD_LENGTH
     , usart_wl_8bit
+    , usart_wl_9bit
 
     , USART_STOP_BIT
     , usart_stb_1bit
+    , usart_stb_0_5bit
+    , usart_stb_2bit
+    , usart_stb_1_5bit
 
     , USART_PARITY_CFG
     , usart_pm_none
+    , usart_pm_even
+    , usart_pm_odd
 
     , USART_RX_CFG
     , usart_receive_enable
@@ -116,6 +122,7 @@ newtype USART_WORD_LENGTH = USART_WORD_LENGTH Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 usart_wl_8bit = USART_WORD_LENGTH $ ext "USART_WL_8BIT"
+usart_wl_9bit = USART_WORD_LENGTH $ ext "USART_WL_9BIT"
 
 
 
@@ -123,6 +130,9 @@ newtype USART_STOP_BIT = USART_STOP_BIT Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 usart_stb_1bit = USART_STOP_BIT $ ext "USART_STB_1BIT"
+usart_stb_0_5bit = USART_STOP_BIT $ ext "USART_STB_0_5BIT"
+usart_stb_2bit = USART_STOP_BIT $ ext "USART_STB_2BIT"
+usart_stb_1_5bit = USART_STOP_BIT $ ext "USART_STB_1_5BIT"
 
 
 
@@ -130,6 +140,8 @@ newtype USART_PARITY_CFG = USART_PARITY_CFG Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 usart_pm_none = USART_PARITY_CFG $ ext "USART_PM_NONE"
+usart_pm_even = USART_PARITY_CFG $ ext "USART_PM_EVEN"
+usart_pm_odd  = USART_PARITY_CFG $ ext "USART_PM_ODD"
 
 
 
@@ -305,10 +317,16 @@ inclUSART = do
     inclSym uart7
 
     inclSym usart_wl_8bit
+    inclSym usart_wl_9bit
 
     inclSym usart_stb_1bit
+    inclSym usart_stb_0_5bit
+    inclSym usart_stb_2bit
+    inclSym usart_stb_1_5bit
 
     inclSym usart_pm_none
+    inclSym usart_pm_even
+    inclSym usart_pm_odd
 
     inclSym usart_receive_enable
 
