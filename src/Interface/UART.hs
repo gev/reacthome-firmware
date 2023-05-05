@@ -29,10 +29,10 @@ data WordLength
 
 data StopBit
 
-    = SB_1b
-    | SB_0_5b
-    | SB_2b
+    = SB_0_5b
+    | SB_1b
     | SB_1_5b
+    | SB_2b
 
 class Handler HandleUART u => UART u where
 
