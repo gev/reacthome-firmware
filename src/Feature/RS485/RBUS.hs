@@ -36,6 +36,7 @@ import           Ivory.Stdlib
 import           Protocol.RS485.RBUS
 import           Protocol.RS485.RBUS.Master          as P
 import           Protocol.RS485.RBUS.Master.MacTable as T
+import           Protocol.RS485.RBUS.Master.Rx
 
 
 
@@ -72,6 +73,8 @@ rbus' rs485 index = do
     msgBuff          <- buffer (name <> "_msg"              )
     msgIndex         <- value  (name <> "_msg_index"        ) 0
     txBuff           <- buffer (name <> "_tx"               )
+    rsBuff           <- buffer (name <> "_rs"               )
+    rsSize           <- value  (name <> "_rs_size"          ) 0
     rxLock           <- value  (name <> "_rx_lock"          ) false
     txLock           <- value  (name <> "_tx_lock"          ) false
     rxTimestamp      <- value  (name <> "_timestamp_rx"     ) 0
@@ -124,6 +127,7 @@ rbus' rs485 index = do
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgConfirm, msgTTL, msgQueue, msgBuff, msgIndex
                     , txBuff
+                    , rsBuff, rsSize
                     , rxLock, txLock
                     , rxTimestamp, txTimestamp
                     , shouldDiscovery, shouldConfirm, shouldPing
@@ -186,6 +190,9 @@ configureRBUS list buff size = do
                     T.lazyTransmit transport $ \transmit -> do
                         transmit 8
                         for 8 $ \ix -> transmit =<< deref (buff ! ix)
+                    store rsSize 0
+                    store rxLock false
+                    reset protocol
         zipWithM_ run list (iterate (+1) 1)
 
 
