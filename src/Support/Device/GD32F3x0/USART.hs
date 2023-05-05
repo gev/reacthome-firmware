@@ -278,6 +278,13 @@ usart_interrupt_flag_clear :: Def ('[USART_PERIPH, USART_INT_FLAG] :-> ())
 usart_interrupt_flag_clear = fun "usart_interrupt_flag_clear"
 
 
+clearFlag :: USART_PERIPH -> USART_FLAG -> Ivory eff ()
+clearFlag = call_ usart_flag_clear
+
+usart_flag_clear :: Def ('[USART_PERIPH, USART_FLAG] :-> ())
+usart_flag_clear = fun "usart_flag_clear"
+
+
 tdata :: USART_PERIPH -> Ivory eff Uint32
 tdata = call usart_tdata
 
