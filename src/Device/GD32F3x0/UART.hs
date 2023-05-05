@@ -142,19 +142,15 @@ instance I.UART UART where
     enable u = enableUSART (uart u)
 
 
-{-
-    TODO: add all values of word length, stopbit and parity
-    TODO: check: are DMA structure's completed?
--}
 coerceWordLength :: I.WordLength -> USART_WORD_LENGTH
 coerceWordLength I.WL_8b = usart_wl_8bit
 coerceWordLength I.WL_9b = usart_wl_9bit
 
 coerceStopBit :: I.StopBit -> USART_STOP_BIT
-coerceStopBit I.SB_1b   = usart_stb_1bit
 coerceStopBit I.SB_0_5b = usart_stb_0_5bit
-coerceStopBit I.SB_2b   = usart_stb_2bit
+coerceStopBit I.SB_1b   = usart_stb_1bit
 coerceStopBit I.SB_1_5b = usart_stb_1_5bit
+coerceStopBit I.SB_2b   = usart_stb_2bit
 
 coerceParity :: I.Parity -> USART_PARITY_CFG
 coerceParity I.None = usart_pm_none

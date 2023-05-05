@@ -15,10 +15,10 @@ module Support.Device.GD32F3x0.USART
     , usart_wl_9bit
 
     , USART_STOP_BIT
-    , usart_stb_1bit
     , usart_stb_0_5bit
-    , usart_stb_2bit
+    , usart_stb_1bit
     , usart_stb_1_5bit
+    , usart_stb_2bit
 
     , USART_PARITY_CFG
     , usart_pm_none
@@ -116,10 +116,10 @@ usart_wl_9bit = USART_WORD_LENGTH $ ext "USART_WL_9BIT"
 newtype USART_STOP_BIT = USART_STOP_BIT Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
-usart_stb_1bit = USART_STOP_BIT $ ext "USART_STB_1BIT"
 usart_stb_0_5bit = USART_STOP_BIT $ ext "USART_STB_0_5BIT"
-usart_stb_2bit = USART_STOP_BIT $ ext "USART_STB_2BIT"
+usart_stb_1bit = USART_STOP_BIT $ ext "USART_STB_1BIT"
 usart_stb_1_5bit = USART_STOP_BIT $ ext "USART_STB_1_5BIT"
+usart_stb_2bit = USART_STOP_BIT $ ext "USART_STB_2BIT"
 
 
 
@@ -298,10 +298,10 @@ inclUSART = do
     inclSym usart_wl_8bit
     inclSym usart_wl_9bit
 
-    inclSym usart_stb_1bit
     inclSym usart_stb_0_5bit
-    inclSym usart_stb_2bit
+    inclSym usart_stb_1bit
     inclSym usart_stb_1_5bit
+    inclSym usart_stb_2bit
 
     inclSym usart_pm_none
     inclSym usart_pm_even
