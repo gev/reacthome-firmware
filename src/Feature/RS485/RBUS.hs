@@ -152,18 +152,19 @@ configureRS485 RBUS{..} = do
     isRBUS'      <- deref isRBUS
     baudrate'    <- deref baudrate
     lineControl' <- deref lineControl
-    let config    = I.configureRS485 rs baudrate'
+    let config lc wl sb p = lineControl' ==? lc
+                                         ==> I.configureRS485 rs baudrate' wl sb p
     ifte_ isRBUS'
           (I.configureRS485 rs defaultBaudrate I.WL_8b I.SB_1b I.None)
           (when (baudrate' >? 0) $
-              cond_ [ lineControl' ==? 0 ==> config I.WL_8b I.SB_1b I.None
-                    -- , lineControl' ==? 1 ==> config I.WL_8b I.SB_1b I.Even
-                    -- , lineControl' ==? 2 ==> config I.WL_8b I.SB_1b I.Odd
-                    -- , lineControl' ==? 3 ==> config I.WL_9b I.SB_1b I.None
-                    -- , lineControl' ==? 4 ==> config I.WL_8b I.SB_2b I.None
-                    -- , lineControl' ==? 5 ==> config I.WL_8b I.SB_2b I.Even
-                    -- , lineControl' ==? 6 ==> config I.WL_8b I.SB_2b I.Odd
-                    -- , lineControl' ==? 7 ==> config I.WL_9b I.SB_2b I.None
+              cond_ [ config 0 I.WL_8b I.SB_1b I.None
+                    , config 1 I.WL_8b I.SB_1b I.Even
+                    , config 2 I.WL_8b I.SB_1b I.Odd
+                    , config 3 I.WL_9b I.SB_1b I.None
+                    , config 4 I.WL_8b I.SB_2b I.None
+                    , config 5 I.WL_8b I.SB_2b I.Even
+                    , config 6 I.WL_8b I.SB_2b I.Odd
+                    , config 7 I.WL_9b I.SB_2b I.None
                     ]
           )
 
