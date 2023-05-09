@@ -51,7 +51,7 @@ rbus uart' = do
     msgIndex      <- value  (name <> "_msg_index"   ) 0
     txBuff        <- buffer (name <> "_tx"          )
     txLock        <- value  (name <> "_tx_lock"     ) false
-    rxTimestamp   <- value  (name <> "_timestamp_rx") 0
+    -- rxTimestamp   <- value  (name <> "_timestamp_rx") 0
 
     {--
         TODO: move dispatcher outside
@@ -65,7 +65,7 @@ rbus uart' = do
                     , msgOffset, msgSize, msgQueue, msgBuff, msgIndex
                     , txBuff
                     , txLock
-                    , rxTimestamp
+                    -- , rxTimestamp
                     }
 
     addHandler $ HandleUART uart (rxHandle rbus) (txHandle rbus) Nothing
@@ -78,7 +78,7 @@ rbus uart' = do
 
     addTask $ yeld (name <> "_rx"   ) $ rxTask    rbus
     addTask $ yeld (name <> "_tx"   ) $ txTask    rbus
-    addTask $ yeld (name <> "_reset") $ resetTask rbus
+    -- addTask $ yeld (name <> "_reset") $ resetTask rbus
 
     pure rbus
 
