@@ -273,3 +273,8 @@ instance Controller [RBUS] where
                       , action ==? 0xf2 ==> initialize    list buff size
                       ]
              ]
+
+
+{-
+    TODO: handle actions only when initialized
+-}
