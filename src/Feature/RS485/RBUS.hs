@@ -249,15 +249,17 @@ initialize :: KnownNat n
            -> Buffer n Uint8
            -> Uint8
            -> Ivory (ProcEffects s ()) ()
-initialize list buff size = undefined
-    when (size ==? 24) $ do
-        let run r@RBUS{..} p = do
-                let offset = 6 * p
+initialize list buff size =
+    when (size ==? 25) $ do
+        let run r@RBUS{..} offset = do
                 store isRBUS      =<< unpack   buff  offset
                 store baudrate    =<< unpackLE buff (offset + 1)
                 store lineControl =<< unpack   buff (offset + 5)
                 configureRS485 r
-        zipWithM_ run list (iterate (+1) 0)
+                store rsSize 0
+                store rxLock false
+                reset protocol
+        zipWithM_ run list (iterate (+6) 1)
 
 
 
