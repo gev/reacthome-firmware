@@ -244,12 +244,30 @@ transmitRB485 list buff size = do
 
 
 
+initialize :: KnownNat n
+           => [RBUS]
+           -> Buffer n Uint8
+           -> Uint8
+           -> Ivory (ProcEffects s ()) ()
+initialize list buff size = undefined
+    when (size ==? 24) $ do
+        let run r@RBUS{..} p = do
+                let offset = 6 * p
+                store isRBUS      =<< unpack   buff  offset
+                store baudrate    =<< unpackLE buff (offset + 1)
+                store lineControl =<< unpack   buff (offset + 5)
+                configureRS485 r
+        zipWithM_ run list (iterate (+1) 0)
+
+
+
 instance Controller [RBUS] where
     handle list buff size =
         pure [ size >? 1 ==> do
                 action <- deref $ buff ! 0
-                cond_ [ action ==? 0xa0 ==> configureRBUS  list buff size
-                      , action ==? 0xa1 ==> transmitRBUS   list buff size
-                      , action ==? 0xa2 ==> transmitRB485  list buff size
+                cond_ [ action ==? 0xa0 ==> configureRBUS list buff size
+                      , action ==? 0xa1 ==> transmitRBUS  list buff size
+                      , action ==? 0xa2 ==> transmitRB485 list buff size
+                      , action ==? 0xf2 ==> initialize    list buff size
                       ]
              ]
