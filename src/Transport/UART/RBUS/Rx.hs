@@ -21,11 +21,11 @@ rxTask RBUS{..} =
     pop rxQueue $ \i -> do
         v <- deref $ rxBuff ! toIx i
         receive protocol $ castDefault v
-        store rxTimestamp =<< getSystemTime clock
+        -- store rxTimestamp =<< getSystemTime clock
 
 
-resetTask :: RBUS -> Ivory eff ()
-resetTask RBUS{..} = do
-    t0 <- deref rxTimestamp
-    t1 <- getSystemTime clock
-    when (t1 - t0 >? 1) $ reset protocol
+-- resetTask :: RBUS -> Ivory eff ()
+-- resetTask RBUS{..} = do
+--     t0 <- deref rxTimestamp
+--     t1 <- getSystemTime clock
+--     when (t1 - t0 >? 1) $ reset protocol
