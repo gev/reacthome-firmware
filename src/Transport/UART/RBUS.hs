@@ -72,7 +72,7 @@ rbus uart' = do
 
     let rbusInit :: Def ('[] :-> ())
         rbusInit = proc (name <> "_init") $ body $ do
-            configUART uart 2_000_000 WL_8b SB_1b None
+            configUART uart 4_000_000 WL_8b SB_1b None
 
     addInit rbusInit
 

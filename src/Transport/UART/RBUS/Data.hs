@@ -17,15 +17,15 @@ data RBUS where
           => { name          :: String
              , clock         :: SystemClock
              , uart         :: u
-             , protocol      :: U.RBUS   255
-             , rxBuff        :: Buffer   64 Uint16
-             , rxQueue       :: Queue    64
-             , msgOffset     :: Buffer   32 Uint16
-             , msgSize       :: Buffer   32 Uint16
-             , msgQueue      :: Queue    32
+             , protocol      :: U.RBUS  255
+             , rxBuff        :: Buffer  512 Uint16
+             , rxQueue       :: Queue   512
+             , msgOffset     :: Buffer  256 Uint16
+             , msgSize       :: Buffer  256 Uint16
+             , msgQueue      :: Queue   256
              , msgBuff       :: Buffer 4096 Uint16
              , msgIndex      :: Value       Uint16
              , txBuff        :: Buffer  512 Uint16
              , txLock        :: Value       IBool
-             , rxTimestamp   :: Value      Uint32
+             , rxTimestamp   :: Value       Uint32
              } -> RBUS
