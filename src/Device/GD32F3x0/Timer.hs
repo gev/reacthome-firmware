@@ -34,13 +34,14 @@ data Timer = forall s. Timer
     }
 
 
+timer_0 :: MonadWriter Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
+timer_0 = mkTimer timer0 rcu_timer0 timer1_irqn 
 
 timer_1 :: MonadWriter Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
 timer_1 = mkTimer timer1 rcu_timer1 timer1_irqn
 
 timer_2 :: MonadWriter Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
 timer_2 = mkTimer timer2 rcu_timer2 timer2_irqn
-
 
 
 mkTimer :: MonadWriter Context m
