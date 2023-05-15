@@ -106,6 +106,7 @@ data GD32F3x0 = GD32F3x0
     , out_pb_14 :: OutputW
     , out_pb_15 :: OutputW
 
+    , pwm_0     :: PWMW
     , pwm_1     :: PWMW
     , pwm_2     :: PWMW
     , pwm_3     :: PWMW
@@ -117,7 +118,6 @@ data GD32F3x0 = GD32F3x0
     , pwm_9     :: PWMW
     , pwm_10    :: PWMW
     , pwm_11    :: PWMW
-    , pwm_12    :: PWMW
     }
 
 
@@ -207,18 +207,18 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
     , out_pb_14 = output pb_14
     , out_pb_15 = output pb_15
 
-    , pwm_1  = mkPWM pwm_timer_1 timer_ch_0 (pa_0  $ AF gpio_af_2)
-    , pwm_2  = mkPWM pwm_timer_1 timer_ch_1 (pa_1  $ AF gpio_af_2)
-    , pwm_3  = mkPWM pwm_timer_1 timer_ch_2 (pa_2  $ AF gpio_af_2)
-    , pwm_4  = mkPWM pwm_timer_1 timer_ch_3 (pa_3  $ AF gpio_af_2)
-    , pwm_5  = mkPWM pwm_timer_2 timer_ch_0 (pa_6  $ AF gpio_af_1)
-    , pwm_6  = mkPWM pwm_timer_2 timer_ch_1 (pa_7  $ AF gpio_af_1)
-    , pwm_7  = mkPWM pwm_timer_2 timer_ch_2 (pb_0  $ AF gpio_af_1)
-    , pwm_8  = mkPWM pwm_timer_2 timer_ch_3 (pb_1  $ AF gpio_af_1)
-    , pwm_9  = mkPWM pwm_timer_0 timer_ch_0 (pa_8  $ AF gpio_af_2)
-    , pwm_10 = mkPWM pwm_timer_0 timer_ch_1 (pa_9  $ AF gpio_af_2)
-    , pwm_11 = mkPWM pwm_timer_0 timer_ch_2 (pa_10 $ AF gpio_af_2)
-    , pwm_12 = mkPWM pwm_timer_0 timer_ch_3 (pa_11 $ AF gpio_af_2)
+    , pwm_0  = mkPWM pwm_timer_1 timer_ch_0 (pa_0  $ AF gpio_af_2)
+    , pwm_1  = mkPWM pwm_timer_1 timer_ch_1 (pa_1  $ AF gpio_af_2)
+    , pwm_2  = mkPWM pwm_timer_1 timer_ch_2 (pa_2  $ AF gpio_af_2)
+    , pwm_3  = mkPWM pwm_timer_1 timer_ch_3 (pa_3  $ AF gpio_af_2)
+    , pwm_4  = mkPWM pwm_timer_2 timer_ch_0 (pa_6  $ AF gpio_af_1)
+    , pwm_5  = mkPWM pwm_timer_2 timer_ch_1 (pa_7  $ AF gpio_af_1)
+    , pwm_6  = mkPWM pwm_timer_2 timer_ch_2 (pb_0  $ AF gpio_af_1)
+    , pwm_7  = mkPWM pwm_timer_2 timer_ch_3 (pb_1  $ AF gpio_af_1)
+    , pwm_8  = mkPWM pwm_timer_0 timer_ch_0 (pa_8  $ AF gpio_af_2)
+    , pwm_9  = mkPWM pwm_timer_0 timer_ch_1 (pa_9  $ AF gpio_af_2)
+    , pwm_10 = mkPWM pwm_timer_0 timer_ch_2 (pa_10 $ AF gpio_af_2)
+    , pwm_11 = mkPWM pwm_timer_0 timer_ch_3 (pa_11 $ AF gpio_af_2)
     }
 
 
