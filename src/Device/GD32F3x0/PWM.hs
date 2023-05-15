@@ -2,7 +2,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE NumericUnderscores #-}
 
 module Device.GD32F3x0.PWM where
 
@@ -39,9 +38,18 @@ mkPWM :: MonadWriter Context m => m Timer -> TIMER_CHANNEL -> Port -> m PWM
 mkPWM timer' channel_pwm port = do
     timer_pwm <- timer'
     addInit $ initPort port
+    let initPWM' :: Def ('[] :-> ()) 
+        initPWM' = do
+            let t = timer timer_pwm
+            -- initChannelOcTimer t channel_pwm =<< local (istruct timerOcDefaultParam)
+            -- configChannelOutputPulseValue t channel_pwm 0
+            -- configTimerOutputMode t channel_pwm timer_oc_mode_pwm0
+            -- configChannelOutputShadow t channel_pwm timer_oc_shadow_disable
+            -- configPrimaryOutput t true
+            enableTimer t
+
+
+            
     addInit initPWM'
     pure $ PWM { timer_pwm, channel_pwm, port }
-    where initPWM' :: Def ('[] :-> ()) 
-          initPWM' = do
-            undefined
 
