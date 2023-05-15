@@ -42,12 +42,13 @@ mkPWM timer' channel_pwm port = do
     let initPWM' :: Def ('[] :-> ())
         initPWM' = proc (symbol (pin port) <> "_pwm_init") $ body $ do
             let t = timer timer_pwm
-            initChannelOcTimer t channel_pwm =<< local (istruct timerOcDefaultParam)
+            initChannelOcTimer            t channel_pwm =<< local (istruct timerOcDefaultParam)
             configChannelOutputPulseValue t channel_pwm 0
-            configTimerOutputMode t channel_pwm timer_oc_mode_pwm0
-            configChannelOutputShadow t channel_pwm timer_oc_shadow_disable
-            configPrimaryOutput t true
-            enableTimer t
+            configTimerOutputMode         t channel_pwm timer_oc_mode_pwm0
+            configChannelOutputShadow     t channel_pwm timer_oc_shadow_disable
+            configPrimaryOutput           t true
+            enableTimer                   t
 
+    addInit $ initPort port
     addInit initPWM'
     pure $ PWM { timer_pwm, channel_pwm, port }
