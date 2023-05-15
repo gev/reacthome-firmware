@@ -77,10 +77,13 @@ io m p = p $ MF m
 
 
 initPort :: Port -> Def ('[] ':-> ())
-initPort Port{..} = proc (symbol gpio <> "_" <> symbol pin <>"_init") $ body $ do
+initPort p@Port{..} = proc (show p <>"_init") $ body $ do
     enablePeriphClock rcu
     setOutputOptions gpio gpio_otype_pp gpio_ospeed_50mhz pin
     case mode of
         (MF mode) -> setMode gpio mode gpio_pupd_none pin
         (AF mode) -> setMode gpio gpio_mode_af gpio_pupd_none pin
                   >> setAF gpio mode pin
+
+instance Show Port where
+    show Port{..} = symbol gpio <> "_" <> symbol pin <>"_init"

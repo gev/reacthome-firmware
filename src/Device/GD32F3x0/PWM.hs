@@ -10,7 +10,6 @@ import           Core.Context
 import           Device.GD32F3x0.GPIO
 import           Device.GD32F3x0.Timer
 import           Ivory.Language
-import           Ivory.Support
 import           Support.Device.GD32F3x0.Timer
 
 pwm_timer_0 :: MonadWriter Context m => m Timer
@@ -40,7 +39,7 @@ mkPWM timer' channel_pwm port = do
     timer_pwm <- timer'
     addInit $ initPort port
     let initPWM' :: Def ('[] :-> ())
-        initPWM' = proc (symbol (pin port) <> "_pwm_init") $ body $ do
+        initPWM' = proc (show port <> "_pwm_init") $ body $ do
             let t = timer timer_pwm
             initChannelOcTimer            t channel_pwm =<< local (istruct timerOcDefaultParam)
             configChannelOutputPulseValue t channel_pwm 0
