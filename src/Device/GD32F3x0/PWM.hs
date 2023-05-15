@@ -1,16 +1,17 @@
-{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE TypeOperators    #-}
 
 module Device.GD32F3x0.PWM where
 
-import           Device.GD32F3x0.Timer     
-import           Device.GD32F3x0.GPIO
-import           Support.Device.GD32F3x0.Timer
 import           Control.Monad.Writer
 import           Core.Context
+import           Device.GD32F3x0.GPIO
+import           Device.GD32F3x0.Timer
 import           Ivory.Language
+import           Ivory.Support
+import           Support.Device.GD32F3x0.Timer
 
 pwm_timer_0 :: MonadWriter Context m => m Timer
 pwm_timer_0 = timer_0 $ timerParam [ prescaler .= ival 328
@@ -38,18 +39,15 @@ mkPWM :: MonadWriter Context m => m Timer -> TIMER_CHANNEL -> Port -> m PWM
 mkPWM timer' channel_pwm port = do
     timer_pwm <- timer'
     addInit $ initPort port
-    let initPWM' :: Def ('[] :-> ()) 
-        initPWM' = do
+    let initPWM' :: Def ('[] :-> ())
+        initPWM' = proc (symbol (pin port) <> "_pwm_init") $ body $ do
             let t = timer timer_pwm
-            -- initChannelOcTimer t channel_pwm =<< local (istruct timerOcDefaultParam)
-            -- configChannelOutputPulseValue t channel_pwm 0
-            -- configTimerOutputMode t channel_pwm timer_oc_mode_pwm0
-            -- configChannelOutputShadow t channel_pwm timer_oc_shadow_disable
-            -- configPrimaryOutput t true
+            initChannelOcTimer t channel_pwm =<< local (istruct timerOcDefaultParam)
+            configChannelOutputPulseValue t channel_pwm 0
+            configTimerOutputMode t channel_pwm timer_oc_mode_pwm0
+            configChannelOutputShadow t channel_pwm timer_oc_shadow_disable
+            configPrimaryOutput t true
             enableTimer t
 
-
-            
     addInit initPWM'
     pure $ PWM { timer_pwm, channel_pwm, port }
-
