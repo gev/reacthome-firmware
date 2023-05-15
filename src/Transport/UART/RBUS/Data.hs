@@ -27,5 +27,5 @@ data RBUS where
              , msgIndex      :: Value       Uint16
              , txBuff        :: Buffer  512 Uint16
              , txLock        :: Value       IBool
-          --    , rxTimestamp   :: Value       Uint32
+             , rxTimestamp   :: Value       Uint32
              } -> RBUS
