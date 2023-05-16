@@ -37,7 +37,7 @@ relays :: MonadWriter Context m => String -> Int -> m Dimmers
 relays name n = do
     addStruct (Proxy :: Proxy DimmerStruct)
     let runDimmers = runRecords name $ replicate n go
-    payload      <- buffer "relay_message"
+    payload      <- buffer "dimmer_message"
     let relays    = Dimmers {runDimmers, payload}
     runDimmers addArea
     pure relays
