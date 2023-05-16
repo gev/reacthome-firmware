@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE TypeOperators    #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Device.GD32F3x0.PWM where
 
@@ -11,6 +12,7 @@ import           Device.GD32F3x0.GPIO
 import           Device.GD32F3x0.Timer
 import           Ivory.Language
 import           Support.Device.GD32F3x0.Timer
+import qualified Interface.PWM as I
 
 pwm_timer_0 :: MonadWriter Context m => m Timer
 pwm_timer_0 = timer_0 $ timerParam [ prescaler .= ival 328
@@ -42,7 +44,7 @@ mkPWM timer' channel_pwm port = do
         initPWM' = proc (show port <> "_pwm_init") $ body $ do
             let t = timer timer_pwm
             initChannelOcTimer            t channel_pwm =<< local (istruct timerOcDefaultParam)
-            configChannelOutputPulseValue t channel_pwm 0
+            configChannelOutputPulseValue t channel_pwm 127
             configTimerOutputMode         t channel_pwm timer_oc_mode_pwm0
             configChannelOutputShadow     t channel_pwm timer_oc_shadow_disable
             configPrimaryOutput           t true
@@ -51,3 +53,7 @@ mkPWM timer' channel_pwm port = do
     addInit $ initPort port
     addInit initPWM'
     pure $ PWM { timer_pwm, channel_pwm, port }
+
+
+instance I.PWM PWM where
+    setDuty PWM{..} duty = pure ()

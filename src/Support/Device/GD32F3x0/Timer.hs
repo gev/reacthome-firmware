@@ -32,6 +32,7 @@ module Support.Device.GD32F3x0.Timer
     , timer0
     , timer1
     , timer2
+    , timer14
 
     , TIMER_ALIGNE_MODE
     , timer_counter_edge
@@ -170,6 +171,7 @@ instance ExtSymbol TIMER_PERIPH
 timer0 = TIMER_PERIPH $ ext "TIMER0"
 timer1 = TIMER_PERIPH $ ext "TIMER1"
 timer2 = TIMER_PERIPH $ ext "TIMER2"
+timer14 = TIMER_PERIPH $ ext "TIMER14"
 
 
 
@@ -377,6 +379,7 @@ inclTimer = do
     inclSym timer0
     inclSym timer1
     inclSym timer2
+    inclSym timer14
 
     inclSym timer_counter_edge
     inclSym timer_counter_up
@@ -424,3 +427,4 @@ inclTimer = do
     incl timer_channel_output_mode_config
     incl timer_channel_output_shadow_config
     incl timer_auto_reload_shadow_enable
+    incl timer_channel_output_config
