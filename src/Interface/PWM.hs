@@ -6,4 +6,4 @@ type Prescaller = Uint32
 type Period = Uint32
 
 class PWM p where
-    setDuty :: p -> Uint32 -> Ivory eff ()
+    setDuty :: p -> Uint16 -> Ivory eff ()

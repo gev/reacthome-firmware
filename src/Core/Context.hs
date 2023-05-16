@@ -11,6 +11,7 @@ import           Core.Task
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Language.Module
+import Data.List
 
 
 
@@ -56,7 +57,7 @@ addStruct = addModule . defStruct
 
 
 instance Semigroup Context where
-  (Context m1 i1 t1) <> (Context m2 i2 t2) = Context (m1 <> m2) (i1 <> i2) (t1 <> t2)
+  (Context m1 i1 t1) <> (Context m2 i2 t2) = Context (m1 <> m2) (nub $ i1 <> i2) (t1 <> t2)
 
 instance Monoid Context where
   mempty = Context mempty mempty mempty

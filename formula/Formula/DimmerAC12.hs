@@ -13,7 +13,7 @@ dimmerAC12 = Formula { name       = "dimmerAC12"
                      , model      = 0xff
                      , version    = (1, 0)
                      , shouldInit = false
-                     , transport  = rbus $ rs485 1 uart_1 out_pa_4
+                     , transport  = rbus $ rs485 1 uart_0 out_pb_2
                      , features   = [ dimmerAC [ pwm_0
                                                , pwm_1
                                                , pwm_2

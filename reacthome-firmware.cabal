@@ -58,6 +58,7 @@ executable reacthome-firmware
 
                     , Endpoint.Relays
                     , Endpoint.Groups
+                    , Endpoint.Dimmers
 
                     , Feature.Blink
                     , Feature.Echo
