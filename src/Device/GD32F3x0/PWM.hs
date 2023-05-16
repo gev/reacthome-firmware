@@ -1,8 +1,8 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RecordWildCards  #-}
 {-# LANGUAGE TypeOperators    #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module Device.GD32F3x0.PWM where
 
@@ -10,9 +10,10 @@ import           Control.Monad.Writer
 import           Core.Context
 import           Device.GD32F3x0.GPIO
 import           Device.GD32F3x0.Timer
+import qualified Interface.PWM                 as I
 import           Ivory.Language
 import           Support.Device.GD32F3x0.Timer
-import qualified Interface.PWM as I
+
 
 pwm_timer_0 :: MonadWriter Context m => m Timer
 pwm_timer_0 = timer_0 $ timerParam [ prescaler .= ival 328
