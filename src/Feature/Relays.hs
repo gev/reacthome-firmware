@@ -70,7 +70,7 @@ relays outs = do
                          , transmit = T.transmitBuffer transport
                          }
     addTask $ delay 10 "relays_manage" $ manage relays
-    addTask $ delay  1 "relays_sync"   $ sync relays
+    addTask $ yeld     "relays_sync"   $ sync relays
     pure $ Feature relays
 
 

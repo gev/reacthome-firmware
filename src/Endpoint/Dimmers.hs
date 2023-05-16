@@ -23,6 +23,7 @@ type DimmerStruct = "dimmer_struct"
     ; value    :: Uint8
     ; velocity :: Uint8
     ; group    :: Uint8
+    ; synced   :: IBool
     }
 |]
 
@@ -33,18 +34,19 @@ data Dimmers = Dimmers
     , payload    :: Buffer 6 Uint8
     }
 
-relays :: MonadWriter Context m => String -> Int -> m Dimmers
-relays name n = do
+dimmers :: MonadWriter Context m => String -> Int -> m Dimmers
+dimmers name n = do
     addStruct (Proxy :: Proxy DimmerStruct)
     let runDimmers = runRecords name $ replicate n go
-    payload      <- buffer "dimmer_message"
-    let relays    = Dimmers {runDimmers, payload}
+    payload       <- buffer "dimmer_message"
+    let dimmers    = Dimmers {runDimmers, payload}
     runDimmers addArea
-    pure relays
+    pure dimmers
     where go = [ mode     .= ival 0
                , value    .= ival 0
                , velocity .= ival 0
                , group    .= ival 1
+               , synced   .= ival true
                ]
 
 
