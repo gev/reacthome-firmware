@@ -61,7 +61,4 @@ mkPWM timer' channel_pwm port = do
 
 
 instance I.PWM PWM where
-
-    setDuty PWM{..} duty = do
-        let t = timer timer_pwm
-        configChannelOutputPulseValue t channel_pwm duty
+    setDuty PWM{..} duty = pure ()
