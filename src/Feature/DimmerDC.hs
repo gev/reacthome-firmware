@@ -95,9 +95,20 @@ sync DimmerDC{..} = do
 
 
 
+instance Controller DimmerDC where
+    handle ds buff size = do
+        shouldInit' <- deref $ shouldInit ds
+        pure [ size >=? 3 ==> do
+                action <- deref $ buff ! 0
+                cond_ [ iNot shouldInit' ==> cond_
+                      [ action ==? 0x00  ==> onDo    ds buff size
+                      , action ==? 0xd0  ==> onDim ds buff size
+                      ]
+                      , action ==? 0xf2  ==> onInit  ds buff size
+                      ]
+             ]
 
 
-
-
-
-instance Controller DimmerDC
+onDo    = undefined
+onDim   = undefined
+onInit  = undefined
