@@ -148,7 +148,7 @@ syncGroups Relays{..} i =
 instance Controller Relays where
     handle rs buff size = do
         shouldInit' <- deref $ shouldInit rs
-        pure [ size >=? 3 ==> do
+        pure [ size >=? 4 ==> do
                 action <- deref $ buff ! 0
                 cond_ [ iNot shouldInit' ==> cond_
                       [ action ==? 0x00  ==> onDo    rs buff size
