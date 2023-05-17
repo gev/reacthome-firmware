@@ -18,8 +18,9 @@ import           Core.Task
 import           Core.Transport       as T
 import           Data.Buffer
 import           Data.Index
+import           Data.Serialize
 import           Data.Value
-import           Endpoint.Dimmers
+import           Endpoint.Dimmers     as D
 import           GHC.TypeNats
 import           Interface.MCU
 import           Interface.PWM
@@ -101,14 +102,33 @@ instance Controller DimmerDC where
         pure [ size >=? 3 ==> do
                 action <- deref $ buff ! 0
                 cond_ [ iNot shouldInit' ==> cond_
-                      [ action ==? 0x00  ==> onDo    ds buff size
-                      , action ==? 0xd0  ==> onDim ds buff size
+                      [ action ==? 0x00  ==> onDo   ds buff size
+                      , action ==? 0xd0  ==> onDim  ds buff size
                       ]
-                      , action ==? 0xf2  ==> onInit  ds buff size
+                      , action ==? 0xf2  ==> onInit ds buff size
                       ]
              ]
 
 
-onDo    = undefined
-onDim   = undefined
-onInit  = undefined
+onDo :: DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
+onDo DimmerDC{..} buff size = undefined
+
+
+onDim :: DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
+onDim DimmerDC{..} buff size = undefined
+
+
+onInit :: KnownNat n => DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
+onInit DimmerDC{..} buff size =
+    when (size ==? 12 * 4) $ do
+        runDimmers getDimmers $ \ds -> do
+            offset <- local $ ival 1
+            arrayMap $ \ix -> do
+                offset' <- deref offset
+                let d = addrOf ds ! ix
+                store (d ~> D.group   ) =<< unpack buff  offset'
+                store (d ~> D.mode    ) =<< unpack buff (offset' + 1)
+                store (d ~> D.value   ) =<< unpack buff (offset' + 2)
+                store (d ~> D.velocity) =<< unpack buff (offset' + 3)
+                store offset $ offset' + 4
+        store shouldInit false
