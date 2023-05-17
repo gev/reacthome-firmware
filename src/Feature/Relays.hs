@@ -263,7 +263,7 @@ onInit :: KnownNat n
         -> Uint8
         -> Ivory (ProcEffects s ()) ()
 onInit rs@Relays{..} buff size =
-    when (size >=? 5 * n + 6 * n) $ do
+    when (size >=? 1 + 5 * n + 6 * n) $ do
         offset <- local $ ival 1
         initGroups rs buff offset
         initRelays rs buff offset
