@@ -110,17 +110,31 @@ instance Controller DimmerDC where
              ]
 
 
-onDo :: DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
-onDo DimmerDC{..} buff size = undefined
+onDo :: KnownNat n => DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
+onDo DimmerDC{..} buff size = do
+    index  <- deref $ buff ! 1
+    when (index >=? 1 .&& index <=? n) $
+        runDimmers getDimmers $ \ds -> do
+            let d = addrOf ds ! toIx index
+            mode' <- deref $ d ~> D.mode
+            when (mode' /=? 0) $ do
+                value' <- deref $ buff ! 2
+                ifte_ (value' ==? 0)
+                      (store (d ~> D.value) 0)
+                      (store (d ~> D.value) 255)
+                store (d ~> synced) false
 
 
 onDim :: DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
-onDim DimmerDC{..} buff size = undefined
+onDim DimmerDC{..} buff size = do
+    index  <- deref $ buff ! 1
+    when (index >=? 1 .&& index <=? n) $
+                
 
 
 onInit :: KnownNat n => DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
 onInit DimmerDC{..} buff size =
-    when (size ==? 12 * 4) $ do
+    when (size >=? 1 + 12 * 4) $ do
         runDimmers getDimmers $ \ds -> do
             offset <- local $ ival 1
             arrayMap $ \ix -> do
