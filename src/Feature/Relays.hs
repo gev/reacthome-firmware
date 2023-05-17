@@ -91,7 +91,7 @@ manage Relays{..} = zipWithM_ zip getOutputs (iterate (+1) 0)
 
 
 manageRelay :: Output o
-            => Ref Global (Struct R.RelayStruct)
+            => Record R.RelayStruct
             -> o
             -> Ivory eff Uint32
             -> (o -> Ivory eff ())
@@ -160,9 +160,9 @@ instance Controller Relays where
 
 
 
-onDo :: KnownNat l
+onDo :: KnownNat n
      => Relays
-     -> Ref Global ('Array l ('Stored Uint8))
+     -> Buffer n Uint8
      -> Uint8
      -> Ivory (ProcEffects s ()) ()
 onDo Relays{..} buff size = do
