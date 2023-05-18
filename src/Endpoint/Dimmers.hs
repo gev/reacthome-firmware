@@ -87,8 +87,14 @@ fade dimmer value' velocity' = runCheckMode dimmer $ do
     store (dimmer ~> velocity) velocity'
 
 setValue :: Record DimmerStruct -> Uint8 -> Ivory eff ()
-setValue dimmer value' = runCheckMode dimmer $
-    store (dimmer ~> value ) value'
+setValue dimmer value' = runCheckMode dimmer $ do
+    mode <- deref $ dimmer ~> mode
+    ifte_ (mode ==? 4)
+          (ifte_ (value' ==? 0)
+                 (store (dimmer ~> value ) 0)
+                 (store (dimmer ~> value ) 255)
+          )
+          (store (dimmer ~> value ) value')
 
 setMode :: Record DimmerStruct -> Uint8 -> Ivory eff ()
 setMode dimmer mode' = do
