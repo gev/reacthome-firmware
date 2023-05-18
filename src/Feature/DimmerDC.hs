@@ -21,7 +21,7 @@ import           Data.Index
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
-import           Endpoint.Dimmers
+import           Endpoint.Dimmers     as Dim
 import           GHC.TypeNats
 import           Interface.MCU
 import           Interface.PWM
@@ -79,7 +79,8 @@ manageDimmer :: PWM p
             => Record DimmerStruct
             -> p
             -> Ivory eff ()
-manageDimmer d pwm = pure ()
+manageDimmer dimmer pwm =
+    setDuty pwm . safeCast =<< deref (dimmer ~> Dim.value)
 
 
 
@@ -180,7 +181,7 @@ onFade dimmers index buff size =
     when (size >=? 5) $ do
         value    <- unpack buff 3
         velocity <- unpack buff 4
-        E.fade value velocity dimmers index
+        fade value velocity dimmers index
 
 
 onMode :: KnownNat n => Dimmers -> Uint8 -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
