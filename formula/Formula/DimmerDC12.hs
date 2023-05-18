@@ -13,7 +13,7 @@ dimmerDC12 :: Formula GD32F3x0
 dimmerDC12 = Formula { name       = "dimmerDC12"
                      , model      = 0xad
                      , version    = (2, 1)
-                     , shouldInit = false
+                     , shouldInit = true
                      , transport  = rbus $ rs485 1 uart_0 out_pb_2
                      , features   = [ dimmerDC [ pwm_0
                                                , pwm_1
