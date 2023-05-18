@@ -18,6 +18,7 @@ import           Core.Task
 import           Core.Transport       as T
 import           Data.Buffer
 import           Data.Index
+import           Data.Record
 import           Data.Serialize
 import           Data.Value
 import           Endpoint.Dimmers     as D
@@ -75,7 +76,7 @@ manage DimmerDC{..} = zipWithM_ zip getPWMs (iterate (+1) 0)
 
 
 manageDimmer :: PWM p
-            => Ref Global (Struct DimmerStruct)
+            => Record DimmerStruct
             -> p
             -> Ivory eff ()
 manageDimmer d pwm = pure ()
@@ -98,62 +99,107 @@ sync DimmerDC{..} = do
 
 instance Controller DimmerDC where
     handle ds buff size = do
-        shouldInit' <- deref $ shouldInit ds
-        pure [ size >=? 3 ==> do
-                action <- deref $ buff ! 0
-                cond_ [ iNot shouldInit' ==> cond_
-                      [ action ==? 0x00  ==> onDo   ds buff size
-                      , action ==? 0xd0  ==> onDim  ds buff size
-                      ]
-                      , action ==? 0xf2  ==> onInit ds buff size
-                      ]
+        action <- deref $ buff ! 0
+        pure [ action ==? 0x00 ==> onDo   ds buff size
+             , action ==? 0xd0 ==> onDim  ds buff size
+             , action ==? 0xf2 ==> onInit ds buff size
              ]
 
 
 
 onDo :: KnownNat n => DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
 onDo DimmerDC{..} buff size = do
-    index  <- deref $ buff ! 1
-    when (index >=? 1 .&& index <=? n) $
-        runDimmers getDimmers $ \ds -> do
-            let d = addrOf ds ! toIx index
-            mode' <- deref $ d ~> D.mode
-            when (mode' /=? 0) $ do
+    when (size >=? 3) $ do
+        shouldInit' <- deref shouldInit
+        when (iNot shouldInit') $ do
+            index <- deref $ buff ! 1
+            when (index >=? 1 .&& index <=? n) $ do
+                let index' = index - 1
                 value' <- deref $ buff ! 2
                 ifte_ (value' ==? 0)
-                      (store (d ~> D.value) 0)
-                      (store (d ~> D.value) 255)
-                store (d ~> synced) false
+                    (onOn  getDimmers index')
+                    (onOff getDimmers index')
 
 
 
 
 onDim :: KnownNat n => DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
 onDim DimmerDC{..} buff size = do
-    index  <- deref $ buff ! 1
-    when (index >=? 1 .&& index <=? n) $ do
-        action <- deref $ buff ! 2
-        cond_ [ action ==? 0 ==> pure () -- off
-              , action ==? 1 ==> pure () -- on
-              , action ==? 2 ==> pure () -- set
-              , action ==? 3 ==> pure () -- fade
-              , action ==? 4 ==> pure () -- type
-              , action ==? 5 ==> pure () -- group
-              ]
+    when (size >=? 3) $ do
+        shouldInit' <- deref shouldInit
+        when (iNot shouldInit') $ do
+            index <- deref $ buff ! 1
+            when (index >=? 1 .&& index <=? n) $ do
+                let index' = index - 1
+                action <- deref $ buff ! 2
+                cond_ [ action ==? 0 ==> onOff     getDimmers index'
+                        , action ==? 1 ==> onOn    getDimmers index'
+                        , action ==? 2 ==> onSet   getDimmers index' buff size
+                        , action ==? 3 ==> onFade  getDimmers index' buff size
+                        , action ==? 4 ==> onMode  getDimmers index' buff size
+                        , action ==? 5 ==> onGroup getDimmers index' buff size
+                        ]
 
 
 
 onInit :: KnownNat n => DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
 onInit DimmerDC{..} buff size =
     when (size >=? 1 + 12 * 4) $ do
+        offset <- local $ ival 1
         runDimmers getDimmers $ \ds -> do
-            offset <- local $ ival 1
             arrayMap $ \ix -> do
                 offset' <- deref offset
                 let d = addrOf ds ! ix
-                store (d ~> D.group   ) =<< unpack buff  offset'
-                store (d ~> D.mode    ) =<< unpack buff (offset' + 1)
-                store (d ~> D.value   ) =<< unpack buff (offset' + 2)
-                store (d ~> D.velocity) =<< unpack buff (offset' + 3)
+                group    <- unpack buff  offset'
+                mode     <- unpack buff (offset' + 1)
+                value    <- unpack buff (offset' + 2)
+                velocity <- unpack buff (offset' + 3)
+                D.init d group mode value velocity
                 store offset $ offset' + 4
         store shouldInit false
+
+
+
+onOn :: Dimmers -> Uint8 -> Ivory eff ()
+onOn dimmers index =
+    runDimmers dimmers $ \ds ->
+        D.on $ addrOf ds ! toIx index
+
+
+onOff :: Dimmers -> Uint8 -> Ivory eff ()
+onOff dimmers index =
+    runDimmers dimmers $ \ds ->
+        D.off $ addrOf ds ! toIx index
+
+
+onSet :: KnownNat n => Dimmers -> Uint8 -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
+onSet dimmers index buff size =
+    when (size >=? 4) $
+        runDimmers dimmers $ \ds -> do
+            value <- unpack buff 3
+            D.setValue (addrOf ds ! toIx index) value
+
+
+onFade :: KnownNat n => Dimmers -> Uint8 -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
+onFade dimmers index buff size =
+    when (size >=? 5) $
+        runDimmers dimmers $ \ds -> do
+            value    <- unpack buff 3
+            velocity <- unpack buff 4
+            D.fade (addrOf ds ! toIx index) value velocity
+
+
+onMode :: KnownNat n => Dimmers -> Uint8 -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
+onMode dimmers index buff size =
+    when (size >=? 4) $
+        runDimmers dimmers $ \ds -> do
+            mode <- unpack buff 3
+            D.setMode (addrOf ds ! toIx index) mode
+
+
+onGroup :: KnownNat n => Dimmers -> Uint8 -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
+onGroup dimmers index buff size =
+    when (size >=? 4) $
+        runDimmers dimmers $ \ds -> do
+            group <- unpack buff 3
+            D.setGroup (addrOf ds ! toIx index) group
