@@ -78,7 +78,7 @@ manageDimmer :: PWM p
             => Ref Global (Struct DimmerStruct)
             -> p
             -> Ivory eff ()
-manageDimmer d pwm = undefined
+manageDimmer d pwm = pure ()
 
 
 
@@ -133,12 +133,12 @@ onDim DimmerDC{..} buff size = do
     index  <- deref $ buff ! 1
     when (index >=? 1 .&& index <=? n) $ do
         action <- deref $ buff ! 2
-        cond_ [ action ==? 0 ==> undefined -- off
-              , action ==? 1 ==> undefined -- on
-              , action ==? 2 ==> undefined -- set
-              , action ==? 3 ==> undefined -- fade
-              , action ==? 4 ==> undefined -- type
-              , action ==? 5 ==> undefined -- group
+        cond_ [ action ==? 0 ==> pure () -- off
+              , action ==? 1 ==> pure () -- on
+              , action ==? 2 ==> pure () -- set
+              , action ==? 3 ==> pure () -- fade
+              , action ==? 4 ==> pure () -- type
+              , action ==? 5 ==> pure () -- group
               ]
 
 
