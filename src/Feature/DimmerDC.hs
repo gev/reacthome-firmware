@@ -110,6 +110,7 @@ instance Controller DimmerDC where
              ]
 
 
+
 onDo :: KnownNat n => DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
 onDo DimmerDC{..} buff size = do
     index  <- deref $ buff ! 1
@@ -125,11 +126,21 @@ onDo DimmerDC{..} buff size = do
                 store (d ~> synced) false
 
 
-onDim :: DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
+
+
+onDim :: KnownNat n => DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
 onDim DimmerDC{..} buff size = do
     index  <- deref $ buff ! 1
-    when (index >=? 1 .&& index <=? n) $
-                
+    when (index >=? 1 .&& index <=? n) $ do
+        action <- deref $ buff ! 2
+        cond_ [ action ==? 0 ==> undefined -- off
+              , action ==? 1 ==> undefined -- on
+              , action ==? 2 ==> undefined -- set
+              , action ==? 3 ==> undefined -- fade
+              , action ==? 4 ==> undefined -- type
+              , action ==? 5 ==> undefined -- group
+              ]
+
 
 
 onInit :: KnownNat n => DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
