@@ -7,12 +7,13 @@
 
 module Endpoint.Dimmers where
 
-import           Control.Monad.Writer
+import           Control.Monad.Writer (MonadWriter)
 import           Core.Context
 import           Data.Buffer
 import           Data.Record
 import           Data.Serialize
 import           Ivory.Language
+import           Ivory.Stdlib
 
 
 type DimmerStruct = "dimmer_struct"
@@ -62,3 +63,55 @@ message Dimmers{..} i = do
         pack payload 4 =<< deref (dimmer ~> value)
         pack payload 5 =<< deref (dimmer ~> velocity)
     pure payload
+
+
+
+init :: Record DimmerStruct -> Uint8 -> Uint8 -> Uint8 -> Uint8 -> Ivory eff ()
+init dimmer group' mode' value' velocity' = do
+    store (dimmer ~> group   ) group'
+    store (dimmer ~> mode    ) mode'
+    store (dimmer ~> value   ) value'
+    store (dimmer ~> velocity) velocity'
+
+on :: Record DimmerStruct -> Ivory eff ()
+on dimmer = runCheckMode dimmer $
+    store (dimmer ~> value) 255
+
+off :: Record DimmerStruct -> Ivory eff ()
+off dimmer = runCheckMode dimmer $
+    store (dimmer ~> value) 0
+
+fade :: Record DimmerStruct -> Uint8 -> Uint8 -> Ivory eff ()
+fade dimmer value' velocity' = runCheckMode dimmer $ do
+    store (dimmer ~> value   ) value'
+    store (dimmer ~> velocity) velocity'
+
+setValue :: Record DimmerStruct -> Uint8 -> Ivory eff ()
+setValue dimmer value' = runCheckMode dimmer $
+    store (dimmer ~> value ) value'
+
+setMode :: Record DimmerStruct -> Uint8 -> Ivory eff ()
+setMode dimmer mode' = do
+    store (dimmer ~> mode  ) mode'
+    store (dimmer ~> value ) 0
+    store (dimmer ~> synced) false
+
+setGroup :: Record DimmerStruct -> Uint8 -> Ivory eff ()
+setGroup dimmer group' = do
+    store (dimmer ~> group ) group'
+    store (dimmer ~> synced) false
+
+
+
+runCheckMode :: Record DimmerStruct -> Ivory eff () -> Ivory eff ()
+runCheckMode dimmer run = do
+    mode' <- deref $ dimmer ~> mode
+    when (mode' /=? 0) $ do
+        run
+        store (dimmer ~> synced) false
+
+
+-- sync :: Record DimmerStruct -> Ivory eff () -> Ivory eff ()
+-- sync Dimmers{..} run =
+--     runDimmers $ \ds ->
+--         arrayMap
