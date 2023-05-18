@@ -132,19 +132,19 @@ onDim DimmerDC{..} buff size = do
             when (index >=? 1 .&& index <=? n) $ do
                 let index' = index - 1
                 action <- deref $ buff ! 2
-                cond_ [ action ==? 0 ==> onOff     getDimmers index'
-                        , action ==? 1 ==> onOn    getDimmers index'
-                        , action ==? 2 ==> onSet   getDimmers index' buff size
-                        , action ==? 3 ==> onFade  getDimmers index' buff size
-                        , action ==? 4 ==> onMode  getDimmers index' buff size
-                        , action ==? 5 ==> onGroup getDimmers index' buff size
-                        ]
+                cond_ [ action ==? 0 ==> onOff   getDimmers index'
+                      , action ==? 1 ==> onOn    getDimmers index'
+                      , action ==? 2 ==> onSet   getDimmers index' buff size
+                      , action ==? 3 ==> onFade  getDimmers index' buff size
+                      , action ==? 4 ==> onMode  getDimmers index' buff size
+                      , action ==? 5 ==> onGroup getDimmers index' buff size
+                      ]
 
 
 
 onInit :: KnownNat n => DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
 onInit DimmerDC{..} buff size =
-    when (size >=? 1 + 12 * 4) $ do
+    when (size >=? 1 + n * 3) $ do
         offset <- local $ ival 1
         runDimmers getDimmers $ \ds -> do
             arrayMap $ \ix -> do
@@ -153,9 +153,8 @@ onInit DimmerDC{..} buff size =
                 group    <- unpack buff  offset'
                 mode     <- unpack buff (offset' + 1)
                 value    <- unpack buff (offset' + 2)
-                velocity <- unpack buff (offset' + 3)
-                D.init d group mode value velocity
-                store offset $ offset' + 4
+                D.init d group mode value 0
+                store offset $ offset' + 3
         store shouldInit false
 
 
