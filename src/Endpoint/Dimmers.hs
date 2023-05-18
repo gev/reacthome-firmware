@@ -12,6 +12,7 @@ import           Core.Context
 import           Data.Buffer
 import           Data.Record
 import           Data.Serialize
+import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
 
@@ -66,58 +67,86 @@ message Dimmers{..} i = do
 
 
 
-init :: Record DimmerStruct -> Uint8 -> Uint8 -> Uint8 -> Uint8 -> Ivory eff ()
-init dimmer group' mode' value' velocity' = do
+initialize :: Record DimmerStruct -> Uint8 -> Uint8 -> Uint8 -> Uint8 -> Ivory eff ()
+initialize dimmer group' mode' value' velocity' = do
     store (dimmer ~> group   ) group'
     store (dimmer ~> mode    ) mode'
     store (dimmer ~> value   ) value'
     store (dimmer ~> velocity) velocity'
 
-on :: Record DimmerStruct -> Ivory eff ()
-on dimmer = runCheckMode dimmer $
+on :: Dimmers -> Uint8 -> Ivory eff ()
+on = runCheckMode $ \dimmer ->
     store (dimmer ~> value) 255
 
-off :: Record DimmerStruct -> Ivory eff ()
-off dimmer = runCheckMode dimmer $
+off :: Dimmers -> Uint8 -> Ivory eff ()
+off = runCheckMode $ \dimmer ->
     store (dimmer ~> value) 0
 
-fade :: Record DimmerStruct -> Uint8 -> Uint8 -> Ivory eff ()
-fade dimmer value' velocity' = runCheckMode dimmer $ do
+fade :: Uint8 -> Uint8 -> Dimmers -> Uint8 -> Ivory eff ()
+fade value' velocity' = runCheckMode $ \dimmer -> do
     store (dimmer ~> value   ) value'
     store (dimmer ~> velocity) velocity'
 
-setValue :: Record DimmerStruct -> Uint8 -> Ivory eff ()
-setValue dimmer value' = runCheckMode dimmer $ do
+setValue :: Uint8 -> Dimmers -> Uint8 -> Ivory eff ()
+setValue value' = runCheckMode $ \dimmer -> do
     mode <- deref $ dimmer ~> mode
     ifte_ (mode ==? 4)
-          (ifte_ (value' ==? 0)
-                 (store (dimmer ~> value ) 0)
-                 (store (dimmer ~> value ) 255)
-          )
-          (store (dimmer ~> value ) value')
+        (ifte_ (value' ==? 0)
+                (store (dimmer ~> value ) 0)
+                (store (dimmer ~> value ) 255)
+        )
+        (store (dimmer ~> value ) value')
 
-setMode :: Record DimmerStruct -> Uint8 -> Ivory eff ()
-setMode dimmer mode' = do
+setMode :: Uint8 -> Dimmers -> Uint8 -> Ivory eff ()
+setMode  mode' = runDimmer $ \dimmer -> do
     store (dimmer ~> mode  ) mode'
     store (dimmer ~> value ) 0
     store (dimmer ~> synced) false
 
-setGroup :: Record DimmerStruct -> Uint8 -> Ivory eff ()
-setGroup dimmer group' = do
+setGroup :: Uint8 -> Dimmers -> Uint8 -> Ivory eff ()
+setGroup group' = runDimmer $ \dimmer -> do
     store (dimmer ~> group ) group'
     store (dimmer ~> synced) false
 
 
 
-runCheckMode :: Record DimmerStruct -> Ivory eff () -> Ivory eff ()
-runCheckMode dimmer run = do
+runCheckMode :: (Record DimmerStruct -> Ivory eff ()) -> Dimmers -> Uint8 -> Ivory eff ()
+runCheckMode run = runDimmer $ \dimmer -> do
     mode' <- deref $ dimmer ~> mode
     when (mode' /=? 0) $ do
-        run
+        run dimmer
         store (dimmer ~> synced) false
 
 
--- sync :: Record DimmerStruct -> Ivory eff () -> Ivory eff ()
--- sync Dimmers{..} run =
---     runDimmers $ \ds ->
---         arrayMap
+runDimmer :: (Record DimmerStruct -> Ivory eff ()) -> Dimmers -> Uint8 -> Ivory eff ()
+runDimmer run dimmers index =
+    runDimmers dimmers $ \ds -> do
+        let ix' = toIx index
+        let dimmer' = addrOf ds ! ix'
+        run dimmer'
+        syncDimmerGroup ds dimmer' ix'
+
+
+
+syncDimmerGroup :: KnownNat n => Records' n DimmerStruct -> Record DimmerStruct -> Ix n -> Ivory eff ()
+syncDimmerGroup ds dimmer' ix' = do
+    group' <- deref $ dimmer' ~> group
+    arrayMap $ \ix'' ->
+        when (ix'' /=? ix') $ do
+            let dimmer'' = addrOf ds ! ix''
+            group'' <- deref $ dimmer'' ~> group
+            when (group'' ==? group') $ do
+                let sync = copyLabel dimmer'' dimmer'
+                sync velocity
+                sync value
+                sync mode
+                store (dimmer'' ~> synced) false
+
+
+
+copyLabel :: (IvoryStore a, IvoryStruct sym)
+          => Ref s1 (Struct sym)
+          -> Ref s2 (Struct sym)
+          -> Label sym ('Stored a)
+          -> Ivory eff ()
+copyLabel dst src label = store (dst ~> label) =<< deref (src ~> label)

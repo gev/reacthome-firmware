@@ -21,7 +21,7 @@ import           Data.Index
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
-import           Endpoint.Dimmers     as D
+import           Endpoint.Dimmers
 import           GHC.TypeNats
 import           Interface.MCU
 import           Interface.PWM
@@ -153,52 +153,45 @@ onInit DimmerDC{..} buff size =
                 group    <- unpack buff  offset'
                 mode     <- unpack buff (offset' + 1)
                 value    <- unpack buff (offset' + 2)
-                D.init d group mode value 0
+                initialize d group mode value 0
+                syncDimmerGroup ds d ix
                 store offset $ offset' + 3
         store shouldInit false
 
 
 
 onOn :: Dimmers -> Uint8 -> Ivory eff ()
-onOn dimmers index =
-    runDimmers dimmers $ \ds ->
-        D.on $ addrOf ds ! toIx index
+onOn = on
 
 
 onOff :: Dimmers -> Uint8 -> Ivory eff ()
-onOff dimmers index =
-    runDimmers dimmers $ \ds ->
-        D.off $ addrOf ds ! toIx index
+onOff = off
 
 
 onSet :: KnownNat n => Dimmers -> Uint8 -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
 onSet dimmers index buff size =
-    when (size >=? 4) $
-        runDimmers dimmers $ \ds -> do
-            value <- unpack buff 3
-            D.setValue (addrOf ds ! toIx index) value
+    when (size >=? 4) $ do
+        value <- unpack buff 3
+        setValue value dimmers index
 
 
 onFade :: KnownNat n => Dimmers -> Uint8 -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
 onFade dimmers index buff size =
-    when (size >=? 5) $
-        runDimmers dimmers $ \ds -> do
-            value    <- unpack buff 3
-            velocity <- unpack buff 4
-            D.fade (addrOf ds ! toIx index) value velocity
+    when (size >=? 5) $ do
+        value    <- unpack buff 3
+        velocity <- unpack buff 4
+        E.fade value velocity dimmers index
 
 
 onMode :: KnownNat n => Dimmers -> Uint8 -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
 onMode dimmers index buff size =
-    when (size >=? 4) $
-        runDimmers dimmers $ \ds -> do
-            mode <- unpack buff 3
-            D.setMode (addrOf ds ! toIx index) mode
+    when (size >=? 4) $ do
+        mode <- unpack buff 3
+        setMode mode dimmers index
 
 
 onGroup :: KnownNat n => Dimmers -> Uint8 -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
 onGroup dimmers index buff size =
-    when (size >=? 4) $
-        runDimmers dimmers $ \ds -> do
-            group <- unpack buff 3
-            D.setGroup (addrOf ds ! toIx index) group
+    when (size >=? 4) $ do
+        group <- unpack buff 3
+        setGroup group dimmers index
