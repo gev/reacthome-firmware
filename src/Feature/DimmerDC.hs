@@ -58,8 +58,8 @@ dimmerDC pwms = do
                            , current
                            , transmit = T.transmitBuffer transport
                            }
-    addTask $ delay 10 "dimmers_manage" $ manage dimmers
-    addTask $ yeld     "dimmers_sync"   $ sync dimmers
+    addTask $ delay 1 "dimmers_manage" $ manage dimmers
+    addTask $ yeld    "dimmers_sync"   $ sync dimmers
     pure $ Feature dimmers
 
 
@@ -80,7 +80,7 @@ manageDimmer :: PWM p
             -> p
             -> Ivory eff ()
 manageDimmer dimmer pwm =
-    setDuty pwm . safeCast =<< deref (dimmer ~> Dim.value)
+    setDuty pwm . safeCast =<< deref (dimmer ~> Dim.brightness)
 
 
 
@@ -172,8 +172,8 @@ onOff = off
 onSet :: KnownNat n => Dimmers -> Uint8 -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
 onSet dimmers index buff size =
     when (size >=? 4) $ do
-        value <- unpack buff 3
-        setValue value dimmers index
+        brightness <- unpack buff 3
+        setBrightness brightness dimmers index
 
 
 onFade :: KnownNat n => Dimmers -> Uint8 -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
