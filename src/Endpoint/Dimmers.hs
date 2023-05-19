@@ -25,6 +25,8 @@ type DimmerStruct = "dimmer_struct"
     ; brightness :: Uint8
     ; velocity   :: Uint8
     ; group      :: Uint8
+    ; value      :: IFloat
+    ; delta      :: IFloat
     ; synced     :: IBool
     }
 |]
@@ -48,6 +50,8 @@ dimmers name n = do
                , brightness .= ival 0
                , velocity   .= ival 0
                , group      .= ival 1
+               , value      .= ival 0
+               , delta      .= ival 0
                , synced     .= ival true
                ]
 
@@ -75,32 +79,43 @@ initialize dimmer group' mode' brightness' velocity' = do
     store (dimmer ~> velocity  ) velocity'
 
 on :: Dimmers -> Uint8 -> Ivory eff ()
-on = runCheckMode $ \dimmer ->
+on = runCheckMode $ \dimmer -> do
     store (dimmer ~> brightness) 255
+    store (dimmer ~> value     ) 255
 
 off :: Dimmers -> Uint8 -> Ivory eff ()
-off = runCheckMode $ \dimmer ->
+off = runCheckMode $ \dimmer -> do
     store (dimmer ~> brightness) 0
+    store (dimmer ~> value     ) 0
 
 fade :: Uint8 -> Uint8 -> Dimmers -> Uint8 -> Ivory eff ()
 fade brightness' velocity' = runCheckMode $ \dimmer -> do
-    store (dimmer ~> brightness   ) brightness'
-    store (dimmer ~> velocity) velocity'
+    store (dimmer ~> brightness) brightness'
+    store (dimmer ~> value     ) $ safeCast brightness'
+    store (dimmer ~> velocity  ) velocity'
+    store (dimmer ~> delta     ) $ 8 / (260 - safeCast velocity');
 
 setBrightness :: Uint8 -> Dimmers -> Uint8 -> Ivory eff ()
 setBrightness brightness' = runCheckMode $ \dimmer -> do
     mode <- deref $ dimmer ~> mode
     ifte_ (mode ==? 4)
         (ifte_ (brightness' ==? 0)
-                (store (dimmer ~> brightness ) 0)
-                (store (dimmer ~> brightness ) 255)
+                (do store (dimmer ~> brightness ) 0
+                    store (dimmer ~> value      ) 0
+                )
+                (do store (dimmer ~> brightness ) 255
+                    store (dimmer ~> value      ) 0
+                )
         )
-        (store (dimmer ~> brightness ) brightness')
+        (do store (dimmer ~> brightness ) brightness'
+            store (dimmer ~> value      ) $ safeCast brightness'
+        )
 
 setMode :: Uint8 -> Dimmers -> Uint8 -> Ivory eff ()
 setMode  mode' = runDimmer $ \dimmer -> do
     store (dimmer ~> mode      ) mode'
     store (dimmer ~> brightness) 0
+    store (dimmer ~> value     ) 0
     store (dimmer ~> synced    ) false
 
 setGroup :: Uint8 -> Dimmers -> Uint8 -> Ivory eff ()
@@ -136,10 +151,15 @@ syncDimmerGroup ds dimmer' ix' = do
             let dimmer'' = addrOf ds ! ix''
             group'' <- deref $ dimmer'' ~> group
             when (group'' ==? group') $ do
-                let sync = copyLabel dimmer'' dimmer'
+                let sync :: IvoryStore a
+                         => Label DimmerStruct (Stored a)
+                         -> Ivory eff ()
+                    sync = copyLabel dimmer'' dimmer'
                 sync velocity
                 sync brightness
                 sync mode
+                sync value
+                sync delta
                 store (dimmer'' ~> synced) false
 
 

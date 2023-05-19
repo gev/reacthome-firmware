@@ -71,16 +71,25 @@ manage DimmerDC{..} = zipWithM_ zip getPWMs (iterate (+1) 0)
         zip pwm i = runDimmers getDimmers $ \ds -> do
             let ix = toIx i
             let d = addrOf ds ! ix
-            manageDimmer d pwm
+            manageDimmer pwm d
 
 
 
-manageDimmer :: PWM p
-            => Record DimmerStruct
-            -> p
-            -> Ivory eff ()
-manageDimmer dimmer pwm =
-    setDuty pwm . safeCast =<< deref (dimmer ~> Dim.brightness)
+manageDimmer :: PWM p => p -> Record DimmerStruct -> Ivory eff ()
+manageDimmer pwm dimmer = do
+    brightness' <- deref $ dimmer ~> Dim.brightness
+    value'      <- deref $ dimmer ~> Dim.value
+    delta'      <- deref $ dimmer ~> Dim.delta
+    cond_ [ value' <? safeCast brightness' ==> do
+                store (dimmer ~> Dim.value) $ value' + delta'
+                when  (value' >? safeCast brightness') $
+                    store (dimmer ~> Dim.value) $ safeCast brightness'
+          , value' >? safeCast brightness' ==> do
+                store (dimmer ~> Dim.value) $ value' - delta'
+                when  (value' <? safeCast brightness') $
+                    store (dimmer ~> Dim.value) $ safeCast brightness'
+          ]
+    setDuty pwm $ castDefault value'
 
 
 
