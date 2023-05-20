@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "gd32f3x0.h"
 
-#define LED_NUM 5
+#define LED_NUM 20
 #define LED_FOR_RST 7
 #define LED_BUF_LENGTH (LED_NUM + LED_FOR_RST)
 
@@ -165,20 +165,49 @@ int main(void) {
   dma_config();
   timer_config();
 
-  while (1){
-		set_color(0,100,100,100);
-		set_color(1,0,0,100);
-		set_color(2,100,0,0);
-		set_color(3,0,100,0);
-		set_color(4,100,0,100);
-		for (uint32_t x = 0; x <10000000; x++);
+  uint8_t rainbow[LED_NUM][3] = {
+    {},
+    {},
+    {},
+    {},
+  };
 
-		set_color(0,100,0,100);
-		set_color(1,0,100,0);
-		set_color(2,100,0,0);
-		set_color(3,0,0,100);
-	  set_color(4,100,100,100);
-		for (uint32_t x = 0; x <10000000; x++);
+  while (1){
+    // for (uint32_t x = 0; x < LED_NUM; x++){
+    //   set_color(x,0,255,0);
+    // }
+		// // set_color(0,100,100,100);
+		// // set_color(1,0,0,100);
+		// // set_color(2,100,0,0);
+		// // set_color(3,0,100,0);
+		// // set_color(4,100,0,100);
+		// for (uint32_t x = 0; x <10000000; x++);
+
+		// set_color(0  ,100 ,0   ,100);
+		// set_color(1  ,0   ,100 ,0);
+		// set_color(2  ,100 ,0   ,0);
+		// set_color(3  ,0   ,0   ,100);
+	  // set_color(4  ,100 ,100 ,100);
+  
+		// set_color(5  ,100 ,0   ,100);
+		// set_color(6  ,0   ,100 ,0);
+		// set_color(7  ,100 ,0   ,0);
+		// set_color(8  ,0   ,0   ,100);
+	  // set_color(9  ,100 ,100 ,100);
+ 
+		// set_color(10 ,100 ,0   ,100);
+		// set_color(11 ,0   ,100 ,0);
+		// set_color(12 ,100 ,0   ,0);
+		// set_color(13 ,0   ,0   ,100);
+	  // set_color(14 ,100 ,100 ,100);
+
+		// set_color(15 ,100 ,0   ,100);
+		// set_color(16 ,0   ,100 ,0);
+		// set_color(17 ,100 ,0   ,0);
+		// set_color(18 ,0   ,0   ,100);
+	  // set_color(19 ,100 ,100 ,100);
+
+		// for (uint32_t x = 0; x <10000000; x++);
 
 	}
 }

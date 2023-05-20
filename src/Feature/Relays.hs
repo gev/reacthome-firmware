@@ -70,7 +70,7 @@ relays outs = do
                          , transmit = T.transmitBuffer transport
                          }
     addTask $ delay 10 "relays_manage" $ manage relays
-    addTask $ delay  1 "relays_sync"   $ sync relays
+    addTask $ yeld     "relays_sync"   $ sync relays
     pure $ Feature relays
 
 
@@ -91,7 +91,7 @@ manage Relays{..} = zipWithM_ zip getOutputs (iterate (+1) 0)
 
 
 manageRelay :: Output o
-            => Ref Global (Struct R.RelayStruct)
+            => Record R.RelayStruct
             -> o
             -> Ivory eff Uint32
             -> (o -> Ivory eff ())
@@ -160,9 +160,9 @@ instance Controller Relays where
 
 
 
-onDo :: KnownNat l
+onDo :: KnownNat n
      => Relays
-     -> Ref Global ('Array l ('Stored Uint8))
+     -> Buffer n Uint8
      -> Uint8
      -> Ivory (ProcEffects s ()) ()
 onDo Relays{..} buff size = do
@@ -263,7 +263,7 @@ onInit :: KnownNat n
         -> Uint8
         -> Ivory (ProcEffects s ()) ()
 onInit rs@Relays{..} buff size =
-    when (size >=? 5 * n + 6 * n) $ do
+    when (size >=? 1 + 5 * n + 6 * n) $ do
         offset <- local $ ival 1
         initGroups rs buff offset
         initRelays rs buff offset

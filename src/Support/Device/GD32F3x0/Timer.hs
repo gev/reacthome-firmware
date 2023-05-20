@@ -26,11 +26,13 @@ module Support.Device.GD32F3x0.Timer
     , ocidlestate
     , ocnidlestate
     , timerOcParam
+    , timerOcDefaultParam
 
     , TIMER_PERIPH
     , timer0
     , timer1
     , timer2
+    , timer14
 
     , TIMER_ALIGNE_MODE
     , timer_counter_edge
@@ -76,6 +78,7 @@ module Support.Device.GD32F3x0.Timer
 
     , TIMER_CHANNEL_IDLE_STATE
     , timer_oc_idle_state_low
+    , timer_oc_idle_state_high
 
     , TIMER_COMPL_CHANNEL_IDLE_STATE
     , timer_ocn_idle_state_low
@@ -147,17 +150,19 @@ type TIMER_OC_PARAM s = Ref s (Struct TIMER_OC_PARAM_STRUCT)
 timerOcParam :: [InitStruct  TIMER_OC_PARAM_STRUCT]
              -> Init (Struct TIMER_OC_PARAM_STRUCT)
 timerOcParam p =
-    istruct $ p <+>
-        [ outputstate  .= ival timer_ccx_enable
-        , outputnstate .= ival timer_ccxn_disable
-        , ocpolarity   .= ival timer_oc_polarity_high
-        , ocnpolarity  .= ival timer_ocn_polarity_high
-        , ocidlestate  .= ival timer_oc_idle_state_low
-        , ocnidlestate .= ival timer_ocn_idle_state_low
+    istruct $ p <+> timerOcDefaultParam
+        
 
-        ]
+timerOcDefaultParam = 
+    [ outputstate  .= ival timer_ccx_enable
+    , outputnstate .= ival timer_ccxn_disable
+    , ocpolarity   .= ival timer_oc_polarity_high
+    , ocnpolarity  .= ival timer_ocn_polarity_high
+    , ocidlestate  .= ival timer_oc_idle_state_high
+    , ocnidlestate .= ival timer_ocn_idle_state_low
 
-
+    ]
+    
 
 newtype TIMER_PERIPH = TIMER_PERIPH Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
@@ -166,6 +171,7 @@ instance ExtSymbol TIMER_PERIPH
 timer0 = TIMER_PERIPH $ ext "TIMER0"
 timer1 = TIMER_PERIPH $ ext "TIMER1"
 timer2 = TIMER_PERIPH $ ext "TIMER2"
+timer14 = TIMER_PERIPH $ ext "TIMER14"
 
 
 
@@ -263,6 +269,7 @@ newtype TIMER_CHANNEL_IDLE_STATE = TIMER_CHANNEL_IDLE_STATE Uint16
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_oc_idle_state_low = TIMER_CHANNEL_IDLE_STATE $ ext "TIMER_OC_IDLE_STATE_LOW"
+timer_oc_idle_state_high = TIMER_CHANNEL_IDLE_STATE $ ext "TIMER_OC_IDLE_STATE_HIGH"
 
 
 
@@ -372,6 +379,7 @@ inclTimer = do
     inclSym timer0
     inclSym timer1
     inclSym timer2
+    inclSym timer14
 
     inclSym timer_counter_edge
     inclSym timer_counter_up
@@ -403,6 +411,7 @@ inclTimer = do
     inclSym timer_ocn_polarity_high
 
     inclSym timer_oc_idle_state_low
+    inclSym timer_oc_idle_state_high
 
     inclSym timer_ocn_idle_state_low
 
@@ -418,3 +427,4 @@ inclTimer = do
     incl timer_channel_output_mode_config
     incl timer_channel_output_shadow_config
     incl timer_auto_reload_shadow_enable
+    incl timer_channel_output_config

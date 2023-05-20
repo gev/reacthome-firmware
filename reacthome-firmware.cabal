@@ -58,6 +58,7 @@ executable reacthome-firmware
 
                     , Endpoint.Relays
                     , Endpoint.Groups
+                    , Endpoint.Dimmers
 
                     , Feature.Blink
                     , Feature.Echo
@@ -120,6 +121,7 @@ executable reacthome-firmware
                     , Device.GD32F3x0.SystemClock
                     , Device.GD32F3x0.Timer
                     , Device.GD32F3x0.UART
+                    , Device.GD32F3x0.PWM
 
                     , Device.GD32F4xx
                     , Device.GD32F4xx.GPIO

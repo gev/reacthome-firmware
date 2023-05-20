@@ -5,8 +5,10 @@
 module Support.Device.GD32F3x0.IRQ
     ( IRQn
 
+    , timer0_irqn
     , timer1_irqn
     , timer2_irqn
+    , timer14_irqn
     , usart0_irqn
     , usart1_irqn
     , dma_channel1_2_irqn
@@ -29,8 +31,10 @@ newtype IRQn = IRQn Uint8
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 instance ExtSymbol IRQn
 
+timer0_irqn         = IRQn $ ext "TIMER0_IRQn"
 timer1_irqn         = IRQn $ ext "TIMER1_IRQn"
 timer2_irqn         = IRQn $ ext "TIMER2_IRQn"
+timer14_irqn        = IRQn $ ext "TIMER14_IRQn"
 usart0_irqn         = IRQn $ ext "USART0_IRQn"
 usart1_irqn         = IRQn $ ext "USART1_IRQn"
 dma_channel1_2_irqn = IRQn $ ext "DMA_Channel1_2_IRQn"
@@ -50,8 +54,10 @@ makeIRQHandler t b = incl $ proc ((init . symbol) t <> "Handler") $ body b
 
 inclIRQ :: ModuleDef
 inclIRQ = do
+    inclSym timer0_irqn
     inclSym timer1_irqn
     inclSym timer2_irqn
+    inclSym timer14_irqn
     inclSym usart0_irqn
     inclSym usart1_irqn
     inclSym dma_channel1_2_irqn

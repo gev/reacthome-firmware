@@ -282,7 +282,7 @@ typedef struct {
 } timer_break_parameter_struct;                                                     
                                                                                     
 /* channel output parameter struct definitions */                                   
-typedef struct {                                                                    
+typedef struct timer_oc_parameter_struct {                                                                    
     uint32_t outputstate;                                                           /*!< channel output state */
     uint16_t outputnstate;                                                          /*!< channel complementary output state */
     uint16_t ocpolarity;                                                            /*!< channel output polarity */
