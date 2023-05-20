@@ -104,7 +104,7 @@ setBrightness brightness' = runCheckMode $ \dimmer -> do
                     store (dimmer ~> value      ) 0
                 )
                 (do store (dimmer ~> brightness ) 255
-                    store (dimmer ~> value      ) 0
+                    store (dimmer ~> value      ) 255
                 )
         )
         (do store (dimmer ~> brightness ) brightness'
