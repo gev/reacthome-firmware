@@ -14,6 +14,7 @@ import           Data.Record
 import           Data.Serialize
 import           GHC.TypeNats
 import           Ivory.Language
+import           Ivory.Language.Float (IFloat (IFloat))
 import           Ivory.Stdlib
 
 
@@ -161,6 +162,25 @@ syncDimmerGroup ds dimmer' ix' = do
                 sync value
                 sync delta
                 store (dimmer'' ~> synced) false
+
+
+
+calculateValue :: (Default v, Bounded v, IvoryIntegral v, SafeCast v IFloat)
+               => Record DimmerStruct -> Ivory eff v
+calculateValue dimmer = do
+    brightness' <- deref $ dimmer ~> brightness
+    value'      <- deref $ dimmer ~> value
+    delta'      <- deref $ dimmer ~> delta
+    cond_ [ value' <? safeCast brightness' ==> do
+                store (dimmer ~> value) $ value' + delta'
+                when  (value' >? safeCast brightness') $
+                    store (dimmer ~> value) $ safeCast brightness'
+          , value' >? safeCast brightness' ==> do
+                store (dimmer ~> value) $ value' - delta'
+                when  (value' <? safeCast brightness') $
+                    store (dimmer ~> value) $ safeCast brightness'
+          ]
+    pure $ castDefault value'
 
 
 
