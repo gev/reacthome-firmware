@@ -11,7 +11,7 @@ import           Core.Task
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Language.Module
-import Data.List
+import           Data.List
 
 
 
