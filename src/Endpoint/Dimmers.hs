@@ -172,16 +172,16 @@ calculateValue dimmer = do
     delta'      <- deref $ dimmer ~> delta
     cond_ [ value' <? brightness' ==> do
                 store (dimmer ~> value) $ value' + delta'
-                value'      <- deref $ dimmer ~> value
-                when  (value' >? brightness') $
+                value' <- deref $ dimmer ~> value
+                when (value' >? brightness') $
                     store (dimmer ~> value) brightness'
           , value' >? brightness' ==> do
                 store (dimmer ~> value) $ value' - delta'
-                value'      <- deref $ dimmer ~> value
-                when  (value' <? brightness') $
+                value' <- deref $ dimmer ~> value
+                when (value' <? brightness') $
                     store (dimmer ~> value) brightness'
           ]
-    castFloatToUint16 value'
+    castFloatToUint16 =<< deref (dimmer ~> value)
 
 
 copyLabel :: (IvoryStore a, IvoryStruct sym)
