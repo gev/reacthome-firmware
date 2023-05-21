@@ -45,6 +45,7 @@ instance Compiler GCC GD32F3x0 where
 
         , ldflags = [ "-mthumb"
                     , "-mcpu=cortex-m4"
+                    , "-mfpu=fpv4-sp-d16"
                     , "-mfloat-abi=hard"
                     , "-Wl,--gc-sections"
                     , "-flto"
