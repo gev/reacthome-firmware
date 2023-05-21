@@ -77,7 +77,7 @@ manage DimmerDC{..} = zipWithM_ zip getPWMs (iterate (+1) 0)
 
 manageDimmer :: PWM p => p -> Record DimmerStruct -> Ivory eff ()
 manageDimmer pwm dimmer =
-    setDuty pwm =<< calculateValue dimmer
+    setDuty pwm  =<< calculateValue dimmer
 
 
 

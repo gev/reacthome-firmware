@@ -15,6 +15,7 @@ import           Data.Serialize
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
+import           Support.Cast
 
 
 type DimmerStruct = "dimmer_struct"
@@ -100,15 +101,15 @@ setBrightness brightness' = runCheckMode $ \dimmer -> do
     mode <- deref $ dimmer ~> mode
     ifte_ (mode ==? 4)
         (ifte_ (brightness' ==? 0)
-                (do store (dimmer ~> brightness ) 0
-                    store (dimmer ~> value      ) 0
+                (do store (dimmer ~> brightness) 0
+                    store (dimmer ~> value     ) 0
                 )
-                (do store (dimmer ~> brightness ) 255
-                    store (dimmer ~> value      ) 255
+                (do store (dimmer ~> brightness) 255
+                    store (dimmer ~> value     ) 255
                 )
         )
-        (do store (dimmer ~> brightness ) brightness'
-            store (dimmer ~> value      ) $ safeCast brightness'
+        (do store (dimmer ~> brightness) brightness'
+            store (dimmer ~> value     ) $ safeCast brightness'
         )
 
 setMode :: Uint8 -> Dimmers -> Uint8 -> Ivory eff ()
@@ -164,23 +165,23 @@ syncDimmerGroup ds dimmer' ix' = do
 
 
 
-calculateValue :: (Default v, Bounded v, IvoryIntegral v, SafeCast v IFloat)
-               => Record DimmerStruct -> Ivory eff v
+calculateValue :: Record DimmerStruct -> Ivory eff Uint16
 calculateValue dimmer = do
-    brightness' <- deref $ dimmer ~> brightness
+    brightness' <- safeCast <$> deref (dimmer ~> brightness)
+    -- let brightness'' = safeCast brightness'
     value'      <- deref $ dimmer ~> value
+    value''     <- castFloatToUint16 value'
     delta'      <- deref $ dimmer ~> delta
-    cond_ [ value' <? safeCast brightness' ==> do
+    cond_ [ value'' <? brightness' ==> do
                 store (dimmer ~> value) $ value' + delta'
-                when  (value' >? safeCast brightness') $
-                    store (dimmer ~> value) $ safeCast brightness'
-          , value' >? safeCast brightness' ==> do
+                -- when  (value' >? brightness'') $
+                --     store (dimmer ~> value) brightness''
+          , value'' >? brightness' ==> do
                 store (dimmer ~> value) $ value' - delta'
-                when  (value' <? safeCast brightness') $
-                    store (dimmer ~> value) $ safeCast brightness'
+                -- when  (value' <? brightness'') $
+                --     store (dimmer ~> value) brightness''
           ]
-    pure $ castDefault value'
-
+    pure value''
 
 
 copyLabel :: (IvoryStore a, IvoryStruct sym)
