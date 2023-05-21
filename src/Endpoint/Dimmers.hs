@@ -14,7 +14,6 @@ import           Data.Record
 import           Data.Serialize
 import           GHC.TypeNats
 import           Ivory.Language
-import           Ivory.Language.Float (IFloat (IFloat))
 import           Ivory.Stdlib
 
 

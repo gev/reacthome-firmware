@@ -21,7 +21,7 @@ import           Data.Index
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
-import           Endpoint.Dimmers     as Dim
+import           Endpoint.Dimmers
 import           GHC.TypeNats
 import           Interface.MCU
 import           Interface.PWM
