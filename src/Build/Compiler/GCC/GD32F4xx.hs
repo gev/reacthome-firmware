@@ -28,11 +28,14 @@ instance Compiler GCC GD32F4xx where
 
         , cflags  = [ "-mthumb"
                     , "-mcpu=cortex-m4"
+                    , "-mfpu=fpv4-sp-d16"
                     , "-mfloat-abi=hard"
+                    , "-ffast-math"
+                    , "-fno-math-errno"
                     -- , "-fno-builtin"
                     -- , "-fno-strict-aliasing"
                     , "-fdata-sections"
-                    -- , "-fms-extensions"
+                    , "-fms-extensions"
                     , "-ffunction-sections"
                     , "-Wall"
                     , "-O3"
@@ -43,6 +46,7 @@ instance Compiler GCC GD32F4xx where
 
         , ldflags = [ "-mthumb"
                     , "-mcpu=cortex-m4"
+                    , "-mfpu=fpv4-sp-d16"
                     , "-mfloat-abi=hard"
                     , "-Wl,--gc-sections"
                     , "-flto"
