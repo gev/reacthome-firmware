@@ -168,20 +168,20 @@ syncDimmerGroup ds dimmer' ix' = do
 calculateValue :: Record DimmerStruct -> Ivory eff Uint16
 calculateValue dimmer = do
     brightness' <- safeCast <$> deref (dimmer ~> brightness)
-    -- let brightness'' = safeCast brightness'
     value'      <- deref $ dimmer ~> value
-    value''     <- castFloatToUint16 value'
     delta'      <- deref $ dimmer ~> delta
-    cond_ [ value'' <? brightness' ==> do
+    cond_ [ value' <? brightness' ==> do
                 store (dimmer ~> value) $ value' + delta'
-                -- when  (value' >? brightness'') $
-                --     store (dimmer ~> value) brightness''
-          , value'' >? brightness' ==> do
+                value'      <- deref $ dimmer ~> value
+                when  (value' >? brightness') $
+                    store (dimmer ~> value) brightness'
+          , value' >? brightness' ==> do
                 store (dimmer ~> value) $ value' - delta'
-                -- when  (value' <? brightness'') $
-                --     store (dimmer ~> value) brightness''
+                value'      <- deref $ dimmer ~> value
+                when  (value' <? brightness') $
+                    store (dimmer ~> value) brightness'
           ]
-    pure value''
+    castFloatToUint16 value'
 
 
 copyLabel :: (IvoryStore a, IvoryStruct sym)
