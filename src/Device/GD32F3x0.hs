@@ -15,6 +15,7 @@ import           Device.GD32F3x0.SystemClock   as G
 import           Device.GD32F3x0.SysTick
 import           Device.GD32F3x0.Timer
 import           Device.GD32F3x0.UART
+import           Device.GD32F3x0.EXTI
 import           Interface.Mac                 (Mac)
 import           Interface.MCU
 import           Interface.SystemClock         (SystemClock, systemClock)
@@ -25,6 +26,8 @@ import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.RCU   as R
 import           Support.Device.GD32F3x0.Timer
 import           Support.Device.GD32F3x0.USART
+import           Support.Device.GD32F3x0.EXTI
+import           Support.Device.GD32F3x0.SYSCFG
 
 
 
@@ -32,6 +35,7 @@ type UARTW   = forall m. MonadWriter Context m => m UART
 type InputW  = forall m. MonadWriter Context m => m Input
 type OutputW = forall m. MonadWriter Context m => m Output
 type PWMW    = forall m. MonadWriter Context m => m PWM
+type EXTIW   = forall m. MonadWriter Context m => m EXTI
 
 
 data GD32F3x0 = GD32F3x0
@@ -118,6 +122,8 @@ data GD32F3x0 = GD32F3x0
     , pwm_9     :: PWMW
     , pwm_10    :: PWMW
     , pwm_11    :: PWMW
+
+    , exti_pa_0 :: EXTIW
     }
 
 
@@ -219,6 +225,8 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
     , pwm_9  = mkPWM pwm_timer_0 timer_ch_1 (pa_9  $ AF gpio_af_2)
     , pwm_10 = mkPWM pwm_timer_0 timer_ch_2 (pa_10 $ AF gpio_af_2)
     , pwm_11 = mkPWM pwm_timer_0 timer_ch_3 (pa_11 $ AF gpio_af_2)
+
+    , exti_pa_0 = mkEXTI (input pa_0) exti0_1_irqn exti_source_gpioa exti_source_pin0 exti_0
     }
 
 

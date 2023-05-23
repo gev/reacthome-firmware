@@ -7,6 +7,7 @@
 
 module Support.Device.GD32F3x0.EXTI
     ( EXTI_LINE
+    , exti_0
     , exti_1
     , exti_2
     , exti_3
@@ -60,6 +61,7 @@ import           Ivory.Support.Device.GD32F3x0
 newtype EXTI_LINE = EXTI_LINE Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
+exti_0  = EXTI_LINE $ ext "EXTI_0"
 exti_1  = EXTI_LINE $ ext "EXTI_1"
 exti_2  = EXTI_LINE $ ext "EXTI_2"
 exti_3  = EXTI_LINE $ ext "EXTI_3"
@@ -133,6 +135,7 @@ exti_interrupt_flag_clear = fun "exti_interrupt_flag_clear"
 
 inclExti :: ModuleDef
 inclExti = do
+    inclSym exti_0
     inclSym exti_1
     inclSym exti_2
     inclSym exti_3
