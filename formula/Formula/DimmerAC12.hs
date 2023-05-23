@@ -26,6 +26,6 @@ dimmerAC12 = Formula { name       = "dimmerAC12"
                                                , pwm_9
                                                , pwm_10
                                                , pwm_11
-                                               ] in_pa_5
+                                               ] exti_pa_5
                                     ]
                      }

@@ -58,6 +58,7 @@ import           Ivory.Language.Module
 import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
 
+
 newtype EXTI_LINE = EXTI_LINE Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 

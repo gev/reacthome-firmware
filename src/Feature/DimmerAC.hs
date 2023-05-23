@@ -16,8 +16,8 @@ data DimmerAC = DimmerAC
 dimmerAC :: ( MonadWriter Context m
             , MonadReader (Domain p t) m
             , T.Transport t
-            ) => [p -> m o] -> (p -> m i) -> m Feature
-dimmerAC outs input = pure $ Feature DimmerAC
+            ) => [p -> m o] -> (p -> m e) -> m Feature
+dimmerAC outs exti = pure $ Feature DimmerAC
 
 
 
