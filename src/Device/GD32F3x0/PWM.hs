@@ -11,8 +11,10 @@ import           Core.Context
 import           Device.GD32F3x0.GPIO
 import           Device.GD32F3x0.Timer
 import qualified Interface.PWM                 as I
+import qualified Interface.Timer               as T       
 import           Ivory.Language
 import           Support.Device.GD32F3x0.Timer
+
 
 pwm_timer_0 :: MonadWriter Context m => m Timer
 pwm_timer_0 = timer_0 $ timerParam [ prescaler .= ival 328
@@ -61,3 +63,6 @@ instance I.PWM PWM where
     setDuty PWM{..} duty = do
         let t = timer timer_pwm
         configChannelOutputPulseValue t channel_pwm duty
+    
+    resetCounter PWM{..} = do
+        T.setCounter timer_pwm 0
