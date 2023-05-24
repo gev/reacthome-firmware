@@ -1,8 +1,8 @@
 module Interface.PWM where
 
-import Ivory.Language
+import           Ivory.Language
 
-type Prescaller = Uint32
+type Prescaler = Uint32
 type Period = Uint32
 
 class PWM p where
