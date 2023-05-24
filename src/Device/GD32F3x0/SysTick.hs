@@ -36,4 +36,6 @@ instance Handler HandleTimer SysTick where
             handleIRQ' = proc "SysTick_Handler" $ body handle
 
 
-instance Timer SysTick
+instance Timer SysTick where
+  setCounter _ _ = pure()
+  getCounter _ = pure 0
