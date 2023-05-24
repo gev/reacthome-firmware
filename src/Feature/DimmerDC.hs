@@ -24,14 +24,13 @@ import           Data.Value
 import           Endpoint.Dimmers
 import           GHC.TypeNats
 import           Interface.MCU
-import           Interface.PWM
+import qualified Interface.PWM        as I
 import           Ivory.Language
-import           Ivory.Language.Uint  (Uint8 (Uint8))
 import           Ivory.Stdlib
 import           Support.Cast
 
 
-data DimmerDC = forall p. PWM p => DimmerDC
+data DimmerDC = forall p. I.PWM p => DimmerDC
     { n          :: Uint8
     , getDimmers :: Dimmers
     , getPWMs    :: [p]
@@ -43,7 +42,7 @@ data DimmerDC = forall p. PWM p => DimmerDC
 
 dimmerDC :: ( MonadWriter Context m
             , MonadReader (D.Domain p t) m
-            , T.Transport t, PWM o
+            , T.Transport t, I.PWM o
             ) => [p -> m o] -> m Feature
 dimmerDC pwms = do
     mcu        <- asks D.mcu
@@ -69,7 +68,7 @@ dimmerDC pwms = do
 manage :: DimmerDC -> Ivory eff ()
 manage DimmerDC{..} = zipWithM_ zip getPWMs (iterate (+1) 0)
     where
-        zip :: PWM p => p -> Sint32 -> Ivory eff ()
+        zip :: I.PWM p => p -> Sint32 -> Ivory eff ()
         zip pwm i = runDimmers getDimmers $ \ds -> do
             let ix = toIx i
             let d = addrOf ds ! ix
@@ -77,9 +76,9 @@ manage DimmerDC{..} = zipWithM_ zip getPWMs (iterate (+1) 0)
 
 
 
-manageDimmer :: PWM p => p -> Record DimmerStruct -> Ivory eff ()
+manageDimmer :: I.PWM p => p -> Record DimmerStruct -> Ivory eff ()
 manageDimmer pwm dimmer =
-    setDuty pwm =<< castFloatToUint16 . (* 1000)  =<< calculateValue dimmer
+    I.setDuty pwm =<< castFloatToUint16 . (* 1000)  =<< calculateValue dimmer
 
 
 
