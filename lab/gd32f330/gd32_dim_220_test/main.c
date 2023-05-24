@@ -26,7 +26,7 @@ pin dim_1 = {GPIOA, GPIO_PIN_9};
 pin dim_4 = {GPIOA, GPIO_PIN_12};
 pin rede = {GPIOA, GPIO_PIN_4};
 pin dim_220v = {GPIOA, GPIO_PIN_2};
-pin dim_220v_1 = {GPIOA, GPIO_PIN_7};
+pin dim_220v_1 = {GPIOA, GPIO_PIN_6};
 
 void pin_init_out(pin x) {
   gpio_mode_set(x.port, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, x.num);
@@ -130,9 +130,9 @@ int main() {
 void EXTI4_15_IRQHandler() {
   if (RESET != exti_interrupt_flag_get(EXTI_5)) {
     delay_us(9500 - time_pause);
-    pin_set(dim_220v_1);
-    delay_us(time_pause);
     pin_reset(dim_220v_1);
+    delay_us(time_pause);
+    pin_set(dim_220v_1);
     exti_interrupt_flag_clear(EXTI_5);
   }
 }

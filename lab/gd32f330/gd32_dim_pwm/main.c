@@ -60,10 +60,10 @@ void timer_conf(uint32_t timer, uint32_t rcu) {
 
   timer_deinit(timer);
 
-  timer_initpara.prescaler = 83;
+  timer_initpara.prescaler = 3280;
   timer_initpara.alignedmode = TIMER_COUNTER_EDGE;
   timer_initpara.counterdirection = TIMER_COUNTER_UP;
-  timer_initpara.period = 999;
+  timer_initpara.period = 250;
   timer_initpara.clockdivision = TIMER_CKDIV_DIV1;
   timer_initpara.repetitioncounter = 0;
   timer_init(timer, &timer_initpara);
@@ -78,7 +78,7 @@ void timer_conf(uint32_t timer, uint32_t rcu) {
   timer_channel_output_config(timer, TIMER_CH_0, &timer_ocintpara);
 
   timer_channel_output_pulse_value_config(timer, TIMER_CH_0, 0);
-  timer_channel_output_mode_config(timer, TIMER_CH_0, TIMER_OC_MODE_PWM0);
+  timer_channel_output_mode_config(timer, TIMER_CH_0, TIMER_OC_MODE_HIGH);
   timer_channel_output_shadow_config(timer, TIMER_CH_0,
                                      TIMER_OC_SHADOW_DISABLE);
 
@@ -92,7 +92,7 @@ void timer_conf(uint32_t timer, uint32_t rcu) {
   timer_channel_output_config(timer, TIMER_CH_1, &timer_ocintpara);
 
   timer_channel_output_pulse_value_config(timer, TIMER_CH_1, 0);
-  timer_channel_output_mode_config(timer, TIMER_CH_1, TIMER_OC_MODE_PWM0);
+  timer_channel_output_mode_config(timer, TIMER_CH_1, TIMER_OC_MODE_HIGH);
   timer_channel_output_shadow_config(timer, TIMER_CH_1,
                                      TIMER_OC_SHADOW_DISABLE);
 
@@ -106,7 +106,7 @@ void timer_conf(uint32_t timer, uint32_t rcu) {
   timer_channel_output_config(timer, TIMER_CH_2, &timer_ocintpara);
 
   timer_channel_output_pulse_value_config(timer, TIMER_CH_2, 0);
-  timer_channel_output_mode_config(timer, TIMER_CH_2, TIMER_OC_MODE_PWM0);
+  timer_channel_output_mode_config(timer, TIMER_CH_2, TIMER_OC_MODE_LOW);
   timer_channel_output_shadow_config(timer, TIMER_CH_2,
                                      TIMER_OC_SHADOW_DISABLE);
 
@@ -120,7 +120,7 @@ void timer_conf(uint32_t timer, uint32_t rcu) {
   timer_channel_output_config(timer, TIMER_CH_3, &timer_ocintpara);
 
   timer_channel_output_pulse_value_config(timer, TIMER_CH_3, 0);
-  timer_channel_output_mode_config(timer, TIMER_CH_3, TIMER_OC_MODE_PWM0);
+  timer_channel_output_mode_config(timer, TIMER_CH_3, TIMER_OC_MODE_LOW);
   timer_channel_output_shadow_config(timer, TIMER_CH_3,
                                      TIMER_OC_SHADOW_DISABLE);
 
@@ -131,7 +131,25 @@ void timer_conf(uint32_t timer, uint32_t rcu) {
   timer_enable(timer);
 }
 
+void init_null_detect(void) {
+  /* enable the key user clock */
+  rcu_periph_clock_enable(RCU_GPIOA);
+  rcu_periph_clock_enable(RCU_GPIOB);
+  rcu_periph_clock_enable(RCU_CFGCMP);
 
+  /* configure button pin as input */
+  gpio_mode_set(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO_PIN_5);
+
+  /* enable and set key user EXTI interrupt to the lower priority */
+  nvic_irq_enable(EXTI4_15_IRQn, 2U, 1U);
+
+  /* connect key user EXTI line to key GPIO pin */
+  syscfg_exti_line_config(EXTI_SOURCE_GPIOA, EXTI_SOURCE_PIN5);
+
+  /* configure key user EXTI line */
+  exti_init(EXTI_5, EXTI_INTERRUPT, EXTI_TRIG_RISING);
+  exti_interrupt_flag_clear(EXTI_5);
+}
 
 /*!
     \brief      main function
@@ -160,22 +178,33 @@ int main(void) {
   pin_config_af(GPIOA, GPIO_PIN_9,  GPIO_AF_2);
   pin_config_af(GPIOA, GPIO_PIN_10, GPIO_AF_2);
 
-  timer_channel_output_pulse_value_config(TIMER0, TIMER_CH_0, 500);
-  timer_channel_output_pulse_value_config(TIMER0, TIMER_CH_1, 500);
-  timer_channel_output_pulse_value_config(TIMER0, TIMER_CH_2, 500);
-  timer_channel_output_pulse_value_config(TIMER0, TIMER_CH_3, 500);
+  timer_channel_output_pulse_value_config(TIMER0, TIMER_CH_0, 10);
+  timer_channel_output_pulse_value_config(TIMER0, TIMER_CH_1, 10);
+  timer_channel_output_pulse_value_config(TIMER0, TIMER_CH_2, 10);
+  timer_channel_output_pulse_value_config(TIMER0, TIMER_CH_3, 10);
 
-  timer_channel_output_pulse_value_config(TIMER1, TIMER_CH_0, 500);
-  timer_channel_output_pulse_value_config(TIMER1, TIMER_CH_1, 500);
-  timer_channel_output_pulse_value_config(TIMER1, TIMER_CH_2, 500);
-  timer_channel_output_pulse_value_config(TIMER1, TIMER_CH_3, 500);
+  timer_channel_output_pulse_value_config(TIMER1, TIMER_CH_0, 10);
+  timer_channel_output_pulse_value_config(TIMER1, TIMER_CH_1, 10);
+  timer_channel_output_pulse_value_config(TIMER1, TIMER_CH_2, 10);
+  timer_channel_output_pulse_value_config(TIMER1, TIMER_CH_3, 10);
 
-  timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_0, 500);
-  timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_1, 500);
-  timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_2, 500);
-  timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_3, 500);
+  timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_0, 10);
+  timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_1, 10);
+  timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_2, 10);
+  timer_channel_output_pulse_value_config(TIMER2, TIMER_CH_3, 10);
+
+  init_null_detect();
 
   while (1) {
 
+  }
+}
+
+void EXTI4_15_IRQHandler() {
+  if (RESET != exti_interrupt_flag_get(EXTI_5)) {
+    timer_counter_value_config(TIMER0, 0);
+    timer_counter_value_config(TIMER1, 0);
+    timer_counter_value_config(TIMER2, 0);
+    exti_interrupt_flag_clear(EXTI_5);
   }
 }

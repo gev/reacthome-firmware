@@ -198,7 +198,9 @@ r_flash:
 #	JLinkExe ip tunnel:69669681::jlink-europe.segger.com -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink
 #	JLinkExe ip tunnel:801031640:thirteen:jlink-europe.segger.com -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink
 #	JLinkExe ip 192.168.31.93 -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink
-	JLinkExe ip 192.168.88.154 -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink
+#	JLinkExe ip 192.168.88.154 -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink
+	JLinkExe ip tunnel:69669681::jlink-europe.segger.com -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink
+
 r_erase:
 #	JLinkExe ip tunnel:69669681::jlink-europe.segger.com -Device GD32F330K8 -If SWD -Speed 1000 jlink/EraseMCU.jlink
 #	JLinkExe ip tunnel:801031640:thirteen:jlink-europe.segger.com -Device GD32F330K8 -If SWD -Speed 1000 jlink/EraseMCU.jlink
