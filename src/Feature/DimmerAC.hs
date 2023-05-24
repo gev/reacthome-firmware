@@ -6,7 +6,7 @@ import           Control.Monad.Reader
 import           Control.Monad.Writer
 import           Core.Context
 import           Core.Controller
-import           Core.Domain
+import           Core.Domain as D
 import           Core.Feature
 import           Core.Transport       as T
 
@@ -17,7 +17,12 @@ dimmerAC :: ( MonadWriter Context m
             , MonadReader (Domain p t) m
             , T.Transport t
             ) => [p -> m o] -> (p -> m e) -> m Feature
-dimmerAC outs exti = pure $ Feature DimmerAC
+dimmerAC pwms exti = do
+    mcu <- asks D.mcu
+    e   <- exti mcu
+    let CrossZerro = mapM_ resetCounter pwms
+    addHandler e CrossZerro
+    pure $ Feature DimmerAC
 
 
 
