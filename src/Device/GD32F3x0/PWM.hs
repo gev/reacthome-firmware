@@ -16,20 +16,22 @@ import           Ivory.Language
 import           Support.Device.GD32F3x0.Timer
 
 
-pwm_timer_0 :: MonadWriter Context m => m Timer
-pwm_timer_0 = timer_0 $ timerParam [ prescaler .= ival 839
-                                   , period    .= ival 999
-                                   ]
 
-pwm_timer_1 :: MonadWriter Context m => m Timer
-pwm_timer_1 = timer_1 $ timerParam [ prescaler .= ival 839
-                                   , period    .= ival 999
-                                   ]
+pwmTimerParam :: Uint16 -> Uint32 -> Init (Struct TIMER_PARAM_STRUCT)
+pwmTimerParam prescaler' period' =
+    timerParam [ prescaler .= ival prescaler'
+               , period    .= ival period'
+               ]
 
-pwm_timer_2 :: MonadWriter Context m => m Timer
-pwm_timer_2 = timer_2 $ timerParam [ prescaler .= ival 839
-                                   , period    .= ival 999
-                                   ]
+pwm_timer_0 :: MonadWriter Context m => Uint16 -> Uint32 -> m Timer
+pwm_timer_0 prescaler' period' = timer_0 $ pwmTimerParam prescaler' period'
+
+pwm_timer_1 :: MonadWriter Context m => Uint16 -> Uint32 -> m Timer
+pwm_timer_1 prescaler' period' = timer_1 $ pwmTimerParam prescaler' period'
+
+pwm_timer_2 :: MonadWriter Context m => Uint16 -> Uint32 -> m Timer
+pwm_timer_2 prescaler' period' = timer_2 $ pwmTimerParam prescaler' period'
+
 
 
 data PWM = PWM
@@ -38,16 +40,16 @@ data PWM = PWM
     , port        :: Port
     }
 
-mkPWM :: MonadWriter Context m => m Timer -> TIMER_CHANNEL -> Port -> m PWM
-mkPWM timer' channel_pwm port = do
-    timer_pwm <- timer'
+mkPWM :: MonadWriter Context m => (Uint16 -> Uint32 -> m Timer) -> TIMER_CHANNEL -> Port -> Uint16 -> Uint32 -> m PWM
+mkPWM timer' channel_pwm port prescaler period = do
+    timer_pwm <- timer' prescaler period
 
     let initPWM' :: Def ('[] :-> ())
         initPWM' = proc (show port <> "_pwm_init") $ body $ do
             let t = timer timer_pwm
             initChannelOcTimer            t channel_pwm =<< local (istruct timerOcDefaultParam)
-            configChannelOutputPulseValue t channel_pwm 127
-            configTimerOutputMode         t channel_pwm timer_oc_mode_pwm0
+            configChannelOutputPulseValue t channel_pwm 0
+            configTimerOutputMode         t channel_pwm timer_oc_mode_pwm1
             configChannelOutputShadow     t channel_pwm timer_oc_shadow_disable
             configPrimaryOutput           t true
             enableTimer                   t

@@ -6,35 +6,36 @@ module Device.GD32F3x0 where
 
 import           Control.Monad.Writer
 import           Core.Context
+import           Device.GD32F3x0.EXTI
 import           Device.GD32F3x0.GPIO
 import           Device.GD32F3x0.GPIO.Input
 import           Device.GD32F3x0.GPIO.Output
-import           Device.GD32F3x0.Mac           (makeMac)
+import           Device.GD32F3x0.Mac            (makeMac)
 import           Device.GD32F3x0.PWM
-import           Device.GD32F3x0.SystemClock   as G
+import           Device.GD32F3x0.SystemClock    as G
 import           Device.GD32F3x0.SysTick
 import           Device.GD32F3x0.Timer
 import           Device.GD32F3x0.UART
-import           Device.GD32F3x0.EXTI
-import           Interface.Mac                 (Mac)
+import           Interface.Mac                  (Mac)
 import           Interface.MCU
-import           Interface.SystemClock         (SystemClock, systemClock)
+import           Interface.SystemClock          (SystemClock, systemClock)
+import           Ivory.Language
 import           Support.Device.GD32F3x0
 import           Support.Device.GD32F3x0.DMA
+import           Support.Device.GD32F3x0.EXTI
 import           Support.Device.GD32F3x0.GPIO
 import           Support.Device.GD32F3x0.IRQ
-import           Support.Device.GD32F3x0.RCU   as R
+import           Support.Device.GD32F3x0.RCU    as R
+import           Support.Device.GD32F3x0.SYSCFG
 import           Support.Device.GD32F3x0.Timer
 import           Support.Device.GD32F3x0.USART
-import           Support.Device.GD32F3x0.EXTI
-import           Support.Device.GD32F3x0.SYSCFG
 
 
 
 type UARTW   = forall m. MonadWriter Context m => m UART
 type InputW  = forall m. MonadWriter Context m => m Input
 type OutputW = forall m. MonadWriter Context m => m Output
-type PWMW    = forall m. MonadWriter Context m => m PWM
+type PWMW    = forall m. MonadWriter Context m => Uint16 -> Uint32 ->  m PWM
 type EXTIW   = forall m. MonadWriter Context m => m EXTI
 
 
@@ -227,15 +228,15 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
     , pwm_10 = mkPWM pwm_timer_0 timer_ch_2 (pa_10 $ AF gpio_af_2)
     , pwm_11 = mkPWM pwm_timer_0 timer_ch_3 (pa_11 $ AF gpio_af_2)
 
-    , exti_pa_0 = mkEXTI    (input pa_0) 
-                            exti0_1_irqn  
-                            exti_source_gpioa 
-                            exti_source_pin0 
+    , exti_pa_0 = mkEXTI    (input pa_0)
+                            exti0_1_irqn
+                            exti_source_gpioa
+                            exti_source_pin0
                             exti_0
-    , exti_pa_5 = mkEXTI    (input pa_5) 
-                            exti4_15_irqn 
-                            exti_source_gpioa 
-                            exti_source_pin5 
+    , exti_pa_5 = mkEXTI    (input pa_5)
+                            exti4_15_irqn
+                            exti_source_gpioa
+                            exti_source_pin5
                             exti_5
     }
 
