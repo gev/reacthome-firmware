@@ -1,30 +1,30 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE RecordWildCards  #-}
-{-# LANGUAGE TypeOperators    #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE TypeOperators         #-}
 
 module Device.GD32F3x0.EXTI where
 
 
-import           Control.Monad.Writer (MonadWriter)
+import           Control.Monad.Writer           (MonadWriter)
 import           Core.Context
 import           Core.Handler
+import           Device.GD32F3x0.GPIO.Input
+import qualified Interface.EXTI                 as I
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Ivory.Support
-import qualified Interface.EXTI     as E
-import           Device.GD32F3x0.GPIO.Input
-import           Support.Device.GD32F3x0.RCU
-import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.EXTI
-import           Support.Device.GD32F3x0.SYSCFG
+import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.Misc
+import           Support.Device.GD32F3x0.RCU
+import           Support.Device.GD32F3x0.SYSCFG
 
 
 
-data EXTI = EXTI 
+data EXTI = EXTI
     { port    :: Input
     , extiIRQ :: IRQn
     , srcPort :: EXTI_PORT
@@ -46,13 +46,16 @@ mkEXTI input extiIRQ srcPort srcPin ex = do
     pure EXTI { port, extiIRQ, srcPort, srcPin, ex }
 
 
-instance Handler E.HandleEXTI EXTI where
-    addHandler (E.HandleEXTI EXTI{..} handle) = do
+instance Handler I.HandleEXTI EXTI where
+    addHandler (I.HandleEXTI EXTI{..} handle) = do
         addModule $ makeIRQHandler extiIRQ (handleEXTI ex handle)
 
 handleEXTI :: EXTI_LINE -> Ivory eff () -> Ivory eff ()
 handleEXTI ex handle = do
-    f <- getExtiInterruptFlag ex 
+    f <- getExtiInterruptFlag ex
     when f $ do
-        clearExtiInterruptFlag ex 
+        clearExtiInterruptFlag ex
         handle
+
+
+instance I.EXTI EXTI
