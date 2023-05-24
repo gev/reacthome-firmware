@@ -4,10 +4,10 @@ import           Ivory.Language
 
 
 data ModePMW
-    = DUTY_LOW
-    | DUTY_HIGH
-    | FORCE_LOW
+    = DUTY_HIGH
+    | DUTY_LOW
     | FORCE_HIGH
+    | FORCE_LOW
 
 
 class PWM p where
