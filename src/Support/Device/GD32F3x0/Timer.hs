@@ -60,6 +60,10 @@ module Support.Device.GD32F3x0.Timer
 
     , TIMER_COMPARE_MODE
     , timer_oc_mode_pwm0
+    , timer_oc_mode_pwm1
+    , timer_oc_mode_high
+    , timer_oc_mode_low
+    
 
     , TIMER_COMPARE_SHADOW
     , timer_oc_shadow_disable
@@ -228,6 +232,9 @@ newtype TIMER_COMPARE_MODE = TIMER_COMPARE_MODE Uint16
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_oc_mode_pwm0 = TIMER_COMPARE_MODE $ ext "TIMER_OC_MODE_PWM0"
+timer_oc_mode_pwm1 = TIMER_COMPARE_MODE $ ext "TIMER_OC_MODE_PWM1"
+timer_oc_mode_high = TIMER_COMPARE_MODE $ ext "TIMER_OC_MODE_HIGH"
+timer_oc_mode_low  = TIMER_COMPARE_MODE $ ext "TIMER_OC_MODE_LOW"
 
 
 
@@ -407,6 +414,9 @@ inclTimer = do
     inclSym timer_ch_3
 
     inclSym timer_oc_mode_pwm0
+    inclSym timer_oc_mode_pwm1
+    inclSym timer_oc_mode_high
+    inclSym timer_oc_mode_low
 
     inclSym timer_oc_shadow_disable
 
