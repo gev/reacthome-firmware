@@ -77,12 +77,13 @@ initialize dimmer group' mode' brightness' velocity' = do
     store (dimmer ~> group     ) group'
     store (dimmer ~> mode      ) mode'
     store (dimmer ~> brightness) brightness'
+    store (dimmer ~> value     ) brightness'
     store (dimmer ~> velocity  ) velocity'
 
 on :: Dimmers -> Uint8 -> Ivory eff ()
 on = runCheckMode $ \dimmer -> do
-    store (dimmer ~> brightness) 255
-    store (dimmer ~> value     ) 255
+    store (dimmer ~> brightness) 1
+    store (dimmer ~> value     ) 1
 
 off :: Dimmers -> Uint8 -> Ivory eff ()
 off = runCheckMode $ \dimmer -> do

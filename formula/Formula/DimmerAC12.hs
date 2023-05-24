@@ -2,7 +2,7 @@ module Formula.DimmerAC12 where
 
 import           Core.Formula
 import           Device.GD32F3x0
-import           Feature.DimmerAC
+import           Feature.Dimmer.AC    (dimmerAC)
 import           Interface.RS485
 import           Ivory.Language
 import           Transport.RS485.RBUS
@@ -10,9 +10,9 @@ import           Transport.RS485.RBUS
 
 dimmerAC12 :: Formula GD32F3x0
 dimmerAC12 = Formula { name       = "dimmerAC12"
-                     , model      = 0xff
-                     , version    = (1, 0)
-                     , shouldInit = false
+                     , model      = 0xad
+                     , version    = (2, 1)
+                     , shouldInit = true
                      , transport  = rbus $ rs485 1 uart_0 out_pb_2
                      , features   = [ dimmerAC [ pwm_0
                                                , pwm_1
