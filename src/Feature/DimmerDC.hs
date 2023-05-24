@@ -26,7 +26,9 @@ import           GHC.TypeNats
 import           Interface.MCU
 import           Interface.PWM
 import           Ivory.Language
+import           Ivory.Language.Uint  (Uint8 (Uint8))
 import           Ivory.Stdlib
+import           Support.Cast
 
 
 data DimmerDC = forall p. PWM p => DimmerDC
@@ -77,7 +79,7 @@ manage DimmerDC{..} = zipWithM_ zip getPWMs (iterate (+1) 0)
 
 manageDimmer :: PWM p => p -> Record DimmerStruct -> Ivory eff ()
 manageDimmer pwm dimmer =
-    setDuty pwm  =<< calculateValue dimmer
+    setDuty pwm =<< castFloatToUint16 . (* 1000)  =<< calculateValue dimmer
 
 
 
@@ -150,8 +152,8 @@ onInit DimmerDC{..} buff size =
                 let d = addrOf ds ! ix
                 group    <- unpack buff  offset'
                 mode     <- unpack buff (offset' + 1)
-                value    <- unpack buff (offset' + 2)
-                initialize d group mode value 0
+                value    <- unpack buff (offset' + 2) :: Ivory eff Uint8
+                initialize d group mode (safeCast value / 255) 0
                 syncDimmerGroup ds d ix
                 store offset $ offset' + 3
         store shouldInit false
@@ -169,16 +171,16 @@ onOff = off
 onSet :: KnownNat n => Dimmers -> Uint8 -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
 onSet dimmers index buff size =
     when (size >=? 4) $ do
-        brightness <- unpack buff 3
-        setBrightness brightness dimmers index
+        brightness <- unpack buff 3  :: Ivory eff Uint8
+        setBrightness (safeCast brightness / 255) dimmers index
 
 
 onFade :: KnownNat n => Dimmers -> Uint8 -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
 onFade dimmers index buff size =
     when (size >=? 5) $ do
-        value    <- unpack buff 3
-        velocity <- unpack buff 4
-        fade value velocity dimmers index
+        value    <- unpack buff 3 :: Ivory eff Uint8
+        velocity <- unpack buff 4 :: Ivory eff Uint8
+        fade (safeCast value / 255) (safeCast velocity / 255) dimmers index
 
 
 onMode :: KnownNat n => Dimmers -> Uint8 -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
