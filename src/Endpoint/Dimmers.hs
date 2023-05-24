@@ -23,8 +23,8 @@ type DimmerStruct = "dimmer_struct"
 [ivory|
     struct dimmer_struct
     { mode       :: Uint8
-    ; brightness :: Uint8
-    ; velocity   :: Uint8
+    ; brightness :: IFloat
+    ; velocity   :: IFloat
     ; group      :: Uint8
     ; value      :: IFloat
     ; delta      :: IFloat
@@ -64,15 +64,15 @@ message Dimmers{..} i = do
         let dimmer = addrOf d ! toIx i
         pack payload 0 (0xd0 :: Uint8)
         pack payload 1 $ i + 1
-        pack payload 2 =<< deref (dimmer ~> group     )
-        pack payload 3 =<< deref (dimmer ~> mode      )
-        pack payload 4 =<< deref (dimmer ~> brightness)
-        pack payload 5 =<< deref (dimmer ~> velocity  )
+        pack payload 2 =<< deref (dimmer ~> group)
+        pack payload 3 =<< deref (dimmer ~> mode )
+        pack payload 4 =<< castFloatToUint8 . (* 255) =<< deref (dimmer ~> brightness)
+        pack payload 5 =<< castFloatToUint8 . (* 255) =<< deref (dimmer ~> velocity  )
     pure payload
 
 
 
-initialize :: Record DimmerStruct -> Uint8 -> Uint8 -> Uint8 -> Uint8 -> Ivory eff ()
+initialize :: Record DimmerStruct -> Uint8 -> Uint8 -> IFloat -> IFloat -> Ivory eff ()
 initialize dimmer group' mode' brightness' velocity' = do
     store (dimmer ~> group     ) group'
     store (dimmer ~> mode      ) mode'
@@ -89,14 +89,14 @@ off = runCheckMode $ \dimmer -> do
     store (dimmer ~> brightness) 0
     store (dimmer ~> value     ) 0
 
-fade :: Uint8 -> Uint8 -> Dimmers -> Uint8 -> Ivory eff ()
+fade :: IFloat -> IFloat -> Dimmers -> Uint8 -> Ivory eff ()
 fade brightness' velocity' = runCheckMode $ \dimmer -> do
     store (dimmer ~> brightness) brightness'
-    store (dimmer ~> value     ) $ safeCast brightness'
+    store (dimmer ~> value     ) brightness'
     store (dimmer ~> velocity  ) velocity'
-    store (dimmer ~> delta     ) $ 8 / (260 - safeCast velocity');
+    store (dimmer ~> delta     ) $ 0.0001 / (1.02 - velocity');
 
-setBrightness :: Uint8 -> Dimmers -> Uint8 -> Ivory eff ()
+setBrightness :: IFloat -> Dimmers -> Uint8 -> Ivory eff ()
 setBrightness brightness' = runCheckMode $ \dimmer -> do
     mode <- deref $ dimmer ~> mode
     ifte_ (mode ==? 4)
@@ -104,8 +104,8 @@ setBrightness brightness' = runCheckMode $ \dimmer -> do
                 (do store (dimmer ~> brightness) 0
                     store (dimmer ~> value     ) 0
                 )
-                (do store (dimmer ~> brightness) 255
-                    store (dimmer ~> value     ) 255
+                (do store (dimmer ~> brightness) 1
+                    store (dimmer ~> value     ) 1
                 )
         )
         (do store (dimmer ~> brightness) brightness'
@@ -165,23 +165,21 @@ syncDimmerGroup ds dimmer' ix' = do
 
 
 
-calculateValue :: Record DimmerStruct -> Ivory eff Uint16
+calculateValue :: Record DimmerStruct -> Ivory eff IFloat
 calculateValue dimmer = do
-    brightness' <- safeCast <$> deref (dimmer ~> brightness)
+    brightness' <- deref (dimmer ~> brightness)
     value'      <- deref $ dimmer ~> value
     delta'      <- deref $ dimmer ~> delta
     cond_ [ value' <? brightness' ==> do
                 store (dimmer ~> value) $ value' + delta'
-                value' <- deref $ dimmer ~> value
-                when (value' >? brightness') $
-                    store (dimmer ~> value) brightness'
+                when (value' >? 1) $
+                    store (dimmer ~> value) 1
           , value' >? brightness' ==> do
                 store (dimmer ~> value) $ value' - delta'
-                value' <- deref $ dimmer ~> value
-                when (value' <? brightness') $
-                    store (dimmer ~> value) brightness'
+                when (value' <? 0) $
+                    store (dimmer ~> value) 0
           ]
-    castFloatToUint16 =<< deref (dimmer ~> value)
+    deref (dimmer ~> value)
 
 
 copyLabel :: (IvoryStore a, IvoryStruct sym)
