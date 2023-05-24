@@ -15,4 +15,7 @@ data HandleTimer t = HandleTimer
     }
 
 
-class Handler HandleTimer t => Timer t
+class Handler HandleTimer t => Timer t where
+
+    setCounter :: t -> Uint32 -> Ivory eff ()
+    getCounter :: t -> Ivory eff Uint32

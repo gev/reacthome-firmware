@@ -90,6 +90,7 @@ module Support.Device.GD32F3x0.Timer
     , clearTimerInterruptFlag
     , initTimer
     , readCounter
+    , writeCounter
     , configPrimaryOutput
     , configChannelOutputPulseValue
     , configTimerOutputMode
@@ -330,6 +331,13 @@ timer_cnt :: Def ('[TIMER_PERIPH] :-> Uint32)
 timer_cnt = fun "TIMER_CNT"
 
 
+writeCounter :: TIMER_PERIPH -> Uint32 -> Ivory eff ()
+writeCounter = call_ timer_counter_value_config
+
+timer_counter_value_config :: Def ('[TIMER_PERIPH, Uint32] :-> ())
+timer_counter_value_config = fun "timer_counter_value_config"
+
+
 configPrimaryOutput :: TIMER_PERIPH -> IBool -> Ivory eff ()
 configPrimaryOutput = call_ timer_primary_output_config
 
@@ -422,6 +430,7 @@ inclTimer = do
     incl timer_enable
     incl timer_init
     incl timer_cnt
+    incl timer_counter_value_config
     incl timer_primary_output_config
     incl timer_channel_output_pulse_value_config
     incl timer_channel_output_mode_config

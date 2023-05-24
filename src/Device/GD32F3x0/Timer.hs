@@ -86,3 +86,8 @@ instance Handler I.HandleTimer Timer where
                 flag <- getTimerInterruptFlag timer timer_int_flag_up
                 when flag $ clearTimerInterruptFlag timer timer_int_flag_up
                 handle
+
+instance I.Timer Timer where
+
+    setCounter t c = writeCounter (timer t) c
+    getCounter t   = readCounter  (timer t)
