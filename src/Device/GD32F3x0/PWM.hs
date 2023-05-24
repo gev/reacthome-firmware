@@ -66,3 +66,5 @@ instance I.PWM PWM where
 
     resetCounter PWM{..} = do
         T.setCounter timer_pwm 0
+
+    setMode PWM{..} _ = pure ()
