@@ -17,17 +17,17 @@ import           Support.Device.GD32F3x0.Timer
 
 
 pwm_timer_0 :: MonadWriter Context m => m Timer
-pwm_timer_0 = timer_0 $ timerParam [ prescaler .= ival 328
+pwm_timer_0 = timer_0 $ timerParam [ prescaler .= ival 3280
                                    , period    .= ival 254
                                    ]
 
 pwm_timer_1 :: MonadWriter Context m => m Timer
-pwm_timer_1 = timer_1 $ timerParam [ prescaler .= ival 328
+pwm_timer_1 = timer_1 $ timerParam [ prescaler .= ival 3280
                                    , period    .= ival 254
                                    ]
 
 pwm_timer_2 :: MonadWriter Context m => m Timer
-pwm_timer_2 = timer_2 $ timerParam [ prescaler .= ival 328
+pwm_timer_2 = timer_2 $ timerParam [ prescaler .= ival 3280
                                    , period    .= ival 254
                                    ]
 
@@ -46,7 +46,7 @@ mkPWM timer' channel_pwm port = do
         initPWM' = proc (show port <> "_pwm_init") $ body $ do
             let t = timer timer_pwm
             initChannelOcTimer            t channel_pwm =<< local (istruct timerOcDefaultParam)
-            configChannelOutputPulseValue t channel_pwm 0
+            configChannelOutputPulseValue t channel_pwm 127
             configTimerOutputMode         t channel_pwm timer_oc_mode_pwm0
             configChannelOutputShadow     t channel_pwm timer_oc_shadow_disable
             configPrimaryOutput           t true
