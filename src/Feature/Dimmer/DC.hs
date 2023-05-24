@@ -1,11 +1,12 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GADTs            #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE DataKinds          #-}
+{-# LANGUAGE FlexibleContexts   #-}
+{-# LANGUAGE GADTs              #-}
+{-# LANGUAGE NamedFieldPuns     #-}
+{-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE RankNTypes         #-}
+{-# LANGUAGE RecordWildCards    #-}
 
-module Feature.DimmerDC where
+module Feature.Dimmer.DC where
 
 import           Control.Monad        (zipWithM_)
 import           Control.Monad.Reader (MonadReader, asks)
@@ -21,7 +22,7 @@ import           Data.Index
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
-import           Endpoint.Dimmers
+import           Endpoint.Dimmers     as Dim
 import           GHC.TypeNats
 import           Interface.MCU
 import qualified Interface.PWM        as I
@@ -43,25 +44,27 @@ data DimmerDC = forall p. I.PWM p => DimmerDC
 dimmerDC :: ( MonadWriter Context m
             , MonadReader (D.Domain p t) m
             , T.Transport t, I.PWM o
-            ) => [p -> m o] -> m Feature
+            ) => [p -> Uint16 -> Uint32 -> m o] -> m Feature
 dimmerDC pwms = do
-    mcu        <- asks D.mcu
-    transport  <- asks D.transport
-    shouldInit <- asks D.shouldInit
-    os         <- mapM ($ peripherals mcu) pwms
-    let n       = length os
-    getDimmers <- dimmers "dimmers" n
-    current    <- index "current_dimmer"
-    let dimmers = DimmerDC { n = fromIntegral n
-                           , getDimmers
-                           , getPWMs = os
-                           , shouldInit
-                           , current
-                           , transmit = T.transmitBuffer transport
+    mcu         <- asks D.mcu
+    transport   <- asks D.transport
+    shouldInit  <- asks D.shouldInit
+    os          <- mapM (\pwm -> pwm (peripherals mcu) 83 999) pwms
+    let n        = length os
+    getDimmers  <- dimmers "dimmers" n
+    current     <- index "current_dimmer"
+    let dimmerDC = DimmerDC { n = fromIntegral n
+                            , getDimmers
+                            , getPWMs = os
+                            , shouldInit
+                            , current
+                            , transmit = T.transmitBuffer transport
                            }
-    addTask $ delay 1 "dimmers_manage" $ manage dimmers
-    addTask $ yeld    "dimmers_sync"   $ sync dimmers
-    pure $ Feature dimmers
+
+    addTask $ delay 1 "dimmers_manage" $ manage dimmerDC
+    addTask $ yeld    "dimmers_sync"   $ sync dimmerDC
+
+    pure $ Feature dimmerDC
 
 
 
@@ -77,8 +80,9 @@ manage DimmerDC{..} = zipWithM_ zip getPWMs (iterate (+1) 0)
 
 
 manageDimmer :: I.PWM p => p -> Record DimmerStruct -> Ivory eff ()
-manageDimmer pwm dimmer =
-    I.setDuty pwm =<< castFloatToUint16 . (* 1000)  =<< calculateValue dimmer
+manageDimmer pwm dimmer = do
+    v <- calculateValue dimmer
+    I.setDuty pwm =<< castFloatToUint16 ((1 - v) * 1_000)
 
 
 
