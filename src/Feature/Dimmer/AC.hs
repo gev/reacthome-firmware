@@ -8,7 +8,7 @@
 
 module Feature.Dimmer.AC where
 
-import           Control.Monad        (zipWithM_)
+import           Control.Monad        (void, zipWithM_)
 import           Control.Monad.Reader (MonadReader, asks)
 import           Control.Monad.Writer (MonadWriter)
 import           Core.Context
@@ -22,12 +22,13 @@ import           Data.Buffer
 import           Data.Index
 import           Data.Record
 import           Data.Serialize
-import           Data.Value
+import           Data.Value           as V
 import           Endpoint.Dimmers     as Dim
 import           GHC.TypeNats
 import           Interface.EXTI
 import           Interface.MCU
 import qualified Interface.PWM        as I
+import           Interface.Timer
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Support.Cast
@@ -38,6 +39,9 @@ data DimmerAC = forall p. I.PWM p => DimmerAC
     , getDimmers :: Dimmers
     , getPWMs    :: [p]
     , shouldInit :: Value IBool
+    , isZero     :: Value IBool
+    , period0    :: Value Uint32
+    , period1    :: Value Uint32
     , current    :: Index Uint8
     , transmit   :: forall n. KnownNat n
                  => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
@@ -52,6 +56,9 @@ dimmerAC pwms exti = do
     e   <- exti $ peripherals mcu
     transport   <- asks D.transport
     shouldInit  <- asks D.shouldInit
+    isZero      <- V.value "dimmer_is_zero"  false
+    period0     <- V.value "dimmer_period_0" 0
+    period1     <- V.value "dimmer_period_1" 0
     os          <- mapM (\pwm -> pwm (peripherals mcu) 1_000_000 0xff_ff_ff_ff) pwms
     let n        = length os
     getDimmers  <- dimmers "dimmers" n
@@ -60,40 +67,70 @@ dimmerAC pwms exti = do
                             , getDimmers
                             , getPWMs = os
                             , shouldInit
+                            , isZero
+                            , period0
+                            , period1
                             , current
                             , transmit = T.transmitBuffer transport
                             }
 
     let crossZero :: Ivory eff ()
-        crossZero = mapM_ I.resetCounter os
+        crossZero = do
+            period1' <- deref period1
+            store period1 =<< getCounter (head os)
+            store period0 period1'
+            mapM_ I.resetCounter os
+            store isZero true
 
     addHandler $ HandleEXTI e crossZero
 
-    addTask $ delay 1 "dimmers_manage" $ manage dimmerAC
-    addTask $ yeld    "dimmers_sync"   $ sync dimmerAC
+    addTask $ delay 1 "dimmers_calculate" $ calculate dimmerAC
+    addTask $ yeld    "dimmers_manage"    $ manage dimmerAC
+    addTask $ yeld    "dimmers_sync"      $ sync dimmerAC
 
     pure $ Feature dimmerAC
 
 
 
-manage :: DimmerAC -> Ivory eff ()
-manage DimmerAC{..} = zipWithM_ zip getPWMs (iterate (+1) 0)
+calculate :: DimmerAC -> Ivory eff ()
+calculate DimmerAC{..} = zipWithM_ zip getPWMs (iterate (+1) 0)
     where
         zip :: I.PWM p => p -> Sint32 -> Ivory eff ()
         zip pwm i = runDimmers getDimmers $ \ds -> do
             let ix = toIx i
             let d = addrOf ds ! ix
-            manageDimmer pwm d
+            calculateDimmer d
 
 
 
-manageDimmer :: I.PWM p => p -> Record DimmerStruct -> Ivory eff ()
-manageDimmer pwm dimmer = do
-    v <- calculateValue dimmer
+calculateDimmer :: Record DimmerStruct -> Ivory eff ()
+calculateDimmer dimmer =
+    void $ calculateValue dimmer
+
+
+
+manage :: DimmerAC -> Ivory eff ()
+manage DimmerAC{..} = do
+    isZero' <- deref isZero
+    when isZero' $ do
+        zipWithM_ zip getPWMs (iterate (+1) 0)
+        store isZero false
+    where
+        zip :: I.PWM p => p -> Sint32 -> Ivory eff ()
+        zip pwm i = runDimmers getDimmers $ \ds -> do
+            let ix = toIx i
+            let d = addrOf ds ! ix
+            manageDimmer pwm d =<< deref period0
+
+
+
+manageDimmer :: I.PWM p => p -> Record DimmerStruct -> Uint32 -> Ivory eff ()
+manageDimmer pwm dimmer period = do
+    v <- deref $ dimmer ~> Dim.value
     cond_ [ v ==? 0 ==> I.setMode pwm I.FORCE_LOW
           , v ==? 1 ==> I.setMode pwm I.FORCE_HIGH
           , true ==> do I.setMode pwm I.LOW
-                        I.setDuty pwm =<< castFloatToUint16 ((1 - v) * 9_600 + 100)
+                        I.setDuty pwm =<< castFloatToUint16 ((1 - v) * (safeCast period - 400) + 100)
           ]
 
 
