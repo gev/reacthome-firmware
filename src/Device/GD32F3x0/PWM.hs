@@ -20,7 +20,7 @@ import           Support.Device.GD32F3x0.Timer
 
 pwmTimerParam :: Uint32 -> Uint32 -> Init (Struct TIMER_PARAM_STRUCT)
 pwmTimerParam frequency' period' =
-    timerParam [ prescaler .= ival (castDefault $ frequency' `iDiv` system_core_clock - 1)
+    timerParam [ prescaler .= ival (castDefault $ system_core_clock `iDiv` frequency' - 1)
                , period    .= ival (period' - 1)
                ]
 
