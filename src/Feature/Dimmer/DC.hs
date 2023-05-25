@@ -125,7 +125,6 @@ onDo DimmerDC{..} buff size = do
 
 
 
-
 onDim :: KnownNat n => DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
 onDim DimmerDC{..} buff size = do
     when (size >=? 3) $ do

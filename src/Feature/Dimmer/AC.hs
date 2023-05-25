@@ -90,7 +90,7 @@ manage DimmerAC{..} = zipWithM_ zip getPWMs (iterate (+1) 0)
 manageDimmer :: I.PWM p => p -> Record DimmerStruct -> Ivory eff ()
 manageDimmer pwm dimmer = do
     v <- calculateValue dimmer
-    I.setDuty pwm =<< castFloatToUint16 ((1 - v) * 10_000)
+    I.setDuty pwm =<< castFloatToUint16 ((1 - v) * 10_000 + 50)
 
 
 
@@ -130,7 +130,6 @@ onDo DimmerAC{..} buff size = do
                 ifte_ (value' ==? 0)
                     (onOn  getDimmers index')
                     (onOff getDimmers index')
-
 
 
 
