@@ -1,15 +1,15 @@
-{-# LANGUAGE DataKinds          #-}
-{-# LANGUAGE FlexibleContexts   #-}
-{-# LANGUAGE NamedFieldPuns     #-}
-{-# LANGUAGE NumericUnderscores #-}
-{-# LANGUAGE RecordWildCards    #-}
-{-# LANGUAGE TypeOperators      #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE TypeOperators         #-}
 
 module Device.GD32F3x0.PWM where
 
 import           Control.Monad.Writer
 import           Core.Context
+import           Core.Handler
 import           Device.GD32F3x0.GPIO
 import           Device.GD32F3x0.Timer
 import qualified Interface.PWM                  as I
@@ -17,7 +17,6 @@ import qualified Interface.Timer                as T
 import           Ivory.Language
 import           Support.Device.GD32F3x0.System
 import           Support.Device.GD32F3x0.Timer
-import Core.Handler
 
 
 
@@ -78,6 +77,7 @@ instance I.PWM PWM where
         configTimerOutputMode t channel_pwm . coerceModePWM
 
 
+
 coerceModePWM I.HIGH       = timer_oc_mode_pwm0
 coerceModePWM I.LOW        = timer_oc_mode_pwm1
 coerceModePWM I.FORCE_HIGH = timer_oc_mode_high
@@ -88,9 +88,9 @@ coerceModePWM I.FORCE_LOW  = timer_oc_mode_low
 instance T.Timer PWM where
     setCounter PWM{..} = T.setCounter timer_pwm
     getCounter PWM{..} = T.getCounter timer_pwm
-    
+
 
 
 instance Handler T.HandleTimer PWM where
-    addHandler T.HandleTimer {timer = PWM{..} , handle} = 
+    addHandler T.HandleTimer {timer = PWM{..} , handle} =
         addHandler $ T.HandleTimer timer_pwm handle

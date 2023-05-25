@@ -1,7 +1,7 @@
 module Interface.PWM where
 
-import           Ivory.Language
 import           Interface.Timer
+import           Ivory.Language
 
 
 data ModePMW
@@ -12,6 +12,6 @@ data ModePMW
 
 
 class Timer p => PWM p where
+    setMode       :: p -> ModePMW -> Ivory eff ()
     setDuty       :: p -> Uint16 -> Ivory eff ()
     resetCounter  :: p -> Ivory eff ()
-    setMode       :: p -> ModePMW -> Ivory eff ()
