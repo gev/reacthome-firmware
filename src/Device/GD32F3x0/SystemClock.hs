@@ -12,7 +12,9 @@ import           Ivory.Language
 import           Support.Device.GD32F3x0.Timer
 
 
-
+{--
+    TODO:  Use a frequency instead the prescaler
+--}
 systemClock :: MonadWriter Context m => m SystemClock
 systemClock = I.systemClock (sysTick 83_999)
                             (timer_14 $ timerParam [ prescaler .= ival 83
