@@ -4,6 +4,7 @@
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE RecordWildCards    #-}
 {-# LANGUAGE TypeOperators      #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 module Device.GD32F3x0.PWM where
 
@@ -16,6 +17,7 @@ import qualified Interface.Timer                as T
 import           Ivory.Language
 import           Support.Device.GD32F3x0.System
 import           Support.Device.GD32F3x0.Timer
+import Core.Handler
 
 
 
@@ -80,3 +82,15 @@ coerceModePWM I.HIGH       = timer_oc_mode_pwm0
 coerceModePWM I.LOW        = timer_oc_mode_pwm1
 coerceModePWM I.FORCE_HIGH = timer_oc_mode_high
 coerceModePWM I.FORCE_LOW  = timer_oc_mode_low
+
+
+
+instance T.Timer PWM where
+    setCounter PWM{..} = T.setCounter timer_pwm
+    getCounter PWM{..} = T.getCounter timer_pwm
+    
+
+
+instance Handler T.HandleTimer PWM where
+    addHandler T.HandleTimer {timer = PWM{..} , handle} = 
+        addHandler $ T.HandleTimer timer_pwm handle
