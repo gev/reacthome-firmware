@@ -1,8 +1,9 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE RecordWildCards  #-}
-{-# LANGUAGE TypeOperators    #-}
+{-# LANGUAGE DataKinds          #-}
+{-# LANGUAGE FlexibleContexts   #-}
+{-# LANGUAGE NamedFieldPuns     #-}
+{-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE RecordWildCards    #-}
+{-# LANGUAGE TypeOperators      #-}
 
 module Device.GD32F3x0.PWM where
 
@@ -50,7 +51,7 @@ mkPWM timer' channel_pwm port frequency period = do
             let t = timer timer_pwm
             initChannelOcTimer            t channel_pwm =<< local (istruct timerOcDefaultParam)
             configChannelOutputPulseValue t channel_pwm 0
-            configTimerOutputMode         t channel_pwm timer_oc_mode_pwm1
+            configTimerOutputMode         t channel_pwm timer_oc_mode_low
             configChannelOutputShadow     t channel_pwm timer_oc_shadow_disable
             configPrimaryOutput           t true
             enableTimer                   t
