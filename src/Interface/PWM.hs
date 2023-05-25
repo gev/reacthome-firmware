@@ -4,8 +4,8 @@ import           Ivory.Language
 
 
 data ModePMW
-    = DUTY_HIGH
-    | DUTY_LOW
+    = HIGH
+    | LOW
     | FORCE_HIGH
     | FORCE_LOW
 

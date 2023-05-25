@@ -74,7 +74,7 @@ instance I.PWM PWM where
         configTimerOutputMode t channel_pwm . coerceModePWM
 
 
-coerceModePWM I.DUTY_HIGH  = timer_oc_mode_pwm0
-coerceModePWM I.DUTY_LOW   = timer_oc_mode_pwm1
+coerceModePWM I.HIGH       = timer_oc_mode_pwm0
+coerceModePWM I.LOW        = timer_oc_mode_pwm1
 coerceModePWM I.FORCE_HIGH = timer_oc_mode_high
 coerceModePWM I.FORCE_LOW  = timer_oc_mode_low
