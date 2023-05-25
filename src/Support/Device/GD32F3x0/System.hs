@@ -5,6 +5,7 @@
 
 module Support.Device.GD32F3x0.System
     ( system_core_clock
+    , inclSystem
     ) where
 
 import           Ivory.Language

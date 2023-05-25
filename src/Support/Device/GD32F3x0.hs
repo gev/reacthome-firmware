@@ -10,6 +10,7 @@ import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.SYSCFG
+import           Support.Device.GD32F3x0.System
 import           Support.Device.GD32F3x0.Timer
 import           Support.Device.GD32F3x0.USART
 
@@ -24,6 +25,7 @@ inclGD32F3x0 = do
     inclMisc
     inclRCU
     inclSYSCFG
+    inclSystem
     inclTimer
     inclUSART
     inclCoreCM4
