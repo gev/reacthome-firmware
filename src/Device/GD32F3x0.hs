@@ -35,7 +35,7 @@ import           Support.Device.GD32F3x0.USART
 type UARTW   = forall m. MonadWriter Context m => m UART
 type InputW  = forall m. MonadWriter Context m => m Input
 type OutputW = forall m. MonadWriter Context m => m Output
-type PWMW    = forall m. MonadWriter Context m => Uint16 -> Uint32 ->  m PWM
+type PWMW    = forall m. MonadWriter Context m => Uint32 -> Uint32 ->  m PWM
 type EXTIW   = forall m. MonadWriter Context m => m EXTI
 
 

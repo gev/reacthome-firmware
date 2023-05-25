@@ -19,7 +19,3 @@ systemClock = I.systemClock (sysTick 83_999)
                                                    , period    .= ival 0xff_ff
                                                    ]
                             )
-                            -- (timer_1 $ timerParam [ prescaler .= ival 83
-                            --                       , period    .= ival 0xff_ff_ff_ff
-                            --                       ]
-                            -- )

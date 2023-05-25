@@ -46,13 +46,13 @@ data DimmerAC = forall p. I.PWM p => DimmerAC
 dimmerAC :: ( MonadWriter Context m
             , MonadReader (D.Domain p t) m
             , T.Transport t, I.PWM o, Handler HandleEXTI e, EXTI e
-            ) => [p -> Uint16 -> Uint32 -> m o] -> (p -> m e) -> m Feature
+            ) => [p -> Uint32 -> Uint32 -> m o] -> (p -> m e) -> m Feature
 dimmerAC pwms exti = do
     mcu <- asks D.mcu
     e   <- exti $ peripherals mcu
     transport   <- asks D.transport
     shouldInit  <- asks D.shouldInit
-    os          <- mapM (\pwm -> pwm (peripherals mcu) 83 0xff_ff_ff_fe) pwms
+    os          <- mapM (\pwm -> pwm (peripherals mcu) 1_000_000 0xff_ff_ff_ff) pwms
     let n        = length os
     getDimmers  <- dimmers "dimmers" n
     current     <- index "current_dimmer"

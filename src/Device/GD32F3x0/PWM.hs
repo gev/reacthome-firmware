@@ -10,27 +10,28 @@ import           Control.Monad.Writer
 import           Core.Context
 import           Device.GD32F3x0.GPIO
 import           Device.GD32F3x0.Timer
-import qualified Interface.PWM                 as I
-import qualified Interface.Timer               as T
+import qualified Interface.PWM                  as I
+import qualified Interface.Timer                as T
 import           Ivory.Language
+import           Support.Device.GD32F3x0.System
 import           Support.Device.GD32F3x0.Timer
 
 
 
-pwmTimerParam :: Uint16 -> Uint32 -> Init (Struct TIMER_PARAM_STRUCT)
-pwmTimerParam prescaler' period' =
-    timerParam [ prescaler .= ival prescaler'
-               , period    .= ival period'
+pwmTimerParam :: Uint32 -> Uint32 -> Init (Struct TIMER_PARAM_STRUCT)
+pwmTimerParam frequency' period' =
+    timerParam [ prescaler .= ival (castDefault $ frequency' `iDiv` system_core_clock - 1)
+               , period    .= ival (period' - 1)
                ]
 
-pwm_timer_0 :: MonadWriter Context m => Uint16 -> Uint32 -> m Timer
-pwm_timer_0 prescaler' period' = timer_0 $ pwmTimerParam prescaler' period'
+pwm_timer_0 :: MonadWriter Context m => Uint32 -> Uint32 -> m Timer
+pwm_timer_0 frequency' period' = timer_0 $ pwmTimerParam frequency' period'
 
-pwm_timer_1 :: MonadWriter Context m => Uint16 -> Uint32 -> m Timer
-pwm_timer_1 prescaler' period' = timer_1 $ pwmTimerParam prescaler' period'
+pwm_timer_1 :: MonadWriter Context m => Uint32 -> Uint32 -> m Timer
+pwm_timer_1 frequency' period' = timer_1 $ pwmTimerParam frequency' period'
 
-pwm_timer_2 :: MonadWriter Context m => Uint16 -> Uint32 -> m Timer
-pwm_timer_2 prescaler' period' = timer_2 $ pwmTimerParam prescaler' period'
+pwm_timer_2 :: MonadWriter Context m => Uint32 -> Uint32 -> m Timer
+pwm_timer_2 frequency' period' = timer_2 $ pwmTimerParam frequency' period'
 
 
 
@@ -40,9 +41,9 @@ data PWM = PWM
     , port        :: Port
     }
 
-mkPWM :: MonadWriter Context m => (Uint16 -> Uint32 -> m Timer) -> TIMER_CHANNEL -> Port -> Uint16 -> Uint32 -> m PWM
-mkPWM timer' channel_pwm port prescaler period = do
-    timer_pwm <- timer' prescaler period
+mkPWM :: MonadWriter Context m => (Uint32 -> Uint32 -> m Timer) -> TIMER_CHANNEL -> Port -> Uint32 -> Uint32 -> m PWM
+mkPWM timer' channel_pwm port frequency period = do
+    timer_pwm <- timer' frequency period
 
     let initPWM' :: Def ('[] :-> ())
         initPWM' = proc (show port <> "_pwm_init") $ body $ do
