@@ -35,16 +35,18 @@ import           Support.Cast
 
 
 data DimmerAC = forall p. I.PWM p => DimmerAC
-    { n          :: Uint8
-    , getDimmers :: Dimmers
-    , getPWMs    :: [p]
-    , shouldInit :: Value IBool
-    , isZero     :: Value IBool
-    , period0    :: Value Uint32
-    , period1    :: Value Uint32
-    , current    :: Index Uint8
-    , transmit   :: forall n. KnownNat n
-                 => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
+    { n              :: Uint8
+    , getDimmers     :: Dimmers
+    , getPWMs        :: [p]
+    , shouldInit     :: Value IBool
+    , isCrossZero    :: Value IBool
+    , isNoCrossZero  :: Value IBool
+    , countCrossZero :: Value Uint32
+    , period0        :: Value Uint32
+    , period1        :: Value Uint32
+    , current        :: Index Uint8
+    , transmit       :: forall n. KnownNat n
+                     => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
 
 dimmerAC :: ( MonadWriter Context m
@@ -52,43 +54,59 @@ dimmerAC :: ( MonadWriter Context m
             , T.Transport t, I.PWM o, Handler HandleEXTI e, EXTI e
             ) => [p -> Uint32 -> Uint32 -> m o] -> (p -> m e) -> m Feature
 dimmerAC pwms exti = do
-    mcu <- asks D.mcu
-    e   <- exti $ peripherals mcu
-    transport   <- asks D.transport
-    shouldInit  <- asks D.shouldInit
-    isZero      <- V.value "dimmer_is_zero"  false
-    period0     <- V.value "dimmer_period_0" 0
-    period1     <- V.value "dimmer_period_1" 0
-    os          <- mapM (\pwm -> pwm (peripherals mcu) 1_000_000 0xff_ff_ff_ff) pwms
-    let n        = length os
-    getDimmers  <- dimmers "dimmers" n
-    current     <- index "current_dimmer"
-    let dimmerAC = DimmerAC { n = fromIntegral n
-                            , getDimmers
-                            , getPWMs = os
-                            , shouldInit
-                            , isZero
-                            , period0
-                            , period1
-                            , current
-                            , transmit = T.transmitBuffer transport
-                            }
+    mcu            <- asks D.mcu
+    e              <- exti $ peripherals mcu
+    transport      <- asks D.transport
+    shouldInit     <- asks D.shouldInit
+    isCrossZero    <- V.value "dimmer_is_zero"    false
+    isNoCrossZero  <- V.value "dimmer_is_no_zero" true
+    countCrossZero <- V.value "dimmer_count_zero" 0
+    period0        <- V.value "dimmer_period_0"   0
+    period1        <- V.value "dimmer_period_1"   0
+    os             <- mapM (\pwm -> pwm (peripherals mcu) 1_000_000 0xff_ff_ff_ff) pwms
+    let n           = length os
+    getDimmers     <- dimmers "dimmers" n
+    current        <- index "current_dimmer"
+    let dimmerAC    = DimmerAC { n = fromIntegral n
+                               , getDimmers
+                               , getPWMs = os
+                               , shouldInit
+                               , isCrossZero
+                               , isNoCrossZero
+                               , countCrossZero
+                               , period0
+                               , period1
+                               , current
+                               , transmit = T.transmitBuffer transport
+                               }
 
-    let crossZero :: Ivory eff ()
-        crossZero = do
+    let crossCrossZero :: Ivory eff ()
+        crossCrossZero = do
             period1' <- deref period1
             store period1 =<< getCounter (head os)
             store period0 period1'
             mapM_ I.resetCounter os
-            store isZero true
+            countCrossZero' <- deref countCrossZero
+            store countCrossZero $ countCrossZero' + 1
+            store isCrossZero true
 
-    addHandler $ HandleEXTI e crossZero
+    addHandler $ HandleEXTI e crossCrossZero
 
-    addTask $ delay 1 "dimmers_calculate" $ calculate dimmerAC
-    addTask $ yeld    "dimmers_manage"    $ manage dimmerAC
-    addTask $ yeld    "dimmers_sync"      $ sync dimmerAC
+    addTask $ delay 100 "dimmers_cross_zero_error"     $ detectCrossZeroError dimmerAC
+    addTask $ delay 10  "dimmers_manage_no_cross_zero" $ manageNoCrossZero    dimmerAC
+    addTask $ delay 1   "dimmers_calculate"            $ calculate            dimmerAC
+    addTask $ yeld      "dimmers_manage"               $ manage               dimmerAC
+    addTask $ yeld      "dimmers_sync"                 $ sync                 dimmerAC
 
     pure $ Feature dimmerAC
+
+
+
+detectCrossZeroError :: DimmerAC -> Ivory eff ()
+detectCrossZeroError DimmerAC{..} = do
+    countCrossZero' <- deref countCrossZero
+    store isNoCrossZero $ countCrossZero' <? 75
+    store countCrossZero 0
 
 
 
@@ -111,10 +129,11 @@ calculateDimmer dimmer =
 
 manage :: DimmerAC -> Ivory eff ()
 manage DimmerAC{..} = do
-    isZero' <- deref isZero
-    when isZero' $ do
+    isCrossZero'   <- deref isCrossZero
+    isNoCrossZero' <- deref isNoCrossZero
+    when (iNot isNoCrossZero' .&& isCrossZero') $ do
         zipWithM_ zip getPWMs (iterate (+1) 0)
-        store isZero false
+        store isCrossZero false
     where
         zip :: I.PWM p => p -> Sint32 -> Ivory eff ()
         zip pwm i = runDimmers getDimmers $ \ds -> do
@@ -131,6 +150,30 @@ manageDimmer pwm dimmer period = do
           , v ==? 1 ==> I.setMode pwm I.FORCE_HIGH
           , true ==> do I.setMode pwm I.LOW
                         I.setDuty pwm =<< castFloatToUint16 ((1 - v) * (safeCast period - 400) + 100)
+          ]
+
+
+
+manageNoCrossZero :: DimmerAC -> Ivory eff ()
+manageNoCrossZero DimmerAC{..} = do
+    isNoCrossZero' <- deref isNoCrossZero
+    when isNoCrossZero' $ do
+        zipWithM_ zip getPWMs (iterate (+1) 0)
+        store isCrossZero false
+    where
+        zip :: I.PWM p => p -> Sint32 -> Ivory eff ()
+        zip pwm i = runDimmers getDimmers $ \ds -> do
+            let ix = toIx i
+            let d = addrOf ds ! ix
+            manageDimmerNoCrossZero pwm d
+
+
+
+manageDimmerNoCrossZero :: I.PWM p => p -> Record DimmerStruct -> Ivory eff ()
+manageDimmerNoCrossZero pwm dimmer = do
+    v <- deref $ dimmer ~> Dim.value
+    cond_ [ v >? 0 ==> I.setMode pwm I.FORCE_HIGH
+          , true   ==> I.setMode pwm I.FORCE_LOW
           ]
 
 
