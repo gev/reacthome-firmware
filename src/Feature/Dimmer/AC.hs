@@ -135,7 +135,6 @@ manageDimmer pwm dimmer period = do
 
 
 
-
 sync :: DimmerAC -> Ivory (ProcEffects s ()) ()
 sync DimmerAC{..} = do
     i <- deref current
