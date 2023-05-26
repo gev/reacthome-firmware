@@ -130,7 +130,7 @@ manageDimmer pwm dimmer period = do
     cond_ [ v ==? 0 ==> I.setMode pwm I.FORCE_LOW
           , v ==? 1 ==> I.setMode pwm I.FORCE_HIGH
           , true ==> do I.setMode pwm I.LOW
-                        I.setDuty pwm =<< castFloatToUint16 ((1 - v) * (safeCast period - 400) + 100)
+                        I.setDuty pwm =<< castFloatToUint16 ((1 - v) * (safeCast period - 300) + 100)
           ]
 
 
