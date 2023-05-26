@@ -100,7 +100,9 @@ dimmerAC pwms exti = do
 
     pure $ Feature dimmerAC
 
-
+{-
+    TODO: Send a cross Zero error to the server
+-}
 
 detectCrossZeroError :: DimmerAC -> Ivory eff ()
 detectCrossZeroError DimmerAC{..} = do
