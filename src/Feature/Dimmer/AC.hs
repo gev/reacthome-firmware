@@ -92,11 +92,11 @@ dimmerAC pwms exti = do
 
     addHandler $ HandleEXTI e crossCrossZero
 
-    addTask $ delay 100 "dimmers_cross_zero_error"     $ detectCrossZeroError dimmerAC
-    addTask $ delay 10  "dimmers_manage_no_cross_zero" $ manageNoCrossZero    dimmerAC
-    addTask $ delay 1   "dimmers_calculate"            $ calculate            dimmerAC
-    addTask $ yeld      "dimmers_manage"               $ manage               dimmerAC
-    addTask $ yeld      "dimmers_sync"                 $ sync                 dimmerAC
+    addTask $ delay 1_000 "dimmers_cross_zero_error"     $ detectCrossZeroError dimmerAC
+    addTask $ delay 10    "dimmers_manage_no_cross_zero" $ manageNoCrossZero    dimmerAC
+    addTask $ delay 1     "dimmers_calculate"            $ calculate            dimmerAC
+    addTask $ yeld        "dimmers_manage"               $ manage               dimmerAC
+    addTask $ yeld        "dimmers_sync"                 $ sync                 dimmerAC
 
     pure $ Feature dimmerAC
 
