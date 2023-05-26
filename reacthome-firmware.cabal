@@ -91,6 +91,7 @@ executable reacthome-firmware
                     , Interface.RS485
                     , Interface.PWM
                     , Interface.EXTI
+                    , Interface.NeoPixel
 
                     , Protocol.RS485.RBUS
                     , Protocol.RS485.RBUS.Master
