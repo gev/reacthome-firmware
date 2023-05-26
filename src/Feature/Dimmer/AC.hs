@@ -157,9 +157,8 @@ manageDimmer pwm dimmer period = do
 manageNoCrossZero :: DimmerAC -> Ivory eff ()
 manageNoCrossZero DimmerAC{..} = do
     isNoCrossZero' <- deref isNoCrossZero
-    when isNoCrossZero' $ do
+    when isNoCrossZero' $
         zipWithM_ zip getPWMs (iterate (+1) 0)
-        store isCrossZero false
     where
         zip :: I.PWM p => p -> Sint32 -> Ivory eff ()
         zip pwm i = runDimmers getDimmers $ \ds -> do
