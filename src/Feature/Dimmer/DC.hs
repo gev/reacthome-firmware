@@ -86,7 +86,7 @@ manageDimmer pwm dimmer = do
     cond_ [ v ==? 0 ==> I.setMode pwm I.FORCE_LOW
           , v ==? 1 ==> I.setMode pwm I.FORCE_HIGH
           , true ==> do I.setMode pwm I.LOW
-                        I.setDuty pwm =<< castFloatToUint16 ((1 - v) * 920 + 80)
+                        I.setDuty pwm =<< castFloatToUint16 ((1 - v) * 960 + 40)
           ]
 
 
