@@ -1,14 +1,26 @@
+{-# LANGUAGE DataKinds   #-}
+{-# LANGUAGE QuasiQuotes #-}
+
 module Interface.NeoPixel where
-    
+
+import           Data.Record
 import           Ivory.Language
-import           Interface.PWM
 
-data RGB = RGB 
-    { g :: Record Uint8
-    , r :: Record Uint8
-    , b :: Record Uint8
-    }   
 
-class NeoPixel n where
-    sendColors :: n -> IvoryEff ()
-    setPixelColor :: n -> IvoryEff ()
+type RGB = "rgb_struct"
+
+[ivory|
+    struct rgb_struct
+    { r :: Uint8
+    ; g :: Uint8
+    ; b :: Uint8
+    }
+|]
+
+
+class NeoPixel p where
+    sendPixels :: PixelBuffer t => p -> Records n t -> Ivory eff ()
+
+
+class PixelBuffer t where
+    setPixel :: Records n t -> Ix n -> Record t -> Ivory eff ()
