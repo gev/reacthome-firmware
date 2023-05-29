@@ -7,5 +7,5 @@ import           Data.NeoPixel.Buffer
 import           Ivory.Language
 
 
-class NeoPixelBuffer n t => NeoPixel p n t where
+class NeoPixelBuffer t n => NeoPixel p t n where
     transmitPixels :: p -> t n -> Ivory eff ()
