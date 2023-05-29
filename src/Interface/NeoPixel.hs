@@ -3,16 +3,9 @@
 
 module Interface.NeoPixel where
 
-import           Data.Record
-import           GHC.TypeNats
+import           Data.NeoPixel.Buffer
 import           Ivory.Language
 
 
-
-
-class NeoPixelBuffer b => NeoPixel p b where
-    sendPixels :: p -> b -> Ivory eff ()
-
-
-class NeoPixelBuffer t where
-    setByte :: t -> Ix n -> Uint8 -> Ivory eff ()
+class NeoPixelBuffer n t => NeoPixel p n t where
+    transmitPixels :: p -> t n -> Ivory eff ()
