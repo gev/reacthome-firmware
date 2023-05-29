@@ -33,6 +33,7 @@ module Support.Device.GD32F3x0.Timer
     , timer1
     , timer2
     , timer14
+    , timer15
 
     , TIMER_ALIGNE_MODE
     , timer_counter_edge
@@ -177,6 +178,7 @@ timer0 = TIMER_PERIPH $ ext "TIMER0"
 timer1 = TIMER_PERIPH $ ext "TIMER1"
 timer2 = TIMER_PERIPH $ ext "TIMER2"
 timer14 = TIMER_PERIPH $ ext "TIMER14"
+timer15 = TIMER_PERIPH $ ext "TIMER15"
 
 
 
@@ -395,6 +397,7 @@ inclTimer = do
     inclSym timer1
     inclSym timer2
     inclSym timer14
+    inclSym timer15
 
     inclSym timer_counter_edge
     inclSym timer_counter_up
