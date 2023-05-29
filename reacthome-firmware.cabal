@@ -52,6 +52,9 @@ executable reacthome-firmware
                     , Data.Buffer
                     , Data.Index
                     , Data.Matrix
+                    , Data.NeoPixel.Buffer
+                    , Data.NeoPixel.Buffer.PWM
+                    , Data.NeoPixel.Buffer.SPI
                     , Data.Serialize
                     , Data.Concurrent.Semaphore
                     , Data.Concurrent.Queue
