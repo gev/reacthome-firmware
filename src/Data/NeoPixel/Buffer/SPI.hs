@@ -3,6 +3,8 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE KindSignatures        #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RankNTypes            #-}
+{-# LANGUAGE ScopedTypeVariables   #-}
 {-# LANGUAGE TypeOperators         #-}
 
 
@@ -12,28 +14,30 @@ import           Control.Monad.Writer (MonadWriter)
 import           Core.Context
 import           Data.Buffer
 import           Data.NeoPixel.Buffer
+import           Data.Value
 import           GHC.TypeNats
 import           Interface.NeoPixel
 import           Ivory.Language
 import           Ivory.Language.Proxy
 
-newtype NeoPixelBufferSPI n = NeoPixelBufferSPI
-    { frame :: Buffer (n * 4) Uint8
+newtype NeoPixelBufferSPI (n :: Nat) = NeoPixelBufferSPI
+    { runFrame :: RunValues Uint8
     }
 
 
-neoPixelBufferSPI :: (MonadWriter Context m, KnownNat (n * 4), KnownNat (n * 1))
+neoPixelBufferSPI :: forall m n. (MonadWriter Context m, KnownNat n)
                   => String -> m (NeoPixelBufferSPI n)
 neoPixelBufferSPI id = do
-    buf     <- buffer id
+    let size = 3 * fromTypeNat (aNat :: NatType n)
+    let buf  = runValues_ (id <> "_neo_pixel_buffer_spi") $ fromInteger size
     let npb  = NeoPixelBufferSPI buf
     let initNeoPixelBufferSPI' :: Def ('[] :-> ())
-        initNeoPixelBufferSPI' = proc "neo_pixel_buffer_spi_init" $ body $ do
-            arrayMap $ \ix -> writeByte npb ix 0
+        initNeoPixelBufferSPI' = proc (id <> "_neo_pixel_buffer_spi_init") $ body $ do
+            arrayMap $ \(ix :: Ix n) -> writeByte npb ix 0
     addInit initNeoPixelBufferSPI'
     pure $ NeoPixelBufferSPI buf
 
 
 
-instance NeoPixelBuffer n NeoPixelBufferSPI where
+instance NeoPixelBuffer NeoPixelBufferSPI n where
   writeByte = undefined
