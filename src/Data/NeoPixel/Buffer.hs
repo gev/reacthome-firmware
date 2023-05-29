@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+
 module Data.NeoPixel.Buffer where
 
 import           GHC.TypeNats
