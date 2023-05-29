@@ -15,6 +15,7 @@ module Support.Device.GD32F3x0.RCU
     , rcu_timer1
     , rcu_timer2
     , rcu_timer14
+    , rcu_timer15
     , rcu_usart0
     , rcu_usart1
     , rcu_cfgcmp
@@ -39,6 +40,7 @@ rcu_timer0  = RCU_PERIPH $ ext "RCU_TIMER0"
 rcu_timer1  = RCU_PERIPH $ ext "RCU_TIMER1"
 rcu_timer2  = RCU_PERIPH $ ext "RCU_TIMER2"
 rcu_timer14 = RCU_PERIPH $ ext "RCU_TIMER14"
+rcu_timer15 = RCU_PERIPH $ ext "RCU_TIMER15"
 rcu_usart0  = RCU_PERIPH $ ext "RCU_USART0"
 rcu_usart1  = RCU_PERIPH $ ext "RCU_USART1"
 rcu_cfgcmp  = RCU_PERIPH $ ext "RCU_CFGCMP"
@@ -62,6 +64,7 @@ inclRCU = do
     inclSym rcu_timer1
     inclSym rcu_timer2
     inclSym rcu_timer14
+    inclSym rcu_timer15
     inclSym rcu_usart0
     inclSym rcu_usart1
     inclSym rcu_cfgcmp

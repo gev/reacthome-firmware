@@ -9,6 +9,7 @@ module Support.Device.GD32F3x0.IRQ
     , timer1_irqn
     , timer2_irqn
     , timer14_irqn
+    , timer15_irqn
     , usart0_irqn
     , usart1_irqn
     , dma_channel1_2_irqn
@@ -35,6 +36,7 @@ timer0_irqn         = IRQn $ ext "TIMER0_IRQn"
 timer1_irqn         = IRQn $ ext "TIMER1_IRQn"
 timer2_irqn         = IRQn $ ext "TIMER2_IRQn"
 timer14_irqn        = IRQn $ ext "TIMER14_IRQn"
+timer15_irqn        = IRQn $ ext "TIMER15_IRQn"
 usart0_irqn         = IRQn $ ext "USART0_IRQn"
 usart1_irqn         = IRQn $ ext "USART1_IRQn"
 dma_channel1_2_irqn = IRQn $ ext "DMA_Channel1_2_IRQn"
@@ -58,6 +60,7 @@ inclIRQ = do
     inclSym timer1_irqn
     inclSym timer2_irqn
     inclSym timer14_irqn
+    inclSym timer15_irqn
     inclSym usart0_irqn
     inclSym usart1_irqn
     inclSym dma_channel1_2_irqn

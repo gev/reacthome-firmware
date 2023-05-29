@@ -46,6 +46,9 @@ timer_2 = mkTimer timer2 rcu_timer2 timer2_irqn
 timer_14 :: MonadWriter Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
 timer_14 = mkTimer timer14 rcu_timer14 timer14_irqn
 
+timer_15 :: MonadWriter Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
+timer_15 = mkTimer timer15 rcu_timer15 timer15_irqn
+
 
 mkTimer :: MonadWriter Context m
         => TIMER_PERIPH
