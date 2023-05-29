@@ -11,6 +11,7 @@ import           Device.GD32F3x0.GPIO
 import           Device.GD32F3x0.GPIO.Input
 import           Device.GD32F3x0.GPIO.Output
 import           Device.GD32F3x0.Mac            (makeMac)
+import           Device.GD32F3x0.NeoPixel
 import           Device.GD32F3x0.PWM
 import           Device.GD32F3x0.SystemClock    as G
 import           Device.GD32F3x0.SysTick
@@ -36,7 +37,7 @@ type UARTW     = forall m. MonadWriter Context m => m UART
 type InputW    = forall m. MonadWriter Context m => m Input
 type OutputW   = forall m. MonadWriter Context m => m Output
 type PWMW      = forall m. MonadWriter Context m => Uint32 -> Uint32 ->  m PWM
-type NeoPixelW = forall m. MonadWriter Context m => Uint32 -> Uint32 ->  m NeoPixel
+type NeoPixelW = forall m. MonadWriter Context m => m NeoPixel
 type EXTIW     = forall m. MonadWriter Context m => m EXTI
 
 

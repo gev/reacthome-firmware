@@ -35,6 +35,9 @@ pwm_timer_1 frequency' period' = timer_1 $ pwmTimerParam frequency' period'
 pwm_timer_2 :: MonadWriter Context m => Uint32 -> Uint32 -> m Timer
 pwm_timer_2 frequency' period' = timer_2 $ pwmTimerParam frequency' period'
 
+pwm_timer_15 :: MonadWriter Context m => Uint32 -> Uint32 -> m Timer
+pwm_timer_15 frequency' period' = timer_15 $ pwmTimerParam frequency' period'
+
 
 
 data PWM = PWM
@@ -43,7 +46,13 @@ data PWM = PWM
     , port        :: Port
     }
 
-mkPWM :: MonadWriter Context m => (Uint32 -> Uint32 -> m Timer) -> TIMER_CHANNEL -> Port -> Uint32 -> Uint32 -> m PWM
+mkPWM :: MonadWriter Context m
+      => (Uint32 -> Uint32 -> m Timer)
+      -> TIMER_CHANNEL
+      -> Port
+      -> Uint32
+      -> Uint32
+      -> m PWM
 mkPWM timer' channel_pwm port frequency period = do
     timer_pwm <- timer' frequency period
 
