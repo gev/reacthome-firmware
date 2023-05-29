@@ -127,6 +127,7 @@ executable reacthome-firmware
                     , Device.GD32F3x0.Timer
                     , Device.GD32F3x0.UART
                     , Device.GD32F3x0.PWM
+                    , Device.GD32F3x0.NeoPixel
                     , Device.GD32F3x0.EXTI
 
                     , Device.GD32F4xx
