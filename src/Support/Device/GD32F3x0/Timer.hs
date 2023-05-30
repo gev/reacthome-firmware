@@ -68,6 +68,7 @@ module Support.Device.GD32F3x0.Timer
 
     , TIMER_COMPARE_SHADOW
     , timer_oc_shadow_disable
+    , timer_oc_shadow_enable
 
     , TIMER_CHANNEL_STATE
     , timer_ccx_enable
@@ -249,6 +250,7 @@ newtype TIMER_COMPARE_SHADOW = TIMER_COMPARE_SHADOW Uint16
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_oc_shadow_disable = TIMER_COMPARE_SHADOW $ ext "TIMER_OC_SHADOW_DISABLE"
+timer_oc_shadow_enable  = TIMER_COMPARE_SHADOW $ ext "TIMER_OC_SHADOW_ENABLE"
 
 
 
@@ -445,6 +447,7 @@ inclTimer = do
     inclSym timer_oc_mode_low
 
     inclSym timer_oc_shadow_disable
+    inclSym timer_oc_shadow_enable
 
     inclSym timer_ccx_enable
 
