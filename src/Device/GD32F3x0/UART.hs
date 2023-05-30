@@ -61,7 +61,7 @@ mkUART uart rcu uartIRQ dma dmaIRQn rx tx = do
                            , periph_width .= ival dma_peripheral_width_16bit
                            , priority     .= ival dma_priority_ultra_high
                            ]
-    dmaParams <- record (symbol uart <> "_dma_param") dmaInit
+    dmaParams <- record (symbol dma <> "_dma_param") dmaInit
 
     let initUART' :: Def ('[] ':-> ())
         initUART' = proc (symbol uart <> "_init") $ body $ do
