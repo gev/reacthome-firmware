@@ -62,7 +62,7 @@ mkNeoPixel timer' pwmChannel dmaChannel port = do
             configTimerOutputMode         t pwmChannel timer_oc_mode_high
             configPrimaryOutput           t true
             enableTimerDMA                t timer_dma_upd
-            configChannelOutputShadow     t pwmChannel timer_oc_shadow_disable
+            configChannelOutputShadow     t pwmChannel timer_oc_shadow_enable
             enableTimer                   t
 
     addInit $ initPort port
