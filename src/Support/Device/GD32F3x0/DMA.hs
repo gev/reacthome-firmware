@@ -68,6 +68,7 @@ module Support.Device.GD32F3x0.DMA
     , deinitDMA
     , initDMA
     , disableCirculationDMA
+    , enableCirculationDMA
     , disableMemoryToMemoryDMA
     , enableChannelDMA
     , enableInterruptDMA
@@ -118,6 +119,7 @@ dmaParam p = p <+>
 
 newtype DMA_CHANNEL = DMA_CHANNEL Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
+instance ExtSymbol DMA_CHANNEL
 
 dma_ch0 = DMA_CHANNEL $ ext "DMA_CH0"
 dma_ch1 = DMA_CHANNEL $ ext "DMA_CH1"
@@ -216,6 +218,12 @@ disableCirculationDMA = call_ dma_circulation_disable
 dma_circulation_disable :: Def ('[DMA_CHANNEL] :-> ())
 dma_circulation_disable = fun "dma_circulation_disable"
 
+enableCirculationDMA :: DMA_CHANNEL -> Ivory eff ()
+enableCirculationDMA = call_ dma_circulation_enable
+
+dma_circulation_enable :: Def ('[DMA_CHANNEL] :-> ())
+dma_circulation_enable = fun "dma_circulation_enable"
+
 
 disableMemoryToMemoryDMA :: DMA_CHANNEL -> Ivory eff ()
 disableMemoryToMemoryDMA = call_ dma_memory_to_memory_disable
@@ -293,6 +301,7 @@ inclDMA = do
     incl dma_deinit
     incl dma_init
     incl dma_circulation_disable
+    incl dma_circulation_enable
     incl dma_memory_to_memory_disable
     incl dma_channel_enable
     incl dma_interrupt_enable
