@@ -1,5 +1,7 @@
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE GADTs                 #-}
 {-# LANGUAGE KindSignatures        #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
@@ -20,10 +22,16 @@ import qualified Interface.NeoPixel             as I
 import qualified Interface.PWM                  as I
 import           Ivory.Language
 import           Ivory.Support
+import           Support.Cast
 import           Support.Device.GD32F3x0.DMA
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.System
 import           Support.Device.GD32F3x0.Timer
+
+
+
+pwmPeriod :: Num a => a
+pwmPeriod = 100
 
 
 
@@ -41,7 +49,7 @@ mkNeoPixelPWM :: MonadWriter Context m
               -> Port
               -> m NeoPixelPWM
 mkNeoPixelPWM timer' pwmChannel dmaChannel port = do
-    pwmTimer <- timer' system_core_clock 100
+    pwmTimer <- timer' system_core_clock pwmPeriod
 
     let dmaInit = dmaParam [ direction    .= ival dma_memory_to_peripheral
                            , memory_inc   .= ival dma_memory_increase_enable
@@ -72,13 +80,19 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel port = do
 
 
 
-instance I.NeoPixel NeoPixelPWM where
-    transmitPixels NeoPixelPWM{..} = undefined
-        -- runFrame $ \frame -> do
-        --     deinitDMA                   dmaChannel
-        --     store (dmaParams ~> memory_addr) =<< castArrayToUint32 (toCArray frame)
-        --     store (dmaParams ~> number) $ safeCast n
-        --     initDMA                     dmaChannel dmaParams
-        --     enableCirculationDMA        dmaChannel
-        --     disableMemoryToMemoryDMA    dmaChannel
-        --     enableChannelDMA            dmaChannel
+instance KnownNat n => I.NeoPixel NeoPixelBufferPWM n where
+    neoPixelBuffer id = neoPixelBufferPWM id pwmPeriod
+
+
+
+instance KnownNat n => I.NeoPixelTransmitter NeoPixelPWM NeoPixelBufferPWM n where
+    transmitPixels NeoPixelPWM{..} NeoPixelBufferPWM{..} =
+        runFrame $ \frame -> do
+            let frame' = addrOf frame
+            deinitDMA                   dmaChannel
+            store (dmaParams ~> memory_addr) =<< castArrayUint8ToUint32 (toCArray frame')
+            store (dmaParams ~> number) $ arrayLen frame'
+            initDMA                     dmaChannel dmaParams
+            enableCirculationDMA        dmaChannel
+            disableMemoryToMemoryDMA    dmaChannel
+            enableChannelDMA            dmaChannel
