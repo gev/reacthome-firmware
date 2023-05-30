@@ -13,7 +13,7 @@ import           Core.Handler
 import           Device.GD32F3x0.GPIO
 import           Device.GD32F3x0.Timer
 import qualified Interface.PWM                  as I
-import qualified Interface.Timer                as T
+import qualified Interface.Timer                as I
 import           Ivory.Language
 import           Support.Device.GD32F3x0.System
 import           Support.Device.GD32F3x0.Timer
@@ -41,9 +41,9 @@ pwm_timer_15 frequency' period' = timer_15 $ pwmTimerParam frequency' period'
 
 
 data PWM = PWM
-    { timer_pwm   :: Timer
-    , channel_pwm :: TIMER_CHANNEL
-    , port        :: Port
+    { pwmTimer   :: Timer
+    , pwmChannel :: TIMER_CHANNEL
+    , port       :: Port
     }
 
 mkPWM :: MonadWriter Context m
@@ -53,37 +53,37 @@ mkPWM :: MonadWriter Context m
       -> Uint32
       -> Uint32
       -> m PWM
-mkPWM timer' channel_pwm port frequency period = do
-    timer_pwm <- timer' frequency period
+mkPWM timer' pwmChannel port frequency period = do
+    pwmTimer <- timer' frequency period
 
     let initPWM' :: Def ('[] :-> ())
         initPWM' = proc (show port <> "_pwm_init") $ body $ do
-            let t = timer timer_pwm
-            initChannelOcTimer            t channel_pwm =<< local (istruct timerOcDefaultParam)
-            configChannelOutputPulseValue t channel_pwm 0
-            configTimerOutputMode         t channel_pwm timer_oc_mode_low
-            configChannelOutputShadow     t channel_pwm timer_oc_shadow_disable
+            let t = timer pwmTimer
+            initChannelOcTimer            t pwmChannel =<< local (istruct timerOcDefaultParam)
+            configChannelOutputPulseValue t pwmChannel 0
+            configTimerOutputMode         t pwmChannel timer_oc_mode_low
+            configChannelOutputShadow     t pwmChannel timer_oc_shadow_disable
             configPrimaryOutput           t true
             enableTimer                   t
 
     addInit $ initPort port
     addInit initPWM'
 
-    pure PWM { timer_pwm, channel_pwm, port }
+    pure PWM { pwmTimer, pwmChannel, port }
 
 
 
 instance I.PWM PWM where
     setDuty PWM{..} duty = do
-        let t = timer timer_pwm
-        configChannelOutputPulseValue t channel_pwm duty
+        let t = timer pwmTimer
+        configChannelOutputPulseValue t pwmChannel duty
 
     resetCounter PWM{..} = do
-        T.setCounter timer_pwm 0
+        I.setCounter pwmTimer 0
 
     setMode PWM{..} = do
-        let t = timer timer_pwm
-        configTimerOutputMode t channel_pwm . coerceModePWM
+        let t = timer pwmTimer
+        configTimerOutputMode t pwmChannel . coerceModePWM
 
 
 
@@ -94,12 +94,12 @@ coerceModePWM I.FORCE_LOW  = timer_oc_mode_low
 
 
 
-instance T.Timer PWM where
-    setCounter PWM{..} = T.setCounter timer_pwm
-    getCounter PWM{..} = T.getCounter timer_pwm
+instance I.Timer PWM where
+    setCounter PWM{..} = I.setCounter pwmTimer
+    getCounter PWM{..} = I.getCounter pwmTimer
 
 
 
-instance Handler T.HandleTimer PWM where
-    addHandler T.HandleTimer {timer = PWM{..} , handle} =
-        addHandler $ T.HandleTimer timer_pwm handle
+instance Handler I.HandleTimer PWM where
+    addHandler I.HandleTimer {timer = PWM{..} , handle} =
+        addHandler $ I.HandleTimer pwmTimer handle
