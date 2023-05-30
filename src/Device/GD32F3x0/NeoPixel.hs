@@ -27,20 +27,20 @@ import           Support.Device.GD32F3x0.Timer
 
 
 
-data NeoPixel = NeoPixel
+data NeoPixelPWM = NeoPixelPWM
     { pwmTimer   :: Timer
     , pwmChannel :: TIMER_CHANNEL
     , dmaChannel :: DMA_CHANNEL
     , dmaParams  :: Record DMA_PARAM_STRUCT
     }
 
-mkNeoPixel :: MonadWriter Context m
-           => (Uint32 -> Uint32 -> m Timer)
-           -> TIMER_CHANNEL
-           -> DMA_CHANNEL
-           -> Port
-           -> m NeoPixel
-mkNeoPixel timer' pwmChannel dmaChannel port = do
+mkNeoPixelPWM :: MonadWriter Context m
+              => (Uint32 -> Uint32 -> m Timer)
+              -> TIMER_CHANNEL
+              -> DMA_CHANNEL
+              -> Port
+              -> m NeoPixelPWM
+mkNeoPixelPWM timer' pwmChannel dmaChannel port = do
     pwmTimer <- timer' system_core_clock 100
 
     let dmaInit = dmaParam [ direction    .= ival dma_memory_to_peripheral
@@ -68,12 +68,12 @@ mkNeoPixel timer' pwmChannel dmaChannel port = do
     addInit $ initPort port
     addInit initNeoPixel'
 
-    pure NeoPixel { pwmTimer, pwmChannel, dmaChannel, dmaParams }
+    pure NeoPixelPWM { pwmTimer, pwmChannel, dmaChannel, dmaParams }
 
 
 
-instance I.NeoPixel NeoPixel where
-    transmitPixels NeoPixel{..} = undefined
+instance I.NeoPixel NeoPixelPWM where
+    transmitPixels NeoPixelPWM{..} = undefined
         -- runFrame $ \frame -> do
         --     deinitDMA                   dmaChannel
         --     store (dmaParams ~> memory_addr) =<< castArrayToUint32 (toCArray frame)
