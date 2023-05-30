@@ -11,15 +11,15 @@
 
 module Data.NeoPixel.Buffer.PWM where
 
-import           Control.Monad.Writer     (MonadWriter)
+import           Control.Monad.Writer (MonadWriter)
 import           Core.Context
 import           Data.NeoPixel.Buffer
-import           Data.NeoPixel.Buffer.SPI (NeoPixelBufferSPI (runFrame))
 import           Data.Value
 import           GHC.TypeNats
 import           Interface.NeoPixel
 import           Ivory.Language
 import           Ivory.Language.Proxy
+
 
 data NeoPixelBufferPWM (n :: Nat) = NeoPixelBufferPWM
     { runFrame :: RunValues Uint8
