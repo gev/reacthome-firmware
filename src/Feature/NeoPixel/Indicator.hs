@@ -18,6 +18,7 @@ import           Interface.MCU
 import Data.NeoPixel.Buffer
 import           GHC.TypeNats
 import Ivory.Language
+import Core.Task
 
 
 
@@ -41,7 +42,14 @@ indicator npx = do
         initIndicator' = proc "indicator_init" $ body $ transmitPixels neoPixel pixels
 
     addInit initIndicator'
-    
+
+    addTask $ delay 100 "indicator_task" $ indicatorTask pixels $ mac mcu
+
     pure $ Feature Indicator { pixels }
+
+
+
+indicatorTask pixels mac = undefined
+
 
 instance Controller Indicator
