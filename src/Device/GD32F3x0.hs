@@ -219,31 +219,70 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
     , out_pb_14 = output pb_14
     , out_pb_15 = output pb_15
 
-    , pwm_0     = mkPWM pwm_timer_1 timer_ch_0 (pa_0  $ AF gpio_af_2)
-    , pwm_1     = mkPWM pwm_timer_1 timer_ch_1 (pa_1  $ AF gpio_af_2)
-    , pwm_2     = mkPWM pwm_timer_1 timer_ch_2 (pa_2  $ AF gpio_af_2)
-    , pwm_3     = mkPWM pwm_timer_1 timer_ch_3 (pa_3  $ AF gpio_af_2)
-    , pwm_4     = mkPWM pwm_timer_2 timer_ch_0 (pa_6  $ AF gpio_af_1)
-    , pwm_5     = mkPWM pwm_timer_2 timer_ch_1 (pa_7  $ AF gpio_af_1)
-    , pwm_6     = mkPWM pwm_timer_2 timer_ch_2 (pb_0  $ AF gpio_af_1)
-    , pwm_7     = mkPWM pwm_timer_2 timer_ch_3 (pb_1  $ AF gpio_af_1)
-    , pwm_8     = mkPWM pwm_timer_0 timer_ch_0 (pa_8  $ AF gpio_af_2)
-    , pwm_9     = mkPWM pwm_timer_0 timer_ch_1 (pa_9  $ AF gpio_af_2)
-    , pwm_10    = mkPWM pwm_timer_0 timer_ch_2 (pa_10 $ AF gpio_af_2)
-    , pwm_11    = mkPWM pwm_timer_0 timer_ch_3 (pa_11 $ AF gpio_af_2)
+    , pwm_0     = mkPWM pwm_timer_1
+                        timer_ch_0
+                        (pa_0  $ AF gpio_af_2)
 
-    , npx_pwm_0 = mkNeoPixelPWM pwm_timer_15 timer_ch_0 dma_ch2 dma_channel1_2_irqn (pb_8 $ AF gpio_af_2)
+    , pwm_1     = mkPWM pwm_timer_1
+                        timer_ch_1
+                        (pa_1  $ AF gpio_af_2)
 
-    , exti_pa_0 = mkEXTI    (input pa_0)
-                            exti0_1_irqn
-                            exti_source_gpioa
-                            exti_source_pin0
-                            exti_0
-    , exti_pa_5 = mkEXTI    (input pa_5)
-                            exti4_15_irqn
-                            exti_source_gpioa
-                            exti_source_pin5
-                            exti_5
+    , pwm_2     = mkPWM pwm_timer_1
+                        timer_ch_2
+                        (pa_2  $ AF gpio_af_2)
+
+    , pwm_3     = mkPWM pwm_timer_1
+                        timer_ch_3
+                        (pa_3  $ AF gpio_af_2)
+
+    , pwm_4     = mkPWM pwm_timer_2
+                        timer_ch_0
+                        (pa_6  $ AF gpio_af_1)
+
+    , pwm_5     = mkPWM pwm_timer_2
+                        timer_ch_1
+                        (pa_7  $ AF gpio_af_1)
+
+    , pwm_6     = mkPWM pwm_timer_2
+                        timer_ch_2
+                        (pb_0  $ AF gpio_af_1)
+
+    , pwm_7     = mkPWM pwm_timer_2
+                        timer_ch_3
+                        (pb_1  $ AF gpio_af_1)
+
+    , pwm_8     = mkPWM pwm_timer_0
+                        timer_ch_0
+                        (pa_8  $ AF gpio_af_2)
+
+    , pwm_9     = mkPWM pwm_timer_0
+                        timer_ch_1
+                        (pa_9  $ AF gpio_af_2)
+
+    , pwm_10    = mkPWM pwm_timer_0
+                        timer_ch_2
+                        (pa_10 $ AF gpio_af_2)
+
+    , pwm_11    = mkPWM pwm_timer_0
+                        timer_ch_3
+                        (pa_11 $ AF gpio_af_2)
+
+    , npx_pwm_0 = mkNeoPixelPWM pwm_timer_15
+                                timer_ch_0 dma_ch2
+                                dma_channel1_2_irqn
+                                (pb_8 $ AF gpio_af_2)
+
+    , exti_pa_0 = mkEXTI (input pa_0)
+                         exti0_1_irqn
+                         exti_source_gpioa
+                         exti_source_pin0
+                         exti_0
+
+    , exti_pa_5 = mkEXTI (input pa_5)
+                         exti4_15_irqn
+                         exti_source_gpioa
+                         exti_source_pin5
+                         exti_5
 
     }
 
