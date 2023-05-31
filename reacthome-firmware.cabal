@@ -69,6 +69,7 @@ executable reacthome-firmware
                     , Feature.MixA
                     , Feature.Dimmer.AC
                     , Feature.Dimmer.DC
+                    , Feature.NeoPixel.Indicator
                     , Feature.RS485.RBUS
                     , Feature.RS485.RBUS.Data
                     , Feature.RS485.RBUS.Rx
