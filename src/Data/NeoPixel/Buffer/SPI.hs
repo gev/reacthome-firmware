@@ -39,5 +39,5 @@ neoPixelBufferSPI id = do
 
 
 
-instance NeoPixelBuffer NeoPixelBufferSPI n where
+instance NeoPixelBuffer NeoPixelBufferSPI where
   writeByte = undefined

@@ -3,6 +3,7 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE KindSignatures        #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
@@ -11,7 +12,7 @@
 
 module Data.NeoPixel.Buffer.PWM where
 
-import           Control.Monad.Writer (MonadWriter)
+import           Control.Monad.Writer
 import           Core.Context
 import           Data.NeoPixel.Buffer
 import           Data.Value
@@ -31,20 +32,21 @@ data NeoPixelBufferPWM (n :: Nat) = NeoPixelBufferPWM
 neoPixelBufferPWM :: forall m n. (MonadWriter Context m, KnownNat n)
                   => String -> Uint8 -> m (NeoPixelBufferPWM n)
 neoPixelBufferPWM id period = do
-    let zero = period `iDiv` 3
-    let one  = 2 * zero
-    let size = 8 * fromTypeNat (aNat :: NatType n)
-    let buf  = runValues_ (id <> "_neo_pixel_buffer_pwm") $ fromInteger size
-    let npb  = NeoPixelBufferPWM buf zero one
+    let zeroDuty = period `iDiv` 3
+    let oneDuty  = 2 * zeroDuty
+    let size     = 8 * fromTypeNat (aNat :: NatType n)
+    let runFrame = runValues_ (id <> "_neo_pixel_buffer_pwm") $ fromInteger size
+    let npb      = NeoPixelBufferPWM { runFrame, zeroDuty, oneDuty }
     let initNeoPixelBufferPWM' :: Def ('[] :-> ())
         initNeoPixelBufferPWM' = proc (id <> "_neo_pixel_buffer_pwm_init") $ body $ do
             arrayMap $ \(ix :: Ix n) -> writeByte npb ix 0
+    runFrame addArea
     addInit initNeoPixelBufferPWM'
     pure npb
 
 
 
-instance NeoPixelBuffer NeoPixelBufferPWM n where
+instance NeoPixelBuffer NeoPixelBufferPWM where
   writeByte NeoPixelBufferPWM{..} ix value = do
     v <- local $ ival value
     times 8 $ \jx -> do
