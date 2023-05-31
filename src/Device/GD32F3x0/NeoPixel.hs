@@ -31,7 +31,7 @@ import           Support.Device.GD32F3x0.Timer
 
 
 pwmPeriod :: Num a => a
-pwmPeriod = 100
+pwmPeriod = 101
 
 
 
