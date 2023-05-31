@@ -49,7 +49,9 @@ indicator npx = do
 
 
 
-indicatorTask pixels mac = undefined
+indicatorTask pixels mac =
+    arrayMap $ \ix ->
+        writeByte pixels (toIx $ fromIx ix) =<< deref (mac ! ix)
 
 
 
