@@ -2,6 +2,7 @@
 {-# LANGUAGE NamedFieldPuns     #-}
 {-# LANGUAGE DataKinds          #-}
 {-# LANGUAGE GADTs              #-}
+{-# LANGUAGE TypeOperators   #-}
 
 module Feature.NeoPixel.Indicator where
 
@@ -16,6 +17,7 @@ import           Interface.MCU
 
 import Data.NeoPixel.Buffer
 import           GHC.TypeNats
+import Ivory.Language
 
 
 
@@ -34,8 +36,12 @@ indicator npx = do
     mcu      <- asks D.mcu
     neoPixel <- npx $ peripherals mcu
     pixels   <- neoPixelBuffer neoPixel "indicator"
+
+    let initIndicator' :: Def ('[] :-> ())
+        initIndicator' = proc "indicator_init" $ body $ transmitPixels neoPixel pixels
+
+    addInit initIndicator'
+    
     pure $ Feature Indicator { pixels }
-
-
 
 instance Controller Indicator
