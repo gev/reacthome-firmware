@@ -1,28 +1,28 @@
+{-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NamedFieldPuns     #-}
-{-# LANGUAGE DataKinds          #-}
-{-# LANGUAGE GADTs              #-}
-{-# LANGUAGE TypeOperators   #-}
+{-# LANGUAGE GADTs            #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE TypeOperators    #-}
 
-module Feature.NeoPixel.Indicator where
+module Feature.Indicator where
 
-import           Control.Monad.Reader 
-import           Control.Monad.Writer 
-import Core.Feature
-import Core.Domain as D
-import Core.Context
-import Core.Controller
-import Interface.NeoPixel as I
+import           Control.Monad.Reader
+import           Control.Monad.Writer
+import           Core.Context
+import           Core.Controller
+import           Core.Domain          as D
+import           Core.Feature
 import           Interface.MCU
+import           Interface.NeoPixel   as I
 
-import Data.NeoPixel.Buffer
+import           Core.Task
+import           Data.NeoPixel.Buffer
 import           GHC.TypeNats
-import Ivory.Language
-import Core.Task
+import           Ivory.Language
 
 
 
-data Indicator = forall b. NeoPixelBuffer b => Indicator 
+data Indicator = forall b. NeoPixelBuffer b => Indicator
     { pixels :: b 60
 
     }
@@ -50,6 +50,7 @@ indicator npx = do
 
 
 indicatorTask pixels mac = undefined
+
 
 
 instance Controller Indicator

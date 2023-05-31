@@ -2,8 +2,8 @@ module Formula.DimmerAC12 where
 
 import           Core.Formula
 import           Device.GD32F3x0
-import           Feature.Dimmer.AC          (dimmerAC)
-import           Feature.NeoPixel.Indicator
+import           Feature.Dimmer.AC    (dimmerAC)
+import           Feature.Indicator
 import           Interface.RS485
 import           Ivory.Language
 import           Transport.RS485.RBUS
