@@ -57,4 +57,4 @@ instance NeoPixelBuffer NeoPixelBufferPWM where
             ifte_ (b ==? 0x80)
                   (store byte oneDuty)
                   (store byte zeroDuty)
-        store v $ s `iShiftR` 1
+        store v $ s `iShiftL` 1
