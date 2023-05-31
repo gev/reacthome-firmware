@@ -50,11 +50,11 @@ instance NeoPixelBuffer NeoPixelBufferPWM where
   writeByte NeoPixelBufferPWM{..} ix value = do
     let i = 8 * fromIx ix
     v <- local $ ival value
-    runFrame $ \frame -> times 8 $ \jx -> do
+    runFrame $ \frame -> for 8 $ \jx -> do
         s <- deref v
         let b = s .& 0x80
         let byte = addrOf frame ! (toIx i + jx)
         ifte_ (b ==? 0x80)
-            (store byte oneDuty)
+            (store byte oneDuty )
             (store byte zeroDuty)
         store v $ s `iShiftL` 1
