@@ -8,9 +8,9 @@ import           Ivory.Language
 
 
 
-class NeoPixelBuffer t n where
+class NeoPixelBuffer b where
     writeByte :: KnownNat n
-              => t n
+              => b n
               -> Ix n
               -> Uint8
               -> Ivory (AllowBreak (ProcEffects s ())) ()

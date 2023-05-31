@@ -80,12 +80,9 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel port = do
 
 
 
-instance KnownNat n => I.NeoPixel NeoPixelBufferPWM n where
-    neoPixelBuffer id = neoPixelBufferPWM id pwmPeriod
+instance I.NeoPixel NeoPixelPWM NeoPixelBufferPWM where
+    neoPixelBuffer _ id = neoPixelBufferPWM id pwmPeriod
 
-
-
-instance KnownNat n => I.NeoPixelTransmitter NeoPixelPWM NeoPixelBufferPWM n where
     transmitPixels NeoPixelPWM{..} NeoPixelBufferPWM{..} =
         runFrame $ \frame -> do
             let frame' = addrOf frame

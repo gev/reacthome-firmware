@@ -1,5 +1,5 @@
-{-# LANGUAGE FlexibleContexts      #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleContexts       #-}
+{-# LANGUAGE FunctionalDependencies #-}
 
 module Interface.NeoPixel where
 
@@ -10,9 +10,7 @@ import           GHC.TypeNats
 import           Ivory.Language
 
 
-class KnownNat n => NeoPixel b n where
-    neoPixelBuffer :: MonadWriter Context m => String -> m (b n)
-
-
-class KnownNat n => NeoPixelTransmitter p b n where
-    transmitPixels :: p -> b n -> Ivory eff ()
+class NeoPixel p b | p -> b where
+    neoPixelBuffer :: (KnownNat n, MonadWriter Context m)
+                   => p -> String -> m (b n)
+    transmitPixels :: KnownNat n => p -> b n -> Ivory eff ()
