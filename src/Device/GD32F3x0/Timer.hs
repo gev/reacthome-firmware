@@ -35,7 +35,7 @@ data Timer = forall s. Timer
 
 
 timer_0 :: MonadWriter Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
-timer_0 = mkTimer timer0 rcu_timer0 timer0_irqn 
+timer_0 = mkTimer timer0 rcu_timer0 timer0_irqn
 
 timer_1 :: MonadWriter Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
 timer_1 = mkTimer timer1 rcu_timer1 timer1_irqn
@@ -92,5 +92,5 @@ instance Handler I.HandleTimer Timer where
 
 instance I.Timer Timer where
 
-    setCounter t c = writeCounter (timer t) c
-    getCounter t   = readCounter  (timer t)
+    setCounter t = writeCounter (timer t)
+    getCounter t = readCounter  (timer t)
