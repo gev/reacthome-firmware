@@ -33,7 +33,7 @@ neoPixelBufferSPI id = do
     let npb  = NeoPixelBufferSPI buf
     let initNeoPixelBufferSPI' :: Def ('[] :-> ())
         initNeoPixelBufferSPI' = proc (id <> "_neo_pixel_buffer_spi_init") $ body $ do
-            arrayMap $ \(ix :: Ix n) -> writeByte npb ix 0
+            clearBuffer (npb :: NeoPixelBufferSPI n)
     addInit initNeoPixelBufferSPI'
     pure $ NeoPixelBufferSPI buf
 
