@@ -34,12 +34,12 @@ neoPixelBufferPWM :: forall m n. (MonadWriter Context m, KnownNat n)
 neoPixelBufferPWM id period = do
     let zeroDuty = period `iDiv` 3
     let oneDuty  = 2 * zeroDuty
-    let size     = 8 * fromTypeNat (aNat :: NatType n)
-    let runFrame = runValues_ (id <> "_neo_pixel_buffer_pwm") $ fromInteger size
+    let size     = fromInteger $ 8 * (21 + fromTypeNat (aNat :: NatType n))
+    let runFrame = runValues (id <> "_neo_pixel_buffer_pwm") $ replicate size 0
     let npb      = NeoPixelBufferPWM { runFrame, zeroDuty, oneDuty }
     let initNeoPixelBufferPWM' :: Def ('[] :-> ())
         initNeoPixelBufferPWM' = proc (id <> "_neo_pixel_buffer_pwm_init") $ body $ do
-            arrayMap $ \(ix :: Ix n) -> writeByte npb ix 0
+            arrayMap $ \(ix :: Ix n) -> writeByte npb ix 127
     runFrame addArea
     addInit initNeoPixelBufferPWM'
     pure npb
