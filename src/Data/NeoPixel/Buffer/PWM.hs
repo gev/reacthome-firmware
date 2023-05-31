@@ -39,7 +39,7 @@ neoPixelBufferPWM id period = do
     let npb      = NeoPixelBufferPWM { runFrame, zeroDuty, oneDuty }
     let initNeoPixelBufferPWM' :: Def ('[] :-> ())
         initNeoPixelBufferPWM' = proc (id <> "_neo_pixel_buffer_pwm_init") $ body $ do
-            arrayMap $ \(ix :: Ix n) -> writeByte npb ix 10
+            arrayMap $ \(ix :: Ix n) -> writeByte npb ix 0
     runFrame addArea
     addInit initNeoPixelBufferPWM'
     pure npb
