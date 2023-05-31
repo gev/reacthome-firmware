@@ -10,7 +10,7 @@
 
 module Device.GD32F3x0.NeoPixel where
 
-import           Control.Monad.Writer
+import           Control.Monad.Writer           (MonadWriter)
 import           Core.Context
 import           Core.Handler
 import           Data.NeoPixel.Buffer.PWM
@@ -21,14 +21,15 @@ import           GHC.TypeNats
 import qualified Interface.NeoPixel             as I
 import qualified Interface.PWM                  as I
 import           Ivory.Language
+import           Ivory.Stdlib
 import           Ivory.Support
 import           Support.Cast
 import           Support.Device.GD32F3x0.DMA
+import           Support.Device.GD32F3x0.IRQ
+import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.System
 import           Support.Device.GD32F3x0.Timer
-import           Support.Device.GD32F3x0.IRQ
-import           Support.Device.GD32F3x0.Misc
 
 
 
@@ -82,6 +83,21 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn port = do
     addInit initNeoPixel'
 
     pure NeoPixelPWM { pwmTimer, pwmChannel, dmaChannel, dmaIRQn, dmaParams }
+
+
+
+instance Handler I.HandleNeoPixel NeoPixelPWM where
+  addHandler (I.HandleNeoPixel NeoPixelPWM{..} handle) =
+    addModule $ makeIRQHandler dmaIRQn (handleDMA dmaChannel handle)
+
+
+
+handleDMA :: DMA_CHANNEL -> Ivory eff () -> Ivory eff ()
+handleDMA dma handle = do
+    f <- getInterruptFlagDMA  dma dma_int_flag_ftf
+    when f $ do
+        clearInterruptFlagDMA dma dma_int_flag_g
+        handle
 
 
 
