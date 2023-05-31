@@ -27,6 +27,8 @@ import           Support.Device.GD32F3x0.DMA
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.System
 import           Support.Device.GD32F3x0.Timer
+import           Support.Device.GD32F3x0.IRQ
+import           Support.Device.GD32F3x0.Misc
 
 
 
@@ -39,6 +41,7 @@ data NeoPixelPWM = NeoPixelPWM
     { pwmTimer   :: Timer
     , pwmChannel :: TIMER_CHANNEL
     , dmaChannel :: DMA_CHANNEL
+    , dmaIRQn    :: IRQn
     , dmaParams  :: Record DMA_PARAM_STRUCT
     }
 
@@ -46,9 +49,10 @@ mkNeoPixelPWM :: MonadWriter Context m
               => (Uint32 -> Uint32 -> m Timer)
               -> TIMER_CHANNEL
               -> DMA_CHANNEL
+              -> IRQn
               -> Port
               -> m NeoPixelPWM
-mkNeoPixelPWM timer' pwmChannel dmaChannel port = do
+mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn port = do
     pwmTimer <- timer' system_core_clock pwmPeriod
 
     let dmaInit = dmaParam [ direction    .= ival dma_memory_to_peripheral
@@ -72,11 +76,12 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel port = do
             enableTimerDMA                t timer_dma_upd
             configChannelOutputShadow     t pwmChannel timer_oc_shadow_enable
             enableTimer                   t
+            enableIrqNvic                 dmaIRQn 1 0
 
     addInit $ initPort port
     addInit initNeoPixel'
 
-    pure NeoPixelPWM { pwmTimer, pwmChannel, dmaChannel, dmaParams }
+    pure NeoPixelPWM { pwmTimer, pwmChannel, dmaChannel, dmaIRQn, dmaParams }
 
 
 
@@ -90,6 +95,8 @@ instance I.NeoPixel NeoPixelPWM NeoPixelBufferPWM where
             store (dmaParams ~> memory_addr) =<< castArrayUint8ToUint32 (toCArray frame')
             store (dmaParams ~> number) $ arrayLen frame'
             initDMA                     dmaChannel dmaParams
-            enableCirculationDMA        dmaChannel
+            disableCirculationDMA       dmaChannel
             disableMemoryToMemoryDMA    dmaChannel
+            clearInterruptFlagDMA       dmaChannel dma_int_flag_g
+            enableInterruptDMA          dmaChannel dma_int_ftf
             enableChannelDMA            dmaChannel
