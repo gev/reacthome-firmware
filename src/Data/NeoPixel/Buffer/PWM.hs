@@ -34,12 +34,12 @@ neoPixelBufferPWM :: forall m n. (MonadWriter Context m, KnownNat n)
 neoPixelBufferPWM id period = do
     let zeroDuty = period `iDiv` 3
     let oneDuty  = 2 * zeroDuty
-    let size     = fromInteger $ 8 * (21 + fromTypeNat (aNat :: NatType n))
+    let size     = fromInteger $ 8 * (25 + fromTypeNat (aNat :: NatType n))
     let runFrame = runValues (id <> "_neo_pixel_buffer_pwm") $ replicate size 0
     let npb      = NeoPixelBufferPWM { runFrame, zeroDuty, oneDuty }
     let initNeoPixelBufferPWM' :: Def ('[] :-> ())
         initNeoPixelBufferPWM' = proc (id <> "_neo_pixel_buffer_pwm_init") $ body $ do
-            arrayMap $ \(ix :: Ix n) -> writeByte npb ix 127
+            arrayMap $ \(ix :: Ix n) -> writeByte npb ix 10
     runFrame addArea
     addInit initNeoPixelBufferPWM'
     pure npb
@@ -48,13 +48,13 @@ neoPixelBufferPWM id period = do
 
 instance NeoPixelBuffer NeoPixelBufferPWM where
   writeByte NeoPixelBufferPWM{..} ix value = do
+    let i = 8 * fromIx ix
     v <- local $ ival value
-    times 8 $ \jx -> do
+    runFrame $ \frame -> times 8 $ \jx -> do
         s <- deref v
         let b = s .& 0x80
-        runFrame $ \frame -> do
-            let byte = addrOf frame ! toIx (ix * jx)
-            ifte_ (b ==? 0x80)
-                  (store byte oneDuty)
-                  (store byte zeroDuty)
+        let byte = addrOf frame ! (toIx i + jx)
+        ifte_ (b ==? 0x80)
+            (store byte oneDuty)
+            (store byte zeroDuty)
         store v $ s `iShiftL` 1
