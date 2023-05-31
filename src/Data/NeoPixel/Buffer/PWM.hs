@@ -34,7 +34,7 @@ neoPixelBufferPWM :: forall m n. (MonadWriter Context m, KnownNat n)
 neoPixelBufferPWM id period = do
     let zeroDuty = period `iDiv` 3
     let oneDuty  = 2 * zeroDuty
-    let size     = fromInteger $ 167 + 8 * fromTypeNat (aNat :: NatType n)
+    let size     = fromInteger $ 8 * fromTypeNat (aNat :: NatType n) + 1 -- | add one reset bit
     let runFrame = runValues (id <> "_neo_pixel_buffer_pwm") $ replicate size 0
     let npb      = NeoPixelBufferPWM { runFrame, zeroDuty, oneDuty }
     let initNeoPixelBufferPWM' :: Def ('[] :-> ())
