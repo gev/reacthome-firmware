@@ -165,23 +165,23 @@ int main(void) {
   dma_config();
   timer_config();
 
-  uint8_t rainbow[LED_NUM][3] = {
-    {},
-    {},
-    {},
-    {},
-  };
+  // uint8_t rainbow[LED_NUM][3] = {
+  //   {},
+  //   {},
+  //   {},
+  //   {},
+  // };
 
   while (1){
-    // for (uint32_t x = 0; x < LED_NUM; x++){
-    //   set_color(x,0,255,0);
-    // }
-		// // set_color(0,100,100,100);
-		// // set_color(1,0,0,100);
-		// // set_color(2,100,0,0);
-		// // set_color(3,0,100,0);
-		// // set_color(4,100,0,100);
-		// for (uint32_t x = 0; x <10000000; x++);
+    for (uint32_t x = 0; x < LED_NUM; x++){
+      set_color(x,0,55,0);
+    }
+		// set_color(0,100,100,100);
+		// set_color(1,0,0,100);
+		// set_color(2,100,0,0);
+		// set_color(3,0,100,0);
+		// set_color(4,100,0,100);
+		for (uint32_t x = 0; x <10000000; x++);
 
 		// set_color(0  ,100 ,0   ,100);
 		// set_color(1  ,0   ,100 ,0);
