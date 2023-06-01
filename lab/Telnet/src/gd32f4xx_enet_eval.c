@@ -173,7 +173,7 @@ static void enet_gpio_config(void)
 
 #elif defined RMII_MODE
     /* choose DIV2 to get 50MHz from 200MHz on CKOUT0 pin (PA8) to clock the PHY */
-    rcu_ckout0_config(RCU_CKOUT0SRC_PLLP, RCU_CKOUT0_DIV4);
+    // rcu_ckout0_config(RCU_CKOUT0SRC_PLLP, RCU_CKOUT0_DIV4);
     syscfg_enet_phy_interface_config(SYSCFG_ENET_PHY_RMII);
 
 #endif /* MII_MODE */
@@ -292,17 +292,17 @@ static void enet_gpio_config(void)
     gpio_af_set(GPIOA, GPIO_AF_11, GPIO_PIN_2);
     gpio_af_set(GPIOA, GPIO_AF_11, GPIO_PIN_7);
 
-    /* PG11: ETH_RMII_TX_EN */
-    gpio_mode_set(GPIOG, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_11);
-    gpio_output_options_set(GPIOG, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, GPIO_PIN_11);
+    /* PB11: ETH_RMII_TX_EN */
+    gpio_mode_set(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_11);
+    gpio_output_options_set(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, GPIO_PIN_11);
 
-    /* PG13: ETH_RMII_TXD0 */
-    gpio_mode_set(GPIOG, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_13);
-    gpio_output_options_set(GPIOG, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, GPIO_PIN_13);
+    /* PB12: ETH_RMII_TXD0 */
+    gpio_mode_set(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_12);
+    gpio_output_options_set(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, GPIO_PIN_12);
 
-    /* PG14: ETH_RMII_TXD1 */
-    gpio_mode_set(GPIOG, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_14);
-    gpio_output_options_set(GPIOG, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, GPIO_PIN_14);
+    /* PB13: ETH_RMII_TXD1 */
+    gpio_mode_set(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_13);
+    gpio_output_options_set(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, GPIO_PIN_13);
 
     gpio_af_set(GPIOG, GPIO_AF_11, GPIO_PIN_11);
     gpio_af_set(GPIOG, GPIO_AF_11, GPIO_PIN_13);
