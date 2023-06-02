@@ -12,6 +12,5 @@ data ModePMW
 
 
 class Timer p => PWM p where
-    setMode       :: p -> ModePMW -> Ivory eff ()
-    setDuty       :: p -> Uint16 -> Ivory eff ()
-    resetCounter  :: p -> Ivory eff ()
+    setMode  :: p -> ModePMW -> Ivory eff ()
+    setDuty  :: p -> Uint16 -> Ivory eff ()
