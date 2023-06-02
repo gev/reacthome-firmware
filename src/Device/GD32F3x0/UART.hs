@@ -9,15 +9,15 @@
 
 module Device.GD32F3x0.UART where
 
-import qualified Control.Monad                 as M
-import           Control.Monad.Writer          (MonadWriter)
+import qualified Control.Monad                  as M
+import           Control.Monad.Writer           (MonadWriter)
 import           Core.Context
 import           Core.Handler
 import           Data.Maybe
 import           Data.Record
-import qualified Device.GD32F3x0.GPIO          as G
-import           Interface.UART                (HandleUART (onDrain))
-import qualified Interface.UART                as I
+import qualified Device.GD32F3x0.GPIO           as G
+import           Interface.UART                 (HandleUART (onDrain))
+import qualified Interface.UART                 as I
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Ivory.Support
@@ -28,8 +28,8 @@ import           Support.Device.GD32F3x0.DMA
 import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
-import           Support.Device.GD32F3x0.USART as S
-import Support.Device.GD32F3x0.SYSCFG
+import           Support.Device.GD32F3x0.SYSCFG
+import           Support.Device.GD32F3x0.USART  as S
 
 
 data UART = UART
