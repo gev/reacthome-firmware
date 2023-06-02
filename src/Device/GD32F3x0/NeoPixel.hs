@@ -13,8 +13,10 @@ module Device.GD32F3x0.NeoPixel where
 import           Control.Monad.Writer           (MonadWriter)
 import           Core.Context
 import           Core.Handler
+import           Core.Task
 import           Data.NeoPixel.Buffer.PWM
 import           Data.Record
+import           Data.Value
 import           Device.GD32F3x0.GPIO
 import           Device.GD32F3x0.Timer
 import           GHC.TypeNats
@@ -39,11 +41,13 @@ pwmPeriod = 101
 
 
 data NeoPixelPWM = NeoPixelPWM
-    { pwmTimer   :: Timer
-    , pwmChannel :: TIMER_CHANNEL
-    , dmaChannel :: DMA_CHANNEL
-    , dmaIRQn    :: IRQn
-    , dmaParams  :: Record DMA_PARAM_STRUCT
+    { pwmTimer     :: Timer
+    , pwmChannel   :: TIMER_CHANNEL
+    , pwmPort      :: Port
+    , dmaChannel   :: DMA_CHANNEL
+    , dmaIRQn      :: IRQn
+    , dmaParams    :: Record DMA_PARAM_STRUCT
+    , frameRequest :: Value IBool
     }
 
 mkNeoPixelPWM :: MonadWriter Context m
@@ -53,20 +57,20 @@ mkNeoPixelPWM :: MonadWriter Context m
               -> IRQn
               -> Port
               -> m NeoPixelPWM
-mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn port = do
-    pwmTimer <- timer' system_core_clock pwmPeriod
-
-    let dmaInit = dmaParam [ direction    .= ival dma_memory_to_peripheral
-                           , memory_inc   .= ival dma_memory_increase_enable
-                           , memory_width .= ival dma_memory_width_8bit
-                           , periph_inc   .= ival dma_periph_increase_disable
-                           , periph_width .= ival dma_peripheral_width_16bit
-                           , priority     .= ival dma_priority_ultra_high
-                           ]
-    dmaParams <- record (symbol dmaChannel <> "_dma_param") dmaInit
+mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn pwmPort = do
+    pwmTimer     <- timer' system_core_clock pwmPeriod
+    let dmaInit   = dmaParam [ direction    .= ival dma_memory_to_peripheral
+                             , memory_inc   .= ival dma_memory_increase_enable
+                             , memory_width .= ival dma_memory_width_8bit
+                             , periph_inc   .= ival dma_periph_increase_disable
+                             , periph_width .= ival dma_peripheral_width_16bit
+                             , priority     .= ival dma_priority_ultra_high
+                             ]
+    dmaParams    <- record (symbol dmaChannel <> "_dma_param") dmaInit
+    frameRequest <- value  (symbol dmaChannel <> "_frame_request" ) true
 
     let initNeoPixel' :: Def ('[] :-> ())
-        initNeoPixel' = proc (show port <> "_pwm_init") $ body $ do
+        initNeoPixel' = proc (show pwmPort <> "_pwm_init") $ body $ do
             enablePeriphClock             rcu_dma
             let t = timer pwmTimer
             store (dmaParams ~> periph_addr) =<< ch0cv t
@@ -79,25 +83,33 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn port = do
             enableTimer                   t
             enableIrqNvic                 dmaIRQn 1 0
 
-    addInit $ initPort port
+    addInit $ initPort pwmPort
     addInit initNeoPixel'
 
-    pure NeoPixelPWM { pwmTimer, pwmChannel, dmaChannel, dmaIRQn, dmaParams }
+    let neoPixel = NeoPixelPWM { pwmTimer, pwmChannel, pwmPort, dmaChannel, dmaIRQn, dmaParams, frameRequest }
+
+    addModule $ makeIRQHandler dmaIRQn (handleDMA neoPixel)
+
+    pure neoPixel
 
 
 
-instance Handler I.HandleNeoPixel NeoPixelPWM where
-  addHandler (I.HandleNeoPixel NeoPixelPWM{..} handle) =
-    addModule $ makeIRQHandler dmaIRQn (handleDMA dmaChannel handle)
+instance Handler I.RenderNeoPixel NeoPixelPWM where
+  addHandler (I.RenderNeoPixel NeoPixelPWM{..} frameRate render) =
+    addTask $ delay (1000 `iDiv` frameRate)
+                    (show pwmPort <> "neo_pixel") $ do
+                        frameRequest' <- deref frameRequest
+                        when frameRequest' render
 
 
 
-handleDMA :: DMA_CHANNEL -> Ivory eff () -> Ivory eff ()
-handleDMA dma handle = do
-    f <- getInterruptFlagDMA  dma dma_int_flag_ftf
+handleDMA :: NeoPixelPWM -> Ivory eff ()
+handleDMA NeoPixelPWM{..} = do
+    f <- getInterruptFlagDMA  dmaChannel dma_int_flag_ftf
     when f $ do
-        clearInterruptFlagDMA dma dma_int_flag_g
-        handle
+        clearInterruptFlagDMA dmaChannel dma_int_flag_g
+        store frameRequest true
+
 
 
 
@@ -116,3 +128,4 @@ instance I.NeoPixel NeoPixelPWM NeoPixelBufferPWM where
             clearInterruptFlagDMA       dmaChannel dma_int_flag_g
             enableInterruptDMA          dmaChannel dma_int_ftf
             enableChannelDMA            dmaChannel
+            store frameRequest false
