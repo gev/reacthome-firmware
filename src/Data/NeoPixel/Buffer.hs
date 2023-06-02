@@ -8,19 +8,19 @@ import           Ivory.Language
 
 
 
-class NeoPixelBuffer b where
+class NeoPixelBuffer t where
     clearByte   :: KnownNat n
-                => b n
+                => t n
                 -> Ix n
-                -> Ivory (AllowBreak (ProcEffects s ())) ()
+                -> Ivory eff ()
 
     writeByte   :: KnownNat n
-                => b n
+                => t n
                 -> Ix n
                 -> Uint8
-                -> Ivory (AllowBreak (ProcEffects s ())) ()
+                -> Ivory ('Effects (Returns ()) b (Scope s)) ()
 
     clearBuffer :: KnownNat n
-                => b n
+                => t n
                 -> Ivory (ProcEffects s ()) ()
     clearBuffer buff = arrayMap $ \ix -> clearByte buff ix

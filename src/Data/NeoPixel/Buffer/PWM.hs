@@ -7,7 +7,7 @@
 {-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
 {-# LANGUAGE ScopedTypeVariables   #-}
-{-# LANGUAGE TypeOperators         #-}
+
 
 
 module Data.NeoPixel.Buffer.PWM where
@@ -32,17 +32,12 @@ data NeoPixelBufferPWM (n :: Nat) = NeoPixelBufferPWM
 neoPixelBufferPWM :: forall m n. (MonadWriter Context m, KnownNat n)
                   => String -> Uint8 -> m (NeoPixelBufferPWM n)
 neoPixelBufferPWM id period = do
-    let zeroDuty = period `iDiv` 3
-    let oneDuty  = 2 * zeroDuty
-    let size     = fromInteger $ 8 * fromTypeNat (aNat :: NatType n) + 1 -- | add one reset bit
-    let runFrame = runValues (id <> "_neo_pixel_buffer_pwm") $ replicate size 0
-    let npb      = NeoPixelBufferPWM { runFrame, zeroDuty, oneDuty }
-    let initNeoPixelBufferPWM' :: Def ('[] :-> ())
-        initNeoPixelBufferPWM' = proc (id <> "_neo_pixel_buffer_pwm_init") $ body $ do
-            clearBuffer (npb :: NeoPixelBufferPWM n)
+    let zeroDuty = period `iDiv` 4
+    let oneDuty  = 3 * zeroDuty
+    let size     = 8 * fromInteger (fromTypeNat (aNat :: NatType n)) + 1 -- | add stop bit
+    let runFrame = runValues (id <> "_neo_pixel_buffer_pwm") $ replicate size 0x0
     runFrame addArea
-    addInit initNeoPixelBufferPWM'
-    pure npb
+    pure $ NeoPixelBufferPWM { runFrame, zeroDuty, oneDuty }
 
 
 
@@ -59,6 +54,7 @@ instance NeoPixelBuffer NeoPixelBufferPWM where
     v <- local $ ival value
     runFrame $ \frame -> for 8 $ \jx -> do
         s <- deref v
+        let s = value
         let b = s .& 0x80
         let byte = addrOf frame ! (toIx i + jx)
         ifte_ (b ==? 0x80)
