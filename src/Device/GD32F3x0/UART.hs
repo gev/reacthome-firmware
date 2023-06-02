@@ -29,6 +29,7 @@ import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.USART as S
+import Support.Device.GD32F3x0.SYSCFG
 
 
 data UART = UART
@@ -67,6 +68,7 @@ mkUART uart rcu uartIRQ dma dmaIRQn rx tx = do
         initUART' = proc (symbol uart <> "_init") $ body $ do
             store (dmaParams ~> periph_addr) =<< tdata uart
             enablePeriphClock   rcu_dma
+            enableRemapDMA      remap_dma_usart0tx
             enableIrqNvic       uartIRQ 0 0
             enableIrqNvic       dmaIRQn 1 0
             enablePeriphClock   rcu
