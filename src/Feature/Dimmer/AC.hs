@@ -85,7 +85,7 @@ dimmerAC pwms exti = do
             period1' <- deref period1
             store period1 =<< getCounter (head os)
             store period0 period1'
-            mapM_ I.resetCounter os
+            mapM_ resetCounter os
             countCrossZero' <- deref countCrossZero
             store countCrossZero $ countCrossZero' + 1
             store isCrossZero true
