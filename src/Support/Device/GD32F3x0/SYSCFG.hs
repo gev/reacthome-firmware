@@ -81,9 +81,9 @@ exti_source_pin15 = EXTI_PIN $ ext "EXTI_SOURCE_PIN15"
 
 newtype DMA_REMAP = DMA_REMAP Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
-instance ExtSymbol EXTI_PIN
+instance ExtSymbol DMA_REMAP
 
-remap_dma_usart0tx = DMA_REMAP $ ext SYSCFG_DMA_REMAP_USART0TX
+remap_dma_usart0tx = DMA_REMAP $ ext "SYSCFG_DMA_REMAP_USART0TX"
 
 
 
