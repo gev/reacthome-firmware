@@ -40,4 +40,5 @@ neoPixelBufferSPI id = do
 
 
 instance NeoPixelBuffer NeoPixelBufferSPI where
+  clearByte = undefined
   writeByte = undefined
