@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GADTs            #-}
 {-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RecordWildCards  #-}
 {-# LANGUAGE TypeOperators    #-}
 
 module Feature.Indicator where
@@ -15,9 +16,11 @@ import           Core.Feature
 import           Interface.MCU
 import           Interface.NeoPixel   as I
 
+import           Core.Handler
 import           Core.Task
 import           Data.NeoPixel.Buffer
 import           GHC.TypeNats
+import           Interface.Mac
 import           Ivory.Language
 
 
@@ -38,18 +41,22 @@ indicator npx = do
     neoPixel <- npx $ peripherals mcu
     pixels   <- neoPixelBuffer neoPixel "indicator"
 
+    let indicator = Indicator { pixels }
+
+    -- addHandler $ I.HandleNeoPixel neoPixel (render indicator $ mac mcu)
+
     let initIndicator' :: Def ('[] :-> ())
         initIndicator' = proc "indicator_init" $ body $ transmitPixels neoPixel pixels
 
     addInit initIndicator'
 
-    addTask $ delay 100 "indicator_task" $ indicatorTask pixels $ mac mcu
-
-    pure $ Feature Indicator { pixels }
+    pure $ Feature indicator
 
 
 
-indicatorTask pixels mac =
+render :: Indicator -> Mac -> Ivory (ProcEffects s ()) ()
+render Indicator{..} mac = do
+    clearBuffer pixels
     arrayMap $ \ix ->
         writeByte pixels (toIx $ fromIx ix) =<< deref (mac ! ix)
 

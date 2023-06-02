@@ -47,6 +47,13 @@ neoPixelBufferPWM id period = do
 
 
 instance NeoPixelBuffer NeoPixelBufferPWM where
+
+  clearByte NeoPixelBufferPWM{..} ix = do
+    let i = 8 * fromIx ix
+    runFrame $ \frame -> for 8 $ \jx -> do
+        let byte = addrOf frame ! (toIx i + jx)
+        store byte zeroDuty
+
   writeByte NeoPixelBufferPWM{..} ix value = do
     let i = 8 * fromIx ix
     v <- local $ ival value
