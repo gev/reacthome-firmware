@@ -72,6 +72,9 @@ mkUART uart rcu uartIRQ dma dmaIRQn rx tx = do
             enableIrqNvic       uartIRQ 0 0
             enableIrqNvic       dmaIRQn 1 0
             enablePeriphClock   rcu
+{-
+    TODO: Generalize  remap dma
+-}
 
     addInit $ G.initPort rx
     addInit $ G.initPort tx
