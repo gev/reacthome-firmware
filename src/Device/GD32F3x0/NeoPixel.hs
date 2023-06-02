@@ -21,7 +21,7 @@ import           Device.GD32F3x0.GPIO
 import           Device.GD32F3x0.Timer
 import           GHC.TypeNats
 import qualified Interface.NeoPixel             as I
-import qualified Interface.PWM                  as I
+import qualified Interface.Timer                as I
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Ivory.Support
@@ -41,23 +41,20 @@ pwmPeriod = 101
 
 
 data NeoPixelPWM = NeoPixelPWM
-    { pwmTimer     :: Timer
-    , pwmChannel   :: TIMER_CHANNEL
-    , pwmPort      :: Port
-    , dmaChannel   :: DMA_CHANNEL
-    , dmaIRQn      :: IRQn
-    , dmaParams    :: Record DMA_PARAM_STRUCT
-    , frameRequest :: Value IBool
+    { pwmTimer   :: Timer
+    , pwmChannel :: TIMER_CHANNEL
+    , pwmPort    :: Port
+    , dmaChannel :: DMA_CHANNEL
+    , dmaParams  :: Record DMA_PARAM_STRUCT
     }
 
 mkNeoPixelPWM :: MonadWriter Context m
               => (Uint32 -> Uint32 -> m Timer)
               -> TIMER_CHANNEL
               -> DMA_CHANNEL
-              -> IRQn
               -> Port
               -> m NeoPixelPWM
-mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn pwmPort = do
+mkNeoPixelPWM timer' pwmChannel dmaChannel pwmPort = do
     pwmTimer     <- timer' system_core_clock pwmPeriod
     let dmaInit   = dmaParam [ direction    .= ival dma_memory_to_peripheral
                              , memory_inc   .= ival dma_memory_increase_enable
@@ -77,39 +74,23 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn pwmPort = do
             initChannelOcTimer            t pwmChannel =<< local (istruct timerOcDefaultParam)
             configChannelOutputPulseValue t pwmChannel 0
             configTimerOutputMode         t pwmChannel timer_oc_mode_pwm0
+            configChannelOutputShadow     t pwmChannel timer_oc_shadow_disable
             configPrimaryOutput           t true
             enableTimerDMA                t timer_dma_upd
-            configChannelOutputShadow     t pwmChannel timer_oc_shadow_enable
             enableTimer                   t
-            enableIrqNvic                 dmaIRQn 1 0
 
     addInit $ initPort pwmPort
     addInit initNeoPixel'
 
-    let neoPixel = NeoPixelPWM { pwmTimer, pwmChannel, pwmPort, dmaChannel, dmaIRQn, dmaParams, frameRequest }
-
-    addModule $ makeIRQHandler dmaIRQn (handleDMA neoPixel)
-
-    pure neoPixel
+    pure NeoPixelPWM { pwmTimer, pwmChannel, pwmPort, dmaChannel, dmaParams }
 
 
 
 instance Handler I.RenderNeoPixel NeoPixelPWM where
   addHandler (I.RenderNeoPixel NeoPixelPWM{..} frameRate render) =
     addTask $ delay (1000 `iDiv` frameRate)
-                    (show pwmPort <> "neo_pixel") $ do
-                        frameRequest' <- deref frameRequest
-                        when frameRequest' render
-
-
-
-handleDMA :: NeoPixelPWM -> Ivory eff ()
-handleDMA NeoPixelPWM{..} = do
-    f <- getInterruptFlagDMA  dmaChannel dma_int_flag_ftf
-    when f $ do
-        clearInterruptFlagDMA dmaChannel dma_int_flag_g
-        store frameRequest true
-
+                    (show pwmPort <> "neo_pixel")
+                    render
 
 
 
@@ -119,13 +100,11 @@ instance I.NeoPixel NeoPixelPWM NeoPixelBufferPWM where
     transmitPixels NeoPixelPWM{..} NeoPixelBufferPWM{..} =
         runFrame $ \frame -> do
             let frame' = addrOf frame
-            deinitDMA                   dmaChannel
             store (dmaParams ~> memory_addr) =<< castArrayUint8ToUint32 (toCArray frame')
             store (dmaParams ~> number) $ arrayLen frame'
+            deinitDMA                   dmaChannel
             initDMA                     dmaChannel dmaParams
             disableCirculationDMA       dmaChannel
             disableMemoryToMemoryDMA    dmaChannel
-            clearInterruptFlagDMA       dmaChannel dma_int_flag_g
-            enableInterruptDMA          dmaChannel dma_int_ftf
+            I.resetCounter              pwmTimer
             enableChannelDMA            dmaChannel
-            store frameRequest false

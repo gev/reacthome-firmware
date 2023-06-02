@@ -269,7 +269,6 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
 
     , npx_pwm_0 = mkNeoPixelPWM pwm_timer_15
                                 timer_ch_0 dma_ch2
-                                dma_channel1_2_irqn
                                 (pb_8 $ AF gpio_af_2)
 
     , exti_pa_0 = mkEXTI (input pa_0)

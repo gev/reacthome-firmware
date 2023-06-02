@@ -3,7 +3,6 @@
 {-# LANGUAGE GADTs            #-}
 {-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RecordWildCards  #-}
-{-# LANGUAGE TypeOperators    #-}
 
 module Feature.Indicator where
 
@@ -11,23 +10,26 @@ import           Control.Monad.Reader
 import           Control.Monad.Writer
 import           Core.Context
 import           Core.Controller
-import           Core.Domain          as D
+import           Core.Domain             as D
 import           Core.Feature
 import           Interface.MCU
-import           Interface.NeoPixel   as I
+import qualified Interface.NeoPixel      as I
 
 import           Core.Handler
 import           Core.Task
 import           Data.NeoPixel.Buffer
+import           Feature.RS485.RBUS.Data (RBUS (clock))
 import           GHC.TypeNats
+import           Interface.Counter
 import           Interface.Mac
+import           Interface.NeoPixel      (NeoPixel (transmitPixels))
 import           Ivory.Language
 
 
 
-data Indicator = forall b. NeoPixelBuffer b => Indicator
-    { pixels :: b 60
-
+data Indicator = forall o b. (I.NeoPixel o b, NeoPixelBuffer b) => Indicator
+    { neoPixel :: o
+    , pixels   :: b 60
     }
 
 
@@ -39,16 +41,11 @@ indicator :: ( MonadWriter Context m
 indicator npx = do
     mcu      <- asks D.mcu
     neoPixel <- npx $ peripherals mcu
-    pixels   <- neoPixelBuffer neoPixel "indicator"
+    pixels   <- I.neoPixelBuffer neoPixel "indicator"
 
-    let indicator = Indicator { pixels }
+    let indicator = Indicator { neoPixel, pixels }
 
-    -- addHandler $ I.HandleNeoPixel neoPixel (render indicator $ mac mcu)
-
-    let initIndicator' :: Def ('[] :-> ())
-        initIndicator' = proc "indicator_init" $ body $ transmitPixels neoPixel pixels
-
-    addInit initIndicator'
+    addHandler $ I.RenderNeoPixel neoPixel 10 (render indicator $ mac mcu)
 
     pure $ Feature indicator
 
@@ -57,8 +54,11 @@ indicator npx = do
 render :: Indicator -> Mac -> Ivory (ProcEffects s ()) ()
 render Indicator{..} mac = do
     clearBuffer pixels
-    arrayMap $ \ix ->
-        writeByte pixels (toIx $ fromIx ix) =<< deref (mac ! ix)
+    writeByte pixels 1 1
+    arrayMap $ \ix -> do
+        v <- deref (mac ! ix)
+        writeByte pixels (toIx $ fromIx ix) v
+    transmitPixels neoPixel pixels
 
 
 
