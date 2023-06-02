@@ -57,8 +57,8 @@ uint32_t g_timedelay;
 */
 int main(void)
 {
-    gd_eval_com_init(EVAL_COM0);
-    gd_eval_key_init(KEY_TAMPER, KEY_MODE_EXTI);
+    // gd_eval_com_init(EVAL_COM0);
+    // gd_eval_key_init(KEY_TAMPER, KEY_MODE_EXTI);
     /* setup ethernet system(GPIOs, clocks, MAC, DMA, systick) */
     enet_system_setup();
 

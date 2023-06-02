@@ -85,6 +85,16 @@ SECTIONS
         _estack = .;
     } >DATA
 
+    .heap : {
+        __heap_start__ = .;
+        end = __heap_start__;
+        _end = end;
+        __end = end;
+        KEEP(*(.heap))
+        __heap_end__ = .;
+        __HeapLimit = __heap_end__;
+    } > REGION_HEAP
+
     __bss_start = .;
     .bss :
     {
