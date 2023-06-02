@@ -68,7 +68,6 @@ mkUART uart rcu uartIRQ dma dmaIRQn rx tx = do
         initUART' = proc (symbol uart <> "_init") $ body $ do
             store (dmaParams ~> periph_addr) =<< tdata uart
             enablePeriphClock   rcu_dma
-            enableRemapDMA      remap_dma_usart0tx
             enableIrqNvic       uartIRQ 0 0
             enableIrqNvic       dmaIRQn 1 0
             enablePeriphClock   rcu
