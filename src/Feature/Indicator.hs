@@ -45,7 +45,7 @@ indicator npx = do
 
     let indicator = Indicator { neoPixel, pixels }
 
-    addHandler $ I.RenderNeoPixel neoPixel 10 (render indicator $ mac mcu)
+    addHandler $ I.RenderNeoPixel neoPixel 60 (render indicator $ mac mcu)
 
     pure $ Feature indicator
 
@@ -54,7 +54,6 @@ indicator npx = do
 render :: Indicator -> Mac -> Ivory (ProcEffects s ()) ()
 render Indicator{..} mac = do
     clearBuffer pixels
-    writeByte pixels 1 1
     arrayMap $ \ix -> do
         v <- deref (mac ! ix)
         writeByte pixels (toIx $ fromIx ix) v

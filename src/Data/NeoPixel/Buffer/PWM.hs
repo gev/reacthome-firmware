@@ -54,7 +54,6 @@ instance NeoPixelBuffer NeoPixelBufferPWM where
     v <- local $ ival value
     runFrame $ \frame -> for 8 $ \jx -> do
         s <- deref v
-        let s = value
         let b = s .& 0x80
         let byte = addrOf frame ! (toIx i + jx)
         ifte_ (b ==? 0x80)
