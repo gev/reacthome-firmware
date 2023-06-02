@@ -72,8 +72,6 @@ C_SOURCES =  \
 ./src/main.c														\
 ./src/netconf.c														\
 ./lwip-2.1.2/port/GD32F4xx/Basic/ethernetif.c						\
-./lwip-2.1.2/port/GD32F4xx/FreeRTOS/ethernetif.c					\
-./lwip-2.1.2/port/GD32F4xx/FreeRTOS/sys_arch.c						\
 ./lwip-2.1.2/src/api/api_lib.c										\
 ./lwip-2.1.2/src/api/api_msg.c										\
 ./lwip-2.1.2/src/api/err.c											\
@@ -83,43 +81,6 @@ C_SOURCES =  \
 ./lwip-2.1.2/src/api/netifapi.c										\
 ./lwip-2.1.2/src/api/sockets.c										\
 ./lwip-2.1.2/src/api/tcpip.c										\
-./lwip-2.1.2/src/apps/altcp_tls/altcp_tls_mbedtls.c					\
-./lwip-2.1.2/src/apps/altcp_tls/altcp_tls_mbedtls_mem.c				\
-./lwip-2.1.2/src/apps/http/altcp_proxyconnect.c						\
-./lwip-2.1.2/src/apps/http/http_client.c							\
-./lwip-2.1.2/src/apps/http/httpd.c									\
-./lwip-2.1.2/src/apps/http/fs.c										\
-./lwip-2.1.2/src/apps/http/fsdata.c									\
-./lwip-2.1.2/src/apps/http/makefsdata/makefsdata.c					\
-./lwip-2.1.2/src/apps/lwiperf/lwiperf.c								\
-./lwip-2.1.2/src/apps/mdns/mdns.c									\
-./lwip-2.1.2/src/apps/mqtt/mqtt.c									\
-./lwip-2.1.2/src/apps/netbiosns/netbiosns.c							\
-./lwip-2.1.2/src/apps/smtp/smtp.c									\
-./lwip-2.1.2/src/apps/snmp/snmp_asn1.c								\
-./lwip-2.1.2/src/apps/snmp/snmp_core.c								\
-./lwip-2.1.2/src/apps/snmp/snmp_mib2.c								\
-./lwip-2.1.2/src/apps/snmp/snmp_mib2_icmp.c							\
-./lwip-2.1.2/src/apps/snmp/snmp_mib2_interfaces.c					\
-./lwip-2.1.2/src/apps/snmp/snmp_mib2_ip.c							\
-./lwip-2.1.2/src/apps/snmp/snmp_mib2_snmp.c							\
-./lwip-2.1.2/src/apps/snmp/snmp_mib2_system.c						\
-./lwip-2.1.2/src/apps/snmp/snmp_mib2_tcp.c							\
-./lwip-2.1.2/src/apps/snmp/snmp_mib2_udp.c							\
-./lwip-2.1.2/src/apps/snmp/snmp_msg.c								\
-./lwip-2.1.2/src/apps/snmp/snmp_netconn.c							\
-./lwip-2.1.2/src/apps/snmp/snmp_pbuf_stream.c						\
-./lwip-2.1.2/src/apps/snmp/snmp_raw.c								\
-./lwip-2.1.2/src/apps/snmp/snmp_scalar.c							\
-./lwip-2.1.2/src/apps/snmp/snmp_snmpv2_framework.c					\
-./lwip-2.1.2/src/apps/snmp/snmp_snmpv2_usm.c						\
-./lwip-2.1.2/src/apps/snmp/snmp_table.c								\
-./lwip-2.1.2/src/apps/snmp/snmp_threadsync.c						\
-./lwip-2.1.2/src/apps/snmp/snmp_traps.c								\
-./lwip-2.1.2/src/apps/snmp/snmpv3.c									\
-./lwip-2.1.2/src/apps/snmp/snmpv3_mbedtls.c							\
-./lwip-2.1.2/src/apps/sntp/sntp.c									\
-./lwip-2.1.2/src/apps/tftp/tftp_server.c							\
 ./lwip-2.1.2/src/core/altcp.c										\
 ./lwip-2.1.2/src/core/altcp_alloc.c									\
 ./lwip-2.1.2/src/core/altcp_tcp.c									\
@@ -194,6 +155,45 @@ C_SOURCES =  \
 ./lwip-2.1.2/src/netif/ppp/vj.c										\
 ./lwip-2.1.2/src/netif/slipif.c										\
 ./lwip-2.1.2/src/netif/zepif.c										\
+# ./lwip-2.1.2/port/GD32F4xx/FreeRTOS/ethernetif.c					\
+# ./lwip-2.1.2/port/GD32F4xx/FreeRTOS/sys_arch.c					\	
+# ./lwip-2.1.2/src/apps/altcp_tls/altcp_tls_mbedtls.c					\
+# ./lwip-2.1.2/src/apps/altcp_tls/altcp_tls_mbedtls_mem.c				\
+# ./lwip-2.1.2/src/apps/http/altcp_proxyconnect.c						\
+# ./lwip-2.1.2/src/apps/http/http_client.c							\
+# ./lwip-2.1.2/src/apps/http/httpd.c									\
+# ./lwip-2.1.2/src/apps/http/fs.c										\
+# ./lwip-2.1.2/src/apps/http/fsdata.c									\
+# ./lwip-2.1.2/src/apps/http/makefsdata/makefsdata.c					\
+# ./lwip-2.1.2/src/apps/lwiperf/lwiperf.c								\
+# ./lwip-2.1.2/src/apps/mdns/mdns.c									\
+# ./lwip-2.1.2/src/apps/mqtt/mqtt.c									\
+# ./lwip-2.1.2/src/apps/netbiosns/netbiosns.c							\
+# ./lwip-2.1.2/src/apps/smtp/smtp.c									\
+# ./lwip-2.1.2/src/apps/snmp/snmp_asn1.c								\
+# ./lwip-2.1.2/src/apps/snmp/snmp_core.c								\
+# ./lwip-2.1.2/src/apps/snmp/snmp_mib2.c								\
+# ./lwip-2.1.2/src/apps/snmp/snmp_mib2_icmp.c							\
+# ./lwip-2.1.2/src/apps/snmp/snmp_mib2_interfaces.c					\
+# ./lwip-2.1.2/src/apps/snmp/snmp_mib2_ip.c							\
+# ./lwip-2.1.2/src/apps/snmp/snmp_mib2_snmp.c							\
+# ./lwip-2.1.2/src/apps/snmp/snmp_mib2_system.c						\
+# ./lwip-2.1.2/src/apps/snmp/snmp_mib2_tcp.c							\
+# ./lwip-2.1.2/src/apps/snmp/snmp_mib2_udp.c							\
+# ./lwip-2.1.2/src/apps/snmp/snmp_msg.c								\
+# ./lwip-2.1.2/src/apps/snmp/snmp_netconn.c							\
+# ./lwip-2.1.2/src/apps/snmp/snmp_pbuf_stream.c						\
+# ./lwip-2.1.2/src/apps/snmp/snmp_raw.c								\
+# ./lwip-2.1.2/src/apps/snmp/snmp_scalar.c							\
+# ./lwip-2.1.2/src/apps/snmp/snmp_snmpv2_framework.c					\
+# ./lwip-2.1.2/src/apps/snmp/snmp_snmpv2_usm.c						\
+# ./lwip-2.1.2/src/apps/snmp/snmp_table.c								\
+# ./lwip-2.1.2/src/apps/snmp/snmp_threadsync.c						\
+# ./lwip-2.1.2/src/apps/snmp/snmp_traps.c								\
+# ./lwip-2.1.2/src/apps/snmp/snmpv3.c									\
+# ./lwip-2.1.2/src/apps/snmp/snmpv3_mbedtls.c							\
+# ./lwip-2.1.2/src/apps/sntp/sntp.c									\
+# ./lwip-2.1.2/src/apps/tftp/tftp_server.c							\
 
 # ASM sources
 ASM_SOURCES =  \
@@ -223,7 +223,7 @@ BIN = $(CP) -O binary -S
 # CFLAGS
 #######################################
 # cpu
-CPU = -mcpu=cortex-m4
+CPU = -mcpu=cortex-m4 
 
 # fpu
 # NONE for Cortex-M0/M0+/M3
@@ -248,28 +248,30 @@ C_DEFS =  \
 AS_INCLUDES = 
 
 # C includes
-C_INCLUDES =  \
--I../../support/device/gd32f4xx/inc \
--I../../support/CMSIS/inc \
--I../../support/device/gd32f4xx/peripherals/inc \
--I./inc											\
--I./lwip-2.1.2/port/GD32F4xx/Basic				\
--I./lwip-2.1.2/port/GD32F4xx/FreeRTOS				\
--I./lwip-2.1.2/port/GD32F4xx/arch					\
--I./lwip-2.1.2/src/apps/altcp_tls					\
--I./lwip-2.1.2/src/apps/http						\
--I./lwip-2.1.2/src/apps/http/makefsdata	 		\
--I./lwip-2.1.2/src/apps/snmp						\
+C_INCLUDES =  										\
+-I../../support/device/gd32f4xx/inc					\
+-I../../support/CMSIS/inc 							\
+-I../../support/device/gd32f4xx/peripherals/inc 	\
+-I./inc												\
+-I./lwip-2.1.2/port/GD32F4xx/Basic					\
+-I./lwip-2.1.2/port/GD32F4xx						\
 -I./lwip-2.1.2/src/include/compat/posix/arpa		\
--I./lwip-2.1.2/src/include/compat/posix/net		\
--I./lwip-2.1.2/src/include/compat/posix			\
--I./lwip-2.1.2/src/include/lwip					\
+-I./lwip-2.1.2/src/include/compat/posix/net			\
+-I./lwip-2.1.2/src/include/compat/posix				\
+-I./lwip-2.1.2/src/include							\
+-I./lwip-2.1.2/src/include/lwip						\
 -I./lwip-2.1.2/src/include/lwip/apps				\
 -I./lwip-2.1.2/src/include/lwip/priv				\
 -I./lwip-2.1.2/src/include/lwip/prot				\
 -I./lwip-2.1.2/src/include/netif					\
 -I./lwip-2.1.2/src/include/netif/ppp				\
 -I./lwip-2.1.2/src/include/netif/ppp/polarssl		\
+# -I./lwip-2.1.2/port/GD32F4xx/FreeRTOS				\
+# -I./lwip-2.1.2/port/GD32F4xx/arch					\
+# -I./lwip-2.1.2/src/apps/altcp_tls					\
+# -I./lwip-2.1.2/src/apps/http						\
+# -I./lwip-2.1.2/src/apps/http/makefsdata	 		\
+# -I./lwip-2.1.2/src/apps/snmp						\
 
 
 
