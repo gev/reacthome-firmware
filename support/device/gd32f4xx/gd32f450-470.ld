@@ -93,7 +93,7 @@ SECTIONS
         KEEP(*(.heap))
         __heap_end__ = .;
         __HeapLimit = __heap_end__;
-    } > REGION_HEAP
+    } > DATA
 
     __bss_start = .;
     .bss :
