@@ -5,10 +5,10 @@ import           Ivory.Stdlib
 
 
 class Counter t where
-    readCounter :: t -> Ivory eff Uint32
+    readCounter :: t -> Ivory eff Uint16
 
-    delay :: t -> Uint32 -> Ivory (ProcEffects s ()) ()
-    delay t d =    do
+    usDelay :: t -> Uint16 -> Ivory (ProcEffects s ()) ()
+    usDelay t d =    do
         start <- readCounter t
         forever $ do
             current <- readCounter t

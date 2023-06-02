@@ -78,9 +78,6 @@ instance I.PWM PWM where
         let t = timer pwmTimer
         configChannelOutputPulseValue t pwmChannel duty
 
-    resetCounter PWM{..} = do
-        I.setCounter pwmTimer 0
-
     setMode PWM{..} = do
         let t = timer pwmTimer
         configTimerOutputMode t pwmChannel . coerceModePWM
