@@ -27,7 +27,7 @@ import           Support.Device.GD32F3x0.Timer
 
 
 
-data Timer = forall s. Timer
+data Timer = Timer
     { timer :: TIMER_PERIPH
     , rcu   :: RCU_PERIPH
     , irq   :: IRQn
@@ -70,7 +70,7 @@ mkTimer timer rcu irq param = do
 
 
 instance I.Counter Timer where
-    readCounter = readCounter . timer
+    readCounter t = castDefault <$> readCounter (timer t)
 
 
 
@@ -91,6 +91,5 @@ instance Handler I.HandleTimer Timer where
                 handle
 
 instance I.Timer Timer where
-
     setCounter t = writeCounter (timer t)
     getCounter t = readCounter  (timer t)
