@@ -31,7 +31,11 @@ module Support.Device.GD32F3x0.SYSCFG
     , exti_source_pin14
     , exti_source_pin15
 
+    , DMA_REMAP
+    , remap_dma_usart0tx
+
     , configExtiLine
+    , enableRemapDMA
 
     , inclSYSCFG
     ) where
@@ -75,12 +79,26 @@ exti_source_pin14 = EXTI_PIN $ ext "EXTI_SOURCE_PIN14"
 exti_source_pin15 = EXTI_PIN $ ext "EXTI_SOURCE_PIN15"
 
 
+newtype DMA_REMAP = DMA_REMAP Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
+instance ExtSymbol EXTI_PIN
+
+remap_dma_usart0tx = DMA_REMAP $ ext SYSCFG_DMA_REMAP_USART0TX
+
+
 
 configExtiLine :: EXTI_PORT -> EXTI_PIN -> Ivory eff ()
 configExtiLine = call_ syscfg_exti_line_config
 
 syscfg_exti_line_config :: Def ('[EXTI_PORT, EXTI_PIN] :-> ())
 syscfg_exti_line_config = fun "syscfg_exti_line_config"
+
+
+enableRemapDMA :: DMA_REMAP -> Ivory eff ()
+enableRemapDMA = call_ syscfg_dma_remap_enable
+
+syscfg_dma_remap_enable :: Def ('[DMA_REMAP] :-> ())
+syscfg_dma_remap_enable = fun "syscfg_dma_remap_enable"
 
 
 
@@ -109,4 +127,7 @@ inclSYSCFG = do
     inclSym exti_source_pin14
     inclSym exti_source_pin15
 
+    inclSym remap_dma_usart0tx
+
     incl syscfg_exti_line_config
+    incl syscfg_dma_remap_enable
