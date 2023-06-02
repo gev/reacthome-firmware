@@ -252,24 +252,24 @@ C_INCLUDES =  \
 -I../../support/device/gd32f4xx/inc \
 -I../../support/CMSIS/inc \
 -I../../support/device/gd32f4xx/peripherals/inc \
-./inc											\
-./lwip-2.1.2/port/GD32F4xx/Basic				\
-./lwip-2.1.2/port/GD32F4xx/FreeRTOS				\
-./lwip-2.1.2/port/GD32F4xx/arch					\
-./lwip-2.1.2/src/apps/altcp_tls					\
-./lwip-2.1.2/src/apps/http						\
-./lwip-2.1.2/src/apps/http/makefsdata	 		\
-./lwip-2.1.2/src/apps/snmp						\
-./lwip-2.1.2/src/include/compat/posix/arpa		\
-./lwip-2.1.2/src/include/compat/posix/net		\
-./lwip-2.1.2/src/include/compat/posix			\
-./lwip-2.1.2/src/include/lwip					\
-./lwip-2.1.2/src/include/lwip/apps				\
-./lwip-2.1.2/src/include/lwip/priv				\
-./lwip-2.1.2/src/include/lwip/prot				\
-./lwip-2.1.2/src/include/netif					\
-./lwip-2.1.2/src/include/netif/ppp				\
-./lwip-2.1.2/src/include/netif/ppp/polarssl		\
+-I./inc											\
+-I./lwip-2.1.2/port/GD32F4xx/Basic				\
+-I./lwip-2.1.2/port/GD32F4xx/FreeRTOS				\
+-I./lwip-2.1.2/port/GD32F4xx/arch					\
+-I./lwip-2.1.2/src/apps/altcp_tls					\
+-I./lwip-2.1.2/src/apps/http						\
+-I./lwip-2.1.2/src/apps/http/makefsdata	 		\
+-I./lwip-2.1.2/src/apps/snmp						\
+-I./lwip-2.1.2/src/include/compat/posix/arpa		\
+-I./lwip-2.1.2/src/include/compat/posix/net		\
+-I./lwip-2.1.2/src/include/compat/posix			\
+-I./lwip-2.1.2/src/include/lwip					\
+-I./lwip-2.1.2/src/include/lwip/apps				\
+-I./lwip-2.1.2/src/include/lwip/priv				\
+-I./lwip-2.1.2/src/include/lwip/prot				\
+-I./lwip-2.1.2/src/include/netif					\
+-I./lwip-2.1.2/src/include/netif/ppp				\
+-I./lwip-2.1.2/src/include/netif/ppp/polarssl		\
 
 
 
