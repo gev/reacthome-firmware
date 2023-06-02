@@ -61,7 +61,7 @@ mkTimer timer rcu irq param = do
 
 
 instance I.Counter Timer where
-    readCounter = readCounter . timer
+    readCounter t = castDefault <$> readCounter (timer t)
 
 
 
