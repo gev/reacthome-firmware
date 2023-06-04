@@ -1,8 +1,5 @@
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE FlexibleContexts      #-}
-{-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE GADTs                 #-}
-{-# LANGUAGE KindSignatures        #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RecordWildCards       #-}
@@ -19,7 +16,6 @@ import           Data.Record
 import           Data.Value
 import           Device.GD32F3x0.GPIO
 import           Device.GD32F3x0.Timer
-import           GHC.TypeNats
 import qualified Interface.NeoPixel             as I
 import qualified Interface.Timer                as I
 import           Ivory.Language
@@ -95,7 +91,7 @@ instance Handler I.RenderNeoPixel NeoPixelPWM where
 
 
 instance I.NeoPixel NeoPixelPWM NeoPixelBufferPWM where
-    neoPixelBuffer _ id = neoPixelBufferPWM id pwmPeriod
+    neoPixelBuffer _ = neoPixelBufferPWM pwmPeriod
 
     transmitPixels NeoPixelPWM{..} NeoPixelBufferPWM{..} =
         runFrame $ \frame -> do

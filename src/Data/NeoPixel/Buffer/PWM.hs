@@ -1,12 +1,7 @@
-{-# LANGUAGE DataKinds             #-}
-{-# LANGUAGE FlexibleContexts      #-}
-{-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE KindSignatures        #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE NamedFieldPuns        #-}
-{-# LANGUAGE RankNTypes            #-}
-{-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE RecordWildCards  #-}
 
 
 
@@ -22,20 +17,20 @@ import           Ivory.Language
 import           Ivory.Language.Proxy
 
 
-data NeoPixelBufferPWM (n :: Nat) = NeoPixelBufferPWM
+data NeoPixelBufferPWM = NeoPixelBufferPWM
     { runFrame :: RunValues Uint8
     , zeroDuty :: Uint8
     , oneDuty  :: Uint8
     }
 
 
-neoPixelBufferPWM :: forall m n. (MonadWriter Context m, KnownNat n)
-                  => String -> Uint8 -> m (NeoPixelBufferPWM n)
-neoPixelBufferPWM id period = do
+neoPixelBufferPWM :: forall m n. (MonadWriter Context m)
+                  => Uint8 -> String -> Int -> m NeoPixelBufferPWM
+neoPixelBufferPWM period id size = do
     let zeroDuty = period `iDiv` 4
     let oneDuty  = 3 * zeroDuty
-    let size     = 8 * fromInteger (fromTypeNat (aNat :: NatType n)) + 1 -- | add stop bit
-    let runFrame = runValues (id <> "_neo_pixel_buffer_pwm") $ replicate size 0x0
+    let size'    = 8 * size + 1 -- | add stop bit
+    let runFrame = runValues (id <> "_neo_pixel_buffer_pwm") $ replicate size' 0x0
     runFrame addArea
     pure $ NeoPixelBufferPWM { runFrame, zeroDuty, oneDuty }
 
@@ -43,20 +38,18 @@ neoPixelBufferPWM id period = do
 
 instance NeoPixelBuffer NeoPixelBufferPWM where
 
-  clearByte NeoPixelBufferPWM{..} ix = do
-    let i = 8 * fromIx ix
+  clearByte NeoPixelBufferPWM{..} i = do
     runFrame $ \frame -> for 8 $ \jx -> do
         let byte = addrOf frame ! (toIx i + jx)
         store byte zeroDuty
 
-  writeByte NeoPixelBufferPWM{..} ix value = do
-    let i = 8 * fromIx ix
+  writeByte NeoPixelBufferPWM{..} i value = do
     v <- local $ ival value
     runFrame $ \frame -> for 8 $ \jx -> do
-        s <- deref v
-        let b = s .& 0x80
+        v' <- deref v
+        let b = v' .& 0x80
         let byte = addrOf frame ! (toIx i + jx)
         ifte_ (b ==? 0x80)
             (store byte oneDuty )
             (store byte zeroDuty)
-        store v $ s `iShiftL` 1
+        store v $ v' `iShiftL` 1

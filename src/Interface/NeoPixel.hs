@@ -8,7 +8,6 @@ import           Control.Monad.Writer
 import           Core.Context
 import           Core.Handler
 import           Data.NeoPixel.Buffer
-import           GHC.TypeNats
 import           Ivory.Language
 
 
@@ -20,6 +19,6 @@ data RenderNeoPixel p = RenderNeoPixel
 
 
 class Handler RenderNeoPixel p => NeoPixel p b | p -> b where
-    neoPixelBuffer :: (KnownNat n, MonadWriter Context m)
-                   => p -> String -> m (b n)
-    transmitPixels :: KnownNat n => p -> b n -> Ivory eff ()
+    neoPixelBuffer :: MonadWriter Context m
+                   => p -> String -> Int -> m b
+    transmitPixels :: p -> b -> Ivory eff ()

@@ -18,6 +18,7 @@ import qualified Interface.NeoPixel      as I
 import           Core.Handler
 import           Core.Task
 import           Data.NeoPixel.Buffer
+import           Data.NeoPixel.Canvas1D
 import           Feature.RS485.RBUS.Data (RBUS (clock))
 import           GHC.TypeNats
 import           Interface.Counter
@@ -29,7 +30,7 @@ import           Ivory.Language
 
 data Indicator = forall o b. (I.NeoPixel o b, NeoPixelBuffer b) => Indicator
     { neoPixel :: o
-    , pixels   :: b 60
+    , canvas   :: Canvas1D 20 b
     }
 
 
@@ -41,9 +42,9 @@ indicator :: ( MonadWriter Context m
 indicator npx = do
     mcu      <- asks D.mcu
     neoPixel <- npx $ peripherals mcu
-    pixels   <- I.neoPixelBuffer neoPixel "indicator"
+    canvas   <- mkCanvas1D $ I.neoPixelBuffer neoPixel "indicator"
 
-    let indicator = Indicator { neoPixel, pixels }
+    let indicator = Indicator { neoPixel, canvas }
 
     addHandler $ I.RenderNeoPixel neoPixel 60 (render indicator $ mac mcu)
 
@@ -53,11 +54,9 @@ indicator npx = do
 
 render :: Indicator -> Mac -> Ivory (ProcEffects s ()) ()
 render Indicator{..} mac = do
-    clearBuffer pixels
-    arrayMap $ \ix -> do
-        v <- deref (mac ! ix)
-        writeByte pixels (toIx $ fromIx ix) v
-    transmitPixels neoPixel pixels
+    clearCanvas canvas
+    writePixel  canvas 0 (10, 20, 40)
+    transmitPixels neoPixel $ getBuffer canvas
 
 
 
