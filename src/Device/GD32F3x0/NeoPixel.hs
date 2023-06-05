@@ -70,7 +70,7 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel pwmPort = do
             initChannelOcTimer            t pwmChannel =<< local (istruct timerOcDefaultParam)
             configChannelOutputPulseValue t pwmChannel 0
             configTimerOutputMode         t pwmChannel timer_oc_mode_pwm0
-            configChannelOutputShadow     t pwmChannel timer_oc_shadow_disable
+            configChannelOutputShadow     t pwmChannel timer_oc_shadow_enable
             configPrimaryOutput           t true
             enableTimerDMA                t timer_dma_upd
             enableTimer                   t

@@ -37,9 +37,9 @@ clearCanvas Canvas1D{..} =
 
 
 
-writePixel :: forall n b s. (KnownNat n, NeoPixelBuffer b)
+writePixel :: forall n b r s. (KnownNat n, NeoPixelBuffer b)
             => Canvas1D n b -> Ix n -> RGB
-            -> Ivory (ProcEffects s ()) ()
+            -> Ivory ('Effects (Returns ()) r (Scope s)) ()
 writePixel Canvas1D{..} ix RGB{..} = do
     let offset = 3 * fromIx ix
     writeByte getBuffer offset g

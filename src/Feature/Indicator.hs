@@ -57,7 +57,7 @@ indicator npx color = do
 render :: Indicator -> Ivory (ProcEffects s ()) ()
 render Indicator{..} = do
     clearCanvas canvas
-    writePixel  canvas 0 color
+    arrayMap $ \ix -> writePixel canvas ix color
     transmitPixels neoPixel $ getBuffer canvas
 
 

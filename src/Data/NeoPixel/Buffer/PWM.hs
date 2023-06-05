@@ -40,7 +40,7 @@ instance NeoPixelBuffer NeoPixelBufferPWM where
 
   clearByte NeoPixelBufferPWM{..} i = do
     runFrame $ \frame -> for 8 $ \jx -> do
-        let byte = addrOf frame ! (toIx i + jx)
+        let byte = addrOf frame ! (toIx (8 * i) + jx)
         store byte zeroDuty
 
   writeByte NeoPixelBufferPWM{..} i value = do
@@ -48,7 +48,7 @@ instance NeoPixelBuffer NeoPixelBufferPWM where
     runFrame $ \frame -> for 8 $ \jx -> do
         v' <- deref v
         let b = v' .& 0x80
-        let byte = addrOf frame ! (toIx i + jx)
+        let byte = addrOf frame ! (toIx (8 * i) + jx)
         ifte_ (b ==? 0x80)
             (store byte oneDuty )
             (store byte zeroDuty)
