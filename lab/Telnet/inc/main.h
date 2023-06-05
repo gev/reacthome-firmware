@@ -42,7 +42,7 @@ OF SUCH DAMAGE.
 #include "stdint.h"
 #include "gd32f4xx_enet_eval.h"
 
-//#define USE_DHCP       1 /* enable DHCP, if disabled static address is used */
+// #define USE_DHCP       1 /* enable DHCP, if disabled static address is used */
 
 #define USE_ENET_INTERRUPT
 //#define TIMEOUT_CHECK_USE_LWIP
@@ -55,16 +55,16 @@ OF SUCH DAMAGE.
 #define MAC_ADDR5   6
  
 /* static IP address: IP_ADDR0.IP_ADDR1.IP_ADDR2.IP_ADDR3 */
-#define IP_ADDR0   10
-#define IP_ADDR1   50
-#define IP_ADDR2   3
-#define IP_ADDR3   70
+#define IP_ADDR0   192
+#define IP_ADDR1   168
+#define IP_ADDR2   88
+#define IP_ADDR3   10
 
 /* remote IP address: IP_S_ADDR0.IP_S_ADDR1.IP_S_ADDR2.IP_S_ADDR3 */
-#define IP_S_ADDR0   10
-#define IP_S_ADDR1   50
-#define IP_S_ADDR2   3
-#define IP_S_ADDR3   140
+#define IP_S_ADDR0   192
+#define IP_S_ADDR1   168
+#define IP_S_ADDR2   88
+#define IP_S_ADDR3   11
 
    
 /* net mask */
