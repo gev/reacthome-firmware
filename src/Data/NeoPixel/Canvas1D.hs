@@ -9,6 +9,7 @@ module Data.NeoPixel.Canvas1D where
 
 import           Control.Monad.Writer
 import           Core.Context
+import           Data.Color
 import           Data.NeoPixel.Buffer
 import           GHC.TypeNats
 import           Ivory.Language
@@ -37,9 +38,9 @@ clearCanvas Canvas1D{..} =
 
 
 writePixel :: forall n b s. (KnownNat n, NeoPixelBuffer b)
-            => Canvas1D n b -> Ix n -> (Uint8, Uint8, Uint8)
+            => Canvas1D n b -> Ix n -> RGB
             -> Ivory (ProcEffects s ()) ()
-writePixel Canvas1D{..} ix (r, g, b) = do
+writePixel Canvas1D{..} ix RGB{..} = do
     let offset = 3 * fromIx ix
     writeByte getBuffer offset g
     writeByte getBuffer (offset + 1) r
