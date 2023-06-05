@@ -70,6 +70,7 @@ C_SOURCES =  \
 ./src/gd32f4xx_it.c													\
 ./src/hello_gigadevice.c											\
 ./src/main.c														\
+./src/gd32f450i_eval.c												\
 ./src/netconf.c														\
 ./lwip-2.1.2/port/GD32F4xx/Basic/ethernetif.c						\
 ./lwip-2.1.2/src/api/api_lib.c										\
