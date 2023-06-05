@@ -6,27 +6,27 @@ module Device.GD32F3x0 where
 
 import           Control.Monad.Writer
 import           Core.Context
+import           Device.GD32F3x0.Display.NeoPixel
 import           Device.GD32F3x0.EXTI
 import           Device.GD32F3x0.GPIO
 import           Device.GD32F3x0.GPIO.Input
 import           Device.GD32F3x0.GPIO.Output
-import           Device.GD32F3x0.Mac            (makeMac)
-import           Device.GD32F3x0.NeoPixel
+import           Device.GD32F3x0.Mac              (makeMac)
 import           Device.GD32F3x0.PWM
-import           Device.GD32F3x0.SystemClock    as G
+import           Device.GD32F3x0.SystemClock      as G
 import           Device.GD32F3x0.SysTick
 import           Device.GD32F3x0.Timer
 import           Device.GD32F3x0.UART
-import           Interface.Mac                  (Mac)
+import           Interface.Mac                    (Mac)
 import           Interface.MCU
-import           Interface.SystemClock          (SystemClock, systemClock)
+import           Interface.SystemClock            (SystemClock, systemClock)
 import           Ivory.Language
 import           Support.Device.GD32F3x0
 import           Support.Device.GD32F3x0.DMA
 import           Support.Device.GD32F3x0.EXTI
 import           Support.Device.GD32F3x0.GPIO
 import           Support.Device.GD32F3x0.IRQ
-import           Support.Device.GD32F3x0.RCU    as R
+import           Support.Device.GD32F3x0.RCU      as R
 import           Support.Device.GD32F3x0.SYSCFG
 import           Support.Device.GD32F3x0.Timer
 import           Support.Device.GD32F3x0.USART

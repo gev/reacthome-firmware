@@ -5,19 +5,19 @@
 {-# LANGUAGE RecordWildCards       #-}
 {-# LANGUAGE TypeOperators         #-}
 
-module Device.GD32F3x0.NeoPixel where
+module Device.GD32F3x0.Display.NeoPixel where
 
-import           Control.Monad.Writer           (MonadWriter)
+import           Control.Monad.Writer                  (MonadWriter)
 import           Core.Context
 import           Core.Handler
 import           Core.Task
-import           Data.NeoPixel.Buffer.PWM
+import           Data.Display.FrameBuffer.NeoPixel.PWM
 import           Data.Record
 import           Data.Value
 import           Device.GD32F3x0.GPIO
 import           Device.GD32F3x0.Timer
-import qualified Interface.NeoPixel             as I
-import qualified Interface.Timer                as I
+import qualified Interface.Display                     as I
+import qualified Interface.Timer                       as I
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Ivory.Support
@@ -82,18 +82,18 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel pwmPort = do
 
 
 
-instance Handler I.RenderNeoPixel NeoPixelPWM where
-  addHandler (I.RenderNeoPixel NeoPixelPWM{..} frameRate render) =
+instance Handler I.Render NeoPixelPWM where
+  addHandler (I.Render NeoPixelPWM{..} frameRate render) =
     addTask $ delay (1000 `iDiv` frameRate)
                     (show pwmPort <> "neo_pixel")
                     render
 
 
 
-instance I.NeoPixel NeoPixelPWM NeoPixelBufferPWM where
-    neoPixelBuffer _ = neoPixelBufferPWM pwmPeriod
+instance I.Display NeoPixelPWM FrameBufferNeoPixelPWM where
+    frameBuffer _ = neoPixelBufferPWM pwmPeriod
 
-    transmitPixels NeoPixelPWM{..} NeoPixelBufferPWM{..} =
+    transmitFrameBuffer NeoPixelPWM{..} FrameBufferNeoPixelPWM{..} =
         runFrame $ \frame -> do
             let frame' = addrOf frame
             store (dmaParams ~> memory_addr) =<< castArrayUint8ToUint32 (toCArray frame')

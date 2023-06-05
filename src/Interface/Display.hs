@@ -2,23 +2,24 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE RankNTypes             #-}
 
-module Interface.NeoPixel where
+module Interface.Display where
 
 import           Control.Monad.Writer
 import           Core.Context
 import           Core.Handler
-import           Data.NeoPixel.Buffer
 import           Ivory.Language
 
 
-data RenderNeoPixel p = RenderNeoPixel
+data Render p = Render
     { neoPixel  :: p
     , frameRate :: Uint32
     , render    :: forall s. Ivory (ProcEffects s ()) ()
     }
 
 
-class Handler RenderNeoPixel p => NeoPixel p b | p -> b where
-    neoPixelBuffer :: MonadWriter Context m
-                   => p -> String -> Int -> m b
-    transmitPixels :: p -> b -> Ivory eff ()
+class Handler Render p => Display p b | p -> b where
+
+    frameBuffer         :: MonadWriter Context m
+                        => p -> String -> Int -> m b
+
+    transmitFrameBuffer :: p -> b -> Ivory eff ()

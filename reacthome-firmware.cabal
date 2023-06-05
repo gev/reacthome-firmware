@@ -53,10 +53,10 @@ executable reacthome-firmware
                     , Data.Index
                     , Data.Matrix
                     , Data.Color
-                    , Data.NeoPixel.Buffer
-                    , Data.NeoPixel.Buffer.PWM
-                    , Data.NeoPixel.Buffer.SPI
-                    , Data.NeoPixel.Canvas1D
+                    , Data.Display.Canvas1D
+                    , Data.Display.FrameBuffer
+                    , Data.Display.FrameBuffer.NeoPixel.PWM
+                    , Data.Display.FrameBuffer.NeoPixel.SPI
                     , Data.Serialize
                     , Data.Concurrent.Semaphore
                     , Data.Concurrent.Queue
@@ -97,7 +97,7 @@ executable reacthome-firmware
                     , Interface.RS485
                     , Interface.PWM
                     , Interface.EXTI
-                    , Interface.NeoPixel
+                    , Interface.Display
 
                     , Protocol.RS485.RBUS
                     , Protocol.RS485.RBUS.Master
@@ -121,17 +121,17 @@ executable reacthome-firmware
                     , Transport.UART.RBUS.Tx
 
                     , Device.GD32F3x0
+                    , Device.GD32F3x0.Display.NeoPixel
+                    , Device.GD32F3x0.EXTI
                     , Device.GD32F3x0.GPIO
                     , Device.GD32F3x0.GPIO.Input
                     , Device.GD32F3x0.GPIO.Output
                     , Device.GD32F3x0.Mac
-                    , Device.GD32F3x0.SysTick
+                    , Device.GD32F3x0.PWM
                     , Device.GD32F3x0.SystemClock
+                    , Device.GD32F3x0.SysTick
                     , Device.GD32F3x0.Timer
                     , Device.GD32F3x0.UART
-                    , Device.GD32F3x0.PWM
-                    , Device.GD32F3x0.NeoPixel
-                    , Device.GD32F3x0.EXTI
 
                     , Device.GD32F4xx
                     , Device.GD32F4xx.GPIO

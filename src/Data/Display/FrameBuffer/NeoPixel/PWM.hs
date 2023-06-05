@@ -5,19 +5,19 @@
 
 
 
-module Data.NeoPixel.Buffer.PWM where
+module Data.Display.FrameBuffer.NeoPixel.PWM where
 
 import           Control.Monad.Writer
 import           Core.Context
-import           Data.NeoPixel.Buffer
+import           Data.Display.FrameBuffer
 import           Data.Value
 import           GHC.TypeNats
-import           Interface.NeoPixel
+import           Interface.Display
 import           Ivory.Language
 import           Ivory.Language.Proxy
 
 
-data NeoPixelBufferPWM = NeoPixelBufferPWM
+data FrameBufferNeoPixelPWM = FrameBufferNeoPixelPWM
     { runFrame :: RunValues Uint8
     , zeroDuty :: Uint8
     , oneDuty  :: Uint8
@@ -25,25 +25,25 @@ data NeoPixelBufferPWM = NeoPixelBufferPWM
 
 
 neoPixelBufferPWM :: forall m n. (MonadWriter Context m)
-                  => Uint8 -> String -> Int -> m NeoPixelBufferPWM
+                  => Uint8 -> String -> Int -> m FrameBufferNeoPixelPWM
 neoPixelBufferPWM period id size = do
     let zeroDuty = period `iDiv` 4
     let oneDuty  = 3 * zeroDuty
     let size'    = 8 * size + 1 -- | add stop bit
-    let runFrame = runValues (id <> "_neo_pixel_buffer_pwm") $ replicate size' 0x0
+    let runFrame = runValues (id <> "_frame_buffer_neo_pixel_pwm") $ replicate size' 0x0
     runFrame addArea
-    pure $ NeoPixelBufferPWM { runFrame, zeroDuty, oneDuty }
+    pure $ FrameBufferNeoPixelPWM { runFrame, zeroDuty, oneDuty }
 
 
 
-instance NeoPixelBuffer NeoPixelBufferPWM where
+instance FrameBuffer FrameBufferNeoPixelPWM where
 
-  clearByte NeoPixelBufferPWM{..} i = do
+  clearByte FrameBufferNeoPixelPWM{..} i = do
     runFrame $ \frame -> for 8 $ \jx -> do
         let byte = addrOf frame ! (toIx (8 * i) + jx)
         store byte zeroDuty
 
-  writeByte NeoPixelBufferPWM{..} i value = do
+  writeByte FrameBufferNeoPixelPWM{..} i value = do
     v <- local $ ival value
     runFrame $ \frame -> for 8 $ \jx -> do
         v' <- deref v

@@ -1,14 +1,14 @@
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Data.NeoPixel.Buffer where
+module Data.Display.FrameBuffer where
 
 import           GHC.TypeNats
 import           Ivory.Language
 
 
 
-class NeoPixelBuffer t where
+class FrameBuffer t where
     clearByte   :: t
                 -> Sint32
                 -> Ivory eff ()

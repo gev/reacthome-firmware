@@ -5,12 +5,12 @@
 {-# LANGUAGE RecordWildCards     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Data.NeoPixel.Canvas1D where
+module Data.Display.Canvas1D where
 
 import           Control.Monad.Writer
 import           Core.Context
 import           Data.Color
-import           Data.NeoPixel.Buffer
+import           Data.Display.FrameBuffer
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Language.Proxy
@@ -18,7 +18,7 @@ import           Ivory.Language.Proxy
 
 newtype Canvas1D (n :: Nat) b = Canvas1D {getBuffer :: b}
 
-mkCanvas1D :: forall n b m. (KnownNat n, NeoPixelBuffer b, MonadWriter Context m)
+mkCanvas1D :: forall n b m. (KnownNat n, FrameBuffer b, MonadWriter Context m)
            => (Int -> m b) -> m (Canvas1D n b)
 mkCanvas1D mkBuff = do
     let size = 3 * fromInteger (fromTypeNat (aNat :: NatType n))
@@ -26,7 +26,7 @@ mkCanvas1D mkBuff = do
 
 
 
-clearCanvas :: forall n b s. (KnownNat n, NeoPixelBuffer b)
+clearCanvas :: forall n b s. (KnownNat n, FrameBuffer b)
             => Canvas1D n b -> Ivory (ProcEffects s ()) ()
 clearCanvas Canvas1D{..} =
     arrayMap $ \(ix :: Ix n) -> do
@@ -37,7 +37,7 @@ clearCanvas Canvas1D{..} =
 
 
 
-writePixel :: forall n b r s. (KnownNat n, NeoPixelBuffer b)
+writePixel :: forall n b r s. (KnownNat n, FrameBuffer b)
             => Canvas1D n b -> Ix n -> RGB
             -> Ivory ('Effects (Returns ()) r (Scope s)) ()
 writePixel Canvas1D{..} ix RGB{..} = do
