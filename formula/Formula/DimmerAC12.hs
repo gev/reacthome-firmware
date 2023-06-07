@@ -1,7 +1,6 @@
 module Formula.DimmerAC12 where
 
 import           Core.Formula
-import           Data.Color
 import           Device.GD32F3x0
 import           Feature.Dimmer.AC    (dimmerAC)
 import           Feature.Indicator
@@ -16,7 +15,7 @@ dimmerAC12 = Formula { name       = "dimmerAC12"
                      , version    = (2, 1)
                      , shouldInit = true
                      , transport  = rbus $ rs485 1 uart_0 out_pb_2
-                     , features   = [ indicator npx_pwm_0 $ hsv 240 1 0.2
+                     , features   = [ indicator npx_pwm_0 30
                                     , dimmerAC [ pwm_0
                                                , pwm_1
                                                , pwm_2

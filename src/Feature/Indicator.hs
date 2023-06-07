@@ -40,7 +40,7 @@ import           Support.Cast
 data Indicator = forall o b. (I.Display o b, FrameBuffer b) => Indicator
     { display   :: o
     , canvas    :: Canvas1D 20 b
-    , color     :: [InitStruct HSV]
+    , hue       :: IFloat
     , t1        :: Value IFloat
     , t         :: Value Sint32
     , dt        :: Value Sint32
@@ -53,13 +53,15 @@ data Indicator = forall o b. (I.Display o b, FrameBuffer b) => Indicator
     }
 
 
+maxValue = 0.3 :: IFloat
+
 indicator :: ( MonadWriter Context m
              , MonadReader (D.Domain p t) m
              , FrameBuffer b
              , I.Display o b
              , T.Transport t
-             ) => (p -> m o) -> [InitStruct HSV] -> m Feature
-indicator mkDisplay color = do
+             ) => (p -> m o) -> IFloat -> m Feature
+indicator mkDisplay hue = do
     mcu       <- asks D.mcu
     transport <- asks D.transport
     display   <- mkDisplay $ peripherals mcu
@@ -75,7 +77,7 @@ indicator mkDisplay color = do
     addStruct (Proxy :: Proxy RGB)
     addStruct (Proxy :: Proxy HSV)
 
-    let indicator = Indicator { display, canvas, color
+    let indicator = Indicator { display, canvas, hue
                               , t, t1, dt
                               , start, findMe, findMeMsg
                               , pixels
@@ -93,25 +95,29 @@ indicator mkDisplay color = do
 update :: Indicator -> Ivory (ProcEffects s ()) ()
 update Indicator{..} = do
     t1'   <- deref t1
-    pixel <- local $ istruct color
-    v'    <- deref $ pixel ~> v
+    pixel <- local . istruct $ hsv hue 1 maxValue
 
-    s' <- deref $ pixel ~> s
-    when (t1' >=? s') $ store start false
-
+    when (t1' >=? 1) $ store start false
     start' <- deref start
-    when start' $ store (pixel ~> s) t1'
 
     arrayMap $ \ix -> do
         let x  = pi * (safeCast (fromIx ix) - 10 - t1') / 10
         let y  = 0.25 + 0.2 * cos x
-        store (pixel ~> v) $ v' * y
+        ifte_ start'
+            (do
+                store (pixel ~> s) t1'
+                store (pixel ~> v) $ t1' * maxValue * y
+            )
+            (
+                store (pixel ~> v) $ maxValue * y
+            )
         hsv'to'rgb pixel $ pixels ! ix
 
     findMe' <- deref findMe
     when findMe' $ do
         t' <- deref t
         store (pixel ~> v) 1
+        store (pixel ~> s) 0.5
         hsv'to'rgb pixel $ pixels ! toIx ( 9 - t')
         hsv'to'rgb pixel $ pixels ! toIx (10 + t')
         cond_ [ t' ==? 0 ==> store dt   1
@@ -120,7 +126,7 @@ update Indicator{..} = do
         dt' <- deref dt
         store t  (t' + dt')
 
-    store t1 (t1' + 0.05)
+    store t1 (t1' + 0.1)
 
 
 
