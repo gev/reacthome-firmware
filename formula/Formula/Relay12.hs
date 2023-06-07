@@ -2,6 +2,7 @@ module Formula.Relay12 where
 
 import           Core.Formula
 import           Device.GD32F3x0
+import           Feature.Indicator
 import           Feature.Relays       (relays)
 import           Interface.RS485
 import           Ivory.Language
@@ -14,7 +15,8 @@ relay12 = Formula { name       = "relay12"
                   , version    = (3, 0)
                   , shouldInit = true
                   , transport  = rbus $ rs485 1 uart_0 out_pb_2
-                  , features   = [ relays [ out_pb_1
+                  , features   = [ indicator npx_pwm_0 300
+                                 , relays [ out_pb_1
                                           , out_pa_11
                                           , out_pa_8
                                           , out_pb_0
