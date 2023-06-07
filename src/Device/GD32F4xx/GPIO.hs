@@ -143,3 +143,6 @@ initPort Port{..} = proc (symbol gpio <> "_" <> symbol pin <> "_init") $ body $ 
         (MF mode) -> setMode gpio mode gpio_pupd_none pin
         (AF mode) -> setMode gpio gpio_mode_af gpio_pupd_none pin
                   >> setAF gpio mode pin
+
+instance Show Port where
+    show Port{..} = symbol gpio <> "_" <> symbol pin

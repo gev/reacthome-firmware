@@ -6,6 +6,7 @@ module Device.GD32F4xx where
 import           Control.Monad.Writer
 import           Core.Context
 import           Device.GD32F4xx.GPIO
+import           Device.GD32F4xx.Display.NeoPixel
 import           Device.GD32F4xx.GPIO.Input
 import           Device.GD32F4xx.GPIO.Output
 import           Device.GD32F4xx.Mac           (makeMac)
@@ -14,20 +15,26 @@ import           Device.GD32F4xx.SysTick
 import           Device.GD32F4xx.Timer
 import           Device.GD32F4xx.UART
 import           Interface.Mac                 (Mac)
+import           Device.GD32F4xx.PWM
 import           Interface.MCU
 import           Interface.SystemClock         (SystemClock)
+import           Ivory.Language
 import           Support.Device.GD32F4xx
 import           Support.Device.GD32F4xx.DMA
 import           Support.Device.GD32F4xx.GPIO
 import           Support.Device.GD32F4xx.IRQ
 import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.USART
+import Support.Device.GD32F4xx.Timer
 
 
 
-type UARTW   = forall m. MonadWriter Context m => m UART
-type InputW  = forall m. MonadWriter Context m => m Input
-type OutputW = forall m. MonadWriter Context m => m Output
+
+type UARTW         = forall m. MonadWriter Context m => m UART
+type InputW        = forall m. MonadWriter Context m => m Input
+type OutputW       = forall m. MonadWriter Context m => m Output
+type PWMW          = forall m. MonadWriter Context m => Uint32 -> Uint32 -> m PWM
+type NeoPixelPWMW  = forall m. MonadWriter Context m => m NeoPixelPWM
 
 
 
@@ -209,6 +216,8 @@ data GD32F4xx = GD32F4xx
     , out_pe_13 :: OutputW
     , out_pe_14 :: OutputW
     , out_pe_15 :: OutputW
+
+    , npx_pwm_0 :: NeoPixelPWMW
     }
 
 
@@ -450,6 +459,11 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
     , out_pe_13 = output pe_13
     , out_pe_14 = output pe_14
     , out_pe_15 = output pe_15
+
+    , npx_pwm_0 = mkNeoPixelPWM pwm_timer_2 
+                                timer_ch_0 rcu_dma0 
+                                dma0 dma_ch2 dma_subperi5
+                                (pb_5 $ AF gpio_af_2)
     }
 
 

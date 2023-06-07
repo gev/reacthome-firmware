@@ -146,6 +146,7 @@ dma1 = DMA_PERIPH $ ext "DMA1"
 
 newtype DMA_CHANNEL = DMA_CHANNEL Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
+instance ExtSymbol DMA_CHANNEL
 
 dma_ch0 = DMA_CHANNEL $ ext "DMA_CH0"
 dma_ch1 = DMA_CHANNEL $ ext "DMA_CH1"
