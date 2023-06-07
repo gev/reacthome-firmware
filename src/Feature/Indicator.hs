@@ -102,7 +102,7 @@ update Indicator{..} = do
 
     arrayMap $ \ix -> do
         let x  = pi * (safeCast (fromIx ix) - 10 - t1') / 10
-        let y  = 0.25 + 0.2 * cos x
+        let y  = 0.4 + 0.2 * cos x
         ifte_ start'
             (do
                 store (pixel ~> s) t1'
