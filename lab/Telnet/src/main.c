@@ -40,14 +40,22 @@ OF SUCH DAMAGE.
 #include "main.h"
 #include "lwip/tcp.h"
 #include "lwip/timeouts.h"
-// #include "gd32f450i_eval.h"
+#include "gd32f450i_eval.h"
 #include "hello_gigadevice.h"
+#include <stdio.h>
 
 
 #define SYSTEMTICK_PERIOD_MS  10
 
 __IO uint32_t g_localtime = 0; /* for creating a time reference incremented by 10ms */
 uint32_t g_timedelay;
+
+int _write(int file, char *ptr, int len);
+
+void uart_stdout_init(void)
+{
+    setvbuf(stdout, NULL, _IONBF, 0);
+}
 
 /*!
     \brief      main function
@@ -57,13 +65,14 @@ uint32_t g_timedelay;
 */
 int main(void)
 {
-    // gd_eval_com_init(EVAL_COM0);
+    gd_eval_com_init(EVAL_COM0);
+    uart_stdout_init();
     // gd_eval_key_init(KEY_TAMPER, KEY_MODE_EXTI);
     /* setup ethernet system(GPIOs, clocks, MAC, DMA, systick) */
     enet_system_setup();
-
     /* initilaize the LwIP stack */
     lwip_stack_init();
+    printf("init done\n");
 
     while(1) {
 
@@ -130,10 +139,14 @@ void time_update(void)
     g_localtime += SYSTEMTICK_PERIOD_MS;
 }
 
-/* retarget the C library printf function to the USART */
-int fputc(int ch, FILE *f)
+int _write(int file, char *ptr, int len)
 {
-    // usart_data_transmit(EVAL_COM0, (uint8_t) ch);
-    // while(RESET == usart_flag_get(EVAL_COM0, USART_FLAG_TBE));
-    // return ch;
+    int i;
+    for (i = 0; i < len; i++)
+    {
+        /* отправить символ один за другим */
+        while (usart_flag_get(USART0, USART_FLAG_TBE) == RESET);
+        usart_data_transmit(USART0, *ptr++);
+    }
+    return len;
 }

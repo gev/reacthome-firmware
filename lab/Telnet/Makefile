@@ -98,15 +98,6 @@ C_SOURCES =  \
 ./lwip-2.1.2/src/core/ipv4/ip4.c									\
 ./lwip-2.1.2/src/core/ipv4/ip4_addr.c								\
 ./lwip-2.1.2/src/core/ipv4/ip4_frag.c								\
-./lwip-2.1.2/src/core/ipv6/dhcp6.c									\
-./lwip-2.1.2/src/core/ipv6/ethip6.c									\
-./lwip-2.1.2/src/core/ipv6/icmp6.c									\
-./lwip-2.1.2/src/core/ipv6/inet6.c									\
-./lwip-2.1.2/src/core/ipv6/ip6.c									\
-./lwip-2.1.2/src/core/ipv6/ip6_addr.c								\
-./lwip-2.1.2/src/core/ipv6/ip6_frag.c								\
-./lwip-2.1.2/src/core/ipv6/mld6.c									\
-./lwip-2.1.2/src/core/ipv6/nd6.c									\
 ./lwip-2.1.2/src/core/mem.c											\
 ./lwip-2.1.2/src/core/memp.c										\
 ./lwip-2.1.2/src/core/netif.c										\
@@ -156,6 +147,15 @@ C_SOURCES =  \
 ./lwip-2.1.2/src/netif/ppp/vj.c										\
 ./lwip-2.1.2/src/netif/slipif.c										\
 ./lwip-2.1.2/src/netif/zepif.c										\
+# ./lwip-2.1.2/src/core/ipv6/dhcp6.c									\
+# ./lwip-2.1.2/src/core/ipv6/ethip6.c									\
+# ./lwip-2.1.2/src/core/ipv6/icmp6.c									\
+# ./lwip-2.1.2/src/core/ipv6/inet6.c									\
+# ./lwip-2.1.2/src/core/ipv6/ip6.c									\
+# ./lwip-2.1.2/src/core/ipv6/ip6_addr.c								\
+# ./lwip-2.1.2/src/core/ipv6/ip6_frag.c								\
+# ./lwip-2.1.2/src/core/ipv6/mld6.c									\
+# ./lwip-2.1.2/src/core/ipv6/nd6.c									\
 # ./lwip-2.1.2/port/GD32F4xx/FreeRTOS/ethernetif.c					\
 # ./lwip-2.1.2/port/GD32F4xx/FreeRTOS/sys_arch.c					\	
 # ./lwip-2.1.2/src/apps/altcp_tls/altcp_tls_mbedtls.c					\
