@@ -15,7 +15,8 @@ import           Ivory.Stdlib
 newtype Semaphore t = Semaphore { getSemaphore :: Value t }
 
 
-semaphore :: MonadWriter Context m => String -> Uint32 -> m (Semaphore Uint32)
+semaphore :: (MonadWriter Context m, IvoryZeroVal t, IvoryInit t)
+          => String -> t -> m (Semaphore t)
 semaphore id n = do
     v <- value (id <> "_semaphore") n
     pure $ Semaphore v
