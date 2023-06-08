@@ -18,16 +18,16 @@ import           Ivory.Language.Proxy
 
 
 data FrameBufferNeoPixelPWM = FrameBufferNeoPixelPWM
-    { runFrame :: RunValues Uint8
-    , zeroDuty :: Uint8
-    , oneDuty  :: Uint8
+    { runFrame :: RunValues Uint16
+    , zeroDuty :: Uint16
+    , oneDuty  :: Uint16
     }
 
 
 neoPixelBufferPWM :: forall m n. (MonadWriter Context m)
                   => Uint8 -> String -> Int -> m FrameBufferNeoPixelPWM
 neoPixelBufferPWM period id size = do
-    let zeroDuty = period `iDiv` 4
+    let zeroDuty = safeCast $ period `iDiv` 4
     let oneDuty  = 3 * zeroDuty
     let size'    = 8 * size + 1 -- | add stop bit
     let runFrame = runValues (id <> "_frame_buffer_neo_pixel_pwm") $ replicate size' 0x0

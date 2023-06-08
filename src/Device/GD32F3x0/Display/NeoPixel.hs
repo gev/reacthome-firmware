@@ -96,7 +96,7 @@ instance I.Display NeoPixelPWM FrameBufferNeoPixelPWM where
     transmitFrameBuffer NeoPixelPWM{..} FrameBufferNeoPixelPWM{..} =
         runFrame $ \frame -> do
             let frame' = addrOf frame
-            store (dmaParams ~> memory_addr) =<< castArrayUint8ToUint32 (toCArray frame')
+            store (dmaParams ~> memory_addr) =<< castArrayUint16ToUint32 (toCArray frame')
             store (dmaParams ~> number) $ arrayLen frame'
             deinitDMA                   dmaChannel
             initDMA                     dmaChannel dmaParams

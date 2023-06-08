@@ -32,7 +32,7 @@ import           Support.Device.GD32F4xx.Timer
 
 
 pwmPeriod :: Num a => a
-pwmPeriod = 101
+pwmPeriod = 120
 
 
 
@@ -60,7 +60,7 @@ mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer pwmPort = do
     pwmTimer     <- timer' system_core_clock pwmPeriod
     let dmaInit   = dmaParam [ direction            .= ival dma_memory_to_periph
                              , memory_inc           .= ival dma_memory_increase_enable
-                             , periph_memory_width  .= ival dma_periph_width_8bit
+                             , periph_memory_width  .= ival dma_periph_width_16bit
                              , circular_mode        .= ival dma_circular_mode_disable
                              , periph_inc           .= ival dma_periph_increase_disable
                              , priority             .= ival dma_priority_ultra_high
@@ -76,7 +76,7 @@ mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer pwmPort = do
             initChannelOcTimer            t pwmChannel =<< local (istruct timerOcDefaultParam)
             configChannelOutputPulseValue t pwmChannel 0
             configTimerOutputMode         t pwmChannel timer_oc_mode_pwm0
-            configChannelOutputShadow     t pwmChannel timer_oc_shadow_disable
+            configChannelOutputShadow     t pwmChannel timer_oc_shadow_enable
             configPrimaryOutput           t true
             enableTimerDMA                t timer_dma_upd
             enableTimer                   t
@@ -102,7 +102,7 @@ instance I.Display NeoPixelPWM FrameBufferNeoPixelPWM where
     transmitFrameBuffer NeoPixelPWM{..} FrameBufferNeoPixelPWM{..} =
         runFrame $ \frame -> do
             let frame' = addrOf frame
-            store (dmaParams ~> memory0_addr) =<< castArrayUint8ToUint32 (toCArray frame')
+            store (dmaParams ~> memory0_addr) =<< castArrayUint16ToUint32 (toCArray frame')
             store (dmaParams ~> number) $ arrayLen frame'
             deinitDMA                       dmaPer dmaChannel
             initSingleDMA                   dmaPer dmaChannel dmaParams
