@@ -66,7 +66,7 @@ rbus rs485 = do
     let dispatch = makeDispatcher features
 
     let onMessage buff n shouldHandle = do
-            when shouldHandle $ dispatch buff n
+            when (n >? 0 .&& shouldHandle) $ dispatch buff n
             store shouldConfirm true
 
     {-

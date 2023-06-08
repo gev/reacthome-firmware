@@ -15,7 +15,8 @@ makeDispatcher :: (Controller c, KnownNat l)
                -> Buffer l Uint8
                -> Uint8
                -> forall s. Ivory (ProcEffects s ()) ()
-makeDispatcher controllers buff n = cond_ =<< conditions
+makeDispatcher controllers buff n =
+    when (n >? 0) $ cond_ =<< conditions
     where
         conditions = do
             c <- traverse run handlers

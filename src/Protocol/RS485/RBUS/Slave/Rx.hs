@@ -66,14 +66,13 @@ receiveDiscoveryMac :: Slave n -> Uint8 -> Ivory eff ()
 receiveDiscoveryMac Slave{..} v = do
     i <- deref offset
     m <- deref $ mac ! toIx i
-    ifte_ (v ==? m)
-          (do store offset $ i + 1
-              i <- deref offset
-              updateCRC16 crc v
-              when (i ==? arrayLen mac)
-                   (store phase waitingAddress)
-          )
-          (store valid false)
+    when (v /=? m)
+         (store valid false)
+    updateCRC16 crc v
+    store offset $ i + 1
+    i <- deref offset
+    when (i ==? arrayLen mac)
+         (store phase waitingAddress)
 
 receiveDiscoveryAddress :: Slave n -> Uint8 -> Ivory eff ()
 receiveDiscoveryAddress Slave{..} v = do
@@ -98,8 +97,8 @@ receivePing = runState phase
     ]
 
 receivePingLsbCRC :: Slave n -> Uint8 -> Ivory eff ()
-receivePingLsbCRC r@Slave{..} =
-    receiveLsbCRC r $ store address broadcastAddress
+receivePingLsbCRC s@Slave{..} =
+    receiveLsbCRC s $ store address broadcastAddress
 
 
 
@@ -111,8 +110,8 @@ receiveConfirm = runState phase
     ]
 
 receiveConfirmLsbCRC :: Slave n -> Uint8 -> Ivory eff ()
-receiveConfirmLsbCRC r =
-    receiveLsbCRC r $ onConfirm r
+receiveConfirmLsbCRC s =
+    receiveLsbCRC s $ onConfirm s
 
 
 
@@ -143,16 +142,16 @@ receiveMessageSize Slave{..} v = do
 receiveMessageData :: KnownNat n => Slave n -> Uint8 -> Ivory eff ()
 receiveMessageData Slave{..} v = do
     i <- deref offset
-    s <- deref size
     store (buff ! toIx i) v
     store offset $ i + 1
     updateCRC16 crc v
+    s <- deref size
     i <- deref offset
     when (i ==? s)
          (store phase waitingMsbCRC)
 
 receiveMessageLsbCRC :: Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receiveMessageLsbCRC r@Slave{..} = receiveLsbCRC r $ do
+receiveMessageLsbCRC s@Slave{..} = receiveLsbCRC s $ do
     tmp'   <- safeCast <$> deref tmp
     size'  <- deref size
     tidRx' <- deref tidRx
