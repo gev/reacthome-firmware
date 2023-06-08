@@ -85,6 +85,14 @@ SECTIONS
         _estack = .;
     } >DATA
 
+    /* Remove information from the standard libraries */
+    /DISCARD/ :
+    {
+        libc.a ( * )
+        libm.a ( * )
+        libgcc.a ( * )
+    }
+
     __bss_start = .;
     .bss :
     {
