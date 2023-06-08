@@ -3,6 +3,7 @@
 module Transport.RS485.RBUS.Rx    where
 
 import           Data.Concurrent.Queue
+import           Interface.RS485
 import           Interface.SystemClock
 import           Ivory.Language
 import           Ivory.Stdlib
@@ -29,6 +30,6 @@ resetTask :: RBUS -> Ivory eff ()
 resetTask RBUS{..} = do
     t0 <- deref rxTimestamp
     t1 <- getSystemTime clock
-    when (t1 - t0 >? 1) $ do
+    when (t1 - t0 >? 10) $ do
         reset protocol
         store rxLock false
