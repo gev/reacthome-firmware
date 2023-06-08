@@ -31,7 +31,6 @@ txTask r@RBUS{..} = do
     rxLock' <- deref rxLock
     txLock' <- deref txLock
     when (iNot rxLock' .&& iNot txLock') $ do
-
         hasAddress' <- hasAddress protocol
         ifte_ hasAddress'
             (do
@@ -41,13 +40,10 @@ txTask r@RBUS{..} = do
                 shouldConfirm' <- deref shouldConfirm
                 when shouldConfirm'
                     (doConfirm r)
-
                 shouldInit' <- deref shouldInit
                 when shouldInit'
                     (doRequestInit r)
-
                 doTransmitMessage r
-
                 doPing r
             )
             (doDiscovery r)

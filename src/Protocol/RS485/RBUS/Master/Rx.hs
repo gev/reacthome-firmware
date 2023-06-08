@@ -142,15 +142,17 @@ receiveMessageSize :: Master n -> Uint8 -> Ivory eff ()
 receiveMessageSize Master{..} v = do
     store size v
     updateCRC16 crc v
-    store phase waitingData
+    ifte_ (v ==? 0)
+          (store phase waitingMsbCRC)
+          (store phase waitingData)
 
 receiveMessageData :: KnownNat n => Master n -> Uint8 -> Ivory eff ()
 receiveMessageData Master{..} v = do
     i <- deref offset
-    s <- deref size
     store (buff ! toIx i) v
     store offset $ i + 1
     updateCRC16 crc v
+    s <- deref size
     i <- deref offset
     when (i ==? s)
          (store phase waitingMsbCRC)

@@ -2,8 +2,7 @@
 
 module Transport.RS485.RBUS.Rx    where
 
-import           Data.Concurrent.Queue
-import           Interface.RS485
+import           Data.Concurrent.Queue        as Q
 import           Interface.SystemClock
 import           Ivory.Language
 import           Ivory.Stdlib
@@ -13,6 +12,9 @@ import           Transport.RS485.RBUS.Data
 
 rxHandle :: RBUS -> Uint16 -> Ivory eff ()
 rxHandle RBUS{..} value = do
+    {-
+        TODO: Add error checking on receive
+    -}
     store rxLock true
     store rxTimestamp =<< getSystemTime clock
     push rxQueue $ \i ->
@@ -26,10 +28,15 @@ rxTask RBUS{..} =
         receive protocol $ castDefault v
 
 
+{--
+    TODO: Use IDLE and Error interrupts
+--}
 resetTask :: RBUS -> Ivory eff ()
 resetTask RBUS{..} = do
     t0 <- deref rxTimestamp
     t1 <- getSystemTime clock
-    when (t1 - t0 >? 10) $ do
-        reset protocol
-        store rxLock false
+    when (t1 - t0 >? 1) $ do
+        Q.clear rxQueue
+        reset   protocol
+        store   rxLock false
+        store   rxTimestamp t1

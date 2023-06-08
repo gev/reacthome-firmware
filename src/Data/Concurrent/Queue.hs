@@ -75,6 +75,14 @@ remove Queue{..} =
         up producerS
 
 
+clear :: forall n eff. KnownNat n => Queue n -> Ivory eff ()
+clear Queue{..} = do
+    store consumerIx 0
+    store producerIx 0
+    store (getSemaphore producerS) $ fromInteger $ fromTypeNat (aNat :: NatType n)
+    store (getSemaphore consumerS) 0
+
+
 size :: Queue n -> Ivory eff Uint16
 size Queue{..} =
     (-) <$> deref producerIx <*> deref consumerIx
