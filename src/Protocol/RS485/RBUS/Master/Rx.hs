@@ -29,11 +29,11 @@ receive = runState state
 
 
 receivePreamble :: Master n -> Uint8 -> Ivory eff ()
-receivePreamble = runInput rxPreamble
-    [ discovery |-> start receivingDiscovery waitingMac
-    , ping      |-> start receivingPing      waitingAddress
-    , confirm   |-> start receivingConfirm   waitingAddress
-    , message   |-> start receivingMessage   waitingAddress
+receivePreamble = runInput
+    [ discovery rxPreamble |-> start receivingDiscovery waitingMac
+    , ping      rxPreamble |-> start receivingPing      waitingAddress
+    , confirm   rxPreamble |-> start receivingConfirm   waitingAddress
+    , message   rxPreamble |-> start receivingMessage   waitingAddress
     ]
 
 start :: Uint8 -> Uint8 -> Master n -> Uint8 -> Ivory eff ()

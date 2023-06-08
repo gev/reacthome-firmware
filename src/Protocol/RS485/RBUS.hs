@@ -44,6 +44,9 @@ receivingDiscovery  = 0x01 :: Uint8
 receivingPing       = 0x02 :: Uint8
 receivingConfirm    = 0x03 :: Uint8
 receivingMessage    = 0x04 :: Uint8
+skippingAll         = 0x05 :: Uint8
+skippingMsg         = 0x06 :: Uint8
+
 
 waitingAddress      = 0x00 :: Uint8
 waitingTid          = 0x01 :: Uint8

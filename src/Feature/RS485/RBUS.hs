@@ -118,6 +118,7 @@ rbus' rs485 index = do
     let onDiscovery address = do
             store discoveryAddress address
             store shouldDiscovery true
+            store shouldPing false
 
     let onReceive = store rxLock false
 
@@ -159,7 +160,12 @@ configureRS485 RBUS{..} = do
     let config lc wl sb p = lineControl' ==? lc
                                          ==> I.configureRS485 rs baudrate' wl sb p
     ifte_ isRBUS'
-          (I.configureRS485 rs defaultBaudrate I.WL_8b I.SB_1b I.None)
+          (do
+              I.configureRS485 rs defaultBaudrate I.WL_8b I.SB_1b I.None
+              store shouldDiscovery false
+              store shouldConfirm false
+              store shouldPing true
+          )
           (when (baudrate' >? 0) $
               cond_ [ config 0 I.WL_8b I.SB_1b I.None
                     , config 1 I.WL_8b I.SB_1b I.Even
