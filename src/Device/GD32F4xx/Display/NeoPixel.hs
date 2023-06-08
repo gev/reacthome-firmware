@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
 {-# LANGUAGE TypeOperators         #-}
 
@@ -54,9 +55,10 @@ mkNeoPixelPWM :: MonadWriter Context m
               -> DMA_PERIPH
               -> DMA_CHANNEL
               -> DMA_SUBPERIPH
+              -> (forall eff. TIMER_PERIPH -> Ivory eff Uint32)
               -> Port
               -> m NeoPixelPWM
-mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer pwmPort = do
+mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer selChPWM pwmPort = do
     pwmTimer     <- timer' system_core_clock pwmPeriod
     let dmaInit   = dmaParam [ direction            .= ival dma_memory_to_periph
                              , memory_inc           .= ival dma_memory_increase_enable
@@ -72,7 +74,7 @@ mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer pwmPort = do
         initNeoPixel' = proc (show pwmPort <> "_pwm_init") $ body $ do
             enablePeriphClock             dmaRcu
             let t = timer pwmTimer
-            store (dmaParams ~> periph_addr) =<< ch2cv t
+            store (dmaParams ~> periph_addr) =<< selChPWM t
             initChannelOcTimer            t pwmChannel =<< local (istruct timerOcDefaultParam)
             configChannelOutputPulseValue t pwmChannel 0
             configTimerOutputMode         t pwmChannel timer_oc_mode_pwm0
@@ -104,9 +106,9 @@ instance I.Display NeoPixelPWM FrameBufferNeoPixelPWM where
             let frame' = addrOf frame
             store (dmaParams ~> memory0_addr) =<< castArrayUint16ToUint32 (toCArray frame')
             store (dmaParams ~> number) $ arrayLen frame'
-            deinitDMA                       dmaPer dmaChannel
-            initSingleDMA                   dmaPer dmaChannel dmaParams
-            disableCirculationDMA           dmaPer dmaChannel
-            selectChannelSubperipheralDMA   dmaPer dmaChannel dmaSubPer
-            I.resetCounter                  pwmTimer
-            enableChannelDMA                dmaPer dmaChannel
+            deinitDMA                     dmaPer dmaChannel
+            initSingleDMA                 dmaPer dmaChannel dmaParams
+            disableCirculationDMA         dmaPer dmaChannel
+            selectChannelSubperipheralDMA dmaPer dmaChannel dmaSubPer
+            I.resetCounter                pwmTimer
+            enableChannelDMA              dmaPer dmaChannel
