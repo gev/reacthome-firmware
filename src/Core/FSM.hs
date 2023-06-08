@@ -26,11 +26,10 @@ runState f ts st i = do
 
 
 runInput :: IvoryEq p
-         => d
-         -> [(d -> p, t -> p -> Ivory eff ())]
+         => [(p, t -> p -> Ivory eff ())]
          -> t
          -> p
          -> Ivory eff ()
-runInput d ts st i =
+runInput ts st i =
     cond_ $ run <$> ts
-    where run (f, h) = f d ==? i ==> h st i
+    where run (w, h) = w ==? i ==> h st i
