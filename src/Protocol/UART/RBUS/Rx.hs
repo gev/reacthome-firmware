@@ -16,15 +16,15 @@ import           Util.CRC16
 
 receive :: KnownNat n => RBUS n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receive = runState state
-    [ readyToReceive     |-> receivePreamble
-    , receivingMessage   |-> receiveMessage
+    [ readyToReceive   |-> receivePreamble
+    , receivingMessage |-> receiveMessage
     ]
 
 
 
 receivePreamble :: RBUS n -> Uint8 -> Ivory eff ()
-receivePreamble = runInput preamble
-    [ message   |-> start receivingMessage waitingSize
+receivePreamble = runInput
+    [ message preamble |-> start receivingMessage waitingSize
     ]
 
 start :: Uint8 -> Uint8 -> RBUS n -> Uint8 -> Ivory eff ()

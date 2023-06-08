@@ -31,7 +31,6 @@ txTask r@RBUS{..} = do
     rxLock' <- deref rxLock
     txLock' <- deref txLock
     when (iNot rxLock' .&& iNot txLock') $ do
-        ts <- getSystemTime clock
 
         hasAddress' <- hasAddress protocol
         ifte_ hasAddress'
@@ -39,22 +38,26 @@ txTask r@RBUS{..} = do
                 {-
                     TODO: Move initialization out of the RBUS protocol
                 -}
+                shouldConfirm' <- deref shouldConfirm
+                when shouldConfirm'
+                    (doConfirm r)
+
                 shouldInit' <- deref shouldInit
                 when shouldInit'
-                    (doRequestInit r ts)
+                    (doRequestInit r)
 
-                shouldConfirm' <- deref shouldConfirm
-                ifte_ shouldConfirm'
-                    (doConfirm r)
-                    (doTransmitMessage r ts >> doPing r ts)
+                doTransmitMessage r
+
+                doPing r
             )
-            (doDiscovery r ts)
+            (doDiscovery r)
 
 
 
-doTransmitMessage :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
-doTransmitMessage r@RBUS{..} t1 = do
+doTransmitMessage :: RBUS -> Ivory (ProcEffects s ()) ()
+doTransmitMessage r@RBUS{..} = do
     t0 <- deref txTimestamp
+    t1 <- getSystemTime clock
     when (t1 - t0 >? 1) $ peek msgQueue $ \i -> do
         let ix = toIx i
         ttl <- deref $ msgTTL ! ix
@@ -68,21 +71,18 @@ doTransmitMessage r@RBUS{..} t1 = do
                     store sx $ sx' + 1
                     store (txBuff ! dx) v
                 store (msgTTL ! ix) $ ttl - 1
-                store txTimestamp t1
                 rsTransmit r size
             )
             (remove msgQueue)
 
 
 
-doDiscovery :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
-doDiscovery r@RBUS{..} t1 = do
+doDiscovery :: RBUS -> Ivory (ProcEffects s ()) ()
+doDiscovery r@RBUS{..} = do
     t0 <- deref txTimestamp
-    when (t1 - t0 >? 1000)
-         (do
-            store txTimestamp t1
-            toRS transmitDiscovery r
-         )
+    t1 <- getSystemTime clock
+    when (t1 - t0 >? 1000) $
+        toRS transmitDiscovery r
 
 
 doConfirm :: RBUS -> Ivory (ProcEffects s ()) ()
@@ -91,25 +91,21 @@ doConfirm r@RBUS{..}= do
     toRS transmitConfirm r
 
 
-doPing :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
-doPing r@RBUS{..} t1 = do
+doPing :: RBUS -> Ivory (ProcEffects s ()) ()
+doPing r@RBUS{..} = do
     t0 <- deref txTimestamp
-    when (t1 - t0 >? 1000)
-         (do
-            store txTimestamp t1
-            toRS transmitPing r
-         )
+    t1 <- getSystemTime clock
+    when (t1 - t0 >? 1000) $
+        toRS transmitPing r
 
 
 
-doRequestInit :: RBUS -> Uint32 -> Ivory (ProcEffects s ()) ()
-doRequestInit r@RBUS{..} t1 = do
+doRequestInit :: RBUS -> Ivory (ProcEffects s ()) ()
+doRequestInit r@RBUS{..} = do
     t0 <- deref initTimestamp
-    when (t1 - t0 >? 2000)
-         (do
-            store initTimestamp t1
-            toQueue r initBuff
-         )
+    t1 <- getSystemTime clock
+    when (t1 - t0 >? 2000) $
+        toQueue r initBuff
 
 
 
@@ -139,6 +135,7 @@ rsTransmit :: RBUS -> Uint16 -> Ivory (ProcEffects s ()) ()
 rsTransmit RBUS{..} size = do
     let array = toCArray txBuff
     RS.transmit rs array size
+    store txTimestamp =<< getSystemTime clock
     store txLock true
 
 
