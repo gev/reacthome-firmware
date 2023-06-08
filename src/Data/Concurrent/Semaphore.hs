@@ -40,5 +40,5 @@ down (Semaphore s) run = do
 check :: (IvoryStore t, IvoryOrd t, Num t)
       => Semaphore t -> Ivory eff () -> Ivory eff ()
 check (Semaphore s) run = do
-    v <-  deref s
+    v <- deref s
     when (v >? 0) run
