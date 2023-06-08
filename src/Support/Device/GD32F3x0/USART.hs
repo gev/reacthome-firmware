@@ -63,6 +63,7 @@ module Support.Device.GD32F3x0.USART
     , configTransmit
     , enableUSART
     , getFlag
+    , clearFlag
     , receiveData
     , transmitData
     , transmitDMA
@@ -345,6 +346,7 @@ inclUSART = do
     incl usart_transmit_config
     incl usart_enable
     incl usart_flag_get
+    incl usart_flag_clear
     incl usart_data_receive
     incl usart_data_transmit
     incl usart_interrupt_enable
