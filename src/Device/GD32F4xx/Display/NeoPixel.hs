@@ -2,10 +2,11 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
 {-# LANGUAGE TypeOperators         #-}
 
-module Device.GD32F3x0.Display.NeoPixel where
+module Device.GD32F4xx.Display.NeoPixel where
 
 import           Control.Monad.Writer                  (MonadWriter)
 import           Core.Context
@@ -14,25 +15,25 @@ import           Core.Task
 import           Data.Display.FrameBuffer.NeoPixel.PWM
 import           Data.Record
 import           Data.Value
-import           Device.GD32F3x0.GPIO
-import           Device.GD32F3x0.Timer
+import           Device.GD32F4xx.GPIO
+import           Device.GD32F4xx.Timer
 import qualified Interface.Display                     as I
 import qualified Interface.Timer                       as I
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Ivory.Support
 import           Support.Cast
-import           Support.Device.GD32F3x0.DMA
-import           Support.Device.GD32F3x0.IRQ
-import           Support.Device.GD32F3x0.Misc
-import           Support.Device.GD32F3x0.RCU
-import           Support.Device.GD32F3x0.System
-import           Support.Device.GD32F3x0.Timer
+import           Support.Device.GD32F4xx.DMA
+import           Support.Device.GD32F4xx.IRQ
+import           Support.Device.GD32F4xx.Misc
+import           Support.Device.GD32F4xx.RCU
+import           Support.Device.GD32F4xx.System
+import           Support.Device.GD32F4xx.Timer
 
 
 
 pwmPeriod :: Num a => a
-pwmPeriod = 101
+pwmPeriod = 120
 
 
 
@@ -40,33 +41,40 @@ data NeoPixelPWM = NeoPixelPWM
     { pwmTimer   :: Timer
     , pwmChannel :: TIMER_CHANNEL
     , pwmPort    :: Port
+    , dmaRcu     :: RCU_PERIPH
+    , dmaPer     :: DMA_PERIPH
     , dmaChannel :: DMA_CHANNEL
-    , dmaParams  :: Record DMA_PARAM_STRUCT
+    , dmaSubPer  :: DMA_SUBPERIPH
+    , dmaParams  :: Record DMA_SINGLE_PARAM_STRUCT
     }
 
 mkNeoPixelPWM :: MonadWriter Context m
               => (Uint32 -> Uint32 -> m Timer)
               -> TIMER_CHANNEL
+              -> RCU_PERIPH
+              -> DMA_PERIPH
               -> DMA_CHANNEL
+              -> DMA_SUBPERIPH
+              -> (forall eff. TIMER_PERIPH -> Ivory eff Uint32)
               -> Port
               -> m NeoPixelPWM
-mkNeoPixelPWM timer' pwmChannel dmaChannel pwmPort = do
+mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer selChPWM pwmPort = do
     pwmTimer     <- timer' system_core_clock pwmPeriod
-    let dmaInit   = dmaParam [ direction    .= ival dma_memory_to_peripheral
-                             , memory_inc   .= ival dma_memory_increase_enable
-                             , memory_width .= ival dma_memory_width_8bit
-                             , periph_inc   .= ival dma_periph_increase_disable
-                             , periph_width .= ival dma_peripheral_width_16bit
-                             , priority     .= ival dma_priority_ultra_high
+    let dmaInit   = dmaParam [ direction            .= ival dma_memory_to_periph
+                             , memory_inc           .= ival dma_memory_increase_enable
+                             , periph_memory_width  .= ival dma_periph_width_16bit
+                             , circular_mode        .= ival dma_circular_mode_disable
+                             , periph_inc           .= ival dma_periph_increase_disable
+                             , priority             .= ival dma_priority_ultra_high
                              ]
     dmaParams    <- record (symbol dmaChannel <> "_dma_param") dmaInit
     frameRequest <- value  (symbol dmaChannel <> "_frame_request" ) true
 
     let initNeoPixel' :: Def ('[] :-> ())
         initNeoPixel' = proc (show pwmPort <> "_pwm_init") $ body $ do
-            enablePeriphClock             rcu_dma
+            enablePeriphClock             dmaRcu
             let t = timer pwmTimer
-            store (dmaParams ~> periph_addr) =<< ch0cv t
+            store (dmaParams ~> periph_addr) =<< selChPWM t
             initChannelOcTimer            t pwmChannel =<< local (istruct timerOcDefaultParam)
             configChannelOutputPulseValue t pwmChannel 0
             configTimerOutputMode         t pwmChannel timer_oc_mode_pwm0
@@ -78,7 +86,7 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel pwmPort = do
     addInit $ initPort pwmPort
     addInit initNeoPixel'
 
-    pure NeoPixelPWM { pwmTimer, pwmChannel, pwmPort, dmaChannel, dmaParams }
+    pure NeoPixelPWM { pwmTimer, pwmChannel, pwmPort, dmaRcu, dmaPer, dmaChannel, dmaSubPer, dmaParams }
 
 
 
@@ -96,11 +104,11 @@ instance I.Display NeoPixelPWM FrameBufferNeoPixelPWM where
     transmitFrameBuffer NeoPixelPWM{..} FrameBufferNeoPixelPWM{..} =
         runFrame $ \frame -> do
             let frame' = addrOf frame
-            store (dmaParams ~> memory_addr) =<< castArrayUint16ToUint32 (toCArray frame')
+            store (dmaParams ~> memory0_addr) =<< castArrayUint16ToUint32 (toCArray frame')
             store (dmaParams ~> number) $ arrayLen frame'
-            deinitDMA                   dmaChannel
-            initDMA                     dmaChannel dmaParams
-            disableCirculationDMA       dmaChannel
-            disableMemoryToMemoryDMA    dmaChannel
-            I.resetCounter              pwmTimer
-            enableChannelDMA            dmaChannel
+            deinitDMA                     dmaPer dmaChannel
+            initSingleDMA                 dmaPer dmaChannel dmaParams
+            disableCirculationDMA         dmaPer dmaChannel
+            selectChannelSubperipheralDMA dmaPer dmaChannel dmaSubPer
+            I.resetCounter                pwmTimer
+            enableChannelDMA              dmaPer dmaChannel

@@ -134,10 +134,12 @@ executable reacthome-firmware
                     , Device.GD32F3x0.UART
 
                     , Device.GD32F4xx
+                    , Device.GD32F4xx.Display.NeoPixel
                     , Device.GD32F4xx.GPIO
                     , Device.GD32F4xx.GPIO.Input
                     , Device.GD32F4xx.GPIO.Output
                     , Device.GD32F4xx.Mac
+                    , Device.GD32F4xx.PWM
                     , Device.GD32F4xx.SysTick
                     , Device.GD32F4xx.SystemClock
                     , Device.GD32F4xx.Timer
@@ -176,6 +178,7 @@ executable reacthome-firmware
                     , Support.Device.GD32F4xx.USART
                     , Support.Device.GD32F4xx.EXTI
                     , Support.Device.GD32F4xx.SYSCFG
+                    , Support.Device.GD32F4xx.System
 
                     , Test
 

@@ -25,7 +25,7 @@ import           Support.Device.GD32F4xx.Timer
 
 
 
-data Timer = forall s. Timer
+data Timer = Timer
     { timer :: TIMER_PERIPH
     , rcu   :: RCU_PERIPH
     , irq   :: IRQn
@@ -80,3 +80,7 @@ instance Handler I.HandleTimer Timer where
                 flag <- getTimerInterruptFlag timer timer_int_flag_up
                 when flag $ clearTimerInterruptFlag timer timer_int_flag_up
                 handle
+
+instance I.Timer Timer where
+    setCounter t = writeCounter (timer t)
+    getCounter t = readCounter  (timer t)

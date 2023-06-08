@@ -26,6 +26,7 @@ module Support.Device.GD32F4xx.Timer
     , ocidlestate
     , ocnidlestate
     , timerOcParam
+    , timerOcDefaultParam
 
     , TIMER_PERIPH
     , timer0
@@ -58,8 +59,12 @@ module Support.Device.GD32F4xx.Timer
 
     , TIMER_COMPARE_MODE
     , timer_oc_mode_pwm0
+    , timer_oc_mode_pwm1
+    , timer_oc_mode_high
+    , timer_oc_mode_low
 
     , TIMER_COMPARE_SHADOW
+    , timer_oc_shadow_enable
     , timer_oc_shadow_disable
 
     , TIMER_CHANNEL_STATE
@@ -80,6 +85,9 @@ module Support.Device.GD32F4xx.Timer
     , TIMER_COMPL_CHANNEL_IDLE_STATE
     , timer_ocn_idle_state_low
 
+    , TIMER_DMA_SOURCE
+    , timer_dma_upd
+
 
     , deinitTimer
     , enableTimer
@@ -88,11 +96,17 @@ module Support.Device.GD32F4xx.Timer
     , clearTimerInterruptFlag
     , initTimer
     , readCounter
+    , writeCounter
     , configPrimaryOutput
     , configChannelOutputPulseValue
     , configTimerOutputMode
     , configChannelOutputShadow
     , initChannelOcTimer
+    , enableTimerDMA
+    , ch0cv
+    , ch1cv
+    , ch2cv
+    , ch3cv
 
     , inclTimer
     ) where
@@ -148,14 +162,17 @@ type TIMER_OC_PARAM s = Ref s (Struct TIMER_OC_PARAM_STRUCT)
 timerOcParam :: [InitStruct  TIMER_OC_PARAM_STRUCT]
              -> Init (Struct TIMER_OC_PARAM_STRUCT)
 timerOcParam p =
-    istruct $ p <+>
-        [ outputstate  .= ival timer_ccx_enable
-        , outputnstate .= ival timer_ccxn_disable
-        , ocpolarity   .= ival timer_oc_polarity_high
-        , ocnpolarity  .= ival timer_ocn_polarity_high
-        , ocidlestate  .= ival timer_oc_idle_state_low
-        , ocnidlestate .= ival timer_ocn_idle_state_low
-        ]
+    istruct $ p <+> timerOcDefaultParam
+
+
+timerOcDefaultParam =
+    [ outputstate  .= ival timer_ccx_enable
+    , outputnstate .= ival timer_ccxn_disable
+    , ocpolarity   .= ival timer_oc_polarity_high
+    , ocnpolarity  .= ival timer_ocn_polarity_high
+    , ocidlestate  .= ival timer_oc_idle_state_low
+    , ocnidlestate .= ival timer_ocn_idle_state_low
+    ]
 
 
 newtype TIMER_PERIPH = TIMER_PERIPH Uint32
@@ -220,12 +237,16 @@ newtype TIMER_COMPARE_MODE = TIMER_COMPARE_MODE Uint16
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_oc_mode_pwm0 = TIMER_COMPARE_MODE $ ext "TIMER_OC_MODE_PWM0"
+timer_oc_mode_pwm1 = TIMER_COMPARE_MODE $ ext "TIMER_OC_MODE_PWM1"
+timer_oc_mode_high = TIMER_COMPARE_MODE $ ext "TIMER_OC_MODE_HIGH"
+timer_oc_mode_low  = TIMER_COMPARE_MODE $ ext "TIMER_OC_MODE_LOW"
 
 
 
 newtype TIMER_COMPARE_SHADOW = TIMER_COMPARE_SHADOW Uint16
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
+timer_oc_shadow_enable  = TIMER_COMPARE_SHADOW $ ext "TIMER_OC_SHADOW_ENABLE"
 timer_oc_shadow_disable = TIMER_COMPARE_SHADOW $ ext "TIMER_OC_SHADOW_DISABLE"
 
 
@@ -269,6 +290,13 @@ newtype TIMER_COMPL_CHANNEL_IDLE_STATE = TIMER_COMPL_CHANNEL_IDLE_STATE Uint16
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_ocn_idle_state_low = TIMER_COMPL_CHANNEL_IDLE_STATE $ ext "TIMER_OCN_IDLE_STATE_LOW"
+
+
+
+newtype TIMER_DMA_SOURCE = TIMER_DMA_SOURCE Uint16
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
+
+timer_dma_upd = TIMER_DMA_SOURCE $ ext "TIMER_DMA_UPD"
 
 
 
@@ -321,6 +349,13 @@ timer_cnt :: Def ('[TIMER_PERIPH] :-> Uint32)
 timer_cnt = fun "TIMER_CNT"
 
 
+writeCounter :: TIMER_PERIPH -> Uint32 -> Ivory eff ()
+writeCounter = call_ timer_counter_value_config
+
+timer_counter_value_config :: Def ('[TIMER_PERIPH, Uint32] :-> ())
+timer_counter_value_config = fun "timer_counter_value_config"
+
+
 configPrimaryOutput :: TIMER_PERIPH -> IBool -> Ivory eff ()
 configPrimaryOutput = call_ timer_primary_output_config
 
@@ -363,6 +398,41 @@ timer_channel_output_config :: Def ('[ TIMER_PERIPH, TIMER_CHANNEL, TIMER_OC_PAR
 timer_channel_output_config = fun "timer_channel_output_config"
 
 
+enableTimerDMA :: TIMER_PERIPH -> TIMER_DMA_SOURCE -> Ivory eff ()
+enableTimerDMA = call_ timer_dma_enable
+
+timer_dma_enable :: Def ('[ TIMER_PERIPH, TIMER_DMA_SOURCE] :-> ())
+timer_dma_enable = fun "timer_dma_enable"
+
+
+ch0cv :: TIMER_PERIPH -> Ivory eff Uint32
+ch0cv = call timer_ch0cv
+
+timer_ch0cv :: Def ('[TIMER_PERIPH] :-> Uint32)
+timer_ch0cv = fun "(uint32_t) &TIMER_CH0CV"
+
+
+ch1cv :: TIMER_PERIPH -> Ivory eff Uint32
+ch1cv = call timer_ch1cv
+
+timer_ch1cv :: Def ('[TIMER_PERIPH] :-> Uint32)
+timer_ch1cv = fun "(uint32_t) &TIMER_CH1CV"
+
+
+ch2cv :: TIMER_PERIPH -> Ivory eff Uint32
+ch2cv = call timer_ch2cv
+
+timer_ch2cv :: Def ('[TIMER_PERIPH] :-> Uint32)
+timer_ch2cv = fun "(uint32_t) &TIMER_CH2CV"
+
+
+ch3cv :: TIMER_PERIPH -> Ivory eff Uint32
+ch3cv = call timer_ch3cv
+
+timer_ch3cv :: Def ('[TIMER_PERIPH] :-> Uint32)
+timer_ch3cv = fun "(uint32_t) &TIMER_CH3CV"
+
+
 
 inclTimer :: ModuleDef
 inclTimer = do
@@ -388,7 +458,11 @@ inclTimer = do
     inclSym timer_ch_3
 
     inclSym timer_oc_mode_pwm0
+    inclSym timer_oc_mode_pwm1
+    inclSym timer_oc_mode_high
+    inclSym timer_oc_mode_low
 
+    inclSym timer_oc_shadow_enable
     inclSym timer_oc_shadow_disable
 
     inclSym timer_ccx_enable
@@ -403,6 +477,8 @@ inclTimer = do
 
     inclSym timer_ocn_idle_state_low
 
+    inclSym timer_dma_upd
+
     incl timer_interrupt_flag_get
     incl timer_interrupt_flag_clear
     incl timer_interrupt_enable
@@ -410,8 +486,15 @@ inclTimer = do
     incl timer_enable
     incl timer_init
     incl timer_cnt
+    incl timer_counter_value_config
     incl timer_primary_output_config
     incl timer_channel_output_pulse_value_config
     incl timer_channel_output_mode_config
     incl timer_channel_output_shadow_config
     incl timer_auto_reload_shadow_enable
+    incl timer_channel_output_config
+    incl timer_dma_enable
+    incl timer_ch0cv
+    incl timer_ch1cv
+    incl timer_ch2cv
+    incl timer_ch3cv
