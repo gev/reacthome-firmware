@@ -19,7 +19,9 @@ import           Support.Device.GD32F4xx.System
 import           Support.Device.GD32F4xx.Timer
 
 
-
+{--
+    TODO: Timer might has a prescaler/multiplicator. So resulting frequency maybe wrong
+--}
 pwmTimerParam :: Uint32 -> Uint32 -> Init (Struct TIMER_PARAM_STRUCT)
 pwmTimerParam frequency' period' =
     timerParam [ prescaler .= ival (castDefault $ system_core_clock `iDiv` frequency' - 1)
