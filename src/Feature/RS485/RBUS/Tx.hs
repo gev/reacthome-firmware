@@ -32,9 +32,10 @@ txHandle RBUS{..} = do
 
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()
 txTask r@RBUS{..} = do
+    isRBUS' <- deref isRBUS
     rxLock' <- deref rxLock
     txLock' <- deref txLock
-    when (iNot rxLock' .&& iNot txLock') $ do
+    when (isRBUS' .&& iNot rxLock' .&& iNot txLock') $ do
         shouldDiscovery' <- deref shouldDiscovery
         shouldConfirm'   <- deref shouldConfirm
         shouldPing'      <- deref shouldPing
@@ -96,9 +97,12 @@ doConfirm r@RBUS{..} = do
 
 doPing :: RBUS -> Ivory (ProcEffects s ()) ()
 doPing r@RBUS{..} = do
-    store shouldPing false
-    address' <- deref pingAddress
-    toRS (transmitPing address') r 0
+    t0 <- deref txTimestamp
+    t1 <- getSystemTime clock
+    when (t1 - t0 >? 1000) $ do
+        address' <- deref pingAddress
+        toRS (transmitPing address') r 0
+        store txTimestamp t1
 
 
 
