@@ -74,3 +74,11 @@ configureRS485 RS485{..} = configUART uart
 instance Handler HandleRS485 RS485 where
     addHandler (HandleRS485 RS485{..} onReceive onTransmit) = do
         addHandler $ HandleUART uart onReceive onTransmit (Just $ reset rede)
+
+
+
+setREDE :: RS485 -> Ivory eff ()
+setREDE RS485{..} = set rede
+
+resetREDE :: RS485 -> Ivory eff ()
+resetREDE RS485{..} = reset rede
