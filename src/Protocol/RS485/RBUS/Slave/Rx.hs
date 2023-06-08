@@ -22,17 +22,24 @@ receive = runState state
     , receivingConfirm   |-> receiveConfirm
     , receivingDiscovery |-> receiveDiscovery
     , receivingPing      |-> receivePing
+    , skippingAll        |-> skipAll
+    , skippingMsg        |-> skipMsg
     ]
 
 
 
 receivePreamble :: Slave n -> Uint8 -> Ivory eff ()
-receivePreamble = runInput rxPreamble
-    [ discovery |-> start receivingDiscovery waitingMac
-    , ping      |-> start receivingPing      waitingAddress
-    , confirm   |-> start receivingConfirm   waitingAddress
-    , message   |-> start receivingMessage   waitingAddress
-    ]
+receivePreamble = do
+    runInput
+        [ discovery rxPreamble |-> start receivingDiscovery waitingMac
+        , ping      rxPreamble |-> start receivingPing      waitingAddress
+        , confirm   rxPreamble |-> start receivingConfirm   waitingAddress
+        , message   rxPreamble |-> start receivingMessage   waitingAddress
+        , discovery txPreamble |-> start skippingAll        11
+        , ping      txPreamble |-> start skippingAll        3
+        , confirm   txPreamble |-> start skippingAll        3
+        , message   txPreamble |-> start skippingMsg        2
+        ]
 
 start :: Uint8 -> Uint8 -> Slave n -> Uint8 -> Ivory eff ()
 start s p Slave{..} v = do
@@ -129,7 +136,9 @@ receiveMessageSize :: Slave n -> Uint8 -> Ivory eff ()
 receiveMessageSize Slave{..} v = do
     store size v
     updateCRC16 crc v
-    store phase waitingData
+    ifte_ (v ==? 0)
+          (store phase waitingMsbCRC)
+          (store phase waitingData)
 
 receiveMessageData :: KnownNat n => Slave n -> Uint8 -> Ivory eff ()
 receiveMessageData Slave{..} v = do
@@ -144,11 +153,11 @@ receiveMessageData Slave{..} v = do
 
 receiveMessageLsbCRC :: Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receiveMessageLsbCRC r@Slave{..} = receiveLsbCRC r $ do
-    tmp'   <- deref tmp
+    tmp'   <- safeCast <$> deref tmp
     size'  <- deref size
     tidRx' <- deref tidRx
-    onMessage buff size' $ tidRx' /=? safeCast tmp'
-    store tidRx $ safeCast tmp'
+    onMessage buff size' $ tidRx' /=? tmp'
+    store tidRx tmp'
 
 
 receiveAddress :: Uint8 -> Slave n -> Uint8 -> Ivory eff ()
@@ -172,6 +181,22 @@ receiveLsbCRC s@Slave{..} complete v = do
     when (valid' .&& lsb' ==? v) complete
     reset s
 
+
+skipAll :: Slave n -> Uint8 -> Ivory eff ()
+skipAll s@Slave{..} _ = do
+    phase' <- deref phase
+    ifte_ (phase' >? 1)
+          (store phase $ phase' - 1)
+          (reset s)
+
+skipMsg :: Slave n -> Uint8 -> Ivory eff ()
+skipMsg s@Slave{..} v = do
+    phase' <- deref phase
+    ifte_ (phase' >? 1)
+          (store phase $ phase' - 1)
+          (do store state skippingAll
+              store phase $ v + 2
+          )
 
 
 reset :: Slave n -> Ivory eff ()
