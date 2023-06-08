@@ -72,11 +72,11 @@ mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer pwmPort = do
         initNeoPixel' = proc (show pwmPort <> "_pwm_init") $ body $ do
             enablePeriphClock             dmaRcu
             let t = timer pwmTimer
-            store (dmaParams ~> periph_addr) =<< ch0cv t
+            store (dmaParams ~> periph_addr) =<< ch2cv t
             initChannelOcTimer            t pwmChannel =<< local (istruct timerOcDefaultParam)
             configChannelOutputPulseValue t pwmChannel 0
             configTimerOutputMode         t pwmChannel timer_oc_mode_pwm0
-            configChannelOutputShadow     t pwmChannel timer_oc_shadow_enable
+            configChannelOutputShadow     t pwmChannel timer_oc_shadow_disable
             configPrimaryOutput           t true
             enableTimerDMA                t timer_dma_upd
             enableTimer                   t
