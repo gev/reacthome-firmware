@@ -108,8 +108,7 @@ update Indicator{..} = do
                 store (pixel ~> s) t1'
                 store (pixel ~> v) $ t1' * maxValue * y
             )
-            (
-                store (pixel ~> v) $ maxValue * y
+            (   store (pixel ~> v) $ maxValue * y
             )
         hsv'to'rgb pixel $ pixels ! ix
 

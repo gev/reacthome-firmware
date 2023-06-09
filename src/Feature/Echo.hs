@@ -26,7 +26,6 @@ data Echo = Echo
     { buff     :: Buffer 10 Uint8
     , transmit :: forall n s. KnownNat n
                => Buffer n Uint8
-               -> Ix n
                -> Ivory (ProcEffects s ()) ()
     }
 
@@ -38,16 +37,16 @@ echo :: ( MonadWriter Context m
 echo = do
     buff <- values "echo_buffer" [9,8,7,6,5,4,3,2,1,0]
     transport  <- asks D.transport
-    let echo = Echo { buff, transmit = T.transmitFragment transport }
+    let echo = Echo { buff, transmit = T.transmitBuffer transport }
     -- addTask $ echoTask echo
     pure $ Feature echo
 
 
 echoTask :: Echo -> Task
-echoTask Echo{..} = delay 100 "echo_tx" $ transmit buff $ arrayLen buff
+echoTask Echo{..} = delay 100 "echo_tx" $ transmit buff
 
 
 instance Controller Echo where
     handle Echo{..} request n = do
-        pure [ true ==> transmit request (toIx n)
+        pure [ true ==> transmit request
              ]
