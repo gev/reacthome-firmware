@@ -54,7 +54,7 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel pwmPort = do
     pwmTimer     <- timer' system_core_clock pwmPeriod
     let dmaInit   = dmaParam [ direction    .= ival dma_memory_to_peripheral
                              , memory_inc   .= ival dma_memory_increase_enable
-                             , memory_width .= ival dma_memory_width_8bit
+                             , memory_width .= ival dma_memory_width_16bit
                              , periph_inc   .= ival dma_periph_increase_disable
                              , periph_width .= ival dma_peripheral_width_16bit
                              , priority     .= ival dma_priority_ultra_high
