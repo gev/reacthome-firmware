@@ -43,8 +43,8 @@ data Indicator = forall o b. (I.Display o b, FrameBuffer b) => Indicator
     , hue       :: IFloat
     , t         :: Value Sint32
     , dt        :: Value Sint32
-    , t1        :: Value Sint32
-    , dt1       :: Value Sint32
+    , phi        :: Value Sint32
+    , dphi      :: Value Sint32
     , start     :: Value IBool
     , findMe    :: Value IBool
     , findMeMsg :: Buffer   2 Uint8
@@ -69,8 +69,8 @@ indicator mkDisplay hue = do
     canvas    <- mkCanvas1D $ I.frameBuffer display "indicator"
     t         <- value    "indicator_t"           0
     dt        <- value    "indicator_dt"          1
-    t1        <- value    "indicator_t1"          0
-    dt1       <- value    "indicator_dt1"         1
+    phi        <- value   "indicator_phi"         0
+    dphi       <- value   "indicator_dphi"        1
     start     <- value    "indicator_start"       true
     findMe    <- value    "indicator_find_me"     false
     findMeMsg <- values   "indicator_find_me_msg" [0xfa, 0]
@@ -81,7 +81,7 @@ indicator mkDisplay hue = do
     addConstArea sinT
 
     let indicator = Indicator { display, canvas, hue
-                              , t, dt, t1, dt1
+                              , t, dt, phi, dphi
                               , start, findMe, findMeMsg
                               , pixels
                               , transmit = T.transmitBuffer transport
@@ -97,20 +97,20 @@ indicator mkDisplay hue = do
 
 update :: Indicator -> Ivory (ProcEffects s ()) ()
 update Indicator{..} = do
-    t1'    <- deref t1
+    phi'    <- deref phi
     pixel  <- local . istruct $ hsv hue 1 maxValue
     start' <- deref start
 
     arrayMap $ \ix -> do
-        let x = toIx (10 * fromIx ix + t1')
+        let x = toIx (10 * fromIx ix + phi')
         sin' <- deref $ addrOf sinT ! x
         y    <- assign $ 0.1 + maxValue * sin'
         ifte_ start'
             (do
-                let v' = safeCast t1' / 100
+                let v' = safeCast phi' / 100
                 store (pixel ~> s) v'
                 store (pixel ~> v) $ y * v'
-                when (t1' ==? 100) $ store start false
+                when (phi' ==? 100) $ store start false
             )
             (   store (pixel ~> v) y
             )
@@ -128,11 +128,11 @@ update Indicator{..} = do
               ]
         dt' <- deref dt
         store t  (t' + dt')
-    cond_ [ t1' ==?   0 ==> store dt1   1
-          , t1' ==? 200 ==> store dt1 (-1)
+    cond_ [ phi' ==?   0 ==> store dphi   1
+          , phi' ==? 200 ==> store dphi (-1)
           ]
-    dt1' <- deref dt1
-    store t1 (t1' + dt1')
+    dphi' <- deref dphi
+    store phi (phi' + dphi')
 
 
 
@@ -155,6 +155,7 @@ instance Controller Indicator where
                         transmit findMeMsg
                      )
              ]
+
 
 
 sinT :: ConstMemArea (Array 200 (Stored IFloat))
