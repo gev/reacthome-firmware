@@ -87,7 +87,7 @@ indicator mkDisplay hue = do
                               , transmit = T.transmitBuffer transport
                               }
 
-    addHandler $ I.Render display 20 $ do
+    addHandler $ I.Render display 10 $ do
         update indicator
         render indicator
 
@@ -104,13 +104,13 @@ update Indicator{..} = do
     arrayMap $ \ix -> do
         let x = toIx (10 * fromIx ix + phi')
         sin' <- deref $ addrOf sinT ! x
-        y    <- assign $ 0.1 + maxValue * sin'
+        y    <- assign $ maxValue * (0.2 + 0.8 * sin')
         ifte_ start'
             (do
-                let v' = safeCast phi' / 100
+                let v' = safeCast phi' / 20
                 store (pixel ~> s) v'
                 store (pixel ~> v) $ y * v'
-                when (phi' ==? 100) $ store start false
+                when (phi' ==? 20) $ store start false
             )
             (   store (pixel ~> v) y
             )
