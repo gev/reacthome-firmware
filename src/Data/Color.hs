@@ -48,14 +48,14 @@ hsv'to'rgb :: Ref s1 (Struct HSV)
            -> Ref s2 (Struct RGB)
            -> Ivory eff ()
 hsv'to'rgb hsv rgb = do
-    h'        <- castFloatToUint16 =<< deref (hsv ~> h)
-    s'        <- deref (hsv ~> s)
-    v'        <- deref (hsv ~> v)
-    let h'i    = (h' `iDiv` 60) .% 6
-    v'min     <- assign $ (1 - s') * v'
-    a'        <- assign $ (v' - v'min) * safeCast (h' .% 60) / 60
-    v'inc     <- assign $ v'min + a'
-    v'dec     <- assign $ v'    - a'
+    h'    <- castFloatToUint16 =<< deref (hsv ~> h)
+    s'    <- deref  $ hsv ~> s
+    v'    <- deref  $ hsv ~> v
+    h'i   <- assign $ (h' `iDiv` 60) .% 6
+    v'min <- assign $ (1 - s') * v'
+    a'    <- assign $ (v' - v'min) * safeCast (h' .% 60) / 60
+    v'inc <- assign $ v'min + a'
+    v'dec <- assign $ v'    - a'
     cond_ [ h'i ==? 0 ==> (do store (rgb ~> r) v'
                               store (rgb ~> g) v'inc
                               store (rgb ~> b) v'min
