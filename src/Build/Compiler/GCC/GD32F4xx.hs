@@ -35,7 +35,7 @@ instance Compiler GCC GD32F4xx where
                     -- , "-fno-builtin"
                     -- , "-fno-strict-aliasing"
                     , "-fdata-sections"
-                    , "-fms-extensions"
+                    -- , "-fms-extensions"
                     , "-ffunction-sections"
                     , "-Wall"
                     , "-O3"

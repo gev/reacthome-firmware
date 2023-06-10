@@ -35,7 +35,7 @@ instance Compiler GCC GD32F3x0 where
                     -- , "-fno-builtin"
                     -- , "-fno-strict-aliasing"
                     , "-fdata-sections"
-                    , "-fms-extensions"
+                    -- , "-fms-extensions"
                     , "-ffunction-sections"
                     , "-Wall"
                     , "-O3"
@@ -43,7 +43,8 @@ instance Compiler GCC GD32F3x0 where
 
         , ld      = "-Tsupport/device/gd32f3x0/gd32f3x0.ld"
 
-        , ldflags = [ "-mthumb"
+        , ldflags = [ "-lm", "-lc", "-lgcc"
+                    , "-mthumb"
                     , "-mcpu=cortex-m4"
                     , "-mfpu=fpv4-sp-d16"
                     , "-mfloat-abi=hard"
