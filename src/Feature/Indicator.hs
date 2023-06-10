@@ -41,9 +41,10 @@ data Indicator = forall o b. (I.Display o b, FrameBuffer b) => Indicator
     { display   :: o
     , canvas    :: Canvas1D 20 b
     , hue       :: IFloat
-    , t1        :: Value IFloat
     , t         :: Value Sint32
     , dt        :: Value Sint32
+    , t1        :: Value Sint32
+    , dt1       :: Value Sint32
     , start     :: Value IBool
     , findMe    :: Value IBool
     , findMeMsg :: Buffer   2 Uint8
@@ -67,24 +68,26 @@ indicator mkDisplay hue = do
     display   <- mkDisplay $ peripherals mcu
     canvas    <- mkCanvas1D $ I.frameBuffer display "indicator"
     t         <- value    "indicator_t"           0
-    t1        <- value    "indicator_t1"          0
     dt        <- value    "indicator_dt"          1
+    t1        <- value    "indicator_t1"          0
+    dt1       <- value    "indicator_dt1"         1
     start     <- value    "indicator_start"       true
     findMe    <- value    "indicator_find_me"     false
     findMeMsg <- values   "indicator_find_me_msg" [0xfa, 0]
     pixels    <- records_ "indicator_pixels"
 
-    addStruct (Proxy :: Proxy RGB)
-    addStruct (Proxy :: Proxy HSV)
+    addStruct   (Proxy :: Proxy RGB)
+    addStruct   (Proxy :: Proxy HSV)
+    addConstArea sinT
 
     let indicator = Indicator { display, canvas, hue
-                              , t, t1, dt
+                              , t, dt, t1, dt1
                               , start, findMe, findMeMsg
                               , pixels
                               , transmit = T.transmitBuffer transport
                               }
 
-    addHandler $ I.Render display 10 $ do
+    addHandler $ I.Render display 20 $ do
         update indicator
         render indicator
 
@@ -94,21 +97,22 @@ indicator mkDisplay hue = do
 
 update :: Indicator -> Ivory (ProcEffects s ()) ()
 update Indicator{..} = do
-    t1'   <- deref t1
-    pixel <- local . istruct $ hsv hue 1 maxValue
-
-    when (t1' >=? 1) $ store start false
+    t1'    <- deref t1
+    pixel  <- local . istruct $ hsv hue 1 maxValue
     start' <- deref start
 
     arrayMap $ \ix -> do
-        let x  = pi * (safeCast (fromIx ix) - 10 - t1') / 10
-        let y  = 0.4 + 0.2 * cos x
+        let x = toIx (10 * fromIx ix + t1')
+        sin' <- deref $ addrOf sinT ! x
+        y    <- assign $ 0.1 + maxValue * sin'
         ifte_ start'
             (do
-                store (pixel ~> s) t1'
-                store (pixel ~> v) $ t1' * maxValue * y
+                let v' = safeCast t1' / 100
+                store (pixel ~> s) v'
+                store (pixel ~> v) $ y * v'
+                when (t1' ==? 100) $ store start false
             )
-            (   store (pixel ~> v) $ maxValue * y
+            (   store (pixel ~> v) y
             )
         hsv'to'rgb pixel $ pixels ! ix
 
@@ -124,8 +128,11 @@ update Indicator{..} = do
               ]
         dt' <- deref dt
         store t  (t' + dt')
-
-    store t1 (t1' + 0.1)
+    cond_ [ t1' ==?   0 ==> store dt1   1
+          , t1' ==? 200 ==> store dt1 (-1)
+          ]
+    dt1' <- deref dt1
+    store t1 (t1' + dt1')
 
 
 
@@ -148,3 +155,7 @@ instance Controller Indicator where
                         transmit findMeMsg
                      )
              ]
+
+
+sinT :: ConstMemArea (Array 200 (Stored IFloat))
+sinT = constArea "sinT" $ iarray $ ival . ((/2) . (+1) . sin . ((pi / 100) *) . fromInteger) <$> [-50..150]
