@@ -52,10 +52,10 @@ hsv'to'rgb hsv rgb = do
     s'        <- deref (hsv ~> s)
     v'        <- deref (hsv ~> v)
     let h'i    = (h' `iDiv` 60) .% 6
-    let v'min  = (1 - s') * v'
-    let a'     = (v' - v'min) * safeCast (h' .% 60) / 60
-    let v'inc  = v'min + a'
-    let v'dec  = v'    - a'
+    v'min     <- assign $ (1 - s') * v'
+    a'        <- assign $ (v' - v'min) * safeCast (h' .% 60) / 60
+    v'inc     <- assign $ v'min + a'
+    v'dec     <- assign $ v'    - a'
     cond_ [ h'i ==? 0 ==> (do store (rgb ~> r) v'
                               store (rgb ~> g) v'inc
                               store (rgb ~> b) v'min
