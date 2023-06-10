@@ -8,10 +8,10 @@ module Core.Context where
 
 import           Control.Monad.Writer
 import           Core.Task
+import           Data.List
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Language.Module
-import           Data.List
 
 
 
@@ -49,6 +49,10 @@ addProc = addModule . incl
 
 addArea :: (MonadWriter Context m, IvoryArea area) => MemArea area -> m ()
 addArea = addModule . defMemArea
+
+
+addConstArea :: (MonadWriter Context m, IvoryArea area) => ConstMemArea area -> m ()
+addConstArea = addModule . defConstMemArea
 
 
 addStruct :: (MonadWriter Context m, IvoryStruct sym) => Proxy sym -> m ()
