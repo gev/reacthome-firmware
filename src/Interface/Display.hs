@@ -17,9 +17,9 @@ data Render p = Render
     }
 
 
-class Handler Render p => Display p b | p -> b where
+class Handler Render (p t) => Display p f t | p t -> f t where
 
     frameBuffer         :: MonadWriter Context m
-                        => p -> String -> Int -> m b
+                        => p t -> String -> Int -> m (f t)
 
-    transmitFrameBuffer :: p -> b -> Ivory eff ()
+    transmitFrameBuffer :: p t -> f t -> Ivory eff ()

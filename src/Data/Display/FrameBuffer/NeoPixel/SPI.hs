@@ -1,5 +1,7 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RankNTypes            #-}
 
 
 module Data.Display.FrameBuffer.NeoPixel.SPI where
@@ -13,13 +15,13 @@ import           Interface.Display
 import           Ivory.Language
 import           Ivory.Language.Proxy
 
-newtype FrameBufferNeoPixelSPI = FrameBufferNeoPixelSPI
-    { runFrame :: RunValues Uint8
+newtype FrameBufferNeoPixelSPI t = FrameBufferNeoPixelSPI
+    { runFrame :: RunValues t
     }
 
 
-neoPixelBufferSPI :: MonadWriter Context m
-                  => String -> Int -> m FrameBufferNeoPixelSPI
+neoPixelBufferSPI :: (MonadWriter Context m, IvoryInit t, IvoryZeroVal t)
+                  => String -> Int -> m (FrameBufferNeoPixelSPI t)
 neoPixelBufferSPI id size = do
     let size' = 3 * size
     let buff  = runValues_ (id <> "_frame_buffer_neo_pixel_spi") size'
@@ -27,6 +29,6 @@ neoPixelBufferSPI id size = do
 
 
 
-instance FrameBuffer FrameBufferNeoPixelSPI where
+instance FrameBuffer FrameBufferNeoPixelSPI t where
   clearByte = undefined
   writeByte = undefined

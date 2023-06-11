@@ -1,9 +1,10 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GADTs            #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE DataKinds           #-}
+{-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE GADTs               #-}
+{-# LANGUAGE NamedFieldPuns      #-}
+{-# LANGUAGE RankNTypes          #-}
+{-# LANGUAGE RecordWildCards     #-}
 
 module Feature.Indicator where
 
@@ -37,9 +38,9 @@ import           Support.Cast
 
 
 
-data Indicator = forall o b. (I.Display o b, FrameBuffer b) => Indicator
-    { display   :: o
-    , canvas    :: Canvas1D 20 b
+data Indicator = forall d f t. (I.Display d f t, FrameBuffer f t) => Indicator
+    { display   :: d t
+    , canvas    :: Canvas1D 20 (f t)
     , hue       :: IFloat
     , t         :: Value Sint32
     , dt        :: Value Sint32
@@ -57,11 +58,11 @@ data Indicator = forall o b. (I.Display o b, FrameBuffer b) => Indicator
 maxValue = 0.3 :: IFloat
 
 indicator :: ( MonadWriter Context m
-             , MonadReader (D.Domain p t) m
-             , FrameBuffer b
-             , I.Display o b
-             , T.Transport t
-             ) => (p -> m o) -> IFloat -> m Feature
+             , MonadReader (D.Domain p tr) m
+             , FrameBuffer f t
+             , I.Display d f t
+             , T.Transport tr
+             ) => (p -> m (d t)) -> IFloat -> m Feature
 indicator mkDisplay hue = do
     mcu       <- asks D.mcu
     transport <- asks D.transport

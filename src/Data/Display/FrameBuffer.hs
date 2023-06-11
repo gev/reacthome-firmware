@@ -8,12 +8,12 @@ import           Ivory.Language
 
 
 
-class FrameBuffer t where
-    clearByte   :: t
+class FrameBuffer f t where
+    clearByte   :: f t
                 -> Sint32
                 -> Ivory eff ()
 
-    writeByte   :: t
+    writeByte   :: f t
                 -> Sint32
                 -> Uint8
                 -> Ivory ('Effects (Returns ()) b (Scope s)) ()

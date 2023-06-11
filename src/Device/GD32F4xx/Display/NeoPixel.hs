@@ -37,7 +37,7 @@ pwmPeriod = 120
 
 
 
-data NeoPixelPWM = NeoPixelPWM
+data NeoPixelPWM t = NeoPixelPWM
     { pwmTimer   :: Timer
     , pwmChannel :: TIMER_CHANNEL
     , pwmPort    :: Port
@@ -57,15 +57,15 @@ mkNeoPixelPWM :: MonadWriter Context m
               -> DMA_SUBPERIPH
               -> (forall eff. TIMER_PERIPH -> Ivory eff Uint32)
               -> Port
-              -> m NeoPixelPWM
+              -> m (NeoPixelPWM t)
 mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer selChPWM pwmPort = do
     pwmTimer     <- timer' system_core_clock pwmPeriod
-    let dmaInit   = dmaParam [ direction            .= ival dma_memory_to_periph
-                             , memory_inc           .= ival dma_memory_increase_enable
-                             , periph_memory_width  .= ival dma_periph_width_16bit
-                             , circular_mode        .= ival dma_circular_mode_disable
-                             , periph_inc           .= ival dma_periph_increase_disable
-                             , priority             .= ival dma_priority_ultra_high
+    let dmaInit   = dmaParam [ direction           .= ival dma_memory_to_periph
+                             , memory_inc          .= ival dma_memory_increase_enable
+                             , periph_memory_width .= ival dma_periph_width_16bit
+                             , circular_mode       .= ival dma_circular_mode_disable
+                             , periph_inc          .= ival dma_periph_increase_disable
+                             , priority            .= ival dma_priority_ultra_high
                              ]
     dmaParams    <- record (symbol dmaChannel <> "_dma_param") dmaInit
     frameRequest <- value  (symbol dmaChannel <> "_frame_request" ) true
@@ -90,7 +90,7 @@ mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer selChPWM pwmP
 
 
 
-instance Handler I.Render NeoPixelPWM where
+instance Handler I.Render (NeoPixelPWM t) where
   addHandler (I.Render NeoPixelPWM{..} frameRate render) =
     addTask $ delay (1000 `iDiv` frameRate)
                     (show pwmPort <> "neo_pixel")
@@ -98,7 +98,7 @@ instance Handler I.Render NeoPixelPWM where
 
 
 
-instance I.Display NeoPixelPWM FrameBufferNeoPixelPWM where
+instance I.Display NeoPixelPWM FrameBufferNeoPixelPWM Uint16 where
     frameBuffer _ = neoPixelBufferPWM pwmPeriod
 
     transmitFrameBuffer NeoPixelPWM{..} FrameBufferNeoPixelPWM{..} =

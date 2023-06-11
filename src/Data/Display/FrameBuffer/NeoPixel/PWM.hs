@@ -1,7 +1,9 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE RankNTypes            #-}
+{-# LANGUAGE RecordWildCards       #-}
 
 
 
@@ -17,15 +19,15 @@ import           Ivory.Language
 import           Ivory.Language.Proxy
 
 
-data FrameBufferNeoPixelPWM = FrameBufferNeoPixelPWM
-    { runFrame :: RunValues Uint16
-    , zeroDuty :: Uint16
-    , oneDuty  :: Uint16
+data FrameBufferNeoPixelPWM t = FrameBufferNeoPixelPWM
+    { runFrame :: RunValues t
+    , zeroDuty :: t
+    , oneDuty  :: t
     }
 
 
-neoPixelBufferPWM :: forall m n. (MonadWriter Context m)
-                  => Uint8 -> String -> Int -> m FrameBufferNeoPixelPWM
+neoPixelBufferPWM :: forall m n t. (MonadWriter Context m, SafeCast Uint8 t, IvoryInit t, IvoryZeroVal t, Num t)
+                  => Uint8 -> String -> Int -> m (FrameBufferNeoPixelPWM t)
 neoPixelBufferPWM period id size = do
     let zeroDuty = safeCast $ period `iDiv` 4
     let oneDuty  = 3 * zeroDuty
@@ -36,7 +38,7 @@ neoPixelBufferPWM period id size = do
 
 
 
-instance FrameBuffer FrameBufferNeoPixelPWM where
+instance IvoryStore t => FrameBuffer FrameBufferNeoPixelPWM t where
 
   clearByte FrameBufferNeoPixelPWM{..} i = do
     runFrame $ \frame -> for 8 $ \jx -> do

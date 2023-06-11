@@ -36,7 +36,7 @@ pwmPeriod = 101
 
 
 
-data NeoPixelPWM = NeoPixelPWM
+data NeoPixelPWM t = NeoPixelPWM
     { pwmTimer   :: Timer
     , pwmChannel :: TIMER_CHANNEL
     , pwmPort    :: Port
@@ -49,12 +49,12 @@ mkNeoPixelPWM :: MonadWriter Context m
               -> TIMER_CHANNEL
               -> DMA_CHANNEL
               -> Port
-              -> m NeoPixelPWM
+              -> m (NeoPixelPWM t)
 mkNeoPixelPWM timer' pwmChannel dmaChannel pwmPort = do
     pwmTimer     <- timer' system_core_clock pwmPeriod
     let dmaInit   = dmaParam [ direction    .= ival dma_memory_to_peripheral
                              , memory_inc   .= ival dma_memory_increase_enable
-                             , memory_width .= ival dma_memory_width_16bit
+                             , memory_width .= ival dma_memory_width_8bit
                              , periph_inc   .= ival dma_periph_increase_disable
                              , periph_width .= ival dma_peripheral_width_16bit
                              , priority     .= ival dma_priority_ultra_high
@@ -82,7 +82,7 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel pwmPort = do
 
 
 
-instance Handler I.Render NeoPixelPWM where
+instance Handler I.Render (NeoPixelPWM t) where
   addHandler (I.Render NeoPixelPWM{..} frameRate render) =
     addTask $ delay (1000 `iDiv` frameRate)
                     (show pwmPort <> "neo_pixel")
@@ -90,13 +90,13 @@ instance Handler I.Render NeoPixelPWM where
 
 
 
-instance I.Display NeoPixelPWM FrameBufferNeoPixelPWM where
+instance I.Display NeoPixelPWM FrameBufferNeoPixelPWM Uint8 where
     frameBuffer _ = neoPixelBufferPWM pwmPeriod
 
     transmitFrameBuffer NeoPixelPWM{..} FrameBufferNeoPixelPWM{..} =
         runFrame $ \frame -> do
             let frame' = addrOf frame
-            store (dmaParams ~> memory_addr) =<< castArrayUint16ToUint32 (toCArray frame')
+            store (dmaParams ~> memory_addr) =<< castArrayUint8ToUint32 (toCArray frame')
             store (dmaParams ~> number) $ arrayLen frame'
             deinitDMA                   dmaChannel
             initDMA                     dmaChannel dmaParams
