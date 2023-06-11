@@ -37,7 +37,7 @@ pwmPeriod = 120
 
 
 
-data NeoPixelPWM t = NeoPixelPWM
+data NeoPixelPWM = NeoPixelPWM
     { pwmTimer   :: Timer
     , pwmChannel :: TIMER_CHANNEL
     , pwmPort    :: Port
@@ -57,7 +57,7 @@ mkNeoPixelPWM :: MonadWriter Context m
               -> DMA_SUBPERIPH
               -> (forall eff. TIMER_PERIPH -> Ivory eff Uint32)
               -> Port
-              -> m (NeoPixelPWM t)
+              -> m NeoPixelPWM
 mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer selChPWM pwmPort = do
     pwmTimer     <- timer' system_core_clock pwmPeriod
     let dmaInit   = dmaParam [ direction           .= ival dma_memory_to_periph
@@ -90,7 +90,7 @@ mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer selChPWM pwmP
 
 
 
-instance Handler I.Render (NeoPixelPWM t) where
+instance Handler I.Render NeoPixelPWM where
   addHandler (I.Render NeoPixelPWM{..} frameRate render) =
     addTask $ delay (1000 `iDiv` frameRate)
                     (show pwmPort <> "neo_pixel")

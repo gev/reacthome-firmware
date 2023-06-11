@@ -39,7 +39,7 @@ import           Support.Cast
 
 
 data Indicator = forall d f t. (I.Display d f t, FrameBuffer f t) => Indicator
-    { display   :: d t
+    { display   :: d
     , canvas    :: Canvas1D 20 (f t)
     , hue       :: IFloat
     , t         :: Value Sint32
@@ -58,11 +58,11 @@ data Indicator = forall d f t. (I.Display d f t, FrameBuffer f t) => Indicator
 maxValue = 0.3 :: IFloat
 
 indicator :: ( MonadWriter Context m
-             , MonadReader (D.Domain p tr) m
-             , FrameBuffer f t
-             , I.Display d f t
-             , T.Transport tr
-             ) => (p -> m (d t)) -> IFloat -> m Feature
+             , MonadReader (D.Domain p t) m
+             , FrameBuffer f w
+             , I.Display d f w
+             , T.Transport t
+             ) => (p -> m d) -> IFloat -> m Feature
 indicator mkDisplay hue = do
     mcu       <- asks D.mcu
     transport <- asks D.transport

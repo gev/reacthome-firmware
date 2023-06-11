@@ -34,7 +34,7 @@ type UARTW         = forall m. MonadWriter Context m => m UART
 type InputW        = forall m. MonadWriter Context m => m Input
 type OutputW       = forall m. MonadWriter Context m => m Output
 type PWMW          = forall m. MonadWriter Context m => Uint32 -> Uint32 -> m PWM
-type NeoPixelPWMW  = forall m. MonadWriter Context m => m (NeoPixelPWM Uint16)
+type NeoPixelPWMW  = forall m. MonadWriter Context m => m NeoPixelPWM
 
 
 
