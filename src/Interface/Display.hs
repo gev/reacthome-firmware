@@ -10,8 +10,8 @@ import           Core.Handler
 import           Ivory.Language
 
 
-data Render p = Render
-    { neoPixel  :: p
+data Render d = Render
+    { display   :: d
     , frameRate :: Uint32
     , render    :: forall s. Ivory (ProcEffects s ()) ()
     }
