@@ -166,7 +166,7 @@ syncDimmerGroup ds dimmer' ix' = do
 
 
 
-calculateValue :: Record DimmerStruct -> Ivory eff IFloat
+calculateValue :: Record DimmerStruct -> Ivory eff ()
 calculateValue dimmer = do
     brightness' <- deref (dimmer ~> brightness)
     value'      <- deref $ dimmer ~> value
@@ -180,7 +180,6 @@ calculateValue dimmer = do
                 when (value' <? 0) $
                     store (dimmer ~> value) 0
           ]
-    deref (dimmer ~> value)
 
 
 copyLabel :: (IvoryStore a, IvoryStruct sym)

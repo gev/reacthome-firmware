@@ -124,8 +124,7 @@ calculate DimmerAC{..} = zipWithM_ zip getPWMs (iterate (+1) 0)
 
 
 calculateDimmer :: Record DimmerStruct -> Ivory eff ()
-calculateDimmer dimmer =
-    void $ calculateValue dimmer
+calculateDimmer = calculateValue
 
 
 

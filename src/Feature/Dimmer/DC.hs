@@ -81,8 +81,8 @@ manage DimmerDC{..} = zipWithM_ zip getPWMs (iterate (+1) 0)
 
 manageDimmer :: I.PWM p => p -> Record DimmerStruct -> Ivory eff ()
 manageDimmer pwm dimmer = do
-    v <- calculateValue dimmer
-    v <- calculateValue dimmer
+    calculateValue dimmer
+    v <- deref $ dimmer ~> Dim.value
     cond_ [ v ==? 0 ==> I.setMode pwm I.FORCE_LOW
           , v ==? 1 ==> I.setMode pwm I.FORCE_HIGH
           , true ==> do I.setMode pwm I.LOW
