@@ -160,5 +160,5 @@ instance Controller Indicator where
 
 
 sinT :: ConstMemArea (Array 200 (Stored IFloat))
-sinT = constArea "sinT" $ iarray $ ival . ifloat . f . fromInteger <$> [-50..150]
+sinT = constArea "sinT" $ iarray $ ival . ifloat . f . fromInteger <$> [-50..149]
     where f i = (1 + sin (pi * i / 100)) / 2
