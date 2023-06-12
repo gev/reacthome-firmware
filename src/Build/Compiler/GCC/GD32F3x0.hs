@@ -37,7 +37,7 @@ instance Compiler GCC GD32F3x0 where
                     , "-fdata-sections"
                     -- , "-fms-extensions"
                     , "-ffunction-sections"
-                    , "-Wall"
+                    , "-Wall", "-Wno-main"
                     , "-O3"
                     ]
 
