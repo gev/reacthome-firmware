@@ -69,7 +69,6 @@ receiveMessageData RBUS{..} v = do
 
 receiveMessageLsbCRC :: RBUS n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receiveMessageLsbCRC r@RBUS{..} v = do
-    tmp'   <- deref tmp
     size'  <- deref size
     let complete = onMessage buff size'
     receiveLsbCRC r complete v

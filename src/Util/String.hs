@@ -19,10 +19,6 @@ import           Ivory.Language.Proxy
 
 
 
-type Len = IxRep
-
-
-
 inclString :: ModuleDef
 inclString = do
     incl memcmp
@@ -32,13 +28,13 @@ inclString = do
 
 memcmp :: Def ('[ Ref s1 (CArray (Stored Uint8))
                 , Ref s2 (CArray (Stored Uint8))
-                , IxRep] ':-> Len)
+                , IxRep] ':-> IxRep)
 memcmp = importProc "memcmp" "string.h"
 
 
 memcpy :: Def ('[ Ref s1 (CArray (Stored Uint8))
                 , Ref s2 (CArray (Stored Uint8))
-                , Len] ':-> Len)
+                , IxRep] ':-> ())
 memcpy = importProc "memcpy" "string.h"
 
 
@@ -56,7 +52,7 @@ memCmp a1 a2 = call memcmp (toCArray a1)
 memCpy :: forall n s1 s2 eff. KnownNat n
        => Ref s1 (Array n (Stored Uint8))
        -> Ref s2 (Array n (Stored Uint8))
-       -> Ivory eff IxRep
-memCpy a1 a2 = call memcpy (toCArray a1)
-                           (toCArray a2)
-                           (fromInteger $ fromTypeNat (aNat :: NatType n))
+       -> Ivory eff ()
+memCpy a1 a2 = call_ memcpy (toCArray a1)
+                            (toCArray a2)
+                            (fromInteger $ fromTypeNat (aNat :: NatType n))

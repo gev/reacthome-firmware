@@ -45,7 +45,6 @@ data RBUS n = RBUS
     , buff      :: Buffer n Uint8
     , crc       :: Record   CRC16
     , valid     :: Value    IBool
-    , tmp       :: Value    Uint8
     , onMessage :: Buffer n Uint8 -> Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
 
@@ -64,9 +63,8 @@ rbus id onMessage = do
     buff     <- buffer    (name <> "_message"   )
     crc      <- makeCRC16 (name <> "_crc"       )
     valid    <- value     (name <> "_valid"     ) true
-    tmp      <- value     (name <> "_tmp"       ) 0
     let rbus  = RBUS { name, state, phase, offset, size
-                     , buff, crc, valid, tmp
+                     , buff, crc, valid
                      , onMessage
                      }
     pure rbus

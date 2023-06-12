@@ -100,7 +100,11 @@ rbus' rs485 index = do
             store confirmAddress address
             store shouldConfirm true
 
-    let onConfirm address = remove msgQueue
+    let onConfirm address' = peek msgQueue $ \i -> do
+            let ix = toIx i
+            offset   <- deref $ msgOffset ! ix
+            address  <- deref $ msgBuff ! toIx (offset + 1)
+            when (address ==? safeCast address') $ remove msgQueue
 
     let onPing mac address model version = do
             T.lazyTransmit transport $ \transmit -> do
@@ -222,7 +226,7 @@ transmitRBUS list buff size = do
                         arrayMap $ \ix -> do
                             m1 <- deref $ mac' ! ix
                             m2 <- deref $ buff ! toIx (1 + fromIx ix)
-                            when (m1 /=? m1) $ do
+                            when (m1 /=? m2) $ do
                                 store found false
                                 breakOut
                         found' <- deref found
