@@ -35,15 +35,15 @@ import           Ivory.Stdlib
 
 
 data Relays = forall o. Output o => Relays
-    { n          :: Uint8
-    , getRelays  :: R.Relays
-    , getGroups  :: G.Groups
-    , getOutputs :: [o]
-    , shouldInit :: Value IBool
-    , clock      :: SystemClock
-    , current    :: Index Uint8
-    , transmit   :: forall n. KnownNat n
-                 => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
+    { n           :: Uint8
+    , getRelays   :: R.Relays
+    , getGroups   :: G.Groups
+    , getOutputs  :: [o]
+    , shouldInit  :: Value IBool
+    , clock       :: SystemClock
+    , current     :: Index Uint8
+    , transmit    :: forall n. KnownNat n
+                  => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
 
 
@@ -205,7 +205,7 @@ syncGroup :: KnownNat n
 syncGroup groups rs ix = do
     let r = addrOf rs ! ix
     group <- deref $ r ~> R.group
-    shouldDelay <- turnOffGroup rs ix group
+    shouldDelay <- isTurnOffGroup rs ix group
     when shouldDelay $
         G.runGroups groups $ \gs -> do
             let g = addrOf gs ! toIx (group - 1)
@@ -214,12 +214,12 @@ syncGroup groups rs ix = do
     pure shouldDelay
 
 
-turnOffGroup :: KnownNat n
+isTurnOffGroup :: KnownNat n
              => Records' n R.RelayStruct
              -> Ix n
              -> Uint8
              -> Ivory (ProcEffects s ()) IBool
-turnOffGroup rs ix g = do
+isTurnOffGroup rs ix g = do
     f <- local $ ival false
     arrayMap $ \jx -> do
         when (jx /=? ix) $ do
@@ -235,6 +235,23 @@ turnOffGroup rs ix g = do
                     store f true
     deref f
 
+turnOffGroup :: KnownNat n
+             => Records' n R.RelayStruct
+             -> Ix n
+             -> Uint8
+             -> Ivory (ProcEffects s ()) ()
+turnOffGroup rs ix g =
+    arrayMap $ \jx -> do
+        when (jx /=? ix) $ do
+            let r = addrOf rs ! jx
+            group <- deref $ r ~> R.group
+            when (group ==? g) $ do
+                isOn  <- deref $ r ~> R.state
+                delay <- deref $ r ~> R.delayOn
+                when (isOn .|| delay >? 0) $ do
+                    store (r ~> R.state   ) false
+                    store (r ~> R.delayOn ) 0
+                    store (r ~> R.synced  ) false
 
 
 onGroup :: KnownNat n
