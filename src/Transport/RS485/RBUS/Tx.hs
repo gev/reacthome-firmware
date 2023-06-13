@@ -40,10 +40,10 @@ txTask r@RBUS{..} = do
                 shouldConfirm' <- deref shouldConfirm
                 when shouldConfirm'
                     (doConfirm r)
+                doTransmitMessage r
                 shouldInit' <- deref shouldInit
                 when shouldInit'
                     (doRequestInit r)
-                doTransmitMessage r
                 doPing r
             )
             (doDiscovery r)
