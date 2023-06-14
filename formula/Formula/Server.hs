@@ -17,10 +17,14 @@ server = Formula { name       = "server"
                  , shouldInit = true
                  , transport  = U.rbus uart_1
                  , features   = [ indicator npx_pwm_2 120
-                                , F.rbus [ rs485 1 uart_0 out_pd_1
-                                         , rs485 2 uart_2 out_pb_15
-                                         , rs485 3 uart_3 out_pc_12
-                                         , rs485 4 uart_5 out_pb_14
+                                , F.rbus [ rs485 1 uart_5 out_pb_14
+                                         , rs485 2 uart_3 out_pc_12
+                                         , rs485 3 uart_2 out_pb_15
+                                         , rs485 4 uart_0 out_pd_1
                                          ]
                                 ]
                  }
+
+
+
+
