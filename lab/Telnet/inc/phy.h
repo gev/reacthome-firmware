@@ -35,7 +35,7 @@
 
 #define PHY_SR                           0x1EU                                    /*!< tranceiver status register */
 #define PHY_SPEED_STATUS                 ((uint16_t)0x0001)                     /*!< configured information of speed: 10Mbit/s */
-#define PHY_DUPLEX_STATUS                ((uint16_t)0x0003)                     /*!< configured information of duplex: full-duplex */
+#define PHY_DUPLEX_STATUS                ((uint16_t)0x0004)                     /*!< configured information of duplex: full-duplex */
 // #elif(PHY_TYPE == DP83848)
 // #define PHY_SR                           16U                                    /*!< tranceiver status register */
 // #define PHY_SPEED_STATUS                 ((uint16_t)0x0002)                     /*!< configured information of speed: 10Mbit/s */
