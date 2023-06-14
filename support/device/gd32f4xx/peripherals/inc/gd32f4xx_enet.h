@@ -41,7 +41,7 @@ OF SUCH DAMAGE.
 #include "gd32f4xx.h"
 #include <stdlib.h>
 
-#define IF_USE_EXTERNPHY_LIB             0
+#define IF_USE_EXTERNPHY_LIB             1
 #if (1 == IF_USE_EXTERNPHY_LIB)
 #include "phy.h"
 #endif
