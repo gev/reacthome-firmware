@@ -37,16 +37,15 @@ rxTask RBUS{..} = do
             {-
                 TODO: handle 16 bit values
             -}
-            pop rxQueue $ \i -> do
-                rsSize' <- deref rsSize
-                store (rsBuff ! toIx rsSize') =<< deref (rxBuff ! toIx i)
-                store rsSize $ rsSize' + 1
             rsSize'   <- deref rsSize
             t0        <- deref rxTimestamp
             t1        <- getSystemTime clock
-            baudrate' <- deref baudrate
-            let dt     = 40_000 ./ baudrate' -- wait 4 bytes timeout
-            when (rsSize' >? 0 .&& t1 - t0 >? dt) $ do
+            -- baudrate' <- deref baudrate
+            -- let dt     = 40_000 ./ baudrate' + 1 -- wait 4 bytes timeout
+            pop rxQueue $ \i -> do
+                store (rsBuff ! toIx rsSize') . castDefault =<< deref (rxBuff ! toIx i)
+                store rsSize $ rsSize' + 1
+            when (rsSize' >? 0 .&& t1 - t0 >? 1) $ do
                 lazyTransmit transport $ \transmit -> do
                     transmit $ rsSize' + 2
                     transmit 0xa2

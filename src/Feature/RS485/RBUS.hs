@@ -22,7 +22,7 @@ import           Core.Task
 import           Core.Transport                      as T
 import           Core.Version
 import           Data.Buffer
-import           Data.Concurrent.Queue
+import           Data.Concurrent.Queue               as Q
 import           Data.Serialize
 import           Data.Value
 import           Feature.RS485.RBUS.Data
@@ -169,17 +169,21 @@ configureRS485 RBUS{..} = do
               store shouldDiscovery false
               store shouldConfirm false
               store shouldPing true
+              Q.clear msgQueue
+              reset protocol
           )
-          (when (baudrate' >? 0) $
-              cond_ [ config 0 I.WL_8b I.SB_1b I.None
-                    , config 1 I.WL_8b I.SB_1b I.Even
-                    , config 2 I.WL_8b I.SB_1b I.Odd
-                    , config 3 I.WL_9b I.SB_1b I.None
-                    , config 4 I.WL_8b I.SB_2b I.None
-                    , config 5 I.WL_8b I.SB_2b I.Even
-                    , config 6 I.WL_8b I.SB_2b I.Odd
-                    , config 7 I.WL_9b I.SB_2b I.None
-                    ]
+          (do
+              when (baudrate' >? 0) $
+                cond_ [ config 0 I.WL_8b I.SB_1b I.None
+                        , config 1 I.WL_8b I.SB_1b I.Even
+                        , config 2 I.WL_8b I.SB_1b I.Odd
+                        , config 3 I.WL_9b I.SB_1b I.None
+                        , config 4 I.WL_8b I.SB_2b I.None
+                        , config 5 I.WL_8b I.SB_2b I.Even
+                        , config 6 I.WL_8b I.SB_2b I.Odd
+                        , config 7 I.WL_9b I.SB_2b I.None
+                        ]
+              store rsSize 0
           )
 
 
@@ -200,9 +204,8 @@ configureRBUS list buff size = do
                     T.lazyTransmit transport $ \transmit -> do
                         transmit 8
                         for 8 $ \ix -> transmit =<< deref (buff ! ix)
-                    store rsSize 0
                     store rxLock false
-                    reset protocol
+                    Q.clear rxQueue
         zipWithM_ run list (iterate (+1) 1)
 
 
@@ -247,9 +250,10 @@ transmitRB485 list buff size = do
         let run r@RBUS{..} p = do
                 isRBUS' <- deref isRBUS
                 when (iNot isRBUS' .&& p ==? port) $ do
-                    for (toIx $ size - 2) $ \ix ->
+                    let size' = size - 2
+                    for (toIx size') $ \ix ->
                         store (txBuff ! toIx (fromIx ix)) . safeCast =<< deref (buff ! (ix + 2))
-                    rsTransmit r $ safeCast size
+                    rsTransmit r $ safeCast size'
         zipWithM_ run list (iterate (+1) 1)
 
 
