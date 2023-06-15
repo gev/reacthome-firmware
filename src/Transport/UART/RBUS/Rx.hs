@@ -12,9 +12,6 @@ import           Transport.UART.RBUS.Data
 
 rxHandle :: RBUS -> Uint16 -> Ivory eff ()
 rxHandle RBUS{..} value = do
-    {-
-        TODO: Add error checking on receive
-    -}
     store rxTimestamp =<< getSystemTime clock
     push rxQueue $ \i ->
         store (rxBuff ! toIx i) value

@@ -17,9 +17,6 @@ import           Protocol.RS485.RBUS.Master.Rx
 
 rxHandle :: RBUS -> Uint16 -> Ivory eff ()
 rxHandle RBUS{..} value = do
-    {-
-        TODO: Add error checking on receive
-    -}
     store rxLock true
     store rxTimestamp =<< getSystemTime clock
     push rxQueue $ \i ->

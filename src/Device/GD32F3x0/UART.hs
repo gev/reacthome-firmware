@@ -106,7 +106,18 @@ handleUART uart onReceive onDrain = do
 handleReceive :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
 handleReceive uart onReceive = do
     rbne <- getInterruptFlag    uart usart_int_flag_rbne
-    when rbne $ onReceive =<< S.receiveData uart
+    when rbne $ do
+        clearInterruptFlag      uart usart_int_flag_rbne
+        ferr         <- getFlag uart usart_flag_ferr
+        nerr         <- getFlag uart usart_flag_nerr
+        orerr        <- getFlag uart usart_flag_orerr
+        perr         <- getFlag uart usart_flag_perr
+        clearFlag               uart usart_flag_ferr
+        clearFlag               uart usart_flag_nerr
+        clearFlag               uart usart_flag_orerr
+        clearFlag               uart usart_flag_perr
+        when (iNot $ ferr .|| nerr .|| orerr .|| perr) $
+            onReceive =<< S.receiveData uart
 
 handleDrain :: USART_PERIPH -> Ivory eff () -> Ivory eff ()
 handleDrain uart onDrain = do
