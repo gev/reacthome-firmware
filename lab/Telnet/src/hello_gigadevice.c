@@ -188,14 +188,15 @@ void hello_gigadevice_init(void)
 
     /* create a new TCP control block */
     pcb = tcp_new();
-
+    printf("tcp_new %i \n", pcb);
     /* assign to the new pcb a local IP address and a port number */
     /* using IP_ADDR_ANY allow the pcb to be used by any local interface */
-    tcp_bind(pcb, IP_ADDR_ANY, 23);
+    err_t err = tcp_bind(pcb, IP_ADDR_ANY, 23);
+    printf("tcp_bind %i \n", err);
 
     /* set the connection to the LISTEN state */
     pcb = tcp_listen(pcb);
-
+    printf("tcp_listen %i \n", pcb->state);
     /* Specify the function to be called when a connection is established */
     tcp_accept(pcb, hello_gigadevice_accept);
 }
@@ -211,6 +212,8 @@ static void hello_gigadevice_conn_err(void *arg, err_t err)
 {
     struct name *name;
     name = (struct name *)arg;
-
+    printf("hello_gigadevice_conn_err");
+    _write(NULL, name -> bytes, name -> length);
+    printf("\n");
     mem_free(name);
 }
