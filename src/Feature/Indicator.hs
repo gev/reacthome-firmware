@@ -98,7 +98,7 @@ indicator mkDisplay hue = do
 
 update :: Indicator -> Ivory (ProcEffects s ()) ()
 update Indicator{..} = do
-    phi'    <- deref phi
+    phi'   <- deref phi
     pixel  <- local . istruct $ hsv hue 1 maxValue
     start' <- deref start
 
