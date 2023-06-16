@@ -304,9 +304,9 @@ static void enet_gpio_config(void)
     gpio_mode_set(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_13);
     gpio_output_options_set(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, GPIO_PIN_13);
 
-    gpio_af_set(GPIOG, GPIO_AF_11, GPIO_PIN_11);
-    gpio_af_set(GPIOG, GPIO_AF_11, GPIO_PIN_13);
-    gpio_af_set(GPIOG, GPIO_AF_11, GPIO_PIN_14);
+    gpio_af_set(GPIOB, GPIO_AF_11, GPIO_PIN_11);
+    gpio_af_set(GPIOB, GPIO_AF_11, GPIO_PIN_12);
+    gpio_af_set(GPIOB, GPIO_AF_11, GPIO_PIN_13);
 
     /* PC1: ETH_MDC */
     gpio_mode_set(GPIOC, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_1);
