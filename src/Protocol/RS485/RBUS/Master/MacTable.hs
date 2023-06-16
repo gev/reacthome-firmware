@@ -61,7 +61,7 @@ insertMac :: MacTable
           -> Mac
           -> Value Uint8
           -> Version
-          -> (forall s. Uint8 -> Ivory (ProcEffects s ()) ())
+          -> (forall s. Mac -> Uint8 -> Value Uint8 -> Version -> forall s. Ivory (ProcEffects s ()) ())
           -> Ivory (ProcEffects s ()) ()
 insertMac MacTable{..} mac' model' version' run = do
     address <- local $ ival 255
@@ -83,9 +83,15 @@ insertMac MacTable{..} mac' model' version' run = do
             store  (rec' ~> version ~> major) =<< deref (version' ~> major)
             store  (rec' ~> version ~> minor) =<< deref (version' ~> minor)
             store next $ next' + 1
-            run address'
+            run mac' address' model' version'
         )
-        (run address')
+        (do
+            let rec' = table ! toIx address'
+            store  (rec' ~> model) =<< deref model'
+            store  (rec' ~> version ~> major) =<< deref (version' ~> major)
+            store  (rec' ~> version ~> minor) =<< deref (version' ~> minor)
+            run mac' address' model' version'
+        )
 
 
 

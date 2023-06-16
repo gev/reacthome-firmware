@@ -119,7 +119,8 @@ rbus' rs485 index = do
                 transmit =<< deref (version ~> major)
                 transmit =<< deref (version ~> minor)
 
-    let onDiscovery address = do
+    let onDiscovery mac address model version = do
+            onPing mac address model version
             store discoveryAddress address
             store shouldDiscovery true
             store shouldPing false
