@@ -42,10 +42,10 @@ OF SUCH DAMAGE.
 #include "stdint.h"
 #include "gd32f4xx_enet_eval.h"
 
-#define USE_DHCP       1 /* enable DHCP, if disabled static address is used */
+// #define USE_DHCP       1 /* enable DHCP, if disabled static address is used */
 
 #define USE_ENET_INTERRUPT
-//#define TIMEOUT_CHECK_USE_LWIP
+#define TIMEOUT_CHECK_USE_LWIP
 /* MAC address: MAC_ADDR0:MAC_ADDR1:MAC_ADDR2:MAC_ADDR3:MAC_ADDR4:MAC_ADDR5 */
 #define MAC_ADDR0   2
 #define MAC_ADDR1   0xA
@@ -64,7 +64,7 @@ OF SUCH DAMAGE.
 #define IP_S_ADDR0   192
 #define IP_S_ADDR1   168
 #define IP_S_ADDR2   88
-#define IP_S_ADDR3   11
+#define IP_S_ADDR3   154
 
    
 /* net mask */

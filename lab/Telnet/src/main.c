@@ -72,7 +72,7 @@ int main(void)
     enet_system_setup();
     /* initilaize the LwIP stack */
     lwip_stack_init();
-    printf("init done\n");
+
 
     while(1) {
 
@@ -80,6 +80,7 @@ int main(void)
         /* check if any packet received */
         if(enet_rxframe_size_get()) {
             /* process received ethernet packet */
+            printf("lwip_pkt_handle \n");
             lwip_pkt_handle();
         }
 #endif /* USE_ENET_INTERRUPT */
@@ -106,8 +107,10 @@ int main(void)
 */
 void lwip_netif_status_callback(struct netif *netif)
 {
+    printf("lwip_netif_status_callback0 \n");
     if((netif->flags & NETIF_FLAG_UP) != 0) {
         /* initilaize the helloGigadevice module telnet 23 */
+        printf("lwip_netif_status_callback1 \n");
         hello_gigadevice_init();
     }
 }
