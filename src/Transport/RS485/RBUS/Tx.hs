@@ -34,19 +34,19 @@ txTask r@RBUS{..} = do
         hasAddress' <- hasAddress protocol
         ifte_ hasAddress'
             (do
-                {-
-                    TODO: Move initialization out of the RBUS protocol
-                -}
-                shouldConfirm' <- deref shouldConfirm
-                when shouldConfirm'
-                    (doConfirm r)
+                doConfirm r
                 doTransmitMessage r
-                shouldInit' <- deref shouldInit
-                when shouldInit'
-                    (doRequestInit r)
                 doPing r
             )
             (doDiscovery r)
+
+
+
+initTask :: RBUS -> Ivory (ProcEffects s ()) ()
+initTask r@RBUS{..} = do
+    shouldInit' <- deref shouldInit
+    when shouldInit' $
+        toQueue r initBuff
 
 
 
@@ -82,9 +82,11 @@ doDiscovery r@RBUS{..} = do
 
 
 doConfirm :: RBUS -> Ivory (ProcEffects s ()) ()
-doConfirm r@RBUS{..}= do
-    store shouldConfirm false
-    toRS transmitConfirm r
+doConfirm r@RBUS{..} = do
+    shouldConfirm' <- deref shouldConfirm
+    when shouldConfirm' $ do
+        store shouldConfirm false
+        toRS transmitConfirm r
 
 
 doPing :: RBUS -> Ivory (ProcEffects s ()) ()
@@ -93,15 +95,6 @@ doPing r@RBUS{..} = do
     t1 <- getSystemTime clock
     when (t1 - t0 >? 1000) $
         toRS transmitPing r
-
-
-
-doRequestInit :: RBUS -> Ivory (ProcEffects s ()) ()
-doRequestInit r@RBUS{..} = do
-    t0 <- deref initTimestamp
-    t1 <- getSystemTime clock
-    when (t1 - t0 >? 2000) $
-        toQueue r initBuff
 
 
 

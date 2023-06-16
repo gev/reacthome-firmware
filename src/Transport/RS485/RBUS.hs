@@ -100,9 +100,13 @@ rbus rs485 = do
 
     addInit rbusInit
 
-    addTask $ yeld (name <> "_rx"   ) $ rxTask    rbus
-    addTask $ yeld (name <> "_tx"   ) $ txTask    rbus
-    addTask $ yeld (name <> "_reset") $ resetTask rbus
+    addTask $ yeld       (name <> "_rx"   ) $ rxTask    rbus
+    addTask $ yeld       (name <> "_tx"   ) $ txTask    rbus
+    addTask $ yeld       (name <> "_reset") $ resetTask rbus
+    addTask $ delay 2000 (name <> "_init" ) $ initTask  rbus
+    {-
+        TODO: Move initialization out of the RBUS protocol
+    -}
 
     pure rbus
 
