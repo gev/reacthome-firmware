@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-module Feature.MixA where
+module Feature.Mix where
 
 import           Control.Monad.Reader
 import           Control.Monad.Writer
@@ -11,14 +11,14 @@ import           Core.Feature
 import           Core.Transport       as T
 
 
-data MixA = MixA
+data Mix = Mix
 
-mixA :: ( MonadWriter Context m
+mix :: ( MonadWriter Context m
         , MonadReader (Domain p t) m
         , T.Transport t
         ) => [p -> m i] -> [p -> m o] -> m Feature
-mixA inputs outputs = pure $ Feature MixA
+mix inputs outputs = pure $ Feature Mix
 
 
 
-instance Controller MixA
+instance Controller Mix
