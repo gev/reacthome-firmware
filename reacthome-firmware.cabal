@@ -68,7 +68,7 @@ executable reacthome-firmware
                     , Feature.Blink
                     , Feature.Echo
                     , Feature.Relays
-                    , Feature.MixA
+                    , Feature.Mix
                     , Feature.Dimmer.AC
                     , Feature.Dimmer.DC
                     , Feature.Indicator
