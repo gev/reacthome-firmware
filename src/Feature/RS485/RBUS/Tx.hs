@@ -30,12 +30,13 @@ txHandle RBUS{..} = do
     store txLock false
 
 
+
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()
 txTask r@RBUS{..} = do
-    isRBUS' <- deref isRBUS
+    mode'   <- deref mode
     rxLock' <- deref rxLock
     txLock' <- deref txLock
-    when (isRBUS' .&& iNot rxLock' .&& iNot txLock') $ do
+    when (mode' ==? modeRBUS .&& iNot rxLock' .&& iNot txLock') $ do
         shouldDiscovery' <- deref shouldDiscovery
         shouldConfirm'   <- deref shouldConfirm
         shouldPing'      <- deref shouldPing
@@ -88,11 +89,13 @@ doDiscovery r@RBUS{..} = do
     toRS (transmitDiscovery address') r 0
 
 
+
 doConfirm :: RBUS -> Ivory (ProcEffects s ()) ()
 doConfirm r@RBUS{..} = do
     store shouldConfirm false
     address' <- deref confirmAddress
     toRS (transmitConfirm address') r 0
+
 
 
 doPing :: RBUS -> Ivory (ProcEffects s ()) ()
@@ -112,6 +115,7 @@ toRS :: (Master 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects
      -> Ivory (ProcEffects s ()) ()
 toRS transmit r@RBUS{..} offset =
     rsTransmit r =<< run protocol transmit txBuff offset
+
 
 
 {--
@@ -134,11 +138,13 @@ toQueue RBUS{..} address buff offset size = push msgQueue $ \i -> do
     store (msgTTL    ! ix) messageTTL
 
 
+
 rsTransmit :: RBUS -> Uint16 -> Ivory (ProcEffects s ()) ()
 rsTransmit RBUS{..} size = do
     let array = toCArray txBuff
     RS.transmit rs array size
     store txLock true
+
 
 
 run :: KnownNat l

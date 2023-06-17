@@ -14,11 +14,18 @@ import           Protocol.RS485.RBUS        (Preamble (confirm))
 import           Protocol.RS485.RBUS.Master
 
 
+
+modeNone  = 2 :: Uint8
+modeRBUS  = 1 :: Uint8
+modeRS485 = 0 :: Uint8
+
+
+
 data RBUS = forall t. LazyTransport t => RBUS
      { index            :: Int
      , clock            :: SystemClock
      , rs               :: RS485
-     , isRBUS           :: Value      IBool
+     , mode             :: Value      Uint8
      , baudrate         :: Value      Uint32
      , lineControl      :: Value      Uint8
      , protocol         :: Master 255

@@ -4,7 +4,6 @@
 {-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE RankNTypes        #-}
 {-# LANGUAGE RecordWildCards   #-}
-{-# LANGUAGE TypeOperators     #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
 
@@ -60,7 +59,7 @@ rbus' rs485 index = do
     let clock         = systemClock mcu
 
     rs               <- rs485
-    isRBUS           <- value  (name <> "_is_rbus"          ) true
+    mode             <- value  (name <> "_mode"             ) modeNone
     baudrate         <- value  (name <> "_baudrate"         ) defaultBaudrate
     lineControl      <- value  (name <> "_line_control"     ) 0
     rxBuff           <- buffer (name <> "_rx"               )
@@ -129,7 +128,7 @@ rbus' rs485 index = do
 
     protocol <- master name onMessage onConfirm onDiscovery onPing onReceive
 
-    let rbus = RBUS { index, clock, rs, isRBUS, baudrate, lineControl, protocol
+    let rbus = RBUS { index, clock, rs, mode, baudrate, lineControl, protocol
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgConfirm, msgTTL, msgQueue, msgBuff, msgIndex
                     , txBuff
@@ -143,12 +142,6 @@ rbus' rs485 index = do
 
     addHandler $ I.HandleRS485 rs (rxHandle rbus) (txHandle rbus)
 
-    let rbusInit :: Def ('[] :-> ())
-        rbusInit = proc (name <> "_init") $ body $ do
-            I.configureRS485 rs defaultBaudrate I.WL_8b I.SB_1b I.None
-
-    addInit rbusInit
-
     addTask $ yeld (name <> "_rx"   ) $ rxTask    rbus
     addTask $ yeld (name <> "_tx"   ) $ txTask    rbus
     addTask $ yeld (name <> "_reset") $ resetTask rbus
@@ -156,57 +149,23 @@ rbus' rs485 index = do
     pure rbus
 
 
-
-configureRS485 :: RBUS -> Ivory eff ()
-configureRS485 RBUS{..} = do
-    isRBUS'      <- deref isRBUS
-    baudrate'    <- deref baudrate
-    lineControl' <- deref lineControl
-    let config lc wl sb p = lineControl' ==? lc
-                                         ==> I.configureRS485 rs baudrate' wl sb p
-    ifte_ isRBUS'
-          (do
-              I.configureRS485 rs defaultBaudrate I.WL_8b I.SB_1b I.None
-              store shouldDiscovery false
-              store shouldConfirm false
-              store shouldPing true
-              Q.clear msgQueue
-              reset protocol
-          )
-          (do
-              when (baudrate' >? 0) $
-                cond_ [ config 0 I.WL_8b I.SB_1b I.None
-                        , config 1 I.WL_8b I.SB_1b I.Even
-                        , config 2 I.WL_8b I.SB_1b I.Odd
-                        , config 3 I.WL_9b I.SB_1b I.None
-                        , config 4 I.WL_8b I.SB_2b I.None
-                        , config 5 I.WL_8b I.SB_2b I.Even
-                        , config 6 I.WL_8b I.SB_2b I.Odd
-                        , config 7 I.WL_9b I.SB_2b I.None
-                        ]
-              store rsSize 0
-          )
-
-
-configureRBUS :: KnownNat n
+setMode :: KnownNat n
               => [RBUS]
               -> Buffer n Uint8
               -> Uint8
               -> Ivory (ProcEffects s ()) ()
-configureRBUS list buff size = do
+setMode list buff size = do
     when (size ==? 8) $ do
         port <- deref $ buff ! 1
         let run r@RBUS{..} p =
                 when (p ==? port) $ do
-                    store isRBUS      =<< unpack   buff 2
+                    store mode        =<< unpack   buff 2
                     store baudrate    =<< unpackLE buff 3
                     store lineControl =<< unpack   buff 7
-                    configureRS485 r
+                    configureMode r
                     T.lazyTransmit transport $ \transmit -> do
                         transmit 8
                         for 8 $ \ix -> transmit =<< deref (buff ! ix)
-                    store rxLock false
-                    Q.clear rxQueue
         zipWithM_ run list (iterate (+1) 1)
 
 
@@ -220,8 +179,8 @@ transmitRBUS list buff size = do
     when (size >? 9) $ do
         port <- deref $ buff ! 7
         let run r@RBUS{..} p = do
-                isRBUS' <- deref isRBUS
-                when (isRBUS' .&& p ==? port) $ do
+                mode' <- deref mode
+                when (mode' ==? modeRBUS .&& p ==? port) $ do
                     address <- deref $ buff ! 8
                     let macTable = P.table protocol
                     lookupMac macTable address $ \rec -> do
@@ -249,8 +208,8 @@ transmitRB485 list buff size = do
     when (size >? 2) $ do
         port <- deref $ buff ! 1
         let run r@RBUS{..} p = do
-                isRBUS' <- deref isRBUS
-                when (iNot isRBUS' .&& p ==? port) $ do
+                mode' <- deref mode
+                when (mode' ==? modeRS485 .&& p ==? port) $ do
                     let size' = size - 2
                     for (toIx size') $ \ix ->
                         store (txBuff ! toIx (fromIx ix)) . safeCast =<< deref (buff ! (ix + 2))
@@ -267,14 +226,53 @@ initialize :: KnownNat n
 initialize list buff size =
     when (size ==? 25) $ do
         let run r@RBUS{..} offset = do
-                store isRBUS      =<< unpack   buff  offset
+                store mode        =<< unpack   buff  offset
                 store baudrate    =<< unpackLE buff (offset + 1)
                 store lineControl =<< unpack   buff (offset + 5)
-                configureRS485 r
-                store rsSize 0
-                store rxLock false
-                reset protocol
+                configureMode r
         zipWithM_ run list (iterate (+6) 1)
+
+
+
+configureMode :: RBUS -> Ivory eff ()
+configureMode r = do
+    mode'        <- deref $ mode r
+    cond_ [ mode' ==? modeRBUS  ==> configureRBUS  r
+          , mode' ==? modeRS485 ==> configureRS485 r
+          ]
+    store (rxLock r) false
+    Q.clear $ rxQueue r
+
+
+
+configureRBUS :: RBUS -> Ivory eff ()
+configureRBUS RBUS{..} = do
+    I.configureRS485 rs defaultBaudrate I.WL_8b I.SB_1b I.None
+    store shouldDiscovery false
+    store shouldConfirm false
+    store shouldPing true
+    Q.clear msgQueue
+    reset protocol
+
+
+
+configureRS485 :: RBUS -> Ivory eff ()
+configureRS485 RBUS{..} = do
+    baudrate'    <- deref baudrate
+    lineControl' <- deref lineControl
+    let config lc wl sb p = lineControl' ==? lc
+                                         ==> I.configureRS485 rs baudrate' wl sb p
+    when (baudrate' >? 0) $
+        cond_ [ config 0 I.WL_8b I.SB_1b I.None
+                , config 1 I.WL_8b I.SB_1b I.Even
+                , config 2 I.WL_8b I.SB_1b I.Odd
+                , config 3 I.WL_9b I.SB_1b I.None
+                , config 4 I.WL_8b I.SB_2b I.None
+                , config 5 I.WL_8b I.SB_2b I.Even
+                , config 6 I.WL_8b I.SB_2b I.Odd
+                , config 7 I.WL_9b I.SB_2b I.None
+                ]
+    store rsSize 0
 
 
 
@@ -282,7 +280,7 @@ instance Controller [RBUS] where
     handle list buff size =
         pure [ size >? 1 ==> do
                 action <- deref $ buff ! 0
-                cond_ [ action ==? 0xa0 ==> configureRBUS list buff size
+                cond_ [ action ==? 0xa0 ==> setMode       list buff size
                       , action ==? 0xa1 ==> transmitRBUS  list buff size
                       , action ==? 0xa2 ==> transmitRB485 list buff size
                       , action ==? 0xf2 ==> initialize    list buff size
