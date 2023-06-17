@@ -84,7 +84,7 @@ executable reacthome-firmware
                     , Formula.Server
                     , Formula.DimmerAC12
                     , Formula.DimmerDC12
-                    , Formula.MixA6x6
+                    , Formula.Mix6x12
 
                     , Interface.Counter
                     , Interface.GPIO.Input

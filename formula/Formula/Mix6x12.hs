@@ -1,4 +1,4 @@
-module Formula.MixA6x6 where
+module Formula.Mix6x12 where
 
 import           Core.Formula
 import           Device.GD32F3x0
@@ -8,8 +8,8 @@ import           Ivory.Language
 import           Transport.RS485.RBUS
 
 
-mixA6x6 :: Formula GD32F3x0
-mixA6x6 = Formula { name       = "mixA6x6"
+mix12x6 :: Formula GD32F3x0
+mix12x6 = Formula { name       = "mix12x6"
                   , model      = 0xff
                   , version    = (1, 0)
                   , shouldInit = false
