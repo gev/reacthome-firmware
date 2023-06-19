@@ -61,17 +61,19 @@ executable reacthome-firmware
                     , Data.Concurrent.Semaphore
                     , Data.Concurrent.Queue
 
-                    , Endpoint.Relays
+                    , Endpoint.DInputs
                     , Endpoint.Groups
                     , Endpoint.Dimmers
+                    , Endpoint.Relays
 
                     , Feature.Blink
                     , Feature.Echo
-                    , Feature.Relays
-                    , Feature.Mix
+                    , Feature.DInputs
                     , Feature.Dimmer.AC
                     , Feature.Dimmer.DC
                     , Feature.Indicator
+                    , Feature.Mix
+                    , Feature.Relays
                     , Feature.RS485.RBUS
                     , Feature.RS485.RBUS.Data
                     , Feature.RS485.RBUS.Rx
