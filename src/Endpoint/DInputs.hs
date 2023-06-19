@@ -50,9 +50,9 @@ dinputs name n = do
 
 message :: DInputs -> Uint8 -> Ivory eff (Buffer 3 Uint8)
 message DInputs{..} i = do
-    runDInputs $ \r -> do
-        let dinput = addrOf r ! toIx i
-        pack   payload 1 (1 :: Uint8)
+    runDInputs $ \di -> do
+        let dinput = addrOf di ! toIx i
+        pack   payload 0 (1 :: Uint8)
         pack   payload 1 $ i + 1
         pack   payload 2 =<< deref (dinput ~> state)
     pure payload
