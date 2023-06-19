@@ -11,9 +11,9 @@ import           Formula.Blink450
 import           Formula.DimmerAC12
 import           Formula.DimmerDC12
 import           Formula.Echo
+import           Formula.Mix6x12
 import           Formula.Relay12
 import           Formula.Server
--- import           Formula.MixA6x12
 
 
 main :: IO ()
@@ -21,7 +21,7 @@ main = do
     gcc gd32f330k8u6 [ relay12
                      , dimmerDC12
                      , dimmerAC12
-                    --  , mixA6x12
+                     , mix6x12
                     --  , blink330
                      ]
     gcc gd32f450vgt6 [ server

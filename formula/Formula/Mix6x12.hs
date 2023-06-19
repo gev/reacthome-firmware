@@ -8,8 +8,8 @@ import           Ivory.Language
 import           Transport.RS485.RBUS
 
 
-mix12x6 :: Formula GD32F3x0
-mix12x6 = Formula { name       = "mix12x6"
+mix6x12 :: Formula GD32F3x0
+mix6x12 = Formula { name       = "mix12x6"
                   , model      = 0xff
                   , version    = (1, 0)
                   , shouldInit = false
