@@ -264,14 +264,14 @@ configureRS485 RBUS{..} = do
                                          ==> I.configureRS485 rs baudrate' wl sb p
     when (baudrate' >? 0) $
         cond_ [ config 0 I.WL_8b I.SB_1b I.None
-                , config 1 I.WL_8b I.SB_1b I.Even
-                , config 2 I.WL_8b I.SB_1b I.Odd
-                , config 3 I.WL_9b I.SB_1b I.None
-                , config 4 I.WL_8b I.SB_2b I.None
-                , config 5 I.WL_8b I.SB_2b I.Even
-                , config 6 I.WL_8b I.SB_2b I.Odd
-                , config 7 I.WL_9b I.SB_2b I.None
-                ]
+              , config 1 I.WL_8b I.SB_1b I.Even
+              , config 2 I.WL_8b I.SB_1b I.Odd
+              , config 3 I.WL_9b I.SB_1b I.None
+              , config 4 I.WL_8b I.SB_2b I.None
+              , config 5 I.WL_8b I.SB_2b I.Even
+              , config 6 I.WL_8b I.SB_2b I.Odd
+              , config 7 I.WL_9b I.SB_2b I.None
+              ]
     store rsSize 0
 
 
