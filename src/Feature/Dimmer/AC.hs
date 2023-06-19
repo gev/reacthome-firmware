@@ -113,11 +113,11 @@ detectCrossZeroError DimmerAC{..} = do
 
 
 calculate :: DimmerAC -> Ivory eff ()
-calculate DimmerAC{..} = zipWithM_ zip getPWMs (iterate (+1) 0)
+calculate DimmerAC{..} = zipWithM_ zip getPWMs [0..]
     where
-        zip :: I.PWM p => p -> Sint32 -> Ivory eff ()
+        zip :: I.PWM p => p -> Int -> Ivory eff ()
         zip pwm i = runDimmers getDimmers $ \ds -> do
-            let ix = toIx i
+            let ix = fromIntegral i
             let d = addrOf ds ! ix
             calculateDimmer d
 
@@ -133,12 +133,12 @@ manage DimmerAC{..} = do
     isCrossZero'   <- deref isCrossZero
     isNoCrossZero' <- deref isNoCrossZero
     when (iNot isNoCrossZero' .&& isCrossZero') $ do
-        zipWithM_ zip getPWMs (iterate (+1) 0)
+        zipWithM_ zip getPWMs [0..]
         store isCrossZero false
     where
-        zip :: I.PWM p => p -> Sint32 -> Ivory eff ()
+        zip :: I.PWM p => p -> Int -> Ivory eff ()
         zip pwm i = runDimmers getDimmers $ \ds -> do
-            let ix = toIx i
+            let ix = fromIntegral i
             let d = addrOf ds ! ix
             manageDimmer pwm d =<< deref period0
 
@@ -159,11 +159,11 @@ manageNoCrossZero :: DimmerAC -> Ivory eff ()
 manageNoCrossZero DimmerAC{..} = do
     isNoCrossZero' <- deref isNoCrossZero
     when isNoCrossZero' $
-        zipWithM_ zip getPWMs (iterate (+1) 0)
+        zipWithM_ zip getPWMs [0..]
     where
-        zip :: I.PWM p => p -> Sint32 -> Ivory eff ()
+        zip :: I.PWM p => p -> Int -> Ivory eff ()
         zip pwm i = runDimmers getDimmers $ \ds -> do
-            let ix = toIx i
+            let ix = fromIntegral i
             let d = addrOf ds ! ix
             manageDimmerNoCrossZero pwm d
 

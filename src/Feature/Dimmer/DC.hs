@@ -69,11 +69,11 @@ dimmerDC pwms = do
 
 
 manage :: DimmerDC -> Ivory eff ()
-manage DimmerDC{..} = zipWithM_ zip getPWMs (iterate (+1) 0)
+manage DimmerDC{..} = zipWithM_ zip getPWMs [0..]
     where
-        zip :: I.PWM p => p -> Sint32 -> Ivory eff ()
+        zip :: I.PWM p => p -> Int -> Ivory eff ()
         zip pwm i = runDimmers getDimmers $ \ds -> do
-            let ix = toIx i
+            let ix = fromIntegral i
             let d = addrOf ds ! ix
             manageDimmer pwm d
 

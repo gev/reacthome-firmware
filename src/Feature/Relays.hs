@@ -76,17 +76,17 @@ relays outs = do
 
 
 manage :: Relays -> Ivory eff ()
-manage Relays{..} = zipWithM_ zip getOutputs (iterate (+1) 0)
+manage Relays{..} = zipWithM_ zip getOutputs [0..]
     where
-        zip :: Output o => o -> Sint32 -> Ivory eff ()
+        zip :: Output o => o -> Int -> Ivory eff ()
         zip output i = R.runRelays getRelays $ \rs -> do
-            let ix = toIx i
+            let ix = fromIntegral i
             let r = addrOf rs ! ix
             let run = manageRelay r output $ getSystemTime clock
             isOn <- deref $ r ~> R.state
             ifte_ isOn
                 (run set   R.delayOff false)
-                (run reset R.delayOn  true)
+                (run reset R.delayOn  true )
 
 
 
