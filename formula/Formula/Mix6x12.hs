@@ -14,8 +14,8 @@ mix6x12 :: Formula GD32F3x0
 mix6x12 = Formula { name       = "mix6x12"
                   -- , model      = 0xff
                   -- , version    = (1, 0)
-                  , model      = 0x20
-                  , version    = (4, 1)
+                  , model      = 0xac
+                  , version    = (3, 0)
                   , shouldInit = false
                   , transport  = rbus $ rs485 1 uart_0 out_pb_2
                   , features   = [ dinputs
@@ -32,12 +32,13 @@ mix6x12 = Formula { name       = "mix6x12"
                                        , in_pb_1
                                        , in_pa_11
                                        ]
-                                    --    [ out_pa_0
-                                    --    , out_pa_1
-                                    --    , out_pa_2
-                                    --    , out_pa_3
-                                    --    , out_pa_6
-                                    --    , out_pa_7
-                                    --    ]
+                                 , relays
+                                       [ out_pa_0
+                                       , out_pa_1
+                                       , out_pa_2
+                                       , out_pa_3
+                                       , out_pa_6
+                                       , out_pa_7
+                                       ]
                                  ]
                   }
