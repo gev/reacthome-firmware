@@ -42,19 +42,19 @@ data Relays = Relays
 relays :: MonadWriter Context m => String -> Int -> m Relays
 relays name n = do
     addStruct (Proxy :: Proxy RelayStruct)
-    let runRelays = runRecords name $ replicate n go
+    let runRelays = runRecords name $ go . fromIntegral <$> [1..n]
     payload      <- buffer "relay_message"
     let relays    = Relays {runRelays, payload}
     runRelays addArea
     pure relays
-    where go = [ state           .= ival false
-               , defaultDelayOff .= ival 0
-               , delayOff        .= ival 0
-               , delayOn         .= ival 0
-               , timestamp       .= ival 0
-               , group           .= ival 1
-               , synced          .= ival true
-               ]
+    where go i = [ state           .= ival false
+                 , defaultDelayOff .= ival 0
+                 , delayOff        .= ival 0
+                 , delayOn         .= ival 0
+                 , timestamp       .= ival 0
+                 , group           .= ival i
+                 , synced          .= ival true
+                 ]
 
 
 

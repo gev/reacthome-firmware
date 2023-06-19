@@ -42,19 +42,19 @@ data Dimmers = Dimmers
 dimmers :: MonadWriter Context m => String -> Int -> m Dimmers
 dimmers name n = do
     addStruct (Proxy :: Proxy DimmerStruct)
-    let runDimmers = runRecords name $ replicate n go
+    let runDimmers = runRecords name $ go . fromIntegral <$> [1..n]
     payload       <- buffer "dimmer_message"
     let dimmers    = Dimmers {runDimmers, payload}
     runDimmers addArea
     pure dimmers
-    where go = [ mode       .= ival 0
-               , brightness .= ival 0
-               , velocity   .= ival 0
-               , group      .= ival 1
-               , value      .= ival 0
-               , delta      .= ival 0
-               , synced     .= ival true
-               ]
+    where go i = [ mode       .= ival 0
+                 , brightness .= ival 0
+                 , velocity   .= ival 0
+                 , group      .= ival i
+                 , value      .= ival 0
+                 , delta      .= ival 0
+                 , synced     .= ival true
+                 ]
 
 
 

@@ -166,7 +166,7 @@ setMode list buff size = do
                     T.lazyTransmit transport $ \transmit -> do
                         transmit 8
                         for 8 $ \ix -> transmit =<< deref (buff ! ix)
-        zipWithM_ run list (iterate (+1) 1)
+        zipWithM_ run list $ fromIntegral <$> [1..]
 
 
 
@@ -195,7 +195,7 @@ transmitRBUS list buff size = do
                         found' <- deref found
                         when found' $
                             toQueue r address buff 9 (size - 9)
-        zipWithM_ run list (iterate (+1) 1)
+        zipWithM_ run list $ fromIntegral <$> [1..]
 
 
 
@@ -214,7 +214,7 @@ transmitRB485 list buff size = do
                     for (toIx size') $ \ix ->
                         store (txBuff ! toIx (fromIx ix)) . safeCast =<< deref (buff ! (ix + 2))
                     rsTransmit r $ safeCast size'
-        zipWithM_ run list (iterate (+1) 1)
+        zipWithM_ run list $ fromIntegral <$> [1..]
 
 
 
@@ -230,7 +230,7 @@ initialize list buff size =
                 store baudrate    =<< unpackLE buff (offset + 1)
                 store lineControl =<< unpack   buff (offset + 5)
                 configureMode r
-        zipWithM_ run list (iterate (+6) 1)
+        zipWithM_ run list $ fromIntegral <$> [1, 7..]
 
 
 
