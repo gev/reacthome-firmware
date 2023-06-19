@@ -9,25 +9,24 @@
 
 module Feature.DInputs where
 
-import           Control.Monad         (zipWithM_)
-import           Control.Monad.Reader  (MonadReader, asks)
-import           Control.Monad.Writer  (MonadWriter)
+import           Control.Monad        (zipWithM_)
+import           Control.Monad.Reader (MonadReader, asks)
+import           Control.Monad.Writer (MonadWriter)
 import           Core.Context
 import           Core.Controller
-import qualified Core.Domain           as D
+import qualified Core.Domain          as D
 import           Core.Feature
 import           Core.Task
-import qualified Core.Transport        as T
+import qualified Core.Transport       as T
 import           Data.Buffer
 import           Data.Index
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
-import qualified Endpoint.DInputs      as DI
+import qualified Endpoint.DInputs     as DI
 import           GHC.TypeNats
 import           Interface.GPIO.Input
-import           Interface.MCU         (MCU, peripherals, systemClock)
-import           Interface.SystemClock (SystemClock, getSystemTime)
+import           Interface.MCU        (MCU, peripherals, systemClock)
 import           Ivory.Language
 import           Ivory.Stdlib
 
@@ -37,7 +36,6 @@ data DInputs = forall i. Input i => DInputs
     { n          :: Uint8
     , getDInputs :: DI.DInputs
     , getInputs  :: [i]
-    , clock      :: SystemClock
     , current    :: Index Uint8
     , transmit   :: forall n. KnownNat n
                  => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
@@ -54,11 +52,9 @@ dinputs inputs = do
     let n       = length is
     getDInputs <- DI.dinputs "dinputs" n
     current    <- index "current_dinput"
-    let clock   = systemClock mcu
     let dinputs = DInputs { n = fromIntegral n
                           , getDInputs
                           , getInputs = is
-                          , clock
                           , current
                           , transmit = T.transmitBuffer transport
                           }

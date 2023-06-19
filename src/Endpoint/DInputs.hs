@@ -37,14 +37,14 @@ data DInputs = DInputs
 dinputs :: MonadWriter Context m => String -> Int -> m DInputs
 dinputs name n = do
     addStruct (Proxy :: Proxy DInputStruct)
-    let runDInputs = runRecords name $ go . fromIntegral <$> [1..n]
+    let runDInputs = runRecords name $ replicate n go
     payload       <- buffer "dinput_message"
     let dinputs    = DInputs {runDInputs, payload}
     runDInputs addArea
     pure dinputs
-    where go i = [ state  .= ival false
-                 , synced .= ival true
-                 ]
+    where go = [ state  .= ival false
+               , synced .= ival true
+               ]
 
 
 
