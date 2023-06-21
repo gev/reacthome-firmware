@@ -1,7 +1,7 @@
 #ifndef _PHY_H_
 #define _PHY_H_
 
-#define PHY_ADDRESS                      ((uint16_t)0x1U)                         /*!< phy address determined by the hardware */
+#define PHY_ADDRESS                      ((uint16_t)0x0U)                         /*!< phy address determined by the hardware */
 
 /* PHY read write timeouts */ 
 #define PHY_READ_TO                      ((uint32_t)0x0004FFFFU)                /*!< PHY read timeout */

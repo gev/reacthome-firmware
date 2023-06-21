@@ -67,7 +67,7 @@ int main(void)
 {
     gd_eval_com_init(EVAL_COM0);
     uart_stdout_init();
-    // gd_eval_key_init(KEY_TAMPER, KEY_MODE_EXTI);
+
     /* setup ethernet system(GPIOs, clocks, MAC, DMA, systick) */
     enet_system_setup();
     /* initilaize the LwIP stack */
@@ -80,7 +80,6 @@ int main(void)
         /* check if any packet received */
         if(enet_rxframe_size_get()) {
             /* process received ethernet packet */
-            printf("lwip_pkt_handle \n");
             lwip_pkt_handle();
         }
 #endif /* USE_ENET_INTERRUPT */
@@ -107,10 +106,8 @@ int main(void)
 */
 void lwip_netif_status_callback(struct netif *netif)
 {
-    printf("lwip_netif_status_callback0 \n");
     if((netif->flags & NETIF_FLAG_UP) != 0) {
         /* initilaize the helloGigadevice module telnet 23 */
-        printf("lwip_netif_status_callback1 \n");
         hello_gigadevice_init();
     }
 }
@@ -148,8 +145,8 @@ int _write(int file, char *ptr, int len)
     for (i = 0; i < len; i++)
     {
         /* отправить символ один за другим */
-        while (usart_flag_get(USART0, USART_FLAG_TBE) == RESET);
-        usart_data_transmit(USART0, *ptr++);
+        while (!usart_flag_get(USART0, USART_FLAG_TBE));
+        usart_data_transmit(USART0, ptr[i]);
     }
     return len;
 }
