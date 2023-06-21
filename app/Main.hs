@@ -14,6 +14,7 @@ import           Formula.Echo
 import           Formula.Mix6x12
 import           Formula.Relay12
 import           Formula.Server
+-- import           Formula.MixA6x12
 
 
 main :: IO ()
