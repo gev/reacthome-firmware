@@ -43,9 +43,9 @@ data DInputs = forall i. Input i => DInputs
 
 
 
-mkDinputs :: (MonadWriter Context m, MonadReader (D.Domain p t) m, T.Transport t, Input i)
+mkDInputs :: (MonadWriter Context m, MonadReader (D.Domain p t) m, T.Transport t, Input i)
         => [p -> m i] -> m DInputs
-mkDinputs inputs = do
+mkDInputs inputs = do
     mcu        <- asks D.mcu
     transport  <- asks D.transport
     is         <- mapM ($ peripherals mcu) inputs
@@ -64,7 +64,7 @@ mkDinputs inputs = do
 dinputs :: (MonadWriter Context m, MonadReader (D.Domain p t) m, T.Transport t, Input i)
         => [p -> m i] -> m Feature
 dinputs inputs = do
-    dinputs <-  mkDinputs inputs
+    dinputs <-  mkDInputs inputs
     addTask  $ delay 10 "dinputs_manage" $ manage dinputs
     addTask  $ yeld     "dinputs_sync"   $ sync dinputs
     pure     $ Feature dinputs
