@@ -48,9 +48,9 @@ data Relays = forall o. Output o => Relays
 
 
 
-relays :: (MonadWriter Context m, MonadReader (D.Domain p t) m, T.Transport t, Output o)
-       => [p -> m o] -> m Feature
-relays outs = do
+mkRelays :: (MonadWriter Context m, MonadReader (D.Domain p t) m, T.Transport t, Output o)
+         => [p -> m o] -> m Relays
+mkRelays outs = do
     mcu        <- asks D.mcu
     transport  <- asks D.transport
     shouldInit <- asks D.shouldInit
@@ -60,18 +60,25 @@ relays outs = do
     getGroups  <- G.groups "groups" n
     current    <- index "current_relay"
     let clock   = systemClock mcu
-    let relays  = Relays { n = fromIntegral n
-                         , getRelays
-                         , getGroups
-                         , getOutputs = os
-                         , shouldInit
-                         , clock
-                         , current
-                         , transmit = T.transmitBuffer transport
-                         }
+    pure Relays { n = fromIntegral n
+                , getRelays
+                , getGroups
+                , getOutputs = os
+                , shouldInit
+                , clock
+                , current
+                , transmit = T.transmitBuffer transport
+                }
+
+
+
+relays :: (MonadWriter Context m, MonadReader (D.Domain p t) m, T.Transport t, Output o)
+       => [p -> m o] -> m Feature
+relays outs = do
+    relays <- mkRelays outs
     addTask $ delay 10 "relays_manage" $ manage relays
     addTask $ yeld     "relays_sync"   $ sync relays
-    pure $ Feature relays
+    pure    $ Feature relays
 
 
 
