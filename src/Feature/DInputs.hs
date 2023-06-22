@@ -44,7 +44,7 @@ data DInputs = forall i. Input i => DInputs
 
 
 mkDInputs :: (MonadWriter Context m, MonadReader (D.Domain p t) m, T.Transport t, Input i)
-        => [p -> m i] -> m DInputs
+          => [p -> m i] -> m DInputs
 mkDInputs inputs = do
     mcu        <- asks D.mcu
     transport  <- asks D.transport
