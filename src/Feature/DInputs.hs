@@ -65,8 +65,8 @@ dinputs :: (MonadWriter Context m, MonadReader (D.Domain p t) m, T.Transport t, 
         => [p -> m i] -> m Feature
 dinputs inputs = do
     dinputs <-  mkDInputs inputs
-    addTask  $ delay 10 "dinputs_manage" $ manage dinputs
-    addTask  $ yeld     "dinputs_sync"   $ sync dinputs
+    addTask  $ delay 10 "dinputs_manage" $ manageDInputs dinputs
+    addTask  $ yeld     "dinputs_sync"   $ syncDInputs   dinputs
     pure     $ Feature dinputs
 
 
@@ -75,8 +75,8 @@ instance Controller DInputs
 
 
 
-manage :: DInputs -> Ivory eff ()
-manage DInputs{..} = zipWithM_ zip getInputs [0..]
+manageDInputs :: DInputs -> Ivory eff ()
+manageDInputs DInputs{..} = zipWithM_ zip getInputs [0..]
     where
         zip :: Input i => i -> Int -> Ivory eff ()
         zip input i = DI.runDInputs getDInputs $ \rs -> do
@@ -99,16 +99,16 @@ manageDInput di i  = do
 
 
 
-sync :: DInputs -> Ivory (ProcEffects s ()) ()
-sync rs@DInputs{..} = do
+syncDInputs :: DInputs -> Ivory (ProcEffects s ()) ()
+syncDInputs rs@DInputs{..} = do
     i <- deref current
-    syncDInputs rs i
+    syncDInput rs i
     store current $ i + 1
 
 
 
-syncDInputs :: DInputs -> Uint8 -> Ivory (ProcEffects s ()) ()
-syncDInputs DInputs{..} i =
+syncDInput :: DInputs -> Uint8 -> Ivory (ProcEffects s ()) ()
+syncDInput DInputs{..} i =
     DI.runDInputs getDInputs $ \rs -> do
         let r = addrOf rs ! toIx i
         synced <- deref $ r ~> DI.synced
