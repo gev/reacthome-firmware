@@ -76,14 +76,14 @@ relays :: (MonadWriter Context m, MonadReader (D.Domain p t) m, T.Transport t, O
        => [p -> m o] -> m Feature
 relays outs = do
     relays <- mkRelays outs
-    addTask $ delay 10 "relays_manage" $ manage relays
-    addTask $ yeld     "relays_sync"   $ sync relays
+    addTask $ delay 10 "relays_manage" $ manageRelays relays
+    addTask $ yeld     "relays_sync"   $ syncRelays   relays
     pure    $ Feature relays
 
 
 
-manage :: Relays -> Ivory eff ()
-manage Relays{..} = zipWithM_ zip getOutputs [0..]
+manageRelays :: Relays -> Ivory eff ()
+manageRelays Relays{..} = zipWithM_ zip getOutputs [0..]
     where
         zip :: Output o => o -> Int -> Ivory eff ()
         zip output i = R.runRelays getRelays $ \rs -> do
@@ -119,17 +119,17 @@ manageRelay r o timestamp setOut delay state = do
 
 
 
-sync :: Relays -> Ivory (ProcEffects s ()) ()
-sync rs@Relays{..} = do
+syncRelays :: Relays -> Ivory (ProcEffects s ()) ()
+syncRelays rs@Relays{..} = do
     i <- deref current
-    syncRelays rs i
-    syncGroups rs i
+    syncRelays' rs i
+    syncGroups' rs i
     store current $ i + 1
 
 
 
-syncRelays :: Relays -> Uint8 -> Ivory (ProcEffects s ()) ()
-syncRelays Relays{..} i =
+syncRelays' :: Relays -> Uint8 -> Ivory (ProcEffects s ()) ()
+syncRelays' Relays{..} i =
     R.runRelays getRelays $ \rs -> do
         let r = addrOf rs ! toIx i
         synced <- deref $ r ~> R.synced
@@ -140,8 +140,8 @@ syncRelays Relays{..} i =
 
 
 
-syncGroups :: Relays -> Uint8 -> Ivory (ProcEffects s ()) ()
-syncGroups Relays{..} i =
+syncGroups' :: Relays -> Uint8 -> Ivory (ProcEffects s ()) ()
+syncGroups' Relays{..} i =
     G.runGroups getGroups $ \gs -> do
         let g = addrOf gs ! toIx i
         synced <- deref $ g ~> G.synced
