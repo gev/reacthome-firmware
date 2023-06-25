@@ -62,6 +62,7 @@ executable reacthome-firmware
                     , Data.Concurrent.Queue
 
                     , Endpoint.DInputs
+                    , Endpoint.DInputsRelaysRules
                     , Endpoint.Groups
                     , Endpoint.Dimmers
                     , Endpoint.Relays
