@@ -79,10 +79,10 @@ manageDInputs :: DInputs -> Ivory eff ()
 manageDInputs DInputs{..} = zipWithM_ zip getInputs [0..]
     where
         zip :: Input i => i -> Int -> Ivory eff ()
-        zip input i = DI.runDInputs getDInputs $ \rs -> do
+        zip input i = DI.runDInputs getDInputs $ \dis -> do
             let ix = fromIntegral i
-            let r = addrOf rs ! ix
-            manageDInput r input
+            let di = addrOf dis ! ix
+            manageDInput di input
 
 
 
@@ -100,19 +100,19 @@ manageDInput di i  = do
 
 
 syncDInputs :: DInputs -> Ivory (ProcEffects s ()) ()
-syncDInputs rs@DInputs{..} = do
+syncDInputs dis@DInputs{..} = do
     i <- deref current
-    syncDInput rs i
+    syncDInput dis i
     store current $ i + 1
 
 
 
 syncDInput :: DInputs -> Uint8 -> Ivory (ProcEffects s ()) ()
 syncDInput DInputs{..} i =
-    DI.runDInputs getDInputs $ \rs -> do
-        let r = addrOf rs ! toIx i
-        synced <- deref $ r ~> DI.synced
+    DI.runDInputs getDInputs $ \dis -> do
+        let di = addrOf dis ! toIx i
+        synced <- deref $ di ~> DI.synced
         when (iNot synced) $ do
             msg <- DI.message getDInputs (i .% n)
             transmit msg
-            store (r ~> DI.synced) true
+            store (di ~> DI.synced) true
