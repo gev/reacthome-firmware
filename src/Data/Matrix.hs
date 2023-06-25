@@ -7,12 +7,11 @@
 module Data.Matrix
     ( Matrix
     , Matrix'
-    , RunRows
+    , RunMatrix
     , matrix_
     , matrix
-    , runRows_
-    , runRows
-    , runRowsFromList
+    , runMatrix_
+    , runMatrix
     ) where
 
 import           Control.Monad.Writer
@@ -24,7 +23,7 @@ import           Ivory.Language
 
 type Matrix  n m t = Ref Global (Array  n (Array m (Stored t)))
 type Matrix' n m t = MemArea    (Array  n (Array m (Stored t)))
-type RunRows   m t = forall a.  (forall n. KnownNat n => Matrix' n m t -> a) -> a
+type RunMatrix   t = forall a.  (forall n m. (KnownNat n, KnownNat m) => Matrix' n m t -> a) -> a
 
 
 matrix_ :: (MonadWriter Context w, IvoryZeroVal t, KnownNat n, KnownNat m)
@@ -38,20 +37,17 @@ matrix id v = mkArea id . Just . iarray $ (\r -> iarray $ ival <$> r) <$> v
 
 
 
-runRows_ :: (IvoryInit t, IvoryZeroVal t, KnownNat m)
-         => String -> Int -> RunRows m t
-runRows_ id = run (area id Nothing)
 
-runRows :: (IvoryInit t, IvoryZeroVal t, KnownNat m)
-        => String -> [[t]] -> RunRows m t
-runRows id xs = run (area id . Just . iarray $ (\r -> iarray $ ival <$> r) <$> xs) $ length xs
+runMatrix_ :: (IvoryInit t, IvoryZeroVal t)
+           => String -> Int -> Int -> RunMatrix t
+runMatrix_ id = run' (area id Nothing)
 
-runRowsFromList :: (IvoryInit t, IvoryZeroVal t, KnownNat m)
-                => String -> (c -> t) -> [[c]] -> RunRows m t
-runRowsFromList id h xs = run (area id . Just . iarray $ (\r -> iarray $ ival . h <$> r) <$> xs) $ length xs
+runMatrix :: (IvoryInit t, IvoryZeroVal t)
+          => String -> t -> Int -> Int -> RunMatrix t
+runMatrix id v n m = run' (area id . Just . iarray . replicate n . iarray . replicate m . ival $ v) n m
 
 
 
-run :: forall m t. (forall n. KnownNat n => Matrix' n m t) -> Int -> RunRows m t
-run v n f = go . someNatVal . fromIntegral $ n
-    where go (SomeNat (p :: Proxy p)) = f (v :: Matrix' p m t)
+run' :: forall t. (forall n m. (KnownNat n, KnownNat m) => Matrix' n m t) -> Int -> Int -> RunMatrix t
+run' v n m f = go (someNatVal . fromIntegral $ n) (someNatVal . fromIntegral $ m)
+    where go (SomeNat (p :: Proxy p)) (SomeNat (q :: Proxy q)) = f (v :: Matrix' p q t)
