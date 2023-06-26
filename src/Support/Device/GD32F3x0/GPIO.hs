@@ -54,7 +54,8 @@ module Support.Device.GD32F3x0.GPIO
     , setBit
     , resetBit
     , setAF
-    , getBit
+    , getInputBit
+    , getOutputBit
 
     , inclGPIO
     ) where
@@ -173,12 +174,18 @@ gpio_af_set :: Def ('[GPIO_PERIPH, GPIO_AF, GPIO_PIN] :-> ())
 gpio_af_set = fun "gpio_af_set"
 
 
-getBit :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff IBool
-getBit = call gpio_input_bit_get
+getInputBit :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff IBool
+getInputBit = call gpio_input_bit_get
 
 gpio_input_bit_get :: Def ('[GPIO_PERIPH, GPIO_PIN] :-> IBool)
 gpio_input_bit_get = fun "gpio_input_bit_get"
 
+
+getOutputBit :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff IBool
+getOutputBit = call gpio_output_bit_get
+
+gpio_output_bit_get :: Def ('[GPIO_PERIPH, GPIO_PIN] :-> IBool)
+gpio_output_bit_get = fun "gpio_output_bit_get"
 
 inclGPIO :: ModuleDef
 inclGPIO = do
@@ -225,3 +232,4 @@ inclGPIO = do
     incl gpio_bit_reset
     incl gpio_bit_set
     incl gpio_input_bit_get
+    incl gpio_output_bit_get

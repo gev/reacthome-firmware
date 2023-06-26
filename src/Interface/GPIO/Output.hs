@@ -6,3 +6,4 @@ import           Ivory.Language.Module
 class Output a where
     reset :: a -> Ivory eff ()
     set   :: a -> Ivory eff ()
+    get   :: a -> Ivory eff IBool

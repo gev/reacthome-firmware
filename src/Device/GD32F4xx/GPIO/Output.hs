@@ -23,4 +23,5 @@ output p = do
 
 instance I.Output Output where
     set   (Output Port{..}) = S.setBit   gpio pin
+    get   (Output Port{..}) = S.getOutputBit   gpio pin
     reset (Output Port{..}) = S.resetBit gpio pin
