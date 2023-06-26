@@ -21,4 +21,4 @@ input p = do
 
 
 instance I.Input Input where
-    get (Input Port{..}) = S.getBit gpio pin
+    get (Input Port{..}) = S.getInputBit gpio pin
