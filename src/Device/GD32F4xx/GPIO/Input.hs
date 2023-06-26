@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RecordWildCards #-}
 module Device.GD32F4xx.GPIO.Input where
 
 import           Control.Monad.Writer
@@ -6,7 +7,7 @@ import           Core.Context
 import           Device.GD32F4xx.GPIO
 import qualified Interface.GPIO.Input         as I
 import           Ivory.Language
-import           Support.Device.GD32F4xx.GPIO
+import           Support.Device.GD32F4xx.GPIO as S
 
 
 newtype Input  = Input  {getInput :: Port}
@@ -20,4 +21,4 @@ input p = do
 
 
 instance I.Input Input where
-    get = undefined
+    get (Input Port{..}) = S.getInputBit gpio pin
