@@ -26,9 +26,9 @@ import           Feature.DInputs             (DInputs (DInputs, getDInputs, getI
                                               manageDInputs, mkDInputs,
                                               syncDInputs)
 import           Feature.Relays              (Relays (Relays), manageRelays,
-                                              mkRelays, offRelay, onDo, onGroup,
-                                              onInit, onRelay, syncRelays,
-                                              toggleRelay)
+                                              mkRelays, onDo, onGroup, onInit,
+                                              syncRelays, toggleRelay,
+                                              turnOffRelay, turnOnRelay)
 import           GHC.TypeNats
 import           Interface.GPIO.Input
 import           Interface.GPIO.Output
@@ -94,11 +94,11 @@ manageMixRules Rules{..} DInputs{..} relays n = zipWithM_ zip (reverse getInputs
             let run :: RunMatrix Uint8 -> Ivory ('Effects (Returns ()) r (Scope s)) ()
                 run runRules = runRules $ \rules -> arrayMap $ \jx -> do
                     r <- deref (addrOf rules ! fromIntegral ix ! jx)
-                    cond_ [ r ==? 0 ==> offRelay relays (toIx . fromIx $ jx + 1)
-                          , r ==? 1 ==> onRelay  relays (toIx . fromIx $ jx + 1) 0
+                    cond_ [ r ==? 0 ==> turnOffRelay relays (toIx . fromIx $ jx + 1)
+                          , r ==? 1 ==> turnOnRelay  relays (toIx . fromIx $ jx + 1) 0
                           , r ==? 2 ==> do
                                     changed <- iNot <$> deref (di ~> DI.synced)
-                                    when changed $ toggleRelay relays (toIx . fromIx $ jx + 1)
+                                    when changed $ toggleRelay relays (toIx . fromIx $ jx + 1) 0
                           ]
             state' <- deref $ di ~> DI.state
             ifte_ state'
