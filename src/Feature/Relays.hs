@@ -89,27 +89,40 @@ manageRelays Relays{..} = zipWithM_ zip getOutputs [0..]
         zip output i = R.runRelays getRelays $ \rs -> do
             let ix = fromIntegral i
             let r = addrOf rs ! ix
-            let run = manageRelay r output $ getSystemTime clock
+            let runState = manageState r output
+            let runDelay = manageDelay r $ getSystemTime clock
             isOn <- deref $ r ~> R.state
             ifte_ isOn
-                (run set   R.delayOff false)
-                (run reset R.delayOn  true )
+                (do
+                    runState set        true
+                    runDelay R.delayOff false
+                )
+                (do
+                    runState reset      false
+                    runDelay R.delayOn  true
+                )
 
 
 
-manageRelay :: Output o
+manageState :: Output o
             => Record R.RelayStruct
             -> o
-            -> Ivory eff Uint32
             -> (o -> Ivory eff ())
+            -> IBool
+            -> Ivory eff ()
+manageState r o setOut state = do
+    state' <- get o
+    when (state' /=? state) $ do
+        store (r ~> R.synced) false
+        setOut o
+
+
+manageDelay :: Record R.RelayStruct
+            -> Ivory eff Uint32
             -> Label R.RelayStruct ('Stored Uint32)
             -> IBool
             -> Ivory eff ()
-manageRelay r o timestamp setOut delay state = do
-    state' <- get o
-    when (state' ==? state) $ do
-        store (r ~> R.synced) false
-        setOut o
+manageDelay r timestamp delay state = do
     delay' <- deref $ r ~> delay
     when (delay' >? 0) $ do
         t0 <- deref $ r ~> R.timestamp
@@ -178,23 +191,19 @@ onDo relays@Relays{..} buff size = do
     index <- deref $ buff ! 1
     when (index >=? 1 .&& index <=? n) $ do
         action <- deref $ buff ! 2
-        cond_ [ action ==? 0 ==> offRelay relays (toIx index)
+        cond_ [ action ==? 0 ==> turnOffRelay relays (toIx index)
               , action ==? 1 ==> do
-                    cond_ [ size >=? 7 ==> onRelay  relays (toIx index) =<< unpackLE buff 3
-                          , true       ==> onRelay' relays (toIx index)
+                    cond_ [ size >=? 7 ==> turnOnRelay relays (toIx index) =<< unpackLE buff 3
+                          , true       ==> turnOnRelay relays (toIx index) =<< getSystemTime clock
                           ]
               , action ==? 2 .&& size >=? 7 ==> setRelayDelayOff relays index =<< unpackLE buff 3
               , action ==? 3 ==> setRelayGroup relays index =<< unpack buff 3
               ]
 
 
-{-
-    TODO: check real state of the relay`s out pin
--}
 
-
-offRelay :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
-offRelay Relays{..} index = R.runRelays getRelays $ \rs -> do
+turnOffRelay :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
+turnOffRelay Relays{..} index = R.runRelays getRelays $ \rs -> do
     let ix = index - 1
     let r  = addrOf rs ! ix
     state' <- deref $ r ~> R.state
@@ -204,21 +213,8 @@ offRelay Relays{..} index = R.runRelays getRelays $ \rs -> do
 
 
 
-onRelay' ::Relays -> (forall n. KnownNat n => Ix n) -> Ivory ('Effects (Returns ()) r (Scope s)) ()
-onRelay' Relays{..} index = R.runRelays getRelays $ \rs -> do
-    let ix = index - 1
-    let r  = addrOf rs ! ix
-    state' <- deref $ r ~> R.state
-    when (iNot state') $ do
-        shouldDelay <- syncGroup getGroups rs ix
-        when (iNot shouldDelay) $ store (r ~> R.state ) true
-        store (r ~> R.delayOff ) =<< deref (r ~> R.defaultDelayOff)
-        store (r ~> R.timestamp) =<< getSystemTime clock
-
-
-
-onRelay :: Relays -> (forall n. KnownNat n => Ix n) -> Uint32 -> Ivory ('Effects (Returns ()) r (Scope s)) ()
-onRelay Relays{..} index delay = R.runRelays getRelays $ \rs -> do
+turnOnRelay :: Relays -> (forall n. KnownNat n => Ix n) -> Uint32 -> Ivory ('Effects (Returns ()) r (Scope s)) ()
+turnOnRelay Relays{..} index delay = R.runRelays getRelays $ \rs -> do
     let ix = index - 1
     let r  = addrOf rs ! ix
     state' <- deref $ r ~> R.state
@@ -230,14 +226,14 @@ onRelay Relays{..} index delay = R.runRelays getRelays $ \rs -> do
 
 
 
-toggleRelay :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory ('Effects (Returns ()) r (Scope s)) ()
-toggleRelay relays@Relays{..} index = R.runRelays getRelays $ \rs -> do
+toggleRelay :: Relays -> (forall n. KnownNat n => Ix n) -> Uint32 -> Ivory ('Effects (Returns ()) r (Scope s)) ()
+toggleRelay relays@Relays{..} index delay = R.runRelays getRelays $ \rs -> do
     let ix = index - 1
     let r  = addrOf rs ! ix
     state' <- deref $ r ~> R.state
     ifte_ state'
-          (offRelay relays index)
-          (onRelay' relays index)
+          (turnOffRelay relays index )
+          (turnOnRelay  relays index delay)
 
 
 
