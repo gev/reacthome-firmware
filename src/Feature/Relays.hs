@@ -106,7 +106,10 @@ manageRelay :: Output o
             -> IBool
             -> Ivory eff ()
 manageRelay r o timestamp setOut delay state = do
-    setOut o
+    state' <- get o
+    when (state' ==? state) $ do
+        store (r ~> R.synced) false
+        setOut o
     delay' <- deref $ r ~> delay
     when (delay' >? 0) $ do
         t0 <- deref $ r ~> R.timestamp
@@ -115,7 +118,6 @@ manageRelay r o timestamp setOut delay state = do
             store (r ~> delay      ) 0
             store (r ~> R.state    ) state
             store (r ~> R.timestamp) t1
-            store (r ~> R.synced   ) false
 
 
 
@@ -197,8 +199,7 @@ offRelay Relays{..} index = R.runRelays getRelays $ \rs -> do
     let r  = addrOf rs ! ix
     state' <- deref $ r ~> R.state
     when state' $ do
-        store (r ~> R.state ) false
-        store (r ~> R.synced) false
+        store (r ~> R.state    ) false
         store (r ~> R.timestamp) =<< getSystemTime clock
 
 
@@ -210,15 +211,13 @@ onRelay' Relays{..} index = R.runRelays getRelays $ \rs -> do
     state' <- deref $ r ~> R.state
     when (iNot state') $ do
         shouldDelay <- syncGroup getGroups rs ix
-        when (iNot shouldDelay) $ do
-            store (r ~> R.state ) true
-            store (r ~> R.synced) false
+        when (iNot shouldDelay) $ store (r ~> R.state ) true
         store (r ~> R.delayOff ) =<< deref (r ~> R.defaultDelayOff)
         store (r ~> R.timestamp) =<< getSystemTime clock
 
 
 
-onRelay :: Relays -> (forall n. KnownNat n => Ix n) -> Uint32 -> Ivory (ProcEffects s ()) ()
+onRelay :: Relays -> (forall n. KnownNat n => Ix n) -> Uint32 -> Ivory ('Effects (Returns ()) r (Scope s)) ()
 onRelay Relays{..} index delay = R.runRelays getRelays $ \rs -> do
     let ix = index - 1
     let r  = addrOf rs ! ix
@@ -226,9 +225,7 @@ onRelay Relays{..} index delay = R.runRelays getRelays $ \rs -> do
     when (iNot state') $ do
         shouldDelay <- syncGroup getGroups rs ix
         store (r ~> R.delayOff) delay
-        when (iNot shouldDelay) $ do
-            store (r ~> R.state ) true
-            store (r ~> R.synced) false
+        when (iNot shouldDelay) $ store (r ~> R.state ) true
         store (r ~> R.timestamp) =<< getSystemTime clock
 
 
