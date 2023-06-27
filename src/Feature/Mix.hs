@@ -95,10 +95,10 @@ manageMixRules Rules{..} DInputs{..} relays n = zipWithM_ zip (reverse getInputs
                 run runRules = runRules $ \rules -> arrayMap $ \jx -> do
                     r <- deref (addrOf rules ! fromIntegral ix ! jx)
                     cond_ [ r ==? 0 ==> turnOffRelay relays (toIx . fromIx $ jx + 1)
-                          , r ==? 1 ==> turnOnRelay  relays (toIx . fromIx $ jx + 1) 0
+                          , r ==? 1 ==> turnOnRelay  relays (toIx . fromIx $ jx + 1)
                           , r ==? 2 ==> do
                                     changed <- iNot <$> deref (di ~> DI.synced)
-                                    when changed $ toggleRelay relays (toIx . fromIx $ jx + 1) 0
+                                    when changed $ toggleRelay relays (toIx . fromIx $ jx + 1)
                           ]
             state' <- deref $ di ~> DI.state
             ifte_ state'
