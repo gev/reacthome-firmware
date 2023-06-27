@@ -23,8 +23,8 @@ data Rules = Rules
 
 mkRules :: MonadWriter Context m => Int -> Int -> m Rules
 mkRules n m = do
-    let runRulesOn  = runMatrix  "dinputs_relays_rules_matrix_on"  0 n m
-    let runRulesOff = runMatrix  "dinputs_relays_rules_matrix_off" 0 n m
+    let runRulesOn  = runMatrix  "dinputs_relays_rules_matrix_on"  0xff n m
+    let runRulesOff = runMatrix  "dinputs_relays_rules_matrix_off" 0xff n m
     let runPayload  = runValues_ "dinputs_relays_message" $ 2 + 2 * m
     runRulesOn  addArea
     runRulesOff addArea
