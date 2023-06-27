@@ -27,7 +27,7 @@ import           Feature.DInputs             (DInputs (DInputs, getDInputs, getI
                                               syncDInputs)
 import           Feature.Relays              (Relays (Relays), manageRelays,
                                               mkRelays, offRelay, onDo, onGroup,
-                                              onInit, onRelay', syncRelays,
+                                              onInit, onRelay, syncRelays,
                                               toggleRelay)
 import           GHC.TypeNats
 import           Interface.GPIO.Input
@@ -44,8 +44,8 @@ data Mix = Mix
     , dinputsN   :: Int
     , rules      :: Rules
     , shouldInit :: Value IBool
-    , transmit    :: forall n. KnownNat n
-                  => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
+    , transmit   :: forall n. KnownNat n
+                 => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
 
 
@@ -95,7 +95,7 @@ manageMixRules Rules{..} DInputs{..} relays n = zipWithM_ zip (reverse getInputs
                 run runRules = runRules $ \rules -> arrayMap $ \jx -> do
                     r <- deref (addrOf rules ! fromIntegral ix ! jx)
                     cond_ [ r ==? 0 ==> offRelay relays (toIx . fromIx $ jx + 1)
-                          , r ==? 1 ==> onRelay' relays (toIx . fromIx $ jx + 1)
+                          , r ==? 1 ==> onRelay  relays (toIx . fromIx $ jx + 1) 0
                           , r ==? 2 ==> do
                                     changed <- iNot <$> deref (di ~> DI.synced)
                                     when changed $ toggleRelay relays (toIx . fromIx $ jx + 1)
