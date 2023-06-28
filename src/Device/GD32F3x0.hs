@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE NumericUnderscores #-}
 
 
 module Device.GD32F3x0 where
@@ -30,6 +31,7 @@ import           Support.Device.GD32F3x0.RCU      as R
 import           Support.Device.GD32F3x0.SYSCFG
 import           Support.Device.GD32F3x0.Timer
 import           Support.Device.GD32F3x0.USART
+import Device.GD32F3x0.Flash
 
 
 
@@ -130,6 +132,8 @@ data GD32F3x0 = GD32F3x0
 
     , exti_pa_0 :: EXTIW
     , exti_pa_5 :: EXTIW
+
+    , etc       :: BaseAddr
     }
 
 
@@ -283,6 +287,7 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
                          exti_source_pin5
                          exti_5
 
+    , etc = mkPage 0x800_fc00
     }
 
 

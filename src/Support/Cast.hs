@@ -8,6 +8,7 @@ module Support.Cast
     , castArrayUint16ToUint32
     , castFloatToUint16
     , castFloatToUint8
+    , derefUint32
     , inclCast
     ) where
 
@@ -22,6 +23,7 @@ inclCast = do
     incl cast_to_uint16
     incl cast_array_uint8_to_uint32
     incl cast_array_uint16_to_uint32
+    incl deref_uint32
 
 
 
@@ -52,3 +54,10 @@ cast_to_uint16 = importProc "cast_to_uint16" "cast.h"
 
 cast_to_uint8 :: Def ('[IFloat] :-> Uint8)
 cast_to_uint8 = importProc "cast_to_uint8" "cast.h"
+
+
+derefUint32 :: Uint32 -> Ivory eff Uint32
+derefUint32 = call deref_uint32
+
+deref_uint32 :: Def ('[Uint32] :-> Uint32)
+deref_uint32 = importProc "deref_uint32" "cast.h"
