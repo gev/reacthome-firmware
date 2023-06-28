@@ -98,6 +98,7 @@ executable reacthome-firmware
                     , Interface.PWM
                     , Interface.EXTI
                     , Interface.Display
+                    , Interface.Flash
 
                     , Protocol.RS485.RBUS
                     , Protocol.RS485.RBUS.Master
@@ -132,6 +133,7 @@ executable reacthome-firmware
                     , Device.GD32F3x0.SysTick
                     , Device.GD32F3x0.Timer
                     , Device.GD32F3x0.UART
+                    , Device.GD32F3x0.Flash
 
                     , Device.GD32F4xx
                     , Device.GD32F4xx.Display.NeoPixel
