@@ -11,6 +11,11 @@ import           Support.Cast
 newtype BaseAddr = BaseAddr {getBase :: Uint32}
 
 
+mkPage :: Uint32 -> BaseAddr
+mkPage =  BaseAddr
+
+
+
 instance Flash BaseAddr where
     address (BaseAddr base) (Addr offset) = base + offset
 
