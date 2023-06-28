@@ -61,6 +61,7 @@ executable reacthome-firmware
                     , Data.Concurrent.Semaphore
                     , Data.Concurrent.Queue
 
+                    , Endpoint.ATS
                     , Endpoint.DInputs
                     , Endpoint.DInputsRelaysRules
                     , Endpoint.Groups
