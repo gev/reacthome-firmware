@@ -20,6 +20,7 @@ import           Data.Buffer
 import           Data.Matrix
 import           Data.Serialize
 import           Data.Value
+import           Endpoint.ATS
 import qualified Endpoint.DInputs            as DI
 import           Endpoint.DInputsRelaysRules
 import           Feature.DInputs             (DInputs (DInputs, getDInputs, getInputs),
@@ -43,6 +44,7 @@ data Mix = Mix
     , dinputs    :: DInputs
     , dinputsN   :: Int
     , rules      :: Rules
+    , ats        :: ATS
     , shouldInit :: Value IBool
     , transmit   :: forall n. KnownNat n
                  => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
@@ -60,6 +62,7 @@ mix inputs outputs = do
     dinputs      <- mkDInputs inputs
     let dinputsN  = length inputs
     rules        <- mkRules dinputsN relaysN
+    ats          <- mkATS
     transport    <- asks D.transport
     shouldInit   <- asks D.shouldInit
     let mix       = Mix { relays
@@ -67,6 +70,7 @@ mix inputs outputs = do
                         , dinputs
                         , dinputsN
                         , rules
+                        , ats
                         , shouldInit
                         , transmit = T.transmitBuffer transport
                         }
@@ -80,7 +84,18 @@ manage :: Mix -> Ivory ('Effects (Returns ()) r (Scope s)) ()
 manage Mix{..} = do
     manageDInputs  dinputs
     manageMixRules rules dinputs relays dinputsN
+    manageATS      ats  dinputs relays
     manageRelays   relays
+
+
+
+manageATS :: ATS -> DInputs -> Relays -> Ivory eff ()
+manageATS ATS{..} inputs relays = do
+    mode' <- deref mode
+    cond_ [ mode' ==? mode_N1_G ==> pure ()
+          , mode' ==? mode_N2   ==> pure ()
+          , mode' ==? mode_N2_G ==> pure ()
+          ]
 
 
 
@@ -123,6 +138,7 @@ instance Controller Mix where
                       [ action ==? 0x00  ==> onDo    relays buff size
                       , action ==? 0x02  ==> onGroup relays buff size
                       , action ==? 0x03  ==> onRule  mix    buff size
+                      , action ==? 0x04  ==> onMode  mix    buff size
                       ]
                       , action ==? 0xf2  ==> onInit  relays buff size
                       ]
@@ -146,3 +162,10 @@ onRule Mix{..} buff size = do
         run runRulesOn
         fillPayload rules i
         runPayload rules $ \p -> transmit . addrOf $ p
+
+
+onMode :: KnownNat n => Mix -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
+onMode Mix{..} buff size = do
+    when (size ==? 2 ) $ do
+        store (mode ats) =<< unpack buff 1
+        transmit =<< message ats
