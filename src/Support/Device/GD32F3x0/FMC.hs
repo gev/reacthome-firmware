@@ -6,7 +6,7 @@
 
 module Support.Device.GD32F3x0.FMC
     ( FMC_FLAG
-    , fmc_flag_clear
+    , fmc_flag_end
     , fmc_flag_wperr
     , fmc_flag_pgerr
 
@@ -54,10 +54,10 @@ fmc_flag_clear :: Def ('[FMC_FLAG] :-> ())
 fmc_flag_clear = fun "fmc_flag_clear"
 
 
-programWordFMC :: Uint32 -> Ivory eff ()
+programWordFMC :: Uint32 -> Uint32 -> Ivory eff ()
 programWordFMC = call_ fmc_word_program
 
-fmc_word_program :: Def ('[Uint32] :-> ())
+fmc_word_program :: Def ('[Uint32, Uint32] :-> ())
 fmc_word_program = fun "fmc_word_program"
 
 

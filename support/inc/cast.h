@@ -11,5 +11,6 @@
 #define  cast_to_sint16(p)   ((sint16_t) p)
 #define  cast_to_sint32(p)   ((sint32_t) p)
 
+#define  deref_uint32(a)     (*(uint32_t *) a)
 
 #endif
