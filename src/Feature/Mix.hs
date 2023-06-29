@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs            #-}
 {-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RankNTypes       #-}
 {-# LANGUAGE RecordWildCards  #-}
@@ -132,16 +133,14 @@ sync Mix{..} = do
 instance Controller Mix where
     handle  mix@Mix{..} buff size = do
         shouldInit' <- deref shouldInit
-        pure [ size >=? 3 ==> do
-                action <- deref $ buff ! 0
-                cond_ [ iNot shouldInit' ==> cond_
-                      [ action ==? 0x00  ==> onDo    relays buff size
-                      , action ==? 0x02  ==> onGroup relays buff size
-                      , action ==? 0x03  ==> onRule  mix    buff size
-                      , action ==? 0x04  ==> onMode  mix    buff size
-                      ]
-                      , action ==? 0xf2  ==> onInit  relays buff size
-                      ]
+        action <- deref $ buff ! 0
+        pure [ iNot shouldInit' ==> cond_
+             [ action ==? 0x00  ==> onDo    relays buff size
+             , action ==? 0x02  ==> onGroup relays buff size
+             , action ==? 0x03  ==> onRule  mix    buff size
+             , action ==? 0x04  ==> onMode  mix    buff size
+             ]
+             , action ==? 0xf2  ==> onInit  relays buff size
              ]
 
 

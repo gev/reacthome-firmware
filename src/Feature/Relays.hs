@@ -189,7 +189,7 @@ onDo :: KnownNat n
      -> Ivory (ProcEffects s ()) ()
 onDo relays@Relays{..} buff size = do
     index <- deref $ buff ! 1
-    when (index >=? 1 .&& index <=? n) $ do
+    when (size >=? 3 .&& index >=? 1 .&& index <=? n) $ do
         action <- deref $ buff ! 2
         cond_ [ action ==? 0 ==> turnOffRelay relays (toIx index)
               , action ==? 1 ==> do

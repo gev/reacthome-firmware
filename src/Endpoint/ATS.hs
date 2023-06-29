@@ -37,5 +37,6 @@ mkATS = do
 
 message :: ATS -> Ivory eff (Buffer 2 Uint8)
 message ATS{..} = do
+    store (payload ! 0) 0x4
     store (payload ! 1) =<< deref mode
     pure payload
