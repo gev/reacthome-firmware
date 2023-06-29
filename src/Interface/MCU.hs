@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs            #-}
 {-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RankNTypes       #-}
 
@@ -9,16 +10,18 @@ import           Control.Monad.Writer
 import           Core.Context
 import           Data.Buffer
 import           Data.Value
+import           Interface.Flash
 import           Interface.Mac
 import           Interface.SystemClock (SystemClock)
 import           Ivory.Language
 import           Ivory.Language.Module
 
 
-data MCU p = MCU
+data MCU p = forall f. Flash f => MCU
     { systemClock :: SystemClock
     , peripherals :: p
     , mac         :: Mac
+    , etc         :: f
     }
 
 
@@ -29,14 +32,15 @@ data MCUmod p = MCUmod
     }
 
 
-mkMCU :: MonadWriter Context m
+mkMCU :: (MonadWriter Context m, Flash f)
       => m SystemClock
       -> (Buffer 6 Uint8 -> forall s. Ivory (ProcEffects s ()) ())
       -> ModuleDef
+      -> f
       -> p
       -> m (MCU p)
-mkMCU systemClock' initializeMac mcuModule peripherals = do
+mkMCU systemClock' initializeMac mcuModule etc peripherals = do
     addModule mcuModule
     systemClock <- systemClock'
     mac         <- makeMac initializeMac "mac"
-    pure MCU { systemClock, peripherals, mac }
+    pure MCU { systemClock, peripherals, mac, etc }
