@@ -43,10 +43,6 @@ type NeoPixelPWMW = forall m. MonadWriter Context m => m NeoPixelPWM
 type EXTIW        = forall m. MonadWriter Context m => m EXTI
 
 
-
-etcPage = mkPage 0x800_fc00
-
-
 data GD32F3x0 = GD32F3x0
     { uart_0    :: UARTW
     , uart_1    :: UARTW
@@ -136,11 +132,13 @@ data GD32F3x0 = GD32F3x0
 
     , exti_pa_0 :: EXTIW
     , exti_pa_5 :: EXTIW
+
+    , etc       :: PageAddr
     }
 
 
 gd32f3x0 :: String -> String -> MCUmod GD32F3x0
-gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 etcPage GD32F3x0
+gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
     { uart_0    = mkUART usart0
                          rcu_usart0
                          usart0_irqn
@@ -289,6 +287,7 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 etcPage GD32F3x0
                          exti_source_pin5
                          exti_5
 
+    , etc = mkPage 0x800_fc00
     }
 
 

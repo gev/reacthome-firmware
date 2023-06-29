@@ -230,7 +230,7 @@ data GD32F4xx = GD32F4xx
 
 
 gd32f4xx :: String -> String -> MCUmod GD32F4xx
-gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx etcPage GD32F4xx
+gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
     { uart_0    = mkUART usart0
                          rcu_usart0
                          usart0_irqn

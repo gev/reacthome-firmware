@@ -36,5 +36,6 @@ mix6x12 = Formula { name       = "mix6x12"
                                        , out_pa_6
                                        , out_pa_7
                                        ]
+                                       etc
                                  ]
                   }

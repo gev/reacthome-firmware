@@ -32,20 +32,23 @@ import           Feature.Relays              (Relays (Relays), manageRelays,
                                               syncRelays, toggleRelay,
                                               turnOffRelay, turnOnRelay)
 import           GHC.TypeNats
+import           Interface.Flash
 import           Interface.GPIO.Input
 import           Interface.GPIO.Output
+import           Interface.MCU               as I
 import           Ivory.Language
 import           Ivory.Stdlib
 
 
 
-data Mix = Mix
+data Mix = forall f. Flash f => Mix
     { relaysN    :: Int
     , relays     :: Relays
     , dinputs    :: DInputs
     , dinputsN   :: Int
     , rules      :: Rules
     , ats        :: ATS
+    , etc        :: f
     , shouldInit :: Value IBool
     , transmit   :: forall n. KnownNat n
                  => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
@@ -55,9 +58,9 @@ data Mix = Mix
 
 mix :: ( MonadWriter Context m
        , MonadReader (Domain p t) m
-       , Transport t, Output o, Input i
-       ) => [p -> m i] -> [p -> m o] -> m Feature
-mix inputs outputs = do
+       , Transport t, Output o, Input i, Flash f
+       ) => [p -> m i] -> [p -> m o] -> (p -> f) -> m Feature
+mix inputs outputs etc = do
     relays       <- mkRelays outputs
     let relaysN   = length outputs
     dinputs      <- mkDInputs inputs
@@ -65,6 +68,7 @@ mix inputs outputs = do
     rules        <- mkRules dinputsN relaysN
     ats          <- mkATS
     transport    <- asks D.transport
+    mcu          <- asks D.mcu
     shouldInit   <- asks D.shouldInit
     let mix       = Mix { relays
                         , relaysN
@@ -72,6 +76,7 @@ mix inputs outputs = do
                         , dinputsN
                         , rules
                         , ats
+                        , etc = etc (peripherals mcu)
                         , shouldInit
                         , transmit = T.transmitBuffer transport
                         }
@@ -168,3 +173,7 @@ onMode Mix{..} buff size = do
     when (size ==? 2 ) $ do
         store (mode ats) =<< unpack buff 1
         transmit =<< message ats
+
+
+
+-- save Mix{..} = do

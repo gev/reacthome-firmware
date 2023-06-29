@@ -17,11 +17,10 @@ import           Ivory.Language
 import           Ivory.Language.Module
 
 
-data MCU p = forall f. Flash f => MCU
+data MCU p = MCU
     { systemClock :: SystemClock
     , peripherals :: p
     , mac         :: Mac
-    , etc         :: f
     }
 
 
@@ -32,15 +31,14 @@ data MCUmod p = MCUmod
     }
 
 
-mkMCU :: (MonadWriter Context m, Flash f)
+mkMCU :: (MonadWriter Context m)
       => m SystemClock
       -> (Buffer 6 Uint8 -> forall s. Ivory (ProcEffects s ()) ())
       -> ModuleDef
-      -> f
       -> p
       -> m (MCU p)
-mkMCU systemClock' initializeMac mcuModule etc peripherals = do
+mkMCU systemClock' initializeMac mcuModule peripherals = do
     addModule mcuModule
     systemClock <- systemClock'
     mac         <- makeMac initializeMac "mac"
-    pure MCU { systemClock, peripherals, mac, etc }
+    pure MCU { systemClock, peripherals, mac }
