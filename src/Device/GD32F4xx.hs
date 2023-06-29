@@ -1,11 +1,13 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE FlexibleContexts   #-}
+{-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE RankNTypes         #-}
 
 module Device.GD32F4xx where
 
 import           Control.Monad.Writer
 import           Core.Context
 import           Device.GD32F4xx.Display.NeoPixel
+import           Device.GD32F4xx.Flash
 import           Device.GD32F4xx.GPIO
 import           Device.GD32F4xx.GPIO.Input
 import           Device.GD32F4xx.GPIO.Output
@@ -36,6 +38,9 @@ type OutputW       = forall m. MonadWriter Context m => m Output
 type PWMW          = forall m. MonadWriter Context m => Uint32 -> Uint32 -> m PWM
 type NeoPixelPWMW  = forall m. MonadWriter Context m => m NeoPixelPWM
 
+
+
+etcPage = mkPage 0x800_fc00
 
 
 data GD32F4xx = GD32F4xx
@@ -225,7 +230,7 @@ data GD32F4xx = GD32F4xx
 
 
 gd32f4xx :: String -> String -> MCUmod GD32F4xx
-gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
+gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx etcPage GD32F4xx
     { uart_0    = mkUART usart0
                          rcu_usart0
                          usart0_irqn

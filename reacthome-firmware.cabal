@@ -150,6 +150,7 @@ executable reacthome-firmware
                     , Device.GD32F4xx.SystemClock
                     , Device.GD32F4xx.Timer
                     , Device.GD32F4xx.UART
+                    , Device.GD32F4xx.Flash
 
                     , Ivory.Support
                     , Ivory.Support.Device.GD32F3x0
