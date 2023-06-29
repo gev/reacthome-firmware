@@ -39,6 +39,7 @@ import           Interface.GPIO.Output
 import           Interface.MCU               as I
 import           Ivory.Language
 import           Ivory.Stdlib
+import           Util.CRC16
 
 
 
@@ -113,25 +114,23 @@ manageATS ATS{..} inputs relays = do
 
 
 manageMixRules :: Rules -> DInputs -> Relays -> Int -> Ivory ('Effects (Returns ()) r (Scope s)) ()
-manageMixRules Rules{..} DInputs{..} relays n = zipWithM_ zip (reverse getInputs) [n, n-1 .. 1]
-    where
-        zip :: Input i => i -> Int -> Ivory ('Effects (Returns ()) r (Scope s)) ()
-        zip input i = DI.runDInputs getDInputs $ \dis -> do
-            let ix = i - 1
-            let di = addrOf dis ! fromIntegral ix
-            let run :: RunMatrix Uint8 -> Ivory ('Effects (Returns ()) r (Scope s)) ()
-                run runRules = runRules $ \rules -> arrayMap $ \jx -> do
-                    r <- deref (addrOf rules ! fromIntegral ix ! jx)
-                    cond_ [ r ==? 0 ==> turnOffRelay relays (toIx . fromIx $ jx + 1)
-                          , r ==? 1 ==> turnOnRelay  relays (toIx . fromIx $ jx + 1)
-                          , r ==? 2 ==> do
-                                    changed <- iNot <$> deref (di ~> DI.synced)
-                                    when changed $ toggleRelay relays (toIx . fromIx $ jx + 1)
-                          ]
-            state' <- deref $ di ~> DI.state
-            ifte_ state'
-                (run runRulesOn )
-                (run runRulesOff)
+manageMixRules Rules{..} DInputs{..} relays n =
+    DI.runDInputs getDInputs $ \dis -> arrayMap $ \ix' -> do
+        let ix = fromIntegral n - ix' - 1
+        let di = addrOf dis ! ix
+        let run :: RunMatrix Uint8 -> Ivory ('Effects (Returns ()) r (Scope s)) ()
+            run runRules = runRules $ \rules -> arrayMap $ \jx -> do
+                r <- deref (addrOf rules ! toIx (fromIx ix) ! jx)
+                cond_ [ r ==? 0 ==> turnOffRelay relays (toIx . fromIx $ jx + 1)
+                        , r ==? 1 ==> turnOnRelay  relays (toIx . fromIx $ jx + 1)
+                        , r ==? 2 ==> do
+                                changed <- iNot <$> deref (di ~> DI.synced)
+                                when changed $ toggleRelay relays (toIx . fromIx $ jx + 1)
+                        ]
+        state' <- deref $ di ~> DI.state
+        ifte_ state'
+            (run runRulesOn )
+            (run runRulesOff)
 
 
 
@@ -187,26 +186,53 @@ onMode mix@Mix{..} buff size = do
 
 save :: Mix -> Ivory (ProcEffects s ()) ()
 save Mix{..} = do
-    F.write etc 0 . safeCast =<< deref (mode ats)
-    kx <- local $ ival 1
+    crc   <- local $ istruct initCRC16
+    mode' <- deref (mode ats)
+    updateCRC16 crc mode'
+    F.write etc 0 $ safeCast mode'
+    kx <- local $ ival 4
     let run :: (Rules -> RunMatrix Uint8) -> Ivory eff ()
         run runRules = runRules rules $ \rs -> arrayMap $ \ix -> arrayMap $ \jx -> do
             kx' <- deref kx
-            F.write etc kx' . safeCast =<< deref (addrOf rs ! ix ! jx)
-            store kx $ kx' + 1
+            v   <- deref (addrOf rs ! ix ! jx)
+            updateCRC16 crc v
+            F.write etc kx' $ safeCast v
+            store kx $ kx' + 4
     run runRulesOff
     run runRulesOn
+    kx' <- deref kx
+    F.write etc kx' . safeCast =<< deref (crc ~> msb)
+    F.write etc (kx' + 4) . safeCast =<< deref (crc ~> lsb)
 
 
 
 load :: Mix -> Ivory (ProcEffects s ()) ()
-load Mix{..} = do
-    store (mode ats) . castDefault =<< F.read etc 0
-    kx <- local $ ival 1
-    let run :: (Rules -> RunMatrix Uint8) -> Ivory eff ()
-        run runRules = runRules rules $ \rs -> arrayMap $ \ix -> arrayMap $ \jx -> do
-            kx' <- deref kx
-            store (addrOf rs ! ix ! jx) . castDefault =<< F.read etc kx'
-            store kx $ kx' + 1
-    run runRulesOff
-    run runRulesOn
+load mix@Mix{..} = do
+    valid <- checkCRC mix
+    when valid $ do
+        store (mode ats) . castDefault =<< F.read etc 0
+        kx <- local $ ival 4
+        let run :: (Rules -> RunMatrix Uint8) -> Ivory eff ()
+            run runRules = runRules rules $ \rs -> arrayMap $ \ix -> arrayMap $ \jx -> do
+                kx' <- deref kx
+                store (addrOf rs ! ix ! jx) . castDefault =<< F.read etc kx'
+                store kx $ kx' + 4
+        run runRulesOff
+        run runRulesOn
+
+
+checkCRC :: Mix -> Ivory (ProcEffects s ()) IBool
+checkCRC Mix{..} = do
+    crc   <- local $ istruct initCRC16
+    updateCRC16 crc . castDefault =<< F.read etc 0
+    kx <- local $ ival 4
+    times (fromIntegral $ 2 * dinputsN * relaysN :: Ix 256) $ \_ -> do
+        kx' <- deref kx
+        updateCRC16 crc . castDefault =<< F.read etc kx'
+        store kx $ kx' + 4
+    kx'   <- deref kx
+    msb'  <- castDefault <$> F.read etc kx'
+    lsb'  <- castDefault <$> F.read etc (kx' + 4)
+    lsb'' <- deref $ crc ~> lsb
+    msb'' <- deref $ crc ~> msb
+    pure $ lsb' ==? lsb'' .&& msb' ==? msb''
