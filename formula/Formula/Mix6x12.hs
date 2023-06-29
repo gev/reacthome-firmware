@@ -2,6 +2,7 @@ module Formula.Mix6x12 where
 
 import           Core.Formula
 import           Device.GD32F3x0
+import           Feature.Indicator
 import           Feature.Mix          (mix)
 import           Interface.RS485
 import           Ivory.Language
@@ -14,7 +15,8 @@ mix6x12 = Formula { name       = "mix6x12"
                   , version    = (3, 1)
                   , shouldInit = true
                   , transport  = rbus $ rs485 1 uart_0 out_pb_2
-                  , features   = [ mix [ in_pa_4
+                  , features   = [ indicator npx_pwm_0 150
+                                 , mix [ in_pa_4
                                        , in_pa_15
                                        , in_pb_3
                                        , in_pb_4
