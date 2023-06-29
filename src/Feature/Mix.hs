@@ -4,6 +4,7 @@
 {-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RankNTypes       #-}
 {-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE TypeOperators    #-}
 
 module Feature.Mix where
 
@@ -32,7 +33,7 @@ import           Feature.Relays              (Relays (Relays), manageRelays,
                                               syncRelays, toggleRelay,
                                               turnOffRelay, turnOnRelay)
 import           GHC.TypeNats
-import           Interface.Flash
+import           Interface.Flash             as F
 import           Interface.GPIO.Input
 import           Interface.GPIO.Output
 import           Interface.MCU               as I
@@ -80,8 +81,14 @@ mix inputs outputs etc = do
                         , shouldInit
                         , transmit = T.transmitBuffer transport
                         }
+
+    let initMix' :: Def ('[] :-> ())
+        initMix' = proc "mix_init" $ body $ load mix
+    addInit initMix'
+
     addTask $ delay 10 "mix_manage" $ manage mix
     addTask $ yeld     "mix_sync"   $ sync   mix
+
     pure    $ Feature mix
 
 
@@ -151,7 +158,7 @@ instance Controller Mix where
 
 
 onRule :: KnownNat n => Mix -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
-onRule Mix{..} buff size = do
+onRule mix@Mix{..} buff size = do
     let relaysN'  = fromIntegral relaysN
     let dinputsN' = fromIntegral dinputsN
     i <- subtract 1 <$> deref (buff ! 1)
@@ -166,14 +173,40 @@ onRule Mix{..} buff size = do
         run runRulesOn
         fillPayload rules i
         runPayload rules $ \p -> transmit . addrOf $ p
+        save mix
 
 
 onMode :: KnownNat n => Mix -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
-onMode Mix{..} buff size = do
+onMode mix@Mix{..} buff size = do
     when (size ==? 2 ) $ do
         store (mode ats) =<< unpack buff 1
         transmit =<< message ats
+        save mix
 
 
 
--- save Mix{..} = do
+save :: Mix -> Ivory (ProcEffects s ()) ()
+save Mix{..} = do
+    F.write etc 0 . safeCast =<< deref (mode ats)
+    kx <- local $ ival 1
+    let run :: (Rules -> RunMatrix Uint8) -> Ivory eff ()
+        run runRules = runRules rules $ \rs -> arrayMap $ \ix -> arrayMap $ \jx -> do
+            kx' <- deref kx
+            F.write etc kx' . safeCast =<< deref (addrOf rs ! ix ! jx)
+            store kx $ kx' + 1
+    run runRulesOff
+    run runRulesOn
+
+
+
+load :: Mix -> Ivory (ProcEffects s ()) ()
+load Mix{..} = do
+    store (mode ats) . castDefault =<< F.read etc 0
+    kx <- local $ ival 1
+    let run :: (Rules -> RunMatrix Uint8) -> Ivory eff ()
+        run runRules = runRules rules $ \rs -> arrayMap $ \ix -> arrayMap $ \jx -> do
+            kx' <- deref kx
+            store (addrOf rs ! ix ! jx) . castDefault =<< F.read etc kx'
+            store kx $ kx' + 1
+    run runRulesOff
+    run runRulesOn
