@@ -48,15 +48,12 @@ mkTimer :: MonadWriter Context m
         -> Init (Struct TIMER_PARAM_STRUCT)
         -> m Timer
 mkTimer timer rcu irq param = do
-    addInit initTimer'
-    pure Timer { timer, rcu, irq }
-    where
-        initTimer' :: Def ('[] ':-> ())
-        initTimer' = proc (symbol timer <> "_init") $ body $ do
+    addInit (symbol timer) $ do
             enablePeriphClock rcu
             deinitTimer       timer
             initTimer         timer =<< local param
             enableTimer       timer
+    pure Timer { timer, rcu, irq }
 
 
 

@@ -17,7 +17,7 @@ newtype Output = Output {getOutput :: Port}
 output :: MonadWriter Context m => (MODE -> Port) -> m Output
 output p = do
     let port = io gpio_mode_output p
-    addInit $ initPort port
+    initPort port
     pure $ Output port
 
 

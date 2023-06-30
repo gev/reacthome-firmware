@@ -24,7 +24,5 @@ makeMac :: MonadWriter Context m
         -> m Mac
 makeMac initMac name = do
     mac <- values_ name
-    let initMac' :: Def ('[] ':-> ())
-        initMac' = proc (name <> "_init") $ body $ initMac mac
-    addInit initMac'
+    addInit name $ initMac mac
     pure mac

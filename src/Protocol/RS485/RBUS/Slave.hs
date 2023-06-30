@@ -90,36 +90,34 @@ slave id mac model version onMessage onConfirm onDiscovery onReceive = do
                       , tidRx, tidTx, crc, valid, tmp
                       , onMessage, onConfirm, onDiscovery, onReceive
                       }
-    addInit $ initDisc slave
-    addInit $ initConf slave
-    addInit $ initPing slave
+    addInit (name <> "_disc_tx") $ initDisc slave
+    addInit (name <> "_conf_tx") $ initConf slave
+    addInit (name <> "_ping_tx") $ initPing slave
+
     pure slave
 
 
 
-initDisc :: Slave n -> Def('[] :-> ())
-initDisc Slave{..} =
-    proc (name <> "_init_disc_tx") $ body $ do
-        store (buffDisc ! 0) $ discovery txPreamble
-        arrayCopy buffDisc mac 1 $ arrayLen mac
-        store (buffDisc ! 7) =<< deref model
-        store (buffDisc ! 8) =<< deref (version ~> major)
-        store (buffDisc ! 9) =<< deref (version ~> minor)
-        calcCRC16 buffDisc
+initDisc :: Slave n -> Ivory (ProcEffects s ()) ()
+initDisc Slave{..} = do
+    store (buffDisc ! 0) $ discovery txPreamble
+    arrayCopy buffDisc mac 1 $ arrayLen mac
+    store (buffDisc ! 7) =<< deref model
+    store (buffDisc ! 8) =<< deref (version ~> major)
+    store (buffDisc ! 9) =<< deref (version ~> minor)
+    calcCRC16 buffDisc
 
-initConf :: Slave n -> Def('[] :-> ())
-initConf Slave{..} =
-    proc (name <> "_init_conf_tx") $ body $ do
-        store (buffConf ! 0) $ confirm txPreamble
-        store (buffConf ! 1) =<< deref address
-        calcCRC16 buffConf
+initConf :: Slave n -> Ivory (ProcEffects s ()) ()
+initConf Slave{..} = do
+    store (buffConf ! 0) $ confirm txPreamble
+    store (buffConf ! 1) =<< deref address
+    calcCRC16 buffConf
 
-initPing :: Slave n -> Def('[] :-> ())
-initPing Slave{..} =
-    proc (name <> "_init_ping_tx") $ body $ do
-        store (buffPing ! 0) $ ping txPreamble
-        store (buffPing ! 1) =<< deref address
-        calcCRC16 buffPing
+initPing :: Slave n -> Ivory (ProcEffects s ()) ()
+initPing Slave{..} = do
+    store (buffPing ! 0) $ ping txPreamble
+    store (buffPing ! 1) =<< deref address
+    calcCRC16 buffPing
 
 
 

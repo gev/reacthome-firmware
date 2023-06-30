@@ -70,11 +70,7 @@ rbus uart' = do
 
     addHandler $ HandleUART uart (rxHandle rbus) (txHandle rbus) Nothing
 
-    let rbusInit :: Def ('[] :-> ())
-        rbusInit = proc (name <> "_init") $ body $ do
-            configUART uart 1_000_000 WL_8b SB_1b None
-
-    addInit rbusInit
+    addInit name $ configUART uart 1_000_000 WL_8b SB_1b None
 
     addTask $ yeld (name <> "_rx"   ) $ rxTask    rbus
     addTask $ yeld (name <> "_tx"   ) $ txTask    rbus

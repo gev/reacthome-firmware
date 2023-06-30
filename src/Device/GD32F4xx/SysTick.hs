@@ -21,11 +21,8 @@ newtype SysTick = SysTick Uint32
 
 sysTick :: MonadWriter Context m => Uint32 -> m SysTick
 sysTick freq = do
-    addInit initSysTick'
+    addInit "systick_init" $ sysTickConfig freq
     pure $ SysTick freq
-    where
-        initSysTick' :: Def ('[] :-> ())
-        initSysTick' =  proc "systick_init" $ body $ sysTickConfig freq
 
 
 instance Handler HandleTimer SysTick where

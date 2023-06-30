@@ -83,9 +83,7 @@ mix inputs outputs etc = do
                         , transmit = T.transmitBuffer transport
                         }
 
-    let initMix' :: Def ('[] :-> ())
-        initMix' = proc "mix_init" $ body $ load mix
-    addInit initMix'
+    addInit "mix_init" $ load mix
 
     addTask $ delay 10 "mix_manage" $ manage mix
     addTask $ yeld     "mix_sync"   $ sync   mix

@@ -51,10 +51,8 @@ rs485 n uart' rede' = do
     uart <- uart' $ peripherals mcu'
     rede <- rede' $ peripherals mcu'
 
-    let initRS485' :: Def ('[] ':-> ())
-        initRS485' = proc ("rs485_" <> show n <> "_init") $ body
-                                                          $ reset rede
-    addInit initRS485'
+    addInit ("rs485_" <> show n) $ reset rede
+
     pure RS485 { uart, rede }
 
 

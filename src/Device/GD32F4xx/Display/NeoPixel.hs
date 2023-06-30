@@ -70,8 +70,9 @@ mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer selChPWM pwmP
     dmaParams    <- record (symbol dmaChannel <> "_dma_param") dmaInit
     frameRequest <- value  (symbol dmaChannel <> "_frame_request" ) true
 
-    let initNeoPixel' :: Def ('[] :-> ())
-        initNeoPixel' = proc (show pwmPort <> "_pwm_init") $ body $ do
+    initPort pwmPort
+
+    addInit (show pwmPort <> "_pwm") $ do
             enablePeriphClock             dmaRcu
             let t = timer pwmTimer
             store (dmaParams ~> periph_addr) =<< selChPWM t
@@ -82,9 +83,6 @@ mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer selChPWM pwmP
             configPrimaryOutput           t true
             enableTimerDMA                t timer_dma_upd
             enableTimer                   t
-
-    addInit $ initPort pwmPort
-    addInit initNeoPixel'
 
     pure NeoPixelPWM { pwmTimer, pwmChannel, pwmPort, dmaRcu, dmaPer, dmaChannel, dmaSubPer, dmaParams }
 

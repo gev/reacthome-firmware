@@ -58,8 +58,8 @@ mkPWM :: MonadWriter Context m
 mkPWM timer' pwmChannel port frequency period = do
     pwmTimer <- timer' frequency period
 
-    let initPWM' :: Def ('[] :-> ())
-        initPWM' = proc (show port <> "_pwm_init") $ body $ do
+    initPort port
+    addInit (show port <> "_pwm") $ do
             let t = timer pwmTimer
             initChannelOcTimer            t pwmChannel =<< local (istruct timerOcDefaultParam)
             configChannelOutputPulseValue t pwmChannel 0
@@ -67,9 +67,6 @@ mkPWM timer' pwmChannel port frequency period = do
             configChannelOutputShadow     t pwmChannel timer_oc_shadow_disable
             configPrimaryOutput           t true
             enableTimer                   t
-
-    addInit $ initPort port
-    addInit initPWM'
 
     pure PWM { pwmTimer, pwmChannel, port }
 

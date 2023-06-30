@@ -80,11 +80,11 @@ receiveDiscoveryAddress Slave{..} v = do
     updateCRC16 crc v
     store phase waitingMsbCRC
 
-receiveDiscoveryLsbCRC :: Slave n -> Uint8 -> Ivory eff ()
+receiveDiscoveryLsbCRC :: Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receiveDiscoveryLsbCRC s@Slave{..} = receiveLsbCRC s $ do
     store address =<< deref tmp
-    call_ $ initConf s
-    call_ $ initPing s
+    initConf s
+    initPing s
     onDiscovery
 
 

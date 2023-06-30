@@ -94,11 +94,7 @@ rbus rs485 = do
 
     addHandler $ HandleRS485 rs (rxHandle rbus) (txHandle rbus)
 
-    let rbusInit :: Def ('[] :-> ())
-        rbusInit = proc (name <> "_init") $ body $ do
-            configureRS485 rs defaultBaudrate WL_8b SB_1b None
-
-    addInit rbusInit
+    addInit name $ configureRS485 rs defaultBaudrate WL_8b SB_1b None
 
     addTask $ yeld       (name <> "_rx"   ) $ rxTask    rbus
     addTask $ yeld       (name <> "_tx"   ) $ txTask    rbus

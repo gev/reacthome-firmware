@@ -64,20 +64,19 @@ mkUART uart rcu uartIRQ dma dmaIRQn rx tx = do
                            ]
     dmaParams <- record (symbol dma <> "_dma_param") dmaInit
 
-    let initUART' :: Def ('[] ':-> ())
-        initUART' = proc (symbol uart <> "_init") $ body $ do
+{-
+    TODO: Generalize  remap dma
+-}
+
+    G.initPort rx
+    G.initPort tx
+
+    addInit (symbol uart) $ do
             store (dmaParams ~> periph_addr) =<< tdata uart
             enablePeriphClock   rcu_dma
             enableIrqNvic       uartIRQ 1 0
             enableIrqNvic       dmaIRQn 1 1
             enablePeriphClock   rcu
-{-
-    TODO: Generalize  remap dma
--}
-
-    addInit $ G.initPort rx
-    addInit $ G.initPort tx
-    addInit initUART'
 
     pure UART { uart, rcu, uartIRQ, dma, dmaIRQn, dmaParams, rx, tx }
 

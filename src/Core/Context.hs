@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE TypeOperators         #-}
 
 module Core.Context where
@@ -31,10 +32,11 @@ addModule :: MonadWriter Context m => ModuleDef -> m ()
 addModule m = addContext $ Context m mempty mempty
 
 
-addInit :: MonadWriter Context m => Def ('[] :-> ()) -> m ()
-addInit d = do
+addInit :: MonadWriter Context m => String -> (forall s. Ivory (ProcEffects s ()) ()) -> m ()
+addInit id run = do
     addContext $ Context mempty [d] mempty
     addProc d
+    where d = proc (id <> "_init") $ body run
 
 
 addTask :: MonadWriter Context m => Task -> m ()

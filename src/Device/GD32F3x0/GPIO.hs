@@ -1,9 +1,10 @@
-{-# LANGUAGE DataKinds       #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE TypeOperators   #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RecordWildCards  #-}
 
 module Device.GD32F3x0.GPIO where
 
+import           Control.Monad.Writer         (MonadWriter)
 import           Core.Context
 import           Data.Record
 import           Ivory.Language
@@ -76,8 +77,8 @@ io m p = p $ MF m
 
 
 
-initPort :: Port -> Def ('[] ':-> ())
-initPort p@Port{..} = proc (show p <> "_init") $ body $ do
+initPort :: MonadWriter Context m => Port -> m ()
+initPort p@Port{..} = addInit (show p) $ do
     enablePeriphClock rcu
     setOutputOptions gpio gpio_otype_pp gpio_ospeed_50mhz pin
     case mode of

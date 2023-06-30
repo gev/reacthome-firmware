@@ -35,14 +35,12 @@ data EXTI = EXTI
 mkEXTI :: MonadWriter Context m => m Input -> IRQn -> EXTI_PORT -> EXTI_PIN -> EXTI_LINE -> m EXTI
 mkEXTI input extiIRQ srcPort srcPin ex = do
     port <- input
-    let initEXTI' :: Def ('[] :-> ())
-        initEXTI' = proc (symbol srcPort <> "_" <> symbol srcPin <> "_init") $ body $ do
+    addInit (symbol srcPort <> "_" <> symbol srcPin) $ do
             enablePeriphClock       rcu_cfgcmp
             enableIrqNvic           extiIRQ 0 0
             configExtiLine          srcPort srcPin
             initExti                ex exti_interrupt exti_trig_rising
             clearExtiInterruptFlag  ex
-    addInit initEXTI'
     pure EXTI { port, extiIRQ, srcPort, srcPin, ex }
 
 
