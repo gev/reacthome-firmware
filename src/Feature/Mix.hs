@@ -185,6 +185,7 @@ onMode mix@Mix{..} buff size = do
 
 save :: Mix -> Ivory (ProcEffects s ()) ()
 save Mix{..} = do
+    erasePage etc
     crc   <- local $ istruct initCRC16
     mode' <- deref (mode ats)
     updateCRC16 crc mode'
