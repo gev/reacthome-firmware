@@ -83,8 +83,8 @@ receiveDiscoveryAddress Slave{..} v = do
 receiveDiscoveryLsbCRC :: Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receiveDiscoveryLsbCRC s@Slave{..} = receiveLsbCRC s $ do
     store address =<< deref tmp
-    initConf s
-    initPing s
+    call_ initConf
+    call_ initPing
     onDiscovery
 
 

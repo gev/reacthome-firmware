@@ -32,10 +32,11 @@ addModule :: MonadWriter Context m => ModuleDef -> m ()
 addModule m = addContext $ Context m mempty mempty
 
 
-addInit :: MonadWriter Context m => String -> (forall s. Ivory (ProcEffects s ()) ()) -> m ()
+addInit :: MonadWriter Context m => String -> (forall s. Ivory (ProcEffects s ()) ()) -> m (Def ('[] :-> ()))
 addInit id run = do
     addContext $ Context mempty [d] mempty
     addProc d
+    pure d
     where d = proc (id <> "_init") $ body run
 
 

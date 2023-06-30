@@ -137,7 +137,7 @@ io m p = p $ MF m
 
 
 
-initPort :: MonadWriter Context m => Port -> m ()
+initPort :: MonadWriter Context m => Port -> m (Def ('[] ':-> ()))
 initPort Port{..} = addInit (symbol gpio <> "_" <> symbol pin <> "_init") $ do
     enablePeriphClock rcu
     setOutputOptions gpio gpio_otype_pp gpio_ospeed_50mhz pin
