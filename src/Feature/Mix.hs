@@ -121,12 +121,11 @@ manageMixRules Rules{..} DInputs{..} relays n =
         let run :: RunMatrix Uint8 -> Ivory ('Effects (Returns ()) r (Scope s)) ()
             run runRules = runRules $ \rules -> arrayMap $ \jx -> do
                 r <- deref (addrOf rules ! toIx (fromIx ix) ! jx)
-                cond_ [ r ==? 0 ==> turnOffRelay relays (toIx . fromIx $ jx + 1)
-                        , r ==? 1 ==> turnOnRelay  relays (toIx . fromIx $ jx + 1)
-                        , r ==? 2 ==> do
-                                changed <- iNot <$> deref (di ~> DI.synced)
-                                when changed $ toggleRelay relays (toIx . fromIx $ jx + 1)
-                        ]
+                cond_ [ r ==? 0 ==> turnOffRelay relays (toIx $ 1 + fromIx jx)
+                      , r ==? 1 ==> turnOnRelay  relays (toIx $ 1 + fromIx jx)
+                      , r ==? 2 ==> do changed <- iNot <$> deref (di ~> DI.synced)
+                                       when changed $ toggleRelay relays (toIx $ 1 + fromIx jx)
+                      ]
         state' <- deref $ di ~> DI.state
         ifte_ state'
             (run runRulesOn )
