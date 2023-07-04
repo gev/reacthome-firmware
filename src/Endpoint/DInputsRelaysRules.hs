@@ -5,11 +5,16 @@
 {-# LANGUAGE RecordWildCards  #-}
 
 module Endpoint.DInputsRelaysRules where
-import           Control.Monad.Writer
+
+import           Control.Monad.Writer (MonadWriter)
 import           Core.Context
 import           Data.Matrix
 import           Data.Value
+import           Endpoint.DInputs     as DI
+import           Endpoint.Groups
+import           Endpoint.Relays
 import           Ivory.Language
+import           Ivory.Stdlib
 
 
 
@@ -46,3 +51,23 @@ fillPayload Rules{..} i = runPayload $ \payload -> do
             store kx $ kx' + 1
     run runRulesOff
     run runRulesOn
+
+
+
+manageRules :: Rules -> DInputs -> Relays -> Groups -> Int -> Ivory ('Effects (Returns ()) r (Scope s)) ()
+manageRules Rules{..} DInputs{..} relays groups n =
+    runDInputs  $ \dis -> arrayMap $ \ix' -> do
+        let ix = fromIntegral n - ix' - 1
+        let di = addrOf dis ! ix
+        let run :: RunMatrix Uint8 -> Ivory ('Effects (Returns ()) r (Scope s)) ()
+            run runRules = runRules $ \rules -> arrayMap $ \jx -> do
+                r <- deref (addrOf rules ! toIx (fromIx ix) ! jx)
+                cond_ [ r ==? 0 ==> turnOffRelay relays (toIx $ 1 + fromIx jx)
+                      , r ==? 1 ==> turnOnRelay  relays groups (toIx $ 1 + fromIx jx)
+                      , r ==? 2 ==> do changed <- iNot <$> deref (di ~> DI.synced)
+                                       when changed $ toggleRelay relays groups (toIx $ 1 + fromIx jx)
+                      ]
+        state' <- deref $ di ~> DI.state
+        ifte_ state'
+            (run runRulesOn )
+            (run runRulesOff)

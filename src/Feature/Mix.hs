@@ -4,7 +4,6 @@
 {-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RankNTypes       #-}
 {-# LANGUAGE RecordWildCards  #-}
-{-# LANGUAGE TypeOperators    #-}
 
 module Feature.Mix where
 
@@ -25,13 +24,13 @@ import           Data.Value
 import           Endpoint.ATS
 import qualified Endpoint.DInputs            as DI
 import           Endpoint.DInputsRelaysRules
+import qualified Endpoint.Relays             as R
 import           Feature.DInputs             (DInputs (DInputs, getDInputs, getInputs),
                                               manageDInputs, mkDInputs,
                                               syncDInputs)
-import           Feature.Relays              (Relays (Relays), manageRelays,
-                                              mkRelays, onDo, onGroup, onInit,
-                                              syncRelays, toggleRelay,
-                                              turnOffRelay, turnOnRelay)
+import           Feature.Relays              (Relays (Relays, getGroups, getRelays),
+                                              manageRelays, mkRelays, onDo,
+                                              onGroup, onInit, syncRelays)
 import           GHC.TypeNats
 import           Interface.Flash             as F
 import           Interface.GPIO.Input
@@ -95,39 +94,9 @@ mix inputs outputs etc = do
 manage :: Mix -> Ivory ('Effects (Returns ()) r (Scope s)) ()
 manage Mix{..} = do
     manageDInputs  dinputs
-    manageMixRules rules dinputs relays dinputsN
-    manageATS      ats  dinputs relays
+    manageRules    rules (getDInputs dinputs) (getRelays relays) (getGroups relays) dinputsN
+    manageATS      ats   (getDInputs dinputs) (getRelays relays)
     manageRelays   relays
-
-
-
-manageATS :: ATS -> DInputs -> Relays -> Ivory eff ()
-manageATS ATS{..} inputs relays = do
-    mode' <- deref mode
-    cond_ [ mode' ==? mode_N1_G ==> pure ()
-          , mode' ==? mode_N2   ==> pure ()
-          , mode' ==? mode_N2_G ==> pure ()
-          ]
-
-
-
-manageMixRules :: Rules -> DInputs -> Relays -> Int -> Ivory ('Effects (Returns ()) r (Scope s)) ()
-manageMixRules Rules{..} DInputs{..} relays n =
-    DI.runDInputs getDInputs $ \dis -> arrayMap $ \ix' -> do
-        let ix = fromIntegral n - ix' - 1
-        let di = addrOf dis ! ix
-        let run :: RunMatrix Uint8 -> Ivory ('Effects (Returns ()) r (Scope s)) ()
-            run runRules = runRules $ \rules -> arrayMap $ \jx -> do
-                r <- deref (addrOf rules ! toIx (fromIx ix) ! jx)
-                cond_ [ r ==? 0 ==> turnOffRelay relays (toIx $ 1 + fromIx jx)
-                      , r ==? 1 ==> turnOnRelay  relays (toIx $ 1 + fromIx jx)
-                      , r ==? 2 ==> do changed <- iNot <$> deref (di ~> DI.synced)
-                                       when changed $ toggleRelay relays (toIx $ 1 + fromIx jx)
-                      ]
-        state' <- deref $ di ~> DI.state
-        ifte_ state'
-            (run runRulesOn )
-            (run runRulesOff)
 
 
 

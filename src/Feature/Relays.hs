@@ -191,133 +191,15 @@ onDo relays@Relays{..} buff size = do
     index <- deref $ buff ! 1
     when (size >=? 3 .&& index >=? 1 .&& index <=? n) $ do
         action <- deref $ buff ! 2
-        cond_ [ action ==? 0 ==> turnOffRelay relays (toIx index)
+        cond_ [ action ==? 0 ==> R.turnOffRelay getRelays (toIx index)
               , action ==? 1 ==> do
-                    cond_ [ size >=? 7 ==> turnOnRelay' relays (toIx index) =<< unpackLE buff 3
-                          , true       ==> turnOnRelay  relays (toIx index)
+                    cond_ [ size >=? 7 ==> R.turnOnRelay' getRelays getGroups (toIx index) =<< unpackLE buff 3
+                          , true       ==> R.turnOnRelay  getRelays getGroups (toIx index)
                           ]
-              , action ==? 2 .&& size >=? 7 ==> setRelayDelayOff relays index =<< unpackLE buff 3
-              , action ==? 3 ==> setRelayGroup relays index =<< unpack buff 3
+              , action ==? 2 .&& size >=? 7 ==> R.setRelayDelayOff getRelays index =<< unpackLE buff 3
+              , action ==? 3 ==> R.setRelayGroup getRelays index =<< unpack buff 3
               ]
 
-
-turnOffRelay :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
-turnOffRelay Relays{..} index = R.runRelays getRelays $ \rs -> do
-    let ix = index - 1
-    let r  = addrOf rs ! ix
-    state' <- deref $ r ~> R.state
-    when state' $ do
-        store (r ~> R.state    ) false
-        store (r ~> R.timestamp) =<< getSystemTime clock
-
-
-turnOnRelay :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory ('Effects (Returns ()) r (Scope s)) ()
-turnOnRelay Relays{..} index = R.runRelays getRelays $ \rs -> do
-    let ix = index - 1
-    let r  = addrOf rs ! ix
-    state' <- deref $ r ~> R.state
-    when (iNot state') $ do
-        shouldDelay <- shouldGroupDelay getGroups rs ix
-        when  (iNot shouldDelay) $ store (r ~> R.state) true
-        store (r ~> R.delayOff ) =<< deref (r ~> R.defaultDelayOff)
-        store (r ~> R.timestamp) =<< getSystemTime clock
-
-
-turnOnRelay' :: Relays -> (forall n. KnownNat n => Ix n) -> Uint32 -> Ivory ('Effects (Returns ()) r (Scope s)) ()
-turnOnRelay' Relays{..} index delay = R.runRelays getRelays $ \rs -> do
-    let ix = index - 1
-    let r  = addrOf rs ! ix
-    state' <- deref $ r ~> R.state
-    when (iNot state') $ do
-        shouldDelay <- shouldGroupDelay getGroups rs ix
-        when  (iNot shouldDelay) $ store (r ~> R.state) true
-        store (r ~> R.delayOff ) delay
-        store (r ~> R.timestamp) =<< getSystemTime clock
-
-
-toggleRelay :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory ('Effects (Returns ()) r (Scope s)) ()
-toggleRelay relays@Relays{..} index = R.runRelays getRelays $ \rs -> do
-    let ix = index - 1
-    let r  = addrOf rs ! ix
-    state' <- deref $ r ~> R.state
-    ifte_ state'
-          (turnOffRelay relays index)
-          (turnOnRelay  relays index)
-
-
-setRelayDelayOff :: Relays -> Uint8 -> Uint32 -> Ivory eff ()
-setRelayDelayOff Relays{..} index delay = R.runRelays getRelays $ \rs -> do
-    let ix = toIx (index - 1)
-    let r  = addrOf rs ! ix
-    store (r ~> R.defaultDelayOff) delay
-    store (r ~> R.synced         ) false
-
-
-setRelayGroup :: Relays -> Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
-setRelayGroup Relays{..} index group = R.runRelays getRelays $ \rs -> do
-    let ix = toIx (index - 1)
-    let r  = addrOf rs ! ix
-    turnOffGroup rs ix group
-    store (r ~> R.group ) group
-    store (r ~> R.synced) false
-
-
-
-shouldGroupDelay :: KnownNat n
-          => G.Groups
-          -> Records' n R.RelayStruct
-          -> Ix n
-          -> Ivory ('Effects (Returns ()) r (Scope s)) IBool
-shouldGroupDelay groups rs ix = do
-    let r = addrOf rs ! ix
-    group <- deref $ r ~> R.group
-    shouldDelay <- isTurnOffGroup rs ix group
-    when shouldDelay $
-        G.runGroups groups $ \gs -> do
-            let g = addrOf gs ! toIx (group - 1)
-            delay <- deref $ g ~> G.delay
-            store (r ~> R.delayOn) (delay + 1)
-    pure shouldDelay
-
-
-isTurnOffGroup :: KnownNat n
-             => Records' n R.RelayStruct
-             -> Ix n
-             -> Uint8
-             -> Ivory ('Effects (Returns ()) r (Scope s)) IBool
-isTurnOffGroup rs ix g = do
-    f <- local $ ival false
-    arrayMap $ \jx -> do
-        when (jx /=? ix) $ do
-            let r = addrOf rs ! jx
-            group <- deref $ r ~> R.group
-            when (group ==? g) $ do
-                isOn  <- deref $ r ~> R.state
-                delay <- deref $ r ~> R.delayOn
-                when (isOn .|| delay >? 0) $ do
-                    store (r ~> R.state   ) false
-                    store (r ~> R.delayOn ) 0
-                    store (r ~> R.synced  ) false
-                    store f true
-    deref f
-
-turnOffGroup :: KnownNat n
-             => Records' n R.RelayStruct
-             -> Ix n
-             -> Uint8
-             -> Ivory (ProcEffects s ()) ()
-turnOffGroup rs ix g =
-    arrayMap $ \jx -> do
-        when (jx /=? ix) $ do
-            let r = addrOf rs ! jx
-            group <- deref $ r ~> R.group
-            when (group ==? g) $ do
-                isOn  <- deref $ r ~> R.state
-                delay <- deref $ r ~> R.delayOn
-                when (isOn .|| delay >? 0) $ do
-                    store (r ~> R.state   ) false
-                    store (r ~> R.delayOn ) 0
-                    store (r ~> R.synced  ) false
 
 
 onGroup :: KnownNat n

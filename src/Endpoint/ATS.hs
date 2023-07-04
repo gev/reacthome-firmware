@@ -9,7 +9,10 @@ import           Control.Monad.Writer (MonadWriter)
 import           Core.Context
 import           Data.Buffer
 import           Data.Value
+import           Endpoint.DInputs
+import           Endpoint.Relays
 import           Ivory.Language
+import           Ivory.Stdlib
 
 
 
@@ -40,3 +43,13 @@ message ATS{..} = do
     store (payload ! 0) 0x4
     store (payload ! 1) =<< deref mode
     pure payload
+
+
+
+manageATS :: ATS -> DInputs -> Relays -> Ivory eff ()
+manageATS ATS{..} inputs relays = do
+    mode' <- deref mode
+    cond_ [ mode' ==? mode_N1_G ==> pure ()
+          , mode' ==? mode_N2   ==> pure ()
+          , mode' ==? mode_N2_G ==> pure ()
+          ]
