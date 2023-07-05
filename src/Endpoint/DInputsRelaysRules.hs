@@ -63,7 +63,7 @@ manageRules Rules{..} DInputs{..} relays groups n =
             run runRules = runRules $ \rules -> arrayMap $ \jx -> do
                 r <- deref (addrOf rules ! toIx (fromIx ix) ! jx)
                 cond_ [ r ==? 0 ==> turnOffRelay relays (toIx $ 1 + fromIx jx)
-                      , r ==? 1 ==> turnOnRelay  relays groups (toIx $ 1 + fromIx jx)
+                      , r ==? 1 ==> turnOnRelay' relays groups (toIx $ 1 + fromIx jx) 0
                       , r ==? 2 ==> do changed <- iNot <$> deref (di ~> DI.synced)
                                        when changed $ toggleRelay relays groups (toIx $ 1 + fromIx jx)
                       ]

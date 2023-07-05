@@ -84,34 +84,30 @@ turnOffRelay :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
 turnOffRelay Relays{..} index = runRelays $ \rs -> do
     let ix = index - 1
     let r  = addrOf rs ! ix
-    state' <- deref $ r ~> state
-    when state' $ do
-        store (r ~> state    ) false
-        store (r ~> timestamp) =<< getSystemTime clock
+    store (r ~> state    ) false
+    store (r ~> delayOn  ) 0
+    store (r ~> delayOff ) 0
+    store (r ~> timestamp) =<< getSystemTime clock
 
 
 turnOnRelay :: Relays -> G.Groups -> (forall n. KnownNat n => Ix n) -> Ivory ('Effects (Returns ()) r (Scope s)) ()
 turnOnRelay Relays{..} groups index = runRelays $ \rs -> do
     let ix = index - 1
     let r  = addrOf rs ! ix
-    state' <- deref $ r ~> state
-    when (iNot state') $ do
-        shouldDelay <- shouldGroupDelay groups rs ix
-        when  (iNot shouldDelay) $ store (r ~> state) true
-        store (r ~> delayOff ) =<< deref (r ~> defaultDelayOff)
-        store (r ~> timestamp) =<< getSystemTime clock
+    shouldDelay <- shouldGroupDelay groups rs ix
+    when  (iNot shouldDelay) $ store (r ~> state) true
+    store (r ~> delayOff ) =<< deref (r ~> defaultDelayOff)
+    store (r ~> timestamp) =<< getSystemTime clock
 
 
 turnOnRelay' :: Relays -> G.Groups -> (forall n. KnownNat n => Ix n) -> Uint32 -> Ivory ('Effects (Returns ()) r (Scope s)) ()
 turnOnRelay' Relays{..} groups index delay = runRelays $ \rs -> do
     let ix = index - 1
     let r  = addrOf rs ! ix
-    state' <- deref $ r ~> state
-    when (iNot state') $ do
-        shouldDelay <- shouldGroupDelay groups rs ix
-        when  (iNot shouldDelay) $ store (r ~> state) true
-        store (r ~> delayOff ) delay
-        store (r ~> timestamp) =<< getSystemTime clock
+    shouldDelay <- shouldGroupDelay groups rs ix
+    when  (iNot shouldDelay) $ store (r ~> state) true
+    store (r ~> delayOff ) delay
+    store (r ~> timestamp) =<< getSystemTime clock
 
 
 toggleRelay :: Relays -> G.Groups -> (forall n. KnownNat n => Ix n) -> Ivory ('Effects (Returns ()) r (Scope s)) ()
@@ -176,7 +172,6 @@ isTurnOffGroup rs ix g = do
                 when (isOn .|| delay >? 0) $ do
                     store (r ~> state   ) false
                     store (r ~> delayOn ) 0
-                    store (r ~> synced  ) false
                     store f true
     deref f
 
@@ -196,4 +191,3 @@ turnOffGroup rs ix g =
                 when (isOn .|| delay >? 0) $ do
                     store (r ~> state   ) false
                     store (r ~> delayOn ) 0
-                    store (r ~> synced  ) false

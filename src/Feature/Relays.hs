@@ -76,31 +76,35 @@ relays :: (MonadWriter Context m, MonadReader (D.Domain p t) m, T.Transport t, O
        => [p -> m o] -> m Feature
 relays outs = do
     relays <- mkRelays outs
-    addTask $ delay 10 "relays_manage" $ manageRelays relays
-    addTask $ yeld     "relays_sync"   $ syncRelays   relays
+    addTask $ yeld "relays_manage" $ manageRelays relays
+    addTask $ yeld "relays_sync"   $ syncRelays   relays
     pure    $ Feature relays
 
 
 
 manageRelays :: Relays -> Ivory eff ()
-manageRelays Relays{..} = zipWithM_ zip getOutputs [0..]
+manageRelays Relays{..} = do
+    zipWithM_ off getOutputs [0..]
+    zipWithM_ on  getOutputs [0..]
+
     where
-        zip :: Output o => o -> Int -> Ivory eff ()
-        zip output i = R.runRelays getRelays $ \rs -> do
-            let ix = fromIntegral i
-            let r = addrOf rs ! ix
-            let runState = manageState r output
-            let runDelay = manageDelay r $ getSystemTime clock
-            isOn <- deref $ r ~> R.state
-            ifte_ isOn
-                (do
-                    runState set        true
-                    runDelay R.delayOff false
-                )
-                (do
-                    runState reset      false
-                    runDelay R.delayOn  true
-                )
+        on  :: Output o => o -> Int -> Ivory eff ()
+        on  output i = R.runRelays getRelays $ \rs -> do
+            let ix   = fromIntegral i
+            let r    = addrOf rs ! ix
+            shouldOn   <- deref $ r ~> R.state
+            when shouldOn $ do
+                manageDelay r (getSystemTime clock) R.delayOff false
+                manageState r output set true
+
+        off :: Output o => o -> Int -> Ivory eff ()
+        off output i = R.runRelays getRelays $ \rs -> do
+            let ix   = fromIntegral i
+            let r    = addrOf rs ! ix
+            shouldOff  <- iNot <$> deref (r ~> R.state)
+            when shouldOff $ do
+                manageDelay r (getSystemTime clock) R.delayOn true
+                manageState r output reset false
 
 
 
