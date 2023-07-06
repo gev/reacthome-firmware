@@ -135,7 +135,7 @@ manageLine n ATS{..} hasVoltage isRelayOn relay = do
                                     -- currentSource' <- deref currentSource
                                     ifte_ (iNot relayState')
                                         (do
-                                            store (relay ~> R.timestamp) =<< getSystemTime clock
+                                            store (relay ~> R.timestampOn) =<< getSystemTime clock
                                             turnOn' relay
                                         )
                                         (turnOn  relay)

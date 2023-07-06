@@ -23,6 +23,7 @@ import           Data.Index
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
+import           Endpoint.ATS          (ATS (timestamp))
 import qualified Endpoint.Groups       as G
 import qualified Endpoint.Relays       as R
 import           GHC.TypeNats
@@ -86,7 +87,6 @@ manageRelays :: Relays -> Ivory eff ()
 manageRelays Relays{..} = do
     zipWithM_ off getOutputs [0..]
     zipWithM_ on  getOutputs [0..]
-
     where
         on  :: Output o => o -> Int -> Ivory eff ()
         on  output i = R.runRelays getRelays $ \rs -> do
@@ -94,47 +94,41 @@ manageRelays Relays{..} = do
             let r    = addrOf rs ! ix
             shouldOn   <- deref $ r ~> R.state
             when shouldOn $ do
-                manageDelay r (getSystemTime clock) R.delayOff false
-                manageState r output set true
-
+                timestamp' <- getSystemTime clock
+                manageDelay r timestamp' R.delayOff false
+                state' <- get output
+                when (iNot state') $ do
+                    store (r ~> R.synced) false
+                    set output
         off :: Output o => o -> Int -> Ivory eff ()
         off output i = R.runRelays getRelays $ \rs -> do
             let ix   = fromIntegral i
             let r    = addrOf rs ! ix
             shouldOff  <- iNot <$> deref (r ~> R.state)
             when shouldOff $ do
-                manageDelay r (getSystemTime clock) R.delayOn true
-                manageState r output reset false
+                timestamp' <- getSystemTime clock
+                manageDelay r timestamp' R.delayOn true
+                state' <- get output
+                when state' $ do
+                    store (r ~> R.timestampOff) timestamp'
+                    store (r ~> R.synced) false
+                    reset output
 
-
-
-manageState :: Output o
-            => Record R.RelayStruct
-            -> o
-            -> (o -> Ivory eff ())
-            -> IBool
-            -> Ivory eff ()
-manageState r o setOut state = do
-    state' <- get o
-    when (state' /=? state) $ do
-        store (r ~> R.synced) false
-        setOut o
 
 
 manageDelay :: Record R.RelayStruct
-            -> Ivory eff Uint32
+            -> Uint32
             -> Label R.RelayStruct ('Stored Uint32)
             -> IBool
             -> Ivory eff ()
-manageDelay r timestamp delay state = do
+manageDelay r t1 delay state = do
     delay' <- deref $ r ~> delay
     when (delay' >? 0) $ do
-        t0 <- deref $ r ~> R.timestamp
-        t1 <- timestamp
-        when (t1 - t0 >=? delay') $ do
-            store (r ~> delay      ) 0
-            store (r ~> R.state    ) state
-            store (r ~> R.timestamp) t1
+        t0 <- deref $ r ~> R.timestampOn
+        when (t1 - t0 >? delay') $ do
+            store (r ~> delay        ) 0
+            store (r ~> R.state      ) state
+            store (r ~> R.timestampOn) t1
 
 
 
@@ -261,7 +255,8 @@ initRelays :: KnownNat n
            -> Buffer n Uint8
            -> Ref s (Stored (Ix n))
            -> Ivory eff ()
-initRelays Relays{..} buff offset =
+initRelays Relays{..} buff offset = do
+    timestamp' <- getSystemTime clock
     R.runRelays getRelays $ \rs ->
         arrayMap $ \ix -> do
             offset' <- deref offset
@@ -270,5 +265,6 @@ initRelays Relays{..} buff offset =
             store (r ~> R.group          ) =<< unpack   buff (offset' + 1)
             store (r ~> R.delayOff       ) =<< unpackLE buff (offset' + 2)
             store (r ~> R.defaultDelayOff) =<< unpackLE buff (offset' + 2)
-            store (r ~> R.timestamp      ) =<< getSystemTime clock
+            store (r ~> R.timestampOff   ) timestamp'
+            store (r ~> R.timestampOn    ) timestamp'
             store offset $ offset' + 6
