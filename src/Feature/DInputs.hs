@@ -90,8 +90,8 @@ manageDInput :: Input i
              => Record DI.DInputStruct
              -> i
              -> Ivory eff ()
-manageDInput di i  = do
-    value <- iNot <$> get i
+manageDInput di input  = do
+    value <- iNot <$> get input
     state <- deref $ di ~> DI.state
     when (value /=? state) $ do
         store (di ~> DI.state ) value
