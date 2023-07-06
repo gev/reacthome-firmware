@@ -87,26 +87,28 @@ turnOffRelay Relays{..} index = runRelays $ \rs -> do
     store (r ~> state    ) false
     store (r ~> delayOn  ) 0
     store (r ~> delayOff ) 0
-    store (r ~> timestamp) =<< getSystemTime clock
 
 
 turnOnRelay :: Relays -> G.Groups -> (forall n. KnownNat n => Ix n) -> Ivory ('Effects (Returns ()) r (Scope s)) ()
 turnOnRelay Relays{..} groups index = runRelays $ \rs -> do
     let ix = index - 1
     let r  = addrOf rs ! ix
-    shouldDelay <- shouldGroupDelay groups rs ix
-    when  (iNot shouldDelay) $ store (r ~> state) true
-    store (r ~> delayOff ) =<< deref (r ~> defaultDelayOff)
+    delayOff' <- deref (r ~> defaultDelayOff)
+    delayOn' <- getGroupDelay groups rs ix
+    store (r ~> state    ) $ delayOn' ==? 0
+    store (r ~> delayOff ) delayOff'
+    store (r ~> delayOn  ) delayOn'
     store (r ~> timestamp) =<< getSystemTime clock
 
 
 turnOnRelay' :: Relays -> G.Groups -> (forall n. KnownNat n => Ix n) -> Uint32 -> Ivory ('Effects (Returns ()) r (Scope s)) ()
-turnOnRelay' Relays{..} groups index delay = runRelays $ \rs -> do
+turnOnRelay' Relays{..} groups index delayOff' = runRelays $ \rs -> do
     let ix = index - 1
     let r  = addrOf rs ! ix
-    shouldDelay <- shouldGroupDelay groups rs ix
-    when  (iNot shouldDelay) $ store (r ~> state) true
-    store (r ~> delayOff ) delay
+    delayOn' <- getGroupDelay groups rs ix
+    store (r ~> state    ) $ delayOn' ==? 0
+    store (r ~> delayOff ) delayOff'
+    store (r ~> delayOn  ) delayOn'
     store (r ~> timestamp) =<< getSystemTime clock
 
 
@@ -138,21 +140,21 @@ setRelayGroup Relays{..} index group' = runRelays $ \rs -> do
 
 
 
-shouldGroupDelay :: KnownNat n
-                 => G.Groups
-                 -> Records' n RelayStruct
-                 -> Ix n
-                 -> Ivory ('Effects (Returns ()) r (Scope s)) IBool
-shouldGroupDelay groups rs ix = do
+getGroupDelay :: KnownNat n
+              => G.Groups
+              -> Records' n RelayStruct
+              -> Ix n
+              -> Ivory ('Effects (Returns ()) r (Scope s)) Uint32
+getGroupDelay groups rs ix = do
+    delay <- local $ ival 0
     let r = addrOf rs ! ix
     group <- deref $ r ~> group
     shouldDelay <- isTurnOffGroup rs ix group
     when shouldDelay $
         G.runGroups groups $ \gs -> do
             let g = addrOf gs ! toIx (group - 1)
-            delay <- deref $ g ~> G.delay
-            store (r ~> delayOn) (delay + 1)
-    pure shouldDelay
+            store delay =<< deref (g ~> G.delay)
+    deref delay
 
 
 isTurnOffGroup :: KnownNat n
