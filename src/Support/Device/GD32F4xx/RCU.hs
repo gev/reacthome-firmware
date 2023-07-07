@@ -16,6 +16,7 @@ module Support.Device.GD32F4xx.RCU
     , rcu_gpioe
     , rcu_timer1
     , rcu_timer2
+    , rcu_timer3
     , rcu_usart0
     , rcu_usart1
     , rcu_usart2
@@ -47,6 +48,7 @@ rcu_gpiod  = RCU_PERIPH $ ext "RCU_GPIOD"
 rcu_gpioe  = RCU_PERIPH $ ext "RCU_GPIOE"
 rcu_timer1 = RCU_PERIPH $ ext "RCU_TIMER1"
 rcu_timer2 = RCU_PERIPH $ ext "RCU_TIMER2"
+rcu_timer3 = RCU_PERIPH $ ext "RCU_TIMER3"
 rcu_usart0 = RCU_PERIPH $ ext "RCU_USART0"
 rcu_usart1 = RCU_PERIPH $ ext "RCU_USART1"
 rcu_usart2 = RCU_PERIPH $ ext "RCU_USART2"
@@ -77,6 +79,7 @@ inclRCU = do
     inclSym rcu_gpioe
     inclSym rcu_timer1
     inclSym rcu_timer2
+    inclSym rcu_timer3
     inclSym rcu_usart0
     inclSym rcu_usart1
     inclSym rcu_usart2

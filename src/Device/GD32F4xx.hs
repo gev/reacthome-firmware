@@ -222,6 +222,11 @@ data GD32F4xx = GD32F4xx
     , out_pe_14 :: OutputW
     , out_pe_15 :: OutputW
 
+    , pwm_0     :: PWMW
+    , pwm_1     :: PWMW
+    , pwm_2     :: PWMW
+    , pwm_3     :: PWMW
+
     , npx_pwm_0 :: NeoPixelPWMW
     , npx_pwm_1 :: NeoPixelPWMW
     , npx_pwm_2 :: NeoPixelPWMW
@@ -467,6 +472,21 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
     , out_pe_13 = output pe_13
     , out_pe_14 = output pe_14
     , out_pe_15 = output pe_15
+    
+
+    , pwm_0     = mkPWM pwm_timer_3
+                        timer_ch_0
+                        (pd_12  $ AF gpio_af_2)
+    , pwm_1     = mkPWM pwm_timer_3
+                        timer_ch_1
+                        (pd_13  $ AF gpio_af_2)
+    , pwm_2     = mkPWM pwm_timer_3
+                        timer_ch_2
+                        (pd_14  $ AF gpio_af_2)
+    , pwm_3     = mkPWM pwm_timer_3
+                        timer_ch_3
+                        (pd_15  $ AF gpio_af_2)
+                        
 
     , npx_pwm_0 = mkNeoPixelPWM pwm_timer_2
                                 timer_ch_0 rcu_dma0

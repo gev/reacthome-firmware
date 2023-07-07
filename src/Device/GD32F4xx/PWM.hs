@@ -35,6 +35,8 @@ pwm_timer_1 frequency' period' = timer_1 $ pwmTimerParam frequency' period'
 pwm_timer_2 :: MonadWriter Context m => Uint32 -> Uint32 -> m Timer
 pwm_timer_2 frequency' period' = timer_2 $ pwmTimerParam frequency' period'
 
+pwm_timer_3 :: MonadWriter Context m => Uint32 -> Uint32 -> m Timer
+pwm_timer_3 frequency' period' = timer_3 $ pwmTimerParam frequency' period'
 
 
 data PWM = PWM
