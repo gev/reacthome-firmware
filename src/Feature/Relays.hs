@@ -23,7 +23,6 @@ import           Data.Index
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
-import           Endpoint.ATS          (ATS (timestamp))
 import qualified Endpoint.Groups       as G
 import qualified Endpoint.Relays       as R
 import           GHC.TypeNats
@@ -94,37 +93,43 @@ manageRelays Relays{..} = do
             let r    = addrOf rs ! ix
             shouldOn   <- deref $ r ~> R.state
             when shouldOn $ do
-                timestamp' <- getSystemTime clock
-                manageDelay r timestamp' R.delayOff false
-                state' <- get output
-                when (iNot state') $ do
-                    store (r ~> R.synced) false
-                    set output
+                manageDelay r (getSystemTime clock) R.delayOff false
+                manageState r output set true
         off :: Output o => o -> Int -> Ivory eff ()
         off output i = R.runRelays getRelays $ \rs -> do
             let ix   = fromIntegral i
             let r    = addrOf rs ! ix
             shouldOff  <- iNot <$> deref (r ~> R.state)
             when shouldOff $ do
-                timestamp' <- getSystemTime clock
-                manageDelay r timestamp' R.delayOn true
-                state' <- get output
-                when state' $ do
-                    store (r ~> R.timestampOff) timestamp'
-                    store (r ~> R.synced) false
-                    reset output
+                manageDelay r (getSystemTime clock) R.delayOn true
+                manageState r output reset false
+
+
+
+manageState :: Output o
+            => Record R.RelayStruct
+            -> o
+            -> (o -> Ivory eff ())
+            -> IBool
+            -> Ivory eff ()
+manageState r o setOut state = do
+    state' <- get o
+    when (state' /=? state) $ do
+        store (r ~> R.synced) false
+        setOut o
 
 
 
 manageDelay :: Record R.RelayStruct
-            -> Uint32
+            -> Ivory eff Uint32
             -> Label R.RelayStruct ('Stored Uint32)
             -> IBool
             -> Ivory eff ()
-manageDelay r t1 delay state = do
+manageDelay r timestamp delay state = do
     delay' <- deref $ r ~> delay
     when (delay' >? 0) $ do
         t0 <- deref $ r ~> R.timestampOn
+        t1 <- timestamp
         when (t1 - t0 >? delay') $ do
             store (r ~> delay        ) 0
             store (r ~> R.state      ) state
