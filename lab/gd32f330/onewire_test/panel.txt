@@ -1,0 +1,57 @@
+нужен терминал деплоймента и панели 
+на панеле:
+sudo apt update
+sudo apt upgrade
+sudo apt install git
+"git clone .../hifimems-kmod.git" (установка по инструкции оттудова, перед мейком поправить фалы)
+reboot
+sudo apt-get install raspberrypi-kernel-header
+cd hifimems-kmod
+nano hifimems-soundcard.c
+122 строка 
+на 123 return();
+nano hifimems-codec.c
+61 строка изменить  rates на rate
+make
+
+
+sudo nano /etc/pulse/daemon.conf установить 48000
+
+sudo nano /etc/asound.conf
+вставить вот этот конфиг: https://gist.github.com/gev/ff8f34a19e9ea307f3ff639d34a8f9fc
+
+sudo nano /etc/hosts поменять имя на panel
+
+
+mkdir electron
+wget https://github.com/electron/releases/download/.... (electron 14.0.0 linux64) 
+
+пробуем запустить электрон и устанавливаем все на что ругается пример:sudo apt install libnss3
+
+как запутился
+sudo apt install nodm xinit
+
+sudo nano /etc/default/nodm (взять конфиг с деплоймента)
+
+nano .xinitrc конфиг с деплоймента
+
+chmod +x .xinitrc
+
+sudo nano /boot/config.txt включить юсб 2.0
+git clone github.com/gev/reacthome-panel.git
+git checkout stand
+
+c деплоймента взять 2 первые строки из get-node.sh и выполнить на панеле
+
+sudo npm i -g yarn
+yarn
+yarn bundle
+
+sudo nano /boot/config.txt
+изменить
+hdmi mode 27
+hdmi group
+
+main.js 
+
+на деплойменте:

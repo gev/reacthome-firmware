@@ -155,5 +155,6 @@
   "haskell.plugin.class.globalOn": true,
   "gitlens.codeLens.enabled": false,
   "gitlens.currentLine.enabled": false,
-  "editor.tabSize": 4
+  "editor.tabSize": 4,
+  "C_Cpp.errorSquiggles": "disabled"
 }
