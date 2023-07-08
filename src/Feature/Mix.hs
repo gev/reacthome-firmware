@@ -95,7 +95,7 @@ manage :: Mix -> Ivory ('Effects (Returns ()) r (Scope s)) ()
 manage Mix{..} = do
     manageDInputs  dinputs
     manageRules    rules (getDInputs dinputs) (getRelays relays) (getGroups relays) dinputsN
-    -- manageATS      ats   (getDInputs dinputs) (getRelays relays)
+    manageATS      ats   (getDInputs dinputs) (getRelays relays)
     manageRelays   relays
 
 

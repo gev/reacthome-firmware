@@ -39,6 +39,10 @@ stateError      = 0xff :: Uint8
 maxAttempt      = 3    :: Uint8
 
 
+errorNone       = 0    :: Uint8
+
+
+
 
 data ATS = ATS
     { mode            :: Value    Uint8
@@ -119,36 +123,30 @@ manageLine :: Uint8
            -> Record RelayStruct
            ->  Ivory eff ()
 manageLine n ATS{..} hasVoltage isRelayOn relay = do
-    state' <- deref state
+    state'    <- deref state
+    timestamp <- getSystemTime clock
     ifte_ (state' ==? stateError)
-          (turnOff relay)
+          (turnOff relay timestamp)
           (do
-                hasVoltage'     <- deref $ hasVoltage ~> DI.state
-                isRelayOn'      <- deref $ isRelayOn ~> DI.state
-                relayState'     <- deref $ relay ~> R.state
+                hasVoltage' <- deref $ hasVoltage ~> DI.state
+                isRelayOn'  <- deref $ isRelayOn ~> DI.state
+                relayState' <- deref $ relay ~> R.state
                 ifte_ hasVoltage'
                     (do
                         selectedSource' <- deref selectedSource
                         ifte_ (n >? selectedSource')
                               (do
-                                    -- when relayState' $ store currentSource n
-                                    -- currentSource' <- deref currentSource
-                                    ifte_ (iNot relayState')
-                                        (do
-                                            store (relay ~> R.timestamp) =<< getSystemTime clock
-                                            turnOn' relay
-                                        )
-                                        (turnOn  relay)
+                                    turnOn' relay timestamp
                                     store selectedSource n
                               )
-                              (turnOff relay)
+                              (turnOff relay timestamp)
                     )
-                    (turnOff relay)
+                    (turnOff relay timestamp)
           )
 
 
 
-manageGenerator :: Int
+manageGenerator :: Uint8
                 -> ATS
                 -> Record DInputStruct
                 -> Record DInputStruct
@@ -156,9 +154,27 @@ manageGenerator :: Int
                 -> Record RelayStruct
                 ->  Ivory eff ()
 manageGenerator n ATS{..} hasVoltage isRelayOn relay start = do
-    state' <- deref state
-    when (state' ==? stateError) $ do
-        pure ()
+    state'    <- deref state
+    timestamp <- getSystemTime clock
+    ifte_ (state' ==? stateError)
+          (do
+                turnOff relay timestamp
+                turnOff start timestamp
+          )
+          (do
+                isRelayOn'  <- deref $ isRelayOn ~> DI.state
+                relayState' <- deref $ relay ~> R.state
+                selectedSource' <- deref selectedSource
+                ifte_ (n >? selectedSource')
+                      (do
+                            turnOn' start timestamp
+                            store selectedSource n
+                      )
+                      (do
+                            turnOff relay timestamp
+                            turnOff start timestamp
+                      )
+          )
 
 
 
@@ -172,22 +188,32 @@ manageReset ATS{..} reset = do
 
 
 
-turnOn :: Record RelayStruct -> Ivory eff ()
-turnOn relay = do
-    store (relay ~> R.state   ) true
-    store (relay ~> R.delayOff) 0
-    store (relay ~> R.delayOn ) 0
+turnOn :: Record RelayStruct -> Uint32 -> Ivory eff ()
+turnOn relay timestamp = do
+    isOn <- deref $ relay ~> R.state
+    when (iNot isOn) $ do
+        store (relay ~> R.state    ) true
+        store (relay ~> R.delayOff ) 0
+        store (relay ~> R.delayOn  ) 0
+        store (relay ~> R.timestamp) timestamp
 
 
-turnOn' :: Record RelayStruct -> Ivory eff ()
-turnOn' relay = do
-    store (relay ~> R.state   ) false
-    store (relay ~> R.delayOff) 0
-    store (relay ~> R.delayOn ) 1000
+turnOn' :: Record RelayStruct -> Uint32 -> Ivory eff ()
+turnOn' relay timestamp = do
+    isOn    <- deref $ relay ~> R.state
+    delayOn <- deref $ relay ~> R.delayOn
+    when (iNot isOn .&& delayOn ==? 0) $ do
+        store (relay ~> R.state    ) false
+        store (relay ~> R.delayOff ) 0
+        store (relay ~> R.delayOn  ) 1000
+        store (relay ~> R.timestamp) timestamp
 
 
-turnOff :: Record RelayStruct -> Ivory eff ()
-turnOff relay = do
-    store (relay ~> R.state   ) false
-    store (relay ~> R.delayOff) 0
-    store (relay ~> R.delayOn ) 0
+turnOff :: Record RelayStruct -> Uint32 -> Ivory eff ()
+turnOff relay timestamp = do
+    isOn <- deref $ relay ~> R.state
+    when isOn $ do
+        store (relay ~> R.state    ) false
+        store (relay ~> R.delayOff ) 0
+        store (relay ~> R.delayOn  ) 0
+        store (relay ~> R.timestamp) timestamp
