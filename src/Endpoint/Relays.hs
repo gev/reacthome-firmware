@@ -58,6 +58,7 @@ relays name n = do
     pure relays
     where go i = [ state           .= ival false
                  , defaultDelayOff .= ival 0
+                 , delayOn         .= ival 0
                  , delayOff        .= ival 0
                  , timestamp       .= ival 0
                  , group           .= ival i
