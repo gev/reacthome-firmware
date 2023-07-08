@@ -32,8 +32,7 @@ type RelayStruct = "relay_struct"
     ; defaultDelayOff :: Uint32
     ; delayOff        :: Uint32
     ; delayOn         :: Uint32
-    ; timestampOn     :: Uint32
-    ; timestampOff    :: Uint32
+    ; timestamp       :: Uint32
     ; group           :: Uint8
     ; synced          :: IBool
     }
@@ -60,9 +59,7 @@ relays name n = do
     where go i = [ state           .= ival false
                  , defaultDelayOff .= ival 0
                  , delayOff        .= ival 0
-                 , delayOn         .= ival 0
-                 , timestampOn     .= ival 0
-                 , timestampOff    .= ival 0
+                 , timestamp       .= ival 0
                  , group           .= ival i
                  , synced          .= ival true
                  ]
@@ -86,12 +83,12 @@ turnOffRelay :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
 turnOffRelay Relays{..} index = runRelays $ \rs -> do
     let ix     = index - 1
     let r      = addrOf rs ! ix
-    shouldOff <- deref (r ~> state)
+    shouldOff <- deref $ r ~> state
     when shouldOff $ do
-        store (r ~> state       ) false
-        store (r ~> delayOn     ) 0
-        store (r ~> delayOff    ) 0
-        store (r ~> timestampOff) =<< getSystemTime clock
+        store (r ~> state    ) false
+        store (r ~> delayOn  ) 0
+        store (r ~> delayOff ) 0
+        store (r ~> timestamp) =<< getSystemTime clock
 
 
 turnOnRelay :: Relays -> G.Groups -> (forall n. KnownNat n => Ix n) -> Ivory ('Effects (Returns ()) r (Scope s)) ()
@@ -99,16 +96,17 @@ turnOnRelay Relays{..} groups index = runRelays $ \rs -> do
     let ix    = index - 1
     let rs'   = addrOf rs
     let r     = rs' ! ix
-    shouldOn <- iNot <$> deref (r ~> state)
-    when shouldOn $ do
+    delayOn' <- deref $ r ~> delayOn
+    isOn     <- deref $ r ~> state
+    when (iNot isOn .&& delayOn' ==? 0) $ do
         timestamp' <- getSystemTime clock
-        group'     <- deref (r ~> group)
+        group'     <- deref $ r ~> group
         turnOffGroup rs' ix group' timestamp'
-        delayOn'   <- getGroupDelay rs' groups group' timestamp'
-        store (r ~> state      ) $ delayOn' ==? 0
-        store (r ~> delayOn    ) delayOn'
-        store (r ~> delayOff   ) =<< deref (r ~> defaultDelayOff)
-        store (r ~> timestampOn) timestamp'
+        delay' <- getGroupDelay rs' groups group' timestamp'
+        store (r ~> delayOn) delay'
+        store (r ~> timestamp) timestamp'
+        when  (delay' ==? 0) $ store (r ~> state) true
+    store (r ~> delayOff) =<< deref (r ~> defaultDelayOff)
 
 
 turnOnRelay' :: Relays -> G.Groups -> (forall n. KnownNat n => Ix n) -> Uint32 -> Ivory ('Effects (Returns ()) r (Scope s)) ()
@@ -116,16 +114,17 @@ turnOnRelay' Relays{..} groups index delayOff' = runRelays $ \rs -> do
     let ix    = index - 1
     let rs'   = addrOf rs
     let r     = rs' ! ix
-    shouldOn <- iNot <$> deref (r ~> state)
-    when shouldOn $ do
+    delayOn' <- deref $ r ~> delayOn
+    isOn     <- deref $ r ~> state
+    when (iNot isOn .&& delayOn' ==? 0) $ do
         timestamp' <- getSystemTime clock
-        group'     <- deref (r ~> group)
+        group'     <- deref $ r ~> group
         turnOffGroup rs' ix group' timestamp'
-        delayOn'   <- getGroupDelay rs' groups group' timestamp'
-        store (r ~> state      ) $ delayOn' ==? 0
-        store (r ~> delayOn    ) delayOn'
-        store (r ~> delayOff   ) delayOff'
-        store (r ~> timestampOn) timestamp'
+        delay' <- getGroupDelay rs' groups group' timestamp'
+        store (r ~> delayOn) delay'
+        store (r ~> timestamp) timestamp'
+        when  (delay' ==? 0) $ store (r ~> state) true
+    store (r ~> delayOff) delayOff'
 
 
 toggleRelay :: Relays -> G.Groups -> (forall n. KnownNat n => Ix n) -> Ivory ('Effects (Returns ()) r (Scope s)) ()
@@ -170,9 +169,10 @@ getGroupDelay rs groups i ts = do
     min <- local $ ival delay'
     arrayMap $ \jx -> do
         let r = rs ! jx
-        group <- deref $ r ~> group
-        when (group ==? i) $ do
-            dt <- (ts -) <$> deref (r ~> timestampOff)
+        isOn   <- deref $ r ~> state
+        group' <- deref $ r ~> group
+        when (iNot isOn .&& group' ==? i) $ do
+            dt <- (ts -) <$> deref (r ~> timestamp)
             min' <- deref min
             when (dt <? min') $ store min dt
     min' <- deref min
@@ -194,10 +194,14 @@ turnOffGroup rs ix g t =
             let r = rs ! jx
             group <- deref $ r ~> group
             when (group ==? g) $ do
-                isOn  <- deref $ r ~> state
-                delay <- deref $ r ~> delayOn
-                when (isOn .|| delay >? 0) $ do
-                    store (r ~> state       ) false
-                    store (r ~> delayOn     ) 0
-                    store (r ~> delayOff    ) 0
-                    store (r ~> timestampOff) t
+                isOn     <- deref $ r ~> state
+                delayOn' <- deref $ r ~> delayOn
+                cond_ [ isOn ==> do
+                            store (r ~> state       ) false
+                            store (r ~> delayOn     ) 0
+                            store (r ~> delayOff    ) 0
+                            store (r ~> timestamp   ) t
+                      , delayOn' >? 0 ==> do
+                            store (r ~> delayOn     ) 0
+                            store (r ~> delayOff    ) 0
+                      ]

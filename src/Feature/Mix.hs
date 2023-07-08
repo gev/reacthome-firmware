@@ -84,8 +84,8 @@ mix inputs outputs etc = do
 
     addInit "mix_init" $ load mix
 
-    addTask $ yeld "mix_manage" $ manage mix
-    addTask $ yeld "mix_sync"   $ sync   mix
+    addTask $ delay 10 "mix_manage" $ manage mix
+    addTask $ yeld     "mix_sync"   $ sync   mix
 
     pure    $ Feature mix
 

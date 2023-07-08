@@ -19,11 +19,13 @@ import           Core.Feature
 import           Core.Task
 import qualified Core.Transport        as T
 import           Data.Buffer
+import           Data.Foldable
 import           Data.Index
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
 import qualified Endpoint.Groups       as G
+import           Endpoint.Relays       (delayOn)
 import qualified Endpoint.Relays       as R
 import           GHC.TypeNats
 import           Interface.GPIO.Output
@@ -84,25 +86,50 @@ relays outs = do
 
 manageRelays :: Relays -> Ivory eff ()
 manageRelays Relays{..} = do
+
+    R.runRelays getRelays $ \rs -> arrayMap $ \ix -> do
+        let r     = addrOf rs ! ix
+        isOn     <- deref $ r ~> R.state
+        delayOn  <- deref $ r ~> R.delayOn
+        delayOff <- deref $ r ~> R.delayOff
+        t0       <- deref $ r ~> R.timestamp
+        t1       <- getSystemTime clock
+        let dt    = t1 - t0
+        cond_ [ iNot isOn .&& delayOn >? 0 ==>
+                    when (dt >? delayOn)
+                         (do
+                            store (r ~> R.state    ) true
+                            store (r ~> R.delayOn  ) 0
+                            store (r ~> R.timestamp) t1
+                         )
+              , isOn .&& delayOff >? 0 ==>
+                    when (dt >? delayOff)
+                         (do
+                            store (r ~> R.state    ) false
+                            store (r ~> R.delayOn  ) 0
+                            store (r ~> R.delayOff ) 0
+                            store (r ~> R.timestamp) t1
+                         )
+              ]
+
     zipWithM_ off getOutputs [0..]
     zipWithM_ on  getOutputs [0..]
+
     where
-        on  :: Output o => o -> Int -> Ivory eff ()
-        on  output i = R.runRelays getRelays $ \rs -> do
-            let ix   = fromIntegral i
-            let r    = addrOf rs ! ix
-            shouldOn   <- deref $ r ~> R.state
-            when shouldOn $ do
-                manageDelay r (getSystemTime clock) R.delayOff false
-                manageState r output set true
+
         off :: Output o => o -> Int -> Ivory eff ()
         off output i = R.runRelays getRelays $ \rs -> do
             let ix   = fromIntegral i
             let r    = addrOf rs ! ix
-            shouldOff  <- iNot <$> deref (r ~> R.state)
-            when shouldOff $ do
-                manageDelay r (getSystemTime clock) R.delayOn true
-                manageState r output reset false
+            isOff   <- iNot <$> deref (r ~> R.state)
+            when isOff $ manageState r output reset false
+
+        on  :: Output o => o -> Int -> Ivory eff ()
+        on  output i = R.runRelays getRelays $ \rs -> do
+            let ix   = fromIntegral i
+            let r    = addrOf rs ! ix
+            isOn    <- deref $ r ~> R.state
+            when isOn $ manageState r output set true
 
 
 
@@ -117,23 +144,6 @@ manageState r o setOut state = do
     when (state' /=? state) $ do
         store (r ~> R.synced) false
         setOut o
-
-
-
-manageDelay :: Record R.RelayStruct
-            -> Ivory eff Uint32
-            -> Label R.RelayStruct ('Stored Uint32)
-            -> IBool
-            -> Ivory eff ()
-manageDelay r timestamp delay state = do
-    delay' <- deref $ r ~> delay
-    when (delay' >? 0) $ do
-        t0 <- deref $ r ~> R.timestampOn
-        t1 <- timestamp
-        when (t1 - t0 >? delay') $ do
-            store (r ~> delay        ) 0
-            store (r ~> R.state      ) state
-            store (r ~> R.timestampOn) t1
 
 
 
@@ -270,6 +280,5 @@ initRelays Relays{..} buff offset = do
             store (r ~> R.group          ) =<< unpack   buff (offset' + 1)
             store (r ~> R.delayOff       ) =<< unpackLE buff (offset' + 2)
             store (r ~> R.defaultDelayOff) =<< unpackLE buff (offset' + 2)
-            store (r ~> R.timestampOff   ) timestamp'
-            store (r ~> R.timestampOn    ) timestamp'
+            store (r ~> R.timestamp      ) timestamp'
             store offset $ offset' + 6
