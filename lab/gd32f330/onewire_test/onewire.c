@@ -29,9 +29,23 @@ typedef enum {
     r_done,
 } reset_states_t;
 
-// typedef enum {
+typedef enum {
+    w_start_bit,
+    w_delay_bit,
+    w_wait_end,
+    w_end,
+} write_buf_state_t;
 
-// } write_byte_state_t;
+typedef struct 
+{
+    write_buf_state_t state;
+    uint8_t *buf;
+    uint8_t count_bit;
+    uint8_t count_byte;
+    uint8_t size_buf;
+    uint8_t current_byte;
+
+}struct_write_buf_state_t;
 
 // typedef enum {
 //     w_bit_start = 0,
@@ -40,6 +54,8 @@ typedef enum {
 
 protocol_states_t protocol_states;
 reset_states_t reset_states;
+struct_write_buf_state_t write_buf_state;
+
 bool ow_presence_flag = false; 
 
 
@@ -81,30 +97,6 @@ void ow_reset(){
     ow_handler();
 }
 
-void ow_write_buf(uint8_t *value, uint16_t size){
-
-}
-
-uint8_t ow_read_buf(uint8_t *buf, uint8_t size){
-    static extern uint8_t size_buf = size;
-    protocol_states = p_write_buf;
-    reset_states = r_start;
-}
-
-void ow_write_bit(uint8_t value){
-    
-}
-
-uint8_t ow_read_bit(){
-    
-}
-
-void irq_timer_delay_us(uint16_t time){
-    timer_counter_value_config (TIMER2, 0xFF - (time-1));
-    timer_interrupt_flag_clear(TIMER2, TIMER_INT_UP);
-    timer_interrupt_enable(TIMER2, TIMER_INT_UP);
-}
-
 inline void reset_handler(){
     switch (reset_states){
         case r_start:
@@ -135,17 +127,61 @@ inline void reset_handler(){
         }
 }
 
+
+void ow_write_buf(uint8_t *data, uint8_t size){
+    write_buf_state.size_buf = size;
+    write_buf_state.buf = data;
+    write_buf_state.count_bit = 0;
+    write_buf_state.count_byte = 0;
+    write_buf_state.current_byte = data[0];
+
+    write_buf_state.state = w_start_bit;
+    protocol_states = p_write_buf;
+    ow_handler();
+}
+
 inline void write_buf_handler(){
-    static uint8_t i = 0;
+    switch (write_buf_state.state)
+    {
+    case w_start_bit:
+        gpio_bit_reset(OW_PORT, OW_PIN);
+        write_buf_state.state = r_delay_reset;
+        irq_timer_delay_us(TIME_RESET_US);
+        break;
+    
+    default:
+        break;
+    }
     
 }
+
+uint8_t ow_read_buf(uint8_t *buf, uint8_t size){
+
+}
+
+void ow_write_bit(uint8_t value){
+    
+}
+
+uint8_t ow_read_bit(){
+    
+}
+
+void irq_timer_delay_us(uint16_t time){
+    timer_counter_value_config (TIMER2, 0xFF - (time-1));
+    timer_interrupt_flag_clear(TIMER2, TIMER_INT_UP);
+    timer_interrupt_enable(TIMER2, TIMER_INT_UP);
+}
+
 
 void ow_handler(){
     switch (protocol_states){
     case p_reset:
-        reset_handler()
+        reset_handler();
+        break;
     case p_write_buf:
-        write_buf_handler()
+        write_buf_handler();
+        break;
     default :
         break;
 
