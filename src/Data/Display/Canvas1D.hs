@@ -7,7 +7,7 @@
 
 module Data.Display.Canvas1D where
 
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Data.Color
 import           Data.Display.FrameBuffer
@@ -19,7 +19,7 @@ import           Support.Cast
 
 newtype Canvas1D (n :: Nat) b = Canvas1D {getBuffer :: b}
 
-mkCanvas1D :: forall n f t m. (KnownNat n, FrameBuffer f t, MonadWriter Context m)
+mkCanvas1D :: forall n f t m. (KnownNat n, FrameBuffer f t, MonadState Context m)
            => (Int -> m (f t)) -> m (Canvas1D n (f t))
 mkCanvas1D mkBuff = do
     let size = 3 * fromInteger (fromTypeNat (aNat :: NatType n))

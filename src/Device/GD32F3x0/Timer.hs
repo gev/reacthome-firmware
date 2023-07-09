@@ -10,7 +10,7 @@
 
 module Device.GD32F3x0.Timer where
 
-import           Control.Monad.Writer          (MonadWriter)
+import           Control.Monad.State           (MonadState)
 import           Core.Context
 import           Core.Handler
 import qualified Interface.Counter             as I
@@ -34,23 +34,23 @@ data Timer = Timer
     }
 
 
-timer_0 :: MonadWriter Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
+timer_0 :: MonadState Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
 timer_0 = mkTimer timer0 rcu_timer0 timer0_irqn
 
-timer_1 :: MonadWriter Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
+timer_1 :: MonadState Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
 timer_1 = mkTimer timer1 rcu_timer1 timer1_irqn
 
-timer_2 :: MonadWriter Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
+timer_2 :: MonadState Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
 timer_2 = mkTimer timer2 rcu_timer2 timer2_irqn
 
-timer_14 :: MonadWriter Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
+timer_14 :: MonadState Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
 timer_14 = mkTimer timer14 rcu_timer14 timer14_irqn
 
-timer_15 :: MonadWriter Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
+timer_15 :: MonadState Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
 timer_15 = mkTimer timer15 rcu_timer15 timer15_irqn
 
 
-mkTimer :: MonadWriter Context m
+mkTimer :: MonadState Context m
         => TIMER_PERIPH
         -> RCU_PERIPH
         -> IRQn

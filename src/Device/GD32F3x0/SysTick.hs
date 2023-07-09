@@ -8,7 +8,7 @@
 
 module Device.GD32F3x0.SysTick where
 
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Core.Handler
 import           Interface.Timer
@@ -19,7 +19,7 @@ import           Support.CMSIS.CoreCM4
 
 newtype SysTick = SysTick Uint32
 
-sysTick :: MonadWriter Context m => Uint32 -> m SysTick
+sysTick :: MonadState Context m => Uint32 -> m SysTick
 sysTick freq = do
     addInit "systick_init" $ sysTickConfig freq
     pure $ SysTick freq

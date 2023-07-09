@@ -9,7 +9,7 @@
 module Feature.Indicator where
 
 import           Control.Monad.Reader     (MonadReader, asks)
-import           Control.Monad.Writer     (MonadWriter)
+import           Control.Monad.State      (MonadState)
 import           Core.Context
 import           Core.Controller
 import           Core.Domain              as D
@@ -57,7 +57,7 @@ data Indicator = forall d f t. (I.Display d f t, FrameBuffer f t) => Indicator
 
 maxValue = 0.3 :: IFloat
 
-indicator :: ( MonadWriter Context m
+indicator :: ( MonadState Context m
              , MonadReader (D.Domain p t) m
              , FrameBuffer f w
              , I.Display d f w

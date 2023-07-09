@@ -11,7 +11,7 @@ module Feature.Relays where
 
 import           Control.Monad         (zipWithM_)
 import           Control.Monad.Reader  (MonadReader, asks)
-import           Control.Monad.Writer  (MonadWriter)
+import           Control.Monad.State   (MonadState)
 import           Core.Context
 import           Core.Controller
 import qualified Core.Domain           as D
@@ -50,7 +50,7 @@ data Relays = forall o. Output o => Relays
 
 
 
-mkRelays :: (MonadWriter Context m, MonadReader (D.Domain p t) m, T.Transport t, Output o)
+mkRelays :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Output o)
          => [p -> m o] -> m Relays
 mkRelays outs = do
     mcu        <- asks D.mcu
@@ -74,7 +74,7 @@ mkRelays outs = do
 
 
 
-relays :: (MonadWriter Context m, MonadReader (D.Domain p t) m, T.Transport t, Output o)
+relays :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Output o)
        => [p -> m o] -> m Feature
 relays outs = do
     relays <- mkRelays outs

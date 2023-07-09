@@ -5,7 +5,7 @@
 
 module Data.Concurrent.Semaphore where
 
-import           Control.Monad.Writer (MonadWriter)
+import           Control.Monad.State (MonadState)
 import           Core.Context
 import           Data.Value
 import           Ivory.Language
@@ -15,7 +15,7 @@ import           Ivory.Stdlib
 newtype Semaphore t = Semaphore { getSemaphore :: Value t }
 
 
-semaphore :: (MonadWriter Context m, IvoryZeroVal t, IvoryInit t)
+semaphore :: (MonadState Context m, IvoryZeroVal t, IvoryInit t)
           => String -> t -> m (Semaphore t)
 semaphore id n = do
     v <- value (id <> "_semaphore") n

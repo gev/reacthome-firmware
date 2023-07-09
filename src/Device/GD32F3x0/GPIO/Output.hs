@@ -3,7 +3,7 @@
 
 module Device.GD32F3x0.GPIO.Output where
 
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Device.GD32F3x0.GPIO
 import qualified Interface.GPIO.Output        as I
@@ -14,7 +14,7 @@ import           Support.Device.GD32F3x0.GPIO as S
 newtype Output = Output {getOutput :: Port}
 
 
-output :: MonadWriter Context m => (MODE -> Port) -> m Output
+output :: MonadState Context m => (MODE -> Port) -> m Output
 output p = do
     let port = io gpio_mode_output p
     initPort port

@@ -5,7 +5,7 @@
 
 module Device.GD32F4xx.GPIO where
 
-import           Control.Monad.Writer         (MonadWriter)
+import           Control.Monad.State          (MonadState)
 import           Core.Context
 import           Ivory.Language
 import           Ivory.Support
@@ -137,7 +137,7 @@ io m p = p $ MF m
 
 
 
-initPort :: MonadWriter Context m => Port -> m (Def ('[] ':-> ()))
+initPort :: MonadState Context m => Port -> m (Def ('[] ':-> ()))
 initPort Port{..} = addInit (symbol gpio <> "_" <> symbol pin <> "_init") $ do
     enablePeriphClock rcu
     setOutputOptions gpio gpio_otype_pp gpio_ospeed_50mhz pin

@@ -6,7 +6,7 @@
 
 module Core.Domain where
 
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Core.Feature
 import           Core.Transport
@@ -37,7 +37,7 @@ data Domain p t where
 
 
 
-domain :: (MonadWriter Context m)
+domain :: (MonadState Context m)
        => Uint8
        -> (Uint8, Uint8)
        -> I.MCU p

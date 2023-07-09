@@ -7,7 +7,7 @@
 
 module Data.Concurrent.Queue where
 
-import           Control.Monad.Writer      (MonadWriter)
+import           Control.Monad.State       (MonadState)
 import           Core.Context
 import           Data.Concurrent.Semaphore
 import           Data.Index
@@ -29,7 +29,7 @@ data Queue (n :: Nat) = Queue
     }
 
 
-queue :: forall m n. (MonadWriter Context m, KnownNat n)
+queue :: forall m n. (MonadState Context m, KnownNat n)
       => String -> m (Queue n)
 queue id = do
     let name        = id    <>  "_queue"

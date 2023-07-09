@@ -7,7 +7,7 @@
 module Feature.Echo where
 
 import           Control.Monad.Reader
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Core.Controller
 import           Core.Domain
@@ -30,7 +30,7 @@ data Echo = Echo
     }
 
 
-echo :: ( MonadWriter Context m
+echo :: ( MonadState Context m
         , MonadReader (Domain p t) m
         , T.Transport t
         ) => m Feature

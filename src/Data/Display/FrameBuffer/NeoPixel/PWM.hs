@@ -9,7 +9,7 @@
 
 module Data.Display.FrameBuffer.NeoPixel.PWM where
 
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Data.Display.FrameBuffer
 import           Data.Value
@@ -26,7 +26,7 @@ data FrameBufferNeoPixelPWM t = FrameBufferNeoPixelPWM
     }
 
 
-neoPixelBufferPWM :: forall m n t. (MonadWriter Context m, SafeCast Uint8 t, IvoryInit t, IvoryZeroVal t, Num t)
+neoPixelBufferPWM :: forall m n t. (MonadState Context m, SafeCast Uint8 t, IvoryInit t, IvoryZeroVal t, Num t)
                   => Uint8 -> String -> Int -> m (FrameBufferNeoPixelPWM t)
 neoPixelBufferPWM period id size = do
     let zeroDuty = safeCast $ period `iDiv` 4

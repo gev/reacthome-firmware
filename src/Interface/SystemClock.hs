@@ -6,12 +6,12 @@
 
 module Interface.SystemClock where
 
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
-import           Core.Handler         (Handler (addHandler))
+import           Core.Handler        (Handler (addHandler))
 import           Data.Value
-import           Interface.Counter    (Counter (readCounter))
-import           Interface.Timer      (HandleTimer (HandleTimer), Timer)
+import           Interface.Counter   (Counter (readCounter))
+import           Interface.Timer     (HandleTimer (HandleTimer), Timer)
 import           Ivory.Language
 
 
@@ -25,7 +25,7 @@ data SystemClock where
                 -> SystemClock
 
 
-systemClock :: (MonadWriter Context m, Timer t, Counter c)
+systemClock :: (MonadState Context m, Timer t, Counter c)
             => m t -> m c -> m SystemClock
 systemClock timer' counter' = do
     time    <- value "system_time" 0

@@ -10,9 +10,9 @@
 
 module Protocol.RS485.RBUS.Slave where
 
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
-import           Core.Version         (Version, major, minor)
+import           Core.Version        (Version, major, minor)
 import           Data.Buffer
 import           Data.Record
 import           Data.Value
@@ -60,7 +60,7 @@ txPreamble :: Preamble
 txPreamble = preambleSlave
 
 
-slave :: (MonadWriter Context m, KnownNat n)
+slave :: (MonadState Context m, KnownNat n)
       => String
       -> Buffer 6 Uint8
       -> Value Uint8

@@ -3,7 +3,7 @@ module Main where
 import           Build.Compiler
 import           Build.Compiler.GCC
 import           Build.Firmware
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Device.GD32F3x0
 import           Device.GD32F4xx
 import           Formula.Blink330

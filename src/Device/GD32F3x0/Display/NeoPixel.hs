@@ -7,7 +7,7 @@
 
 module Device.GD32F3x0.Display.NeoPixel where
 
-import           Control.Monad.Writer                  (MonadWriter)
+import           Control.Monad.State                   (MonadState)
 import           Core.Context
 import           Core.Handler
 import           Core.Task
@@ -44,7 +44,7 @@ data NeoPixelPWM = NeoPixelPWM
     , dmaParams  :: Record DMA_PARAM_STRUCT
     }
 
-mkNeoPixelPWM :: MonadWriter Context m
+mkNeoPixelPWM :: MonadState Context m
               => (Uint32 -> Uint32 -> m Timer)
               -> TIMER_CHANNEL
               -> DMA_CHANNEL

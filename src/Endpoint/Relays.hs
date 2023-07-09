@@ -9,7 +9,7 @@
 module Endpoint.Relays where
 
 import           Control.Monad.Reader  (MonadReader, asks)
-import           Control.Monad.Writer  (MonadWriter)
+import           Control.Monad.State   (MonadState)
 import           Core.Context
 import qualified Core.Domain           as D
 import           Data.Buffer
@@ -46,7 +46,7 @@ data Relays = Relays
     , clock     :: SystemClock
     }
 
-relays :: (MonadWriter Context m, MonadReader (D.Domain p0 t0) m) => String -> Int -> m Relays
+relays :: (MonadState Context m, MonadReader (D.Domain p0 t0) m) => String -> Int -> m Relays
 relays name n = do
     mcu          <- asks D.mcu
     let clock     = systemClock mcu

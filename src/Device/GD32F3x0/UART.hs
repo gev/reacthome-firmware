@@ -10,7 +10,7 @@
 module Device.GD32F3x0.UART where
 
 import qualified Control.Monad                  as M
-import           Control.Monad.Writer           (MonadWriter)
+import           Control.Monad.State            (MonadState)
 import           Core.Context
 import           Core.Handler
 import           Data.Maybe
@@ -44,7 +44,7 @@ data UART = UART
     }
 
 
-mkUART :: MonadWriter Context m
+mkUART :: MonadState Context m
        => USART_PERIPH
        -> RCU_PERIPH
        -> IRQn

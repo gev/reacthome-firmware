@@ -4,7 +4,7 @@
 
 module Interface.Display where
 
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Core.Handler
 import           Ivory.Language
@@ -19,7 +19,7 @@ data Render d = Render
 
 class Handler Render p => Display p f t | p -> f t where
 
-    frameBuffer         :: MonadWriter Context m
+    frameBuffer         :: MonadState Context m
                         => p -> String -> Int -> m (f t)
 
     transmitFrameBuffer :: p -> f t -> Ivory eff ()

@@ -7,7 +7,7 @@
 
 module Endpoint.Groups where
 
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Data.Buffer
 import           Data.Record
@@ -34,7 +34,7 @@ data Groups = Groups
     , payload   :: Buffer 7 Uint8
     }
 
-groups :: MonadWriter Context m =>  String -> Int -> m Groups
+groups :: MonadState Context m =>  String -> Int -> m Groups
 groups name n = do
     addStruct (Proxy :: Proxy GroupStruct)
     let runGroups = runRecords name $ replicate n go

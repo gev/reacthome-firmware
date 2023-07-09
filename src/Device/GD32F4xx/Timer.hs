@@ -9,7 +9,7 @@
 
 module Device.GD32F4xx.Timer where
 
-import           Control.Monad.Writer          (MonadWriter)
+import           Control.Monad.State           (MonadState)
 import           Core.Context
 import           Core.Handler
 import qualified Interface.Counter             as I
@@ -33,17 +33,17 @@ data Timer = Timer
 
 
 
-timer_1 :: MonadWriter Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
+timer_1 :: MonadState Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
 timer_1 = mkTimer timer1 rcu_timer1 timer1_irqn
 
-timer_2 :: MonadWriter Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
+timer_2 :: MonadState Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
 timer_2 = mkTimer timer2 rcu_timer2 timer2_irqn
 
-timer_3 :: MonadWriter Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
+timer_3 :: MonadState Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
 timer_3 = mkTimer timer3 rcu_timer3 timer3_irqn
 
 
-mkTimer :: MonadWriter Context m
+mkTimer :: MonadState Context m
         => TIMER_PERIPH
         -> RCU_PERIPH
         -> IRQn

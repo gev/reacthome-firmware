@@ -17,7 +17,7 @@ module Util.CRC16
     , calcCRC16
     ) where
 
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Data.Buffer
 import           Data.Record
@@ -125,7 +125,7 @@ crc16_lsb = constArea "crc16_lsb" $ iarray $ map ival [
 
 
 
-makeCRC16 :: MonadWriter Context m => String -> m (Record CRC16)
+makeCRC16 :: MonadState Context m => String -> m (Record CRC16)
 makeCRC16 name = do
     addModule inclCRC16
     addStruct (Proxy :: Proxy CRC16)

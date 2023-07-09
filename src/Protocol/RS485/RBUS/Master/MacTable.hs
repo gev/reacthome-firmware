@@ -9,7 +9,7 @@
 
 module Protocol.RS485.RBUS.Master.MacTable where
 
-import           Control.Monad.Writer   (MonadWriter)
+import           Control.Monad.State    (MonadState)
 import           Core.Context
 import           Core.Version           (Version, major, minor)
 import           Data.Record
@@ -47,7 +47,7 @@ data MacTable = MacTable
 
 
 
-macTable :: MonadWriter Context m => String -> Int -> m MacTable
+macTable :: MonadState Context m => String -> Int -> m MacTable
 macTable id ports = do
     let name      = id <> "_table"
     next  <- value    (name <> "_next") 0

@@ -8,7 +8,7 @@
 module Transport.UART.RBUS    where
 
 import           Control.Monad.Reader     (MonadReader, asks)
-import           Control.Monad.Writer     (MonadWriter)
+import           Control.Monad.State      (MonadState)
 import           Core.Context
 import           Core.Dispatcher
 import qualified Core.Domain              as D
@@ -31,7 +31,7 @@ import           Transport.UART.RBUS.Tx
 
 
 
-rbus :: (MonadWriter Context m, MonadReader (D.Domain p RBUS) m, UART u)
+rbus :: (MonadState Context m, MonadReader (D.Domain p RBUS) m, UART u)
      => (p -> m u) -> m RBUS
 rbus uart' = do
 

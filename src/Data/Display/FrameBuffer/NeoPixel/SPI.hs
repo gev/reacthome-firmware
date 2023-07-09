@@ -6,7 +6,7 @@
 
 module Data.Display.FrameBuffer.NeoPixel.SPI where
 
-import           Control.Monad.Writer     (MonadWriter)
+import           Control.Monad.State      (MonadState)
 import           Core.Context
 import           Data.Buffer
 import           Data.Display.FrameBuffer
@@ -20,7 +20,7 @@ newtype FrameBufferNeoPixelSPI t = FrameBufferNeoPixelSPI
     }
 
 
-neoPixelBufferSPI :: (MonadWriter Context m, IvoryInit t, IvoryZeroVal t)
+neoPixelBufferSPI :: (MonadState Context m, IvoryInit t, IvoryZeroVal t)
                   => String -> Int -> m (FrameBufferNeoPixelSPI t)
 neoPixelBufferSPI id size = do
     let size' = 3 * size

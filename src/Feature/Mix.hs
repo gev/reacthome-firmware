@@ -9,7 +9,7 @@ module Feature.Mix where
 
 import           Control.Monad               (zipWithM_)
 import           Control.Monad.Reader        (MonadReader, asks)
-import           Control.Monad.Writer        (MonadWriter)
+import           Control.Monad.State         (MonadState)
 import           Core.Context
 import           Core.Controller
 import           Core.Domain                 as D
@@ -57,7 +57,7 @@ data Mix = forall f. Flash f => Mix
 
 
 
-mix :: ( MonadWriter Context m
+mix :: ( MonadState Context m
        , MonadReader (Domain p t) m
        , Transport t, Output o, Input i, Flash f
        ) => [p -> m i] -> [p -> m o] -> (p -> f) -> m Feature

@@ -7,7 +7,7 @@
 
 module Protocol.UART.RBUS where
 
-import           Control.Monad.Writer
+import           Control.Monad.State (MonadState)
 import           Core.Context
 import           Data.Buffer
 import           Data.Record
@@ -50,7 +50,7 @@ data RBUS n = RBUS
 
 
 
-rbus :: (MonadWriter Context m, KnownNat n)
+rbus :: (MonadState Context m, KnownNat n)
       => String
       -> (Buffer n Uint8 -> Uint8 -> forall s. Ivory (ProcEffects s ()) ())
       -> m (RBUS n)

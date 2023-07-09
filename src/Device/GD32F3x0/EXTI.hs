@@ -8,7 +8,7 @@
 module Device.GD32F3x0.EXTI where
 
 
-import           Control.Monad.Writer           (MonadWriter)
+import           Control.Monad.State            (MonadState)
 import           Core.Context
 import           Core.Handler
 import           Device.GD32F3x0.GPIO.Input
@@ -32,7 +32,7 @@ data EXTI = EXTI
     , ex      :: EXTI_LINE
     }
 
-mkEXTI :: MonadWriter Context m => m Input -> IRQn -> EXTI_PORT -> EXTI_PIN -> EXTI_LINE -> m EXTI
+mkEXTI :: MonadState Context m => m Input -> IRQn -> EXTI_PORT -> EXTI_PIN -> EXTI_LINE -> m EXTI
 mkEXTI input extiIRQ srcPort srcPin ex = do
     port <- input
     addInit (symbol srcPort <> "_" <> symbol srcPin) $ do

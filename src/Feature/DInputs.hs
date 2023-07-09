@@ -11,7 +11,7 @@ module Feature.DInputs where
 
 import           Control.Monad        (zipWithM_)
 import           Control.Monad.Reader (MonadReader, asks)
-import           Control.Monad.Writer (MonadWriter)
+import           Control.Monad.State  (MonadState)
 import           Core.Context
 import           Core.Controller
 import qualified Core.Domain          as D
@@ -43,7 +43,7 @@ data DInputs = forall i. Input i => DInputs
 
 
 
-mkDInputs :: (MonadWriter Context m, MonadReader (D.Domain p t) m, T.Transport t, Input i)
+mkDInputs :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Input i)
           => [p -> m i] -> m DInputs
 mkDInputs inputs = do
     mcu        <- asks D.mcu
@@ -61,7 +61,7 @@ mkDInputs inputs = do
 
 
 
-dinputs :: (MonadWriter Context m, MonadReader (D.Domain p t) m, T.Transport t, Input i)
+dinputs :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Input i)
         => [p -> m i] -> m Feature
 dinputs inputs = do
     dinputs <-  mkDInputs inputs

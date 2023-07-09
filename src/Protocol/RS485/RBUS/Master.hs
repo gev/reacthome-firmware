@@ -8,7 +8,7 @@
 
 module Protocol.RS485.RBUS.Master where
 
-import           Control.Monad.Writer
+import           Control.Monad.State                 (MonadState)
 import           Core.Context
 import           Core.Version                        (Version, major, minor,
                                                       version_)
@@ -56,7 +56,7 @@ txPreamble :: Preamble
 txPreamble = preambleMaster
 
 
-master :: (MonadWriter Context m, KnownNat n)
+master :: (MonadState Context m, KnownNat n)
        => String
        -> (Mac -> Uint8 -> Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ())
        -> (Uint8 -> forall eff. Ivory eff ())

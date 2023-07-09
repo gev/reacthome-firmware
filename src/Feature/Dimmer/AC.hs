@@ -10,7 +10,7 @@ module Feature.Dimmer.AC where
 
 import           Control.Monad        (void, zipWithM_)
 import           Control.Monad.Reader (MonadReader, asks)
-import           Control.Monad.Writer (MonadWriter)
+import           Control.Monad.State  (MonadState)
 import           Core.Context
 import           Core.Controller
 import qualified Core.Domain          as D
@@ -49,7 +49,7 @@ data DimmerAC = forall p. I.PWM p => DimmerAC
                      => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
 
-dimmerAC :: ( MonadWriter Context m
+dimmerAC :: ( MonadState Context m
             , MonadReader (D.Domain p t) m
             , T.Transport t, I.PWM o, Handler HandleEXTI e, EXTI e
             ) => [p -> Uint32 -> Uint32 -> m o] -> (p -> m e) -> m Feature

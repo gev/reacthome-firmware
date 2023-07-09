@@ -4,10 +4,10 @@
 
 module Core.Handler where
 
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Ivory.Language
 
 
 class Handler h t where
-    addHandler :: h t -> MonadWriter Context m => m ()
+    addHandler :: h t -> MonadState Context m => m ()

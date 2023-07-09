@@ -3,7 +3,7 @@
 module Core.Formula where
 
 import           Control.Monad.Reader
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Core.Domain
 import           Core.Feature
@@ -22,6 +22,6 @@ data Formula p where
                , model      ::  Uint8
                , version    :: (Uint8,  Uint8)
                , shouldInit ::  IBool
-               , transport  ::  WriterT Context (Reader (Domain p t)) t
-               , features   :: [WriterT Context (Reader (Domain p t)) Feature]
+               , transport  ::  StateT Context (Reader (Domain p t)) t
+               , features   :: [StateT Context (Reader (Domain p t)) Feature]
                } -> Formula p

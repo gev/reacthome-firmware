@@ -5,7 +5,7 @@
 
 module Device.GD32F3x0 where
 
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Device.GD32F3x0.Display.NeoPixel
 import           Device.GD32F3x0.EXTI
@@ -35,12 +35,12 @@ import           Support.Device.GD32F3x0.USART
 
 
 
-type UARTW        = forall m. MonadWriter Context m => m UART
-type InputW       = forall m. MonadWriter Context m => m Input
-type OutputW      = forall m. MonadWriter Context m => m Output
-type PWMW         = forall m. MonadWriter Context m => Uint32 -> Uint32 -> m PWM
-type NeoPixelPWMW = forall m. MonadWriter Context m => m NeoPixelPWM
-type EXTIW        = forall m. MonadWriter Context m => m EXTI
+type UARTW        = forall m. MonadState Context m => m UART
+type InputW       = forall m. MonadState Context m => m Input
+type OutputW      = forall m. MonadState Context m => m Output
+type PWMW         = forall m. MonadState Context m => Uint32 -> Uint32 -> m PWM
+type NeoPixelPWMW = forall m. MonadState Context m => m NeoPixelPWM
+type EXTIW        = forall m. MonadState Context m => m EXTI
 
 
 data GD32F3x0 = GD32F3x0

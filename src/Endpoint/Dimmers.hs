@@ -7,7 +7,7 @@
 
 module Endpoint.Dimmers where
 
-import           Control.Monad.Writer (MonadWriter)
+import           Control.Monad.State (MonadState)
 import           Core.Context
 import           Data.Buffer
 import           Data.Record
@@ -39,7 +39,7 @@ data Dimmers = Dimmers
     , payload    :: Buffer 6 Uint8
     }
 
-dimmers :: MonadWriter Context m => String -> Int -> m Dimmers
+dimmers :: MonadState Context m => String -> Int -> m Dimmers
 dimmers name n = do
     addStruct (Proxy :: Proxy DimmerStruct)
     let runDimmers = runRecords name $ go . fromIntegral <$> [1..n]

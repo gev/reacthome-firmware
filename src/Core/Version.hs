@@ -5,7 +5,7 @@
 
 module Core.Version where
 
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Data.Record
 import           GHC.TypeNats
@@ -26,13 +26,13 @@ type Version = Record VersionStruct
 |]
 
 
-version_ :: MonadWriter Context m => String -> m Version
+version_ :: MonadState Context m => String -> m Version
 version_ name = do
     addStruct (Proxy :: Proxy VersionStruct)
     record_ name
 
 
-version :: MonadWriter Context m => String -> (Uint8, Uint8) -> m Version
+version :: MonadState Context m => String -> (Uint8, Uint8) -> m Version
 version name (major', minor') = do
     addStruct (Proxy :: Proxy VersionStruct)
     record name [ major .= ival major'

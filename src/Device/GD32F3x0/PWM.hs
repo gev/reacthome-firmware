@@ -7,7 +7,7 @@
 
 module Device.GD32F3x0.PWM where
 
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Core.Handler
 import           Device.GD32F3x0.GPIO
@@ -28,16 +28,16 @@ pwmTimerParam frequency' period' =
                , period    .= ival (period' - 1)
                ]
 
-pwm_timer_0 :: MonadWriter Context m => Uint32 -> Uint32 -> m Timer
+pwm_timer_0 :: MonadState Context m => Uint32 -> Uint32 -> m Timer
 pwm_timer_0 frequency' period' = timer_0 $ pwmTimerParam frequency' period'
 
-pwm_timer_1 :: MonadWriter Context m => Uint32 -> Uint32 -> m Timer
+pwm_timer_1 :: MonadState Context m => Uint32 -> Uint32 -> m Timer
 pwm_timer_1 frequency' period' = timer_1 $ pwmTimerParam frequency' period'
 
-pwm_timer_2 :: MonadWriter Context m => Uint32 -> Uint32 -> m Timer
+pwm_timer_2 :: MonadState Context m => Uint32 -> Uint32 -> m Timer
 pwm_timer_2 frequency' period' = timer_2 $ pwmTimerParam frequency' period'
 
-pwm_timer_15 :: MonadWriter Context m => Uint32 -> Uint32 -> m Timer
+pwm_timer_15 :: MonadState Context m => Uint32 -> Uint32 -> m Timer
 pwm_timer_15 frequency' period' = timer_15 $ pwmTimerParam frequency' period'
 
 
@@ -48,7 +48,7 @@ data PWM = PWM
     , port       :: Port
     }
 
-mkPWM :: MonadWriter Context m
+mkPWM :: MonadState Context m
       => (Uint32 -> Uint32 -> m Timer)
       -> TIMER_CHANNEL
       -> Port

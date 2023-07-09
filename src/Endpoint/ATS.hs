@@ -6,7 +6,7 @@
 module Endpoint.ATS where
 
 import           Control.Monad.Reader  (MonadReader, asks)
-import           Control.Monad.Writer  (MonadWriter)
+import           Control.Monad.State   (MonadState)
 import           Core.Context
 import           Core.Domain           (Domain (mcu))
 import qualified Core.Domain           as D
@@ -58,7 +58,7 @@ data ATS = ATS
     }
 
 
-mkATS :: (MonadWriter Context m, MonadReader (Domain p t) m) => m ATS
+mkATS :: (MonadState Context m, MonadReader (Domain p t) m) => m ATS
 mkATS = do
     mcu             <- asks D.mcu
     let clock        = systemClock mcu

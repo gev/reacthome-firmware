@@ -18,7 +18,7 @@ module Data.Value
     , runValuesFromList
     ) where
 
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Data.Area
 import           GHC.TypeNats
@@ -33,21 +33,21 @@ type RunValues t = forall a.  (forall n. KnownNat n => Values' n t -> a) -> a
 
 
 
-value_ :: (MonadWriter Context m, IvoryZeroVal t)
+value_ :: (MonadState Context m, IvoryZeroVal t)
        => String -> m (Value t)
 value_ id = mkArea id Nothing
 
-value :: (MonadWriter Context m, IvoryZeroVal t, IvoryInit t)
+value :: (MonadState Context m, IvoryZeroVal t, IvoryInit t)
       => String -> t -> m (Value t)
 value id v = mkArea id . Just $ ival v
 
 
 
-values_ :: (MonadWriter Context m, KnownNat n, IvoryZeroVal t)
+values_ :: (MonadState Context m, KnownNat n, IvoryZeroVal t)
         => String -> m (Values n t)
 values_ id = mkArea id Nothing
 
-values :: (MonadWriter Context m, KnownNat n, IvoryZeroVal t, IvoryInit t)
+values :: (MonadState Context m, KnownNat n, IvoryZeroVal t, IvoryInit t)
        => String -> [t] -> m (Values n t)
 values id v = mkArea id . Just . iarray $ ival <$> v
 

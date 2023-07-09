@@ -6,7 +6,7 @@
 
 module Interface.MCU where
 
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Data.Buffer
 import           Data.Value
@@ -25,13 +25,13 @@ data MCU p = MCU
 
 
 data MCUmod p = MCUmod
-    { mcu          :: forall m. MonadWriter Context m => m (MCU p)
+    { mcu          :: forall m. MonadState Context m => m (MCU p)
     , model        :: String
     , modification :: String
     }
 
 
-mkMCU :: (MonadWriter Context m)
+mkMCU :: (MonadState Context m)
       => m SystemClock
       -> (Buffer 6 Uint8 -> forall s. Ivory (ProcEffects s ()) ())
       -> ModuleDef

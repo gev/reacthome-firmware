@@ -7,7 +7,7 @@
 module Transport.RS485.RBUS    where
 
 import           Control.Monad.Reader      (MonadReader, asks)
-import           Control.Monad.Writer      (MonadWriter)
+import           Control.Monad.State       (MonadState)
 import           Core.Context
 import           Core.Dispatcher
 import qualified Core.Domain               as D
@@ -28,7 +28,7 @@ import           Transport.RS485.RBUS.Rx
 import           Transport.RS485.RBUS.Tx
 
 
-rbus :: (MonadWriter Context m, MonadReader (D.Domain p RBUS) m)
+rbus :: (MonadState Context m, MonadReader (D.Domain p RBUS) m)
      => m RS485 -> m RBUS
 rbus rs485 = do
 

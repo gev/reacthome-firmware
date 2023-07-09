@@ -16,7 +16,7 @@ module Interface.RS485
     ) where
 
 import           Control.Monad.Reader
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Core.Domain           as D
 import           Core.Handler
@@ -44,7 +44,7 @@ data HandleRS485 r = HandleRS485
 
 
 
-rs485 :: (MonadWriter Context m, MonadReader (D.Domain p t) m, UART u, Output o)
+rs485 :: (MonadState Context m, MonadReader (D.Domain p t) m, UART u, Output o)
       => Int -> (p -> m u) -> (p -> m o) -> m RS485
 rs485 n uart' rede' = do
     mcu' <- asks D.mcu

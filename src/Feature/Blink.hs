@@ -7,7 +7,7 @@
 module Feature.Blink where
 
 import           Control.Monad.Reader
-import           Control.Monad.Writer
+import           Control.Monad.State   (MonadState)
 import           Core.Context
 import           Core.Controller
 import           Core.Domain
@@ -27,7 +27,7 @@ data Blink where
              } -> Blink
 
 
-blink :: (MonadWriter Context m, MonadReader (Domain p t) m, Output o)
+blink :: (MonadState Context m, MonadReader (Domain p t) m, Output o)
       => Int -> (p -> m o) -> m Feature
 blink n o = do
     let name  = "blink_" <> show n

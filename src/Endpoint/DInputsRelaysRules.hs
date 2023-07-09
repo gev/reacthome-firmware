@@ -6,11 +6,11 @@
 
 module Endpoint.DInputsRelaysRules where
 
-import           Control.Monad.Writer (MonadWriter)
+import           Control.Monad.State (MonadState)
 import           Core.Context
 import           Data.Matrix
 import           Data.Value
-import           Endpoint.DInputs     as DI
+import           Endpoint.DInputs    as DI
 import           Endpoint.Groups
 import           Endpoint.Relays
 import           Ivory.Language
@@ -26,7 +26,7 @@ data Rules = Rules
 
 
 
-mkRules :: MonadWriter Context m => Int -> Int -> m Rules
+mkRules :: MonadState Context m => Int -> Int -> m Rules
 mkRules n m = do
     let runRulesOn  = runMatrix  "dinputs_relays_rules_matrix_on"  0xff n m
     let runRulesOff = runMatrix  "dinputs_relays_rules_matrix_off" 0xff n m

@@ -8,7 +8,7 @@
 
 module Endpoint.DInputs where
 
-import           Control.Monad.Writer
+import           Control.Monad.State (MonadState)
 import           Core.Context
 import           Data.Buffer
 import           Data.Record
@@ -34,7 +34,7 @@ data DInputs = DInputs
     , payload    :: Buffer 3 Uint8
     }
 
-dinputs :: MonadWriter Context m => String -> Int -> m DInputs
+dinputs :: MonadState Context m => String -> Int -> m DInputs
 dinputs name n = do
     addStruct (Proxy :: Proxy DInputStruct)
     let runDInputs = runRecords name $ replicate n go

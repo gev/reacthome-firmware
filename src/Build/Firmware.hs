@@ -7,7 +7,7 @@ module Build.Firmware where
 
 import           Build.Shake
 import           Control.Monad.Reader
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Core.Domain
 import           Core.Formula
@@ -19,7 +19,7 @@ import           Ivory.Language.Module
 
 
 
-cook :: Writer Context (MCU p) -> Formula p -> ModuleDef
+cook :: State Context (MCU p) -> Formula p -> ModuleDef
 cook mcu Formula{..} = do
 
     inclModule
@@ -27,17 +27,19 @@ cook mcu Formula{..} = do
     incl  loop
     incl  main
 
-    where (domain'   , domainContext'    ) = runWriter $ domain model version mcu' shouldInit transport' features'
-          (transport', transportContext' ) = runReader (runWriterT transport) domain'
-          (features' , featuresContext'  ) = unzip $ run <$> features
-          (mcu'      , mcuContext'       ) = runWriter mcu
+    where (domain'   , domainContext'   ) = runState (domain model version mcu' shouldInit transport' features') mempty
+          (mcu'      , mcuContext'      ) = runState mcu domainContext'
+          (features' , featuresContexts') = unzip $ run <$> features
+          (transport', transportContext') = runReader (runStateT transport featuresContext') domain'
 
-          run f = runReader (runWriterT f) domain'
+          featuresContext' = mconcat featuresContexts'
 
-          (Context inclModule inits tasks) = mcuContext'
-                                          <> domainContext'
-                                          <> transportContext'
-                                          <> mconcat featuresContext'
+          run f = runReader (runStateT f mcuContext') domain'
+
+          (Context inclModule inits tasks syncs) = mcuContext'
+                                                <> domainContext'
+                                                <> transportContext'
+                                                <> featuresContext'
 
           loop = mkLoop (systemClock mcu') tasks
 

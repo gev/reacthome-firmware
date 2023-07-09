@@ -4,7 +4,7 @@
 
 module Device.GD32F4xx where
 
-import           Control.Monad.Writer
+import           Control.Monad.State
 import           Core.Context
 import           Device.GD32F4xx.Display.NeoPixel
 import           Device.GD32F4xx.Flash
@@ -32,11 +32,11 @@ import           Support.Device.GD32F4xx.USART
 
 
 
-type UARTW         = forall m. MonadWriter Context m => m UART
-type InputW        = forall m. MonadWriter Context m => m Input
-type OutputW       = forall m. MonadWriter Context m => m Output
-type PWMW          = forall m. MonadWriter Context m => Uint32 -> Uint32 -> m PWM
-type NeoPixelPWMW  = forall m. MonadWriter Context m => m NeoPixelPWM
+type UARTW         = forall m. MonadState Context m => m UART
+type InputW        = forall m. MonadState Context m => m Input
+type OutputW       = forall m. MonadState Context m => m Output
+type PWMW          = forall m. MonadState Context m => Uint32 -> Uint32 -> m PWM
+type NeoPixelPWMW  = forall m. MonadState Context m => m NeoPixelPWM
 
 
 
@@ -472,7 +472,7 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
     , out_pe_13 = output pe_13
     , out_pe_14 = output pe_14
     , out_pe_15 = output pe_15
-    
+
 
     , pwm_0     = mkPWM pwm_timer_3
                         timer_ch_0
@@ -486,7 +486,7 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
     , pwm_3     = mkPWM pwm_timer_3
                         timer_ch_3
                         (pd_15  $ AF gpio_af_2)
-                        
+
 
     , npx_pwm_0 = mkNeoPixelPWM pwm_timer_2
                                 timer_ch_0 rcu_dma0
