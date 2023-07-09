@@ -138,7 +138,7 @@ io m p = p $ MF m
 
 
 initPort :: MonadState Context m => Port -> m (Def ('[] ':-> ()))
-initPort Port{..} = addInit (symbol gpio <> "_" <> symbol pin <> "_init") $ do
+initPort Port{..} = addInit (symbol gpio <> "_" <> symbol pin) $ do
     enablePeriphClock rcu
     setOutputOptions gpio gpio_otype_pp gpio_ospeed_50mhz pin
     case mode of

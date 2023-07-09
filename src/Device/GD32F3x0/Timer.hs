@@ -57,7 +57,7 @@ mkTimer :: MonadState Context m
         -> Init (Struct TIMER_PARAM_STRUCT)
         -> m Timer
 mkTimer timer rcu irq param = do
-    addInit (symbol timer <> "_init") $ do
+    addInit (symbol timer) $ do
             enablePeriphClock rcu
             deinitTimer       timer
             initTimer         timer =<< local param
