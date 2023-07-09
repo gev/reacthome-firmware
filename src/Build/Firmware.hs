@@ -30,7 +30,7 @@ cook mcu Formula{..} = do
     where (domain'   , domainContext'   ) = runState (domain model version mcu' shouldInit transport' features') mempty
           (mcu'      , mcuContext'      ) = runState mcu mempty
           (features' , featuresContexts') = unzip $ run <$> features
-          (transport', transportContext') = runReader (runStateT transport mempty) domain'
+          (transport', transportContext') = runReader (runStateT transport featuresContext') domain'
 
           featuresContext' = mconcat featuresContexts'
 

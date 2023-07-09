@@ -6,7 +6,7 @@
 module Transport.RS485.RBUS    where
 
 import           Control.Monad.Reader      (MonadReader, asks)
-import           Control.Monad.State       (MonadState)
+import           Control.Monad.State       (MonadState, gets)
 import           Core.Context
 import           Core.Dispatcher
 import qualified Core.Domain               as D
@@ -68,7 +68,7 @@ rbus rs485 = do
             when (n >? 0 .&& shouldHandle) $ dispatch buff n
             store shouldConfirm true
 
-    -- syncs <- gets getSyncs
+    syncs <- gets getSyncs
     {-
       TODO: Should make Init request here?
       TODO: Should reset Tx queue when address has changed?
@@ -76,7 +76,7 @@ rbus rs485 = do
     let onDiscovery = do
          store shouldConfirm false
          store shouldInit mustInit
-        --  mapM_ call_ syncs
+         mapM_ call_ syncs
 
     let onConfirm = remove msgQueue
 
