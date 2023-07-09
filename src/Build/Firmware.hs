@@ -28,13 +28,13 @@ cook mcu Formula{..} = do
     incl  main
 
     where (domain'   , domainContext'   ) = runState (domain model version mcu' shouldInit transport' features') mempty
-          (mcu'      , mcuContext'      ) = runState mcu domainContext'
+          (mcu'      , mcuContext'      ) = runState mcu mempty
           (features' , featuresContexts') = unzip $ run <$> features
-          (transport', transportContext') = runReader (runStateT transport featuresContext') domain'
+          (transport', transportContext') = runReader (runStateT transport mempty) domain'
 
           featuresContext' = mconcat featuresContexts'
 
-          run f = runReader (runStateT f mcuContext') domain'
+          run f = runReader (runStateT f mempty) domain'
 
           (Context inclModule inits tasks syncs) = mcuContext'
                                                 <> domainContext'

@@ -26,7 +26,7 @@ data Context = Context
 
 
 addContext :: MonadState Context m => Context -> m ()
-addContext = modify . (<>)
+addContext context = modify (<> context)
 
 
 addModule :: MonadState Context m => ModuleDef -> m ()
