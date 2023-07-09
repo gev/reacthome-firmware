@@ -13,6 +13,12 @@ data Task = Task
     }
 
 
+
+instance Eq Task where
+  t1 == t2 = getTask t1 == getTask t2
+
+
+
 task :: Maybe Uint32
      -> String
      -> (forall s. Ivory (ProcEffects s ()) ())

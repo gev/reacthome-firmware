@@ -20,7 +20,7 @@ data Context = Context
     { getModule :: ModuleDef
     , getInits  :: [Def ('[] :-> ())]
     , getTasks  :: [Task]
-    , getSyncs  :: forall eff. [Ivory eff ()]
+    , getSyncs  :: [Def ('[] :-> ())]
     }
 
 
@@ -47,9 +47,11 @@ addTask t = do
         addProc $ getTask t
 
 
-addSync :: MonadState Context m => (forall eff. Ivory eff ()) -> m ()
-addSync s = do
-        addContext $ Context mempty mempty mempty [s]
+addSync :: MonadState Context m => String -> (forall eff. Ivory eff ()) -> m ()
+addSync id run = do
+      addContext $ Context mempty mempty mempty [d]
+      addProc d
+      where d = proc (id <> "_sync") $ body run
 
 
 addProc :: MonadState Context m => Def p -> m ()
@@ -70,7 +72,8 @@ addStruct = addModule . defStruct
 
 
 instance Semigroup Context where
-  (Context m1 i1 t1 s1) <> (Context m2 i2 t2 s2) = Context (m1 <> m2) (nub $ i1 <> i2) (t1 <> t2) (s1 <> s2)
+  (Context m1 i1 t1 s1) <> (Context m2 i2 t2 s2) =
+    Context (m1 <> m2) (nub $ i1 <> i2) (nub $ t1 <> t2) (nub $ s1 <> s2)
 
 instance Monoid Context where
   mempty = Context mempty mempty mempty mempty
