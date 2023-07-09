@@ -47,8 +47,7 @@ errorNone       = 0    :: Uint8
 data ATS = ATS
     { mode            :: Value    Uint8
     , state           :: Value    Uint8
-    , currentSource   :: Value    Uint8
-    , selectedSource  :: Value    Uint8
+    , source          :: Value    Uint8
     , relayStatus     :: Values 3 IBool
     , generatorStatus :: Value    IBool
     , attempt         :: Value    Uint8
@@ -64,8 +63,7 @@ mkATS = do
     let clock        = systemClock mcu
     mode            <- value  "ats_mode"             modeNone
     state           <- value  "ats_state"            stateOff
-    currentSource   <- value  "ats_current_source"   0
-    selectedSource  <- value  "ats_selected_source"  0
+    source          <- value  "ats_source"           0
     relayStatus     <- values "ats_relay_status"     [true, true, true]
     generatorStatus <- value  "ats_generator_status" true
     attempt         <- value  "ats_attempt"          0
@@ -73,8 +71,7 @@ mkATS = do
     payload         <- buffer "ats_payload"
     pure ATS { mode
              , state
-             , currentSource
-             , selectedSource
+             , source
              , relayStatus
              , generatorStatus
              , attempt
@@ -99,7 +96,7 @@ manageATS a@ATS{..} DInputs{runDInputs} Relays{runRelays} =
         let di'  = addrOf di
         let r'   = addrOf r
         mode'   <- deref mode
-        store selectedSource 0
+        -- store selectedSource 0
         cond_ [ mode' ==? mode_N1_G ==> do manageLine      2 a (di' ! 0) (di' ! 1) (r' ! 0)
                                            manageGenerator 1 a (di' ! 2) (di' ! 3) (r' ! 1) (r' ! 2)
                                            manageReset       a (di' ! 4)
@@ -131,17 +128,23 @@ manageLine n ATS{..} hasVoltage isRelayOn relay = do
                 hasVoltage' <- deref $ hasVoltage ~> DI.state
                 isRelayOn'  <- deref $ isRelayOn ~> DI.state
                 relayState' <- deref $ relay ~> R.state
+                source'     <- deref source
                 ifte_ hasVoltage'
                     (do
-                        selectedSource' <- deref selectedSource
-                        ifte_ (n >? selectedSource')
-                              (do
-                                    turnOn' relay timestamp
-                                    store selectedSource n
-                              )
-                              (turnOff relay timestamp)
+                        cond_ [ n >? source' ==> do
+                                    turnOn' relay 1000 timestamp
+                                    store source n
+
+                              , n ==? source' ==> do
+                                    pure ()
+
+                              , true ==> turnOff relay timestamp
+                              ]
                     )
-                    (turnOff relay timestamp)
+                    (do
+                        turnOff relay timestamp
+                        when (n ==? source') $ store source 0
+                    )
           )
 
 
@@ -162,18 +165,39 @@ manageGenerator n ATS{..} hasVoltage isRelayOn relay start = do
                 turnOff start timestamp
           )
           (do
+                hasVoltage' <- deref $ hasVoltage ~> DI.state
                 isRelayOn'  <- deref $ isRelayOn ~> DI.state
                 relayState' <- deref $ relay ~> R.state
-                selectedSource' <- deref selectedSource
-                ifte_ (n >? selectedSource')
-                      (do
-                            turnOn' start timestamp
-                            store selectedSource n
-                      )
-                      (do
+                isStarted'  <- deref $ start ~> R.state
+                source'     <- deref source
+                cond_ [ n >? source' ==> do
+                            turnOff relay timestamp
+                            turnOn' start 1000 timestamp
+                            store source n
+
+                       , n ==? source' ==> do
+                            ifte_ isStarted'
+                                (
+                                    ifte_ hasVoltage'
+                                        (turnOn' relay 10000 timestamp)
+                                        (do
+                                            t <- deref $ start ~> R.timestamp
+                                            when (timestamp - t >? 5000) $ do
+                                                turnOff relay timestamp
+                                                turnOff start timestamp
+                                                turnOn' start 10000 timestamp
+                                        )
+                                )
+                                (do
+                                    turnOff relay timestamp
+                                    turnOn' start 1000 timestamp
+                                )
+
+                       , true ==> do
                             turnOff relay timestamp
                             turnOff start timestamp
-                      )
+                       ]
+
           )
 
 
@@ -198,22 +222,21 @@ turnOn relay timestamp = do
         store (relay ~> R.timestamp) timestamp
 
 
-turnOn' :: Record RelayStruct -> Uint32 -> Ivory eff ()
-turnOn' relay timestamp = do
+turnOn' :: Record RelayStruct -> Uint32 -> Uint32 -> Ivory eff ()
+turnOn' relay delay timestamp = do
     isOn    <- deref $ relay ~> R.state
     delayOn <- deref $ relay ~> R.delayOn
     when (iNot isOn .&& delayOn ==? 0) $ do
         store (relay ~> R.state    ) false
         store (relay ~> R.delayOff ) 0
-        store (relay ~> R.delayOn  ) 1000
+        store (relay ~> R.delayOn  ) delay
         store (relay ~> R.timestamp) timestamp
 
 
 turnOff :: Record RelayStruct -> Uint32 -> Ivory eff ()
 turnOff relay timestamp = do
+    store (relay ~> R.state    ) false
+    store (relay ~> R.delayOff ) 0
+    store (relay ~> R.delayOn  ) 0
     isOn <- deref $ relay ~> R.state
-    when isOn $ do
-        store (relay ~> R.state    ) false
-        store (relay ~> R.delayOff ) 0
-        store (relay ~> R.delayOn  ) 0
-        store (relay ~> R.timestamp) timestamp
+    when isOn $ store (relay ~> R.timestamp) timestamp
