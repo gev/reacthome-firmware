@@ -5,6 +5,7 @@ import           Data.Color
 import           Device.GD32F4xx
 import           Feature.Indicator
 import           Feature.RS485.RBUS  as F
+import           Feature.DInputs (dinputs)
 import           Interface.RS485
 import           Ivory.Language
 import           Transport.UART.RBUS as U
@@ -22,5 +23,10 @@ server = Formula { name       = "server"
                                          , rs485 3 uart_2 out_pb_15
                                          , rs485 4 uart_0 out_pd_1
                                          ]
+                                , dinputs [ in_pa_8
+                                          , in_pb_4
+                                          , in_pe_3
+                                          , in_pe_2
+                                          ]
                                 ]
                  }
