@@ -65,8 +65,13 @@ dinputs :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, I
         => [p -> m i] -> m Feature
 dinputs inputs = do
     dinputs <-  mkDInputs inputs
+
     addTask  $ delay 10 "dinputs_manage" $ manageDInputs dinputs
     addTask  $ yeld     "dinputs_sync"   $ syncDInputs   dinputs
+
+    addSync "dinputs" $ DI.runDInputs (getDInputs dinputs) $
+        \dis -> arrayMap $ \ix -> store (addrOf dis ! ix ~> DI.synced) false
+
     pure     $ Feature dinputs
 
 

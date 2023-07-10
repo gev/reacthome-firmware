@@ -6,6 +6,7 @@ import           Device.GD32F4xx
 import           Feature.Indicator
 import           Feature.Dimmer.DC (dimmerDC)
 import           Feature.RS485.RBUS  as F
+import           Feature.DInputs (dinputs)
 import           Interface.RS485
 import           Ivory.Language
 import           Transport.UART.RBUS as U
@@ -27,5 +28,10 @@ server = Formula { name       = "server"
                                             , pwm_1
                                             , pwm_2
                                             ]
+                                , dinputs [ in_pa_8
+                                          , in_pb_4
+                                          , in_pe_3
+                                          , in_pe_2
+                                          ]
                                 ]
                  }

@@ -82,10 +82,16 @@ mix inputs outputs etc = do
                         , transmit = T.transmitBuffer transport
                         }
 
-    addInit "mix_init" $ load mix
+    addInit "mix" $ load mix
 
     addTask $ delay 10 "mix_manage" $ manage mix
     addTask $ yeld     "mix_sync"   $ sync   mix
+
+    addSync "dinputs" $ DI.runDInputs (getDInputs dinputs) $
+        \dis -> arrayMap $ \ix -> store (addrOf dis ! ix ~> DI.synced) false
+
+    addSync "relays" $ R.runRelays (getRelays relays) $
+        \rs -> arrayMap $ \ix -> store (addrOf rs ! ix ~> R.synced) false
 
     pure    $ Feature mix
 
