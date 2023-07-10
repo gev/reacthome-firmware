@@ -78,8 +78,13 @@ relays :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Ou
        => [p -> m o] -> m Feature
 relays outs = do
     relays <- mkRelays outs
+
     addTask $ yeld "relays_manage" $ manageRelays relays
     addTask $ yeld "relays_sync"   $ syncRelays   relays
+
+    addSync "relays" $ R.runRelays (getRelays relays) $
+        \rs -> arrayMap $ \ix -> store (addrOf rs ! ix ~> R.synced) false
+
     pure    $ Feature relays
 
 
