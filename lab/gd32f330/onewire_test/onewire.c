@@ -44,6 +44,7 @@ typedef struct
     uint8_t count_byte;
     uint8_t size_buf;
     uint8_t current_byte;
+    uint8_t current_bit;
 
 }struct_write_buf_state_t;
 
@@ -145,8 +146,21 @@ inline void write_buf_handler(){
     {
     case w_start_bit:
         gpio_bit_reset(OW_PORT, OW_PIN);
-        write_buf_state.state = r_delay_reset;
-        irq_timer_delay_us(TIME_RESET_US);
+        write_buf_state.state = w_delay_bit;
+        if(write_buf_state.current_bit) {
+            irq_timer_delay_us(TIME_SEND_BIT_1_US);
+        } else {
+            irq_timer_delay_us(TIME_SEND_BIT_0_US);
+        }
+        break;
+    case w_delay_bit:
+        gpio_bit_set(OW_PORT, OW_PIN);
+        write_buf_state.state = w_wait_end;
+        write_buf_state.current_bit ? irq_timer_delay_us(TIME_SEND_BIT_1_PAUSE_US) : irq_timer_delay_us(TIME_SEND_BIT_0_PAUSE_US);
+        break;
+    case w_wait_end:
+        gpio_bit_set(OW_PORT, OW_PIN);
+        write_buf_state.state = w_start_bit;
         break;
     
     default:
