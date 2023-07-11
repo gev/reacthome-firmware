@@ -39,12 +39,14 @@ import           Protocol.RS485.RBUS.Master.Rx
 
 
 
+mkRBUS :: (MonadState Context m, MonadReader (D.Domain p t) m, LazyTransport t)
+     => [m I.RS485] -> m [RBUS]
+mkRBUS rs485 = zipWithM rbus' rs485 [1..]
+
+
 rbus :: (MonadState Context m, MonadReader (D.Domain p t) m, LazyTransport t)
      => [m I.RS485] -> m Feature
-rbus rs485 = do
-    let n   = length rs485
-    list   <- zipWithM rbus' rs485 [1..]
-    pure $ Feature list
+rbus rs485 = Feature <$> mkRBUS rs485
 
 
 rbus' :: (MonadState Context m, MonadReader (D.Domain p t) m, LazyTransport t)

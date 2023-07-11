@@ -41,11 +41,11 @@ data DimmerDC = forall p. I.PWM p => DimmerDC
                  => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
 
-dimmerDC :: ( MonadState Context m
-            , MonadReader (D.Domain p t) m
-            , T.Transport t, I.PWM o
-            ) => [p -> Uint32 -> Uint32 -> m o] -> m Feature
-dimmerDC pwms = do
+mkDimmerDC :: ( MonadState Context m
+              , MonadReader (D.Domain p t) m
+              , T.Transport t, I.PWM o
+              ) => [p -> Uint32 -> Uint32 -> m o] -> m DimmerDC
+mkDimmerDC pwms = do
     mcu         <- asks D.mcu
     transport   <- asks D.transport
     shouldInit  <- asks D.shouldInit
@@ -53,19 +53,27 @@ dimmerDC pwms = do
     let n        = length os
     getDimmers  <- dimmers "dimmers" n
     current     <- index "current_dimmer"
+
     let dimmerDC = DimmerDC { n = fromIntegral n
                             , getDimmers
                             , getPWMs = os
                             , shouldInit
                             , current
                             , transmit = T.transmitBuffer transport
-                           }
+                            }
 
     addTask $ delay 1 "dimmers_manage" $ manage dimmerDC
     addTask $ yeld    "dimmers_sync"   $ sync dimmerDC
 
-    pure $ Feature dimmerDC
+    pure dimmerDC
 
+
+
+dimmerDC :: ( MonadState Context m
+            , MonadReader (D.Domain p t) m
+            , T.Transport t, I.PWM o
+            ) => [p -> Uint32 -> Uint32 -> m o] -> m Feature
+dimmerDC pwms = Feature <$> mkDimmerDC pwms
 
 
 manage :: DimmerDC -> Ivory eff ()

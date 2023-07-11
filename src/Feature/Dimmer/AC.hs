@@ -34,6 +34,7 @@ import           Ivory.Stdlib
 import           Support.Cast
 
 
+
 data DimmerAC = forall p. I.PWM p => DimmerAC
     { n              :: Uint8
     , getDimmers     :: Dimmers
@@ -49,11 +50,13 @@ data DimmerAC = forall p. I.PWM p => DimmerAC
                      => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
 
-dimmerAC :: ( MonadState Context m
-            , MonadReader (D.Domain p t) m
-            , T.Transport t, I.PWM o, Handler HandleEXTI e, EXTI e
-            ) => [p -> Uint32 -> Uint32 -> m o] -> (p -> m e) -> m Feature
-dimmerAC pwms exti = do
+
+
+mkDimmerAC :: ( MonadState Context m
+              , MonadReader (D.Domain p t) m
+              , T.Transport t, I.PWM o, Handler HandleEXTI e, EXTI e
+              ) => [p -> Uint32 -> Uint32 -> m o] -> (p -> m e) -> m DimmerAC
+mkDimmerAC pwms exti = do
     mcu            <- asks D.mcu
     e              <- exti $ peripherals mcu
     transport      <- asks D.transport
@@ -98,7 +101,17 @@ dimmerAC pwms exti = do
     addTask $ yeld        "dimmers_manage"               $ manage               dimmerAC
     addTask $ yeld        "dimmers_sync"                 $ sync                 dimmerAC
 
-    pure $ Feature dimmerAC
+    pure dimmerAC
+
+
+
+dimmerAC :: ( MonadState Context m
+            , MonadReader (D.Domain p t) m
+            , T.Transport t, I.PWM o, Handler HandleEXTI e, EXTI e
+            ) => [p -> Uint32 -> Uint32 -> m o] -> (p -> m e) -> m Feature
+dimmerAC pwms exti = Feature <$> mkDimmerAC pwms exti
+
+
 
 {-
     TODO: Send a cross Zero error to the server
