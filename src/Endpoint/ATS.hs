@@ -132,7 +132,7 @@ manageLine n ATS{..} hasVoltage isRelayOn relay = do
                 ifte_ hasVoltage'
                     (do
                         cond_ [ n >? source' ==> do
-                                    turnOn' relay 1000 timestamp
+                                    turnOn relay 1000 timestamp
                                     store source n
 
                               , n ==? source' ==> do
@@ -172,25 +172,25 @@ manageGenerator n ATS{..} hasVoltage isRelayOn relay start = do
                 source'     <- deref source
                 cond_ [ n >? source' ==> do
                             turnOff relay timestamp
-                            turnOn' start 1000 timestamp
+                            turnOn start 1000 timestamp
                             store source n
 
                        , n ==? source' ==> do
                             ifte_ isStarted'
                                 (
                                     ifte_ hasVoltage'
-                                        (turnOn' relay 10000 timestamp)
+                                        (turnOn relay 15000 timestamp)
                                         (do
                                             t <- deref $ start ~> R.timestamp
-                                            when (timestamp - t >? 5000) $ do
+                                            when (timestamp - t >? 30000) $ do
                                                 turnOff relay timestamp
                                                 turnOff start timestamp
-                                                turnOn' start 10000 timestamp
+                                                turnOn start 10000 timestamp
                                         )
                                 )
                                 (do
                                     turnOff relay timestamp
-                                    turnOn' start 1000 timestamp
+                                    turnOn start 1000 timestamp
                                 )
 
                        , true ==> do
@@ -212,18 +212,8 @@ manageReset ATS{..} reset = do
 
 
 
-turnOn :: Record RelayStruct -> Uint32 -> Ivory eff ()
-turnOn relay timestamp = do
-    isOn <- deref $ relay ~> R.state
-    when (iNot isOn) $ do
-        store (relay ~> R.state    ) true
-        store (relay ~> R.delayOff ) 0
-        store (relay ~> R.delayOn  ) 0
-        store (relay ~> R.timestamp) timestamp
-
-
-turnOn' :: Record RelayStruct -> Uint32 -> Uint32 -> Ivory eff ()
-turnOn' relay delay timestamp = do
+turnOn :: Record RelayStruct -> Uint32 -> Uint32 -> Ivory eff ()
+turnOn relay delay timestamp = do
     isOn    <- deref $ relay ~> R.state
     delayOn <- deref $ relay ~> R.delayOn
     when (iNot isOn .&& delayOn ==? 0) $ do
@@ -236,7 +226,7 @@ turnOn' relay delay timestamp = do
 turnOff :: Record RelayStruct -> Uint32 -> Ivory eff ()
 turnOff relay timestamp = do
     store (relay ~> R.state    ) false
-    store (relay ~> R.delayOff ) 0
+    store (relay ~> R.delayOff ) 1000
     store (relay ~> R.delayOn  ) 0
     isOn <- deref $ relay ~> R.state
     when isOn $ store (relay ~> R.timestamp) timestamp
