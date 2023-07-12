@@ -57,13 +57,13 @@ data Indicator = forall d f t. (I.Display d f t, FrameBuffer f t) => Indicator
 
 maxValue = 0.3 :: IFloat
 
-indicator :: ( MonadState Context m
-             , MonadReader (D.Domain p t) m
-             , FrameBuffer f w
-             , I.Display d f w
-             , T.Transport t
-             ) => (p -> m d) -> IFloat -> m Feature
-indicator mkDisplay hue = do
+mkIndicator :: ( MonadState Context m
+               , MonadReader (D.Domain p t) m
+               , FrameBuffer f w
+               , I.Display d f w
+               , T.Transport t
+               ) => (p -> m d) -> IFloat -> m Indicator
+mkIndicator mkDisplay hue = do
     mcu       <- asks D.mcu
     transport <- asks D.transport
     display   <- mkDisplay $ peripherals mcu
@@ -92,6 +92,18 @@ indicator mkDisplay hue = do
         update indicator
         render indicator
 
+    pure indicator
+
+
+
+indicator :: ( MonadState Context m
+             , MonadReader (D.Domain p t) m
+             , FrameBuffer f w
+             , I.Display d f w
+             , T.Transport t
+             ) => (p -> m d) -> IFloat -> m Feature
+indicator mkDisplay hue = do
+    indicator <- mkIndicator mkDisplay hue
     pure $ Feature indicator
 
 
