@@ -31,6 +31,7 @@ import           Feature.DInputs             (DInputs (DInputs, getDInputs, getI
 import           Feature.Relays              (Relays (Relays, getGroups, getRelays),
                                               manageRelays, mkRelays, onDo,
                                               onGroup, onInit, syncRelays)
+import           GHC.RTS.Flags               (DebugFlags (stable))
 import           GHC.TypeNats
 import           Interface.Flash             as F
 import           Interface.GPIO.Input
@@ -87,8 +88,13 @@ mix inputs outputs etc = do
     addTask $ delay 10 "mix_manage" $ manage mix
     addTask $ yeld     "mix_sync"   $ sync   mix
 
+    addSync "dinputs" $ DI.runDInputs (getDInputs dinputs) $
+        \dis -> arrayMap $ \ix -> store (addrOf dis ! ix ~> DI.synced) false
+
     addSync "relays" $ R.runRelays (getRelays relays) $
         \rs -> arrayMap $ \ix -> store (addrOf rs ! ix ~> R.synced) false
+
+    addSync "ats" $ store (synced ats) false
 
     pure    $ Feature mix
 
@@ -107,6 +113,7 @@ sync :: Mix -> Ivory (ProcEffects s ()) ()
 sync Mix{..} = do
     syncDInputs dinputs
     syncRelays  relays
+    syncATS     ats
 
 
 
@@ -148,7 +155,10 @@ onMode :: KnownNat n => Mix -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s (
 onMode mix@Mix{..} buff size = do
     when (size ==? 2 ) $ do
         store (mode ats) =<< unpack buff 1
-        transmit =<< message ats
+        store (source ats) srcNone
+        store (attempt ats) 0
+        store (state ats) stateOk
+        store (synced ats) false
         save mix
 
 
