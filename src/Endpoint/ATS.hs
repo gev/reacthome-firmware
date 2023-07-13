@@ -164,16 +164,17 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
     manageError n a isRelayOn relay
     timestamp <- getSystemTime clock
     noError   <- iNot <$> hasError a
+    ts        <- deref $ start ~> R.timestamp
+    tr        <- deref $ relay ~> R.timestamp
     ifte_ noError
           (do
                 hasVoltage' <- deref $ hasVoltage ~> DI.state
                 isStarted'  <- deref $ start ~> R.state
                 attempt'    <- deref attempt
                 source'     <- deref source
-                t <- deref $ start ~> R.timestamp
                 cond_ [ n <? source' ==> do
                             justTurnOff relay timestamp
-                            when (iNot isStarted' .&& timestamp - t >? 60_000) $ store attempt 0
+                            when (iNot isStarted' .&& timestamp - ts >? 60_000) $ store attempt 0
                             store source n
                             store synced false
 
@@ -181,14 +182,15 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
                             ifte_ isStarted'
                                 (do
                                     isOn <- deref $ relay ~> R.state
-                                    when (isOn .&& attempt' /=? 0 .&& timestamp - t >? 60_000) $ do
-                                        store attempt 0
-                                        store synced false
+                                    when isOn $ do
+                                        store (start ~> R.timestamp) timestamp
+                                        when (attempt' /=? 0 .&& timestamp - tr >? 60_000) $ do
+                                            store attempt 0
+                                            store synced false
                                     ifte_ hasVoltage'
                                         (delayTurnOn relay 5_000 timestamp)
                                         (do
-                                            when isOn $ store (start ~> R.timestamp) timestamp
-                                            when (timestamp - t >? 30_000) $ justTurnOff start timestamp
+                                            when (timestamp - ts >? 30_000) $ justTurnOff start timestamp
                                             justTurnOff relay timestamp
                                         )
                                 )
@@ -214,13 +216,13 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
 
                        , true ==> do
                             justTurnOff relay timestamp
-                            delayTurnOff start 30_000 timestamp
+                            when (timestamp - ts >? 30_000) $ justTurnOff start timestamp
                        ]
 
           )
           (do
                 justTurnOff relay timestamp
-                delayTurnOff start 30_000 timestamp
+                when (timestamp - ts >? 30_000) $ justTurnOff start timestamp
           )
 
 
