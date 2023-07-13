@@ -129,12 +129,10 @@ instance Controller Mix where
     handle  mix@Mix{..} buff size = do
         shouldInit' <- deref shouldInit
         action <- deref $ buff ! 0
-        pure [ iNot shouldInit' ==> cond_
-             [ action ==? 0x00  ==> onDo     relays    buff size
-             , action ==? 0x02  ==> onGroup  relays    buff size
-             , action ==? 0x03  ==> onRule   mix       buff size
-             , action ==? 0x04  ==> onMode   mix       buff size
-             ]
+        pure [ action ==? 0x00 .&& iNot shouldInit' ==> onDo     relays    buff size
+             , action ==? 0x02 .&& iNot shouldInit' ==> onGroup  relays    buff size
+             , action ==? 0x03 .&& iNot shouldInit' ==> onRule   mix       buff size
+             , action ==? 0x04 .&& iNot shouldInit' ==> onMode   mix       buff size
              , action ==? 0xf2  ==> onInit   relays    buff size
              , action ==? 0xfa  ==> onFindMe indicator buff size
              ]
