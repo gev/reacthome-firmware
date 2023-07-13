@@ -198,7 +198,6 @@ renderPixel pixel i ATS{..} dinputs relays = runDInputs dinputs $ \di -> runRela
                 let t' = t ./ 500
                 when (t' .% 2 ==? 0) $
                     store (pixel ~> v) 0
-            hasVoltage' <- deref $ hasVoltage ~> DI.state
             ifte_ hasVoltage'
                 (do
                     source' <- deref source
