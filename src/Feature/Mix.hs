@@ -135,6 +135,7 @@ instance Controller Mix where
              , action ==? 0x04 .&& iNot shouldInit' ==> onMode   mix       buff size
              , action ==? 0xf2  ==> onInit   relays    buff size
              , action ==? 0xfa  ==> onFindMe indicator buff size
+             , action ==? 0xff  ==> resetError ats
              ]
 
 
@@ -163,13 +164,7 @@ onMode mix@Mix{..} buff size = do
     when (size ==? 2 ) $ do
         store (mode ats) =<< unpack buff 1
         manageLock mix
-        store (source ats) srcNone
-        store (attempt ats) 0
-        store (error ats ! 0) errorNone
-        store (error ats ! 1) errorNone
-        store (error ats ! 2) errorNone
-        store (error ats ! 3) errorNone
-        store (synced ats) false
+        resetError ats
         save mix
 
 

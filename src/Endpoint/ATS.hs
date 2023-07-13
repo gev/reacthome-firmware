@@ -254,18 +254,24 @@ manageError n ATS{..} isRelayOn relay = do
 manageReset :: ATS
             -> Record DI.DInputStruct
             ->  Ivory eff ()
-manageReset ATS{..} di = do
+manageReset a@ATS{..} di = do
     isPressed   <- deref $ di ~> DI.state
     shouldReset <- deref reset
     when (iNot isPressed .&& shouldReset) $ do
-        store (error ! 0) errorNone
-        store (error ! 1) errorNone
-        store (error ! 2) errorNone
-        store (error ! 3) errorNone
-        store source srcNone
-        store attempt 0
-        store synced false
+        resetError a
     store reset isPressed
+
+
+
+resetError :: ATS ->  Ivory eff ()
+resetError ATS{..} = do
+    store (error ! 0) errorNone
+    store (error ! 1) errorNone
+    store (error ! 2) errorNone
+    store (error ! 3) errorNone
+    store source srcNone
+    store attempt 0
+    store synced false
 
 
 
