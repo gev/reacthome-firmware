@@ -181,14 +181,13 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
                             ifte_ isStarted'
                                 (do
                                     isOn <- deref $ relay ~> R.state
-                                    when isOn $ do
-                                        store (start ~> R.timestamp) timestamp
-                                        when (attempt' /=? 0 .&& timestamp - t >? 60_000) $ do
-                                            store attempt 0
-                                            store synced false
+                                    when (isOn .&& attempt' /=? 0 .&& timestamp - t >? 60_000) $ do
+                                        store attempt 0
+                                        store synced false
                                     ifte_ hasVoltage'
                                         (delayTurnOn relay 5_000 timestamp)
                                         (do
+                                            when isOn $ store (start ~> R.timestamp) timestamp
                                             when (timestamp - t >? 30_000) $ justTurnOff start timestamp
                                             justTurnOff relay timestamp
                                         )
