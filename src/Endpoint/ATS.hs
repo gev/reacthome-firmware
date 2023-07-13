@@ -21,6 +21,7 @@ import           GHC.TypeNats
 import           Interface.MCU
 import           Interface.SystemClock (SystemClock, getSystemTime)
 import           Ivory.Language
+import           Ivory.Language.Uint   (Uint8 (Uint8))
 import           Ivory.Stdlib
 
 
@@ -30,8 +31,8 @@ mode_N1_G       = 0x11 :: Uint8
 mode_N2         = 0x20 :: Uint8
 mode_N2_G       = 0x21 :: Uint8
 
-stateOk         = 0x00 :: Uint8
-stateError      = 0xff :: Uint8
+errorNone       = 0x00 :: Uint8
+errorGenerator  = 0x01 :: Uint8
 
 maxAttempt      = 3    :: Uint8
 
@@ -40,13 +41,13 @@ srcNone         = 0xff :: Uint8
 
 data ATS = ATS
     { mode            :: Value    Uint8
-    , state           :: Value    Uint8
+    , error           :: Values 4 Uint8
     , source          :: Value    Uint8
     , attempt         :: Value    Uint8
     , timestamp       :: Value    Uint32
     , reset           :: Value    IBool
     , clock           :: SystemClock
-    , payload         :: Buffer 5 Uint8
+    , payload         :: Buffer 8 Uint8
     , synced          :: Value    IBool
     , transmit        :: forall n. KnownNat n
                       => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
@@ -59,7 +60,7 @@ mkATS = do
     transport       <- asks D.transport
     let clock        = systemClock mcu
     mode            <- value  "ats_mode"             modeNone
-    state           <- value  "ats_state"            stateOk
+    error           <- values "ats_error"            [errorNone, errorNone, errorNone, errorNone]
     source          <- value  "ats_source"           srcNone
     attempt         <- value  "ats_attempt"          0
     timestamp       <- value  "ats_timestamp"        0
@@ -67,7 +68,7 @@ mkATS = do
     reset           <- value  "ats_reset"            false
     payload         <- buffer "ats_payload"
     pure ATS { mode
-             , state
+             , error
              , source
              , attempt
              , timestamp
@@ -80,13 +81,16 @@ mkATS = do
 
 
 
-message :: ATS -> Ivory eff (Buffer 5 Uint8)
+message :: ATS -> Ivory eff (Buffer 8 Uint8)
 message ATS{..} = do
     store (payload ! 0) 0x4
     store (payload ! 1) =<< deref mode
     store (payload ! 2) =<< deref source
     store (payload ! 3) =<< deref attempt
-    store (payload ! 4) =<< deref state
+    store (payload ! 4) =<< deref (error ! 0)
+    store (payload ! 5) =<< deref (error ! 1)
+    store (payload ! 6) =<< deref (error ! 2)
+    store (payload ! 7) =<< deref (error ! 3)
     pure payload
 
 
@@ -121,10 +125,9 @@ manageLine :: Uint8
            ->  Ivory eff ()
 manageLine n a@ATS{..} hasVoltage isRelayOn relay = do
     manageError n a isRelayOn relay
-
     timestamp <- getSystemTime clock
-    state'    <- deref state
-    ifte_ (state' ==? stateOk)
+    noError   <- iNot <$> hasError a
+    ifte_ noError
           (do
                 hasVoltage' <- deref $ hasVoltage ~> DI.state
                 source'     <- deref source
@@ -159,10 +162,9 @@ manageGenerator :: Uint8
                 ->  Ivory eff ()
 manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
     manageError n a isRelayOn relay
-
     timestamp <- getSystemTime clock
-    state'    <- deref state
-    ifte_ (state' ==? stateOk)
+    noError   <- iNot <$> hasError a
+    ifte_ noError
           (do
                 hasVoltage' <- deref $ hasVoltage ~> DI.state
                 isStarted'  <- deref $ start ~> R.state
@@ -185,10 +187,13 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
                                             when (timestamp - t >? 30000) $ do
                                                 justTurnOff relay timestamp
                                                 justTurnOff start timestamp
-                                                when (attempt' <? maxAttempt) $ do
-                                                    delayTurnOn start 10000 timestamp
-                                                    store attempt $ attempt' + 1
-                                                    store synced false
+                                                ifte_ (attempt' <? maxAttempt)
+                                                    (do
+                                                        delayTurnOn start 10000 timestamp
+                                                        store attempt $ attempt' + 1
+                                                        store synced false
+                                                    )
+                                                    (store (error ! 0) errorGenerator)
                                         )
                                 )
                                 (do
@@ -208,6 +213,10 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
           )
 
 
+hasError :: ATS -> Ivory eff IBool
+hasError ATS{..} = do
+    (.||) <$> ((.||) <$> e 1 <*> e 2) <*> e 3
+    where e i = (/=? errorNone) <$> deref (error ! i)
 
 manageError :: Uint8
             -> ATS
@@ -224,7 +233,7 @@ manageError n ATS{..} isRelayOn relay = do
             isRelayOn'  <- deref $ isRelayOn ~> DI.state
             relayState' <- deref $ relay ~> R.state
             when (relayState' /=? isRelayOn') $ do
-                store state $ 10 * n + safeCast relayState'
+                store (error ! toIx n) $ safeCast relayState' * 2 + safeCast isRelayOn'
                 store synced false
 
 
@@ -236,7 +245,10 @@ manageReset ATS{..} di = do
     isPressed   <- deref $ di ~> DI.state
     shouldReset <- deref reset
     when (iNot isPressed .&& shouldReset) $ do
-        store state stateOk
+        store (error ! 0) errorNone
+        store (error ! 1) errorNone
+        store (error ! 2) errorNone
+        store (error ! 3) errorNone
         store source srcNone
         store attempt 0
         store synced false
