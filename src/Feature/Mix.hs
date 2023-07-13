@@ -164,6 +164,7 @@ onMode mix@Mix{..} buff size = do
         store (mode ats) =<< unpack buff 1
         manageLock mix
         store (source ats) srcNone
+        store (attempt ats) 0
         store (error ats ! 0) errorNone
         store (error ats ! 1) errorNone
         store (error ats ! 2) errorNone
