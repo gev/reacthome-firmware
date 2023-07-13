@@ -164,6 +164,7 @@ onMode :: KnownNat n => Mix -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s (
 onMode mix@Mix{..} buff size = do
     when (size ==? 2 ) $ do
         store (mode ats) =<< unpack buff 1
+        manageLock mix
         store (source ats) srcNone
         store (error ats ! 0) errorNone
         store (error ats ! 1) errorNone
@@ -202,6 +203,7 @@ load mix@Mix{..} = do
     valid <- checkCRC mix
     when valid $ do
         store (mode ats) . castDefault =<< F.read etc 0
+        manageLock mix
         kx <- local $ ival 4
         let run :: (Rules -> RunMatrix Uint8) -> Ivory eff ()
             run runRules = runRules rules $ \rs -> arrayMap $ \ix -> arrayMap $ \jx -> do
@@ -227,3 +229,23 @@ checkCRC Mix{..} = do
     lsb'' <- deref $ crc ~> lsb
     msb'' <- deref $ crc ~> msb
     pure $ lsb' ==? lsb'' .&& msb' ==? msb''
+
+
+
+manageLock Mix{..} = R.runRelays (getRelays relays) $ \r -> do
+    let r' = addrOf r
+    mode' <- deref $ mode ats
+    arrayMap $ \ix -> store (r' ! ix ~> R.lock) false
+    cond_ [ mode' ==? mode_N1_G ==> do
+                store (r' ! 0 ~> R.lock) true
+                store (r' ! 1 ~> R.lock) true
+                store (r' ! 2 ~> R.lock) true
+          , mode' ==? mode_N2   ==> do
+                store (r' ! 0 ~> R.lock) true
+                store (r' ! 1 ~> R.lock) true
+          , mode' ==? mode_N2_G ==> do
+                store (r' ! 0 ~> R.lock) true
+                store (r' ! 1 ~> R.lock) true
+                store (r' ! 2 ~> R.lock) true
+                store (r' ! 3 ~> R.lock) true
+          ]

@@ -35,6 +35,7 @@ type RelayStruct = "relay_struct"
     ; timestamp       :: Uint32
     ; group           :: Uint8
     ; synced          :: IBool
+    ; lock            :: IBool
     }
 |]
 
@@ -63,6 +64,7 @@ relays name n = do
                  , timestamp       .= ival 0
                  , group           .= ival i
                  , synced          .= ival true
+                 , lock            .= ival false
                  ]
 
 
@@ -84,8 +86,9 @@ turnOffRelay :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
 turnOffRelay Relays{..} index = runRelays $ \rs -> do
     let ix     = index - 1
     let r      = addrOf rs ! ix
+    isLocked  <- deref $ r ~> lock
     shouldOff <- deref $ r ~> state
-    when shouldOff $ do
+    when (iNot isLocked .&& shouldOff) $ do
         store (r ~> state    ) false
         store (r ~> delayOn  ) 0
         store (r ~> delayOff ) 0
@@ -97,9 +100,10 @@ turnOnRelay Relays{..} groups index = runRelays $ \rs -> do
     let ix    = index - 1
     let rs'   = addrOf rs
     let r     = rs' ! ix
+    isLocked <- deref $ r ~> lock
     delayOn' <- deref $ r ~> delayOn
     isOn     <- deref $ r ~> state
-    when (iNot isOn .&& delayOn' ==? 0) $ do
+    when (iNot isLocked .&& iNot isOn .&& delayOn' ==? 0) $ do
         timestamp' <- getSystemTime clock
         group'     <- deref $ r ~> group
         turnOffGroup rs' ix group' timestamp'
@@ -115,9 +119,10 @@ turnOnRelay' Relays{..} groups index delayOff' = runRelays $ \rs -> do
     let ix    = index - 1
     let rs'   = addrOf rs
     let r     = rs' ! ix
+    isLocked <- deref $ r ~> lock
     delayOn' <- deref $ r ~> delayOn
     isOn     <- deref $ r ~> state
-    when (iNot isOn .&& delayOn' ==? 0) $ do
+    when (iNot isLocked .&& iNot isOn .&& delayOn' ==? 0) $ do
         timestamp' <- getSystemTime clock
         group'     <- deref $ r ~> group
         turnOffGroup rs' ix group' timestamp'
