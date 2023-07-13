@@ -30,7 +30,7 @@ typedef enum {
 } reset_states_t;
 
 typedef enum {
-    w_start_bit,
+    w_start,
     w_delay_bit,
     w_wait_end,
     w_end,
@@ -136,7 +136,7 @@ void ow_write_buf(uint8_t *data, uint8_t size){
     write_buf_state.count_byte = 0;
     write_buf_state.current_byte = data[0];
 
-    write_buf_state.state = w_start_bit;
+    write_buf_state.state = w_start;
     protocol_states = p_write_buf;
     ow_handler();
 }
@@ -144,7 +144,14 @@ void ow_write_buf(uint8_t *data, uint8_t size){
 inline void write_buf_handler(){
     switch (write_buf_state.state)
     {
-    case w_start_bit:
+    case w_start:
+        write_buf_state.current_bit = write_buf_state.current_byte & 1;
+        write_buf_state.current_byte >>= 1;
+        write_buf_state.count_bit++;
+        if (write_buf_state.count_bit == 9){
+            break;
+        }
+
         gpio_bit_reset(OW_PORT, OW_PIN);
         write_buf_state.state = w_delay_bit;
         if(write_buf_state.current_bit) {
@@ -155,12 +162,15 @@ inline void write_buf_handler(){
         break;
     case w_delay_bit:
         gpio_bit_set(OW_PORT, OW_PIN);
-        write_buf_state.state = w_wait_end;
-        write_buf_state.current_bit ? irq_timer_delay_us(TIME_SEND_BIT_1_PAUSE_US) : irq_timer_delay_us(TIME_SEND_BIT_0_PAUSE_US);
-        break;
+        write_buf_state.state = w_start;
+        if(write_buf_state.current_bit) {
+            irq_timer_delay_us(TIME_SEND_BIT_1_PAUSE_US);
+        } else {
+            irq_timer_delay_us(TIME_SEND_BIT_0_PAUSE_US);
+        }
     case w_wait_end:
         gpio_bit_set(OW_PORT, OW_PIN);
-        write_buf_state.state = w_start_bit;
+        // write_buf_state.state = w_start;
         break;
     
     default:

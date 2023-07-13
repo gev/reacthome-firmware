@@ -11,8 +11,10 @@ int main(){
   while(1){
     for (uint32_t i = 0; i < 10000000; i++)
 		{}
+    uint8_t d = 0x44;
     ow_reset();
-
+    for (uint32_t i = 0; i < 50000; i++);
+    ow_write_buf(&(d), 1);
   }
 }
 
