@@ -18,6 +18,7 @@ import           Core.Task
 import           Core.Transport
 import qualified Core.Transport              as T
 import           Data.Buffer
+import           Data.Display.FrameBuffer
 import           Data.Matrix
 import           Data.Serialize
 import           Data.Value
@@ -25,20 +26,24 @@ import           Endpoint.ATS
 import qualified Endpoint.DInputs            as DI
 import           Endpoint.DInputsRelaysRules
 import qualified Endpoint.Relays             as R
+import           Feature.Dimmer.AC           (onFade)
 import           Feature.DInputs             (DInputs (DInputs, getDInputs, getInputs),
                                               manageDInputs, mkDInputs,
                                               syncDInputs)
+import           Feature.Mix.Indicator       (Indicator, mkIndicator, onFindMe)
 import           Feature.Relays              (Relays (Relays, getGroups, getRelays),
                                               manageRelays, mkRelays, onDo,
                                               onGroup, onInit, syncRelays)
 import           GHC.RTS.Flags               (DebugFlags (stable))
 import           GHC.TypeNats
+import           Interface.Display
 import           Interface.Flash             as F
 import           Interface.GPIO.Input
 import           Interface.GPIO.Output
 import           Interface.MCU               as I
 import           Ivory.Language
 import           Ivory.Stdlib
+import           Prelude                     hiding (error)
 import           Util.CRC16
 
 
@@ -50,6 +55,7 @@ data Mix = forall f. Flash f => Mix
     , dinputsN   :: Int
     , rules      :: Rules
     , ats        :: ATS
+    , indicator  :: Indicator
     , etc        :: f
     , shouldInit :: Value IBool
     , transmit   :: forall n. KnownNat n
@@ -60,15 +66,16 @@ data Mix = forall f. Flash f => Mix
 
 mix :: ( MonadState Context m
        , MonadReader (Domain p t) m
-       , Transport t, Output o, Input i, Flash f
-       ) => [p -> m i] -> [p -> m o] -> (p -> f) -> m Feature
-mix inputs outputs etc = do
+       , Transport t, Output o, Input i, Flash f, Display d b w, FrameBuffer b w
+       ) => [p -> m i] -> [p -> m o] -> (p -> m d) -> (p -> f) -> m Feature
+mix inputs outputs display etc = do
     relays       <- mkRelays outputs
     let relaysN   = length outputs
     dinputs      <- mkDInputs inputs
     let dinputsN  = length inputs
     rules        <- mkRules dinputsN relaysN
     ats          <- mkATS
+    indicator    <- mkIndicator display 150 ats (getDInputs dinputs) (getRelays relays)
     transport    <- asks D.transport
     mcu          <- asks D.mcu
     shouldInit   <- asks D.shouldInit
@@ -78,6 +85,7 @@ mix inputs outputs etc = do
                         , dinputsN
                         , rules
                         , ats
+                        , indicator
                         , etc = etc (peripherals mcu)
                         , shouldInit
                         , transmit = T.transmitBuffer transport
@@ -122,12 +130,13 @@ instance Controller Mix where
         shouldInit' <- deref shouldInit
         action <- deref $ buff ! 0
         pure [ iNot shouldInit' ==> cond_
-             [ action ==? 0x00  ==> onDo    relays buff size
-             , action ==? 0x02  ==> onGroup relays buff size
-             , action ==? 0x03  ==> onRule  mix    buff size
-             , action ==? 0x04  ==> onMode  mix    buff size
+             [ action ==? 0x00  ==> onDo     relays    buff size
+             , action ==? 0x02  ==> onGroup  relays    buff size
+             , action ==? 0x03  ==> onRule   mix       buff size
+             , action ==? 0x04  ==> onMode   mix       buff size
              ]
-             , action ==? 0xf2  ==> onInit  relays buff size
+             , action ==? 0xf2  ==> onInit   relays    buff size
+             , action ==? 0xfa  ==> onFindMe indicator buff size
              ]
 
 
@@ -156,8 +165,10 @@ onMode mix@Mix{..} buff size = do
     when (size ==? 2 ) $ do
         store (mode ats) =<< unpack buff 1
         store (source ats) srcNone
-        store (attempt ats) 0
-        store (state ats) stateOk
+        store (error ats ! 0) errorNone
+        store (error ats ! 1) errorNone
+        store (error ats ! 2) errorNone
+        store (error ats ! 3) errorNone
         store (synced ats) false
         save mix
 

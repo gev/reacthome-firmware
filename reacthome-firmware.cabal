@@ -75,6 +75,7 @@ executable reacthome-firmware
                     , Feature.Dimmer.DC
                     , Feature.Indicator
                     , Feature.Mix
+                    , Feature.Mix.Indicator
                     , Feature.Relays
                     , Feature.RS485.RBUS
                     , Feature.RS485.RBUS.Data

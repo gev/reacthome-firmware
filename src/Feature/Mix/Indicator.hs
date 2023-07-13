@@ -6,7 +6,7 @@
 {-# LANGUAGE RankNTypes          #-}
 {-# LANGUAGE RecordWildCards     #-}
 
-module Feature.Indicator where
+module Feature.Mix.Indicator where
 
 import           Control.Monad.Reader     (MonadReader, asks)
 import           Control.Monad.State      (MonadState)
@@ -24,6 +24,9 @@ import           Data.Display.FrameBuffer
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
+import           Endpoint.ATS
+import           Endpoint.DInputs         as DI
+import           Endpoint.Relays          as R
 import           Feature.RS485.RBUS.Data  (RBUS (clock))
 import           GHC.TypeNats
 import           Interface.Counter
@@ -31,6 +34,7 @@ import           Interface.Display        (Display (transmitFrameBuffer))
 import qualified Interface.Display        as I
 import           Interface.Mac
 import           Interface.MCU
+import           Interface.SystemClock    (getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Support.Cast
@@ -43,12 +47,15 @@ data Indicator = forall d f t. (I.Display d f t, FrameBuffer f t) => Indicator
     , hue       :: IFloat
     , t         :: Value Sint32
     , dt        :: Value Sint32
-    , phi        :: Value Sint32
+    , phi       :: Value Sint32
     , dphi      :: Value Sint32
     , start     :: Value IBool
     , findMe    :: Value IBool
     , findMeMsg :: Buffer   2 Uint8
     , pixels    :: Records 20 RGB
+    , ats       :: ATS
+    , dinputs   :: DInputs
+    , relays    :: Relays
     , transmit  :: forall n. KnownNat n
                 => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
@@ -61,8 +68,8 @@ mkIndicator :: ( MonadState Context m
                , FrameBuffer f w
                , I.Display d f w
                , T.Transport t
-               ) => (p -> m d) -> IFloat -> m Indicator
-mkIndicator mkDisplay hue = do
+               ) => (p -> m d) -> IFloat -> ATS -> DInputs -> Relays ->  m Indicator
+mkIndicator mkDisplay hue ats dinputs relays = do
     mcu       <- asks D.mcu
     transport <- asks D.transport
     display   <- mkDisplay $ peripherals mcu
@@ -84,6 +91,7 @@ mkIndicator mkDisplay hue = do
                               , t, dt, phi, dphi
                               , start, findMe, findMeMsg
                               , pixels
+                              , ats, dinputs, relays
                               , transmit = T.transmitBuffer transport
                               }
 
@@ -94,19 +102,6 @@ mkIndicator mkDisplay hue = do
     pure indicator
 
 
-
-indicator :: ( MonadState Context m
-             , MonadReader (D.Domain p t) m
-             , FrameBuffer f w
-             , I.Display d f w
-             , T.Transport t
-             ) => (p -> m d) -> IFloat -> m Feature
-indicator mkDisplay hue = do
-    indicator <- mkIndicator mkDisplay hue
-    pure $ Feature indicator
-
-
-
 update :: Indicator -> Ivory (ProcEffects s ()) ()
 update Indicator{..} = do
     phi'   <- deref phi
@@ -114,7 +109,8 @@ update Indicator{..} = do
     start' <- deref start
 
     arrayMap $ \ix -> do
-        let x = toIx (10 * fromIx ix + phi')
+        let i = fromIx ix
+        let x = toIx (10 * i + phi')
         sin' <- deref $ addrOf sinT ! x
         y    <- assign $ maxValue * (0.2 + 0.8 * sin')
         ifte_ start'
@@ -126,6 +122,7 @@ update Indicator{..} = do
             )
             (   store (pixel ~> v) y
             )
+        renderPixel pixel i ats dinputs relays
         hsv'to'rgb pixel $ pixels ! ix
 
     findMe' <- deref findMe
@@ -148,6 +145,77 @@ update Indicator{..} = do
 
 
 
+renderPixel :: Ref s (Struct HSV) -> Sint32 -> ATS -> DInputs -> Relays -> Ivory eff ()
+renderPixel pixel i ATS{..} dinputs relays = runDInputs dinputs $ \di -> runRelays relays $ \ r -> do
+    let di'  = addrOf di
+    let r'   = addrOf r
+    mode'   <- deref mode
+    cond_ [ mode' ==? mode_N1_G
+                  ==> cond_ [ i >=?  3 .&& i <=?  6 ==> renderLine      1 (di' ! 0) (r' ! 0)
+                            , i >=? 13 .&& i <=? 16 ==> renderGenerator 2 (di' ! 2) (r' ! 1) (r' ! 2)
+                            , true ==> store (pixel ~> v) 0
+                            ]
+          , mode' ==? mode_N2
+                  ==> cond_ [ i >=?  3 .&& i <=?  6 ==> renderLine      1 (di' ! 0) (r' ! 0)
+                            , i >=? 13 .&& i <=? 16 ==> renderLine      2 (di' ! 2) (r' ! 1)
+                            , true ==> store (pixel ~> v) 0
+                            ]
+          , mode' ==? mode_N2_G
+                  ==> cond_ [ i >=?  1 .&& i <=?  4 ==> renderLine      1 (di' ! 0) (r' ! 0)
+                            , i >=?  8 .&& i <=? 11 ==> renderLine      2 (di' ! 2) (r' ! 1)
+                            , i >=? 15 .&& i <=? 18 ==> renderGenerator 3 (di' ! 4) (r' ! 2) (r' ! 3)
+                            , true ==> store (pixel ~> v) 0
+                            ]
+          ]
+
+    where
+        renderLine i hasVoltage relay = do
+            let h'       = pixel ~> h
+            hasVoltage' <- deref $ hasVoltage ~> DI.state
+            lineError'  <- deref $ error ! toIx i
+            when (lineError' /=? errorNone) $ do
+                t <- getSystemTime clock
+                let t' = t ./ 500
+                when (t' .% 2 ==? 0) $
+                    store (pixel ~> v) 0
+            ifte_ hasVoltage'
+                (do
+                    source' <- deref source
+                    isOn    <- deref $ relay ~> R.state
+                    ifte_ (isOn .&& source' ==? i)
+                          (store h' 120)
+                          (store h'  60)
+                )
+                (store h' 0)
+
+        renderGenerator i hasVoltage relay start = do
+            let h'          = pixel ~> h
+            hasVoltage'    <- deref $ hasVoltage ~> DI.state
+            generatorError <- deref $ error ! 0
+            lineError'     <- deref $ error ! toIx i
+            when (lineError' /=? errorNone .|| generatorError /=? errorNone) $ do
+                t <- getSystemTime clock
+                let t' = t ./ 500
+                when (t' .% 2 ==? 0) $
+                    store (pixel ~> v) 0
+            hasVoltage' <- deref $ hasVoltage ~> DI.state
+            ifte_ hasVoltage'
+                (do
+                    source' <- deref source
+                    isOn    <- deref $ relay ~> R.state
+                    ifte_ (isOn .&& source' ==? i)
+                          (store h' 120)
+                          (store h'  60)
+                )
+                (do
+                    isOn <- deref $ start ~> R.state
+                    ifte_ (isOn .|| generatorError/=? errorNone)
+                          (store h' 240)
+                          (store h'   0)
+                )
+
+
+
 render :: Indicator -> Ivory (ProcEffects s ()) ()
 render Indicator{..} = do
     writePixels canvas pixels
@@ -155,18 +223,17 @@ render Indicator{..} = do
 
 
 
-instance Controller Indicator where
-    handle Indicator{..} buff size = do
-        action <- deref $ buff ! 0
-        pure [ action ==? 0xfa ==>
-                when (size >=? 2)
-                     (do
-                        v <- unpack buff 1
-                        pack findMeMsg 1 v
-                        store findMe v
-                        transmit findMeMsg
-                     )
-             ]
+onFindMe :: KnownNat n
+         => Indicator
+         -> Buffer n Uint8
+         -> Uint8
+         -> Ivory (ProcEffects s ()) ()
+onFindMe Indicator{..} buff size =
+    when (size >=? 2) $ do
+        v <- unpack buff 1
+        pack findMeMsg 1 v
+        store findMe v
+        transmit findMeMsg
 
 
 

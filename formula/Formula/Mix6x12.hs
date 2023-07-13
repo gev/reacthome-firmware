@@ -15,8 +15,7 @@ mix6x12 = Formula { name       = "mix6x12"
                   , version    = (3, 1)
                   , shouldInit = true
                   , transport  = rbus $ rs485 1 uart_0 out_pb_2
-                  , features   = [ indicator npx_pwm_0 150
-                                 , mix [ in_pa_4
+                  , features   = [ mix [ in_pa_4
                                        , in_pa_15
                                        , in_pb_3
                                        , in_pb_4
@@ -36,6 +35,7 @@ mix6x12 = Formula { name       = "mix6x12"
                                        , out_pa_6
                                        , out_pa_7
                                        ]
+                                       npx_pwm_0
                                        etc
                                  ]
                   }
