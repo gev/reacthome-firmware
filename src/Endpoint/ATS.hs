@@ -224,7 +224,7 @@ manageError n ATS{..} isRelayOn relay = do
             isRelayOn'  <- deref $ isRelayOn ~> DI.state
             relayState' <- deref $ relay ~> R.state
             when (relayState' /=? isRelayOn') $ do
-                store state $ 100 * n + 10 * safeCast relayState' + safeCast isRelayOn'
+                store state $ 10 * n + safeCast relayState'
                 store synced false
 
 
