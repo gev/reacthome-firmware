@@ -1,8 +1,9 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE DataKinds          #-}
+{-# LANGUAGE FlexibleContexts   #-}
+{-# LANGUAGE NamedFieldPuns     #-}
+{-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE RankNTypes         #-}
+{-# LANGUAGE RecordWildCards    #-}
 
 module Endpoint.ATS where
 
@@ -134,8 +135,7 @@ manageLine n a@ATS{..} hasVoltage isRelayOn relay = do
                 ifte_ hasVoltage'
                     (do
                         cond_ [ n <? source' ==> do
-                                    delayTurnOn relay 1000 timestamp
-                                    store attempt 0
+                                    delayTurnOn relay 1_000 timestamp
                                     store source n
                                     store synced false
 
@@ -170,46 +170,58 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
                 isStarted'  <- deref $ start ~> R.state
                 attempt'    <- deref attempt
                 source'     <- deref source
+                t <- deref $ start ~> R.timestamp
                 cond_ [ n <? source' ==> do
                             justTurnOff relay timestamp
-                            delayTurnOn start 1000 timestamp
-                            store attempt $ attempt' + 1
+                            when (iNot isStarted' .&& timestamp - t >? 60_000) $ store attempt 0
                             store source n
                             store synced false
 
                        , n ==? source' ==> do
                             ifte_ isStarted'
-                                (
+                                (do
+                                    isOn <- deref $ relay ~> R.state
+                                    when isOn $ do
+                                        store (start ~> R.timestamp) timestamp
+                                        when (attempt' /=? 0 .&& timestamp - t >? 60_000) $ do
+                                            store attempt 0
+                                            store synced false
                                     ifte_ hasVoltage'
-                                        (delayTurnOn relay 5000 timestamp)
+                                        (delayTurnOn relay 5_000 timestamp)
                                         (do
-                                            t <- deref $ start ~> R.timestamp
-                                            when (timestamp - t >? 30000) $ do
-                                                justTurnOff relay timestamp
-                                                justTurnOff start timestamp
-                                                ifte_ (attempt' <? maxAttempt)
-                                                    (do
-                                                        delayTurnOn start 10000 timestamp
-                                                        store attempt $ attempt' + 1
-                                                        store synced false
-                                                    )
-                                                    (store (error ! 0) errorGenerator)
+                                            when (timestamp - t >? 30_000) $ justTurnOff start timestamp
+                                            justTurnOff relay timestamp
                                         )
                                 )
                                 (do
                                     justTurnOff relay timestamp
-                                    delayTurnOn start 1000 timestamp
+                                    error' <- deref $ error ! 0
+                                    when (error' ==? errorNone) $ do
+                                        t <- deref $ start ~> R.timestamp
+                                        when (timestamp - t >? 10_000) $
+                                            cond_ [ attempt' ==? 0 ==> do
+                                                        justTurnOn start timestamp
+                                                        store attempt 1
+                                                        store synced false
+                                                  , attempt' <? maxAttempt ==> do
+                                                        justTurnOn start timestamp
+                                                        store attempt $ attempt' + 1
+                                                        store synced false
+                                                  , true ==> do
+                                                        store (error ! 0) errorGenerator
+                                                        store synced false
+                                                  ]
                                 )
 
                        , true ==> do
                             justTurnOff relay timestamp
-                            delayTurnOff start 20000 timestamp
+                            delayTurnOff start 30_000 timestamp
                        ]
 
           )
           (do
                 justTurnOff relay timestamp
-                delayTurnOff start 20000 timestamp
+                delayTurnOff start 30_000 timestamp
           )
 
 
@@ -229,7 +241,7 @@ manageError n ATS{..} isRelayOn relay = do
     when (delayOn' ==? 0 .&& delayOff' ==? 0) $ do
         t0 <- deref $ relay ~> R.timestamp
         t1 <- getSystemTime clock
-        when (t1 - t0 >? 100) $ do
+        when (t1 - t0 >? 1_000) $ do
             isRelayOn'  <- deref $ isRelayOn ~> DI.state
             relayState' <- deref $ relay ~> R.state
             when (relayState' /=? isRelayOn') $ do
@@ -256,14 +268,24 @@ manageReset ATS{..} di = do
 
 
 
+justTurnOn :: Record R.RelayStruct -> Uint32 -> Ivory eff ()
+justTurnOn relay timestamp = do
+    isOn <- deref $ relay ~> R.state
+    when (iNot isOn) $ store (relay ~> R.timestamp) timestamp
+    store (relay ~> R.state    ) true
+    store (relay ~> R.delayOff ) 0
+    store (relay ~> R.delayOn  ) 0
+
+
+
 delayTurnOn :: Record R.RelayStruct -> Uint32 -> Uint32 -> Ivory eff ()
 delayTurnOn relay delay timestamp = do
     isOn    <- deref $ relay ~> R.state
     delayOn <- deref $ relay ~> R.delayOn
-    when (iNot isOn .&& delayOn ==? 0) $ do
-        store (relay ~> R.delayOff ) 0
-        store (relay ~> R.delayOn  ) delay
-        store (relay ~> R.timestamp) timestamp
+    when (iNot isOn) $ do
+        store (relay ~> R.delayOn) delay
+        when (delayOn ==? 0) $ store (relay ~> R.timestamp) timestamp
+    store (relay ~> R.delayOff ) 0
 
 
 
@@ -281,10 +303,10 @@ delayTurnOff :: Record R.RelayStruct -> Uint32 -> Uint32 -> Ivory eff ()
 delayTurnOff relay delay timestamp = do
     isOn     <- deref $ relay ~> R.state
     delayOff <- deref $ relay ~> R.delayOff
-    when (isOn .&& delayOff ==? 0) $ do
+    when isOn $ do
         store (relay ~> R.delayOff ) delay
-        store (relay ~> R.delayOn  ) 0
-        store (relay ~> R.timestamp) timestamp
+        when (delayOff ==? 0) $ store (relay ~> R.timestamp) timestamp
+    store (relay ~> R.delayOn  ) 0
 
 
 
