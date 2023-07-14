@@ -151,19 +151,19 @@ renderPixel pixel i ATS{..} dinputs relays = runDInputs dinputs $ \di -> runRela
     let r'   = addrOf r
     mode'   <- deref mode
     cond_ [ mode' ==? mode_N1_G
-                  ==> cond_ [ i >=?  3 .&& i <=?  6 ==> renderLine      1 (di' ! 0) (r' ! 0)
-                            , i >=? 13 .&& i <=? 16 ==> renderGenerator 2 (di' ! 2) (r' ! 1) (r' ! 2)
+                  ==> cond_ [ i >=? 13 .&& i <=? 16 ==> renderLine      1 (di' ! 0) (r' ! 0)
+                            , i >=?  3 .&& i <=?  6 ==> renderGenerator 2 (di' ! 2) (r' ! 1) (r' ! 2)
                             , true ==> store (pixel ~> v) 0
                             ]
           , mode' ==? mode_N2
-                  ==> cond_ [ i >=?  3 .&& i <=?  6 ==> renderLine      1 (di' ! 0) (r' ! 0)
-                            , i >=? 13 .&& i <=? 16 ==> renderLine      2 (di' ! 2) (r' ! 1)
+                  ==> cond_ [ i >=? 13 .&& i <=? 16 ==> renderLine      1 (di' ! 0) (r' ! 0)
+                            , i >=?  3 .&& i <=?  6 ==> renderLine      2 (di' ! 2) (r' ! 1)
                             , true ==> store (pixel ~> v) 0
                             ]
           , mode' ==? mode_N2_G
-                  ==> cond_ [ i >=?  1 .&& i <=?  4 ==> renderLine      1 (di' ! 0) (r' ! 0)
+                  ==> cond_ [ i >=? 15 .&& i <=? 18 ==> renderLine      1 (di' ! 0) (r' ! 0)
                             , i >=?  8 .&& i <=? 11 ==> renderLine      2 (di' ! 2) (r' ! 1)
-                            , i >=? 15 .&& i <=? 18 ==> renderGenerator 3 (di' ! 4) (r' ! 2) (r' ! 3)
+                            , i >=?  1 .&& i <=?  4 ==> renderGenerator 3 (di' ! 4) (r' ! 2) (r' ! 3)
                             , true ==> store (pixel ~> v) 0
                             ]
           ]
