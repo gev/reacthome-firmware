@@ -4,26 +4,30 @@
 module Feature.Server where
 
 import           Control.Monad           (zipWithM_)
-import           Control.Monad.Reader    (MonadReader)
+import           Control.Monad.Reader    (MonadReader, asks)
 import           Control.Monad.State     (MonadState)
 import           Core.Context
 import           Core.Controller
-import           Core.Domain
+import qualified Core.Domain             as D
 import           Core.Feature
 import           Core.Task
 import           Core.Transport
 import           Data.Buffer
 import           Data.Serialize
-import           Endpoint.Dimmers        (Dimmers (..), initialize,
+import           Data.Value
+import           Endpoint.Dimmers        (Dimmers (..), dimmers, initialize,
                                           syncDimmerGroup)
 import qualified Endpoint.DInputs        as DI
-import           Feature.Dimmer.DC       (DimmerDC (..), mkDimmerDC, onDim,
+import           Feature.Dimmer.DC       (DimmerDC (getDimmers, n),
+                                          forceSyncDimmerDC, mkDimmerDC, onDim,
                                           onDo)
-import           Feature.DInputs         (DInputs (getDInputs), manageDInputs,
+import           Feature.DInputs         (DInputs (getDInputs),
+                                          forceSyncDInputs, manageDInputs,
                                           mkDInputs, syncDInputs)
-import           Feature.RS485.RBUS      (configureMode, mkRBUS, setMode,
+import           Feature.RS485.RBUS      (configureMode, forceSyncRBUS,
+                                          forceSyncRBUS', mkRBUS, setMode,
                                           transmitRB485, transmitRBUS)
-import           Feature.RS485.RBUS.Data
+import           Feature.RS485.RBUS.Data (RBUS (RBUS, baudrate, lineControl, mode))
 import           GHC.TypeNats
 import           Interface.GPIO.Input
 import           Interface.PWM           (PWM)
@@ -33,45 +37,48 @@ import           Ivory.Stdlib
 
 
 data Server = Server
-    { rbus    :: [RBUS]
-    , dimmer  :: DimmerDC
-    , dinputs :: DInputs
+    { rbus       :: [RBUS]
+    , dimmer     :: DimmerDC
+    , dinputs    :: DInputs
+    , shouldInit :: Value IBool
     }
 
 
 server :: ( MonadState Context m
-          , MonadReader (Domain p t) m
+          , MonadReader (D.Domain p t) m
           , LazyTransport t, Transport t, PWM o, Input i
           ) => [m RS485] -> [p -> Uint32 -> Uint32 -> m o] -> [p -> m i] -> m Feature
 server rs485 pwms inputs = do
-    rbus    <- mkRBUS     rs485
-    dimmer  <- mkDimmerDC pwms
-    dinputs <- mkDInputs  inputs
+    rbus       <- mkRBUS     rs485
+    dimmer     <- mkDimmerDC pwms
+    dinputs    <- mkDInputs  inputs
+    shouldInit <- asks D.shouldInit
 
     addTask  $ delay 10 "dinputs_manage" $ manageDInputs dinputs
     addTask  $ yeld     "dinputs_sync"   $ syncDInputs   dinputs
 
-    addSync "dinputs" $ DI.runDInputs (getDInputs dinputs) $
-        \dis -> arrayMap $ \ix -> store (addrOf dis ! ix ~> DI.synced) false
+    addSync "dinputs" $ forceSyncDInputs  dinputs
+    addSync "dimmers" $ forceSyncDimmerDC dimmer
 
-    pure $ Feature Server { rbus, dimmer, dinputs }
+    pure $ Feature Server { rbus, dimmer, dinputs, shouldInit }
 
 
 instance Controller Server where
-    handle Server{..} buff size = do
+    handle s@Server{..} buff size = do
         action <- deref $ buff ! 0
-        pure [ action ==? 0xa0 ==> setMode       rbus buff size
-             , action ==? 0xa1 ==> transmitRBUS  rbus buff size
-             , action ==? 0xa2 ==> transmitRB485 rbus buff size
-             , action ==? 0x00 ==> onDo  dimmer buff size
-             , action ==? 0xd0 ==> onDim dimmer buff size
-             , action ==? 0xf2 ==> onInit rbus dimmer buff size
+        pure [ action ==? 0x00 ==> onDo          dimmer buff size
+             , action ==? 0xd0 ==> onDim         dimmer buff size
+             , action ==? 0xa0 ==> setMode       rbus   buff size
+             , action ==? 0xa1 ==> transmitRBUS  rbus   buff size
+             , action ==? 0xa2 ==> transmitRB485 rbus   buff size
+             , action ==? 0xf2 ==> onInit        s      buff size
+            --  , action ==? 0xf4 ==> onGetState    s
              ]
 
 
-onInit :: KnownNat n => [RBUS] -> DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
-onInit rbus DimmerDC{..} buff size =
-    when (size ==? 25 + n * 3) $ do
+onInit :: KnownNat n => Server -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
+onInit Server{..} buff size =
+    when (size ==? 25 + n dimmer * 3) $ do
 
         let run r@RBUS{..} offset = do
                 store mode        =<< unpack   buff  offset
@@ -81,7 +88,7 @@ onInit rbus DimmerDC{..} buff size =
         zipWithM_ run rbus $ fromIntegral <$> [1, 7..]
 
         offset <- local $ ival 25
-        runDimmers getDimmers $ \ds -> do
+        runDimmers (getDimmers dimmer) $ \ds -> do
             arrayMap $ \ix -> do
                 offset' <- deref offset
                 let d = addrOf ds ! ix
@@ -93,3 +100,12 @@ onInit rbus DimmerDC{..} buff size =
                 store offset $ offset' + 3
 
         store shouldInit false
+
+
+
+onGetState Server{..} = do
+    shouldInit' <- deref shouldInit
+    when (iNot shouldInit') $ do
+        forceSyncDimmerDC dimmer
+        forceSyncRBUS' rbus
+    forceSyncDInputs dinputs
