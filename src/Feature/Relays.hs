@@ -85,6 +85,9 @@ relays outs = do
     addSync "relays" $ R.runRelays (getRelays relays) $
         \rs -> arrayMap $ \ix -> store (addrOf rs ! ix ~> R.synced) false
 
+    addSync "groups" $ G.runGroups (getGroups relays) $
+        \gs -> arrayMap $ \ix -> store (addrOf gs ! ix ~> G.synced) false
+
     pure    $ Feature relays
 
 

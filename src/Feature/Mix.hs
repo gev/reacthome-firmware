@@ -25,6 +25,7 @@ import           Data.Value
 import           Endpoint.ATS                as A
 import qualified Endpoint.DInputs            as DI
 import           Endpoint.DInputsRelaysRules as DIR
+import qualified Endpoint.Groups             as G
 import qualified Endpoint.Relays             as R
 import           Feature.Dimmer.AC           (onFade)
 import           Feature.DInputs             (DInputs (DInputs, getDInputs, getInputs),
@@ -101,6 +102,9 @@ mix inputs outputs display etc = do
 
     addSync "relays" $ R.runRelays (getRelays relays) $
         \rs -> arrayMap $ \ix -> store (addrOf rs ! ix ~> R.synced) false
+
+    addSync "groups" $ G.runGroups (getGroups relays) $
+        \gs -> arrayMap $ \ix -> store (addrOf gs ! ix ~> G.synced) false
 
     addSync "rules" $ store (DIR.synced rules) false
 
