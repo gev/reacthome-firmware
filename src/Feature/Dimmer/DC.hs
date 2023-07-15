@@ -65,7 +65,14 @@ mkDimmerDC pwms = do
     addTask $ delay 1 "dimmers_manage" $ manage dimmerDC
     addTask $ yeld    "dimmers_sync"   $ sync dimmerDC
 
+    addSync "dimmers" $ forceSyncDimmerDC dimmerDC
+
     pure dimmerDC
+
+
+forceSyncDimmerDC :: DimmerDC -> Ivory eff ()
+forceSyncDimmerDC dimmers = runDimmers (getDimmers dimmers) $ \rs ->
+        arrayMap $ \ix -> store (addrOf rs ! ix ~> synced) false
 
 
 
@@ -116,9 +123,10 @@ sync DimmerDC{..} = do
 instance Controller DimmerDC where
     handle ds buff size = do
         action <- deref $ buff ! 0
-        pure [ action ==? 0x00 ==> onDo   ds buff size
-             , action ==? 0xd0 ==> onDim  ds buff size
-             , action ==? 0xf2 ==> onInit ds buff size
+        pure [ action ==? 0x00 ==> onDo       ds buff size
+             , action ==? 0xd0 ==> onDim      ds buff size
+             , action ==? 0xf2 ==> onInit     ds buff size
+             , action ==? 0xf4 ==> onGetState ds
              ]
 
 
@@ -210,3 +218,8 @@ onGroup dimmers index buff size =
     when (size >=? 4) $ do
         group <- unpack buff 3
         setGroup group dimmers index
+
+
+onGetState dimmers = do
+    shouldInit' <- deref $ shouldInit dimmers
+    when (iNot shouldInit') $ forceSyncDimmerDC dimmers

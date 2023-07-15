@@ -101,6 +101,8 @@ mkDimmerAC pwms exti = do
     addTask $ yeld        "dimmers_manage"               $ manage               dimmerAC
     addTask $ yeld        "dimmers_sync"                 $ sync                 dimmerAC
 
+    addSync "dimmers" $ forceSyncDimmerAC dimmerAC
+
     pure dimmerAC
 
 
@@ -110,6 +112,12 @@ dimmerAC :: ( MonadState Context m
             , T.Transport t, I.PWM o, Handler HandleEXTI e, EXTI e
             ) => [p -> Uint32 -> Uint32 -> m o] -> (p -> m e) -> m Feature
 dimmerAC pwms exti = Feature <$> mkDimmerAC pwms exti
+
+
+
+forceSyncDimmerAC :: DimmerAC -> Ivory eff ()
+forceSyncDimmerAC dimmers = runDimmers (getDimmers dimmers) $ \rs ->
+        arrayMap $ \ix -> store (addrOf rs ! ix ~> synced) false
 
 
 
@@ -208,9 +216,10 @@ sync DimmerAC{..} = do
 instance Controller DimmerAC where
     handle ds buff size = do
         action <- deref $ buff ! 0
-        pure [ action ==? 0x00 ==> onDo   ds buff size
-             , action ==? 0xd0 ==> onDim  ds buff size
-             , action ==? 0xf2 ==> onInit ds buff size
+        pure [ action ==? 0x00 ==> onDo       ds buff size
+             , action ==? 0xd0 ==> onDim      ds buff size
+             , action ==? 0xf2 ==> onInit     ds buff size
+             , action ==? 0xf4 ==> onGetState ds
              ]
 
 
@@ -302,3 +311,8 @@ onGroup dimmers index buff size =
     when (size >=? 4) $ do
         group <- unpack buff 3
         setGroup group dimmers index
+
+
+onGetState dimmers = do
+    shouldInit' <- deref $ shouldInit dimmers
+    when (iNot shouldInit') $ forceSyncDimmerAC dimmers
