@@ -22,9 +22,9 @@ import           Data.Display.FrameBuffer
 import           Data.Matrix
 import           Data.Serialize
 import           Data.Value
-import           Endpoint.ATS
+import           Endpoint.ATS                as A
 import qualified Endpoint.DInputs            as DI
-import           Endpoint.DInputsRelaysRules
+import           Endpoint.DInputsRelaysRules as DIR
 import qualified Endpoint.Relays             as R
 import           Feature.Dimmer.AC           (onFade)
 import           Feature.DInputs             (DInputs (DInputs, getDInputs, getInputs),
@@ -102,16 +102,18 @@ mix inputs outputs display etc = do
     addSync "relays" $ R.runRelays (getRelays relays) $
         \rs -> arrayMap $ \ix -> store (addrOf rs ! ix ~> R.synced) false
 
-    addSync "ats" $ store (synced ats) false
+    addSync "rules" $ store (DIR.synced rules) false
 
-    pure    $ Feature mix
+    addSync "ats" $ store (A.synced ats) false
+
+    pure $ Feature mix
 
 
 
 manage :: Mix -> Ivory ('Effects (Returns ()) r (Scope s)) ()
 manage Mix{..} = do
     manageDInputs  dinputs
-    manageRules    rules (getDInputs dinputs) (getRelays relays) (getGroups relays) dinputsN
+    manageRules    rules (getDInputs dinputs) (getRelays relays) (getGroups relays)
     manageATS      ats   (getDInputs dinputs) (getRelays relays)
     manageRelays   relays
 
@@ -121,6 +123,7 @@ sync :: Mix -> Ivory (ProcEffects s ()) ()
 sync Mix{..} = do
     syncDInputs dinputs
     syncRelays  relays
+    syncRules   rules
     syncATS     ats
 
 
@@ -129,13 +132,13 @@ instance Controller Mix where
     handle  mix@Mix{..} buff size = do
         shouldInit' <- deref shouldInit
         action <- deref $ buff ! 0
-        pure [ action ==? 0x00 .&& iNot shouldInit' ==> onDo     relays    buff size
-             , action ==? 0x02 .&& iNot shouldInit' ==> onGroup  relays    buff size
-             , action ==? 0x03 .&& iNot shouldInit' ==> onRule   mix       buff size
-             , action ==? 0x04 .&& iNot shouldInit' ==> onMode   mix       buff size
-             , action ==? 0xf2  ==> onInit   relays    buff size
-             , action ==? 0xfa  ==> onFindMe indicator buff size
-             , action ==? 0xff  ==> resetError ats
+        pure [ action ==? 0x00 .&& iNot shouldInit' ==> onDo       relays    buff size
+             , action ==? 0x02 .&& iNot shouldInit' ==> onGroup    relays    buff size
+             , action ==? 0x03 .&& iNot shouldInit' ==> onRule     mix       buff size
+             , action ==? 0x04 .&& iNot shouldInit' ==> onMode     mix       buff size
+             , action ==? 0xf2                      ==> onInit     relays    buff size
+             , action ==? 0xfa                      ==> onFindMe   indicator buff size
+             , action ==? 0xff                      ==> resetError ats
              ]
 
 

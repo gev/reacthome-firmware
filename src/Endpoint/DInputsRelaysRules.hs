@@ -6,35 +6,54 @@
 
 module Endpoint.DInputsRelaysRules where
 
-import           Control.Monad.State (MonadState)
+import           Control.Monad.Reader (MonadReader, asks)
+import           Control.Monad.State  (MonadState)
 import           Core.Context
+import qualified Core.Domain          as D
+import qualified Core.Transport       as T
+import           Data.Buffer
 import           Data.Matrix
 import           Data.Value
-import           Endpoint.DInputs    as DI
+import           Endpoint.DInputs     as DI
 import           Endpoint.Groups
 import           Endpoint.Relays
+import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
 
 
 
 data Rules = Rules
-    { runRulesOn  :: RunMatrix Uint8
+    { n           :: Int
+    , runRulesOn  :: RunMatrix Uint8
     , runRulesOff :: RunMatrix Uint8
     , runPayload  :: RunValues Uint8
+    , synced      :: Value     IBool
+    , transmit    :: forall n. KnownNat n
+                  => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
 
 
 
-mkRules :: MonadState Context m => Int -> Int -> m Rules
+mkRules :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t)
+        => Int -> Int -> m Rules
 mkRules n m = do
-    let runRulesOn  = runMatrix  "dinputs_relays_rules_matrix_on"  0xff n m
-    let runRulesOff = runMatrix  "dinputs_relays_rules_matrix_off" 0xff n m
-    let runPayload  = runValues_ "dinputs_relays_message" $ 2 + 2 * m
+    mcu             <- asks D.mcu
+    transport       <- asks D.transport
+    let runRulesOn   = runMatrix  "dinputs_relays_rules_matrix_on"  0xff n m
+    let runRulesOff  = runMatrix  "dinputs_relays_rules_matrix_off" 0xff n m
+    let runPayload   = runValues_ "dinputs_relays_rules_message"  $ 2 + 2 * m
+    synced          <- value      "dinputs_relays_rules_synced"     false
     runRulesOn  addArea
     runRulesOff addArea
     runPayload  addArea
-    pure Rules { runRulesOn, runRulesOff, runPayload }
+    pure Rules { n
+               , runRulesOn
+               , runRulesOff
+               , runPayload
+               , synced
+               , transmit = T.transmitBuffer transport
+               }
 
 
 
@@ -54,8 +73,8 @@ fillPayload Rules{..} i = runPayload $ \payload -> do
 
 
 
-manageRules :: Rules -> DInputs -> Relays -> Groups -> Int -> Ivory ('Effects (Returns ()) r (Scope s)) ()
-manageRules Rules{..} DInputs{..} relays groups n =
+manageRules :: Rules -> DInputs -> Relays -> Groups -> Ivory ('Effects (Returns ()) r (Scope s)) ()
+manageRules Rules{..} DInputs{..} relays groups =
     runDInputs  $ \dis -> arrayMap $ \ix' -> do
         let ix = fromIntegral n - ix' - 1
         let di = addrOf dis ! ix
@@ -71,3 +90,15 @@ manageRules Rules{..} DInputs{..} relays groups n =
         ifte_ state'
             (run runRulesOn )
             (run runRulesOff)
+
+
+
+syncRules :: Rules -> Ivory (ProcEffects s ()) ()
+syncRules r@Rules{..} = do
+    synced' <- deref synced
+    when (iNot synced') $ mapM_ sync [0 .. n-1]
+    store synced true
+    where
+        sync i = runPayload $ \p -> do
+            fillPayload r $ fromIntegral  i
+            transmit $ addrOf p
