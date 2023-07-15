@@ -96,6 +96,10 @@ message ATS{..} = do
 
 
 
+forceSyncATS :: ATS -> Ivory eff ()
+forceSyncATS ATS{..} = store synced false
+
+
 manageATS :: ATS -> DI.DInputs -> R.Relays -> Ivory eff ()
 manageATS a@ATS{..} DI.DInputs{runDInputs} R.Relays{runRelays} =
     runDInputs $ \di -> runRelays $ \r -> do

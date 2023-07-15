@@ -73,6 +73,10 @@ fillPayload Rules{..} i = runPayload $ \payload -> do
 
 
 
+forceSyncRules :: Rules -> Ivory eff ()
+forceSyncRules Rules{..} = store synced false
+
+
 manageRules :: Rules -> DInputs -> Relays -> Groups -> Ivory ('Effects (Returns ()) r (Scope s)) ()
 manageRules Rules{..} DInputs{..} relays groups =
     runDInputs  $ \dis -> arrayMap $ \ix' -> do
