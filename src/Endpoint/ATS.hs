@@ -174,7 +174,10 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
                 source'     <- deref source
                 cond_ [ n <? source' ==> do
                             justTurnOff relay timestamp
-                            when (iNot isStarted' .&& timestamp - ts >? 60_000) $ store attempt 0
+                            error' <- deref $ error ! 0
+                            when (error' ==? errorNone .&&
+                                  iNot isStarted' .&& timestamp - ts >? 60_000
+                                 ) $ store attempt 0
                             store source n
                             store synced false
 
