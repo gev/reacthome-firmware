@@ -82,13 +82,18 @@ relays outs = do
     addTask $ yeld "relays_manage" $ manageRelays relays
     addTask $ yeld "relays_sync"   $ syncRelays   relays
 
-    addSync "relays" $ R.runRelays (getRelays relays) $
-        \rs -> arrayMap $ \ix -> store (addrOf rs ! ix ~> R.synced) false
+    addSync "relays" $ forceSyncRelays relays
 
-    addSync "groups" $ G.runGroups (getGroups relays) $
-        \gs -> arrayMap $ \ix -> store (addrOf gs ! ix ~> G.synced) false
+    pure $ Feature relays
 
-    pure    $ Feature relays
+
+
+forceSyncRelays :: Relays -> Ivory eff ()
+forceSyncRelays relays = do
+    R.runRelays (getRelays relays) $ \rs ->
+        arrayMap $ \ix -> store (addrOf rs ! ix ~> R.synced) false
+    G.runGroups (getGroups relays) $ \gs ->
+        arrayMap $ \ix -> store (addrOf gs ! ix ~> G.synced) false
 
 
 
@@ -194,10 +199,11 @@ instance Controller Relays where
         pure [ size >=? 3 ==> do
                 action <- deref $ buff ! 0
                 cond_ [ iNot shouldInit' ==> cond_
-                      [ action ==? 0x00  ==> onDo    rs buff size
-                      , action ==? 0x02  ==> onGroup rs buff size
+                      [ action ==? 0x00  ==> onDo       rs buff size
+                      , action ==? 0x02  ==> onGroup    rs buff size
+                      , action ==? 0xf4  ==> onGetState rs
                       ]
-                      , action ==? 0xf2  ==> onInit  rs buff size
+                      , action ==? 0xf2  ==> onInit     rs buff size
                       ]
              ]
 
@@ -290,3 +296,7 @@ initRelays Relays{..} buff offset = do
             store (r ~> R.defaultDelayOff) =<< unpackLE buff (offset' + 2)
             store (r ~> R.timestamp      ) timestamp'
             store offset $ offset' + 6
+
+
+
+onGetState = forceSyncRelays
