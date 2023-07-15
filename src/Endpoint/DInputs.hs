@@ -43,7 +43,7 @@ dinputs name n = do
     runDInputs addArea
     pure dinputs
     where go = [ state  .= ival false
-               , synced .= ival true
+               , synced .= ival false
                ]
 
 

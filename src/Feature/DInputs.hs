@@ -69,14 +69,15 @@ dinputs inputs = do
     addTask  $ delay 10 "dinputs_manage" $ manageDInputs dinputs
     addTask  $ yeld     "dinputs_sync"   $ syncDInputs   dinputs
 
-    addSync "dinputs" $ DI.runDInputs (getDInputs dinputs) $
-        \dis -> arrayMap $ \ix -> store (addrOf dis ! ix ~> DI.synced) false
+    addSync "dinputs" $ forceSyncDInputs dinputs
 
-    pure     $ Feature dinputs
-
+    pure $ Feature dinputs
 
 
-instance Controller DInputs
+
+forceSyncDInputs :: DInputs -> Ivory eff ()
+forceSyncDInputs dinputs = DI.runDInputs (getDInputs dinputs) $
+    \dis -> arrayMap $ \ix -> store (addrOf dis ! ix ~> DI.synced) false
 
 
 
@@ -121,3 +122,7 @@ syncDInput DInputs{..} i =
             msg <- DI.message getDInputs (i .% n)
             transmit msg
             store (di ~> DI.synced) true
+
+
+
+instance Controller DInputs
