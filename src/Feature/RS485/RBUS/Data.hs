@@ -7,10 +7,12 @@ import           Core.Transport
 import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Data.Value
+import           Endpoint.ATS                (ATS (payload))
+import           Endpoint.DInputsRelaysRules (Rules (synced))
 import           Interface.RS485
 import           Interface.SystemClock
 import           Ivory.Language
-import           Protocol.RS485.RBUS        (Preamble (confirm))
+import           Protocol.RS485.RBUS         (Preamble (confirm))
 import           Protocol.RS485.RBUS.Master
 
 
@@ -21,7 +23,7 @@ modeRS485 = 0 :: Uint8
 
 
 
-data RBUS = forall t. LazyTransport t => RBUS
+data RBUS = forall t. (LazyTransport t, Transport t) => RBUS
      { index            :: Int
      , clock            :: SystemClock
      , rs               :: RS485
@@ -51,5 +53,8 @@ data RBUS = forall t. LazyTransport t => RBUS
      , discoveryAddress :: Value      Uint8
      , confirmAddress   :: Value      Uint8
      , pingAddress      :: Value      Uint8
+     , shouldInit       :: Value      IBool
+     , synced           :: Value      IBool
+     , payload          :: Buffer   8 Uint8
      , transport        :: t
      }

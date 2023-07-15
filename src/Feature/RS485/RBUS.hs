@@ -24,6 +24,7 @@ import           Data.Buffer
 import           Data.Concurrent.Queue               as Q
 import           Data.Serialize
 import           Data.Value
+import           Feature.Dimmer.AC                   (DimmerAC (shouldInit))
 import           Feature.RS485.RBUS.Data
 import           Feature.RS485.RBUS.Rx
 import           Feature.RS485.RBUS.Tx
@@ -32,30 +33,31 @@ import           Interface.MCU                       (MCU (peripherals, systemCl
 import qualified Interface.RS485                     as I
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Protocol.RS485.RBUS
+import           Protocol.RS485.RBUS                 hiding (message)
 import           Protocol.RS485.RBUS.Master          as P
 import           Protocol.RS485.RBUS.Master.MacTable as T
 import           Protocol.RS485.RBUS.Master.Rx
 
 
 
-mkRBUS :: (MonadState Context m, MonadReader (D.Domain p t) m, LazyTransport t)
+mkRBUS :: (MonadState Context m, MonadReader (D.Domain p t) m, LazyTransport t, Transport t)
      => [m I.RS485] -> m [RBUS]
 mkRBUS rs485 = zipWithM rbus' rs485 [1..]
 
 
-rbus :: (MonadState Context m, MonadReader (D.Domain p t) m, LazyTransport t)
+rbus :: (MonadState Context m, MonadReader (D.Domain p t) m, LazyTransport t, Transport t)
      => [m I.RS485] -> m Feature
 rbus rs485 = Feature <$> mkRBUS rs485
 
 
-rbus' :: (MonadState Context m, MonadReader (D.Domain p t) m, LazyTransport t)
+rbus' :: (MonadState Context m, MonadReader (D.Domain p t) m, LazyTransport t, Transport t)
      => m I.RS485 -> Int -> m RBUS
 rbus' rs485 index = do
     rs               <- rs485
 
     mcu              <- asks D.mcu
     transport        <- asks D.transport
+    shouldInit       <- asks D.shouldInit
 
     let name          = "feature_rs485_rbus_" <> show index
     let clock         = systemClock mcu
@@ -86,6 +88,8 @@ rbus' rs485 index = do
     discoveryAddress <- value  (name <> "_address_discovery") broadcastAddress
     confirmAddress   <- value  (name <> "_address_confirm"  ) broadcastAddress
     pingAddress      <- value  (name <> "_address_ping"     ) broadcastAddress
+    synced           <- value  (name <> "_synced"           ) true
+    payload          <- buffer (name <> "_payload"          )
 
     let onMessage mac address buff n shouldHandle = do
             when shouldHandle $ do
@@ -139,6 +143,9 @@ rbus' rs485 index = do
                     , rxTimestamp, txTimestamp
                     , shouldDiscovery, shouldConfirm, shouldPing
                     , discoveryAddress, confirmAddress, pingAddress
+                    , shouldInit
+                    , synced
+                    , payload
                     , transport
                     }
 
@@ -147,27 +154,58 @@ rbus' rs485 index = do
     addTask $ yeld (name <> "_rx"   ) $ rxTask    rbus
     addTask $ yeld (name <> "_tx"   ) $ txTask    rbus
     addTask $ yeld (name <> "_reset") $ resetTask rbus
+    addTask $ yeld (name <> "_sync" ) $ syncTask  rbus
+
+    addSync (name <> "_sync") $ forceSyncRBUS rbus
 
     pure rbus
 
 
+
+forceSyncRBUS :: RBUS -> Ivory eff ()
+forceSyncRBUS RBUS{..} = store synced false
+
+
+forceSyncRBUS' :: [RBUS] -> Ivory eff ()
+forceSyncRBUS' = mapM_ forceSyncRBUS
+
+
+syncTask :: RBUS -> Ivory (ProcEffects s ()) ()
+syncTask r@RBUS{..} = do
+    synced' <- deref synced
+    when (iNot synced') $ do
+        T.transmitBuffer transport =<< message r
+        store synced true
+
+
+
+message :: RBUS -> Ivory eff (Buffer 8 Uint8)
+message RBUS{..} = do
+    pack   payload 0 (0xa0 :: Uint8)
+    pack   payload 1 (fromIntegral index :: Uint8)
+    pack   payload 2 =<< deref mode
+    packLE payload 3 =<< deref baudrate
+    pack   payload 7 =<< deref lineControl
+    pure   payload
+
+
+
 setMode :: KnownNat n
-              => [RBUS]
-              -> Buffer n Uint8
-              -> Uint8
-              -> Ivory (ProcEffects s ()) ()
+        => [RBUS]
+        -> Buffer n Uint8
+        -> Uint8
+        -> Ivory eff ()
 setMode list buff size = do
     when (size ==? 8) $ do
         port <- deref $ buff ! 1
-        let run r@RBUS{..} p =
-                when (p ==? port) $ do
+        let run r@RBUS{..} p = do
+                shouldInit' <- deref shouldInit
+                when (iNot shouldInit' .&& p ==? port) $ do
                     store mode        =<< unpack   buff 2
                     store baudrate    =<< unpackLE buff 3
                     store lineControl =<< unpack   buff 7
                     configureMode r
-                    T.lazyTransmit transport $ \transmit -> do
-                        transmit 8
-                        for 8 $ \ix -> transmit =<< deref (buff ! ix)
+                    store synced false
         zipWithM_ run list $ fromIntegral <$> [1..]
 
 
@@ -181,8 +219,9 @@ transmitRBUS list buff size = do
     when (size >? 9) $ do
         port <- deref $ buff ! 7
         let run r@RBUS{..} p = do
-                mode' <- deref mode
-                when (mode' ==? modeRBUS .&& p ==? port) $ do
+                shouldInit' <- deref shouldInit
+                mode'       <- deref mode
+                when (iNot shouldInit' .&& mode' ==? modeRBUS .&& p ==? port) $ do
                     address <- deref $ buff ! 8
                     let macTable = P.table protocol
                     lookupMac macTable address $ \rec -> do
@@ -210,8 +249,9 @@ transmitRB485 list buff size = do
     when (size >? 2) $ do
         port <- deref $ buff ! 1
         let run r@RBUS{..} p = do
-                mode' <- deref mode
-                when (mode' ==? modeRS485 .&& p ==? port) $ do
+                shouldInit' <- deref shouldInit
+                mode'       <- deref mode
+                when (iNot shouldInit' .&& mode' ==? modeRS485 .&& p ==? port) $ do
                     let size' = size - 2
                     for (toIx size') $ \ix ->
                         store (txBuff ! toIx (fromIx ix)) . safeCast =<< deref (buff ! (ix + 2))
@@ -232,6 +272,7 @@ initialize list buff size =
                 store baudrate    =<< unpackLE buff (offset + 1)
                 store lineControl =<< unpack   buff (offset + 5)
                 configureMode r
+                store shouldInit false
         zipWithM_ run list $ fromIntegral <$> [1, 7..]
 
 
@@ -278,6 +319,16 @@ configureRS485 RBUS{..} = do
 
 
 
+onGetState :: [RBUS] -> Ivory eff ()
+onGetState = mapM_ run
+    where
+        run r@RBUS{..} = do
+            shouldInit' <- deref shouldInit
+            when (iNot shouldInit') $ forceSyncRBUS r
+
+
+
+
 instance Controller [RBUS] where
     handle list buff size =
         pure [ size >? 1 ==> do
@@ -286,6 +337,7 @@ instance Controller [RBUS] where
                       , action ==? 0xa1 ==> transmitRBUS  list buff size
                       , action ==? 0xa2 ==> transmitRB485 list buff size
                       , action ==? 0xf2 ==> initialize    list buff size
+                      , action ==? 0xf4 ==> onGetState    list
                       ]
              ]
 
