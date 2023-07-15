@@ -24,17 +24,18 @@ import           Data.Serialize
 import           Data.Value
 import           Endpoint.ATS                as A
 import qualified Endpoint.DInputs            as DI
-import           Endpoint.DInputsRelaysRules as DIR
+import           Endpoint.DInputsRelaysRules
 import qualified Endpoint.Groups             as G
 import qualified Endpoint.Relays             as R
 import           Feature.Dimmer.AC           (onFade)
 import           Feature.DInputs             (DInputs (DInputs, getDInputs, getInputs),
-                                              manageDInputs, mkDInputs,
-                                              syncDInputs)
+                                              forceSyncDInputs, manageDInputs,
+                                              mkDInputs, syncDInputs)
 import           Feature.Mix.Indicator       (Indicator, mkIndicator, onFindMe)
 import           Feature.Relays              (Relays (Relays, getGroups, getRelays),
-                                              manageRelays, mkRelays, onDo,
-                                              onGroup, onInit, syncRelays)
+                                              forceSyncRelays, manageRelays,
+                                              mkRelays, onDo, onGroup, onInit,
+                                              syncRelays)
 import           GHC.RTS.Flags               (DebugFlags (stable))
 import           GHC.TypeNats
 import           Interface.Display
@@ -97,18 +98,10 @@ mix inputs outputs display etc = do
     addTask $ delay 10 "mix_manage" $ manage mix
     addTask $ yeld     "mix_sync"   $ sync   mix
 
-    addSync "dinputs" $ DI.runDInputs (getDInputs dinputs) $
-        \dis -> arrayMap $ \ix -> store (addrOf dis ! ix ~> DI.synced) false
-
-    addSync "relays" $ R.runRelays (getRelays relays) $
-        \rs -> arrayMap $ \ix -> store (addrOf rs ! ix ~> R.synced) false
-
-    addSync "groups" $ G.runGroups (getGroups relays) $
-        \gs -> arrayMap $ \ix -> store (addrOf gs ! ix ~> G.synced) false
-
-    addSync "rules" $ store (DIR.synced rules) false
-
-    addSync "ats" $ store (A.synced ats) false
+    addSync "dinputs" $ forceSyncDInputs dinputs
+    addSync "relays"  $ forceSyncRelays  relays
+    addSync "rules"   $ forceSyncRules   rules
+    addSync "ats"     $ forceSyncATS     ats
 
     pure $ Feature mix
 
@@ -141,6 +134,7 @@ instance Controller Mix where
              , action ==? 0x03 .&& iNot shouldInit' ==> onRule     mix       buff size
              , action ==? 0x04 .&& iNot shouldInit' ==> onMode     mix       buff size
              , action ==? 0xf2                      ==> onInit     relays    buff size
+             , action ==? 0xf4                      ==> onGetState mix
              , action ==? 0xfa                      ==> onFindMe   indicator buff size
              , action ==? 0xff                      ==> resetError ats
              ]
@@ -173,6 +167,15 @@ onMode mix@Mix{..} buff size = do
         manageLock mix
         resetError ats
         save mix
+
+
+
+onGetState :: Mix -> Ivory eff ()
+onGetState Mix{..} = do
+    shouldInit' <- deref shouldInit
+    when (iNot shouldInit') $ forceSyncRelays relays
+    forceSyncRules rules
+    forceSyncATS ats
 
 
 
