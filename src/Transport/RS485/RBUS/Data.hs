@@ -17,10 +17,10 @@ data RBUS = RBUS
     , protocol      :: Slave  255
     , rxBuff        :: Buffer  64 Uint16
     , rxQueue       :: Queue   64
-    , msgOffset     :: Buffer  32 Uint16
-    , msgSize       :: Buffer  32 Uint16
-    , msgTTL        :: Buffer  32 Uint8
-    , msgQueue      :: Queue   32
+    , msgOffset     :: Buffer  64 Uint16
+    , msgSize       :: Buffer  64 Uint16
+    , msgTTL        :: Buffer  64 Uint8
+    , msgQueue      :: Queue   64
     , msgBuff       :: Buffer 512 Uint16
     , msgIndex      :: Value      Uint16
     , txBuff        :: Buffer 255 Uint16

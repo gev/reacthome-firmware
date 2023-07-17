@@ -96,7 +96,7 @@ mix inputs outputs display etc = do
     addInit "mix" $ load mix
 
     addTask $ delay 10 "mix_manage" $ manage mix
-    addTask $ delay 1  "mix_sync"   $ sync   mix
+    addTask $ yeld     "mix_sync"   $ sync   mix
 
     addSync "dinputs" $ forceSyncDInputs dinputs
     addSync "relays"  $ forceSyncRelays  relays
