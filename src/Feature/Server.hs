@@ -72,7 +72,7 @@ instance Controller Server where
              , action ==? 0xa1 ==> transmitRBUS  rbus   buff size
              , action ==? 0xa2 ==> transmitRB485 rbus   buff size
              , action ==? 0xf2 ==> onInit        s      buff size
-            --  , action ==? 0xf4 ==> onGetState    s
+             , action ==? 0xf4 ==> onGetState    s
              ]
 
 
