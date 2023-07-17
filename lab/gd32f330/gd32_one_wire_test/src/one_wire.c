@@ -6,11 +6,11 @@
 #define TIME_RESET_US 480
 #define TIME_PRESENCE_FIRST_US 70
 #define TIME_PRESENCE_SECOND_US 410
-#define TIME_SEND_BIT_1_US 6
-#define TIME_SEND_BIT_1_PAUSE_US 64
+#define TIME_SEND_BIT_1_US 5
+#define TIME_SEND_BIT_1_PAUSE_US 65
 #define TIME_SEND_BIT_0_US 60
 #define TIME_SEND_BIT_0_PAUSE_US 10
-#define TIME_READ_BIT_US 9
+#define TIME_READ_BIT_US 10
 #define TIME_READ_BIT_PAUSE_US 55
 
 extern pin one_wire, rede;
@@ -33,7 +33,7 @@ uint8_t one_wire_reset() {
 void one_wire_send_byte(uint8_t data) {
   for (uint8_t bit = 0; bit < 8; bit++) {
     pin_reset(one_wire);
-    if (0 < (data & 1)) {
+    if (data & 1) {
       delay_us(TIME_SEND_BIT_1_US);
       pin_set(one_wire);
       delay_us(TIME_SEND_BIT_1_PAUSE_US);
