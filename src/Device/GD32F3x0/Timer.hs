@@ -24,6 +24,7 @@ import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.Timer
+import           Support.Device.GD32F3x0.System (system_core_clock)
 
 
 
@@ -48,6 +49,29 @@ timer_14 = mkTimer timer14 rcu_timer14 timer14_irqn
 
 timer_15 :: MonadState Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
 timer_15 = mkTimer timer15 rcu_timer15 timer15_irqn
+
+
+timerConfig :: Uint32 -> Uint32 -> Init (Struct TIMER_PARAM_STRUCT)
+timerConfig frequency' period' =
+    timerParam [ prescaler .= ival (castDefault $ system_core_clock `iDiv` frequency' - 1)
+               , period    .= ival (period' - 1)
+               ]
+
+
+cfg_timer_0 :: MonadState Context m => Uint32 -> Uint32 -> m Timer
+cfg_timer_0 frequency' period' = timer_0 $ timerConfig frequency' period'
+
+cfg_timer_1 :: MonadState Context m => Uint32 -> Uint32 -> m Timer
+cfg_timer_1 frequency' period' = timer_1 $ timerConfig frequency' period'
+
+cfg_timer_2 :: MonadState Context m => Uint32 -> Uint32 -> m Timer
+cfg_timer_2 frequency' period' = timer_2 $ timerConfig frequency' period'
+
+cfg_timer_14 :: MonadState Context m => Uint32 -> Uint32 -> m Timer
+cfg_timer_14 frequency' period' = timer_14 $ timerConfig frequency' period'
+
+cfg_timer_15 :: MonadState Context m => Uint32 -> Uint32 -> m Timer
+cfg_timer_15 frequency' period' = timer_15 $ timerConfig frequency' period'
 
 
 mkTimer :: MonadState Context m
