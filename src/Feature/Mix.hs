@@ -96,7 +96,7 @@ mix inputs outputs display etc = do
     addInit "mix" $ load mix
 
     addTask $ delay 10 "mix_manage" $ manage mix
-    addTask $ delay 1    "mix_sync"   $ sync   mix
+    addTask $ delay  1 "mix_sync"   $ sync   mix
 
     addSync "dinputs" $ forceSyncDInputs dinputs
     addSync "relays"  $ forceSyncRelays  relays
@@ -174,6 +174,7 @@ onGetState :: Mix -> Ivory eff ()
 onGetState Mix{..} = do
     shouldInit' <- deref shouldInit
     when (iNot shouldInit') $ forceSyncRelays relays
+    forceSyncDInputs dinputs
     forceSyncRules rules
     forceSyncATS ats
 
