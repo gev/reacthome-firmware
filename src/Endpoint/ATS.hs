@@ -106,18 +106,18 @@ manageATS a@ATS{..} DI.DInputs{runDInputs} R.Relays{runRelays} =
         let di'  = addrOf di
         let r'   = addrOf r
         mode'   <- deref mode
-        cond_ [ mode' ==? mode_N1_G ==> do manageLine      1 a (di' ! 0) (di' ! 1) (r' ! 0)
-                                           manageGenerator 2 a (di' ! 4) (di' ! 5) (r' ! 2) (r' ! 3)
-                                           manageReset       a (di' ! 6)
+        cond_ [ mode' ==? mode_N1_G ==> do manageLine      1 a (di' !  1) (di' !  2) (r' !  0)
+                                           manageGenerator 2 a (di' ! 10) (di' ! 11) (r' !  4) (r' !  5)
+                                           manageReset       a (di' !  0)
 
-              , mode' ==? mode_N2   ==> do manageLine      1 a (di' ! 0) (di' ! 1) (r' ! 0)
-                                           manageLine      2 a (di' ! 2) (di' ! 3) (r' ! 1)
-                                           manageReset       a (di' ! 6)
+              , mode' ==? mode_N2   ==> do manageLine      1 a (di' !  1) (di' !  2) (r' !  0)
+                                           manageLine      2 a (di' !  3) (di' !  4) (r' !  1)
+                                           manageReset       a (di' !  0)
 
-              , mode' ==? mode_N2_G ==> do manageLine      1 a (di' ! 0) (di' ! 1) (r' ! 0)
-                                           manageLine      2 a (di' ! 2) (di' ! 3) (r' ! 1)
-                                           manageGenerator 3 a (di' ! 4) (di' ! 5) (r' ! 2) (r' ! 3)
-                                           manageReset       a (di' ! 6)
+              , mode' ==? mode_N2_G ==> do manageLine      1 a (di' !  1) (di' !  2) (r' !  0)
+                                           manageLine      2 a (di' !  3) (di' !  4) (r' !  1)
+                                           manageGenerator 3 a (di' ! 10) (di' ! 11) (r' !  4) (r' !  5)
+                                           manageReset       a (di' !  0)
               ]
 
 
