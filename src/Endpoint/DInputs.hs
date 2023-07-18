@@ -23,6 +23,7 @@ type DInputStruct = "dinput_struct"
 [ivory|
     struct dinput_struct
     { state           :: IBool
+    ; timestamp       :: Uint32
     ; synced          :: IBool
     }
 |]
@@ -42,8 +43,9 @@ dinputs name n = do
     let dinputs    = DInputs {runDInputs, payload}
     runDInputs addArea
     pure dinputs
-    where go = [ state  .= ival false
-               , synced .= ival false
+    where go = [ state     .= ival false
+               , timestamp .= ival 0
+               , synced    .= ival false
                ]
 
 

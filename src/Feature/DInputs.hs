@@ -9,24 +9,25 @@
 
 module Feature.DInputs where
 
-import           Control.Monad        (zipWithM_)
-import           Control.Monad.Reader (MonadReader, asks)
-import           Control.Monad.State  (MonadState)
+import           Control.Monad         (zipWithM_)
+import           Control.Monad.Reader  (MonadReader, asks)
+import           Control.Monad.State   (MonadState)
 import           Core.Context
 import           Core.Controller
-import qualified Core.Domain          as D
+import qualified Core.Domain           as D
 import           Core.Feature
 import           Core.Task
-import qualified Core.Transport       as T
+import qualified Core.Transport        as T
 import           Data.Buffer
 import           Data.Index
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
-import qualified Endpoint.DInputs     as DI
+import qualified Endpoint.DInputs      as DI
 import           GHC.TypeNats
 import           Interface.GPIO.Input
-import           Interface.MCU        (MCU, peripherals, systemClock)
+import           Interface.MCU         (MCU, peripherals, systemClock)
+import           Interface.SystemClock (SystemClock, getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
 
@@ -37,6 +38,7 @@ data DInputs = forall i. Input i => DInputs
     , getDInputs :: DI.DInputs
     , getInputs  :: [i]
     , current    :: Index Uint8
+    , clock      :: SystemClock
     , transmit   :: forall n. KnownNat n
                  => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
@@ -47,6 +49,7 @@ mkDInputs :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t,
           => [p -> m i] -> m DInputs
 mkDInputs inputs = do
     mcu        <- asks D.mcu
+    let clock   = systemClock mcu
     transport  <- asks D.transport
     is         <- mapM ($ peripherals mcu) inputs
     let n       = length is
@@ -56,6 +59,7 @@ mkDInputs inputs = do
                  , getDInputs
                  , getInputs = is
                  , current
+                 , clock
                  , transmit = T.transmitBuffer transport
                  }
 
@@ -88,20 +92,22 @@ manageDInputs DInputs{..} = zipWithM_ zip getInputs [0..]
         zip input i = DI.runDInputs getDInputs $ \dis -> do
             let ix = fromIntegral i
             let di = addrOf dis ! ix
-            manageDInput di input
+            manageDInput di input =<< getSystemTime clock
 
 
 
 manageDInput :: Input i
              => Record DI.DInputStruct
              -> i
+             -> Uint32
              -> Ivory eff ()
-manageDInput di input  = do
+manageDInput di input t  = do
     value <- iNot <$> get input
     state <- deref $ di ~> DI.state
     when (value /=? state) $ do
-        store (di ~> DI.state ) value
-        store (di ~> DI.synced) false
+        store (di ~> DI.state    ) value
+        store (di ~> DI.timestamp) t
+        store (di ~> DI.synced   ) false
 
 
 
