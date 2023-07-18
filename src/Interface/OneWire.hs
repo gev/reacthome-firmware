@@ -20,12 +20,13 @@ data OneWire where
               , timer :: t
               } -> OneWire
 
+
 oneWire :: (MonadState Context m, MonadReader (D.Domain p t1) m, Timer t, Output o)
        => Int -> (p -> m o) -> (p -> m t) -> m OneWire
 oneWire n out' timer' = do
-    mcu' <- asks D.mcu
-    out  <- out' $ peripherals mcu'
-    let timer = undefined 
+    mcu'  <- asks D.mcu
+    out   <- out'   $ peripherals mcu'
+    timer <- timer' $ peripherals mcu'
     pure OneWire {out, timer}
 
 
