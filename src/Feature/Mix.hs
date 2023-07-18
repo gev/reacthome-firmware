@@ -242,8 +242,8 @@ manageLock Mix{..} = R.runRelays (getRelays relays) $ \r -> do
     arrayMap $ \ix -> store (r' ! ix ~> R.lock) false
     cond_ [ mode' ==? mode_N1_G ==> do
                 store (r' ! 0 ~> R.lock) true
-                store (r' ! 1 ~> R.lock) true
                 store (r' ! 2 ~> R.lock) true
+                store (r' ! 3 ~> R.lock) true
           , mode' ==? mode_N2   ==> do
                 store (r' ! 0 ~> R.lock) true
                 store (r' ! 1 ~> R.lock) true
