@@ -108,16 +108,16 @@ manageATS a@ATS{..} DI.DInputs{runDInputs} R.Relays{runRelays} =
         mode'   <- deref mode
         cond_ [ mode' ==? mode_N1_G ==> do manageLine      1 a (di' !  1) (di' !  2) (r' !  0)
                                            manageGenerator 2 a (di' ! 10) (di' ! 11) (r' !  4) (r' !  5)
-                                           manageReset       a (di' !  0)
+                                           manageError       a (di' !  0)
 
               , mode' ==? mode_N2   ==> do manageLine      1 a (di' !  1) (di' !  2) (r' !  0)
                                            manageLine      2 a (di' !  3) (di' !  4) (r' !  1)
-                                           manageReset       a (di' !  0)
+                                           manageError       a (di' !  0)
 
               , mode' ==? mode_N2_G ==> do manageLine      1 a (di' !  1) (di' !  2) (r' !  0)
                                            manageLine      2 a (di' !  3) (di' !  4) (r' !  1)
                                            manageGenerator 3 a (di' ! 10) (di' ! 11) (r' !  4) (r' !  5)
-                                           manageReset       a (di' !  0)
+                                           manageError       a (di' !  0)
               ]
 
 
@@ -278,10 +278,10 @@ detectError n ATS{..} hasVoltage isRelayOn relay = do
 
 
 
-manageReset :: ATS
+manageError :: ATS
             -> Record DI.DInputStruct
             ->  Ivory eff ()
-manageReset a@ATS{..} di = do
+manageError a@ATS{..} di = do
     isPressed   <- deref $ di ~> DI.state
     shouldReset <- deref reset
     when (iNot isPressed .&& shouldReset) $ do
