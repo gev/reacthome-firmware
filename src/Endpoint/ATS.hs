@@ -100,7 +100,7 @@ forceSyncATS :: ATS -> Ivory eff ()
 forceSyncATS ATS{..} = store synced false
 
 
-manageATS :: ATS -> DI.DInputs -> R.Relays -> Ivory eff ()
+manageATS :: ATS -> DI.DInputs -> R.Relays -> Ivory ('Effects (Returns ()) r (Scope s)) ()
 manageATS a@ATS{..} DI.DInputs{runDInputs} R.Relays{runRelays} =
     runDInputs $ \di -> runRelays $ \r -> do
         let di'  = addrOf di
@@ -127,9 +127,9 @@ manageLine :: Uint8
            -> Record DI.DInputStruct
            -> Record DI.DInputStruct
            -> Record R.RelayStruct
-           ->  Ivory eff ()
+           ->  Ivory ('Effects (Returns ()) r (Scope s)) ()
 manageLine n a@ATS{..} hasVoltage isRelayOn relay = do
-    manageError n a isRelayOn relay
+    detectError n a hasVoltage isRelayOn relay
     timestamp <- getSystemTime clock
     noError   <- iNot <$> hasError a
     ifte_ noError
@@ -163,9 +163,9 @@ manageGenerator :: Uint8
                 -> Record DI.DInputStruct
                 -> Record R.RelayStruct
                 -> Record R.RelayStruct
-                ->  Ivory eff ()
+                ->  Ivory ('Effects (Returns ()) r (Scope s)) ()
 manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
-    manageError n a isRelayOn relay
+    detectError n a hasVoltage isRelayOn relay
     timestamp <- getSystemTime clock
     noError   <- iNot <$> hasError a
     ts        <- deref $ start ~> R.timestamp
@@ -233,28 +233,48 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
           )
 
 
+
 hasError :: ATS -> Ivory eff IBool
 hasError ATS{..} = do
     (.||) <$> ((.||) <$> e 1 <*> e 2) <*> e 3
     where e i = (/=? errorNone) <$> deref (error ! i)
 
-manageError :: Uint8
+
+
+detectError :: Uint8
             -> ATS
             -> Record DI.DInputStruct
+            -> Record DI.DInputStruct
             -> Record R.RelayStruct
-            ->  Ivory eff ()
-manageError n ATS{..} isRelayOn relay = do
+            ->  Ivory ('Effects (Returns ()) r (Scope s)) ()
+detectError n ATS{..} hasVoltage isRelayOn relay = do
     delayOn'  <- deref $ relay ~> R.delayOn
     delayOff' <- deref $ relay ~> R.delayOff
-    when (delayOn' ==? 0 .&& delayOff' ==? 0) $ do
-        t0 <- deref $ relay ~> R.timestamp
-        t1 <- getSystemTime clock
-        when (t1 - t0 >? 1_000) $ do
+    error'    <- deref $ error ! toIx n
+    when (error' ==? errorNone .&& delayOn' ==? 0 .&& delayOff' ==? 0) $ do
+        t1      <- deref $ hasVoltage ~> DI.timestamp
+        t2      <- deref $ isRelayOn ~> DI.timestamp
+        t3      <- deref $ relay ~> R.timestamp
+        t       <- getSystemTime clock
+        let dt1  = t - t1
+        let dt2  = t - t2
+        let dt3  = t - t3
+        dt <- ifte (dt1 <? dt2) (pure dt1) (pure dt2)
+        dt <- ifte (dt  <? dt3) (pure dt ) (pure dt3)
+        when (dt >? 1_000) $ do
+            hasVoltage' <- deref $ hasVoltage ~> DI.state
             isRelayOn'  <- deref $ isRelayOn ~> DI.state
             relayState' <- deref $ relay ~> R.state
-            when (relayState' /=? isRelayOn') $ do
-                store (error ! toIx n) $ safeCast relayState' * 2 + safeCast isRelayOn'
-                store synced false
+            cond_ [ iNot hasVoltage' .&& iNot relayState' .&&      isRelayOn' ==> err 1 -- 0 0 1
+                  , iNot hasVoltage' .&&      relayState' .&& iNot isRelayOn' ==> err 2 -- 0 1 0
+                  , iNot hasVoltage' .&&      relayState' .&&      isRelayOn' ==> err 3 -- 0 1 1
+                  ,      hasVoltage' .&& iNot relayState' .&&      isRelayOn' ==> err 5 -- 1 0 1
+                  ,      hasVoltage' .&&      relayState' .&& iNot isRelayOn' ==> err 6 -- 1 1 0
+                  ]
+            where
+                err code = do
+                    store (error ! toIx n) code
+                    store synced false
 
 
 
