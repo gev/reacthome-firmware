@@ -202,12 +202,14 @@ turnOffGroup rs ix g t =
             when (group ==? g) $ do
                 isOn     <- deref $ r ~> state
                 delayOn' <- deref $ r ~> delayOn
-                cond_ [ isOn ==> do
-                            store (r ~> state       ) false
-                            store (r ~> delayOn     ) 0
-                            store (r ~> delayOff    ) 0
-                            store (r ~> timestamp   ) t
-                      , delayOn' >? 0 ==> do
-                            store (r ~> delayOn     ) 0
-                            store (r ~> delayOff    ) 0
-                      ]
+                isLocked <- deref $ r ~> lock
+                when (iNot isLocked) $
+                    cond_ [ isOn ==> do
+                                store (r ~> state    ) false
+                                store (r ~> delayOn  ) 0
+                                store (r ~> delayOff ) 0
+                                store (r ~> timestamp) t
+                        , delayOn' >? 0 ==> do
+                                store (r ~> delayOn  ) 0
+                                store (r ~> delayOff ) 0
+                        ]
