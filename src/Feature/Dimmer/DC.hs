@@ -108,15 +108,17 @@ manageDimmer pwm dimmer = do
 
 sync :: DimmerDC -> Ivory (ProcEffects s ()) ()
 sync DimmerDC{..} = do
-    i <- deref current
-    runDimmers getDimmers $ \ds -> do
-        let d = addrOf ds ! toIx i
-        synced' <- deref $ d ~> synced
-        when (iNot synced') $ do
-            msg <- message getDimmers (i .% n)
-            transmit msg
-            store (d ~> synced) true
-    store current $ i + 1
+    shouldInit' <- deref shouldInit
+    when (iNot shouldInit') $ do
+        i <- deref current
+        runDimmers getDimmers $ \ds -> do
+            let d = addrOf ds ! toIx i
+            synced' <- deref $ d ~> synced
+            when (iNot synced') $ do
+                msg <- message getDimmers (i .% n)
+                transmit msg
+                store (d ~> synced) true
+        store current $ i + 1
 
 
 
@@ -220,6 +222,4 @@ onGroup dimmers index buff size =
         setGroup group dimmers index
 
 
-onGetState dimmers = do
-    shouldInit' <- deref $ shouldInit dimmers
-    when (iNot shouldInit') $ forceSyncDimmerDC dimmers
+onGetState = forceSyncDimmerDC

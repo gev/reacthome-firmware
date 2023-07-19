@@ -104,8 +104,6 @@ onInit Server{..} buff size =
 
 
 onGetState Server{..} = do
-    shouldInit' <- deref shouldInit
-    when (iNot shouldInit') $ do
-        forceSyncDimmerDC dimmer
-        forceSyncRBUS' rbus
     forceSyncDInputs dinputs
+    forceSyncDimmerDC dimmer
+    forceSyncRBUS' rbus

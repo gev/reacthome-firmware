@@ -172,9 +172,8 @@ onMode mix@Mix{..} buff size = do
 
 onGetState :: Mix -> Ivory eff ()
 onGetState Mix{..} = do
-    shouldInit' <- deref shouldInit
-    when (iNot shouldInit') $ forceSyncRelays relays
     forceSyncDInputs dinputs
+    forceSyncRelays relays
     forceSyncRules rules
     forceSyncATS ats
 

@@ -172,8 +172,9 @@ forceSyncRBUS' = mapM_ forceSyncRBUS
 
 syncTask :: RBUS -> Ivory (ProcEffects s ()) ()
 syncTask r@RBUS{..} = do
-    synced' <- deref synced
-    when (iNot synced') $ do
+    shouldInit' <- deref shouldInit
+    synced'     <- deref synced
+    when (iNot shouldInit' .&& iNot synced') $ do
         T.transmitBuffer transport =<< message r
         store synced true
 
