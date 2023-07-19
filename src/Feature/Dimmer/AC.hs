@@ -201,15 +201,17 @@ manageDimmerNoCrossZero pwm dimmer = do
 
 sync :: DimmerAC -> Ivory (ProcEffects s ()) ()
 sync DimmerAC{..} = do
-    i <- deref current
-    runDimmers getDimmers $ \ds -> do
-        let d = addrOf ds ! toIx i
-        synced' <- deref $ d ~> synced
-        when (iNot synced') $ do
-            msg <- message getDimmers (i .% n)
-            transmit msg
-            store (d ~> synced) true
-    store current $ i + 1
+    shouldInit' <- deref shouldInit
+    when (iNot shouldInit') $ do
+        i <- deref current
+        runDimmers getDimmers $ \ds -> do
+            let d = addrOf ds ! toIx i
+            synced' <- deref $ d ~> synced
+            when (iNot synced') $ do
+                msg <- message getDimmers (i .% n)
+                transmit msg
+                store (d ~> synced) true
+        store current $ i + 1
 
 
 
@@ -313,6 +315,4 @@ onGroup dimmers index buff size =
         setGroup group dimmers index
 
 
-onGetState dimmers = do
-    shouldInit' <- deref $ shouldInit dimmers
-    when (iNot shouldInit') $ forceSyncDimmerAC dimmers
+onGetState = forceSyncDimmerAC

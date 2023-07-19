@@ -162,10 +162,12 @@ manageState r o setOut state = do
 
 syncRelays :: Relays -> Ivory (ProcEffects s ()) ()
 syncRelays rs@Relays{..} = do
-    i <- deref current
-    syncRelays' rs i
-    syncGroups' rs i
-    store current $ i + 1
+    shouldInit' <- deref shouldInit
+    when (iNot shouldInit') $ do
+        i <- deref current
+        syncRelays' rs i
+        syncGroups' rs i
+        store current $ i + 1
 
 
 
