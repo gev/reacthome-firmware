@@ -17,6 +17,7 @@ import           Data.Buffer
 import           Data.Record
 import           Data.Value
 import qualified Endpoint.DInputs      as DI
+import           Endpoint.Relays       (delayOn)
 import qualified Endpoint.Relays       as R
 import           GHC.TypeNats
 import           Interface.MCU
@@ -223,13 +224,15 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
 
                        , true ==> do
                             justTurnOff relay timestamp
-                            when (timestamp - ts >? 30_000) $ justTurnOff start timestamp
+                            delay <- deref $ start ~> delayOn
+                            when (delay >? 0 .|| timestamp - ts >? 30_000) $ justTurnOff start timestamp
                        ]
 
           )
           (do
                 justTurnOff relay timestamp
-                when (timestamp - ts >? 30_000) $ justTurnOff start timestamp
+                delay <- deref $ start ~> delayOn
+                when (delay >? 0 .|| timestamp - ts >? 30_000) $ justTurnOff start timestamp
           )
 
 
