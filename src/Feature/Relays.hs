@@ -290,11 +290,13 @@ initRelays Relays{..} buff offset = do
         arrayMap $ \ix -> do
             offset' <- deref offset
             let r = addrOf rs ! ix
-            store (r ~> R.state          ) =<< unpack   buff  offset'
-            store (r ~> R.group          ) =<< unpack   buff (offset' + 1)
-            store (r ~> R.delayOff       ) =<< unpackLE buff (offset' + 2)
-            store (r ~> R.defaultDelayOff) =<< unpackLE buff (offset' + 2)
-            store (r ~> R.timestamp      ) timestamp'
+            isLocked <- deref $ r ~> R.lock
+            when (iNot isLocked) $ do
+                store (r ~> R.state          ) =<< unpack   buff  offset'
+                store (r ~> R.group          ) =<< unpack   buff (offset' + 1)
+                store (r ~> R.delayOff       ) =<< unpackLE buff (offset' + 2)
+                store (r ~> R.defaultDelayOff) =<< unpackLE buff (offset' + 2)
+                store (r ~> R.timestamp      ) timestamp'
             store offset $ offset' + 6
 
 
