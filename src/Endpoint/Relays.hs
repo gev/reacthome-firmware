@@ -174,13 +174,15 @@ getGroupDelay rs groups i ts = do
         deref (g ~> G.delay)
     min <- local $ ival delay'
     arrayMap $ \jx -> do
-        let r = rs ! jx
-        isOn   <- deref $ r ~> state
-        group' <- deref $ r ~> group
-        when (iNot isOn .&& group' ==? i) $ do
-            dt <- (ts -) <$> deref (r ~> timestamp)
-            min' <- deref min
-            when (dt <? min') $ store min dt
+        let r     = rs ! jx
+        isLocked <- deref $ r ~> lock
+        when (iNot isLocked) $ do
+            isOn   <- deref $ r ~> state
+            group' <- deref $ r ~> group
+            when (iNot isOn .&& group' ==? i) $ do
+                dt <- (ts -) <$> deref (r ~> timestamp)
+                min' <- deref min
+                when (dt <? min') $ store min dt
     min' <- deref min
     ifte (delay' >? min')
          (pure $ delay' - min')
