@@ -207,11 +207,11 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
                                         t <- deref $ start ~> R.timestamp
                                         when (timestamp - t >? 10_000) $
                                             cond_ [ attempt' ==? 0 ==> do
-                                                        delayTurnOn start 10_000 timestamp
+                                                        justTurnOn start timestamp
                                                         store attempt 1
                                                         store synced false
                                                   , attempt' <? maxAttempt ==> do
-                                                        delayTurnOn start 10_000 timestamp
+                                                        justTurnOn start timestamp
                                                         store attempt $ attempt' + 1
                                                         store synced false
                                                   , true ==> do
@@ -227,15 +227,13 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
                                 store attempt 0
                                 store synced false
                             justTurnOff relay timestamp
-                            delay <- deref $ start ~> delayOn
-                            when (delay >? 0 .|| timestamp - ts >? 30_000) $ justTurnOff start timestamp
+                            when (timestamp - ts >? 30_000) $ justTurnOff start timestamp
                        ]
 
           )
           (do
                 justTurnOff relay timestamp
-                delay <- deref $ start ~> delayOn
-                when (delay >? 0 .|| timestamp - ts >? 30_000) $ justTurnOff start timestamp
+                when (timestamp - ts >? 30_000) $ justTurnOff start timestamp
           )
 
 
