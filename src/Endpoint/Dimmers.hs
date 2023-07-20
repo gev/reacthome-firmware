@@ -53,7 +53,7 @@ dimmers name n = do
                  , group      .= ival i
                  , value      .= ival 0
                  , delta      .= ival 0
-                 , synced     .= ival true
+                 , synced     .= ival false
                  ]
 
 

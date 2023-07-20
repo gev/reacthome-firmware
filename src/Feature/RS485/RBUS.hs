@@ -88,7 +88,7 @@ rbus' rs485 index = do
     discoveryAddress <- value  (name <> "_address_discovery") broadcastAddress
     confirmAddress   <- value  (name <> "_address_confirm"  ) broadcastAddress
     pingAddress      <- value  (name <> "_address_ping"     ) broadcastAddress
-    synced           <- value  (name <> "_synced"           ) true
+    synced           <- value  (name <> "_synced"           ) false
     payload          <- buffer (name <> "_payload"          )
 
     let onMessage mac address buff n shouldHandle = do
