@@ -63,7 +63,7 @@ relays name n = do
                  , delayOff        .= ival 0
                  , timestamp       .= ival 0
                  , group           .= ival i
-                 , synced          .= ival true
+                 , synced          .= ival false
                  , lock            .= ival false
                  ]
 

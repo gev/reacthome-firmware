@@ -43,7 +43,7 @@ groups name n = do
     pure Groups { runGroups, payload }
     where go =  [ enabled   .= ival false
                 , delay     .= ival 0
-                , synced    .= ival true
+                , synced    .= ival false
                 ]
 
 
