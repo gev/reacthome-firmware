@@ -101,6 +101,7 @@ executable reacthome-firmware
                     , Interface.Timer
                     , Interface.UART
                     , Interface.RS485
+                    , Interface.OneWire
                     , Interface.PWM
                     , Interface.EXTI
                     , Interface.Display
