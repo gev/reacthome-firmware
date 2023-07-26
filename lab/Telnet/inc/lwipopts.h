@@ -115,8 +115,8 @@ OF SUCH DAMAGE.
 #define LWIP_PROVIDE_ERRNO      1
 
 /* checksum options */
-#define CHECKSUM_BY_HARDWARE                             /* computing and verifying the IP, UDP, TCP and ICMP
-                                                            checksums by hardware */
+// #define CHECKSUM_BY_HARDWARE                             /* computing and verifying the IP, UDP, TCP and ICMP
+//                                                             checksums by hardware */
 
 /* sequential layer options */
 #define LWIP_NETCONN            0                        /* set to 1 to enable netconn API (require to use api_lib.c) */
