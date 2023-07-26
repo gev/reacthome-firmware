@@ -44,15 +44,15 @@ OF SUCH DAMAGE.
 
 // #define USE_DHCP       1 /* enable DHCP, if disabled static address is used */
 
-// #define USE_ENET_INTERRUPT
+#define USE_ENET_INTERRUPT
 // #define TIMEOUT_CHECK_USE_LWIP
 /* MAC address: MAC_ADDR0:MAC_ADDR1:MAC_ADDR2:MAC_ADDR3:MAC_ADDR4:MAC_ADDR5 */
-#define MAC_ADDR0   1
-#define MAC_ADDR1   1
-#define MAC_ADDR2   1
-#define MAC_ADDR3   1
-#define MAC_ADDR4   1
-#define MAC_ADDR5   1
+#define MAC_ADDR0   4
+#define MAC_ADDR1   4
+#define MAC_ADDR2   4
+#define MAC_ADDR3   4
+#define MAC_ADDR4   4
+#define MAC_ADDR5   4
  
 /* static IP address: IP_ADDR0.IP_ADDR1.IP_ADDR2.IP_ADDR3 */
 #define IP_ADDR0   192
@@ -61,10 +61,10 @@ OF SUCH DAMAGE.
 #define IP_ADDR3   10
 
 /* remote IP address: IP_S_ADDR0.IP_S_ADDR1.IP_S_ADDR2.IP_S_ADDR3 */
-#define IP_S_ADDR0   192
-#define IP_S_ADDR1   168
-#define IP_S_ADDR2   88
-#define IP_S_ADDR3   154
+// #define IP_S_ADDR0   192
+// #define IP_S_ADDR1   168
+// #define IP_S_ADDR2   88
+// #define IP_S_ADDR3   154
 
 
    

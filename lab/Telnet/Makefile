@@ -20,7 +20,7 @@ TARGET = telnet
 # building variables
 ######################################
 # debug build?
-DEBUG = 0
+DEBUG = 1
 # optimization
 OPT = -O3
 
@@ -341,6 +341,7 @@ $(BUILD_DIR):
 clean:
 	-rm -fR $(BUILD_DIR)
 flash:
+	make
 	JLinkExe -Device GD32F450VG -If SWD -Speed 1000 jlink/FlashMCU.jlink
 erase:
 	JLinkExe -Device GD32F450VG -If SWD -Speed 1000 jlink/EraseMCU.jlink
