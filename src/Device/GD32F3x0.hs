@@ -13,12 +13,14 @@ import           Device.GD32F3x0.Flash
 import           Device.GD32F3x0.GPIO
 import           Device.GD32F3x0.GPIO.Input
 import           Device.GD32F3x0.GPIO.Output
+import           Device.GD32F3x0.GPIO.OpenDrain
 import           Device.GD32F3x0.Mac              (makeMac)
 import           Device.GD32F3x0.PWM
 import           Device.GD32F3x0.SystemClock      as G
 import           Device.GD32F3x0.SysTick
 import           Device.GD32F3x0.Timer
 import           Device.GD32F3x0.UART
+import           Device.GD32F3x0.OneWire
 import           Interface.Mac                    (Mac)
 import           Interface.MCU
 import           Interface.SystemClock            (SystemClock, systemClock)
@@ -38,10 +40,12 @@ import           Support.Device.GD32F3x0.USART
 type UARTW        = forall m. MonadState Context m => m UART
 type InputW       = forall m. MonadState Context m => m Input
 type OutputW      = forall m. MonadState Context m => m Output
+type OpenDrainW   = forall m. MonadState Context m => m OpenDrain
 type PWMW         = forall m. MonadState Context m => Uint32 -> Uint32 -> m PWM
 type TimerW       = forall m. MonadState Context m => Uint32 -> Uint32 -> m Timer
 type NeoPixelPWMW = forall m. MonadState Context m => m NeoPixelPWM
 type EXTIW        = forall m. MonadState Context m => m EXTI
+type OneWireW     = forall m. MonadState Context m => m OneWire
 
 
 data GD32F3x0 = GD32F3x0
@@ -116,6 +120,8 @@ data GD32F3x0 = GD32F3x0
     , out_pb_14 :: OutputW
     , out_pb_15 :: OutputW
 
+    , od_pa_8   :: OpenDrainW
+
     , tim_0   :: TimerW
     , tim_1   :: TimerW
     , tim_2   :: TimerW
@@ -139,6 +145,8 @@ data GD32F3x0 = GD32F3x0
 
     , exti_pa_0 :: EXTIW
     , exti_pa_5 :: EXTIW
+    
+    , ow_pa_8   :: OneWireW
 
     , etc       :: PageAddr
     }
@@ -230,6 +238,7 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
     , out_pb_14 = output pb_14
     , out_pb_15 = output pb_15
 
+    , od_pa_8   = opendrain pa_8
 
     , tim_0   =  cfg_timer_0
     , tim_1   =  cfg_timer_1
@@ -301,6 +310,8 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
                          exti_source_gpioa
                          exti_source_pin5
                          exti_5
+
+
 
     , etc = mkPage 0x800_fc00
     }

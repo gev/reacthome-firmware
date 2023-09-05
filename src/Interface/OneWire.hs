@@ -30,5 +30,4 @@ oneWire n out' timer' = do
     pure OneWire {out, timer}
 
 
-
-  
+class Handler HandleOneWire o => OneWire o where 
