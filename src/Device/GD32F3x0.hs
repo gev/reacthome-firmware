@@ -146,7 +146,6 @@ data GD32F3x0 = GD32F3x0
     , exti_pa_0 :: EXTIW
     , exti_pa_5 :: EXTIW
     
-    , ow_pa_8   :: OneWireW
 
     , etc       :: PageAddr
     }
@@ -238,7 +237,7 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
     , out_pb_14 = output pb_14
     , out_pb_15 = output pb_15
 
-    , od_pa_8   = opendrain pa_8
+    , od_pa_8   = openDrain pa_8
 
     , tim_0   =  cfg_timer_0
     , tim_1   =  cfg_timer_1

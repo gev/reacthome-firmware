@@ -16,7 +16,7 @@ newtype Output = Output {getOutput :: Port}
 
 output :: MonadState Context m => (MODE -> Port) -> m Output
 output p = do
-    let port = io gpio_mode_output p
+    let port = p Out
     initPort port
     pure $ Output port
 

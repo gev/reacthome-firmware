@@ -15,7 +15,7 @@ newtype Input = Input {getInput :: Port}
 
 input :: MonadState Context m => (MODE -> Port) -> m Input
 input p = do
-    let port = io gpio_mode_input p
+    let port = p In
     initPort port
     pure $ Input port
 
