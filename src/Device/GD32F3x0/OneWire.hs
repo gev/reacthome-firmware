@@ -1,18 +1,26 @@
+{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE FlexibleContexts #-}
+
 module Device.GD32F3x0.OneWire where
 
 import qualified Device.GD32F3x0.GPIO           as G
-import           Device.GD32F3x0.Timer
+import           Device.GD32F3x0.Timer          (Timer)
+import           Core.Context
+import           Control.Monad.State
+
+
+
 
 data OneWire = OneWire 
     {   
-        pin     :: OpenDrainW
+        pin     :: G.Port
     ,   timer   :: Timer
     }
 
 mkOneWire :: MonadState Context m
-          => OpenDrainW
+          => G.Port
           -> Timer
           -> m OneWire
-mkOneWire pin = do
+mkOneWire pin timer = do
     
-    pure OneWire { pin }
+    pure OneWire { pin, timer }
