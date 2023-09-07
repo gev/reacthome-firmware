@@ -26,8 +26,8 @@ data Port = Port
 data MODE
     = In
     | Out
-    | AF GPIO_AF
     | OD
+    | AF GPIO_AF
 
 
 
@@ -79,15 +79,14 @@ initPort :: MonadState Context m => Port -> m (Def ('[] ':-> ()))
 initPort p@Port{..} = addInit (show p) $ do
     enablePeriphClock rcu
     case mode of
-        In        -> setOutputOptions gpio gpio_otype_pp gpio_ospeed_50mhz pin
-                  >> setMode gpio gpio_mode_input gpio_pupd_none pin
-        Out       -> setOutputOptions gpio gpio_otype_pp gpio_ospeed_50mhz pin
-                  >> setMode gpio gpio_mode_output gpio_pupd_none pin
-        OD        -> setOutputOptions gpio gpio_otype_od gpio_ospeed_50mhz pin
-                  >> setMode gpio gpio_mode_output gpio_pupd_none pin
-        (AF mode) -> setOutputOptions gpio gpio_otype_pp gpio_ospeed_50mhz pin
-                  >> setMode gpio gpio_mode_af gpio_pupd_none pin
+        In        -> initMode gpio_mode_input  gpio_otype_pp
+        Out       -> initMode gpio_mode_output gpio_otype_pp
+        OD        -> initMode gpio_mode_output gpio_otype_od
+        (AF mode) -> initMode gpio_mode_af     gpio_otype_pp
                   >> setAF gpio mode pin
+    where initMode mode otype = do
+            setOutputOptions gpio otype gpio_ospeed_50mhz pin
+            setMode gpio mode gpio_pupd_none pin
 
 instance Show Port where
     show Port{..} = symbol gpio <> "_" <> symbol pin
