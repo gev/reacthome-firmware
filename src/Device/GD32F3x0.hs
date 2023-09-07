@@ -38,114 +38,114 @@ import           Support.Device.GD32F3x0.USART
 
 
 
-type UARTW        = forall m. MonadState Context m => m UART
-type InputW       = forall m. MonadState Context m => m Input
-type OutputW      = forall m. MonadState Context m => m Output
-type OpenDrainW   = forall m. MonadState Context m => m OpenDrain
-type PWMW         = forall m. MonadState Context m => Uint32 -> Uint32 -> m PWM
-type TimerW       = forall m. MonadState Context m => Uint32 -> Uint32 -> m Timer
-type NeoPixelPWMW = forall m. MonadState Context m => m NeoPixelPWM
-type EXTIW        = forall m. MonadState Context m => m EXTI
-type OneWireW     = forall m. MonadState Context m => m OneWire
+type UART'        = forall m. MonadState Context m => m UART
+type Input'       = forall m. MonadState Context m => m Input
+type Output'      = forall m. MonadState Context m => m Output
+type OpenDrain'   = forall m. MonadState Context m => m OpenDrain
+type PWM'         = forall m. MonadState Context m => Uint32 -> Uint32 -> m PWM
+type Timer'       = forall m. MonadState Context m => Uint32 -> Uint32 -> m Timer
+type NeoPixelPWM' = forall m. MonadState Context m => m NeoPixelPWM
+type EXTI'        = forall m. MonadState Context m => m EXTI
+type OneWire'     = forall m. MonadState Context m => m OneWire
 
 
 data GD32F3x0 = GD32F3x0
-    { uart_0    :: UARTW
-    , uart_1    :: UARTW
+    { uart_0    :: UART'
+    , uart_1    :: UART'
 
-    , in_pa_0   :: InputW
-    , in_pa_1   :: InputW
-    , in_pa_2   :: InputW
-    , in_pa_3   :: InputW
-    , in_pa_4   :: InputW
-    , in_pa_5   :: InputW
-    , in_pa_6   :: InputW
-    , in_pa_7   :: InputW
-    , in_pa_8   :: InputW
-    , in_pa_9   :: InputW
-    , in_pa_10  :: InputW
-    , in_pa_11  :: InputW
-    , in_pa_12  :: InputW
-    , in_pa_13  :: InputW
-    , in_pa_14  :: InputW
-    , in_pa_15  :: InputW
+    , in_pa_0   :: Input'
+    , in_pa_1   :: Input'
+    , in_pa_2   :: Input'
+    , in_pa_3   :: Input'
+    , in_pa_4   :: Input'
+    , in_pa_5   :: Input'
+    , in_pa_6   :: Input'
+    , in_pa_7   :: Input'
+    , in_pa_8   :: Input'
+    , in_pa_9   :: Input'
+    , in_pa_10  :: Input'
+    , in_pa_11  :: Input'
+    , in_pa_12  :: Input'
+    , in_pa_13  :: Input'
+    , in_pa_14  :: Input'
+    , in_pa_15  :: Input'
 
-    , in_pb_0   :: InputW
-    , in_pb_1   :: InputW
-    , in_pb_2   :: InputW
-    , in_pb_3   :: InputW
-    , in_pb_4   :: InputW
-    , in_pb_5   :: InputW
-    , in_pb_6   :: InputW
-    , in_pb_7   :: InputW
-    , in_pb_8   :: InputW
-    , in_pb_9   :: InputW
-    , in_pb_10  :: InputW
-    , in_pb_11  :: InputW
-    , in_pb_12  :: InputW
-    , in_pb_13  :: InputW
-    , in_pb_14  :: InputW
-    , in_pb_15  :: InputW
+    , in_pb_0   :: Input'
+    , in_pb_1   :: Input'
+    , in_pb_2   :: Input'
+    , in_pb_3   :: Input'
+    , in_pb_4   :: Input'
+    , in_pb_5   :: Input'
+    , in_pb_6   :: Input'
+    , in_pb_7   :: Input'
+    , in_pb_8   :: Input'
+    , in_pb_9   :: Input'
+    , in_pb_10  :: Input'
+    , in_pb_11  :: Input'
+    , in_pb_12  :: Input'
+    , in_pb_13  :: Input'
+    , in_pb_14  :: Input'
+    , in_pb_15  :: Input'
 
-    , out_pa_0  :: OutputW
-    , out_pa_1  :: OutputW
-    , out_pa_2  :: OutputW
-    , out_pa_3  :: OutputW
-    , out_pa_4  :: OutputW
-    , out_pa_5  :: OutputW
-    , out_pa_6  :: OutputW
-    , out_pa_7  :: OutputW
-    , out_pa_8  :: OutputW
-    , out_pa_9  :: OutputW
-    , out_pa_10 :: OutputW
-    , out_pa_11 :: OutputW
-    , out_pa_12 :: OutputW
-    , out_pa_13 :: OutputW
-    , out_pa_14 :: OutputW
-    , out_pa_15 :: OutputW
+    , out_pa_0  :: Output'
+    , out_pa_1  :: Output'
+    , out_pa_2  :: Output'
+    , out_pa_3  :: Output'
+    , out_pa_4  :: Output'
+    , out_pa_5  :: Output'
+    , out_pa_6  :: Output'
+    , out_pa_7  :: Output'
+    , out_pa_8  :: Output'
+    , out_pa_9  :: Output'
+    , out_pa_10 :: Output'
+    , out_pa_11 :: Output'
+    , out_pa_12 :: Output'
+    , out_pa_13 :: Output'
+    , out_pa_14 :: Output'
+    , out_pa_15 :: Output'
 
-    , out_pb_0  :: OutputW
-    , out_pb_1  :: OutputW
-    , out_pb_2  :: OutputW
-    , out_pb_3  :: OutputW
-    , out_pb_4  :: OutputW
-    , out_pb_5  :: OutputW
-    , out_pb_6  :: OutputW
-    , out_pb_7  :: OutputW
-    , out_pb_8  :: OutputW
-    , out_pb_9  :: OutputW
-    , out_pb_10 :: OutputW
-    , out_pb_11 :: OutputW
-    , out_pb_12 :: OutputW
-    , out_pb_13 :: OutputW
-    , out_pb_14 :: OutputW
-    , out_pb_15 :: OutputW
+    , out_pb_0  :: Output'
+    , out_pb_1  :: Output'
+    , out_pb_2  :: Output'
+    , out_pb_3  :: Output'
+    , out_pb_4  :: Output'
+    , out_pb_5  :: Output'
+    , out_pb_6  :: Output'
+    , out_pb_7  :: Output'
+    , out_pb_8  :: Output'
+    , out_pb_9  :: Output'
+    , out_pb_10 :: Output'
+    , out_pb_11 :: Output'
+    , out_pb_12 :: Output'
+    , out_pb_13 :: Output'
+    , out_pb_14 :: Output'
+    , out_pb_15 :: Output'
 
-    , od_pa_8   :: OpenDrainW
+    , od_pa_8   :: OpenDrain'
 
-    , tim_0     :: TimerW
-    , tim_1     :: TimerW
-    , tim_2     :: TimerW
-    , tim_14    :: TimerW
-    , tim_15    :: TimerW
+    , tim_0     :: Timer'
+    , tim_1     :: Timer'
+    , tim_2     :: Timer'
+    , tim_14    :: Timer'
+    , tim_15    :: Timer'
 
-    , pwm_0     :: PWMW
-    , pwm_1     :: PWMW
-    , pwm_2     :: PWMW
-    , pwm_3     :: PWMW
-    , pwm_4     :: PWMW
-    , pwm_5     :: PWMW
-    , pwm_6     :: PWMW
-    , pwm_7     :: PWMW
-    , pwm_8     :: PWMW
-    , pwm_9     :: PWMW
-    , pwm_10    :: PWMW
-    , pwm_11    :: PWMW
+    , pwm_0     :: PWM'
+    , pwm_1     :: PWM'
+    , pwm_2     :: PWM'
+    , pwm_3     :: PWM'
+    , pwm_4     :: PWM'
+    , pwm_5     :: PWM'
+    , pwm_6     :: PWM'
+    , pwm_7     :: PWM'
+    , pwm_8     :: PWM'
+    , pwm_9     :: PWM'
+    , pwm_10    :: PWM'
+    , pwm_11    :: PWM'
 
-    , npx_pwm_0 :: NeoPixelPWMW
+    , npx_pwm_0 :: NeoPixelPWM'
 
-    , exti_pa_0 :: EXTIW
-    , exti_pa_5 :: EXTIW
+    , exti_pa_0 :: EXTI'
+    , exti_pa_5 :: EXTI'
 
 
     , etc       :: PageAddr
