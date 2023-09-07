@@ -14,7 +14,7 @@ import           Core.Context
 import           Core.Handler
 import           Data.Maybe
 import           Data.Record
-import qualified Device.GD32F3x0.GPIO           as G
+import           Device.GD32F3x0.GPIO.Port
 import           Interface.UART                 (HandleUART (onDrain))
 import qualified Interface.UART                 as I
 import           Ivory.Language
@@ -38,8 +38,8 @@ data UART = UART
     , dma       :: DMA_CHANNEL
     , dmaIRQn   :: IRQn
     , dmaParams :: Record DMA_PARAM_STRUCT
-    , rx        :: G.Port
-    , tx        :: G.Port
+    , rx        :: Port
+    , tx        :: Port
     }
 
 
@@ -49,8 +49,8 @@ mkUART :: MonadState Context m
        -> IRQn
        -> DMA_CHANNEL
        -> IRQn
-       -> G.Port
-       -> G.Port
+       -> Port
+       -> Port
        -> m UART
 mkUART uart rcu uartIRQ dma dmaIRQn rx tx = do
 
@@ -67,8 +67,8 @@ mkUART uart rcu uartIRQ dma dmaIRQn rx tx = do
     TODO: Generalize  remap dma
 -}
 
-    G.initPort rx
-    G.initPort tx
+    initPort rx
+    initPort tx
 
     addInit (symbol uart) $ do
             store (dmaParams ~> periph_addr) =<< tdata uart

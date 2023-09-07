@@ -3,7 +3,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE TypeOperators         #-}
 
 module Device.GD32F3x0.Display.NeoPixel where
 
@@ -14,7 +13,7 @@ import           Core.Task
 import           Data.Display.FrameBuffer.NeoPixel.PWM
 import           Data.Record
 import           Data.Value
-import           Device.GD32F3x0.GPIO
+import           Device.GD32F3x0.GPIO.Port
 import           Device.GD32F3x0.Timer
 import qualified Interface.Display                     as I
 import qualified Interface.Timer                       as I

@@ -133,6 +133,8 @@ executable reacthome-firmware
                     , Device.GD32F3x0.Display.NeoPixel
                     , Device.GD32F3x0.EXTI
                     , Device.GD32F3x0.GPIO
+                    , Device.GD32F3x0.GPIO.Mode
+                    , Device.GD32F3x0.GPIO.Port
                     , Device.GD32F3x0.GPIO.Input
                     , Device.GD32F3x0.GPIO.Output
                     , Device.GD32F3x0.GPIO.OpenDrain
