@@ -150,8 +150,11 @@ executable reacthome-firmware
                     , Device.GD32F4xx
                     , Device.GD32F4xx.Display.NeoPixel
                     , Device.GD32F4xx.GPIO
+                    , Device.GD32F4xx.GPIO.Mode
+                    , Device.GD32F4xx.GPIO.Port
                     , Device.GD32F4xx.GPIO.Input
                     , Device.GD32F4xx.GPIO.Output
+                    , Device.GD32F4xx.GPIO.OpenDrain
                     , Device.GD32F4xx.Mac
                     , Device.GD32F4xx.PWM
                     , Device.GD32F4xx.SysTick

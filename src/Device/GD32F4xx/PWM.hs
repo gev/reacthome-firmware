@@ -10,7 +10,7 @@ module Device.GD32F4xx.PWM where
 import           Control.Monad.State
 import           Core.Context
 import           Core.Handler
-import           Device.GD32F4xx.GPIO
+import           Device.GD32F4xx.GPIO.Port
 import           Device.GD32F4xx.Timer
 import qualified Interface.PWM                  as I
 import qualified Interface.Timer                as I

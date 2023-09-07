@@ -16,6 +16,7 @@ import           Data.Display.FrameBuffer.NeoPixel.PWM
 import           Data.Record
 import           Data.Value
 import           Device.GD32F4xx.GPIO
+import           Device.GD32F4xx.GPIO.Port
 import           Device.GD32F4xx.Timer
 import qualified Interface.Display                     as I
 import qualified Interface.Timer                       as I

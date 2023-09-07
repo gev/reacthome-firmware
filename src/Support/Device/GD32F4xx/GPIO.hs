@@ -28,6 +28,7 @@ module Support.Device.GD32F4xx.GPIO
 
     , GPIO_OTYPE
     , gpio_otype_pp
+    , gpio_otype_od
 
     , GPIO_PIN
     , gpio_pin_0
@@ -122,6 +123,7 @@ newtype GPIO_OTYPE = GPIO_OTYPE Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 gpio_otype_pp = GPIO_OTYPE $ ext "GPIO_OTYPE_PP"
+gpio_otype_od = GPIO_OTYPE $ ext "GPIO_OTYPE_OD"
 
 
 
@@ -238,6 +240,7 @@ inclGPIO = do
     inclSym gpio_ospeed_50mhz
 
     inclSym gpio_otype_pp
+    inclSym gpio_otype_od
 
     inclSym gpio_pin_0
     inclSym gpio_pin_1
