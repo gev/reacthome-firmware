@@ -10,8 +10,8 @@ import           Device.GD32F4xx.Display.NeoPixel
 import           Device.GD32F4xx.Flash
 import           Device.GD32F4xx.GPIO
 import           Device.GD32F4xx.GPIO.Input
-import           Device.GD32F4xx.GPIO.Output
 import           Device.GD32F4xx.GPIO.Mode
+import           Device.GD32F4xx.GPIO.Output
 import           Device.GD32F4xx.Mac              (makeMac)
 import           Device.GD32F4xx.PWM
 import           Device.GD32F4xx.SystemClock      as G
@@ -245,8 +245,8 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
                          dma_ch7
                          dma_subperi4
                          dma1_channel7_irqn
-                         (pb_7 $ AF gpio_af_7)
-                         (pb_6 $ AF gpio_af_7)
+                         (pb_7 af_7)
+                         (pb_6 af_7)
 
     , uart_1    = mkUART usart1
                          rcu_usart1
@@ -256,8 +256,8 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
                          dma_ch6
                          dma_subperi4
                          dma0_channel6_irqn
-                         (pd_6 $ AF gpio_af_7)
-                         (pd_5 $ AF gpio_af_7)
+                         (pd_6 af_7)
+                         (pd_5 af_7)
 
     , uart_2    = mkUART usart2
                          rcu_usart2
@@ -267,8 +267,8 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
                          dma_ch3
                          dma_subperi4
                          dma0_channel3_irqn
-                         (pd_9 $ AF gpio_af_7)
-                         (pd_8 $ AF gpio_af_7)
+                         (pd_9 af_7)
+                         (pd_8 af_7)
 
     , uart_3    = mkUART uart3
                          rcu_uart3
@@ -278,8 +278,8 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
                          dma_ch4
                          dma_subperi4
                          dma0_channel4_irqn
-                         (pc_11 $ AF gpio_af_8)
-                         (pc_10 $ AF gpio_af_8)
+                         (pc_11 af_8)
+                         (pc_10 af_8)
 
     , uart_5    = mkUART usart5
                          rcu_usart5
@@ -289,8 +289,8 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
                          dma_ch6
                          dma_subperi5
                          dma1_channel6_irqn
-                         (pc_7 $ AF gpio_af_8)
-                         (pc_6 $ AF gpio_af_8)
+                         (pc_7 af_8)
+                         (pc_6 af_8)
 
     , uart_7    = mkUART uart7
                          rcu_uart7
@@ -300,8 +300,8 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
                          dma_ch0
                          dma_subperi5
                          dma0_channel0_irqn
-                         (pe_0 $ AF gpio_af_8)
-                         (pe_1 $ AF gpio_af_8)
+                         (pe_0 af_8)
+                         (pe_1 af_8)
 
 
     , in_pa_0   = mkInput pa_0
