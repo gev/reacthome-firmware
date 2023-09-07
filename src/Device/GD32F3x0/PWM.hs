@@ -3,7 +3,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE TypeOperators         #-}
 
 module Device.GD32F3x0.PWM where
 
