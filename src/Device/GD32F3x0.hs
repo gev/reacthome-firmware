@@ -20,7 +20,9 @@ import           Device.GD32F3x0.OneWire
 import           Device.GD32F3x0.PWM
 import           Device.GD32F3x0.SystemClock      as G
 import           Device.GD32F3x0.SysTick
-import           Device.GD32F3x0.Timer
+import           Device.GD32F3x0.Timer            (Timer, cfg_timer_0,
+                                                   cfg_timer_1, cfg_timer_14,
+                                                   cfg_timer_15, cfg_timer_2)
 import           Device.GD32F3x0.UART
 import           Interface.Mac                    (Mac)
 import           Interface.MCU
@@ -123,11 +125,11 @@ data GD32F3x0 = GD32F3x0
 
     , od_pa_8   :: OpenDrain'
 
-    , tim_0     :: Timer'
-    , tim_1     :: Timer'
-    , tim_2     :: Timer'
-    , tim_14    :: Timer'
-    , tim_15    :: Timer'
+    , timer_0   :: Timer'
+    , timer_1   :: Timer'
+    , timer_2   :: Timer'
+    , timer_14  :: Timer'
+    , timer_15  :: Timer'
 
     , pwm_0     :: PWM'
     , pwm_1     :: PWM'
@@ -240,11 +242,11 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
 
     , od_pa_8   = mkOpenDrain pa_8
 
-    , tim_0   =  cfg_timer_0
-    , tim_1   =  cfg_timer_1
-    , tim_2   =  cfg_timer_2
-    , tim_14  =  cfg_timer_14
-    , tim_15  =  cfg_timer_15
+    , timer_0   =  cfg_timer_0
+    , timer_1   =  cfg_timer_1
+    , timer_2   =  cfg_timer_2
+    , timer_14  =  cfg_timer_14
+    , timer_15  =  cfg_timer_15
 
 
     , pwm_0     = mkPWM cfg_timer_1
