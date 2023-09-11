@@ -16,7 +16,8 @@ import           Device.GD32F4xx.Mac              (makeMac)
 import           Device.GD32F4xx.PWM
 import           Device.GD32F4xx.SystemClock      as G
 import           Device.GD32F4xx.SysTick
-import           Device.GD32F4xx.Timer
+import           Device.GD32F4xx.Timer            (Timer, cfg_timer_1,
+                                                   cfg_timer_2, cfg_timer_3)
 import           Device.GD32F4xx.UART
 import           Interface.Mac                    (Mac)
 import           Interface.MCU
@@ -36,6 +37,7 @@ import           Support.Device.GD32F4xx.USART
 type UART'         = forall m. MonadState Context m => m UART
 type Input'        = forall m. MonadState Context m => m Input
 type Output'       = forall m. MonadState Context m => m Output
+type Timer'        = forall m. MonadState Context m => Uint32 -> Uint32 -> m Timer
 type PWM'          = forall m. MonadState Context m => Uint32 -> Uint32 -> m PWM
 type NeoPixelPWM'  = forall m. MonadState Context m => m NeoPixelPWM
 
@@ -222,6 +224,10 @@ data GD32F4xx = GD32F4xx
     , out_pe_13 :: Output'
     , out_pe_14 :: Output'
     , out_pe_15 :: Output'
+
+    , timer_1   :: Timer'
+    , timer_2   :: Timer'
+    , timer_3   :: Timer'
 
     , pwm_0     :: PWM'
     , pwm_1     :: PWM'
@@ -474,40 +480,43 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
     , out_pe_14 = mkOutput pe_14
     , out_pe_15 = mkOutput pe_15
 
+    , timer_1   =  cfg_timer_1
+    , timer_2   =  cfg_timer_2
+    , timer_3   =  cfg_timer_3
 
-    , pwm_0     = mkPWM pwm_timer_3
+    , pwm_0     = mkPWM cfg_timer_3
                         timer_ch_0
                         (pd_12 af_2)
-    , pwm_1     = mkPWM pwm_timer_3
+    , pwm_1     = mkPWM cfg_timer_3
                         timer_ch_1
                         (pd_13 af_2)
-    , pwm_2     = mkPWM pwm_timer_3
+    , pwm_2     = mkPWM cfg_timer_3
                         timer_ch_2
                         (pd_14 af_2)
-    , pwm_3     = mkPWM pwm_timer_3
+    , pwm_3     = mkPWM cfg_timer_3
                         timer_ch_3
                         (pd_15 af_2)
 
 
-    , npx_pwm_0 = mkNeoPixelPWM pwm_timer_2
+    , npx_pwm_0 = mkNeoPixelPWM cfg_timer_2
                                 timer_ch_0 rcu_dma0
                                 dma0 dma_ch2
                                 dma_subperi5 ch0cv
                                 (pb_4 af_2)
 
-    , npx_pwm_1 = mkNeoPixelPWM pwm_timer_2
+    , npx_pwm_1 = mkNeoPixelPWM cfg_timer_2
                                 timer_ch_1 rcu_dma0
                                 dma0 dma_ch2
                                 dma_subperi5 ch1cv
                                 (pb_5 af_2)
 
-    , npx_pwm_2 = mkNeoPixelPWM pwm_timer_2
+    , npx_pwm_2 = mkNeoPixelPWM cfg_timer_2
                                 timer_ch_2 rcu_dma0
                                 dma0 dma_ch2
                                 dma_subperi5 ch2cv
                                 (pb_0 af_2)
 
-    , npx_pwm_3 = mkNeoPixelPWM pwm_timer_2
+    , npx_pwm_3 = mkNeoPixelPWM cfg_timer_2
                                 timer_ch_3 rcu_dma0
                                 dma0 dma_ch2
                                 dma_subperi5 ch3cv

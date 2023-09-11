@@ -44,8 +44,8 @@ type UART'        = forall m. MonadState Context m => m UART
 type Input'       = forall m. MonadState Context m => m Input
 type Output'      = forall m. MonadState Context m => m Output
 type OpenDrain'   = forall m. MonadState Context m => m OpenDrain
-type PWM'         = forall m. MonadState Context m => Uint32 -> Uint32 -> m PWM
 type Timer'       = forall m. MonadState Context m => Uint32 -> Uint32 -> m Timer
+type PWM'         = forall m. MonadState Context m => Uint32 -> Uint32 -> m PWM
 type NeoPixelPWM' = forall m. MonadState Context m => m NeoPixelPWM
 type EXTI'        = forall m. MonadState Context m => m EXTI
 type OneWire'     = forall m. MonadState Context m => m OneWire

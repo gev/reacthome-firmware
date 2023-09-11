@@ -22,22 +22,6 @@ import           Support.Device.GD32F4xx.Timer
 {--
     TODO: Timer might has a prescaler/multiplicator. So resulting frequency maybe wrong
 --}
-pwmTimerParam :: Uint32 -> Uint32 -> Init (Struct TIMER_PARAM_STRUCT)
-pwmTimerParam frequency' period' =
-    timerParam [ prescaler .= ival (castDefault $ system_core_clock `iDiv` frequency' - 1)
-               , period    .= ival (period' - 1)
-               ]
-
-
-pwm_timer_1 :: MonadState Context m => Uint32 -> Uint32 -> m Timer
-pwm_timer_1 frequency' period' = timer_1 $ pwmTimerParam frequency' period'
-
-pwm_timer_2 :: MonadState Context m => Uint32 -> Uint32 -> m Timer
-pwm_timer_2 frequency' period' = timer_2 $ pwmTimerParam frequency' period'
-
-pwm_timer_3 :: MonadState Context m => Uint32 -> Uint32 -> m Timer
-pwm_timer_3 frequency' period' = timer_3 $ pwmTimerParam frequency' period'
-
 
 data PWM = PWM
     { pwmTimer   :: Timer
