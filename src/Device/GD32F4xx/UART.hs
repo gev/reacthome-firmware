@@ -16,7 +16,7 @@ import           Core.Handler
 import           Data.Foldable
 import           Data.Maybe
 import           Data.Record
-import qualified Device.GD32F4xx.GPIO          as G
+import qualified Device.GD32F4xx.GPIO.Port          as G
 import           Interface.UART                (HandleUART (onDrain))
 import qualified Interface.UART                as I
 import           Ivory.Language

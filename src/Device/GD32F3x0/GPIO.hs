@@ -1,31 +1,12 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE RecordWildCards  #-}
-{-# LANGUAGE TypeOperators    #-}
 
-module Device.GD32F3x0.GPIO where
+module Device.GD32F3x0.GPIO  where
 
-import           Control.Monad.State          (MonadState)
-import           Core.Context
-import           Data.Record
-import           Ivory.Language
-import           Ivory.Support                (ExtSymbol (symbol))
+import           Device.GD32F3x0.GPIO.Mode
+import           Device.GD32F3x0.GPIO.Port
 import           Support.Device.GD32F3x0.GPIO
 import           Support.Device.GD32F3x0.RCU
-
-
-
-data Port = Port
-    { rcu  :: RCU_PERIPH
-    , gpio :: GPIO_PERIPH
-    , pin  :: GPIO_PIN
-    , mode :: MODE
-    }
-
-
-data MODE
-    = MF GPIO_MODE
-    | AF GPIO_AF
 
 
 
@@ -65,27 +46,8 @@ pb_15 = pb gpio_pin_15
 
 
 
-pa :: GPIO_PIN -> MODE -> Port
+pa :: GPIO_PIN -> Mode -> Port
 pa = Port rcu_gpioa gpioa
 
-pb :: GPIO_PIN -> MODE -> Port
+pb :: GPIO_PIN -> Mode -> Port
 pb = Port rcu_gpiob gpiob
-
-
-
-io :: GPIO_MODE -> (MODE -> Port) -> Port
-io m p = p $ MF m
-
-
-
-initPort :: MonadState Context m => Port -> m (Def ('[] ':-> ()))
-initPort p@Port{..} = addInit (show p) $ do
-    enablePeriphClock rcu
-    setOutputOptions gpio gpio_otype_pp gpio_ospeed_50mhz pin
-    case mode of
-        (MF mode) -> setMode gpio mode gpio_pupd_none pin
-        (AF mode) -> setMode gpio gpio_mode_af gpio_pupd_none pin
-                  >> setAF gpio mode pin
-
-instance Show Port where
-    show Port{..} = symbol gpio <> "_" <> symbol pin

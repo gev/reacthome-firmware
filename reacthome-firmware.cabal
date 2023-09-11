@@ -95,6 +95,7 @@ executable reacthome-firmware
                     , Interface.Counter
                     , Interface.GPIO.Input
                     , Interface.GPIO.Output
+                    , Interface.GPIO.OpenDrain
                     , Interface.Mac
                     , Interface.MCU
                     , Interface.SystemClock
@@ -132,8 +133,11 @@ executable reacthome-firmware
                     , Device.GD32F3x0.Display.NeoPixel
                     , Device.GD32F3x0.EXTI
                     , Device.GD32F3x0.GPIO
+                    , Device.GD32F3x0.GPIO.Mode
+                    , Device.GD32F3x0.GPIO.Port
                     , Device.GD32F3x0.GPIO.Input
                     , Device.GD32F3x0.GPIO.Output
+                    , Device.GD32F3x0.GPIO.OpenDrain
                     , Device.GD32F3x0.Mac
                     , Device.GD32F3x0.PWM
                     , Device.GD32F3x0.SystemClock
@@ -141,12 +145,16 @@ executable reacthome-firmware
                     , Device.GD32F3x0.Timer
                     , Device.GD32F3x0.UART
                     , Device.GD32F3x0.Flash
+                    , Device.GD32F3x0.OneWire
 
                     , Device.GD32F4xx
                     , Device.GD32F4xx.Display.NeoPixel
                     , Device.GD32F4xx.GPIO
+                    , Device.GD32F4xx.GPIO.Mode
+                    , Device.GD32F4xx.GPIO.Port
                     , Device.GD32F4xx.GPIO.Input
                     , Device.GD32F4xx.GPIO.Output
+                    , Device.GD32F4xx.GPIO.OpenDrain
                     , Device.GD32F4xx.Mac
                     , Device.GD32F4xx.PWM
                     , Device.GD32F4xx.SysTick

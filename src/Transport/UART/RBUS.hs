@@ -3,7 +3,6 @@
 {-# LANGUAGE NamedFieldPuns     #-}
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE RankNTypes         #-}
-{-# LANGUAGE TypeOperators      #-}
 
 module Transport.UART.RBUS    where
 

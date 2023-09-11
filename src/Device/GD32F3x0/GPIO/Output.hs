@@ -5,7 +5,8 @@ module Device.GD32F3x0.GPIO.Output where
 
 import           Control.Monad.State
 import           Core.Context
-import           Device.GD32F3x0.GPIO
+import           Device.GD32F3x0.GPIO.Mode
+import           Device.GD32F3x0.GPIO.Port
 import qualified Interface.GPIO.Output        as I
 import           Ivory.Language.Module
 import           Support.Device.GD32F3x0.GPIO as S
@@ -14,9 +15,9 @@ import           Support.Device.GD32F3x0.GPIO as S
 newtype Output = Output {getOutput :: Port}
 
 
-output :: MonadState Context m => (MODE -> Port) -> m Output
-output p = do
-    let port = io gpio_mode_output p
+mkOutput :: MonadState Context m => (Mode -> Port) -> m Output
+mkOutput p = do
+    let port = p output
     initPort port
     pure $ Output port
 
