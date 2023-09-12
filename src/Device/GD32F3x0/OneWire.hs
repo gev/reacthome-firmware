@@ -1,12 +1,14 @@
-{-# LANGUAGE DataKinds          #-}
-{-# LANGUAGE FlexibleContexts   #-}
-{-# LANGUAGE NamedFieldPuns     #-}
-{-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE NumericUnderscores    #-}
 
 module Device.GD32F3x0.OneWire where
 
 import           Control.Monad.State
 import           Core.Context
+import           Core.Handler
 import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Data.Value
@@ -17,6 +19,8 @@ import           Device.GD32F3x0.Timer          (Timer)
 import qualified Interface.OneWire              as I
 import           Ivory.Language
 
+
+
 data OneWire = OneWire
     { port  :: OpenDrain
     , timer :: Timer
@@ -25,6 +29,7 @@ data OneWire = OneWire
     , tmpV  :: Value     Uint8
     , count :: Value     Uint8
     }
+
 
 mkOneWire :: MonadState Context m
          => (Uint32 -> Uint32 -> m Timer)
@@ -39,8 +44,15 @@ mkOneWire cfg od = do
     count <- value  "one_wire_count" 0
     pure $ OneWire { port, timer, tmpB, tmpQ, tmpV, count }
 
+
+
 instance I.OneWire OneWire where
-    read _ = pure ()
+    read _ = pure 0
 
     write OneWire {tmpB, tmpQ} v =
-        push tmpQ $ \ix -> store tmpB ix v
+        push tmpQ $ \ix -> store (tmpB ! toIx ix) v
+
+
+
+instance Handler I.HandleOneWire OneWire where
+  addHandler _ = pure ()

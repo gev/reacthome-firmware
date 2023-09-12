@@ -1,7 +1,8 @@
 module Formula.OW where
 import           Core.Formula
 
-import           Device.GD32F3x0      as D
+import           Device.GD32F3x0
+import           Feature.TestOneWire  (testOneWire)
 import           Interface.RS485
 import           Ivory.Language
 import           Transport.RS485.RBUS
@@ -14,7 +15,6 @@ ow = Formula { name = "ow"
              , version    = (2, 1)
              , shouldInit = true
              , transport  = rbus $ rs485 1 uart_0 out_pb_2
-             , features   = [ testOW $ D.ow od_pa_8
-
+             , features   = [ testOneWire ow_0 od_pa_8
                             ]
              }

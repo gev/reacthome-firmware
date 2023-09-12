@@ -48,7 +48,7 @@ type Timer'       = forall m. MonadState Context m => Uint32 -> Uint32 -> m Time
 type PWM'         = forall m. MonadState Context m => Uint32 -> Uint32 -> m PWM
 type NeoPixelPWM' = forall m. MonadState Context m => m NeoPixelPWM
 type EXTI'        = forall m. MonadState Context m => m EXTI
-type OneWire'     = forall m. MonadState Context m => (Uint32 -> Uint32 -> m Timer) -> m OpenDrain -> m OneWire
+type OneWire'     = forall m. MonadState Context m => m OpenDrain -> m OneWire
 
 
 data GD32F3x0 = GD32F3x0
@@ -149,7 +149,7 @@ data GD32F3x0 = GD32F3x0
     , exti_pa_0 :: EXTI'
     , exti_pa_5 :: EXTI'
 
-    , ow        :: OneWire'
+    , ow_0      :: OneWire'
 
     , etc       :: PageAddr
     }
@@ -315,7 +315,7 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
                          exti_5
 
 
-    , ow  = mkOneWire cfg_timer_0
+    , ow_0  = mkOneWire cfg_timer_0
 
     , etc = mkPage 0x800_fc00
     }

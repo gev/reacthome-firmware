@@ -82,6 +82,7 @@ executable reacthome-firmware
                     , Feature.RS485.RBUS.Rx
                     , Feature.RS485.RBUS.Tx
                     , Feature.Server
+                    , Feature.TestOneWire
 
                     , Formula.Blink330
                     , Formula.Blink450
