@@ -1,4 +1,5 @@
 module Formula.OW where
+
 import           Core.Formula
 
 import           Device.GD32F3x0

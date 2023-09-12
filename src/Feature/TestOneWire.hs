@@ -7,16 +7,16 @@
 module Feature.TestOneWire where
 
 import           Control.Monad.Reader
-import           Control.Monad.State   (MonadState)
+import           Control.Monad.State      (MonadState)
 import           Core.Context
 import           Core.Controller
 import           Core.Domain
 import           Core.Feature
 import           Core.Task
 import           Data.Value
-import     qualified      Interface.OneWire as I
-import     qualified      Interface.GPIO.OpenDrain as I
-import           Interface.MCU         (MCU (peripherals))
+import qualified Interface.GPIO.OpenDrain as I
+import           Interface.MCU            (MCU (peripherals))
+import qualified Interface.OneWire        as I
 import           Interface.Timer
 import           Ivory.Language
 
@@ -38,7 +38,7 @@ testOneWire ow od = do
 
     addTask $ delay 1_000 name $ do
         I.write onewire 0xaa
-        
+
     pure feature
 
 instance Controller TestOW
