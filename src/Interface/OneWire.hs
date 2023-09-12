@@ -29,9 +29,6 @@ oneWire n openDrain' timer' = do
     timer       <- timer' $ peripherals mcu'
     pure OneWire {openDrain, timer}
 
-
-sendByte :: OneWire -> Ivory eff ()
-sendByte OneWire{..} = 
-
+class OneWire p => 
 
 -- class Handler HandleOneWire o => OneWire o where 
