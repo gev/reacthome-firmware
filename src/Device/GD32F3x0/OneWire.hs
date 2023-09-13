@@ -42,7 +42,7 @@ mkOneWire :: MonadState Context m
          -> m OneWire
 mkOneWire cfg od = do
     port  <- od
-    timer <- cfg 2_000_000 10
+    timer <- cfg 2_000_000 2
     tmpB  <- buffer "one_wire_tmp"
     tmpQ  <- queue  "one_wire_tmp"
     tmpV  <- value_ "one_wire_tmp_value"
@@ -63,9 +63,11 @@ mkOneWire cfg od = do
     {-
     -   TODO: Have we to star/stop timer?
     -}
-    let owTask = pop tmpQ $ \i -> do
-            store tmpV =<< deref (tmpB ! toIx i)
-            store count 0
+    let owTask = do
+            count' <- deref count
+            when (count' ==? 8) $ pop tmpQ $ \i -> do
+                store tmpV =<< deref (tmpB ! toIx i)
+                store count 0
 
     addTask $ yeld "one_wire" owTask
 
