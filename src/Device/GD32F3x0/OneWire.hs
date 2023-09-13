@@ -60,6 +60,9 @@ mkOneWire cfg od = do
 
     addHandler $ I.HandleTimer timer handlerOW
 
+    {-
+    -   TODO: Have we to star/stop timer?
+    -}
     let owTask = pop tmpQ $ \i -> do
             store tmpV =<< deref (tmpB ! toIx i)
             store count 0
