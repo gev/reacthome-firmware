@@ -18,6 +18,9 @@ import           Device.GD32F3x0.GPIO.Port
 import           Device.GD32F3x0.Timer          (Timer)
 import qualified Interface.OneWire              as I
 import           Ivory.Language
+import qualified Interface.Timer                as I
+import           Support.CMSIS.CoreCM4
+import qualified Interface.GPIO.OpenDrain       as I
 
 
 
@@ -42,6 +45,11 @@ mkOneWire cfg od = do
     tmpQ  <- queue  "one_wire_tmp"
     tmpV  <- value_ "one_wire_tmp_value"
     count <- value  "one_wire_count" 0
+    let handlerOW = do
+                    I.set port
+                    nop 10
+                    I.reset port
+    addHandler $ I.HandleTimer timer handlerOW
     pure $ OneWire { port, timer, tmpB, tmpQ, tmpV, count }
 
 

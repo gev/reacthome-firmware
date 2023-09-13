@@ -36,7 +36,7 @@ testOneWire ow od = do
 
     let feature = Feature $ TestOW { name, onewire }
 
-    addTask $ delay 1_000 name $ do
+    addTask $ delay 1 name $ do
         I.write onewire 0xaa
 
     pure feature
