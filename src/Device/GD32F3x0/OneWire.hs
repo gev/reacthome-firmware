@@ -9,6 +9,7 @@ module Device.GD32F3x0.OneWire where
 import           Control.Monad.State            (MonadState)
 import           Core.Context
 import           Core.Handler
+import           Core.Task                      (yeld)
 import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Data.Value
@@ -46,20 +47,25 @@ mkOneWire cfg od = do
     tmpQ  <- queue  "one_wire_tmp"
     tmpV  <- value_ "one_wire_tmp_value"
     count <- value  "one_wire_count" 8
+
     let handlerOW = do
             count' <- deref count
-            cond_ [ count' ==? 8 
-                           ==> pop tmpQ (\i -> do store tmpV =<< deref (tmpB ! toIx i)
-                                                  store count 0)
-                  , count' <? 8 
-                           ==> do tmpV' <- deref tmpV
-                                  let bit = (tmpV' `iShiftR` count') .& 1
-                                  ifte_ (bit ==? 1)
-                                      (I.set   port)
-                                      (I.reset port)
-                                  store count $ count' + 1
-                  ]
+            when (count' <? 8) $ do
+                tmpV' <- deref tmpV
+                let bit = (tmpV' `iShiftR` count') .& 1
+                ifte_ (bit ==? 1)
+                    (I.set   port)
+                    (I.reset port)
+                store count $ count' + 1
+
     addHandler $ I.HandleTimer timer handlerOW
+
+    let owTask = pop tmpQ $ \i -> do
+            store tmpV =<< deref (tmpB ! toIx i)
+            store count 0
+
+    addTask $ yeld "one_wire" owTask
+
     pure $ OneWire { port, timer, tmpB, tmpQ, tmpV, count }
 
 
