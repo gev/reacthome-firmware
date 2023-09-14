@@ -3,6 +3,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE NumericUnderscores    #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Device.GD32F3x0.OneWire where
 
@@ -29,11 +30,16 @@ import           Support.CMSIS.CoreCM4
 data OneWire = OneWire
     { port  :: OpenDrain
     , timer :: Timer
+    , state :: Value     Uint8
     , tmpB  :: Buffer 32 Uint8
     , tmpQ  :: Queue  32
     , tmpV  :: Value     Uint8
     , count :: Value     Uint8
     }
+
+
+stateDone  = 0x0 :: Uint8
+stateWrite = 0x1 :: Uint8
 
 
 mkOneWire :: MonadState Context m
@@ -42,38 +48,57 @@ mkOneWire :: MonadState Context m
          -> m OneWire
 mkOneWire cfg od = do
     port  <- od
-    timer <- cfg 2_000_000 2
+    timer <- cfg 1_000_000 10
+    state <- value  "one_wire_state" stateDone
     tmpB  <- buffer "one_wire_tmp"
     tmpQ  <- queue  "one_wire_tmp"
     tmpV  <- value_ "one_wire_tmp_value"
     count <- value  "one_wire_count" 8
 
-    addInit "onewire" $ I.set port
+    let onewire = OneWire { port  = port
+                          , timer = timer
+                          , state = state
+                          , tmpB  = tmpB
+                          , tmpQ  = tmpQ
+                          , tmpV  = tmpV
+                          , count = count
+                          }
 
-    let handlerOW = do
-            count' <- deref count
-            when (count' <? 8) $ do
-                tmpV' <- deref tmpV
-                let bit = (tmpV' `iShiftR` count') .& 1
-                ifte_ (bit ==? 1)
-                    (I.set   port)
-                    (I.reset port)
-                store count $ count' + 1
+    addInit "onewire" $ initOneWire onewire
+    addHandler $ I.HandleTimer timer $ handlerOneWire onewire
+    addTask $ yeld "one_wire" $ taskOneWire onewire
 
-    addHandler $ I.HandleTimer timer handlerOW
+    pure onewire
 
-    {-
-    -   TODO: Have we to star/stop timer?
-    -}
-    let owTask = do
-            count' <- deref count
-            when (count' ==? 8) $ pop tmpQ $ \i -> do
-                store tmpV =<< deref (tmpB ! toIx i)
-                store count 0
+    
 
-    addTask $ yeld "one_wire" owTask
+initOneWire OneWire {..} = I.set port
 
-    pure $ OneWire { port, timer, tmpB, tmpQ, tmpV, count }
+
+
+taskOneWire OneWire {..} = do
+    state' <- deref state
+    when (state' ==? 8) $ pop tmpQ $ \i -> do
+        store tmpV =<< deref (tmpB ! toIx i)
+        store state stateWrite
+        store count 0
+
+
+{-
+-   TODO: Should we star/stop timer?
+-}
+handlerOneWire OneWire {..} = do
+    state' <- deref state
+    when (state' ==? stateWrite) $ do
+        count' <- deref count
+        when (count' <? 8) $ do
+            tmpV' <- deref tmpV
+            let bit = (tmpV' `iShiftR` count') .& 1
+            ifte_ (bit ==? 1)
+                (I.set   port)
+                (I.reset port)
+            store count $ count' + 1
+
 
 
 
