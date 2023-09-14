@@ -48,6 +48,8 @@ mkOneWire cfg od = do
     tmpV  <- value_ "one_wire_tmp_value"
     count <- value  "one_wire_count" 8
 
+    addInit "onewire" $ I.set port
+
     let handlerOW = do
             count' <- deref count
             when (count' <? 8) $ do
