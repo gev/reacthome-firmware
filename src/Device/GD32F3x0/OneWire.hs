@@ -70,15 +70,15 @@ mkOneWire cfg od = do
     tmpV  <- value_ "one_wire_tmp_value"
     count <- value  "one_wire_count" 8
 
-    let onewire = OneWire { port  
-                          , timer 
-                          , state 
+    let onewire = OneWire { port
+                          , timer
+                          , state
                           , phase
                           , time
-                          , tmpB  
-                          , tmpQ  
-                          , tmpV  
-                          , count 
+                          , tmpB
+                          , tmpQ
+                          , tmpV
+                          , count
                           }
 
     addInit "onewire" $ initOneWire onewire
@@ -114,7 +114,7 @@ handlerOneWire OneWire {..} = do
         time'  <- deref time
         phase' <- deref phase
         cond_ [ phase' ==? phaseReset ==> do
-                    cond_ [ time' ==? 0 ==> do 
+                    cond_ [ time' ==? 0 ==> do
                                 I.reset port
                                 store time 1
                           , time' ==? timeReset ==> do
@@ -122,10 +122,10 @@ handlerOneWire OneWire {..} = do
                                 store time 0
                                 store count 0
                                 store phase phasePresenceStart
-                          , true ==> store time (time' + 1)      
+                          , true ==> store time (time' + 1)
                           ]
               , phase' ==? phasePresenceStart ==> do
-                    cond_ [ time' <? timePresenceStart ==> store time (time' + 1) 
+                    cond_ [ time' <? timePresenceStart ==> store time (time' + 1)
                           , true ==> do
                                 hasPresence <- iNot <$> I.get port
                                 ifte_ hasPresence
@@ -144,6 +144,7 @@ handlerOneWire OneWire {..} = do
                                 ifte_ hasntPresence
                                     (do
                                         store time 0
+                                        store count 0
                                         store phase phaseWriteBit
                                     )
                                     (
@@ -152,7 +153,7 @@ handlerOneWire OneWire {..} = do
                           ]
               , phase' ==? phaseWriteBit ==> do
                     count' <- deref count
-                    ifte_ (count' <? 8) 
+                    ifte_ (count' <? 8)
                         (do
                             tmpV' <- deref tmpV
                             let bit = (tmpV' `iShiftR` count') .& 1
