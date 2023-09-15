@@ -36,11 +36,8 @@ testOneWire ow od = do
 
     let feature = Feature $ TestOW { name, onewire }
 
-    addTask $ delay 1 name $ do
-        I.write onewire 0xff
-        I.write onewire 0x00
-        I.write onewire 0xff
-        I.write onewire 0x00
+    addTask $ delay 5 name $ do
+        I.write onewire 0x55
 
     pure feature
 
