@@ -3,7 +3,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE NumericUnderscores    #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RecordWildCards       #-}
 
 module Device.GD32F3x0.OneWire where
 
@@ -70,12 +70,14 @@ mkOneWire cfg od = do
 
     pure onewire
 
-    
 
+
+initOneWire :: OneWire -> Ivory eff ()
 initOneWire OneWire {..} = I.set port
 
 
 
+taskOneWire :: OneWire -> Ivory eff ()
 taskOneWire OneWire {..} = do
     state' <- deref state
     when (state' ==? 8) $ pop tmpQ $ \i -> do
@@ -87,6 +89,7 @@ taskOneWire OneWire {..} = do
 {-
 -   TODO: Should we star/stop timer?
 -}
+handlerOneWire :: OneWire -> Ivory eff ()
 handlerOneWire OneWire {..} = do
     state' <- deref state
     when (state' ==? stateWrite) $ do
