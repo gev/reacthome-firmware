@@ -104,30 +104,21 @@ initOneWire :: OneWire -> Ivory eff ()
 initOneWire OneWire {..} = OD.set port
 
 
-
 taskOneWire :: OneWire -> Ivory eff ()
-taskOneWire OneWire {..} = do
-    currentState <- deref state
-    cond_ [ currentState ==? stateError ==> do
-                pop stateQ $ \i -> do
-                    nextState <- deref (stateB ! toIx i)
-                    when (nextState ==? stateReset) $ do
-                        store time  0
-                        store state nextState
-          , currentState ==? stateDone ==> do
-                pop stateQ $ \i -> do
-                    nextState <- deref (stateB ! toIx i)
-                    ifte_ (nextState ==? stateWrite)
-                          (pop tmpQ $ \j -> do
-                                store tmpV =<< deref (tmpB ! toIx j)
-                                store count 0
-                                store time  0
-                                store state nextState
-                          )
-                          (do
-                                store time  0
-                                store state nextState
-                          )
+taskOneWire ow = do
+    currentState <- deref $ state ow
+    cond_ [ currentState ==? stateDone  ==> onDone  ow
+          , currentState ==? stateError ==> onError ow
+          ]
+
+
+handlerOneWire :: OneWire -> Ivory eff ()
+handlerOneWire ow = do
+    state' <- deref $ state ow
+    cond_ [ state' ==? stateReset        ==> doReset      ow
+          , state' ==? stateWaitPresence ==> waitPresence ow
+          , state' ==? stateWaitReady    ==> waitReady    ow
+          , state' ==? stateWrite        ==> doWrite      ow
           ]
 
 
@@ -135,54 +126,94 @@ taskOneWire OneWire {..} = do
 {-
 -   TODO: Should we start/stop timer?
 -}
-handlerOneWire :: OneWire -> Ivory eff ()
-handlerOneWire OneWire {..} = do
-    state' <- deref state
-    time'  <- deref time
-    store time (time' + 1)
-    cond_ [ state' ==? stateReset ==>
-                cond_ [ time' ==? 0 ==> do
-                            OD.reset port
-                      , time' ==? timeReset ==> do
-                            OD.set port
-                            store state stateWaitPresence
-                      ]
-          , state' ==? stateWaitPresence .&& time' ==? timeWaitPresence ==> do
+
+
+onDone :: OneWire -> Ivory eff ()
+onDone ow@OneWire {..} = popState ow $ \nextState ->
+    ifte_ (nextState ==? stateWrite)
+          (popTmp ow $ \v -> do
+                store tmpV  v
+                store count 0
+                store time  0
+                store state nextState
+          )
+          (do
+                store time  0
+                store state nextState
+          )
+
+
+onError :: OneWire -> Ivory eff ()
+onError ow@OneWire {..} = popState ow $ \nextState ->
+    when (nextState ==? stateReset) $ do
+        store time  0
+        store state stateReset
+
+
+
+doReset :: OneWire -> Ivory eff ()
+doReset OneWire{..} = do
+    time' <- deref time
+    cond_ [ time' ==? 0 ==> do
+                OD.reset port
+                store time 1
+          , time' ==? timeReset ==> do
+                OD.set port
+                store state stateWaitPresence
+          , true ==> store time (time' + 1)
+          ]
+
+
+waitPresence :: OneWire -> Ivory eff ()
+waitPresence OneWire{..} =  do
+    time' <- deref time
+    cond_ [ time' ==? timeWaitPresence ==> do
                 hasPresence <- iNot <$> OD.get port
                 ifte_ hasPresence
                     (store state stateWaitReady)
                     (store state stateError)
-          , state' ==? stateWaitReady .&& time' ==? timeWaitReady ==> do
+          , true ==> store time (time' + 1)
+          ]
+
+
+waitReady :: OneWire -> Ivory eff ()
+waitReady OneWire{..} = do
+    time' <- deref time
+    cond_ [ time' ==? timeWaitReady ==> do
                 hasntPresence <- OD.get port
                 ifte_ hasntPresence
                     (store state stateDone)
                     (store state stateError)
-          , state' ==? stateWrite ==> do
-                delay' <- deref delay
-                cond_ [ time' ==? 0 ==> do
-                            count' <- deref count
-                            ifte_ (count' <? 8)
-                                  (do
-                                        OD.reset port
-                                        tmpV'  <- deref tmpV
-                                        let bit = (tmpV' `iShiftR` count') .& 1
-                                        ifte_ (bit ==? 1)
-                                            (store delay timeWrite1)
-                                            (store delay timeWrite0)
-                                        store count $ count' + 1
-                                  )
-                                  (store state stateDone)
-                      , time' ==? delay' ==> do
-                            OD.set port
-                      , time' ==? timeWriteSlot ==> do
-                            store time 0
-                      ]
+          , true ==> store time (time' + 1)
+          ]
+
+
+doWrite OneWire{..} = do
+    time'  <- deref time
+    delay' <- deref delay
+    cond_ [ time' ==? 0 ==> do
+                count' <- deref count
+                ifte_ (count' <? 8)
+                      (do
+                            OD.reset port
+                            tmpV' <- deref tmpV
+                            let bit = (tmpV' `iShiftR` count') .& 1
+                            ifte_ (bit ==? 1)
+                                (store delay timeWrite1)
+                                (store delay timeWrite0)
+                            store count $ count' + 1
+                            store time 1
+                      )
+                      (store state stateDone)
+          , time' ==? delay' ==> OD.set port >> store time (time' + 1)
+          , time' ==? timeWriteSlot ==> store time 0
+          , true  ==> store time (time' + 1)
           ]
 
 
 instance OW.OneWire OneWire where
 
-    reset ow    = do pushState ow stateReset
+    reset ow    = pushState ow stateReset
 
     read  ow    = pushState ow stateRead
 
@@ -194,6 +225,16 @@ instance OW.OneWire OneWire where
 instance Handler OW.HandleOneWire OneWire where
   addHandler _ = pure ()
 
+
+
+pop' :: KnownNat n => Queue n -> Buffer n Uint8 -> (Uint8 -> Ivory eff ())-> Ivory eff ()
+pop' q b run = pop q $ \i -> run =<< deref (b ! toIx i)
+
+popState :: OneWire -> (Uint8 -> Ivory eff ()) -> Ivory eff ()
+popState OneWire{..} = pop' stateQ stateB
+
+popTmp :: OneWire -> (Uint8 -> Ivory eff ()) -> Ivory eff ()
+popTmp OneWire{..} = pop' tmpQ tmpB
 
 
 push' :: KnownNat n => Queue n -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
