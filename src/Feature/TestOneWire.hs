@@ -1,8 +1,7 @@
-{-# LANGUAGE DataKinds          #-}
-{-# LANGUAGE FlexibleContexts   #-}
-{-# LANGUAGE GADTs              #-}
-{-# LANGUAGE NamedFieldPuns     #-}
-{-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs            #-}
+{-# LANGUAGE NamedFieldPuns   #-}
 
 module Feature.TestOneWire where
 
@@ -14,20 +13,20 @@ import           Core.Domain
 import           Core.Feature
 import           Core.Task
 import           Data.Value
-import qualified Interface.GPIO.OpenDrain as I
+import qualified Interface.GPIO.OpenDrain as OD
 import           Interface.MCU            (MCU (peripherals))
-import qualified Interface.OneWire        as I
+import qualified Interface.OneWire        as OW
 import           Interface.Timer
 import           Ivory.Language
 
 data TestOW where
-    TestOW :: I.OneWire ow
+    TestOW :: OW.OneWire ow
           => { name     :: String
              , onewire  :: ow
              } -> TestOW
 
 
-testOneWire :: (MonadState Context m, MonadReader (Domain p t) m, I.OneWire ow, I.OpenDrain od)
+testOneWire :: (MonadState Context m, MonadReader (Domain p t) m, OW.OneWire ow, OD.OpenDrain od)
             => (p -> m od -> m ow) -> (p -> m od) -> m Feature
 testOneWire ow od = do
     let name  = "test_one_wire"
@@ -37,7 +36,9 @@ testOneWire ow od = do
     let feature = Feature $ TestOW { name, onewire }
 
     addTask $ delay 5 name $ do
-        I.write onewire 0x55
+        OW.reset onewire
+        OW.write onewire 0xcc
+        OW.write onewire 0xbe
 
     pure feature
 

@@ -12,5 +12,6 @@ data HandleOneWire ow = HandleOneWire
     }
 
 class Handler HandleOneWire ow => OneWire ow where
-    read  :: ow -> Ivory eff Uint8
+    reset :: ow -> Ivory eff ()
+    read  :: ow -> Ivory eff ()
     write :: ow -> Uint8 -> Ivory eff ()
