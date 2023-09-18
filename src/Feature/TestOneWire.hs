@@ -16,6 +16,7 @@ import           Data.Value
 import qualified Interface.GPIO.OpenDrain as OD
 import           Interface.MCU            (MCU (peripherals))
 import qualified Interface.OneWire        as OW
+import qualified Interface.RS485          as OW
 import           Interface.Timer
 import           Ivory.Language
 
@@ -35,10 +36,10 @@ testOneWire ow od = do
 
     let feature = Feature $ TestOW { name, onewire }
 
-    addTask $ delay 5 name $ do
+    addTask $ delay 20 name $ do
         OW.reset onewire
-        OW.write onewire 0xcc
-        OW.write onewire 0xbe
+        mapM_ (OW.write onewire) [0xcc, 0xbe]
+        replicateM_ 9 $ OW.read onewire
 
     pure feature
 

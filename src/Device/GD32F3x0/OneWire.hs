@@ -12,7 +12,6 @@ import           Core.Context
 import           Core.FSM
 import           Core.Handler
 import           Core.Task                      (yeld)
-import           Data.Bits                      (Bits (bit))
 import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Data.Value
@@ -60,6 +59,9 @@ timeWaitReady       =  97 :: Uint8
 timeWrite0          =   7 :: Uint8
 timeWrite1          =   1 :: Uint8
 timeWriteSlot       =   8 :: Uint8
+timeReadPrepare     =   1 :: Uint8
+timeWaitBit         =   2 :: Uint8
+timeReadSlot        =   8 :: Uint8
 
 
 mkOneWire :: MonadState Context m
@@ -117,6 +119,7 @@ handlerOneWire ow = runState state
     , stateWaitPresence |-> waitPresence
     , stateWaitReady    |-> waitReady
     , stateWrite        |-> doWrite
+    , stateRead         |-> doRead
     ] ow =<< deref (time ow)
 
 
@@ -128,17 +131,20 @@ handlerOneWire ow = runState state
 
 onDone :: OneWire -> Ivory eff ()
 onDone ow@OneWire {..} = popState ow $ \nextState ->
-    ifte_ (nextState ==? stateWrite)
-          (popTmp ow $ \v -> do
-                store tmpV  v
+    cond_ [ nextState ==? stateWrite ==> do
+                popTmp ow $ \v -> do
+                    store tmpV  v
+                    store count 0
+                    store time  0
+                    store state nextState
+          , nextState ==? stateRead ==> do
                 store count 0
                 store time  0
                 store state nextState
-          )
-          (do
+          , true ==> do
                 store time  0
                 store state nextState
-          )
+          ]
 
 
 onError :: OneWire -> Ivory eff ()
@@ -201,6 +207,31 @@ doWrite OneWire{..} time' = deref delay >>= \delay' -> cond_
               (store state stateDone)
     , time' ==? delay' ==> OD.set port >> store time (time' + 1)
     , time' ==? timeWriteSlot ==> store time 0
+    , true  ==> store time (time' + 1)
+    ]
+
+
+doRead :: OneWire -> Uint8 -> Ivory eff ()
+doRead OneWire{..} time' = deref delay >>= \delay' -> cond_
+    [ time' ==? 0 ==> do
+        OD.reset port
+        store tmpV 0
+        store time 1
+    , time' ==? timeReadPrepare ==> do
+        OD.set port
+        store time (time' + 1)
+    , time' ==? timeWaitBit ==> do
+        count' <- deref count
+        tmpV'  <- deref tmpV
+        bit <- OD.get port
+        store tmpV $ tmpV' .| (safeCast bit `iShiftL` count')
+        store count $ count' + 1
+        store time $ time' + 1
+    , time' ==? timeReadSlot ==> do
+        count' <- deref count
+        ifte_ (count' ==? 8)
+              (store state stateDone)
+              (store time 0)
     , true  ==> store time (time' + 1)
     ]
 
