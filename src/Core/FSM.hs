@@ -25,6 +25,18 @@ runState f ts st i = do
 
 
 
+runState' :: (IvoryStore a, IvoryVar (ref s (Stored a)), IvoryRef ref, IvoryEq a)
+         => (t -> ref s (Stored a))
+         -> [(a, t -> Ivory eff ())]
+         -> t
+         -> Ivory eff ()
+runState' f ts st = do
+    p <- deref (f st)
+    let run (w, h) = w ==? p ==> h st
+    cond_ $ run <$> ts
+
+
+
 runInput :: IvoryEq p
          => [(p, t -> p -> Ivory eff ())]
          -> t
