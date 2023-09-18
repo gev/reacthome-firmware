@@ -15,6 +15,7 @@ import           Formula.Mix6x12
 import           Formula.OW
 import           Formula.Relay12
 import           Formula.Server
+import           Formula.DI4
 -- import           Formula.MixA6x12
 
 
@@ -25,6 +26,7 @@ main = do
                      , dimmerAC12
                      , mix6x12
                      , ow
+                     , di4
                     --  , blink330
                      ]
     gcc gd32f450vgt6 [ server
