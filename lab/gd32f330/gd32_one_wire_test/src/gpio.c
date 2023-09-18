@@ -4,7 +4,7 @@
 pin dim_1 = {GPIOA, GPIO_PIN_9};
 pin dim_4 = {GPIOA, GPIO_PIN_12};
 pin rede = {GPIOA, GPIO_PIN_4};
-pin one_wire = {GPIOA, GPIO_PIN_15};
+pin one_wire = {GPIOA, GPIO_PIN_8};
 
 void pin_init_out(pin x) {
   gpio_mode_set(x.port, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, x.num);

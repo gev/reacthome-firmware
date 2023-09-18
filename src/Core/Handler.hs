@@ -10,4 +10,4 @@ import           Ivory.Language
 
 
 class Handler h t where
-    addHandler :: h t -> MonadState Context m => m ()
+    addHandler :: MonadState Context m => h t -> m ()
