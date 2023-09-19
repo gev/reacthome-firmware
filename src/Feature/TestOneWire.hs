@@ -37,7 +37,8 @@ testOneWire ow od = do
 
     addTask $ delay 20 name $ do
         OW.reset onewire
-        mapM_ (OW.write onewire) [0xcc, 0xbe]
+        OW.skipROM onewire
+        OW.write onewire 0xbe
         replicateM_ 9 $ OW.read onewire
 
     pure feature

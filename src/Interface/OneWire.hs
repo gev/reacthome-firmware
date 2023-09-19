@@ -245,12 +245,22 @@ doRead OneWire{..} time' = deref delay >>= \delay' -> cond_
     ]
 
 
-reset ow    = pushState ow stateReset
 
-read  ow    = pushState ow stateRead
+reset :: OneWire -> Ivory eff ()
+reset ow = pushState ow stateReset
 
-write ow v  = pushTmp   ow v
-            >> pushState ow stateWrite
+read :: OneWire -> Ivory eff ()
+read ow = pushState ow stateRead
+
+write :: OneWire -> Uint8 -> Ivory eff ()
+write ow v = pushTmp ow v
+          >> pushState ow stateWrite
+
+skipROM :: OneWire -> Ivory eff ()
+skipROM ow = write ow 0xcc
+
+selectROM :: OneWire -> Ivory eff ()
+selectROM ow = write ow 0x55
 
 
 
