@@ -148,7 +148,6 @@ executable reacthome-firmware
                     , Device.GD32F3x0.Timer
                     , Device.GD32F3x0.UART
                     , Device.GD32F3x0.Flash
-                    , Device.GD32F3x0.OneWire
 
                     , Device.GD32F4xx
                     , Device.GD32F4xx.Display.NeoPixel

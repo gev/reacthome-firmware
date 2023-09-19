@@ -16,7 +16,6 @@ import           Device.GD32F3x0.GPIO.Mode
 import           Device.GD32F3x0.GPIO.OpenDrain
 import           Device.GD32F3x0.GPIO.Output
 import           Device.GD32F3x0.Mac              (makeMac)
-import           Device.GD32F3x0.OneWire
 import           Device.GD32F3x0.PWM
 import           Device.GD32F3x0.SystemClock      as G
 import           Device.GD32F3x0.SysTick
@@ -26,6 +25,7 @@ import           Device.GD32F3x0.Timer            (Timer, cfg_timer_0,
 import           Device.GD32F3x0.UART
 import           Interface.Mac                    (Mac)
 import           Interface.MCU
+import           Interface.OneWire
 import           Interface.SystemClock            (SystemClock, systemClock)
 import           Ivory.Language
 import           Support.Device.GD32F3x0

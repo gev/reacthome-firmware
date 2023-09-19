@@ -15,20 +15,19 @@ import           Core.Task
 import           Data.Value
 import qualified Interface.GPIO.OpenDrain as OD
 import           Interface.MCU            (MCU (peripherals))
+import           Interface.OneWire        (OneWire)
 import qualified Interface.OneWire        as OW
-import qualified Interface.RS485          as OW
 import           Interface.Timer
 import           Ivory.Language
 
-data TestOW where
-    TestOW :: OW.OneWire ow
-          => { name     :: String
-             , onewire  :: ow
-             } -> TestOW
+data TestOW = TestOW
+    { name    :: String
+    , onewire :: OW.OneWire
+    }
 
 
-testOneWire :: (MonadState Context m, MonadReader (Domain p t) m, OW.OneWire ow, OD.OpenDrain od)
-            => (p -> m od -> m ow) -> (p -> m od) -> m Feature
+testOneWire :: (MonadState Context m, MonadReader (Domain p t) m, OD.OpenDrain od)
+            => (p -> m od -> m OW.OneWire) -> (p -> m od) -> m Feature
 testOneWire ow od = do
     let name  = "test_one_wire"
     mcu      <- asks mcu
