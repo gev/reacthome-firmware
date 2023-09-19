@@ -8,14 +8,13 @@ import           Device.GD32F3x0
 import           Device.GD32F4xx
 import           Formula.Blink330
 import           Formula.Blink450
+import           Formula.DI4
 import           Formula.DimmerAC12
 import           Formula.DimmerDC12
 import           Formula.Echo
 import           Formula.Mix6x12
-import           Formula.OW
 import           Formula.Relay12
 import           Formula.Server
-import           Formula.DI4
 -- import           Formula.MixA6x12
 
 
@@ -25,7 +24,6 @@ main = do
                      , dimmerDC12
                      , dimmerAC12
                      , mix6x12
-                     , ow
                      , di4
                     --  , blink330
                      ]
