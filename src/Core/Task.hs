@@ -1,14 +1,20 @@
-{-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE RankNTypes    #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds      #-}
+{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE RankNTypes     #-}
+{-# LANGUAGE TypeOperators  #-}
 
 module Core.Task where
 
 import           Ivory.Language
 
 
+data Period = Period
+     { interval :: Uint32
+     , phase    :: Uint32
+     }
+
 data Task = Task
-    { period  :: Maybe Uint32
+    { period  :: Maybe Period
     , getTask :: Def ('[] :-> ())
     }
 
@@ -19,20 +25,26 @@ instance Eq Task where
 
 
 
-task :: Maybe Uint32
+task :: Maybe Period
      -> String
      -> (forall s. Ivory (ProcEffects s ()) ())
      -> Task
-task period id run = Task { period  = period
+task period id run = Task { period
                           , getTask = proc (id <> "_task") $ body run
                           }
 
+delayPhase :: Uint32
+           -> Uint32
+           -> String
+           -> (forall s. Ivory (ProcEffects s ()) ())
+           -> Task
+delayPhase interval phase = task . Just $ Period interval phase
 
 delay :: Uint32
       -> String
       -> (forall s. Ivory (ProcEffects s ()) ())
       -> Task
-delay period = task (Just period)
+delay interval = delayPhase interval 0
 
 
 yeld :: String
