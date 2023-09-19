@@ -49,8 +49,9 @@ stateRead           = 0x1 :: Uint8
 stateReset          = 0x2 :: Uint8
 stateWaitPresence   = 0x3 :: Uint8
 stateWaitReady      = 0x4 :: Uint8
-stateDone           = 0x5 :: Uint8
-stateError          = 0x6 :: Uint8
+stateReady          = 0x5 :: Uint8
+stateResult         = 0x6 :: Uint8
+stateError          = 0x7 :: Uint8
 
 
 timeReset           =  48 :: Uint8
@@ -71,7 +72,7 @@ mkOneWire :: MonadState Context m
 mkOneWire cfg od = do
     port   <- od
     timer  <- cfg    1_000_000 10
-    state  <- value  "one_wire_state" stateDone
+    state  <- value  "one_wire_state" stateReady
     time   <- value_ "one_wire_time"
     stateB <- buffer "one_wire_state"
     stateQ <- queue  "one_wire_state"
@@ -108,8 +109,9 @@ initOneWire OneWire {..} = OD.set port
 
 taskOneWire :: OneWire -> Ivory eff ()
 taskOneWire = runState' state
-    [ stateDone  |-> onDone
-    , stateError |-> onError
+    [ stateReady  |-> onReady
+    , stateResult |-> onResult
+    , stateError  |-> onError
     ]
 
 
@@ -129,8 +131,8 @@ handlerOneWire ow = runState state
 -}
 
 
-onDone :: OneWire -> Ivory eff ()
-onDone ow@OneWire {..} = popState ow $ \nextState ->
+onReady :: OneWire -> Ivory eff ()
+onReady ow@OneWire {..} = popState ow $ \nextState ->
     cond_ [ nextState ==? stateWrite ==> do
                 popTmp ow $ \v -> do
                     store tmpV  v
@@ -146,6 +148,9 @@ onDone ow@OneWire {..} = popState ow $ \nextState ->
                 store state nextState
           ]
 
+
+onResult :: OneWire -> Ivory eff ()
+onResult OneWire{..} = store state stateReady
 
 onError :: OneWire -> Ivory eff ()
 onError ow@OneWire {..} = popState ow $ \nextState ->
@@ -183,7 +188,7 @@ waitReady OneWire{..} time' = cond_
     [ time' ==? timeWaitReady ==> do
         hasntPresence <- OD.get port
         ifte_ hasntPresence
-            (store state stateDone)
+            (store state stateReady)
             (store state stateError)
     , true ==> store time (time' + 1)
     ]
@@ -204,7 +209,7 @@ doWrite OneWire{..} time' = deref delay >>= \delay' -> cond_
                     store count $ count' + 1
                     store time 1
               )
-              (store state stateDone)
+              (store state stateReady)
     , time' ==? delay' ==> OD.set port >> store time (time' + 1)
     , time' ==? timeWriteSlot ==> store time 0
     , true  ==> store time (time' + 1)
@@ -230,7 +235,7 @@ doRead OneWire{..} time' = deref delay >>= \delay' -> cond_
     , time' ==? timeReadSlot ==> do
         count' <- deref count
         ifte_ (count' ==? 8)
-              (store state stateDone)
+              (store state stateResult)
               (store time 0)
     , true  ==> store time (time' + 1)
     ]
