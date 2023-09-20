@@ -1,47 +1,61 @@
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE GADTs                 #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE NumericUnderscores    #-}
+{-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
 
-module Device.GD32F3x0.OneWire where
+module Protocol.OneWire.Master
+    ( OneWire
+    , HandleOneWire (HandleOneWire)
+    , mkOneWire
+    , reset
+    , write
+    , read
+    , skipROM
+    , selectROM
+    ) where
 
-import           Control.Monad.State            (MonadState)
+import           Control.Monad.State      (MonadState)
 import           Core.Context
 import           Core.FSM
 import           Core.Handler
-import           Core.Task                      (yeld)
+import           Core.Task                (yeld)
 import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Data.Value
-import           Device.GD32F3x0.GPIO.Mode
-import           Device.GD32F3x0.GPIO.OpenDrain
-import           Device.GD32F3x0.GPIO.Port
-import           Device.GD32F3x0.Timer          (Timer)
-import           GHC.Float                      (timesFloat)
 import           GHC.TypeNats
-import qualified Interface.GPIO.OpenDrain       as OD
-import qualified Interface.OneWire              as OW
-import qualified Interface.Timer                as T
+import qualified Interface.GPIO.OpenDrain as OD
+import qualified Interface.Timer          as T
 import           Ivory.Language
 import           Ivory.Stdlib
+import           Prelude                  hiding (read)
 
 
-
-data OneWire = OneWire
-    { port   :: OpenDrain
-    , timer  :: Timer
-    , state  :: Value     Uint8
-    , time   :: Value     Uint8
-    , stateB :: Buffer 32 Uint8
-    , stateQ :: Queue  32
-    , tmpB   :: Buffer 32 Uint8
-    , tmpQ   :: Queue  32
-    , tmpV   :: Value     Uint8
-    , delay  :: Value     Uint8
-    , count  :: Value     Uint8
+data HandleOneWire = HandleOneWire
+    { onData  :: forall eff. Uint8 -> Ivory eff ()
+    , onError :: forall eff. Uint8 -> Ivory eff ()
     }
+
+
+
+data OneWire where
+  OneWire :: (OD.OpenDrain od, T.Timer t)
+          => { port     :: od
+             , timer    :: t
+             , state    :: Value Uint8
+             , time     :: Value Uint8
+             , stateB   :: Buffer 32 Uint8
+             , stateQ   :: Queue 32
+             , tmpB     :: Buffer 32 Uint8
+             , tmpQ     :: Queue 32
+             , tmpV     :: Value Uint8
+             , width    :: Value Uint8
+             , count    :: Value Uint8
+             , handle   :: HandleOneWire
+             } -> OneWire
 
 
 stateWrite          = 0x0 :: Uint8
@@ -49,8 +63,9 @@ stateRead           = 0x1 :: Uint8
 stateReset          = 0x2 :: Uint8
 stateWaitPresence   = 0x3 :: Uint8
 stateWaitReady      = 0x4 :: Uint8
-stateDone           = 0x5 :: Uint8
-stateError          = 0x6 :: Uint8
+stateReady          = 0x5 :: Uint8
+stateResult         = 0x6 :: Uint8
+stateError          = 0x7 :: Uint8
 
 
 timeReset           =  48 :: Uint8
@@ -64,21 +79,22 @@ timeWaitBit         =   2 :: Uint8
 timeReadSlot        =   8 :: Uint8
 
 
-mkOneWire :: MonadState Context m
-         => (Uint32 -> Uint32 -> m Timer)
-         -> m OpenDrain
-         -> m OneWire
-mkOneWire cfg od = do
+mkOneWire :: (MonadState Context m, OD.OpenDrain od, T.Timer t)
+          => (Uint32 -> Uint32 -> m t)
+          -> m od
+          -> HandleOneWire
+          -> m OneWire
+mkOneWire cfg od handle = do
     port   <- od
     timer  <- cfg    1_000_000 10
-    state  <- value  "one_wire_state" stateDone
+    state  <- value  "one_wire_state" stateReady
     time   <- value_ "one_wire_time"
     stateB <- buffer "one_wire_state"
     stateQ <- queue  "one_wire_state"
     tmpB   <- buffer "one_wire_tmp"
     tmpQ   <- queue  "one_wire_tmp"
     tmpV   <- value_ "one_wire_tmp_value"
-    delay  <- value_ "one_wire_delay"
+    width  <- value_ "one_wire_bit_width"
     count  <- value_ "one_wire_count"
 
     let onewire = OneWire { port
@@ -90,8 +106,9 @@ mkOneWire cfg od = do
                           , tmpB
                           , tmpQ
                           , tmpV
-                          , delay
+                          , width
                           , count
+                          , handle
                           }
 
     addInit "onewire" $ initOneWire onewire
@@ -108,8 +125,9 @@ initOneWire OneWire {..} = OD.set port
 
 taskOneWire :: OneWire -> Ivory eff ()
 taskOneWire = runState' state
-    [ stateDone  |-> onDone
-    , stateError |-> onError
+    [ stateReady  |-> handleReady
+    , stateResult |-> handleResult
+    , stateError  |-> handleError
     ]
 
 
@@ -129,8 +147,8 @@ handlerOneWire ow = runState state
 -}
 
 
-onDone :: OneWire -> Ivory eff ()
-onDone ow@OneWire {..} = popState ow $ \nextState ->
+handleReady :: OneWire -> Ivory eff ()
+handleReady ow@OneWire {..} = popState ow $ \nextState ->
     cond_ [ nextState ==? stateWrite ==> do
                 popTmp ow $ \v -> do
                     store tmpV  v
@@ -147,8 +165,13 @@ onDone ow@OneWire {..} = popState ow $ \nextState ->
           ]
 
 
-onError :: OneWire -> Ivory eff ()
-onError ow@OneWire {..} = popState ow $ \nextState ->
+handleResult :: OneWire -> Ivory eff ()
+handleResult OneWire{..} = do
+    onData handle =<< deref tmpV
+    store state stateReady
+
+handleError :: OneWire -> Ivory eff ()
+handleError ow@OneWire {..} = popState ow $ \nextState ->
     when (nextState ==? stateReset) $ do
         store time  0
         store state stateReset
@@ -183,14 +206,14 @@ waitReady OneWire{..} time' = cond_
     [ time' ==? timeWaitReady ==> do
         hasntPresence <- OD.get port
         ifte_ hasntPresence
-            (store state stateDone)
+            (store state stateReady)
             (store state stateError)
     , true ==> store time (time' + 1)
     ]
 
 
 doWrite :: OneWire -> Uint8 -> Ivory eff ()
-doWrite OneWire{..} time' = deref delay >>= \delay' -> cond_
+doWrite OneWire{..} time' = deref width >>= \width' -> cond_
     [ time' ==? 0 ==> do
         count' <- deref count
         ifte_ (count' <? 8)
@@ -199,20 +222,20 @@ doWrite OneWire{..} time' = deref delay >>= \delay' -> cond_
                     tmpV' <- deref tmpV
                     let bit = (tmpV' `iShiftR` count') .& 1
                     ifte_ (bit ==? 1)
-                        (store delay timeWrite1)
-                        (store delay timeWrite0)
+                        (store width timeWrite1)
+                        (store width timeWrite0)
                     store count $ count' + 1
                     store time 1
               )
-              (store state stateDone)
-    , time' ==? delay' ==> OD.set port >> store time (time' + 1)
+              (store state stateReady)
+    , time' ==? width' ==> OD.set port >> store time (time' + 1)
     , time' ==? timeWriteSlot ==> store time 0
     , true  ==> store time (time' + 1)
     ]
 
 
 doRead :: OneWire -> Uint8 -> Ivory eff ()
-doRead OneWire{..} time' = deref delay >>= \delay' -> cond_
+doRead OneWire{..} time' = deref width >>= \width' -> cond_
     [ time' ==? 0 ==> do
         OD.reset port
         store tmpV 0
@@ -230,25 +253,31 @@ doRead OneWire{..} time' = deref delay >>= \delay' -> cond_
     , time' ==? timeReadSlot ==> do
         count' <- deref count
         ifte_ (count' ==? 8)
-              (store state stateDone)
+              (store state stateResult)
               (store time 0)
     , true  ==> store time (time' + 1)
     ]
 
 
-instance OW.OneWire OneWire where
 
-    reset ow    = pushState ow stateReset
+reset :: OneWire -> Ivory eff ()
+reset ow = pushState ow stateReset
 
-    read  ow    = pushState ow stateRead
+read :: OneWire -> Ivory eff ()
+read ow = pushState ow stateRead
 
-    write ow v  = pushTmp   ow v
-               >> pushState ow stateWrite
+write :: OneWire -> Uint8 -> Ivory eff ()
+write ow v = pushTmp ow v
+          >> pushState ow stateWrite
+
+skipROM :: OneWire -> Ivory eff ()
+skipROM ow = write ow 0xcc
+
+selectROM :: OneWire -> Ivory eff ()
+selectROM ow = write ow 0x55
 
 
 
-instance Handler OW.HandleOneWire OneWire where
-  addHandler _ = pure ()
 
 
 

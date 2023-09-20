@@ -24,6 +24,7 @@ mkLoop systemClock tasks = proc "loop" $ body $ do
     where
         run t1 clock task = do
             t0 <- deref clock
-            when (t1 - t0 >=? fromJust (period task)) $ do
+            let Period interval phase = fromJust $ period task
+            when (t1 - t0 >=? interval + phase) $ do
                 runTask task
-                store clock t1
+                store clock $ t1 - phase
