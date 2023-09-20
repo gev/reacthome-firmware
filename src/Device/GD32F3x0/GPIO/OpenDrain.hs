@@ -22,7 +22,14 @@ mkOpenDrain p = do
     pure $ OpenDrain port
 
 
-instance I.OpenDrain OpenDrain where
-    set   (OpenDrain Port{..}) = S.setBit       gpio pin
+
+instance I.Input OpenDrain where
     get   (OpenDrain Port{..}) = S.getInputBit  gpio pin
+
+
+instance I.Output OpenDrain where
+    set   (OpenDrain Port{..}) = S.setBit       gpio pin
     reset (OpenDrain Port{..}) = S.resetBit     gpio pin
+
+
+instance I.OpenDrain OpenDrain

@@ -1,9 +1,14 @@
-module Interface.GPIO.OpenDrain where
+module Interface.GPIO.OpenDrain
+    ( Input
+    , Output
+    , OpenDrain
+    , get
+    , reset
+    , set
+    ) where
 
+import           Interface.GPIO.Output
 import           Ivory.Language
 import           Ivory.Language.Module
 
-class OpenDrain a where
-    reset :: a -> Ivory eff ()
-    set   :: a -> Ivory eff ()
-    get   :: a -> Ivory eff IBool
+class Output a => OpenDrain a

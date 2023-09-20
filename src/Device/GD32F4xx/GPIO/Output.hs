@@ -22,7 +22,11 @@ mkOutput p = do
     pure $ Output port
 
 
+
+instance I.Input Output where
+    get   (Output Port{..}) = S.getOutputBit gpio pin
+
+
 instance I.Output Output where
     set   (Output Port{..}) = S.setBit       gpio pin
-    get   (Output Port{..}) = S.getOutputBit gpio pin
     reset (Output Port{..}) = S.resetBit     gpio pin

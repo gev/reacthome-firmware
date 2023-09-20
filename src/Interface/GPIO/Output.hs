@@ -1,9 +1,15 @@
-module Interface.GPIO.Output where
+module Interface.GPIO.Output
+    ( Input
+    , Output
+    , get
+    , reset
+    , set
+    ) where
 
+import           Interface.GPIO.Input
 import           Ivory.Language
 import           Ivory.Language.Module
 
-class Output a where
+class Input a => Output a where
     reset :: a -> Ivory eff ()
     set   :: a -> Ivory eff ()
-    get   :: a -> Ivory eff IBool
