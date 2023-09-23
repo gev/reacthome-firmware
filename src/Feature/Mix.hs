@@ -27,7 +27,6 @@ import qualified Endpoint.DInputs            as DI
 import           Endpoint.DInputsRelaysRules
 import qualified Endpoint.Groups             as G
 import qualified Endpoint.Relays             as R
-import           Feature.Dimmer.AC           (onFade)
 import           Feature.DInputs             (DInputs (DInputs, getDInputs, getInputs),
                                               forceSyncDInputs, manageDInputs,
                                               mkDInputs, syncDInputs)
