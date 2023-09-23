@@ -41,6 +41,7 @@ data OneWireMaster = OneWireMaster
     , tmpV    :: Value       Uint8
     , width   :: Value       Uint8
     , count   :: Value       Uint8
+    , error   :: Value       Uint8
     , onData  :: forall eff. Uint8 -> Ivory eff ()
     , onError :: forall eff. Uint8 -> Ivory eff ()
     }
@@ -67,6 +68,10 @@ timeWaitBit         =   2 :: Uint8
 timeReadSlot        =   8 :: Uint8
 
 
+errorNoPresence     = 0x00 :: Uint8
+errorNotReady       = 0x01 :: Uint8
+
+
 mkOneWireMaster :: MonadState Context m
                 => m OneWire
                 -> (forall eff. Uint8 -> Ivory eff ())
@@ -83,6 +88,7 @@ mkOneWireMaster ow onData onError = do
     tmpV    <- value_ "one_wire_tmp_value"
     width   <- value_ "one_wire_bit_width"
     count   <- value_ "one_wire_count"
+    error   <- value_ "one_wire_error"
 
     let master  = OneWireMaster { onewire
                                 , state
@@ -94,6 +100,7 @@ mkOneWireMaster ow onData onError = do
                                 , tmpV
                                 , width
                                 , count
+                                , error
                                 , onData
                                 , onError
                                 }
@@ -152,10 +159,14 @@ handleResult OneWireMaster{..} = do
     onData =<< deref tmpV
     store state stateReady
 
-handleError m@OneWireMaster {..} = popState m $ \nextState ->
-    when (nextState ==? stateReset) $ do
-        store time  0
-        store state stateReset
+
+handleError :: OneWireMaster -> Ivory eff ()
+handleError m@OneWireMaster {..} = do
+    onError =<< deref error
+    popState m $ \nextState ->
+        when (nextState ==? stateReset) $ do
+            store time  0
+            store state stateReset
 
 
 
@@ -177,7 +188,10 @@ waitPresence OneWireMaster{..} time' = cond_
         hasPresence <- iNot <$> getState onewire
         ifte_ hasPresence
             (store state stateWaitReady)
-            (store state stateError)
+            (do
+                store error errorNoPresence
+                store state stateError
+            )
     , true ==> store time (time' + 1)
     ]
 
@@ -188,7 +202,10 @@ waitReady OneWireMaster{..} time' = cond_
         hasntPresence <- getState onewire
         ifte_ hasntPresence
             (store state stateReady)
-            (store state stateError)
+            (do
+                store error errorNotReady
+                store state stateError
+            )
     , true ==> store time (time' + 1)
     ]
 
