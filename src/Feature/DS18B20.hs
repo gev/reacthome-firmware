@@ -22,12 +22,13 @@ import           Interface.OneWire
 import           Interface.Timer
 import           Ivory.Language
 import           Prelude                  hiding (read)
+import           Protocol.OneWire.Master
 
 
 
 data DS18B20 = DS18B20
     { name    :: String
-    , onewire :: OneWire
+    , onewire :: OneWireMaster
     -- , address :: Buffer 32 Uint8
     }
 
@@ -37,7 +38,7 @@ ds18b20 :: (MonadState Context m, MonadReader (Domain p t) m, OpenDrain od)
 ds18b20 ow od = do
     let name  = "ds18b20"
     mcu'     <- asks $ peripherals . mcu
-    onewire  <- ow mcu' $ od mcu'
+    onewire  <- mkOneWireMaster (ow mcu' $ od mcu') onData onError
 
     let ds = DS18B20 { name, onewire }
 
