@@ -265,7 +265,7 @@ read m = pushState m stateRead
 
 write :: OneWireMaster -> Uint8 -> Ivory eff ()
 write m v = pushTmp m v
-          >> pushState m stateWrite
+         >> pushState m stateWrite
 
 skipROM :: OneWireMaster -> Ivory eff ()
 skipROM m = write m 0xcc
