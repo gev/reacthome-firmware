@@ -95,7 +95,7 @@ onData DS18B20{..} v = do
             -}
             store count 0
             raw <- unpackLE rxB 0
-            let t = 25 * raw `iDiv` 4 :: Sint16
+            let t = (25 * raw) `iDiv` 4 :: Sint16
             packLE txB 9 t
             transmit txB
           )
