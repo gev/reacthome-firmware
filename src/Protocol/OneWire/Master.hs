@@ -11,7 +11,7 @@ module Protocol.OneWire.Master
     , write
     , read
     , skipROM
-    , selectROM
+    , matchROM
     ) where
 
 import           Control.Monad.State   (MonadState)
@@ -270,8 +270,8 @@ write m v = pushTmp m v
 skipROM :: OneWireMaster -> Ivory eff ()
 skipROM m = write m 0xcc
 
-selectROM :: OneWireMaster -> Ivory eff ()
-selectROM m = write m 0x55
+matchROM :: OneWireMaster -> Ivory eff ()
+matchROM m = write m 0x55
 
 
 
