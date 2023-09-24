@@ -2,6 +2,7 @@
 #include "one_wire.h"
 #include <string.h>
 #include "delay_us.h"
+#include "crc8.h"
 
 ds18b20_rom_t ds18b20_pool[DS18B20_NUMBER];
 
@@ -97,7 +98,7 @@ uint8_t ds18b20w_search_next(uint8_t* newAddr, uint8_t search_mode) {
         } while(rom_byte_number < 8); // loop until through all ROM bytes 0-7
 
         // if the search was successful then
-        if(!(id_bit_number < 65)) {
+        if(id_bit_number > 64) {
             // search successful so set last_Discrepancy, last_device_flag, search_result
             last_discrepancy = last_zero;
 
@@ -109,13 +110,14 @@ uint8_t ds18b20w_search_next(uint8_t* newAddr, uint8_t search_mode) {
     }
 
     // if no device found then reset counters so next 'search' will be like a first
-    if(!search_result || !saved_rom[0]) {
+    if(search_result || saved_rom[0] || (crc_ow(saved_rom, sizeof(saved_rom)) == 0) ) {
+        memcpy(newAddr, saved_rom, sizeof(saved_rom));
+    } else {
+
         last_discrepancy = 0;
         last_device_flag = false;
         last_family_discrepancy = 0;
         search_result = false;
-    } else {
-        memcpy(newAddr, saved_rom, sizeof(saved_rom));
     }
 
     return search_result;

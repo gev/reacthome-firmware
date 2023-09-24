@@ -65,6 +65,7 @@ src/delay_us.c \
 src/one_wire.c \
 src/gpio.c \
 src/ds18b20.c \
+src/crc8.c \
 
 
 # ASM sources
