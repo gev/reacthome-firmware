@@ -38,22 +38,22 @@ mkOneWire cfg od = do
 
 
 initOneWire :: OneWire -> Ivory eff ()
-initOneWire OneWire {..} = OD.set port
+initOneWire OneWire{..} = OD.set port
 
 
 
 pullUp :: OneWire -> Ivory eff ()
-pullUp OneWire {..} = OD.set port
+pullUp OneWire{..} = OD.set port
 
 
 pullDown :: OneWire -> Ivory eff ()
-pullDown OneWire {..} = OD.reset port
+pullDown OneWire{..} = OD.reset port
 
 
 getState :: OneWire -> Ivory eff IBool
-getState OneWire {..} = OD.get port
+getState OneWire{..} = OD.get port
 
 
 
 handleTimer :: MonadState Context m => OneWire -> (forall eff. Ivory eff ()) -> m ()
-handleTimer OneWire {..} handler = addHandler $ T.HandleTimer timer handler
+handleTimer OneWire{..} handler = addHandler $ T.HandleTimer timer handler
