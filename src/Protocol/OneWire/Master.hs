@@ -17,7 +17,6 @@ module Protocol.OneWire.Master
 import           Control.Monad.State   (MonadState)
 import           Core.Context
 import           Core.FSM
-import           Core.Handler
 import           Core.Task             (yeld)
 import           Data.Buffer
 import           Data.Concurrent.Queue
@@ -41,8 +40,9 @@ data OneWireMaster = OneWireMaster
     , tmpV    :: Value       Uint8
     , width   :: Value       Uint8
     , count   :: Value       Uint8
-    , onData  :: forall eff. Uint8 -> Ivory eff ()
-    , onError :: forall eff. Uint8 -> Ivory eff ()
+    , error   :: Value       Uint8
+    , onData  :: forall   s. Uint8 -> Ivory (ProcEffects s ()) ()
+    , onError :: forall   s. Uint8 -> Ivory (ProcEffects s ()) ()
     }
 
 
@@ -67,10 +67,14 @@ timeWaitBit         =   2 :: Uint8
 timeReadSlot        =   8 :: Uint8
 
 
+errorNoPresence     = 0x00 :: Uint8
+errorNotReady       = 0x01 :: Uint8
+
+
 mkOneWireMaster :: MonadState Context m
                 => m OneWire
-                -> (forall eff. Uint8 -> Ivory eff ())
-                -> (forall eff. Uint8 -> Ivory eff ())
+                -> (forall s. Uint8 -> Ivory (ProcEffects s ()) ())
+                -> (forall s. Uint8 -> Ivory (ProcEffects s ()) ())
                 -> m OneWireMaster
 mkOneWireMaster ow onData onError = do
     onewire <- ow
@@ -83,6 +87,7 @@ mkOneWireMaster ow onData onError = do
     tmpV    <- value_ "one_wire_tmp_value"
     width   <- value_ "one_wire_bit_width"
     count   <- value_ "one_wire_count"
+    error   <- value_ "one_wire_error"
 
     let master  = OneWireMaster { onewire
                                 , state
@@ -94,6 +99,7 @@ mkOneWireMaster ow onData onError = do
                                 , tmpV
                                 , width
                                 , count
+                                , error
                                 , onData
                                 , onError
                                 }
@@ -105,7 +111,7 @@ mkOneWireMaster ow onData onError = do
 
 
 
-taskOneWire :: OneWireMaster -> Ivory eff ()
+taskOneWire :: OneWireMaster -> Ivory (ProcEffects s ()) ()
 taskOneWire = runState' state
     [ stateReady  |-> handleReady
     , stateResult |-> handleResult
@@ -138,6 +144,7 @@ handleReady m@OneWireMaster {..} = popState m $ \nextState ->
                     store time  0
                     store state nextState
           , nextState ==? stateRead ==> do
+                store tmpV  0
                 store count 0
                 store time  0
                 store state nextState
@@ -147,15 +154,19 @@ handleReady m@OneWireMaster {..} = popState m $ \nextState ->
           ]
 
 
-handleResult :: OneWireMaster -> Ivory eff ()
+handleResult :: OneWireMaster -> Ivory (ProcEffects s ()) ()
 handleResult OneWireMaster{..} = do
     onData =<< deref tmpV
     store state stateReady
 
-handleError m@OneWireMaster {..} = popState m $ \nextState ->
-    when (nextState ==? stateReset) $ do
-        store time  0
-        store state stateReset
+
+handleError :: OneWireMaster -> Ivory (ProcEffects s ()) ()
+handleError m@OneWireMaster {..} = do
+    onError =<< deref error
+    popState m $ \nextState ->
+        when (nextState ==? stateReset) $ do
+            store time  0
+            store state stateReset
 
 
 
@@ -177,7 +188,10 @@ waitPresence OneWireMaster{..} time' = cond_
         hasPresence <- iNot <$> getState onewire
         ifte_ hasPresence
             (store state stateWaitReady)
-            (store state stateError)
+            (do
+                store error errorNoPresence
+                store state stateError
+            )
     , true ==> store time (time' + 1)
     ]
 
@@ -188,7 +202,10 @@ waitReady OneWireMaster{..} time' = cond_
         hasntPresence <- getState onewire
         ifte_ hasntPresence
             (store state stateReady)
-            (store state stateError)
+            (do
+                store error errorNotReady
+                store state stateError
+            )
     , true ==> store time (time' + 1)
     ]
 
@@ -216,10 +233,9 @@ doWrite OneWireMaster{..} time' = deref width >>= \width' -> cond_
 
 
 doRead :: OneWireMaster -> Uint8 -> Ivory eff ()
-doRead OneWireMaster{..} time' = deref width >>= \width' -> cond_
+doRead OneWireMaster{..} time' = cond_
     [ time' ==? 0 ==> do
         pullDown onewire
-        store tmpV 0
         store time 1
     , time' ==? timeReadPrepare ==> do
         pullUp onewire
