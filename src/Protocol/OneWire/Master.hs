@@ -241,9 +241,9 @@ doRead OneWireMaster{..} time' = cond_
         pullUp onewire
         store time (time' + 1)
     , time' ==? timeWaitBit ==> do
-        count' <- deref count
+        bit    <- getState onewire
         tmpV'  <- deref tmpV
-        bit <- getState onewire
+        count' <- deref count
         store tmpV $ tmpV' .| (safeCast bit `iShiftL` count')
         store count $ count' + 1
         store time $ time' + 1
