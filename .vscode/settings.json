@@ -153,7 +153,5 @@
   ],
   "haskell.plugin.importLens.codeLensOn": false,
   "haskell.plugin.class.globalOn": true,
-  "gitlens.codeLens.enabled": false,
-  "gitlens.currentLine.enabled": false,
   "editor.tabSize": 4
 }
