@@ -7,8 +7,8 @@
 #include "one_wire.h"
 
 typedef enum {
+  STATE_SEARCH,
   STATE_INIT,
-  STATE_START,
   STATE_RESET,
   STATE_WRITE_SEARCH_CMD,
   STATE_READ_BIT,
@@ -42,10 +42,6 @@ bool ds18b20w_search_next(uint8_t* newAddr, uint8_t search_mode) {
         rom_byte_number = 0;
         rom_byte_mask = 1;
         search_result = 0;
-        current_state = STATE_START;
-        break;
-
-      case STATE_START:
         if (last_device_flag){
           current_state = STATE_FAILURE;
         } else {
@@ -73,7 +69,6 @@ bool ds18b20w_search_next(uint8_t* newAddr, uint8_t search_mode) {
         id_bit = one_wire_read_bit();
         cmp_id_bit = one_wire_read_bit();
         if ((id_bit == 1) && (cmp_id_bit == 1)) {
-          // adfadf++;
           current_state = STATE_FAILURE;
         } else {
           current_state = STATE_WRITE_BIT;
@@ -119,7 +114,7 @@ bool ds18b20w_search_next(uint8_t* newAddr, uint8_t search_mode) {
           if (last_discrepancy == 0) last_device_flag = true;
           search_result = true;
         }
-        if(search_result || saved_rom[0] || (crc_ow(saved_rom, sizeof(saved_rom)) == 0) ){
+        if (search_result && saved_rom[0] && (crc_ow(saved_rom, sizeof(saved_rom)) == 0)) {
           current_state = STATE_SUCCESS;
         } else {
           last_discrepancy = 0;

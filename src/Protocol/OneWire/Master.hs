@@ -25,25 +25,8 @@ import           GHC.TypeNats
 import           Interface.OneWire
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Prelude               hiding (read)
+import           Prelude               hiding (error, read)
 
-
-
-data OneWireMaster = OneWireMaster
-    { onewire :: OneWire
-    , state   :: Value       Uint8
-    , time    :: Value       Uint8
-    , stateB  :: Buffer  32  Uint8
-    , stateQ  :: Queue   32
-    , tmpB    :: Buffer  32  Uint8
-    , tmpQ    :: Queue   32
-    , tmpV    :: Value       Uint8
-    , width   :: Value       Uint8
-    , count   :: Value       Uint8
-    , error   :: Value       Uint8
-    , onData  :: forall   s. Uint8 -> Ivory (ProcEffects s ()) ()
-    , onError :: forall   s. Uint8 -> Ivory (ProcEffects s ()) ()
-    }
 
 
 stateWrite          = 0x0 :: Uint8
@@ -69,6 +52,24 @@ timeReadSlot        =   8 :: Uint8
 
 errorNoPresence     = 0x00 :: Uint8
 errorNotReady       = 0x01 :: Uint8
+
+
+data OneWireMaster = OneWireMaster
+    { onewire :: OneWire
+    , state   :: Value       Uint8
+    , time    :: Value       Uint8
+    , stateB  :: Buffer  32  Uint8
+    , stateQ  :: Queue   32
+    , tmpB    :: Buffer  32  Uint8
+    , tmpQ    :: Queue   32
+    , tmpV    :: Value       Uint8
+    , width   :: Value       Uint8
+    , count   :: Value       Uint8
+    , error   :: Value       Uint8
+    , onData  :: forall   s. Uint8 -> Ivory (ProcEffects s ()) ()
+    , onError :: forall   s. Uint8 -> Ivory (ProcEffects s ()) ()
+    }
+
 
 
 mkOneWireMaster :: MonadState Context m
@@ -198,8 +199,8 @@ waitPresence OneWireMaster{..} time' = cond_
 waitReady :: OneWireMaster -> Uint8 -> Ivory eff ()
 waitReady OneWireMaster{..} time' = cond_
     [ time' ==? timeWaitReady ==> do
-        hasntPresence <- getState onewire
-        ifte_ hasntPresence
+        hasPresence <- getState onewire
+        ifte_ hasPresence
             (store state stateReady)
             (do
                 store error errorNotReady
