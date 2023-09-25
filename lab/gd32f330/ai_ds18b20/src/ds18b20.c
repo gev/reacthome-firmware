@@ -8,7 +8,9 @@
 
 typedef enum {
   STATE_INIT,
-  STATE_SEARCH,
+  STATE_START,
+  STATE_RESET,
+  STATE_WRITE_SEARCH_CMD,
   STATE_READ_BIT,
   STATE_WRITE_BIT,
   STATE_CHECK_DEVICES,
@@ -40,21 +42,29 @@ bool ds18b20w_search_next(uint8_t* newAddr, uint8_t search_mode) {
         rom_byte_number = 0;
         rom_byte_mask = 1;
         search_result = 0;
-        current_state = STATE_SEARCH;
+        current_state = STATE_START;
         break;
 
-      case STATE_SEARCH:
+      case STATE_START:
         if (last_device_flag){
           current_state = STATE_FAILURE;
-          break;
+        } else {
+          current_state = STATE_RESET;
         }
+        break;
+
+      case STATE_RESET:
         if (!one_wire_reset()) {
           last_discrepancy = 0;
           last_device_flag = false;
           last_family_discrepancy = 0;
           current_state = STATE_FAILURE;
-          break;
+        } else {
+          current_state = STATE_WRITE_SEARCH_CMD;
         }
+        break;
+
+      case STATE_WRITE_SEARCH_CMD:  
         one_wire_write_byte(search_mode);
         current_state = STATE_READ_BIT;
         break;
