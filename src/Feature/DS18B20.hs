@@ -57,11 +57,12 @@ ds18b20 ow od = do
                          , count
                          , transmit = T.transmitBuffer transport
                          }
-    onewire   <- mkOneWireMaster (ow mcu $ od mcu) (onData ds) (onError ds)
+    onewire   <- ow mcu $ od mcu
+    master    <- mkOneWireMaster onewire (onData ds) (onError ds)
 
 
-    addTask $ delay      10000     (name <> "_measure_temperature") $ measureTemperature onewire
-    addTask $ delayPhase 10000 700 (name <> "_get_temperature"    ) $ getTemperature     onewire
+    addTask $ delay      10000     (name <> "_measure_temperature") $ measureTemperature master
+    addTask $ delayPhase 10000 700 (name <> "_get_temperature"    ) $ getTemperature     master
 
     pure $ Feature ds
 

@@ -72,12 +72,11 @@ errorNotReady       = 0x01 :: Uint8
 
 
 mkOneWireMaster :: MonadState Context m
-                => m OneWire
+                => OneWire
                 -> (forall s. Uint8 -> Ivory (ProcEffects s ()) ())
                 -> (forall s. Uint8 -> Ivory (ProcEffects s ()) ())
                 -> m OneWireMaster
-mkOneWireMaster ow onData onError = do
-    onewire <- ow
+mkOneWireMaster onewire onData onError = do
     state   <- value  "one_wire_state" stateReady
     time    <- value_ "one_wire_time"
     stateB  <- buffer "one_wire_state"
