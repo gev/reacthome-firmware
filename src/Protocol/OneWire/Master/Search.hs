@@ -180,17 +180,29 @@ handleReady m@Search {..} = popState m $ \nextState ->
           ]
 
 
+startSearch :: Search -> Ivory eff ()
+startSearch Search{..} = do
+    arrayMap $ \ix -> store (savedROM ! ix) 0
+    store countROM              0
+    store lastDiscrepancy       0
+    store lastFamilyDiscrepancy 0
+    store lastDeviceFlag        false
+    store state stateSearchNext
+
+
 searchNext :: Search -> Ivory eff ()
 searchNext Search{..} = do
-    store idBitNumber   1
-    store lastZero      0
-    store romByteNumber 0
-    store romByteMask   1
-    store searchResult  false
     lastDeviceFlag'  <- deref lastDeviceFlag
     ifte_ lastDeviceFlag'
         (store state stateReady)
-        (store state stateReset)
+        (do
+            store idBitNumber   1
+            store lastZero      0
+            store romByteNumber 0
+            store romByteMask   1
+            store searchResult  false
+            store state stateReset
+        )
 
 
 handleResult :: Search -> Ivory (ProcEffects s ()) ()
@@ -209,21 +221,9 @@ handleError :: Search -> Ivory (ProcEffects s ()) ()
 handleError m@Search {..} = do
     onError =<< deref error
     popState m $ \nextState ->
-        when (nextState ==? stateReset .|| nextState ==? stateSearch) $ do
-            store time  0
+        when (nextState ==? stateReset .|| nextState ==? stateSearch) $
             store state nextState
 
-
-
-startSearch :: Search -> Ivory eff ()
-startSearch Search{..} = do
-    arrayMap $ \ix -> store (savedROM ! ix) 0
-    store countROM              0
-    store lastDiscrepancy       0
-    store lastFamilyDiscrepancy 0
-    store lastDeviceFlag        false
-    store searchResult          false
-    store state stateSearchNext
 
 
 doReset :: Search -> Ivory eff ()
@@ -372,13 +372,14 @@ getSearchDirection Search{..} = do
                             store width timeWrite1
                       )
                       (do
-                            store rom $ rom' .& romByteMask'
+                            store rom $ rom' .& iComplement romByteMask'
                             store width timeWrite0
                     )
                 store state stateWriteBit
           )
 
 
+checkDevices :: Search -> Ivory eff ()
 checkDevices Search{..} = do
     idBitNumber'   <- deref idBitNumber
     romByteMask'   <- deref romByteMask
