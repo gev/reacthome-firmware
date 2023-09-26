@@ -3,6 +3,9 @@
 {-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RankNTypes       #-}
 {-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE TypeOperators    #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use for_" #-}
 
 module Protocol.OneWire.Master.Search
     ( Search
@@ -55,6 +58,7 @@ timeReadSlot            =   8 :: Uint8
 
 errorNoPresence         = 0x00 :: Uint8
 errorNotReady           = 0x01 :: Uint8
+errorCRC                = 0x02 :: Uint8
 
 data Search = Search
     { onewire               :: OneWire
@@ -140,6 +144,8 @@ mkSearch onewire onData onError = do
                         , tmpV
                         }
 
+    addProc (getCRC :: GetCRC 8)
+
     handleTimer onewire $ handleOneWire search
     addTask $ yeld "one_wire" $ taskOneWire search
 
@@ -149,6 +155,7 @@ mkSearch onewire onData onError = do
 taskOneWire :: Search -> Ivory (ProcEffects s ()) ()
 taskOneWire = runState' state
     [ stateReady      |-> handleReady
+    , stateSearch     |-> startSearch
     , stateSearchNext |-> searchNext
     , stateResult     |-> handleResult
     , stateError      |-> handleError
@@ -176,7 +183,7 @@ handleOneWire = runState' state
 
 handleReady :: Search -> Ivory eff ()
 handleReady m@Search {..} = popState m $ \nextState ->
-    cond_ [ nextState ==? stateSearch ==> startSearch m
+    cond_ [ nextState ==? stateSearch ==> store state stateSearch
           ]
 
 
@@ -208,12 +215,20 @@ searchNext Search{..} = do
 handleResult :: Search -> Ivory (ProcEffects s ()) ()
 handleResult Search{..} = do
     countROM' <- deref countROM
-    onData countROM' savedROM
-    ifte_ (countROM' ==? 255)
-          (store state stateReady)
+    crc <- call getCRC savedROM
+    ifte_ (crc ==? 0)
           (do
-            store countROM $ countROM' + 1
-            store state stateSearchNext
+            onData countROM' savedROM
+            ifte_ (countROM' ==? 255)
+                (store state stateReady)
+                (do
+                    store countROM $ countROM' + 1
+                    store state stateSearchNext
+                )
+          )
+          (do
+               store error errorCRC
+               store state stateError
           )
 
 
@@ -221,7 +236,8 @@ handleError :: Search -> Ivory (ProcEffects s ()) ()
 handleError m@Search {..} = do
     onError =<< deref error
     popState m $ \nextState ->
-        when (nextState ==? stateReset .|| nextState ==? stateSearch) $
+        when (nextState ==? stateReset .|| nextState ==? stateSearch) $ do
+            store time 0
             store state nextState
 
 
@@ -403,7 +419,10 @@ checkDevices Search{..} = do
                 rom' <- deref (savedROM ! 0)
                 ifte_ (searchResult' .&& rom' /=? 0)
                       (store state stateResult)
-                      (store state stateReady)
+                      (do
+                            store error errorCRC
+                            store state stateError
+                      )
           )
           (store state stateReadIdBit)
 
@@ -413,6 +432,24 @@ search :: Search -> Ivory eff ()
 search m = pushState m stateSearch
 
 
+
+type GetCRC n = Def ('[Buffer n Uint8] :-> Uint8)
+
+getCRC :: KnownNat n => GetCRC n
+getCRC = proc "one_wire_get_crc" $ \buff -> body $ do
+    crc <- local $ ival 0
+    arrayMap $ \ix -> do
+        inbyte <- local . ival =<< deref (buff ! ix)
+        for (8 :: Ix 8) . const $ do
+            crc' <- deref crc
+            inbyte' <- deref inbyte
+            let mix = (crc' .^ inbyte') .& 0x01
+            store crc $ crc' `iShiftR` 1
+            when (mix /=? 0) $ do
+                crc'' <- deref crc
+                store crc $ crc'' .^ 0x8c
+            store inbyte $ inbyte' `iShiftR` 1
+    ret =<< deref crc
 
 
 
