@@ -59,7 +59,7 @@ stateError              = 0xe :: Uint8
 
 
 timeReset               =  48 :: Uint8
-timeWaitPresence        =  56 :: Uint8
+timeWaitPresence        =  55 :: Uint8
 timeWaitReady           =  97 :: Uint8
 timeWrite0              =   7 :: Uint8
 timeWrite1              =   1 :: Uint8
@@ -253,7 +253,7 @@ handleReadResult OneWireMaster{..} = do
 handleSearchResult :: OneWireMaster -> Ivory (ProcEffects s ()) ()
 handleSearchResult OneWireMaster{..} = do
     countROM' <- deref countROM
-    crc <- call getCRC savedROM
+    crc <- call getCRC 8 savedROM
     ifte_ (crc ==? 0)
           (do
             onDiscovery countROM' savedROM
@@ -572,12 +572,12 @@ checkDevices OneWireMaster{..} = do
 
 
 
-getCRC :: Def ('[Buffer 8 Uint8] :-> Uint8)
-getCRC = proc "one_wire_get_crc" $ \buff -> body $ do
+getCRC :: Def ('[Ix 8, Buffer 8 Uint8] :-> Uint8)
+getCRC = proc "one_wire_get_crc" $ \n buff -> body $ do
     crc <- local $ ival 0
     arrayMap $ \ix -> do
         inbyte <- local . ival =<< deref (buff ! ix)
-        for (8 :: Ix 8) . const $ do
+        times n . const $ do
             crc' <- deref crc
             inbyte' <- deref inbyte
             let mix = (crc' .^ inbyte') .& 0x01

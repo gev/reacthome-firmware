@@ -120,7 +120,7 @@ onData DS18B20{..} i v = do
     store (rxB ! toIx index') v
     ifte_ (index' ==? 8)
           (do
-                crc  <- call getCRC rxB
+                crc  <- call getCRC 8 rxB
                 when (crc ==? 0) $ do
                     let id = idList ! toIx i
                     arrayMap $ \ix -> do
@@ -149,25 +149,73 @@ onDiscovery DS18B20{..} _ id = do
 
 onError :: DS18B20 -> Uint8 -> Ivory (ProcEffects s ()) ()
 onError _ _ = pure ()
-    -- store  idNumber 0
 
 
 
-getCRC :: Def ('[Buffer 9 Uint8] :-> Uint8)
-getCRC = proc "ds18b20_get_crc" $ \buff -> body $ do
+getCRC :: Def ('[Ix 8, Buffer 9 Uint8] :-> Uint8)
+getCRC = proc "ds18b20_get_crc" $ \n buff -> body $ do
     crc <- local $ ival 0
     arrayMap $ \ix -> do
         inbyte <- local . ival =<< deref (buff ! ix)
-        for (8 :: Ix 8) . const $ do
-            crc' <- deref crc
-            inbyte' <- deref inbyte
-            let mix = (crc' .^ inbyte') .& 0x01
-            store crc $ crc' `iShiftR` 1
-            when (mix /=? 0) $ do
-                crc'' <- deref crc
-                store crc $ crc'' .^ 0x8c
-            store inbyte $ inbyte' `iShiftR` 1
+        times n . const $ do
+            mix <- (.& 1) <$> ((.^) <$> deref crc <*> deref inbyte)
+            store crc . (`iShiftR` 1) =<< deref crc
+            when (mix /=? 0) $
+                store crc . (.^ 0x8c) =<< deref crc
+            store inbyte . (`iShiftR` 1) =<< deref inbyte
     ret =<< deref crc
+
+
+
+{-
+uint8_t crc_ow(uint8_t* data, uint8_t size) {
+  uint8_t crc = 0;
+  for (uint8_t i = 0; i < size; i++) {
+    uint8_t inbyte = data[i];
+    for (uint8_t j = 0; j < 8; j++) {
+      uint8_t mix = (crc ^ inbyte) & 0x01;
+      crc >>= 1;
+      if (mix) crc ^= 0x8C;
+      inbyte >>= 1;
+    }
+  }
+  return crc;
+}
+-}
+
+{-
+
+uint8_t ds18b20_get_crc(uint8_t n_var0[9U])
+{
+    uint8_t n_local0 = (uint8_t) 0U;
+    uint8_t *n_ref1 = &n_local0;
+
+    for (int32_t n_ix2 = (int32_t) 0; n_ix2 <= (int32_t) 8; n_ix2++) {
+        uint8_t n_deref3 = n_var0[n_ix2];
+        uint8_t n_local4 = n_deref3;
+        uint8_t *n_ref5 = &n_local4;
+
+        for (int32_t n_ix6 = (int32_t) 0; n_ix6 <= (int32_t) -1; n_ix6++) {
+            uint8_t n_deref7 = *n_ref1;
+            uint8_t n_deref8 = *n_ref5;
+
+            *n_ref1 = (uint8_t) (n_deref7 >> (uint8_t) 1U);
+            if ((bool) (0 != (uint8_t) ((uint8_t) (n_deref7 ^ n_deref8) & (uint8_t) 1U))) {
+                uint8_t n_deref9 = *n_ref1;
+
+                *n_ref1 = (uint8_t) (n_deref9 ^ (uint8_t) 140U);
+            }
+            *n_ref5 = (uint8_t) (n_deref8 >> (uint8_t) 1U);
+        }
+    }
+
+    uint8_t n_deref10 = *n_ref1;
+
+    return n_deref10;
+}
+
+-}
+
 
 
 instance Controller DS18B20
