@@ -79,9 +79,9 @@ ds18b20 ow od = do
 
     addProc getCRC
 
-    addTask $ delay      15_000       (name <> "_search"             ) $ searchDevices              ds master
-    addTask $ delayPhase 15_000 6_000 (name <> "_measure_temperature") $ request measureTemperature ds master
-    addTask $ delayPhase 15_000 9_000 (name <> "_get_temperature"    ) $ request getTemperature     ds master
+    addTask $ delay      15_000       (name <> "_search"             ) $ searchDevices   ds master
+    addTask $ delayPhase 15_000 6_000 (name <> "_measure_temperature") $ measureTemperature master
+    addTask $ delayPhase 15_000 6_700 (name <> "_get_temperature"    ) $ getTemperature  ds master
 
     pure $ Feature ds
 
@@ -94,27 +94,23 @@ searchDevices DS18B20{..} onewire = do
 
 
 
-request :: (OneWireMaster -> Ix 256 -> Ivory (AllowBreak eff) ()) -> DS18B20 -> OneWireMaster -> Ivory eff ()
-request run DS18B20{..} onewire = do
+measureTemperature :: OneWireMaster -> Ivory eff ()
+measureTemperature onewire = do
+    reset    onewire
+    skipROM  onewire
+    write    onewire 0x44
+
+
+getTemperature :: DS18B20 -> OneWireMaster -> Ivory eff ()
+getTemperature DS18B20{..} onewire = do
     idNumber' <- deref idNumber
     for (toIx idNumber') $ \ix -> do
         reset    onewire
         matchROM onewire
         let id = idList ! ix
         arrayMap $ \ix -> write onewire =<< deref (id ! ix)
-        run      onewire ix
-
-
-
-measureTemperature :: OneWireMaster -> Ix 256 -> Ivory eff ()
-measureTemperature onewire =
-    const $ write onewire 0x44
-
-
-getTemperature :: OneWireMaster -> Ix 256 -> Ivory eff ()
-getTemperature onewire ix = do
-    write onewire 0xbe
-    replicateM_ 9 $ read onewire $ castDefault $ fromIx ix
+        write onewire 0xbe
+        replicateM_ 9 $ read onewire $ castDefault $ fromIx ix
 
 
 
