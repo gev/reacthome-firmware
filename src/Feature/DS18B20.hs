@@ -120,7 +120,7 @@ onData DS18B20{..} i v = do
     store (rxB ! toIx index') v
     ifte_ (index' ==? 8)
           (do
-                crc  <- call getCRC 8 rxB
+                crc  <- call getCRC rxB
                 when (crc ==? 0) $ do
                     let id = idList ! toIx i
                     arrayMap $ \ix -> do
@@ -152,17 +152,20 @@ onError _ _ = pure ()
 
 
 
-getCRC :: Def ('[Ix 8, Buffer 9 Uint8] :-> Uint8)
-getCRC = proc "ds18b20_get_crc" $ \n buff -> body $ do
+getCRC :: Def ('[Buffer 9 Uint8] :-> Uint8)
+getCRC = proc "ds18b20_get_crc" $ \buff -> body $ do
     crc <- local $ ival 0
     arrayMap $ \ix -> do
         inbyte <- local . ival =<< deref (buff ! ix)
-        times n . const $ do
-            mix <- (.& 1) <$> ((.^) <$> deref crc <*> deref inbyte)
-            store crc . (`iShiftR` 1) =<< deref crc
-            when (mix /=? 0) $
-                store crc . (.^ 0x8c) =<< deref crc
-            store inbyte . (`iShiftR` 1) =<< deref inbyte
+        times (8 :: Ix 9) . const $ do
+            crc' <- deref crc
+            inbyte' <- deref inbyte
+            let mix = (crc' .^ inbyte') .& 0x01
+            store crc $ crc' `iShiftR` 1
+            when (mix /=? 0) $ do
+                crc'' <- deref crc
+                store crc $ crc'' .^ 0x8c
+            store inbyte $ inbyte' `iShiftR` 1
     ret =<< deref crc
 
 

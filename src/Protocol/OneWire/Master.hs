@@ -253,7 +253,7 @@ handleReadResult OneWireMaster{..} = do
 handleSearchResult :: OneWireMaster -> Ivory (ProcEffects s ()) ()
 handleSearchResult OneWireMaster{..} = do
     countROM' <- deref countROM
-    crc <- call getCRC 8 savedROM
+    crc <- call getCRC savedROM
     ifte_ (crc ==? 0)
           (do
             onDiscovery countROM' savedROM
@@ -572,12 +572,12 @@ checkDevices OneWireMaster{..} = do
 
 
 
-getCRC :: Def ('[Ix 8, Buffer 8 Uint8] :-> Uint8)
-getCRC = proc "one_wire_get_crc" $ \n buff -> body $ do
+getCRC :: Def ('[Buffer 8 Uint8] :-> Uint8)
+getCRC = proc "one_wire_get_crc" $ \buff -> body $ do
     crc <- local $ ival 0
     arrayMap $ \ix -> do
         inbyte <- local . ival =<< deref (buff ! ix)
-        times n . const $ do
+        times (8 :: Ix 9) . const $ do
             crc' <- deref crc
             inbyte' <- deref inbyte
             let mix = (crc' .^ inbyte') .& 0x01
