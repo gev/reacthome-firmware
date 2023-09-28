@@ -11,16 +11,18 @@ import           Device.GD32F4xx.Flash
 import           Device.GD32F4xx.GPIO
 import           Device.GD32F4xx.GPIO.Input
 import           Device.GD32F4xx.GPIO.Mode
+import           Device.GD32F4xx.GPIO.OpenDrain
 import           Device.GD32F4xx.GPIO.Output
 import           Device.GD32F4xx.Mac              (makeMac)
 import           Device.GD32F4xx.PWM
 import           Device.GD32F4xx.SystemClock      as G
 import           Device.GD32F4xx.SysTick
 import           Device.GD32F4xx.Timer            (Timer, cfg_timer_1,
-                                                   cfg_timer_2, cfg_timer_3)
+                                                   cfg_timer_2, cfg_timer_3, cfg_timer_6)
 import           Device.GD32F4xx.UART
 import           Interface.Mac                    (Mac)
 import           Interface.MCU
+import           Interface.OneWire
 import           Interface.SystemClock            (SystemClock)
 import           Ivory.Language
 import           Support.Device.GD32F4xx
@@ -37,9 +39,11 @@ import           Support.Device.GD32F4xx.USART
 type UART'         = forall m. MonadState Context m => m UART
 type Input'        = forall m. MonadState Context m => m Input
 type Output'       = forall m. MonadState Context m => m Output
+type OpenDrain'    = forall m. MonadState Context m => m OpenDrain
 type Timer'        = forall m. MonadState Context m => Uint32 -> Uint32 -> m Timer
 type PWM'          = forall m. MonadState Context m => Uint32 -> Uint32 -> m PWM
 type NeoPixelPWM'  = forall m. MonadState Context m => m NeoPixelPWM
+type OneWire'      = forall m. MonadState Context m => m OpenDrain -> m OneWire
 
 
 
@@ -225,9 +229,12 @@ data GD32F4xx = GD32F4xx
     , out_pe_14 :: Output'
     , out_pe_15 :: Output'
 
+    , od_pb_3   :: OpenDrain'
+
     , timer_1   :: Timer'
     , timer_2   :: Timer'
     , timer_3   :: Timer'
+    , timer_6   :: Timer'
 
     , pwm_0     :: PWM'
     , pwm_1     :: PWM'
@@ -238,6 +245,8 @@ data GD32F4xx = GD32F4xx
     , npx_pwm_1 :: NeoPixelPWM'
     , npx_pwm_2 :: NeoPixelPWM'
     , npx_pwm_3 :: NeoPixelPWM'
+
+    , ow_0      :: OneWire'
     }
 
 
@@ -480,9 +489,12 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
     , out_pe_14 = mkOutput pe_14
     , out_pe_15 = mkOutput pe_15
 
+    , od_pb_3   = mkOpenDrain pb_3
+
     , timer_1   =  cfg_timer_1
     , timer_2   =  cfg_timer_2
     , timer_3   =  cfg_timer_3
+    , timer_6   =  cfg_timer_6
 
     , pwm_0     = mkPWM cfg_timer_3
                         timer_ch_0
@@ -521,6 +533,9 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
                                 dma0 dma_ch2
                                 dma_subperi5 ch3cv
                                 (pc_7 af_2)
+
+
+    , ow_0  = mkOneWire cfg_timer_6
     }
 
 

@@ -5,6 +5,7 @@ import           Data.Color
 import           Device.GD32F4xx
 import           Feature.Indicator
 import qualified Feature.Server      as F
+import           Feature.DS18B20 (ds18b20)
 import           Interface.RS485
 import           Ivory.Language
 import           Transport.UART.RBUS as U
@@ -31,5 +32,6 @@ server = Formula { name       = "server"
                                            , in_pe_3
                                            , in_pe_2
                                            ]
+                                , ds18b20 ow_0 od_pb_3
                                 ]
                  }

@@ -7,6 +7,7 @@ module Support.Device.GD32F4xx.IRQ
     , timer1_irqn
     , timer2_irqn
     , timer3_irqn
+    , timer6_irqn
     , usart0_irqn
     , usart1_irqn
     , usart2_irqn
@@ -49,6 +50,7 @@ instance ExtSymbol IRQn
 timer1_irqn        = IRQn $ ext "TIMER1_IRQn"
 timer2_irqn        = IRQn $ ext "TIMER2_IRQn"
 timer3_irqn        = IRQn $ ext "TIMER3_IRQn"
+timer6_irqn        = IRQn $ ext "TIMER6_IRQn"
 usart0_irqn        = IRQn $ ext "USART0_IRQn"
 usart1_irqn        = IRQn $ ext "USART1_IRQn"
 usart2_irqn        = IRQn $ ext "USART2_IRQn"
@@ -81,6 +83,7 @@ inclIRQ = do
     inclSym timer1_irqn
     inclSym timer2_irqn
     inclSym timer3_irqn
+    inclSym timer6_irqn
     inclSym usart0_irqn
     inclSym usart1_irqn
     inclSym usart2_irqn
