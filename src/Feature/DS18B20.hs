@@ -148,8 +148,8 @@ onDiscovery DS18B20{..} _ id = do
 
 
 onError :: DS18B20 -> Uint8 -> Ivory (ProcEffects s ()) ()
-onError DS18B20{..} _ =
-    store  idNumber 0
+onError _ _ = pure ()
+    -- store  idNumber 0
 
 
 

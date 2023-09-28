@@ -59,7 +59,7 @@ stateError              = 0xe :: Uint8
 
 
 timeReset               =  48 :: Uint8
-timeWaitPresence        =  55 :: Uint8
+timeWaitPresence        =  56 :: Uint8
 timeWaitReady           =  97 :: Uint8
 timeWrite0              =   7 :: Uint8
 timeWrite1              =   1 :: Uint8
