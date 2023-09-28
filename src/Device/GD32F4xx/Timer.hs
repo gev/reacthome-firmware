@@ -48,7 +48,7 @@ timer_6 = mkTimer timer6 rcu_timer6 timer6_irqn
 
 timerConfig :: Uint32 -> Uint32 -> Init (Struct TIMER_PARAM_STRUCT)
 timerConfig frequency' period' =
-    timerParam [ prescaler .= ival (castDefault $ system_core_clock `iDiv` frequency' - 1)
+    timerParam [ prescaler .= ival (castDefault $ (system_core_clock `iDiv` frequency') `iDiv` 2 - 1)
                , period    .= ival (period' - 1)
                ]
 
