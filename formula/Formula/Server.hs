@@ -3,9 +3,9 @@ module Formula.Server where
 import           Core.Formula
 import           Data.Color
 import           Device.GD32F4xx
+import           Feature.DS18B20
 import           Feature.Indicator
 import qualified Feature.Server      as F
-import           Feature.DS18B20 (ds18b20)
 import           Interface.RS485
 import           Ivory.Language
 import           Transport.UART.RBUS as U
