@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE QuasiQuotes      #-}
 {-# LANGUAGE RankNTypes       #-}
 {-# LANGUAGE RecordWildCards  #-}
 {-# LANGUAGE TypeOperators    #-}
@@ -23,6 +24,7 @@ import           Core.FSM
 import           Core.Task             (yeld)
 import           Data.Buffer
 import           Data.Concurrent.Queue
+import           Data.Record
 import           Data.Value
 import           Feature.RS485.RBUS.Tx (run)
 import           GHC.TypeNats
@@ -72,80 +74,89 @@ errorNotReady           = 0x1 :: Uint8
 errorCRC                = 0x2 :: Uint8
 
 
+
+type OneWireAction = "one_wire_action_struct"
+
+[ivory|
+    struct one_wire_action_struct {
+        action_  :: Uint8;
+        payload_ :: Uint8;
+    }
+|]
+
+
+
 data OneWireMaster = OneWireMaster
     { onewire               :: OneWire
-    , state                 :: Value       Uint8
-    , action                :: Value       Uint8
-    , time                  :: Value       Uint8
-    , actionB               :: Buffer  32  Uint8
-    , actionQ               :: Queue   32
-    , tmpB                  :: Buffer  32  Uint8
-    , tmpQ                  :: Queue   32
-    , tmpV                  :: Value       Uint8
-    , width                 :: Value       Uint8
-    , count                 :: Value       Uint8
-    , countROM              :: Value       Uint8
-    , savedROM              :: Buffer   8  Uint8
-    , lastDiscrepancy       :: Value       Uint8
-    , lastDeviceFlag        :: Value       IBool
-    , lastFamilyDiscrepancy :: Value       Uint8
-    , idBit                 :: Value       IBool
-    , cmpIdBit              :: Value       IBool
-    , idBitNumber           :: Value       Uint8
-    , lastZero              :: Value       Uint8
-    , romByteNumber         :: Value       Uint8
-    , romByteMask           :: Value       Uint8
-    , searchResult          :: Value       IBool
-    , searchDirection       :: Value       IBool
-    , error                 :: Value       Uint8
-    , onData                :: forall   s. Uint8 -> Ivory (ProcEffects s ()) ()
-    , onDiscovery           :: forall   s. Uint8 -> Buffer 8 Uint8 -> Ivory (ProcEffects s ()) ()
-    , onError               :: forall   s. Uint8 -> Ivory (ProcEffects s ()) ()
+    , state                 :: Value        Uint8
+    , action                :: Value        Uint8
+    , payload               :: Value        Uint8
+    , time                  :: Value        Uint8
+    , actionB               :: Records 300  OneWireAction
+    , actionQ               :: Queue   300
+    , tmp                   :: Value        Uint8
+    , width                 :: Value        Uint8
+    , count                 :: Value        Uint8
+    , countROM              :: Value        Uint8
+    , savedROM              :: Buffer    8  Uint8
+    , lastDiscrepancy       :: Value        Uint8
+    , lastDeviceFlag        :: Value        IBool
+    , lastFamilyDiscrepancy :: Value        Uint8
+    , idBit                 :: Value        IBool
+    , cmpIdBit              :: Value        IBool
+    , idBitNumber           :: Value        Uint8
+    , lastZero              :: Value        Uint8
+    , romByteNumber         :: Value        Uint8
+    , romByteMask           :: Value        Uint8
+    , searchResult          :: Value        IBool
+    , searchDirection       :: Value        IBool
+    , error                 :: Value        Uint8
+    , onData                :: forall    s. Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
+    , onDiscovery           :: forall    s. Uint8 -> Buffer 8 Uint8 -> Ivory (ProcEffects s ()) ()
+    , onError               :: forall    s. Uint8 -> Ivory (ProcEffects s ()) ()
     }
 
 
 
 mkOneWireMaster :: MonadState Context m
                 => OneWire
-                -> (forall s. Uint8 -> Ivory (ProcEffects s ()) ())
+                -> (forall s. Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ())
                 -> (forall s. Uint8 -> Buffer 8 Uint8 -> Ivory (ProcEffects s ()) ())
                 -> (forall s. Uint8 -> Ivory (ProcEffects s ()) ())
                 -> m OneWireMaster
 mkOneWireMaster onewire onData onDiscovery onError = do
-    state                   <- value  "one_wire_state" stateReady
-    action                  <- value_ "one_wire_action"
-    time                    <- value  "one_wire_time" 0
-    actionB                 <- buffer "one_wire_action"
-    actionQ                 <- queue  "one_wire_action"
-    tmpB                    <- buffer "one_wire_tmp"
-    tmpQ                    <- queue  "one_wire_tmp"
-    tmpV                    <- value_ "one_wire_tmp_value"
-    width                   <- value_ "one_wire_bit_width"
-    count                   <- value_ "one_wire_count"
-    countROM                <- value_ "one_wire_count_rom"
-    savedROM                <- buffer "one_wire_saved_rom"
-    lastDiscrepancy         <- value_ "one_wire_last_discrepancy"
-    lastDeviceFlag          <- value_ "one_wire_last_device_flag"
-    lastFamilyDiscrepancy   <- value_ "one_wire_last_family_discrepancy"
-    idBit                   <- value_ "one_wire_id_bit"
-    cmpIdBit                <- value_ "one_wire_cmp_id_bit"
-    idBitNumber             <- value_ "one_wire_id_bit_number"
-    lastZero                <- value_ "one_wire_last_zero"
-    romByteNumber           <- value_ "one_wire_rom_byte_number"
-    romByteMask             <- value_ "one_wire_rom_byte_mask"
-    searchResult            <- value_ "one_wire_search_result"
-    searchDirection         <- value_ "one_wire_search_direction"
-    error                   <- value_ "one_wire_error"
+    state                   <- value    "one_wire_state" stateReady
+    action                  <- value_   "one_wire_action"
+    payload                 <- value_   "one_wire_payload"
+    time                    <- value    "one_wire_time" 0
+    actionB                 <- records_ "one_wire_actions"
+    actionQ                 <- queue    "one_wire_action"
+    tmp                     <- value_   "one_wire_tmp"
+    width                   <- value_   "one_wire_bit_width"
+    count                   <- value_   "one_wire_count"
+    countROM                <- value_   "one_wire_count_rom"
+    savedROM                <- buffer   "one_wire_saved_rom"
+    lastDiscrepancy         <- value_   "one_wire_last_discrepancy"
+    lastDeviceFlag          <- value_   "one_wire_last_device_flag"
+    lastFamilyDiscrepancy   <- value_   "one_wire_last_family_discrepancy"
+    idBit                   <- value_   "one_wire_id_bit"
+    cmpIdBit                <- value_   "one_wire_cmp_id_bit"
+    idBitNumber             <- value_   "one_wire_id_bit_number"
+    lastZero                <- value_   "one_wire_last_zero"
+    romByteNumber           <- value_   "one_wire_rom_byte_number"
+    romByteMask             <- value_   "one_wire_rom_byte_mask"
+    searchResult            <- value_   "one_wire_search_result"
+    searchDirection         <- value_   "one_wire_search_direction"
+    error                   <- value_   "one_wire_error"
 
     let master  = OneWireMaster { onewire
                                 , state
                                 , action
+                                , payload
                                 , time
                                 , actionB
                                 , actionQ
-                                , tmpB
-                                , tmpQ
-                                , tmpV
+                                , tmp
                                 , width
                                 , count
                                 , countROM
@@ -167,7 +178,8 @@ mkOneWireMaster onewire onData onDiscovery onError = do
                                 , onError
                                 }
 
-    addProc (getCRC :: GetCRC 8)
+    addProc getCRC
+    addStruct (Proxy :: Proxy OneWireAction)
 
     handleTimer onewire $ handleOneWire master
     addTask $ yeld "one_wire" $ taskOneWire master
@@ -177,17 +189,16 @@ mkOneWireMaster onewire onData onDiscovery onError = do
 
 
 reset :: OneWireMaster -> Ivory eff ()
-reset m = pushAction m stateReset
+reset m = pushAction m actionReset 0
 
-read :: OneWireMaster -> Ivory eff ()
-read m = pushAction m stateRead
+read :: OneWireMaster -> Uint8 -> Ivory eff ()
+read m = pushAction m actionRead
 
 write :: OneWireMaster -> Uint8 -> Ivory eff ()
-write m v = pushTmp m v
-         >> pushAction m stateWrite
+write m = pushAction m actionWrite
 
-search :: OneWireMaster -> Ivory eff ()
-search m = pushAction m actionSearch
+search :: OneWireMaster -> Uint16 -> Ivory eff ()
+search m n = pushAction m actionSearch $ castDefault $ n - 1
 
 skipROM :: OneWireMaster -> Ivory eff ()
 skipROM m = write m 0xcc
@@ -210,8 +221,9 @@ taskOneWire = runState' state
 
 handleReady :: OneWireMaster -> Ivory eff ()
 handleReady m =
-    popAction m $ \action' -> do
+    popAction m $ \action' payload'  -> do
         store (action m) action'
+        store (payload m) payload'
         runAction m
 
 
@@ -233,7 +245,8 @@ handleSearchNext OneWireMaster{..} = do
 
 handleReadResult :: OneWireMaster -> Ivory (ProcEffects s ()) ()
 handleReadResult OneWireMaster{..} = do
-    onData =<< deref tmpV
+    payload' <- deref payload
+    onData payload' =<< deref tmp
     store state stateReady
 
 
@@ -244,7 +257,8 @@ handleSearchResult OneWireMaster{..} = do
     ifte_ (crc ==? 0)
           (do
             onDiscovery countROM' savedROM
-            ifte_ (countROM' ==? 255)
+            n <- deref payload
+            ifte_ (countROM' ==? n)
                 (store state stateReady)
                 (do
                     store countROM $ countROM' + 1
@@ -261,7 +275,7 @@ handleSearchResult OneWireMaster{..} = do
 handleError :: OneWireMaster -> Ivory (ProcEffects s ()) ()
 handleError m@OneWireMaster {..} = do
     onError =<< deref error
-    popAction m $ \action' ->
+    popAction m $ \action' payload' ->
         when (action' ==? actionReset .|| action' ==? actionSearch) $ do
             store action action'
             runAction m
@@ -277,15 +291,15 @@ runAction = runState' action
 
 
 initWriteAction :: OneWireMaster -> Ivory eff ()
-initWriteAction m@OneWireMaster{..} = popTmp m $ \v -> do
-    store tmpV  v
+initWriteAction m@OneWireMaster{..} = do
+    store tmp   =<< deref payload
     store count 0
     store state stateWrite
 
 
 initReadAction :: OneWireMaster -> Ivory eff ()
 initReadAction OneWireMaster{..} = do
-    store tmpV  0
+    store tmp   0
     store count 0
     store state stateRead
 
@@ -297,7 +311,7 @@ initSearchAction OneWireMaster{..} = do
     store lastDiscrepancy       0
     store lastFamilyDiscrepancy 0
     store lastDeviceFlag        false
-    store tmpV                  0xf0
+    store tmp                   0xf0
     store state                 stateSearchNext
 
 
@@ -336,6 +350,7 @@ runReadAction = runState' state
     ]
 
 
+runSearchAction :: OneWireMaster -> Ivory eff ()
 runSearchAction = runState' state
     [ stateReset               |-> doReset
     , stateWaitPresence        |-> waitPresence
@@ -406,8 +421,8 @@ doWrite nextState OneWireMaster{..} = do
             ifte_ (count' <? 8)
                 (do
                         pullDown onewire
-                        tmpV' <- deref tmpV
-                        let bit = (tmpV' `iShiftR` count') .& 1
+                        tmp' <- deref tmp
+                        let bit = (tmp' `iShiftR` count') .& 1
                         ifte_ (bit ==? 1)
                             (store width timeWrite1)
                             (store width timeWrite0)
@@ -433,9 +448,9 @@ doRead nextState OneWireMaster{..} = do
             store time (time' + 1)
         , time' ==? timeWaitBit ==> do
             bit    <- getState onewire
-            tmpV'  <- deref tmpV
+            tmp'  <- deref tmp
             count' <- deref count
-            store tmpV $ tmpV' .| (safeCast bit `iShiftL` count')
+            store tmp $ tmp' .| (safeCast bit `iShiftL` count')
             store count $ count' + 1
             store time $ time' + 1
         , time' ==? timeReadSlot ==> do
@@ -556,9 +571,8 @@ checkDevices OneWireMaster{..} = do
 
 
 
-type GetCRC n = Def ('[Buffer n Uint8] :-> Uint8)
 
-getCRC :: KnownNat n => GetCRC n
+getCRC :: Def ('[Buffer 8 Uint8] :-> Uint8)
 getCRC = proc "one_wire_get_crc" $ \buff -> body $ do
     crc <- local $ ival 0
     arrayMap $ \ix -> do
@@ -576,24 +590,18 @@ getCRC = proc "one_wire_get_crc" $ \buff -> body $ do
 
 
 
+popAction :: OneWireMaster -> (Uint8 -> Uint8 -> Ivory eff ()) -> Ivory eff ()
+popAction OneWireMaster{..} run =
+    pop actionQ $ \i -> do
+        let a = actionB ! toIx i
+        action'  <- deref (a ~> action_)
+        payload' <- deref (a ~> payload_)
+        run action' payload'
 
 
-
-pop' :: KnownNat n => Queue n -> Buffer n Uint8 -> (Uint8 -> Ivory eff ())-> Ivory eff ()
-pop' q b run = pop q $ \i -> run =<< deref (b ! toIx i)
-
-popAction :: OneWireMaster -> (Uint8 -> Ivory eff ()) -> Ivory eff ()
-popAction OneWireMaster{..} = pop' actionQ actionB
-
-popTmp :: OneWireMaster -> (Uint8 -> Ivory eff ()) -> Ivory eff ()
-popTmp OneWireMaster{..} = pop' tmpQ tmpB
-
-
-push' :: KnownNat n => Queue n -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
-push' q b v = push q $ \i -> store (b ! toIx i) v
-
-pushAction :: OneWireMaster -> Uint8 -> Ivory eff ()
-pushAction OneWireMaster{..} = push' actionQ actionB
-
-pushTmp :: OneWireMaster -> Uint8 -> Ivory eff ()
-pushTmp OneWireMaster{..} = push' tmpQ tmpB
+pushAction :: OneWireMaster -> Uint8 -> Uint8 -> Ivory eff ()
+pushAction OneWireMaster{..} action' payload' =
+    push actionQ $ \i -> do
+        let a = actionB ! toIx i
+        store (a ~> action_) action'
+        store (a ~> payload_) payload'
