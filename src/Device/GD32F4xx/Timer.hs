@@ -89,11 +89,11 @@ instance I.Counter Timer where
 
 instance Handler I.HandleTimer Timer where
     addHandler (I.HandleTimer {I.timer = Timer{..}, handle}) = do
-        addProc initTimerIRQ'
+        addInit (symbol timer <> "_irq_init") initTimerIRQ'
         addModule $ makeIRQHandler irq handleIRQ'
         where
-            initTimerIRQ' :: Def ('[] ':-> ())
-            initTimerIRQ' = proc (symbol timer <> "_irq_init") $ body $ do
+            initTimerIRQ' :: Ivory eff ()
+            initTimerIRQ' = do
                 enableIrqNvic irq 0 0
                 enableTimerInterrupt timer timer_int_up
 
