@@ -15,6 +15,9 @@ module Protocol.OneWire.Master
     , search
     , skipROM
     , matchROM
+    , errorNoPresence
+    , errorNotReady
+    , errorCRC
     ) where
 
 import           Control.Monad.State   (MonadState)

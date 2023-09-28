@@ -148,8 +148,9 @@ onDiscovery DS18B20{..} _ id = do
 
 
 onError :: DS18B20 -> Uint8 -> Ivory (ProcEffects s ()) ()
-onError _ _ = pure ()
-
+onError DS18B20{..} error =
+    when (error ==? errorNoPresence .|| error ==? errorNotReady) $
+        store idNumber 0
 
 
 getCRC :: Def ('[Buffer 9 Uint8] :-> Uint8)
