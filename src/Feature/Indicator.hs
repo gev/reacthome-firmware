@@ -43,7 +43,7 @@ data Indicator = forall d f t. (I.Display d f t, FrameBuffer f t) => Indicator
     , hue       :: IFloat
     , t         :: Value Sint32
     , dt        :: Value Sint32
-    , phi        :: Value Sint32
+    , phi       :: Value Sint32
     , dphi      :: Value Sint32
     , start     :: Value IBool
     , findMe    :: Value IBool
