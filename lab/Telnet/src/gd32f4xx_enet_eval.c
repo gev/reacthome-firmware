@@ -86,7 +86,7 @@ void enet_system_setup(void)
 
     /* an interrupt every 10ms */
     ahb_frequency = rcu_clock_freq_get(CK_AHB);
-    SysTick_Config(ahb_frequency / 100);
+    SysTick_Config(1999999);
 }
 
 /*!
