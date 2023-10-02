@@ -141,12 +141,12 @@ void time_update(void)
 
 int _write(int file, char *ptr, int len)
 {
-    int i;
-    for (i = 0; i < len; i++)
-    {
-        /* отправить символ один за другим */
-        while (!usart_flag_get(USART0, USART_FLAG_TBE));
-        usart_data_transmit(USART0, ptr[i]);
-    }
+    // int i;
+    // for (i = 0; i < len; i++)
+    // {
+    //     /* отправить символ один за другим */
+    //     while (!usart_flag_get(USART0, USART_FLAG_TBE));
+    //     usart_data_transmit(USART0, ptr[i]);
+    // }
     return len;
 }

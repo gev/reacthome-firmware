@@ -347,14 +347,14 @@ erase:
 	JLinkExe -Device GD32F450VG -If SWD -Speed 1000 jlink/EraseMCU.jlink
 r_flash:
 	make
-	JLinkExe ip 192.168.88.107 -Device GD32F450VG -If SWD -Speed 1000 jlink/FlashMCU.jlink
+	JLinkExe ip 192.168.88.107 -Device GD32F450VI -If SWD -Speed 1000 jlink/FlashMCU.jlink
 r_erase:
-	JLinkExe ip 192.168.88.107 -Device GD32F450VG -If SWD -Speed 1000 jlink/EraseMCU.jlink
+	JLinkExe ip 192.168.88.107 -Device GD32F450VI -If SWD -Speed 1000 jlink/EraseMCU.jlink
 koro_flash:
 	make
-	JLinkExe ip tunnel:69610692::jlink-europe.segger.com -Device GD32F450VG -If SWD -Speed 1000 jlink/FlashMCU.jlink
+	JLinkExe ip tunnel:69610692::jlink-europe.segger.com -Device GD32F450VI -If SWD -Speed 1000 jlink/FlashMCU.jlink
 koro_erase:
-	JLinkExe ip tunnel:69610692::jlink-europe.segger.com -Device GD32F450VG -If SWD -Speed 1000 jlink/EraseMCU.jlink
+	JLinkExe ip tunnel:69610692::jlink-europe.segger.com -Device GD32F450VI -If SWD -Speed 1000 jlink/EraseMCU.jlink
 flash_rasp_loc:
 	make
 	JLinkExe ip 192.168.31.93 -Device GD32F450VG -If SWD -Speed 1000 jlink/FlashMCU.jlink
