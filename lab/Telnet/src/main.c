@@ -118,15 +118,15 @@ void lwip_netif_status_callback(struct netif *netif)
     \param[out] none
     \retval     none
 */
-void delay_10ms(uint32_t ncount)
-{
-    /* capture the current local time */
-    g_timedelay = g_localtime + ncount;
+// void delay_10ms(uint32_t ncount)
+// {
+//     /* capture the current local time */
+//     g_timedelay = g_localtime + ncount;
 
-    /* wait until the desired delay finish */
-    while(g_timedelay > g_localtime) {
-    }
-}
+//     /* wait until the desired delay finish */
+//     while(g_timedelay > g_localtime) {
+//     }
+// }
 
 /*!
     \brief      updates the system local time
