@@ -44,7 +44,7 @@ OF SUCH DAMAGE.
 
 // #define USE_DHCP       1 /* enable DHCP, if disabled static address is used */
 
-// #define USE_ENET_INTERRUPT
+#define USE_ENET_INTERRUPT
 // #define TIMEOUT_CHECK_USE_LWIP
 /* MAC address: MAC_ADDR0:MAC_ADDR1:MAC_ADDR2:MAC_ADDR3:MAC_ADDR4:MAC_ADDR5 */
 #define MAC_ADDR0   4
