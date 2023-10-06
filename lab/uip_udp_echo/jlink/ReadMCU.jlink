@@ -1,0 +1,4 @@
+savebin build\uip_udp.bin, 0x00, 0x4000
+r
+g
+q
