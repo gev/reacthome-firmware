@@ -40,9 +40,7 @@ OF SUCH DAMAGE.
 
 #include "gd32f4xx.h"
 #include "stdint.h"
-#include "gd32f4xx_enet_eval.h"
 
-// #define USE_DHCP       1 /* enable DHCP, if disabled static address is used */
 
 #define USE_ENET_INTERRUPT
 // #define TIMEOUT_CHECK_USE_LWIP
