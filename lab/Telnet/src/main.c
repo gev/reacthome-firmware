@@ -88,10 +88,6 @@ int main(void)
 #ifdef TIMEOUT_CHECK_USE_LWIP
         sys_check_timeouts();
 
-#ifdef USE_DHCP
-        lwip_dhcp_process_handle();
-#endif /* USE_DHCP */
-
 #else
         lwip_periodic_handle(g_localtime);
 #endif /* TIMEOUT_CHECK_USE_LWIP */
@@ -111,22 +107,6 @@ void lwip_netif_status_callback(struct netif *netif)
         hello_gigadevice_init();
     }
 }
-
-/*!
-    \brief      insert a delay time
-    \param[in]  ncount: number of 10ms periods to wait for
-    \param[out] none
-    \retval     none
-*/
-// void delay_10ms(uint32_t ncount)
-// {
-//     /* capture the current local time */
-//     g_timedelay = g_localtime + ncount;
-
-//     /* wait until the desired delay finish */
-//     while(g_timedelay > g_localtime) {
-//     }
-// }
 
 /*!
     \brief      updates the system local time

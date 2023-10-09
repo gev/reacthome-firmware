@@ -72,7 +72,7 @@ C_SOURCES =  \
 ./src/gd32f450i_eval.c												\
 ./src/netconf.c														\
 ./src/udp_echo.c														\
-../../support/lwip-2.1.2/port/GD32F4xx/Basic/ethernetif.c						\
+../../support/device/gd32f4xx/lwip_port/ethernetif.c						\
 ../../support/lwip-2.1.2/src/api/api_lib.c										\
 ../../support/lwip-2.1.2/src/api/api_msg.c										\
 ../../support/lwip-2.1.2/src/api/err.c											\
@@ -197,7 +197,6 @@ C_DEFS =  \
 -DGD32F450
 
 
-
 # AS includes
 AS_INCLUDES = 
 
@@ -207,7 +206,7 @@ C_INCLUDES =  										\
 -I../../support/CMSIS/inc 							\
 -I../../support/device/gd32f4xx/peripherals/inc 	\
 -I./inc												\
--I../../support/lwip-2.1.2/port/GD32F4xx/Basic					\
+-I../../support/device/gd32f4xx/lwip_port					\
 -I../../support/lwip-2.1.2/port/GD32F4xx						\
 -I../../support/lwip-2.1.2/src/include/compat/posix/arpa		\
 -I../../support/lwip-2.1.2/src/include/compat/posix/net			\
