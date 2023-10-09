@@ -13,7 +13,7 @@
 ######################################
 # target
 ######################################
-TARGET = telnet
+TARGET = udp
 
 
 ######################################
@@ -68,134 +68,86 @@ C_SOURCES =  \
 ../../support/device/gd32f4xx/peripherals/src/gd32f4xx_syscfg.c		\
 ./src/gd32f4xx_enet_eval.c											\
 ./src/gd32f4xx_it.c													\
-./src/hello_gigadevice.c											\
 ./src/main.c														\
 ./src/gd32f450i_eval.c												\
 ./src/netconf.c														\
 ./src/udp_echo.c														\
-./lwip-2.1.2/port/GD32F4xx/Basic/ethernetif.c						\
-./lwip-2.1.2/src/api/api_lib.c										\
-./lwip-2.1.2/src/api/api_msg.c										\
-./lwip-2.1.2/src/api/err.c											\
-./lwip-2.1.2/src/api/if_api.c										\
-./lwip-2.1.2/src/api/netbuf.c										\
-./lwip-2.1.2/src/api/netdb.c										\
-./lwip-2.1.2/src/api/netifapi.c										\
-./lwip-2.1.2/src/api/sockets.c										\
-./lwip-2.1.2/src/api/tcpip.c										\
-./lwip-2.1.2/src/core/altcp.c										\
-./lwip-2.1.2/src/core/altcp_alloc.c									\
-./lwip-2.1.2/src/core/altcp_tcp.c									\
-./lwip-2.1.2/src/core/def.c											\
-./lwip-2.1.2/src/core/dns.c											\
-./lwip-2.1.2/src/core/inet_chksum.c									\
-./lwip-2.1.2/src/core/init.c										\
-./lwip-2.1.2/src/core/ip.c											\
-./lwip-2.1.2/src/core/ipv4/autoip.c									\
-./lwip-2.1.2/src/core/ipv4/dhcp.c									\
-./lwip-2.1.2/src/core/ipv4/etharp.c									\
-./lwip-2.1.2/src/core/ipv4/icmp.c									\
-./lwip-2.1.2/src/core/ipv4/igmp.c									\
-./lwip-2.1.2/src/core/ipv4/ip4.c									\
-./lwip-2.1.2/src/core/ipv4/ip4_addr.c								\
-./lwip-2.1.2/src/core/ipv4/ip4_frag.c								\
-./lwip-2.1.2/src/core/mem.c											\
-./lwip-2.1.2/src/core/memp.c										\
-./lwip-2.1.2/src/core/netif.c										\
-./lwip-2.1.2/src/core/pbuf.c										\
-./lwip-2.1.2/src/core/raw.c											\
-./lwip-2.1.2/src/core/stats.c										\
-./lwip-2.1.2/src/core/sys.c											\
-./lwip-2.1.2/src/core/tcp.c											\
-./lwip-2.1.2/src/core/tcp_in.c										\
-./lwip-2.1.2/src/core/tcp_out.c										\
-./lwip-2.1.2/src/core/timeouts.c									\
-./lwip-2.1.2/src/core/udp.c											\
-./lwip-2.1.2/src/netif/bridgeif.c									\
-./lwip-2.1.2/src/netif/bridgeif_fdb.c								\
-./lwip-2.1.2/src/netif/ethernet.c									\
-./lwip-2.1.2/src/netif/lowpan6.c									\
-./lwip-2.1.2/src/netif/lowpan6_ble.c								\
-./lwip-2.1.2/src/netif/lowpan6_common.c								\
-./lwip-2.1.2/src/netif/ppp/auth.c									\
-./lwip-2.1.2/src/netif/ppp/ccp.c									\
-./lwip-2.1.2/src/netif/ppp/chap-md5.c								\
-./lwip-2.1.2/src/netif/ppp/chap-new.c								\
-./lwip-2.1.2/src/netif/ppp/chap_ms.c								\
-./lwip-2.1.2/src/netif/ppp/demand.c									\
-./lwip-2.1.2/src/netif/ppp/eap.c									\
-./lwip-2.1.2/src/netif/ppp/ecp.c									\
-./lwip-2.1.2/src/netif/ppp/eui64.c									\
-./lwip-2.1.2/src/netif/ppp/fsm.c									\
-./lwip-2.1.2/src/netif/ppp/ipcp.c									\
-./lwip-2.1.2/src/netif/ppp/ipv6cp.c									\
-./lwip-2.1.2/src/netif/ppp/lcp.c									\
-./lwip-2.1.2/src/netif/ppp/magic.c									\
-./lwip-2.1.2/src/netif/ppp/mppe.c									\
-./lwip-2.1.2/src/netif/ppp/polarssl/arc4.c							\
-./lwip-2.1.2/src/netif/ppp/polarssl/des.c							\
-./lwip-2.1.2/src/netif/ppp/polarssl/md4.c							\
-./lwip-2.1.2/src/netif/ppp/polarssl/md5.c							\
-./lwip-2.1.2/src/netif/ppp/polarssl/sha1.c							\
-./lwip-2.1.2/src/netif/ppp/ppp.c									\
-./lwip-2.1.2/src/netif/ppp/pppapi.c									\
-./lwip-2.1.2/src/netif/ppp/pppcrypt.c								\
-./lwip-2.1.2/src/netif/ppp/pppoe.c									\
-./lwip-2.1.2/src/netif/ppp/pppol2tp.c								\
-./lwip-2.1.2/src/netif/ppp/pppos.c									\
-./lwip-2.1.2/src/netif/ppp/upap.c									\
-./lwip-2.1.2/src/netif/ppp/utils.c									\
-./lwip-2.1.2/src/netif/ppp/vj.c										\
-./lwip-2.1.2/src/netif/slipif.c										\
-./lwip-2.1.2/src/netif/zepif.c										\
-# ./lwip-2.1.2/src/core/ipv6/dhcp6.c									\
-# ./lwip-2.1.2/src/core/ipv6/ethip6.c									\
-# ./lwip-2.1.2/src/core/ipv6/icmp6.c									\
-# ./lwip-2.1.2/src/core/ipv6/inet6.c									\
-# ./lwip-2.1.2/src/core/ipv6/ip6.c									\
-# ./lwip-2.1.2/src/core/ipv6/ip6_addr.c								\
-# ./lwip-2.1.2/src/core/ipv6/ip6_frag.c								\
-# ./lwip-2.1.2/src/core/ipv6/mld6.c									\
-# ./lwip-2.1.2/src/core/ipv6/nd6.c									\
-# ./lwip-2.1.2/port/GD32F4xx/FreeRTOS/ethernetif.c					\
-# ./lwip-2.1.2/port/GD32F4xx/FreeRTOS/sys_arch.c					\	
-# ./lwip-2.1.2/src/apps/altcp_tls/altcp_tls_mbedtls.c					\
-# ./lwip-2.1.2/src/apps/altcp_tls/altcp_tls_mbedtls_mem.c				\
-# ./lwip-2.1.2/src/apps/http/altcp_proxyconnect.c						\
-# ./lwip-2.1.2/src/apps/http/http_client.c							\
-# ./lwip-2.1.2/src/apps/http/httpd.c									\
-# ./lwip-2.1.2/src/apps/http/fs.c										\
-# ./lwip-2.1.2/src/apps/http/fsdata.c									\
-# ./lwip-2.1.2/src/apps/http/makefsdata/makefsdata.c					\
-# ./lwip-2.1.2/src/apps/lwiperf/lwiperf.c								\
-# ./lwip-2.1.2/src/apps/mdns/mdns.c									\
-# ./lwip-2.1.2/src/apps/mqtt/mqtt.c									\
-# ./lwip-2.1.2/src/apps/netbiosns/netbiosns.c							\
-# ./lwip-2.1.2/src/apps/smtp/smtp.c									\
-# ./lwip-2.1.2/src/apps/snmp/snmp_asn1.c								\
-# ./lwip-2.1.2/src/apps/snmp/snmp_core.c								\
-# ./lwip-2.1.2/src/apps/snmp/snmp_mib2.c								\
-# ./lwip-2.1.2/src/apps/snmp/snmp_mib2_icmp.c							\
-# ./lwip-2.1.2/src/apps/snmp/snmp_mib2_interfaces.c					\
-# ./lwip-2.1.2/src/apps/snmp/snmp_mib2_ip.c							\
-# ./lwip-2.1.2/src/apps/snmp/snmp_mib2_snmp.c							\
-# ./lwip-2.1.2/src/apps/snmp/snmp_mib2_system.c						\
-# ./lwip-2.1.2/src/apps/snmp/snmp_mib2_tcp.c							\
-# ./lwip-2.1.2/src/apps/snmp/snmp_mib2_udp.c							\
-# ./lwip-2.1.2/src/apps/snmp/snmp_msg.c								\
-# ./lwip-2.1.2/src/apps/snmp/snmp_netconn.c							\
-# ./lwip-2.1.2/src/apps/snmp/snmp_pbuf_stream.c						\
-# ./lwip-2.1.2/src/apps/snmp/snmp_raw.c								\
-# ./lwip-2.1.2/src/apps/snmp/snmp_scalar.c							\
-# ./lwip-2.1.2/src/apps/snmp/snmp_snmpv2_framework.c					\
-# ./lwip-2.1.2/src/apps/snmp/snmp_snmpv2_usm.c						\
-# ./lwip-2.1.2/src/apps/snmp/snmp_table.c								\
-# ./lwip-2.1.2/src/apps/snmp/snmp_threadsync.c						\
-# ./lwip-2.1.2/src/apps/snmp/snmp_traps.c								\
-# ./lwip-2.1.2/src/apps/snmp/snmpv3.c									\
-# ./lwip-2.1.2/src/apps/snmp/snmpv3_mbedtls.c							\
-# ./lwip-2.1.2/src/apps/sntp/sntp.c									\
-# ./lwip-2.1.2/src/apps/tftp/tftp_server.c							\
+../../support/lwip-2.1.2/port/GD32F4xx/Basic/ethernetif.c						\
+../../support/lwip-2.1.2/src/api/api_lib.c										\
+../../support/lwip-2.1.2/src/api/api_msg.c										\
+../../support/lwip-2.1.2/src/api/err.c											\
+../../support/lwip-2.1.2/src/api/if_api.c										\
+../../support/lwip-2.1.2/src/api/netbuf.c										\
+../../support/lwip-2.1.2/src/api/netdb.c										\
+../../support/lwip-2.1.2/src/api/netifapi.c										\
+../../support/lwip-2.1.2/src/api/sockets.c										\
+../../support/lwip-2.1.2/src/api/tcpip.c										\
+../../support/lwip-2.1.2/src/core/altcp.c										\
+../../support/lwip-2.1.2/src/core/altcp_alloc.c									\
+../../support/lwip-2.1.2/src/core/altcp_tcp.c									\
+../../support/lwip-2.1.2/src/core/def.c											\
+../../support/lwip-2.1.2/src/core/dns.c											\
+../../support/lwip-2.1.2/src/core/inet_chksum.c									\
+../../support/lwip-2.1.2/src/core/init.c										\
+../../support/lwip-2.1.2/src/core/ip.c											\
+../../support/lwip-2.1.2/src/core/ipv4/autoip.c									\
+../../support/lwip-2.1.2/src/core/ipv4/dhcp.c									\
+../../support/lwip-2.1.2/src/core/ipv4/etharp.c									\
+../../support/lwip-2.1.2/src/core/ipv4/icmp.c									\
+../../support/lwip-2.1.2/src/core/ipv4/igmp.c									\
+../../support/lwip-2.1.2/src/core/ipv4/ip4.c									\
+../../support/lwip-2.1.2/src/core/ipv4/ip4_addr.c								\
+../../support/lwip-2.1.2/src/core/ipv4/ip4_frag.c								\
+../../support/lwip-2.1.2/src/core/mem.c											\
+../../support/lwip-2.1.2/src/core/memp.c										\
+../../support/lwip-2.1.2/src/core/netif.c										\
+../../support/lwip-2.1.2/src/core/pbuf.c										\
+../../support/lwip-2.1.2/src/core/raw.c											\
+../../support/lwip-2.1.2/src/core/stats.c										\
+../../support/lwip-2.1.2/src/core/sys.c											\
+../../support/lwip-2.1.2/src/core/tcp.c											\
+../../support/lwip-2.1.2/src/core/tcp_in.c										\
+../../support/lwip-2.1.2/src/core/tcp_out.c										\
+../../support/lwip-2.1.2/src/core/timeouts.c									\
+../../support/lwip-2.1.2/src/core/udp.c											\
+../../support/lwip-2.1.2/src/netif/bridgeif.c									\
+../../support/lwip-2.1.2/src/netif/bridgeif_fdb.c								\
+../../support/lwip-2.1.2/src/netif/ethernet.c									\
+../../support/lwip-2.1.2/src/netif/lowpan6.c									\
+../../support/lwip-2.1.2/src/netif/lowpan6_ble.c								\
+../../support/lwip-2.1.2/src/netif/lowpan6_common.c								\
+../../support/lwip-2.1.2/src/netif/ppp/auth.c									\
+../../support/lwip-2.1.2/src/netif/ppp/ccp.c									\
+../../support/lwip-2.1.2/src/netif/ppp/chap-md5.c								\
+../../support/lwip-2.1.2/src/netif/ppp/chap-new.c								\
+../../support/lwip-2.1.2/src/netif/ppp/chap_ms.c								\
+../../support/lwip-2.1.2/src/netif/ppp/demand.c									\
+../../support/lwip-2.1.2/src/netif/ppp/eap.c									\
+../../support/lwip-2.1.2/src/netif/ppp/ecp.c									\
+../../support/lwip-2.1.2/src/netif/ppp/eui64.c									\
+../../support/lwip-2.1.2/src/netif/ppp/fsm.c									\
+../../support/lwip-2.1.2/src/netif/ppp/ipcp.c									\
+../../support/lwip-2.1.2/src/netif/ppp/ipv6cp.c									\
+../../support/lwip-2.1.2/src/netif/ppp/lcp.c									\
+../../support/lwip-2.1.2/src/netif/ppp/magic.c									\
+../../support/lwip-2.1.2/src/netif/ppp/mppe.c									\
+../../support/lwip-2.1.2/src/netif/ppp/polarssl/arc4.c							\
+../../support/lwip-2.1.2/src/netif/ppp/polarssl/des.c							\
+../../support/lwip-2.1.2/src/netif/ppp/polarssl/md4.c							\
+../../support/lwip-2.1.2/src/netif/ppp/polarssl/md5.c							\
+../../support/lwip-2.1.2/src/netif/ppp/polarssl/sha1.c							\
+../../support/lwip-2.1.2/src/netif/ppp/ppp.c									\
+../../support/lwip-2.1.2/src/netif/ppp/pppapi.c									\
+../../support/lwip-2.1.2/src/netif/ppp/pppcrypt.c								\
+../../support/lwip-2.1.2/src/netif/ppp/pppoe.c									\
+../../support/lwip-2.1.2/src/netif/ppp/pppol2tp.c								\
+../../support/lwip-2.1.2/src/netif/ppp/pppos.c									\
+../../support/lwip-2.1.2/src/netif/ppp/upap.c									\
+../../support/lwip-2.1.2/src/netif/ppp/utils.c									\
+../../support/lwip-2.1.2/src/netif/ppp/vj.c										\
+../../support/lwip-2.1.2/src/netif/slipif.c										\
+../../support/lwip-2.1.2/src/netif/zepif.c										\
+
 
 # ASM sources
 ASM_SOURCES =  \
@@ -255,26 +207,19 @@ C_INCLUDES =  										\
 -I../../support/CMSIS/inc 							\
 -I../../support/device/gd32f4xx/peripherals/inc 	\
 -I./inc												\
--I./lwip-2.1.2/port/GD32F4xx/Basic					\
--I./lwip-2.1.2/port/GD32F4xx						\
--I./lwip-2.1.2/src/include/compat/posix/arpa		\
--I./lwip-2.1.2/src/include/compat/posix/net			\
--I./lwip-2.1.2/src/include/compat/posix				\
--I./lwip-2.1.2/src/include							\
--I./lwip-2.1.2/src/include/lwip						\
--I./lwip-2.1.2/src/include/lwip/apps				\
--I./lwip-2.1.2/src/include/lwip/priv				\
--I./lwip-2.1.2/src/include/lwip/prot				\
--I./lwip-2.1.2/src/include/netif					\
--I./lwip-2.1.2/src/include/netif/ppp				\
--I./lwip-2.1.2/src/include/netif/ppp/polarssl		\
-# -I./lwip-2.1.2/port/GD32F4xx/FreeRTOS				\
-# -I./lwip-2.1.2/port/GD32F4xx/arch					\
-# -I./lwip-2.1.2/src/apps/altcp_tls					\
-# -I./lwip-2.1.2/src/apps/http						\
-# -I./lwip-2.1.2/src/apps/http/makefsdata	 		\
-# -I./lwip-2.1.2/src/apps/snmp						\
-
+-I../../support/lwip-2.1.2/port/GD32F4xx/Basic					\
+-I../../support/lwip-2.1.2/port/GD32F4xx						\
+-I../../support/lwip-2.1.2/src/include/compat/posix/arpa		\
+-I../../support/lwip-2.1.2/src/include/compat/posix/net			\
+-I../../support/lwip-2.1.2/src/include/compat/posix				\
+-I../../support/lwip-2.1.2/src/include							\
+-I../../support/lwip-2.1.2/src/include/lwip						\
+-I../../support/lwip-2.1.2/src/include/lwip/apps				\
+-I../../support/lwip-2.1.2/src/include/lwip/priv				\
+-I../../support/lwip-2.1.2/src/include/lwip/prot				\
+-I../../support/lwip-2.1.2/src/include/netif					\
+-I../../support/lwip-2.1.2/src/include/netif/ppp				\
+-I../../support/lwip-2.1.2/src/include/netif/ppp/polarssl		\
 
 
 
