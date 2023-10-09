@@ -90,7 +90,6 @@ OF SUCH DAMAGE.
 /* function declarations */
 /* updates the system local time */
 void time_update(void);
-/* insert a delay time */
-void delay_10ms(uint32_t ncount);
+
 
 #endif /* MAIN_H */
