@@ -41,7 +41,6 @@ OF SUCH DAMAGE.
 #include "lwip/tcp.h"
 #include "lwip/timeouts.h"
 #include "gd32f450i_eval.h"
-#include "hello_gigadevice.h"
 #include <stdio.h>
 
 
