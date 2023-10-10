@@ -278,7 +278,7 @@ handleSearchResult OneWireMaster{..} = do
 
 
 handleError :: OneWireMaster -> Ivory (ProcEffects s ()) ()
-handleError m@OneWireMaster {..} = do
+handleError OneWireMaster {..} = do
     onError =<< deref error
     store state stateRecovery
 
