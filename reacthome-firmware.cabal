@@ -111,7 +111,6 @@ executable reacthome-firmware
                     , Interface.Flash
 
                     , Protocol.OneWire.Master
-                    , Protocol.OneWire.Master.Search
                     , Protocol.RS485.RBUS
                     , Protocol.RS485.RBUS.Master
                     , Protocol.RS485.RBUS.Master.MacTable

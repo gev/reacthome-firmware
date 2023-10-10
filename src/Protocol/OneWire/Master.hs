@@ -59,6 +59,7 @@ stateCheckDevices       = 0xb :: Uint8
 stateReadResult         = 0xc :: Uint8
 stateSearchResult       = 0xd :: Uint8
 stateError              = 0xe :: Uint8
+stateRecovery           = 0xf :: Uint8
 
 
 timeReset               =  48 :: Uint8
@@ -72,9 +73,9 @@ timeWaitBit             =   2 :: Uint8
 timeReadSlot            =   8 :: Uint8
 
 
-errorNoPresence         = 0x0 :: Uint8
-errorNotReady           = 0x1 :: Uint8
-errorCRC                = 0x2 :: Uint8
+errorNoPresence         = 0x1 :: Uint8
+errorNotReady           = 0x2 :: Uint8
+errorCRC                = 0x3 :: Uint8
 
 
 
@@ -218,6 +219,7 @@ taskOneWire = runState' state
         , stateReadResult   |-> handleReadResult
         , stateSearchResult |-> handleSearchResult
         , stateError        |-> handleError
+        , stateRecovery     |-> recovery
         ]
 
 
@@ -276,8 +278,13 @@ handleSearchResult OneWireMaster{..} = do
 
 
 handleError :: OneWireMaster -> Ivory (ProcEffects s ()) ()
-handleError m@OneWireMaster {..} = do
+handleError OneWireMaster {..} = do
     onError =<< deref error
+    store state stateRecovery
+
+
+recovery :: OneWireMaster -> Ivory (ProcEffects s ()) ()
+recovery m@OneWireMaster {..} =
     popAction m $ \action' payload' ->
         when (action' ==? actionReset .|| action' ==? actionSearch) $ do
             store action action'

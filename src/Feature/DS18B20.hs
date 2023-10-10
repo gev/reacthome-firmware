@@ -42,6 +42,8 @@ import           Protocol.OneWire.Master
 data DS18B20 = DS18B20
     { rxB       :: Values     9 Uint8
     , txB       :: Buffer    11 Uint8
+    , dsErrB    :: Buffer     9 Uint8
+    , owErrB    :: Buffer     2 Uint8
     , index     :: Value        Uint8
     , idNumber  :: Value        Uint8
     , idList    :: Matrix 256 8 Uint8
@@ -56,19 +58,20 @@ ds18b20 ow od = do
     let name   = "ds18b20"
     mcu       <- asks $ peripherals . D.mcu
     transport <- asks D.transport
-    rxB       <- buffer  (name <> "_rx_buffer")
-    txB       <- values  (name <> "_tx_buffer") [ 0xc4
-                                                , 0,0,0,0,0,0,0,0
-                                                , 0,0
-                                                ]
-    index     <- value   (name <> "_index"    ) 0
-    idNumber  <- value   (name <> "_id_number") 0
-    idList    <- matrix_ (name <> "_id_list"  )
+    rxB       <- buffer  (name <> "_rx_buffer"      )
+    txB       <- values  (name <> "_tx_buffer"      ) [0xc5, 0,0,0,0,0,0,0,0, 0,0]
+    dsErrB    <- values  (name <> "_ds_error_buffer") [0xc5, 0,0,0,0,0,0,0,0]
+    owErrB    <- values  (name <> "_ow_error_buffer") [0xc5, 0]
+    index     <- value   (name <> "_index"          ) 0
+    idNumber  <- value   (name <> "_id_number"      ) 0
+    idList    <- matrix_ (name <> "_id_list"        )
 
     onewire   <- ow mcu $ od mcu
 
     let ds     = DS18B20 { rxB
                          , txB
+                         , dsErrB
+                         , owErrB
                          , index
                          , idNumber
                          , idList
@@ -79,9 +82,9 @@ ds18b20 ow od = do
 
     addProc getCRC
 
-    addTask $ delay      15_000       (name <> "_search"             ) $ searchDevices   ds master
-    addTask $ delayPhase 15_000 6_000 (name <> "_measure_temperature") $ measureTemperature master
-    addTask $ delayPhase 15_000 6_700 (name <> "_get_temperature"    ) $ getTemperature  ds master
+    addTask $ delay      15_000       (name <> "_search"             ) $ searchDevices      ds master
+    addTask $ delayPhase 15_000 6_000 (name <> "_measure_temperature") $ measureTemperature ds master
+    addTask $ delayPhase 15_000 6_700 (name <> "_get_temperature"    ) $ getTemperature     ds master
 
     pure $ Feature ds
 
@@ -94,11 +97,13 @@ searchDevices DS18B20{..} onewire = do
 
 
 
-measureTemperature :: OneWireMaster -> Ivory eff ()
-measureTemperature onewire = do
-    reset    onewire
-    skipROM  onewire
-    write    onewire 0x44
+measureTemperature :: DS18B20 -> OneWireMaster -> Ivory eff ()
+measureTemperature DS18B20{..} onewire = do
+    idNumber' <- deref idNumber
+    when (idNumber' >? 0) $ do
+        reset    onewire
+        skipROM  onewire
+        write    onewire 0x44
 
 
 getTemperature :: DS18B20 -> OneWireMaster -> Ivory eff ()
@@ -121,16 +126,21 @@ onData DS18B20{..} i v = do
     ifte_ (index' ==? 8)
           (do
                 crc  <- call getCRC rxB
-                when (crc ==? 0) $ do
-                    let id = idList ! toIx i
-                    arrayMap $ \ix -> do
-                        let jx = toIx $ fromIx ix + 1
-                        store (txB ! jx) =<< deref (id ! ix)
-                    raw <- unpackLE rxB 0
-                    let t = (25 * raw) `iDiv` 4 :: Sint16
-                    packLE txB 9 t
-                    transmit txB
-                    store index 0
+                let id = idList ! toIx i
+                ifte_ (crc ==? 0)
+                      (do
+                            arrayCopy txB id 1 8
+                            raw <- unpackLE rxB 0
+                            let t = (25 * raw) `iDiv` 4 :: Sint16
+                            packLE txB 9 t
+                            transmit txB
+
+                      )
+                      (do
+                            arrayCopy dsErrB id 1 8
+                            transmit dsErrB
+                    )
+                store index 0
           )
           (store index $ index' + 1)
 
@@ -148,7 +158,9 @@ onDiscovery DS18B20{..} _ id = do
 
 
 onError :: DS18B20 -> Uint8 -> Ivory (ProcEffects s ()) ()
-onError DS18B20{..} error =
+onError DS18B20{..} error = do
+    store (owErrB ! 1) error
+    transmit owErrB
     when (error ==? errorNoPresence .|| error ==? errorNotReady) $
         store idNumber 0
 
