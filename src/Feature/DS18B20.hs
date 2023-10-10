@@ -82,9 +82,9 @@ ds18b20 ow od = do
 
     addProc getCRC
 
-    addTask $ delay      15_000       (name <> "_search"             ) $ searchDevices   ds master
-    addTask $ delayPhase 15_000 6_000 (name <> "_measure_temperature") $ measureTemperature master
-    addTask $ delayPhase 15_000 6_700 (name <> "_get_temperature"    ) $ getTemperature  ds master
+    addTask $ delay      15_000       (name <> "_search"             ) $ searchDevices      ds master
+    addTask $ delayPhase 15_000 6_000 (name <> "_measure_temperature") $ measureTemperature ds master
+    addTask $ delayPhase 15_000 6_700 (name <> "_get_temperature"    ) $ getTemperature     ds master
 
     pure $ Feature ds
 
@@ -97,11 +97,13 @@ searchDevices DS18B20{..} onewire = do
 
 
 
-measureTemperature :: OneWireMaster -> Ivory eff ()
-measureTemperature onewire = do
-    reset    onewire
-    skipROM  onewire
-    write    onewire 0x44
+measureTemperature :: DS18B20 -> OneWireMaster -> Ivory eff ()
+measureTemperature DS18B20{..} onewire = do
+    idNumber' <- deref idNumber
+    when (idNumber' >? 0) $ do
+        reset    onewire
+        skipROM  onewire
+        write    onewire 0x44
 
 
 getTemperature :: DS18B20 -> OneWireMaster -> Ivory eff ()
