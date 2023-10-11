@@ -57,9 +57,9 @@ ds18b20 ow od = do
     mcu       <- asks $ peripherals . D.mcu
     transport <- asks D.transport
     rxB       <- buffer  (name <> "_rx_buffer"      )
-    txB       <- values  (name <> "_tx_buffer"      ) [0xc5, 0,0,0,0,0,0,0,0, 0,0]
-    dsErrB    <- values  (name <> "_ds_error_buffer") [0xc5, 0,0,0,0,0,0,0,0]
-    owErrB    <- values  (name <> "_ow_error_buffer") [0xc5, 0]
+    txB       <- values  (name <> "_tx_buffer"      ) [0xc6, 0,0,0,0,0,0,0,0, 0,0]
+    dsErrB    <- values  (name <> "_ds_error_buffer") [0xc6, 0,0,0,0,0,0,0,0]
+    owErrB    <- values  (name <> "_ow_error_buffer") [0xc6, 0]
     idNumber  <- value   (name <> "_id_number"      ) 0
     idList    <- matrix_ (name <> "_id_list"        )
 
