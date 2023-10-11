@@ -12,7 +12,6 @@ module Feature.DS18B20
     , ds18b20
     ) where
 
-import           Control.Monad            (replicateM_, zipWithM_)
 import           Control.Monad.Reader     (MonadReader, asks)
 import           Control.Monad.State      (MonadState)
 import           Core.Context
