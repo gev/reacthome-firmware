@@ -12,7 +12,7 @@ module Feature.DS18B20
     , ds18b20
     ) where
 
-import           Control.Monad            (replicateM_)
+import           Control.Monad            (replicateM_, zipWithM_)
 import           Control.Monad.Reader     (MonadReader, asks)
 import           Control.Monad.State      (MonadState)
 import           Core.Context
@@ -22,7 +22,6 @@ import           Core.Feature
 import           Core.Task
 import qualified Core.Transport           as T
 import           Data.Buffer
-import           Data.Data                (cast)
 import           Data.Matrix
 import           Data.Serialize
 import           Data.Value
@@ -44,7 +43,6 @@ data DS18B20 = DS18B20
     , txB       :: Buffer    11 Uint8
     , dsErrB    :: Buffer     9 Uint8
     , owErrB    :: Buffer     2 Uint8
-    , index     :: Value        Uint8
     , idNumber  :: Value        Uint8
     , idList    :: Matrix 256 8 Uint8
     , transmit  :: forall n. KnownNat n
@@ -62,7 +60,6 @@ ds18b20 ow od = do
     txB       <- values  (name <> "_tx_buffer"      ) [0xc5, 0,0,0,0,0,0,0,0, 0,0]
     dsErrB    <- values  (name <> "_ds_error_buffer") [0xc5, 0,0,0,0,0,0,0,0]
     owErrB    <- values  (name <> "_ow_error_buffer") [0xc5, 0]
-    index     <- value   (name <> "_index"          ) 0
     idNumber  <- value   (name <> "_id_number"      ) 0
     idList    <- matrix_ (name <> "_id_list"        )
 
@@ -72,7 +69,6 @@ ds18b20 ow od = do
                          , txB
                          , dsErrB
                          , owErrB
-                         , index
                          , idNumber
                          , idList
                          , transmit = T.transmitBuffer transport
@@ -115,34 +111,36 @@ getTemperature DS18B20{..} onewire = do
         let id = idList ! ix
         arrayMap $ \ix -> write onewire =<< deref (id ! ix)
         write onewire 0xbe
-        replicateM_ 9 $ read onewire $ castDefault $ fromIx ix
+        for (9 :: Ix 10) $
+            read onewire (cast ix) . cast
+
+{-
+    TODO: Move cast to a separate utility module
+-}
+cast :: (KnownNat n, SafeCast t Sint32, Default t, Bounded t, IvoryOrd t) => Ix n -> t
+cast = castDefault . fromIx
 
 
 
-onData :: DS18B20 -> Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
-onData DS18B20{..} i v = do
-    index' <- deref index
-    store (rxB ! toIx index') v
-    ifte_ (index' ==? 8)
-          (do
-                crc  <- call getCRC rxB
-                let id = idList ! toIx i
-                ifte_ (crc ==? 0)
-                      (do
-                            arrayCopy txB id 1 8
-                            raw <- unpackLE rxB 0
-                            let t = (25 * raw) `iDiv` 4 :: Sint16
-                            packLE txB 9 t
-                            transmit txB
+onData :: DS18B20 -> Uint8 -> Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
+onData DS18B20{..} i index v = do
+    store (rxB ! toIx index) v
+    when (index ==? 8) $ do
+        crc  <- call getCRC rxB
+        let id = idList ! toIx i
+        ifte_ (crc ==? 0)
+              (do
+                    arrayCopy txB id 1 8
+                    raw <- unpackLE rxB 0
+                    let t = (25 * raw) `iDiv` 4 :: Sint16
+                    packLE txB 9 t
+                    transmit txB
 
-                      )
-                      (do
-                            arrayCopy dsErrB id 1 8
-                            transmit dsErrB
-                    )
-                store index 0
-          )
-          (store index $ index' + 1)
+              )
+              (do
+                    arrayCopy dsErrB id 1 8
+                    transmit dsErrB
+              )
 
 
 

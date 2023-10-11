@@ -85,6 +85,7 @@ type OneWireAction = "one_wire_action_struct"
     struct one_wire_action_struct {
         action_  :: Uint8;
         payload_ :: Uint8;
+        index_   :: Uint8;
     }
 |]
 
@@ -95,9 +96,10 @@ data OneWireMaster = OneWireMaster
     , state                 :: Value        Uint8
     , action                :: Value        Uint8
     , payload               :: Value        Uint8
+    , index                 :: Value        Uint8
     , time                  :: Value        Uint8
-    , actionB               :: Records 300  OneWireAction
-    , actionQ               :: Queue   300
+    , actionB               :: Records 768  OneWireAction
+    , actionQ               :: Queue   768
     , tmp                   :: Value        Uint8
     , width                 :: Value        Uint8
     , count                 :: Value        Uint8
@@ -115,7 +117,7 @@ data OneWireMaster = OneWireMaster
     , searchResult          :: Value        IBool
     , searchDirection       :: Value        IBool
     , error                 :: Value        Uint8
-    , onData                :: forall    s. Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
+    , onData                :: forall    s. Uint8 -> Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
     , onDiscovery           :: forall    s. Uint8 -> Buffer 8 Uint8 -> Ivory (ProcEffects s ()) ()
     , onError               :: forall    s. Uint8 -> Ivory (ProcEffects s ()) ()
     }
@@ -124,7 +126,7 @@ data OneWireMaster = OneWireMaster
 
 mkOneWireMaster :: MonadState Context m
                 => OneWire
-                -> (forall s. Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ())
+                -> (forall s. Uint8 -> Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ())
                 -> (forall s. Uint8 -> Buffer 8 Uint8 -> Ivory (ProcEffects s ()) ())
                 -> (forall s. Uint8 -> Ivory (ProcEffects s ()) ())
                 -> m OneWireMaster
@@ -132,6 +134,7 @@ mkOneWireMaster onewire onData onDiscovery onError = do
     state                   <- value    "one_wire_state" stateReady
     action                  <- value_   "one_wire_action"
     payload                 <- value_   "one_wire_payload"
+    index                   <- value_   "one_wire_index"
     time                    <- value    "one_wire_time" 0
     actionB                 <- records_ "one_wire_actions"
     actionQ                 <- queue    "one_wire_action"
@@ -157,6 +160,7 @@ mkOneWireMaster onewire onData onDiscovery onError = do
                                 , state
                                 , action
                                 , payload
+                                , index
                                 , time
                                 , actionB
                                 , actionQ
@@ -193,16 +197,16 @@ mkOneWireMaster onewire onData onDiscovery onError = do
 
 
 reset :: OneWireMaster -> Ivory eff ()
-reset m = pushAction m actionReset 0
+reset m = pushAction m actionReset 0 0
 
-read :: OneWireMaster -> Uint8 -> Ivory eff ()
+read :: OneWireMaster -> Uint8 -> Uint8 -> Ivory eff ()
 read m = pushAction m actionRead
 
 write :: OneWireMaster -> Uint8 -> Ivory eff ()
-write m = pushAction m actionWrite
+write m v = pushAction m actionWrite v 0
 
 search :: OneWireMaster -> Uint16 -> Ivory eff ()
-search m n = pushAction m actionSearch $ castDefault $ n - 1
+search m n = pushAction m actionSearch (castDefault $ n - 1) 0
 
 skipROM :: OneWireMaster -> Ivory eff ()
 skipROM m = write m 0xcc
@@ -226,9 +230,10 @@ taskOneWire = runState' state
 
 handleReady :: OneWireMaster -> Ivory eff ()
 handleReady m =
-    popAction m $ \action' payload'  -> do
-        store (action m) action'
+    popAction m $ \action' payload' index'  -> do
+        store (action  m) action'
         store (payload m) payload'
+        store (index   m) index'
         runAction m
 
 
@@ -251,7 +256,8 @@ handleSearchNext OneWireMaster{..} = do
 handleReadResult :: OneWireMaster -> Ivory (ProcEffects s ()) ()
 handleReadResult OneWireMaster{..} = do
     payload' <- deref payload
-    onData payload' =<< deref tmp
+    index'   <- deref index
+    onData payload' index' =<< deref tmp
     store state stateReady
 
 
@@ -285,7 +291,7 @@ handleError OneWireMaster {..} = do
 
 recovery :: OneWireMaster -> Ivory (ProcEffects s ()) ()
 recovery m@OneWireMaster {..} =
-    popAction m $ \action' payload' ->
+    popAction m $ \action' payload' index' ->
         when (action' ==? actionReset .|| action' ==? actionSearch) $ do
             store action action'
             runAction m
@@ -458,7 +464,7 @@ doRead nextState OneWireMaster{..} = do
             store time (time' + 1)
         , time' ==? timeWaitBit ==> do
             bit    <- getState onewire
-            tmp'  <- deref tmp
+            tmp'   <- deref tmp
             count' <- deref count
             store tmp $ tmp' .| (safeCast bit `iShiftL` count')
             store count $ count' + 1
@@ -600,18 +606,20 @@ getCRC = proc "one_wire_get_crc" $ \buff -> body $ do
 
 
 
-popAction :: OneWireMaster -> (Uint8 -> Uint8 -> Ivory eff ()) -> Ivory eff ()
+popAction :: OneWireMaster -> (Uint8 -> Uint8 -> Uint8 -> Ivory eff ()) -> Ivory eff ()
 popAction OneWireMaster{..} run =
     pop actionQ $ \i -> do
         let a = actionB ! toIx i
-        action'  <- deref (a ~> action_)
+        action'  <- deref (a ~> action_ )
         payload' <- deref (a ~> payload_)
-        run action' payload'
+        index'   <- deref (a ~> index_  )
+        run action' payload' index'
 
 
-pushAction :: OneWireMaster -> Uint8 -> Uint8 -> Ivory eff ()
-pushAction OneWireMaster{..} action' payload' =
+pushAction :: OneWireMaster -> Uint8 -> Uint8 -> Uint8 -> Ivory eff ()
+pushAction OneWireMaster{..} action' payload' index' =
     push actionQ $ \i -> do
         let a = actionB ! toIx i
-        store (a ~> action_) action'
+        store (a ~> action_ ) action'
         store (a ~> payload_) payload'
+        store (a ~> index_  ) index'
