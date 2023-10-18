@@ -40,7 +40,7 @@ OF SUCH DAMAGE.
 
 #define LWIP_IPV4                       
 
-#define LWIP_IGMP
+#define LWIP_IGMP               1
 
 
 #define SYS_LIGHTWEIGHT_PROT    0                        /* SYS_LIGHTWEIGHT_PROT==1: if you want inter-task protection 
