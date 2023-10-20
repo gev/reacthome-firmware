@@ -48,6 +48,7 @@ OF SUCH DAMAGE.
 #include <stdio.h>
 #include "lwip/priv/tcp_priv.h"
 #include "lwip/timeouts.h"
+#include "lwip/igmp.h"
 
 #define MAX_DHCP_TRIES        4
 
@@ -67,6 +68,7 @@ dhcp_state_enum dhcp_state = DHCP_START;
 struct netif g_mynetif;
 uint32_t tcp_timer = 0;
 uint32_t arp_timer = 0;
+uint32_t igmp_timer = 0;
 ip_addr_t ip_address = {0};
 
 void lwip_dhcp_process_handle(void);
@@ -162,6 +164,12 @@ void lwip_periodic_handle(__IO uint32_t localtime)
     if((localtime - arp_timer) >= ARP_TMR_INTERVAL) {
         arp_timer = localtime;
         etharp_tmr();
+    }
+
+    /* ARP periodic process every 5s */
+    if((localtime - igmp_timer) >= IGMP_TMR_INTERVAL) {
+        igmp_timer = localtime;
+        igmp_tmr();
     }
 
 #ifdef USE_DHCP

@@ -37,11 +37,14 @@ OF SUCH DAMAGE.
 
 #include "gd32f4xx.h"
 #include "netconf.h"
-#include "igmp.h"
 #include "main.h"
 #include "lwip/timeouts.h"
 #include "gd32f450i_eval.h"
 #include <stdio.h>
+#include "lwip/igmp.h"
+#include "lwip/prot/igmp.h"
+#include "igmp_test.h"
+
 
 
 #define SYSTEMTICK_PERIOD_MS  10
@@ -66,13 +69,13 @@ int main(void)
 {
     gd_eval_com_init(EVAL_COM0);
     uart_stdout_init();
+    igmp_init();
 
     /* setup ethernet system(GPIOs, clocks, MAC, DMA, systick) */
     enet_system_setup();
     /* initilaize the LwIP stack */
     lwip_stack_init();
-    igmp_init();
-    igmp_start();
+
     while(1) {
 
 #ifndef USE_ENET_INTERRUPT
@@ -109,23 +112,13 @@ void lwip_netif_status_callback(struct netif *netif)
         /* initilaize the udp: echo 1025 */
         udp_echo_init();
     }
+
+    if((netif->flags & NETIF_FLAG_IGMP) != 0) {
+        igmp_test_init();
+    }
 }
 
-/*!
-    \brief      insert a delay time
-    \param[in]  ncount: number of 10ms periods to wait for
-    \param[out] none
-    \retval     none
-*/
-// void delay_10ms(uint32_t ncount)
-// {
-//     /* capture the current local time */
-//     g_timedelay = g_localtime + ncount;
 
-//     /* wait until the desired delay finish */
-//     while(g_timedelay > g_localtime) {
-//     }
-// }
 
 /*!
     \brief      updates the system local time
