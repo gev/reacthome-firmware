@@ -74,6 +74,13 @@ ip_addr_t ip_address = {0};
 void lwip_dhcp_process_handle(void);
 void lwip_netif_status_callback(struct netif *netif);
 
+
+err_t igmp_mac_filter (struct netif *netif,
+       const ip4_addr_t *group, enum netif_mac_filter_action action)
+       {
+           return ERR_OK;
+       };
+
 /*!
     \brief      initializes the LwIP stack
     \param[in]  none
@@ -123,17 +130,19 @@ void lwip_stack_init(void)
 
     netif_add(&g_mynetif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &ethernet_input);
     /* registers the default network interface */
+    netif_set_igmp_mac_filter(&g_mynetif, igmp_mac_filter);
     netif_set_default(&g_mynetif);
     netif_set_status_callback(&g_mynetif, lwip_netif_status_callback);
 #ifdef USE_DHCP
     dhcp_start(&g_mynetif);
 #else
     /* when the netif is fully configured this function must be called */
+    igmp_init();
+    int error = igmp_start(&g_mynetif);
+    printf("err: %i \n", error);
+    igmp_joingroup_netif(&g_mynetif, &igmp_group);
     netif_set_up(&g_mynetif);
 #endif /* USE_DHCP */
-    igmp_init();
-    igmp_start(&g_mynetif);
-    igmp_joingroup_netif(&g_mynetif, &igmp_group);
 }
 
 /*!
