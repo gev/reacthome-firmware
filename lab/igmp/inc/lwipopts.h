@@ -38,7 +38,7 @@ OF SUCH DAMAGE.
 #ifndef LWIPOPTS_H
 #define LWIPOPTS_H
 
-#define LWIP_IPV4                       
+#define LWIP_IPV4               1             
 
 #define LWIP_IGMP               1
 
