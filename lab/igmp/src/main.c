@@ -69,7 +69,6 @@ int main(void)
 {
     gd_eval_com_init(EVAL_COM0);
     uart_stdout_init();
-    igmp_init();
 
     /* setup ethernet system(GPIOs, clocks, MAC, DMA, systick) */
     enet_system_setup();
@@ -108,12 +107,12 @@ int main(void)
 */
 void lwip_netif_status_callback(struct netif *netif)
 {
-    if((netif->flags & NETIF_FLAG_UP) != 0) {
-        /* initilaize the udp: echo 1025 */
-        udp_echo_init();
-    }
+    // if((netif->flags & NETIF_FLAG_UP) != 0) {
+    //     /* initilaize the udp: echo 1025 */
+    //     udp_echo_init();
+    // }
 
-    if((netif->flags & NETIF_FLAG_IGMP) != 0) {
+    if((netif->flags & NETIF_FLAG_UP) != 0) {
         igmp_test_init();
     }
 }

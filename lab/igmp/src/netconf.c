@@ -85,6 +85,7 @@ void lwip_stack_init(void)
     ip_addr_t ipaddr;
     ip_addr_t netmask;
     ip_addr_t gw;
+    ip_addr_t igmp_group;
 
     /* initializes the dynamic memory heap defined by MEM_SIZE */
     mem_init();
@@ -103,6 +104,7 @@ void lwip_stack_init(void)
     IP4_ADDR(&ipaddr, IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
     IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
     IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
+    IP4_ADDR(&igmp_group, 235, 1, 1, 1);
 
 #endif /* USE_DHCP */
 
@@ -129,6 +131,9 @@ void lwip_stack_init(void)
     /* when the netif is fully configured this function must be called */
     netif_set_up(&g_mynetif);
 #endif /* USE_DHCP */
+    igmp_init();
+    igmp_start(&g_mynetif);
+    igmp_joingroup_netif(&g_mynetif, &igmp_group);
 }
 
 /*!
