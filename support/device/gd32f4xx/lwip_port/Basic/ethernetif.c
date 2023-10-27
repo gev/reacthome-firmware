@@ -96,7 +96,7 @@ static void low_level_init(struct netif *netif)
 
     /* device capabilities */
     /* don't set NETIF_FLAG_ETHARP if this device is not an ethernet one */
-    netif->flags = NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP | NETIF_FLAG_LINK_UP | NETIF_FLAG_IGMP;
+    netif->flags = NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP | NETIF_FLAG_LINK_UP;
 
     /* initialize descriptors list: chain/ring mode */
 #ifdef SELECT_DESCRIPTORS_ENHANCED_MODE
