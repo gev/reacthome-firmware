@@ -57,63 +57,33 @@ void uart_stdout_init(void)
     setvbuf(stdout, NULL, _IONBF, 0);
 }
 
-/*!
-    \brief      main function
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
+
 int main(void)
 {
     gd_eval_com_init(EVAL_COM0);
     uart_stdout_init();
-
-    /* setup ethernet system(GPIOs, clocks, MAC, DMA, systick) */
     enet_system_setup();
-    /* initilaize the LwIP stack */
     lwip_stack_init();
 
 
     while(1) {
 
-#ifndef USE_ENET_INTERRUPT
-        /* check if any packet received */
-        if(enet_rxframe_size_get()) {
-            /* process received ethernet packet */
+        if(enet_rxframe_size_get()) { //use interrupt 
             lwip_pkt_handle();
         }
-#endif /* USE_ENET_INTERRUPT */
-
-        /* handle periodic timers for LwIP */
-#ifdef TIMEOUT_CHECK_USE_LWIP
-        sys_check_timeouts();
-
-#else
-        lwip_periodic_handle(g_localtime);
-#endif /* TIMEOUT_CHECK_USE_LWIP */
+    lwip_periodic_handle(g_localtime);
     }
 }
 
-/*!
-    \brief      after the netif is fully configured, it will be called to initialize the function of telnet, client and udp
-    \param[in]  netif: the struct used for lwIP network interface
-    \param[out] none
-    \retval     none
-*/
+
 void lwip_netif_status_callback(struct netif *netif)
 {
     if((netif->flags & NETIF_FLAG_UP) != 0) {
-        /* initilaize the helloGigadevice module telnet 23 */
         hello_gigadevice_init();
     }
 }
 
-/*!
-    \brief      updates the system local time
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
+
 void time_update(void)
 {
     g_localtime += SYSTEMTICK_PERIOD_MS;

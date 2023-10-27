@@ -82,10 +82,6 @@ OF SUCH DAMAGE.
 #define RMII_MODE  // user have to provide the 50 MHz clock by soldering a 50 MHz oscillator
 // #define MII_MODE
 
-/* clock the PHY from external 25MHz crystal (only for MII mode) */
-#ifdef  MII_MODE
-#define PHY_CLOCK_MCO
-#endif
 
 /* function declarations */
 /* updates the system local time */
