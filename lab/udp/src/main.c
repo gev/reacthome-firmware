@@ -74,36 +74,19 @@ int main(void)
 
 
     while(1) {
-
-#ifndef USE_ENET_INTERRUPT
         /* check if any packet received */
         if(enet_rxframe_size_get()) {
             /* process received ethernet packet */
             lwip_pkt_handle();
         }
-#endif /* USE_ENET_INTERRUPT */
-
-        /* handle periodic timers for LwIP */
-#ifdef TIMEOUT_CHECK_USE_LWIP
-        sys_check_timeouts();
-
-
-#else
-        lwip_periodic_handle(g_localtime);
-#endif /* TIMEOUT_CHECK_USE_LWIP */
+        
+    lwip_periodic_handle(g_localtime);
     }
 }
 
-/*!
-    \brief      after the netif is fully configured, it will be called to initialize the function of telnet, client and udp
-    \param[in]  netif: the struct used for lwIP network interface
-    \param[out] none
-    \retval     none
-*/
 void lwip_netif_status_callback(struct netif *netif)
 {
     if((netif->flags & NETIF_FLAG_UP) != 0) {
-        /* initilaize the udp: echo 1025 */
         udp_echo_init();
     }
 }

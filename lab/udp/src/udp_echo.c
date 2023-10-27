@@ -30,7 +30,7 @@ void udp_echo_init(void){
    {
      /* Bind the upcb to the UDP_PORT port */
      /* Using IP_ADDR_ANY allow the upcb to be used by any local interface */
-      err = udp_bind(upcb, IP_ADDR_ANY, 23);
+      err = udp_bind(upcb, IP_ADDR_ANY, 2000);
       
       if(err == ERR_OK)
       {
