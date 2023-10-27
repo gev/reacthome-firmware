@@ -72,7 +72,7 @@ C_SOURCES =  \
 ./src/main.c														\
 ./src/gd32f450i_eval.c												\
 ./src/netconf.c														\
-../../support/device/gd32f4xx/lwip_port/Basic/ethernetif.c	
+../../support/device/gd32f4xx/lwip_port/Basic/ethernetif.c			\
 ../../support/lwip-2.1.2/src/api/api_lib.c										\
 ../../support/lwip-2.1.2/src/api/api_msg.c										\
 ../../support/lwip-2.1.2/src/api/err.c											\
