@@ -59,76 +59,38 @@ void uart_stdout_init(void)
     setvbuf(stdout, NULL, _IONBF, 0);
 }
 
-/*!
-    \brief      main function
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
 int main(void)
 {
     gd_eval_com_init(EVAL_COM0);
     uart_stdout_init();
-
-    /* setup ethernet system(GPIOs, clocks, MAC, DMA, systick) */
     enet_system_setup();
-    /* initilaize the LwIP stack */
     lwip_stack_init();
 
     while(1) {
 
-#ifndef USE_ENET_INTERRUPT
-        /* check if any packet received */
-        if(enet_rxframe_size_get()) {
-            /* process received ethernet packet */
+        if(enet_rxframe_size_get()) {   //USE_ENET_INTERRUPT
             lwip_pkt_handle();
         }
-#endif /* USE_ENET_INTERRUPT */
 
-        /* handle periodic timers for LwIP */
-#ifdef TIMEOUT_CHECK_USE_LWIP
-        sys_check_timeouts();
-
-#ifdef USE_DHCP
-        lwip_dhcp_process_handle();
-#endif /* USE_DHCP */
-
-#else
         lwip_periodic_handle(g_localtime);
-#endif /* TIMEOUT_CHECK_USE_LWIP */
+
     }
 }
 
-/*!
-    \brief      after the netif is fully configured, it will be called to initialize the function of telnet, client and udp
-    \param[in]  netif: the struct used for lwIP network interface
-    \param[out] none
-    \retval     none
-*/
 void lwip_netif_status_callback(struct netif *netif)
 {
-    // if((netif->flags & NETIF_FLAG_UP) != 0) {
-    //     /* initilaize the udp: echo 1025 */
-    //     udp_echo_init();
-    // }
-
     if((netif->flags & NETIF_FLAG_UP) != 0) {
         igmp_test_init();
     }
 }
 
-
-
-/*!
-    \brief      updates the system local time
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
 void time_update(void)
 {
     g_localtime += SYSTEMTICK_PERIOD_MS;
 }
+
+
+
 
 int _write(int file, char *ptr, int len)
 {

@@ -57,9 +57,9 @@ void enet_system_setup(void)
 {
     uint32_t ahb_frequency = 0;
 
-#ifdef USE_ENET_INTERRUPT
+
     nvic_configuration();
-#endif /* USE_ENET_INTERRUPT */
+
 
     /* configure the GPIO ports for ethernet pins */
     enet_gpio_config();
@@ -116,29 +116,20 @@ static void enet_mac_dma_config(void)
 //  enet_initpara_config(HALFDUPLEX_OPTION, ENET_CARRIERSENSE_ENABLE|ENET_RECEIVEOWN_ENABLE|ENET_RETRYTRANSMISSION_DISABLE|ENET_BACKOFFLIMIT_10|ENET_DEFERRALCHECK_DISABLE);
 //  enet_initpara_config(DMA_OPTION, ENET_FLUSH_RXFRAME_ENABLE|ENET_SECONDFRAME_OPT_ENABLE|ENET_NORMAL_DESCRIPTOR);
 
-#ifdef CHECKSUM_BY_HARDWARE
-    enet_init_status = enet_init(ENET_AUTO_NEGOTIATION, ENET_AUTOCHECKSUM_DROP_FAILFRAMES, ENET_BROADCAST_FRAMES_PASS);
-    // enet_init_status = enet_init(ENET_AUTO_NEGOTIATION, ENET_AUTOCHECKSUM_DROP_FAILFRAMES, ENET_RECEIVEALL);
-#else
     enet_init_status = enet_init(ENET_AUTO_NEGOTIATION, ENET_NO_AUTOCHECKSUM, ENET_BROADCAST_FRAMES_PASS);
-#endif /* CHECKSUM_BY_HARDWARE */
+    ENET_MAC_FRMF |= ENET_MULTICAST_FILTER_PASS;
+
 
 }
 
-#ifdef USE_ENET_INTERRUPT
-/*!
-    \brief      configures the nested vectored interrupt controller
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
+
 static void nvic_configuration(void)
 {
     nvic_vector_table_set(NVIC_VECTTAB_FLASH, 0x0);
     nvic_priority_group_set(NVIC_PRIGROUP_PRE2_SUB2);
     nvic_irq_enable(ENET_IRQn, 0, 0);
 }
-#endif /* USE_ENET_INTERRUPT */
+
 
 /*!
     \brief      configures the different GPIO ports
