@@ -117,8 +117,7 @@ static void enet_mac_dma_config(void)
 //  enet_initpara_config(DMA_OPTION, ENET_FLUSH_RXFRAME_ENABLE|ENET_SECONDFRAME_OPT_ENABLE|ENET_NORMAL_DESCRIPTOR);
 
     enet_init_status = enet_init(ENET_AUTO_NEGOTIATION, ENET_NO_AUTOCHECKSUM, ENET_BROADCAST_FRAMES_PASS);
-    ENET_MAC_FRMF |= ENET_MULTICAST_FILTER_PASS;
-
+    enet_fliter_feature_enable (ENET_MULTICAST_FILTER_PASS);
 
 }
 
