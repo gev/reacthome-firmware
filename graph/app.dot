@@ -1,0 +1,12 @@
+digraph G {
+size="6,4";
+ratio="fill";
+subgraph cluster_0 {
+label="app";
+color="#0000000F";
+style="filled";
+u0[label="Main",style="filled",fillcolor="#ffffbb",penwidth="0"];
+
+}
+
+}

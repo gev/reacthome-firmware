@@ -1,0 +1,78 @@
+digraph G {
+size="6,4";
+ratio="fill";
+subgraph cluster_0 {
+label="Support";
+color="#0000000F";
+style="filled";
+subgraph cluster_1 {
+label="Device";
+color="#0000000F";
+style="filled";
+subgraph cluster_2 {
+label="GD32F3x0";
+color="#0000000F";
+style="filled";
+u24[label="GD32F3x0",style="filled,bold",fillcolor="#bbbbff"];
+u12[label="GPIO",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u13[label="SYSCFG",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u14[label="RCU",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u15[label="EXTI",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u16[label="System",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u17[label="Misc",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u18[label="IRQ",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u19[label="FMC",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u20[label="DMA",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u21[label="USART",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u22[label="Timer",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u23[label="DBG",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+
+}
+subgraph cluster_3 {
+label="GD32F4xx";
+color="#0000000F";
+style="filled";
+u0[label="GD32F4xx",style="filled,bold",fillcolor="#bbbbff"];
+u1[label="GPIO",style="filled",fillcolor="#bbffff",penwidth="0"];
+u2[label="SYSCFG",style="filled",fillcolor="#bbffff",penwidth="0"];
+u3[label="RCU",style="filled",fillcolor="#bbffff",penwidth="0"];
+u4[label="EXTI",style="filled",fillcolor="#bbffff",penwidth="0"];
+u5[label="System",style="filled",fillcolor="#bbffff",penwidth="0"];
+u6[label="Misc",style="filled",fillcolor="#bbffff",penwidth="0"];
+u7[label="IRQ",style="filled",fillcolor="#bbffff",penwidth="0"];
+u8[label="DMA",style="filled",fillcolor="#bbffff",penwidth="0"];
+u9[label="USART",style="filled",fillcolor="#bbffff",penwidth="0"];
+u10[label="Timer",style="filled",fillcolor="#bbffff",penwidth="0"];
+u11[label="DBG",style="filled",fillcolor="#bbffff",penwidth="0"];
+
+}
+
+}
+
+}
+u0 -> u1;
+u0 -> u2;
+u0 -> u3;
+u0 -> u4;
+u0 -> u6;
+u0 -> u7;
+u0 -> u8;
+u0 -> u9;
+u0 -> u10;
+u0 -> u11;
+u6 -> u7;
+u17 -> u18;
+u24 -> u12;
+u24 -> u13;
+u24 -> u14;
+u24 -> u15;
+u24 -> u16;
+u24 -> u17;
+u24 -> u18;
+u24 -> u19;
+u24 -> u20;
+u24 -> u21;
+u24 -> u22;
+u24 -> u23;
+
+}

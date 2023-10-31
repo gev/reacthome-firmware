@@ -1,0 +1,64 @@
+digraph G {
+size="6,4";
+ratio="fill";
+subgraph cluster_0 {
+label="Data";
+color="#0000000F";
+style="filled";
+u0[label="Record",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u1[label="Buffer",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u2[label="Area",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u3[label="Value",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u4[label="Index",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u5[label="Color",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u8[label="Matrix",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u9[label="Serialize",style="filled",fillcolor="#ffffbb",penwidth="0"];
+subgraph cluster_1 {
+label="Concurrent";
+color="#0000000F";
+style="filled";
+u6[label="Queue",style="filled",fillcolor="#bbbbff",penwidth="0"];
+u7[label="Semaphore",style="filled",fillcolor="#bbbbff",penwidth="0"];
+
+}
+subgraph cluster_2 {
+label="Display";
+color="#0000000F";
+style="filled";
+u13[label="Canvas1D",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+subgraph cluster_3 {
+label="FrameBuffer";
+color="#0000000F";
+style="filled";
+u12[label="FrameBuffer",style="filled,bold",fillcolor="#ffbbbb"];
+subgraph cluster_4 {
+label="NeoPixel";
+color="#0000000F";
+style="filled";
+u10[label="SPI",style="filled",fillcolor="#ffbbff",penwidth="0"];
+u11[label="PWM",style="filled",fillcolor="#ffbbff",penwidth="0"];
+
+}
+
+}
+
+}
+
+}
+u0 -> u2;
+u1 -> u3;
+u3 -> u2;
+u4 -> u3;
+u6 -> u4;
+u6 -> u7;
+u7 -> u3;
+u8 -> u2;
+u10 -> u1;
+u10 -> u3;
+u10 -> u12;
+u11 -> u3;
+u11 -> u12;
+u13 -> u5;
+u13 -> u12;
+
+}

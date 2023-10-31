@@ -1,0 +1,65 @@
+digraph G {
+size="6,4";
+ratio="fill";
+subgraph cluster_0 {
+label="Feature";
+color="#0000000F";
+style="filled";
+u0[label="Echo",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u3[label="DInputs",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u4[label="Server",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u7[label="Relays",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u8[label="DS18B20",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u9[label="Blink",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u10[label="Indicator",style="filled",fillcolor="#ffffbb",penwidth="0"];
+subgraph cluster_1 {
+label="Dimmer";
+color="#0000000F";
+style="filled";
+u5[label="DC",style="filled",fillcolor="#bbbbff",penwidth="0"];
+u6[label="AC",style="filled",fillcolor="#bbbbff",penwidth="0"];
+
+}
+subgraph cluster_2 {
+label="Mix";
+color="#0000000F";
+style="filled";
+u1[label="Mix",style="filled,bold",fillcolor="#ffffbb"];
+u2[label="Indicator",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+
+}
+subgraph cluster_3 {
+label="RS485";
+color="#0000000F";
+style="filled";
+subgraph cluster_4 {
+label="RBUS";
+color="#0000000F";
+style="filled";
+u14[label="RBUS",style="filled,bold",fillcolor="#bbffff"];
+u11[label="Data",style="filled",fillcolor="#ffbbff",penwidth="0"];
+u12[label="Tx",style="filled",fillcolor="#ffbbff",penwidth="0"];
+u13[label="Rx",style="filled",fillcolor="#ffbbff",penwidth="0"];
+
+}
+
+}
+
+}
+u1 -> u2;
+u1 -> u3;
+u1 -> u7;
+u2 -> u11;
+u4 -> u3;
+u4 -> u5;
+u4 -> u11;
+u4 -> u14;
+u10 -> u11;
+u12 -> u11;
+u13 -> u11;
+u14 -> u6;
+u14 -> u11;
+u14 -> u12;
+u14 -> u13;
+
+}

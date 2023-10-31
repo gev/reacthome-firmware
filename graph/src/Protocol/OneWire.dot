@@ -1,0 +1,18 @@
+digraph G {
+size="6,4";
+ratio="fill";
+subgraph cluster_0 {
+label="Protocol";
+color="#0000000F";
+style="filled";
+subgraph cluster_1 {
+label="OneWire";
+color="#0000000F";
+style="filled";
+u0[label="Master",style="filled",fillcolor="#bbbbff",penwidth="0"];
+
+}
+
+}
+
+}

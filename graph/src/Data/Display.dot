@@ -1,0 +1,36 @@
+digraph G {
+size="6,4";
+ratio="fill";
+subgraph cluster_0 {
+label="Data";
+color="#0000000F";
+style="filled";
+subgraph cluster_1 {
+label="Display";
+color="#0000000F";
+style="filled";
+u3[label="Canvas1D",style="filled",fillcolor="#bbbbff",penwidth="0"];
+subgraph cluster_2 {
+label="FrameBuffer";
+color="#0000000F";
+style="filled";
+u2[label="FrameBuffer",style="filled,bold",fillcolor="#bbbbff"];
+subgraph cluster_3 {
+label="NeoPixel";
+color="#0000000F";
+style="filled";
+u0[label="SPI",style="filled",fillcolor="#bbffff",penwidth="0"];
+u1[label="PWM",style="filled",fillcolor="#bbffff",penwidth="0"];
+
+}
+
+}
+
+}
+
+}
+u0 -> u2;
+u1 -> u2;
+u3 -> u2;
+
+}

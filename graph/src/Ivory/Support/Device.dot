@@ -1,0 +1,25 @@
+digraph G {
+size="6,4";
+ratio="fill";
+subgraph cluster_0 {
+label="Ivory";
+color="#0000000F";
+style="filled";
+subgraph cluster_1 {
+label="Support";
+color="#0000000F";
+style="filled";
+subgraph cluster_2 {
+label="Device";
+color="#0000000F";
+style="filled";
+u0[label="GD32F4xx",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u1[label="GD32F3x0",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+
+}
+
+}
+
+}
+
+}

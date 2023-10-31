@@ -1,0 +1,20 @@
+digraph G {
+size="6,4";
+ratio="fill";
+subgraph cluster_0 {
+label="Data";
+color="#0000000F";
+style="filled";
+subgraph cluster_1 {
+label="Concurrent";
+color="#0000000F";
+style="filled";
+u0[label="Queue",style="filled",fillcolor="#bbbbff",penwidth="0"];
+u1[label="Semaphore",style="filled",fillcolor="#bbbbff",penwidth="0"];
+
+}
+
+}
+u0 -> u1;
+
+}

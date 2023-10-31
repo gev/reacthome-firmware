@@ -1,0 +1,139 @@
+digraph G {
+size="6,4";
+ratio="fill";
+subgraph cluster_0 {
+label="Device";
+color="#0000000F";
+style="filled";
+subgraph cluster_1 {
+label="GD32F3x0";
+color="#0000000F";
+style="filled";
+u30[label="GD32F3x0",style="filled,bold",fillcolor="#ffffbb"];
+u15[label="UART",style="filled",fillcolor="#bbbbff",penwidth="0"];
+u16[label="Flash",style="filled",fillcolor="#bbbbff",penwidth="0"];
+u18[label="Mac",style="filled",fillcolor="#bbbbff",penwidth="0"];
+u19[label="SysTick",style="filled",fillcolor="#bbbbff",penwidth="0"];
+u20[label="EXTI",style="filled",fillcolor="#bbbbff",penwidth="0"];
+u21[label="PWM",style="filled",fillcolor="#bbbbff",penwidth="0"];
+u22[label="SystemClock",style="filled",fillcolor="#bbbbff",penwidth="0"];
+u29[label="Timer",style="filled",fillcolor="#bbbbff",penwidth="0"];
+subgraph cluster_2 {
+label="Display";
+color="#0000000F";
+style="filled";
+u23[label="NeoPixel",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+
+}
+subgraph cluster_3 {
+label="GPIO";
+color="#0000000F";
+style="filled";
+u17[label="GPIO",style="filled,bold",fillcolor="#bbbbff"];
+u24[label="Input",style="filled",fillcolor="#bbffff",penwidth="0"];
+u25[label="Mode",style="filled",fillcolor="#bbffff",penwidth="0"];
+u26[label="Output",style="filled",fillcolor="#bbffff",penwidth="0"];
+u27[label="OpenDrain",style="filled",fillcolor="#bbffff",penwidth="0"];
+u28[label="Port",style="filled",fillcolor="#bbffff",penwidth="0"];
+
+}
+
+}
+subgraph cluster_4 {
+label="GD32F4xx";
+color="#0000000F";
+style="filled";
+u0[label="GD32F4xx",style="filled,bold",fillcolor="#ffffbb"];
+u1[label="UART",style="filled",fillcolor="#ffbbff",penwidth="0"];
+u2[label="Flash",style="filled",fillcolor="#ffbbff",penwidth="0"];
+u4[label="Mac",style="filled",fillcolor="#ffbbff",penwidth="0"];
+u5[label="SysTick",style="filled",fillcolor="#ffbbff",penwidth="0"];
+u6[label="PWM",style="filled",fillcolor="#ffbbff",penwidth="0"];
+u7[label="SystemClock",style="filled",fillcolor="#ffbbff",penwidth="0"];
+u14[label="Timer",style="filled",fillcolor="#ffbbff",penwidth="0"];
+subgraph cluster_5 {
+label="Display";
+color="#0000000F";
+style="filled";
+u8[label="NeoPixel",style="filled",fillcolor="#77ff77",penwidth="0"];
+
+}
+subgraph cluster_6 {
+label="GPIO";
+color="#0000000F";
+style="filled";
+u3[label="GPIO",style="filled,bold",fillcolor="#ffbbff"];
+u9[label="Input",style="filled",fillcolor="#ffff77",penwidth="0"];
+u10[label="Mode",style="filled",fillcolor="#ffff77",penwidth="0"];
+u11[label="Output",style="filled",fillcolor="#ffff77",penwidth="0"];
+u12[label="OpenDrain",style="filled",fillcolor="#ffff77",penwidth="0"];
+u13[label="Port",style="filled",fillcolor="#ffff77",penwidth="0"];
+
+}
+
+}
+
+}
+u0 -> u1;
+u0 -> u2;
+u0 -> u3;
+u0 -> u4;
+u0 -> u5;
+u0 -> u6;
+u0 -> u7;
+u0 -> u8;
+u0 -> u9;
+u0 -> u10;
+u0 -> u11;
+u0 -> u12;
+u0 -> u14;
+u1 -> u13;
+u3 -> u10;
+u3 -> u13;
+u6 -> u13;
+u6 -> u14;
+u7 -> u5;
+u7 -> u14;
+u8 -> u3;
+u8 -> u13;
+u8 -> u14;
+u9 -> u10;
+u9 -> u13;
+u11 -> u10;
+u11 -> u13;
+u12 -> u10;
+u12 -> u13;
+u13 -> u10;
+u15 -> u28;
+u17 -> u25;
+u17 -> u28;
+u20 -> u24;
+u21 -> u28;
+u21 -> u29;
+u22 -> u19;
+u22 -> u29;
+u23 -> u28;
+u23 -> u29;
+u24 -> u25;
+u24 -> u28;
+u26 -> u25;
+u26 -> u28;
+u27 -> u25;
+u27 -> u28;
+u28 -> u25;
+u30 -> u15;
+u30 -> u16;
+u30 -> u17;
+u30 -> u18;
+u30 -> u19;
+u30 -> u20;
+u30 -> u21;
+u30 -> u22;
+u30 -> u23;
+u30 -> u24;
+u30 -> u25;
+u30 -> u26;
+u30 -> u27;
+u30 -> u29;
+
+}

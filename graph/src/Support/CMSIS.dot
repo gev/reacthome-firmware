@@ -1,0 +1,18 @@
+digraph G {
+size="6,4";
+ratio="fill";
+subgraph cluster_0 {
+label="Support";
+color="#0000000F";
+style="filled";
+subgraph cluster_1 {
+label="CMSIS";
+color="#0000000F";
+style="filled";
+u0[label="CoreCM4",style="filled",fillcolor="#bbbbff",penwidth="0"];
+
+}
+
+}
+
+}

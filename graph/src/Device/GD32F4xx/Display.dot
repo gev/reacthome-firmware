@@ -1,0 +1,24 @@
+digraph G {
+size="6,4";
+ratio="fill";
+subgraph cluster_0 {
+label="Device";
+color="#0000000F";
+style="filled";
+subgraph cluster_1 {
+label="GD32F4xx";
+color="#0000000F";
+style="filled";
+subgraph cluster_2 {
+label="Display";
+color="#0000000F";
+style="filled";
+u0[label="NeoPixel",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+
+}
+
+}
+
+}
+
+}

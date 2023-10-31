@@ -1,0 +1,35 @@
+digraph G {
+size="6,4";
+ratio="fill";
+subgraph cluster_0 {
+label="Support";
+color="#0000000F";
+style="filled";
+subgraph cluster_1 {
+label="Device";
+color="#0000000F";
+style="filled";
+subgraph cluster_2 {
+label="GD32F4xx";
+color="#0000000F";
+style="filled";
+u0[label="GPIO",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u1[label="SYSCFG",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u2[label="RCU",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u3[label="EXTI",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u4[label="System",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u5[label="Misc",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u6[label="IRQ",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u7[label="DMA",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u8[label="USART",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u9[label="Timer",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u10[label="DBG",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+
+}
+
+}
+
+}
+u5 -> u6;
+
+}

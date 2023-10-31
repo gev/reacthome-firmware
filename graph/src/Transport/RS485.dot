@@ -1,0 +1,32 @@
+digraph G {
+size="6,4";
+ratio="fill";
+subgraph cluster_0 {
+label="Transport";
+color="#0000000F";
+style="filled";
+subgraph cluster_1 {
+label="RS485";
+color="#0000000F";
+style="filled";
+subgraph cluster_2 {
+label="RBUS";
+color="#0000000F";
+style="filled";
+u3[label="RBUS",style="filled,bold",fillcolor="#bbbbff"];
+u0[label="Data",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u1[label="Tx",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u2[label="Rx",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+
+}
+
+}
+
+}
+u1 -> u0;
+u2 -> u0;
+u3 -> u0;
+u3 -> u1;
+u3 -> u2;
+
+}

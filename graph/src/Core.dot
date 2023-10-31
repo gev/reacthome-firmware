@@ -1,0 +1,40 @@
+digraph G {
+size="6,4";
+ratio="fill";
+subgraph cluster_0 {
+label="Core";
+color="#0000000F";
+style="filled";
+u0[label="Context",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u1[label="FSM",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u2[label="Scheduler",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u3[label="Transport",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u4[label="Formula",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u5[label="Domain",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u6[label="Version",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u7[label="Handler",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u8[label="Controller",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u9[label="Task",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u10[label="Dispatcher",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u11[label="Feature",style="filled",fillcolor="#ffffbb",penwidth="0"];
+
+}
+u0 -> u9;
+u2 -> u9;
+u3 -> u0;
+u3 -> u9;
+u4 -> u0;
+u4 -> u3;
+u4 -> u5;
+u4 -> u11;
+u5 -> u0;
+u5 -> u3;
+u5 -> u6;
+u5 -> u11;
+u6 -> u0;
+u7 -> u0;
+u10 -> u8;
+u11 -> u8;
+u11 -> u9;
+
+}

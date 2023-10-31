@@ -1,0 +1,20 @@
+digraph G {
+size="6,4";
+ratio="fill";
+subgraph cluster_0 {
+label="Formula";
+color="#0000000F";
+style="filled";
+u0[label="DI4",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u1[label="Echo",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u2[label="Blink450",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u3[label="DimmerAC12",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u4[label="Relay12",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u5[label="Server",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u6[label="Mix6x12",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u7[label="Blink330",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u8[label="DimmerDC12",style="filled",fillcolor="#ffffbb",penwidth="0"];
+
+}
+
+}

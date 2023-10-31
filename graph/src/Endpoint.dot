@@ -1,0 +1,23 @@
+digraph G {
+size="6,4";
+ratio="fill";
+subgraph cluster_0 {
+label="Endpoint";
+color="#0000000F";
+style="filled";
+u0[label="DInputsRelaysRules",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u1[label="DInputs",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u2[label="Dimmers",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u3[label="Groups",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u4[label="ATS",style="filled",fillcolor="#ffffbb",penwidth="0"];
+u5[label="Relays",style="filled",fillcolor="#ffffbb",penwidth="0"];
+
+}
+u0 -> u1;
+u0 -> u3;
+u0 -> u5;
+u4 -> u1;
+u4 -> u5;
+u5 -> u3;
+
+}
