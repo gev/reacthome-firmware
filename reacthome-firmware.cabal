@@ -200,6 +200,7 @@ executable reacthome-firmware
                     , Support.Device.GD32F4xx.EXTI
                     , Support.Device.GD32F4xx.SYSCFG
                     , Support.Device.GD32F4xx.System
+                    , Support.Device.GD32F4xx.ENET
 
                     , Test
 
