@@ -206,6 +206,8 @@ executable reacthome-firmware
                     , Support.Lwip.IP_addr
                     , Support.Lwip.Netif
                     , Support.Lwip.Udp
+                    , Support.Lwip.Err
+                    , Support.Lwip.Pbuf
 
                     , Test
 
