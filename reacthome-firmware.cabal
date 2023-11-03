@@ -201,6 +201,12 @@ executable reacthome-firmware
                     , Support.Device.GD32F4xx.SYSCFG
                     , Support.Device.GD32F4xx.System
 
+                    , Support.Lwip.Mem
+                    , Support.Lwip.Memp
+                    , Support.Lwip.IP_addr
+                    , Support.Lwip.Netif
+                    , Support.Lwip.Udp
+
                     , Test
 
                     , Util.CRC16
