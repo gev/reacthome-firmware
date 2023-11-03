@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
+{-# LANGUAGE DataKinds     #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE DataKinds #-}
 
 module Support.Lwip.Udp
     ( newUdp
@@ -10,9 +10,9 @@ module Support.Lwip.Udp
     ) where
 
 import           Ivory.Language
-import           Ivory.Support
 import           Ivory.Language.Proc
 import           Ivory.Language.Syntax
+import           Ivory.Support
 
 
 fun :: ProcType f => Sym -> Def f
