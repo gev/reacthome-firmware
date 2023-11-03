@@ -6,12 +6,12 @@
 {-# LANGUAGE FlexibleInstances #-}
 
 module Support.Lwip.Netif
-    ( --NETIF_STRUCT
-    -- , NETIF
+    ( NETIF_STRUCT
+    , NETIF
 
-    -- , addNetif
-    -- , setNetifDefault
-    -- , setUpNetif
+    , addNetif
+    , setNetifDefault
+    , setUpNetif
 
     ,
     ) where
@@ -21,6 +21,8 @@ import           Ivory.Language.Proc   (ProcType)
 import           Ivory.Language.Syntax (Sym)
 import           Ivory.Support
 import           Support.Lwip.IP_addr
+import           Support.Lwip.Pbuf
+import           Support.Lwip.Err
 
 
 fun :: ProcType f => Sym -> Def f
@@ -41,12 +43,14 @@ type NET_MASK = IP_ADDR_4
 type GW = IP_ADDR_4
 
 
+type NetifInitFn s = '[NETIF s] :-> ErrT;
+type NetifInputFn s = '[PBUF s, NETIF s] :-> ErrT;
 
--- addNetif :: NETIF s -> IP_ADDR -> NET_MASK -> GW -> -> 
--- addNetif = call_ netif_add
+addNetif :: NETIF s -> IP_ADDR -> NET_MASK -> GW -> NetifInitFn s -> NetifInputFn -> Ivory eff () -- after GW  "state = NULL"
+addNetif = call_ netif_add
 
--- netif_add ::
--- netif_add = fun "netif_add"
+netif_add :: Def ('[NETIF s, IP_ADDR, NET_MASK, GW, NetifInitFn s, NetifInputFn] :-> ErrT)
+netif_add = fun "netif_add"
 
 
 setNetifDefault :: NETIF s -> Ivory eff()
@@ -65,30 +69,28 @@ netif_set_up = fun "netif_set_up"
 
 inclNetif :: ModuleDef
 inclNetif = do
-    -- incl netif_add
+    incl netif_add
     incl netif_set_default
     incl netif_set_up
 
 
 
 
-type ErrT = Sint8;
+-- type NetifInitFn s = '[NETIF s] :-> ErrT;
 
-type NetifInitFn s = '[NETIF s] :-> ErrT;
+-- init' :: Def (NetifInitFn s)
+-- init' = undefined
 
-init' :: Def (NetifInitFn s)
-init' = undefined
+-- type Uint8'to'void ='[Uint8] :-> ()
 
-type Uint8'to'void ='[Uint8] :-> ()
+-- foo :: Def Uint8'to'void
+-- foo = undefined
 
-foo :: Def Uint8'to'void
-foo = undefined
+-- bar :: Def ('[ProcPtr (NetifInitFn s)] :-> ())
+-- bar = undefined
 
-bar :: Def ('[ProcPtr (NetifInitFn s)] :-> ())
-bar = undefined
-
-run :: Ivory eff ()
-run = x
-    where
-        x = call_ bar f
-        f = procPtr init'
+-- run :: Ivory eff ()
+-- run = x
+--     where
+--         x = call_ bar f
+--         f = procPtr init'
