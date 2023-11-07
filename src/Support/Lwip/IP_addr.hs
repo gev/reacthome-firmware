@@ -1,11 +1,12 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# LANGUAGE QuasiQuotes       #-}
 {-# HLINT ignore "Use camelCase" #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE DataKinds #-}
 
 module Support.Lwip.IP_addr
-    ( IP_ADDR_4
-    , IP_ADDR_4_POINTER
+    ( IP_ADDR_4_T
+    , IP_ADDR_4
 
     , createIpAddr4
 
@@ -14,16 +15,20 @@ module Support.Lwip.IP_addr
 
 import           Ivory.Language
 import           Ivory.Support
-import           Ivory.Language.Proc
-import           Ivory.Language.Syntax
+import           Ivory.Language.Proc   (ProcType)
+import           Ivory.Language.Syntax (Sym)
 
 
 fun :: ProcType f => Sym -> Def f
 fun = funFrom "lwip/ip_addr.h"
 
 
-type IP_ADDR_4_T = "ip_addr_t"
-type IP_ADDR_4 s = Ref s IP_ADDR_4_T
+type IP_ADDR_4_T = "ip4_addr"
+type IP_ADDR_4 s = Ref s (Struct IP_ADDR_4_T)
+
+[ivory|
+    abstract struct ip4_addr "ip_addr.h"
+|]
 
 
 createIpAddr4 :: IP_ADDR_4 s -> Uint8 -> Uint8 -> Uint8 -> Uint8 -> Ivory eff ()

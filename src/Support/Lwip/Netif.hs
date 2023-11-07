@@ -9,6 +9,15 @@ module Support.Lwip.Netif
     ( NETIF_STRUCT
     , NETIF
 
+    , State
+    , PtrState
+
+    , NetifInitFn
+    , PtrNetifInitFn
+
+    , NetifInputFn
+    , PtrNetifInputFn
+
     , addNetif
     , setNetifDefault
     , setUpNetif
@@ -38,18 +47,23 @@ type NETIF s = Ref s (Struct NETIF_STRUCT)
 |]
 
 
-type IP_ADDR = IP_ADDR_4
-type NET_MASK = IP_ADDR_4
-type GW = IP_ADDR_4
+type NET_MASK s = IP_ADDR_4 s
+type GW s = IP_ADDR_4 s
+
+type Void = '[] :-> ()
+type PtrVoid = Def ('[ProcPtr Void] :-> ())
+
+type NetifInitFn s = '[NETIF s] :-> ErrT
+type PtrNetifInitFn =  Def ('[ProcPtr (NetifInitFn s)] :-> ())
+
+type NetifInputFn s s1 = '[PBUF s, NETIF s1] :-> ErrT
+type PtrNetifInputFn  =  Def ('[ProcPtr (NetifInputFn s s1)] :-> ())
 
 
-type NetifInitFn s = '[NETIF s] :-> ErrT;
-type NetifInputFn s = '[PBUF s, NETIF s] :-> ErrT;
-
-addNetif :: NETIF s -> IP_ADDR -> NET_MASK -> GW -> NetifInitFn s -> NetifInputFn -> Ivory eff () -- after GW  "state = NULL"
+addNetif :: NETIF s -> IP_ADDR_4 s -> NET_MASK s -> GW s -> PtrVoid -> PtrNetifInitFn -> PtrNetifInputFn -> Ivory eff ErrT
 addNetif = call_ netif_add
 
-netif_add :: Def ('[NETIF s, IP_ADDR, NET_MASK, GW, NetifInitFn s, NetifInputFn] :-> ErrT)
+netif_add :: Def ('[NETIF s, IP_ADDR_4 s, NET_MASK s, GW s, PtrVoid, PtrNetifInitFn, PtrNetifInputFn] :-> ErrT)
 netif_add = fun "netif_add"
 
 
@@ -63,7 +77,7 @@ netif_set_default = fun "netif_set_default"
 setUpNetif :: NETIF s -> Ivory eff()
 setUpNetif = call_ netif_set_up
 
-netif_set_up :: Def ('[NETIF] :-> ())
+netif_set_up :: Def ('[NETIF s] :-> ())
 netif_set_up = fun "netif_set_up"
 
 
@@ -76,7 +90,7 @@ inclNetif = do
 
 
 
--- type NetifInitFn s = '[NETIF s] :-> ErrT;
+-- type NetifInitFn s = '[NETIF s] :-> ErrT
 
 -- init' :: Def (NetifInitFn s)
 -- init' = undefined
