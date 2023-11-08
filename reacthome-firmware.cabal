@@ -208,6 +208,8 @@ executable reacthome-firmware
                     , Support.Lwip.Udp
                     , Support.Lwip.Err
                     , Support.Lwip.Pbuf
+                    , Support.Lwip.Tcp
+                    , Support.Lwip.Etharp
 
                     , Test
 

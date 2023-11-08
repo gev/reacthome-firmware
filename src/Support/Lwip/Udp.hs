@@ -7,6 +7,7 @@
 module Support.Lwip.Udp
     ( UdpRecvFn
     , PtrUdpRecvFn
+    
     , newUdp
     , bindUdp
     , sendUdp
@@ -30,9 +31,6 @@ fun :: ProcType f => Sym -> Def f
 fun = funFrom "udp.h"
 
 
-type Void = '[] :-> ()
-type PtrVoid = Def ('[ProcPtr Void] :-> ())
-
 
 type UDP_PCB_STRUCT = "udp_pcb"
 type UDP_PCB s = Ref s (Struct UDP_PCB_STRUCT)
@@ -42,8 +40,8 @@ type UDP_PCB s = Ref s (Struct UDP_PCB_STRUCT)
 |]
 
 
-type UdpRecvFn s s1 s2  = '[PtrVoid, UDP_PCB s, PBUF s1, IP_ADDR_4 s2, Uint16] :-> ErrT
-type PtrUdpRecvFn =  Def ('[ProcPtr (UdpRecvFn s s1 s2)] :-> ())
+type UdpRecvFn s1 s2 s3  = '[ProcPtr ('[] :-> ()), UDP_PCB s1, PBUF s2, IP_ADDR_4 s3, Uint16] :-> ErrT
+type PtrUdpRecvFn s1 s2 s3 =  Def ('[ProcPtr (UdpRecvFn s1 s2 s3)] :-> ())
 
 
 newUdp :: Ivory eff (UDP_PCB s)
@@ -67,7 +65,7 @@ udp_connect :: Def ('[UDP_PCB s, IP_ADDR_4 s, Uint16] :-> ErrT)
 udp_connect = fun "udp_connect"
 
  
-disconnectUdp :: UDP_PCB s -> Ivory eff
+disconnectUdp :: UDP_PCB s -> Ivory eff ()
 disconnectUdp = call_ udp_disconnect
 
 udp_disconnect :: Def ('[UDP_PCB s] :-> ())
@@ -81,10 +79,10 @@ udp_send :: Def ('[UDP_PCB s, PBUF s2] -> ErrT)
 udp_send = fun "udp_send"
 
 
-recvUdp :: UDP_PCB s -> PtrUdpRecvFn -> PtrVoid ->Ivory eff ()
+recvUdp :: UDP_PCB s -> PtrUdpRecvFn s1 s2 s3 -> ProcPtr ('[] :-> ()) -> Ivory eff ()
 recvUdp = call_ udp_recv
 
-udp_recv :: Def ('[UDP_PCB s, PtrUdpRecvFn, PtrVoid] :-> ())
+udp_recv :: Def ('[UDP_PCB s, PtrUdpRecvFn, ProcPtr ('[] :-> ())] :-> ())
 udp_recv = fun "udp_recv"
 
 
