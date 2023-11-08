@@ -7,7 +7,7 @@
 module Support.Lwip.Udp
     ( UdpRecvFn
     , PtrUdpRecvFn
-    
+
     , newUdp
     , bindUdp
     , sendUdp
@@ -41,7 +41,7 @@ type UDP_PCB s = Ref s (Struct UDP_PCB_STRUCT)
 
 
 type UdpRecvFn s1 s2 s3  = '[ProcPtr ('[] :-> ()), UDP_PCB s1, PBUF s2, IP_ADDR_4 s3, Uint16] :-> ErrT
-type PtrUdpRecvFn s1 s2 s3 =  Def ('[ProcPtr (UdpRecvFn s1 s2 s3)] :-> ())
+type PtrUdpRecvFn s1 s2 s3 = ProcPtr (UdpRecvFn s1 s2 s3)
 
 
 newUdp :: Ivory eff (UDP_PCB s)
@@ -51,17 +51,17 @@ udp_new :: Def ('[] :-> UDP_PCB s)
 udp_new = fun "udp_new"
 
 
-bindUdp :: UDP_PCB s -> IP_ADDR_4 s -> Uint16 -> Ivory eff ErrT
+bindUdp :: UDP_PCB s1 -> IP_ADDR_4 s2 -> Uint16 -> Ivory eff ErrT
 bindUdp = call udp_bind
 
-udp_bind :: Def ('[UDP_PCB s, IP_ADDR_4 s, Uint16] :-> ErrT)
+udp_bind :: Def ('[UDP_PCB s1, IP_ADDR_4 s2, Uint16] :-> ErrT)
 udp_bind = fun "udp_bind"
 
 
-connectUdp :: UDP_PCB s -> IP_ADDR_4 s -> Uint16 -> Ivory eff ErrT
+connectUdp :: UDP_PCB s1 -> IP_ADDR_4 s2 -> Uint16 -> Ivory eff ErrT
 connectUdp = call udp_connect
 
-udp_connect :: Def ('[UDP_PCB s, IP_ADDR_4 s, Uint16] :-> ErrT)
+udp_connect :: Def ('[UDP_PCB s1, IP_ADDR_4 s2, Uint16] :-> ErrT)
 udp_connect = fun "udp_connect"
 
  
@@ -72,17 +72,17 @@ udp_disconnect :: Def ('[UDP_PCB s] :-> ())
 udp_disconnect = fun "udp_disconnect"
 
 
-sendUdp :: UDP_PCB s -> PBUF s2 -> Ivory eff ErrT
+sendUdp :: UDP_PCB s1 -> PBUF s2 -> Ivory eff ErrT
 sendUdp = call udp_send
 
-udp_send :: Def ('[UDP_PCB s, PBUF s2] -> ErrT)
+udp_send :: Def ('[UDP_PCB s1, PBUF s2] :-> ErrT)
 udp_send = fun "udp_send"
 
 
-recvUdp :: UDP_PCB s -> PtrUdpRecvFn s1 s2 s3 -> ProcPtr ('[] :-> ()) -> Ivory eff ()
+recvUdp :: UDP_PCB s1 -> PtrUdpRecvFn s2 s3 s4 -> ProcPtr ('[] :-> ()) -> Ivory eff ()
 recvUdp = call_ udp_recv
 
-udp_recv :: Def ('[UDP_PCB s, PtrUdpRecvFn, ProcPtr ('[] :-> ())] :-> ())
+udp_recv :: Def ('[UDP_PCB s1, PtrUdpRecvFn s2 s3 s4, ProcPtr ('[] :-> ())] :-> ())
 udp_recv = fun "udp_recv"
 
 

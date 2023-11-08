@@ -1,7 +1,8 @@
-{-# HLINT ignore "Use camelCase" #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use camelCase" #-}
 
 module Support.Lwip.Etharp
     ( ARP_INTERVAL
@@ -9,7 +10,7 @@ module Support.Lwip.Etharp
 
     , tmrEtharp
 
-    , inclArp
+    , inclEtharp
     ) where
 
 import           Ivory.Language
@@ -42,7 +43,7 @@ etharp_tmr :: Def ('[] :-> ())
 etharp_tmr = fun "etharp_tmr"
 
 
-inclTcp = do
+inclEtharp = do
     incl etharp_tmr
 
     inclSym arp_tmr_interval
