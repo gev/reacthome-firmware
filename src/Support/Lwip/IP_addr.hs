@@ -1,10 +1,10 @@
-{-# LANGUAGE QuasiQuotes       #-}
+{-# LANGUAGE QuasiQuotes   #-}
 {-# HLINT ignore "Use camelCase" #-}
+{-# LANGUAGE DataKinds     #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE DataKinds #-}
 
 module Support.Lwip.IP_addr
-    ( IP_ADDR_4_T
+    ( IP_ADDR_4_STRUCT
     , IP_ADDR_4
 
     , createIpAddr4
@@ -14,9 +14,9 @@ module Support.Lwip.IP_addr
 
 
 import           Ivory.Language
-import           Ivory.Support
 import           Ivory.Language.Proc   (ProcType)
 import           Ivory.Language.Syntax (Sym)
+import           Ivory.Support
 
 
 fun :: ProcType f => Sym -> Def f
@@ -24,18 +24,20 @@ fun = funFrom "ip_addr.h"
 
 
 
-type IP_ADDR_4_T = "ip4_addr"
-type IP_ADDR_4 s = Ref s (Struct IP_ADDR_4_T)
+type IP_ADDR_4_STRUCT = "ip4_addr"
+type IP_ADDR_4 s = Ref s (Struct IP_ADDR_4_STRUCT)
 
 [ivory|
-    struct ip4_addr 
+    struct ip4_addr
         { addr :: Stored Uint32 }
 |]
 
 
 
+ipAddrAny :: IP_ADDR_4 Global
 ipAddrAny = addrOf ip_addr_any
 
+ip_addr_any :: MemArea (Struct IP_ADDR_4_STRUCT)
 ip_addr_any = area "ip_addr_any" $ Just $ istruct [ addr .= ival 0 ]
 
 
@@ -50,4 +52,4 @@ ip_addr4 = fun "IP_ADDR4"
 inclIP_addr :: ModuleDef
 inclIP_addr = do
     incl ip_addr4
-    addArea ip_addr_any
+    defMemArea ip_addr_any
