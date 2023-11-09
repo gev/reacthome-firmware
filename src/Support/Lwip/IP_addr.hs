@@ -13,8 +13,6 @@ module Support.Lwip.IP_addr
     ) where
 
 
-
-
 import           Ivory.Language
 import           Ivory.Support
 import           Ivory.Language.Proc   (ProcType)
@@ -35,10 +33,10 @@ type IP_ADDR_4 s = Ref s (Struct IP_ADDR_4_T)
 |]
 
 
-ip_addr_any :: [InitStruct  IP_ADDR_4_T]
-             -> Init (Struct IP_ADDR_4_T)
-ip_addr_any p =
-    istruct $ p <+> [ addr .= ival 0 ]
+
+ipAddrAny = addrOf ip_addr_any
+
+ip_addr_any = area "ip_addr_any" $ Just $ istruct [ addr .= ival 0 ]
 
 
 
@@ -52,3 +50,4 @@ ip_addr4 = fun "IP_ADDR4"
 inclIP_addr :: ModuleDef
 inclIP_addr = do
     incl ip_addr4
+    addArea ip_addr_any
