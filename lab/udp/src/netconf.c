@@ -143,11 +143,11 @@ void lwip_pkt_handle(void)
 void lwip_periodic_handle(__IO uint32_t localtime)
 {
 #if LWIP_TCP
-    /* TCP periodic process every 250 ms */
-    if(localtime - tcp_timer >= TCP_TMR_INTERVAL) {
-        tcp_timer =  localtime;
-        tcp_tmr();
-    }
+    // /* TCP periodic process every 250 ms */
+    // if(localtime - tcp_timer >= TCP_TMR_INTERVAL) {
+    //     tcp_timer =  localtime;
+    //     tcp_tmr();
+    // }
 
 #endif /* LWIP_TCP */
 
