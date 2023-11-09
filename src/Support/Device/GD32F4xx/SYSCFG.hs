@@ -31,7 +31,12 @@ module Support.Device.GD32F4xx.SYSCFG
     , exti_source_pin14
     , exti_source_pin15
 
+    , ENET_PHY_INTERFACE
+    , enet_phy_rmii
+
     , configExtiLine
+
+    , configPhyInterface
 
     , inclSYSCFG
     ) where
@@ -73,11 +78,25 @@ exti_source_pin15 = EXTI_PIN $ ext "EXTI_SOURCE_PIN15"
 
 
 
+newtype ENET_PHY_INTERFACE = ENET_PHY_INTERFACE Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
+
+enet_phy_rmii = ENET_PHY_INTERFACE $ ext "SYSCFG_ENET_PHY_RMII"
+
+
+
 configExtiLine :: EXTI_PORT -> EXTI_PIN -> Ivory eff ()
 configExtiLine = call_ syscfg_exti_line_config
 
 syscfg_exti_line_config :: Def ('[EXTI_PORT, EXTI_PIN] :-> ())
 syscfg_exti_line_config = fun "syscfg_exti_line_config"
+
+
+configPhyInterface :: ENET_PHY_INTERFACE -> Ivory eff ()
+configPhyInterface = call_ syscfg_enet_phy_interface_config
+
+syscfg_enet_phy_interface_config :: Def ('[ENET_PHY_INTERFACE] :-> ())
+syscfg_enet_phy_interface_config = fun "syscfg_enet_phy_interface_config"
 
 
 
@@ -106,4 +125,7 @@ inclSYSCFG = do
     inclSym exti_source_pin14
     inclSym exti_source_pin15
 
+    inclSym enet_phy_rmii
+
     incl syscfg_exti_line_config
+    incl syscfg_enet_phy_interface_config
