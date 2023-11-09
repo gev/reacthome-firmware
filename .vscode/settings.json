@@ -1,6 +1,5 @@
 {
   "haskell.formattingProvider": "stylish-haskell",
-  "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
   "editor.formatOnType": false,
   "C_Cpp.formatting": "Disabled",
