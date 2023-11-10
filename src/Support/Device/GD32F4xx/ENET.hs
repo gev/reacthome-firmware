@@ -19,10 +19,16 @@ module Support.Device.GD32F4xx.ENET
     , enet_dma_int_nie
     , enet_dma_int_rie
 
+    , ENET_INTERRUPT_FLAG_CLEAR
+    , enet_dma_int_flag_rs_clr
+    , enet_dma_int_flag_ni_clr
+
     , initENET
     , deinitENET
     , resetSoftwareENET
     , enableInterruptENET 
+    , clearEnetInterruptfFlag
+    , getEnetRxframeSize
 
     , inclENET
     ) where
@@ -56,6 +62,13 @@ enet_dma_int_nie  = ENET_INTERRUPT $ ext "ENET_DMA_INT_NIE"
 enet_dma_int_rie  = ENET_INTERRUPT $ ext "ENET_DMA_INT_RIE"
 
 
+newtype ENET_INTERRUPT_FLAG_CLEAR = ENET_INTERRUPT_FLAG_CLEAR Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
+
+enet_dma_int_flag_rs_clr  = ENET_INTERRUPT_FLAG_CLEAR $ ext "ENET_DMA_INT_FLAG_RS_CLR"
+enet_dma_int_flag_ni_clr  = ENET_INTERRUPT_FLAG_CLEAR $ ext "ENET_DMA_INT_FLAG_NI_CLR"
+
+
 initENET :: MEDIAMODE -> CHECKSUM_CONF -> FRAME_RECEPT -> Ivory eff IBool
 initENET = call enet_init
 
@@ -84,6 +97,20 @@ enet_interrupt_enable :: Def ('[ENET_INTERRUPT] :-> ())
 enet_interrupt_enable = fun "enet_interrupt_enable"
 
 
+clearEnetInterruptfFlag :: ENET_INTERRUPT_FLAG_CLEAR -> Ivory eff ()
+clearEnetInterruptfFlag = call_ enet_interrupt_flag_clear
+
+enet_interrupt_flag_clear :: Def ('[ENET_INTERRUPT_FLAG_CLEAR] :-> ())
+enet_interrupt_flag_clear = fun "enet_interrupt_flag_clear"
+
+
+getEnetRxframeSize :: Ivory eff Uint32
+getEnetRxframeSize = call enet_rxframe_size_get
+
+enet_rxframe_size_get :: Def ('[] :-> Uint32)
+enet_rxframe_size_get = fun "enet_rxframe_size_get"
+
+
 inclENET :: ModuleDef
 inclENET = do
     inclSym auto_negotiation
@@ -94,8 +121,12 @@ inclENET = do
 
     inclSym enet_dma_int_nie
     inclSym enet_dma_int_rie
+    inclSym enet_dma_int_flag_rs_clr
+    inclSym enet_dma_int_flag_ni_clr
 
     incl enet_init
     incl enet_deinit
     incl enet_software_reset
     incl enet_interrupt_enable
+    incl enet_interrupt_flag_clear
+    incl enet_rxframe_size_get
