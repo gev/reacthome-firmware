@@ -6,7 +6,7 @@ import           Ivory.Language
 import           Core.Handler
 
 
-data HandleEnet t = HandleEnet
+data HandleEnet e = HandleEnet
     { enet  :: e
     , handle :: forall eff. Ivory eff ()
     }
