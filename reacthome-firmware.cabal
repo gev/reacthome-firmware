@@ -109,6 +109,7 @@ executable reacthome-firmware
                     , Interface.EXTI
                     , Interface.Display
                     , Interface.Flash
+                    , Interface.ENET
 
                     , Protocol.OneWire.Master
                     , Protocol.RS485.RBUS
