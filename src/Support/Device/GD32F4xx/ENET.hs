@@ -7,13 +7,13 @@
 
 module Support.Device.GD32F4xx.ENET
     ( MEDIAMODE
-    , auto_negotiation
+    , enet_auto_negotiation
     
     , CHECKSUM_CONF
-    , no_autochecksum
+    , enet_no_autochecksum
 
     , FRAME_RECEPT
-    , broadcast_frames_pass
+    , enet_broadcast_frames_pass
 
     , ENET_INTERRUPT
     , enet_dma_int_nie
@@ -40,19 +40,19 @@ import           Ivory.Support.Device.GD32F4xx
 newtype MEDIAMODE = MEDIAMODE Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
-auto_negotiation  = MEDIAMODE $ ext "ENET_AUTO_NEGOTIATION"
+enet_auto_negotiation  = MEDIAMODE $ ext "ENET_AUTO_NEGOTIATION"
 
 
 newtype CHECKSUM_CONF = CHECKSUM_CONF Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
-no_autochecksum  = CHECKSUM_CONF $ ext "ENET_NO_AUTOCHECKSUM"
+enet_no_autochecksum  = CHECKSUM_CONF $ ext "ENET_NO_AUTOCHECKSUM"
 
 
 newtype FRAME_RECEPT = FRAME_RECEPT Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
-broadcast_frames_pass  = FRAME_RECEPT $ ext "ENET_BROADCAST_FRAMES_PASS"
+enet_broadcast_frames_pass  = FRAME_RECEPT $ ext "ENET_BROADCAST_FRAMES_PASS"
 
 
 newtype ENET_INTERRUPT = ENET_INTERRUPT Uint32
@@ -113,11 +113,11 @@ enet_rxframe_size_get = fun "enet_rxframe_size_get"
 
 inclENET :: ModuleDef
 inclENET = do
-    inclSym auto_negotiation
+    inclSym enet_auto_negotiation
 
-    inclSym no_autochecksum
+    inclSym enet_no_autochecksum
 
-    inclSym broadcast_frames_pass
+    inclSym enet_broadcast_frames_pass
 
     inclSym enet_dma_int_nie
     inclSym enet_dma_int_rie
