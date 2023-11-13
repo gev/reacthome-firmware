@@ -72,8 +72,8 @@ mkENET ethRmiiRefClk ethRmiiMdio ethRmiiMdc ethRmiiCrsDv ethRmiiRxd0 ethRmiiRxd1
         enablePeriphClock rcu_enetrx
         deinitENET
         resetSoftwareENET
-        flag <- initENET enet_auto_negotiation enet_no_autochecksum enet_broadcast_frames_pass
-        when flag $ do
+        isReady <- initENET enet_auto_negotiation enet_no_autochecksum enet_broadcast_frames_pass
+        when isReady $ do
             enableInterruptENET enet_dma_int_nie
             enableInterruptENET enet_dma_int_rie
 
