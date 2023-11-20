@@ -5,6 +5,7 @@
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE InstanceSigs #-}
 
 module Device.GD32F4xx.ENET where
 
@@ -13,12 +14,14 @@ import           Core.Context
 import           Core.Handler
 import qualified Device.GD32F4xx.GPIO.Port      as G
 import           Interface.ENET                 as I
+import           Interface.LwipPort
 import           Ivory.Stdlib
 import           Support.Device.GD32F4xx.ENET
 import           Support.Device.GD32F4xx.IRQ
 import           Support.Device.GD32F4xx.Misc
 import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.SYSCFG
+import           Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif   
 import qualified Control.Monad
 
 
@@ -92,3 +95,8 @@ handleENET handle = do
 
 instance I.Enet ENET where
     rxFrameSize _ = getEnetRxframeSize
+
+instance LwipPort ENET where
+    initLwipPortIf _ = initEthernetifPtr
+
+    inputLwipPortIf _ = inputEthernetif
