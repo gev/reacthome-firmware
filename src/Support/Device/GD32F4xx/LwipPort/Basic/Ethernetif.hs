@@ -3,8 +3,8 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Support.Device.GD32F4xx.Lwip_port.Basic.Ethernetif   
-    ( initEthernetif
+module Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif   
+    ( initEthernetifPtr
     , inputEthernetif
     , inclEthernetif
     ) where
@@ -22,8 +22,8 @@ fun :: ProcType f => Sym -> Def f
 fun = funFrom "ethernetif.h"
 
 
-initEthernetif :: NETIF s -> Ivory eff ErrT
-initEthernetif = call ethernetif_init
+initEthernetifPtr :: ProcPtr ('[NETIF s] :-> ErrT)
+initEthernetifPtr = procPtr ethernetif_init
 
 ethernetif_init :: Def ('[NETIF s] :-> ErrT)
 ethernetif_init = fun "ethernetif_init"

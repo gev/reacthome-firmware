@@ -110,6 +110,7 @@ executable reacthome-firmware
                     , Interface.Display
                     , Interface.Flash
                     , Interface.ENET
+                    , Interface.LwipPort
 
                     , Protocol.OneWire.Master
                     , Protocol.RS485.RBUS
@@ -203,7 +204,7 @@ executable reacthome-firmware
                     , Support.Device.GD32F4xx.SYSCFG
                     , Support.Device.GD32F4xx.System
                     , Support.Device.GD32F4xx.ENET
-                    , Support.Device.GD32F4xx.Lwip_port.Basic.Ethernetif
+                    , Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif
 
                     , Support.Lwip.Mem
                     , Support.Lwip.Memp
