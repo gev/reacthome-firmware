@@ -6,7 +6,8 @@
 module Support.Lwip.IP_addr
     ( IP_ADDR_4_STRUCT
     , IP_ADDR_4
-
+    
+    , ipAddrAny
     , createIpAddr4
 
     , inclIP_addr

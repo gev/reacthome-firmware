@@ -32,6 +32,7 @@ module Support.Device.GD32F4xx.IRQ
     , dma1_channel5_irqn
     , dma1_channel6_irqn
     , dma1_channel7_irqn
+    , enet_irqn
 
     , makeIRQHandler
 
@@ -75,6 +76,7 @@ dma1_channel4_irqn = IRQn $ ext "DMA1_Channel4_IRQn"
 dma1_channel5_irqn = IRQn $ ext "DMA1_Channel5_IRQn"
 dma1_channel6_irqn = IRQn $ ext "DMA1_Channel6_IRQn"
 dma1_channel7_irqn = IRQn $ ext "DMA1_Channel7_IRQn"
+enet_irqn          = IRQn $ ext "ENET_IRQn" 
 
 
 
@@ -108,6 +110,7 @@ inclIRQ = do
     inclSym dma1_channel5_irqn
     inclSym dma1_channel6_irqn
     inclSym dma1_channel7_irqn
+    inclSym enet_irqn
 
 
 makeIRQHandler :: IRQn
