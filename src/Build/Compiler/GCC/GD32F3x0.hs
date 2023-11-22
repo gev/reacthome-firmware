@@ -24,8 +24,8 @@ instance Compiler GCC GD32F3x0 where
                     , "-Isupport/device/gd32f3x0/peripherals/inc"
                     ]
 
-        , libs    = "support/device/gd32f3x0"
-
+        , libs    = [ "support/device/gd32f3x0" ]
+                     
         , cflags  = [ "-mthumb"
                     , "-mcpu=cortex-m4"
                     , "-mfpu=fpv4-sp-d16"

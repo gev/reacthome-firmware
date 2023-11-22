@@ -68,11 +68,13 @@ instance Shake GCC where
             cmd_ oc "-O ihex" elf out
 
         "build//*.elf" %> \out -> do
-            ss <- getDirectoryFiles libs ["//*.c", "//*.s"]
-            let os = out -<.> "c" <.> "o"
-                   : ["build" </> libs </> s <.> "o" | s <- ss]
-            need os
-            cmd_ cc ldflags ld os "-lc" "-o" out
+            let go lib = do            
+                    ss <- getDirectoryFiles lib ["//*.c", "//*.s"]
+                    let os = out -<.> "c" <.> "o"
+                           : ["build" </> lib </> s <.> "o" | s <- ss]
+                    need os
+                    cmd_ cc ldflags ld os "-lc" "-o" out
+            mapM_ go libs
 
         "build//*.c.o" %> \out -> do
             let m = out -<.> "m"

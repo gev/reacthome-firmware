@@ -21,10 +21,24 @@ instance Compiler GCC GD32F4xx where
         , incs    = [ "-Isupport/inc"
                     , "-Isupport/CMSIS/inc"
                     , "-Isupport/device/gd32f4xx/inc"
+                    , "-Isupport/device/gd32f4xx/ksz8091"
                     , "-Isupport/device/gd32f4xx/peripherals/inc"
+                    , "-Isupport/device/gd32f4xx/lwip_port/Basic"			
+                    , "-Isupport/device/gd32f4xx/lwip_port/arch"			
+                    , "-Isupport/device/gd32f4xx/lwip_port"					
+                    , "-Isupport/lwip-2.1.2/src/include/compat/posix/arpa"	
+                    , "-Isupport/lwip-2.1.2/src/include/compat/posix/net"		
+                    , "-Isupport/lwip-2.1.2/src/include/compat/posix"			
+                    , "-Isupport/lwip-2.1.2/src/include"						
+                    , "-Isupport/lwip-2.1.2/src/include/lwip"					
+                    , "-Isupport/lwip-2.1.2/src/include/netif"				
+                    , "-Isupport/lwip-2.1.2/src/include/netif/ppp"			
+                    , "-Isupport/lwip-2.1.2/src/include/netif/ppp/polarssl"	 
                     ]
 
-        , libs    = "support/device/gd32f4xx"
+        , libs    = [ "support/device/gd32f4xx"
+                    , "support/lwip-2.1.2/src"
+                    ]
 
         , cflags  = [ "-mthumb"
                     , "-mcpu=cortex-m4"

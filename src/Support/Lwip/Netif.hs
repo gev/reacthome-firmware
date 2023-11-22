@@ -13,6 +13,8 @@ module Support.Lwip.Netif
     , NETIF_STRUCT
     , NETIF
     , flags
+    , hwaddr
+    , hwaddr_len
 
     , NetifInitFn
     , PtrNetifInitFn
@@ -56,13 +58,15 @@ newtype NETIF_FLAG = NETIF_FLAG Uint8
 
 netif_flag_up = NETIF_FLAG $ ext "NETIF_FLAG_UP"
 
-
-
 type NETIF_STRUCT = "netif"
 type NETIF s = Ref s (Struct NETIF_STRUCT)
 
 [ivory|
-    struct netif {flags :: Stored NETIF_FLAG}
+    struct netif 
+        { flags      :: Stored NETIF_FLAG
+        ; hwaddr     :: Array 6 (Stored Uint8)
+        ; hwaddr_len :: Stored Uint8
+        }
 |]
 
 

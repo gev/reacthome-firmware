@@ -22,7 +22,9 @@ import           Interface.ENET
 import           Interface.LwipPort
 import           Interface.MCU
 import           Ivory.Language
+import           Ivory.Stdlib
 import           Ivory.Stdlib.Control
+import           Support.Lwip.Etharp
 import           Support.Lwip.Ethernet
 import           Support.Lwip.IP_addr
 import           Support.Lwip.Mem
@@ -30,7 +32,6 @@ import           Support.Lwip.Memp
 import           Support.Lwip.Netif
 import           Support.Lwip.Pbuf
 import           Support.Lwip.Udp
-import Support.Lwip.Etharp
 
 
 
@@ -46,6 +47,7 @@ mkUdpEcho enet = do
     netmask <- record_ "netmask"
     gateway <- record_ "gateway"
     netif   <- record_ "netif"
+
 
     addModule inclEthernet
     addModule inclNetif
@@ -63,6 +65,9 @@ mkUdpEcho enet = do
         createIpAddr4 ip4 192 168 88 9
         createIpAddr4 netmask 255 255 255 0
         createIpAddr4 gateway 192 168 88 1
+        store (netif ~> hwaddr_len) 6
+        arrayCopy (netif ~> hwaddr) (mac mcu) 0 6
+
         addNetif netif ip4 netmask gateway nullPtr (initLwipPortIf enet') inputEthernetPtr
         setNetifDefault netif
         setNetifStatusCallback netif (procPtr netifStatusCallback)
