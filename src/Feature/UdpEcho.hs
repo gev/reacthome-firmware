@@ -2,16 +2,17 @@
 {-# HLINT ignore "Use newtype instead of data" #-}
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE TypeOperators    #-}
 
 module Feature.UdpEcho where
 
-import           Control.Monad         (void)
-import           Control.Monad.Reader  (MonadReader, asks)
-import           Control.Monad.State   (MonadState)
+import           Control.Monad                                     (void)
+import           Control.Monad.Reader                              (MonadReader,
+                                                                    asks)
+import           Control.Monad.State                               (MonadState)
 import           Core.Context
 import           Core.Controller
-import           Core.Domain           as D
+import           Core.Domain                                       as D
 import           Core.Feature
 import           Core.Handler
 import           Core.Task
@@ -21,9 +22,11 @@ import           Device.GD32F4xx
 import           Interface.ENET
 import           Interface.LwipPort
 import           Interface.MCU
+import           Interface.SystemClock                             (getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Ivory.Stdlib.Control
+import           Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif
 import           Support.Lwip.Etharp
 import           Support.Lwip.Ethernet
 import           Support.Lwip.IP_addr
@@ -32,7 +35,6 @@ import           Support.Lwip.Memp
 import           Support.Lwip.Netif
 import           Support.Lwip.Pbuf
 import           Support.Lwip.Udp
-import Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif
 
 
 
@@ -42,12 +44,12 @@ data UdpEcho = UdpEcho
 mkUdpEcho :: (MonadState Context m, MonadReader (Domain p t) m, Enet e, LwipPort e)
       => (p -> m e) -> m UdpEcho
 mkUdpEcho enet = do
-    mcu     <- asks D.mcu
-    enet'   <- enet $ peripherals mcu
-    ip4     <- record_ "ipaddr4"
-    netmask <- record_ "netmask"
-    gateway <- record_ "gateway"
-    netif   <- record_ "netif"
+    mcu       <- asks D.mcu
+    enet'     <- enet $ peripherals mcu
+    ip4       <- record_ "ipaddr4"
+    netmask   <- record_ "netmask"
+    gateway   <- record_ "gateway"
+    netif     <- record_ "netif"
 
     addModule inclEthernet
     addModule inclEthernetif
@@ -61,6 +63,12 @@ mkUdpEcho enet = do
 
     addProc netifStatusCallback
     addProc udpEchoReceiveCallback
+
+    let sysNow :: Def ('[] :-> Uint32)
+        sysNow = proc "sys_now" $ body $
+            ret =<< getSystemTime (systemClock mcu)
+
+    addProc sysNow
 
     addInit "udp_echo" $ do
         initMem
@@ -118,4 +126,3 @@ udpEchoReceiveCallback = proc "udp_echo_callback" $ \_ upcb p addr port -> body 
 
 
 instance Controller UdpEcho
-
