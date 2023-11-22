@@ -75,7 +75,7 @@ static void low_level_init(struct netif *netif)
     int i; 
 #endif /* CHECKSUM_BY_HARDWARE */
     /* set MAC hardware address length */
-    // netif->hwaddr_len = ETHARP_HWADDR_LEN;
+    netif->hwaddr_len = ETHARP_HWADDR_LEN;
 
     // /* set MAC hardware address */
     // netif->hwaddr[0] =  mac_addr[0];
@@ -93,7 +93,7 @@ static void low_level_init(struct netif *netif)
 
     /* device capabilities */
     /* don't set NETIF_FLAG_ETHARP if this device is not an ethernet one */
-    netif->flags = NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP | NETIF_FLAG_LINK_UP;
+    netif->flags = NETIF_FLAG_BROADCAST | NETIF_FLAG_ETHARP | NETIF_FLAG_LINK_UP | NETIF_FLAG_IGMP;
 
     /* initialize descriptors list: chain/ring mode */
 #ifdef SELECT_DESCRIPTORS_ENHANCED_MODE
