@@ -68,10 +68,6 @@ int main(void)
 
     while(1) {
 
-        if(enet_rxframe_size_get()) {   //USE_ENET_INTERRUPT
-            lwip_pkt_handle();
-        }
-
         lwip_periodic_handle(g_localtime);
 
     }
