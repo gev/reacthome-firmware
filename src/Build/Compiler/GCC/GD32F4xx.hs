@@ -22,9 +22,9 @@ instance Compiler GCC GD32F4xx where
                     , "-Isupport/CMSIS/inc"
                     , "-Isupport/device/gd32f4xx/inc"
                     , "-Isupport/device/gd32f4xx/peripherals/inc"
-                    , "-Isupport/device/gd32f4xx/lwip_port/Basic"
-                    , "-Isupport/device/gd32f4xx/lwip_port/arch"
                     , "-Isupport/device/gd32f4xx/lwip_port"
+                    , "-Isupport/device/gd32f4xx/lwip_port/arch"
+                    , "-Isupport/device/gd32f4xx/lwip_port/Basic"
 
                     , "-Isupport/device/ksz8091"
 
