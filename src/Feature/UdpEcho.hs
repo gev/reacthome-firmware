@@ -32,6 +32,7 @@ import           Support.Lwip.Memp
 import           Support.Lwip.Netif
 import           Support.Lwip.Pbuf
 import           Support.Lwip.Udp
+import Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif
 
 
 
@@ -48,13 +49,14 @@ mkUdpEcho enet = do
     gateway <- record_ "gateway"
     netif   <- record_ "netif"
 
-
     addModule inclEthernet
     addModule inclNetif
     addModule inclUdp
     addModule inclMem
     addModule inclMemp
     addModule inclIP_addr
+    addModule inclPbuf
+    addModule inclEthernetif
 
     addProc netifStatusCallback
     addProc udpEchoReceiveCallback
