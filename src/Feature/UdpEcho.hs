@@ -100,16 +100,16 @@ netifStatusCallback = proc "netif_callback" $ \netif -> body $ do
         when (upcb /=? nullPtr) $ do
           err <- bindUdp upcb ipAddrAny 2000
           when (err ==? 0) $
-            recvUdp upcb (procPtr udpEchoRecieveCallback) nullPtr
+            recvUdp upcb (procPtr udpEchoReceiveCallback) nullPtr
 
 
 
-udpEchoRecieveCallback :: Def (UdpRecvFn s1 s2 s3 s4)
-udpEchoRecieveCallback = proc "udp_echo_callback" $ \_ upcb p addr port -> body $ do
+udpEchoReceiveCallback :: Def (UdpRecvFn s1 s2 s3 s4)
+udpEchoReceiveCallback = proc "udp_echo_callback" $ \_ upcb p addr port -> body $ do
     connectUdp upcb addr port
     sendUdp upcb p
     disconnectUdp upcb
-    void $ freePbuf p
+    ret =<< freePbuf p
 
 
 
