@@ -31,7 +31,7 @@ import           Support.Lwip.Err
 
 
 fun :: ProcType f => Sym -> Def f
-fun = funFrom "udp.h"
+fun = funFrom "lwip/udp.h"
 
 
 

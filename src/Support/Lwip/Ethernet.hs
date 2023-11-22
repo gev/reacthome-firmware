@@ -19,7 +19,7 @@ import Ivory.Support
 
 
 fun :: ProcType f => Sym -> Def f
-fun = funFrom "ethernet.h"
+fun = funFrom "netif/ethernet.h"
 
 
 inputEthernetPtr :: ProcPtr ('[PBUF s1, NETIF s2] :-> ErrT)

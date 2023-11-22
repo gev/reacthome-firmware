@@ -23,7 +23,7 @@ import           Support.Lwip.Err
 
 
 fun :: ProcType f => Sym -> Def f
-fun = funFrom "pbuf.h"
+fun = funFrom "lwip/pbuf.h"
 
 
 type PBUF_STRUCT = "pbuf"

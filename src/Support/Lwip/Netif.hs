@@ -44,7 +44,7 @@ import           Support.Lwip.Pbuf
 
 
 headerFile :: HeaderFile
-headerFile = "netif.h"
+headerFile = "lwip/netif.h"
 
 fun :: ProcType f => Sym -> Def f
 fun = funFrom headerFile

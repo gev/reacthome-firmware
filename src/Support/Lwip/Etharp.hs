@@ -21,7 +21,7 @@ import           Ivory.Language.Syntax (Sym)
 
 
 headerFile :: HeaderFile
-headerFile = "etharp.h"
+headerFile = "lwip/etharp.h"
 
 fun :: ProcType f => Sym -> Def f
 fun = funFrom headerFile
