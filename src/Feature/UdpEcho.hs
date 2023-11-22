@@ -57,7 +57,7 @@ mkUdpEcho enet = do
     addModule inclIP_addr
 
     addProc netifStatusCallback
-    addProc udpEchoRecieveCallback
+    addProc udpEchoReceiveCallback
 
     addInit "lwip" $ do
         initMem
