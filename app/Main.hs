@@ -15,6 +15,7 @@ import           Formula.Echo
 import           Formula.Mix6x12
 import           Formula.Relay12
 import           Formula.Server
+import           Formula.UdpEcho450
 -- import           Formula.MixA6x12
 
 
@@ -28,6 +29,7 @@ main = do
                     --  , blink330
                      ]
     gcc gd32f450vgt6 [ server
+                     , udpEcho450
                     --  , blink450
                     --  , echo
                      ]
