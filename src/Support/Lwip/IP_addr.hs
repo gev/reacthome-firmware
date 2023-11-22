@@ -21,7 +21,7 @@ import           Ivory.Support
 
 
 fun :: ProcType f => Sym -> Def f
-fun = funFrom "ip_addr.h"
+fun = funFrom "lwip/ip_addr.h"
 
 
 
