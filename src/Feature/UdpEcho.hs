@@ -57,6 +57,7 @@ mkUdpEcho enet = do
     addModule inclIP_addr
     addModule inclPbuf
     addModule inclEthernetif
+    addModule inclEtharp
 
     addProc netifStatusCallback
     addProc udpEchoReceiveCallback
