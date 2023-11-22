@@ -71,8 +71,9 @@ instance Shake GCC where
         "build//*.elf" %> \out -> do
             let go lib = do
                     ss <- getDirectoryFiles lib ["//*.c", "//*.s"]
-                    pure $ out -<.> "c" <.> "o" : ["build" </> lib </> s <.> "o" | s <- ss]
-            os <- concat <$> mapM go libs
+                    pure ["build" </> lib </> s <.> "o" | s <- ss]
+            os' <- concat <$> mapM go libs
+            let os = out -<.> "c" <.> "o" : os'
             need os
             cmd_ cc ldflags ld os "-lc" "-o" out
 
