@@ -50,19 +50,19 @@ mkUdpEcho enet = do
     netif   <- record_ "netif"
 
     addModule inclEthernet
+    addModule inclEthernetif
     addModule inclNetif
     addModule inclUdp
     addModule inclMem
     addModule inclMemp
     addModule inclIP_addr
     addModule inclPbuf
-    addModule inclEthernetif
     addModule inclEtharp
 
     addProc netifStatusCallback
     addProc udpEchoReceiveCallback
 
-    addInit "lwip" $ do
+    addInit "udp_echo" $ do
         initMem
         initMemp
         createIpAddr4 ip4 192 168 88 9
