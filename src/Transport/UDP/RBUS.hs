@@ -16,6 +16,7 @@ import           Core.Domain                                       as D
 import           Core.Feature
 import           Core.Handler
 import           Core.Task
+import           Core.Transport
 import           Data.Record
 import           Data.Value
 import           Device.GD32F4xx
@@ -35,16 +36,12 @@ import           Support.Lwip.Memp
 import           Support.Lwip.Netif
 import           Support.Lwip.Pbuf
 import           Support.Lwip.Udp
-import Core.Transport
-import Transport.UART.RBUS.Data
+import           Transport.UDP.RBUS.Data
 
-
-
-data UdpEcho = UdpEcho
 
 
 rbus :: (MonadState Context m, MonadReader (Domain p t) m, Enet e, LwipPort e)
-      => (p -> m e) -> m UdpEcho
+      => (p -> m e) -> m RBUS
 rbus enet = do
     mcu       <- asks D.mcu
     enet'     <- enet $ peripherals mcu
@@ -93,7 +90,7 @@ rbus enet = do
 
     addTask $ delay 1000 "eth_arp" tmrEtharp
 
-    pure UdpEcho
+    pure RBUS
 
 
 
@@ -121,4 +118,7 @@ udpEchoReceiveCallback = proc "udp_echo_callback" $ \_ upcb p addr port -> body 
 
 
 instance Transport RBUS where
-    undefined
+  transmitBuffer _ _ = pure ()
+
+instance LazyTransport RBUS where
+  lazyTransmit _ _ = pure ()
