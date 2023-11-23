@@ -290,7 +290,7 @@ erase:
 	JLinkExe -Device GD32F450VG -If SWD -Speed 1000 jlink/EraseMCU.jlink
 r_flash:
 	make
-	JLinkExe ip 192.168.88.107 -Device GD32F450VI -If SWD -Speed 1000 jlink/FlashMCU.jlink
+	JLinkExe ip 192.168.88.119 -Device GD32F450VI -If SWD -Speed 1000 jlink/FlashMCU.jlink
 r_erase:
 	JLinkExe ip 192.168.88.107 -Device GD32F450VI -If SWD -Speed 1000 jlink/EraseMCU.jlink
 koro_flash:

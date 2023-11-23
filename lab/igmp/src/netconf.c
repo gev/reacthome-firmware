@@ -122,9 +122,9 @@ void lwip_stack_init(void)
     your ethernet netif interface. The following code illustrates it's use.*/
 
     netif_add(&g_mynetif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &ethernet_input);
-    g_mynetif.flags |= NETIF_FLAG_IGMP;
+    // g_mynetif.flags |= NETIF_FLAG_IGMP;
     /* registers the default network interface */
-    netif_set_igmp_mac_filter(&g_mynetif, igmp_mac_filter);
+    // netif_set_igmp_mac_filter(&g_mynetif, igmp_mac_filter);
     netif_set_default(&g_mynetif);
     netif_set_status_callback(&g_mynetif, lwip_netif_status_callback);
 
