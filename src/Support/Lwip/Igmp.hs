@@ -26,10 +26,10 @@ fun :: ProcType f => Sym -> Def f
 fun = funFrom "lwip/igmp.h"
 
 
-initIgmp :: Ivory eff ErrT
-initIgmp = call igmp_init
+initIgmp :: Ivory eff ()
+initIgmp = call_ igmp_init
 
-igmp_init :: Def ('[] :-> ErrT)
+igmp_init :: Def ('[] :-> ())
 igmp_init = fun "igmp_init"
 
 
