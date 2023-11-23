@@ -4,7 +4,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TypeOperators    #-}
 
-module Feature.UDP.RBUS where
+module Transport.UDP.RBUS where
 
 import           Control.Monad                                     (void)
 import           Control.Monad.Reader                              (MonadReader,
