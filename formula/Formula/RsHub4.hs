@@ -17,7 +17,7 @@ rsHub4 = Formula { name       = "rs_hub4"
                  , version    = (3, 0)
                  , shouldInit = true
                  , transport  = U.rbus eth_0
-                 , features   = [ indicator npx_pwm_2 60
+                 , features   = [ indicator npx_pwm_2 50
                                 , F.server [ rs485 1 uart_5 out_pb_14
                                            , rs485 2 uart_3 out_pc_12
                                            , rs485 3 uart_2 out_pb_15

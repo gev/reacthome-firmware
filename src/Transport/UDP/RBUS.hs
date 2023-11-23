@@ -30,6 +30,7 @@ import           Ivory.Stdlib.Control
 import           Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif
 import           Support.Lwip.Etharp
 import           Support.Lwip.Ethernet
+import           Support.Lwip.Igmp
 import           Support.Lwip.IP_addr
 import           Support.Lwip.Mem
 import           Support.Lwip.Memp
@@ -49,6 +50,7 @@ rbus enet = do
     netmask   <- record_ "netmask"
     gateway   <- record_ "gateway"
     netif     <- record_ "netif"
+    igmpGroup <- record_ "igmp_group"
 
     addModule inclEthernet
     addModule inclEthernetif
@@ -59,6 +61,7 @@ rbus enet = do
     addModule inclIP_addr
     addModule inclPbuf
     addModule inclEtharp
+    addModule inclIgmp
 
     addProc netifStatusCallback
     addProc udpEchoReceiveCallback
@@ -75,12 +78,16 @@ rbus enet = do
         createIpAddr4 ip4 192 168 88 9
         createIpAddr4 netmask 255 255 255 0
         createIpAddr4 gateway 192 168 88 1
+        createIpAddr4 igmpGroup 135 1 1 1
         store (netif ~> hwaddr_len) 6
         arrayCopy (netif ~> hwaddr) (mac mcu) 0 6
 
         addNetif netif ip4 netmask gateway nullPtr (initLwipPortIf enet') inputEthernetPtr
         setNetifDefault netif
         setNetifStatusCallback netif (procPtr netifStatusCallback)
+        initIgmp
+        startIgmp netif
+        joinIgmpGroupNetif netif igmpGroup
         setUpNetif netif
 
     addHandler $ HandleEnet enet' $ do
@@ -89,6 +96,7 @@ rbus enet = do
             void $ inputLwipPortIf enet' netif
 
     addTask $ delay 1000 "eth_arp" tmrEtharp
+    addTask $ delay 100 "igmp_tmr" tmrIgmp
 
     pure RBUS
 

@@ -223,6 +223,7 @@ executable reacthome-firmware
                     , Support.Lwip.Pbuf
                     , Support.Lwip.Tcp
                     , Support.Lwip.Etharp
+                    , Support.Lwip.Igmp
 
                     , Test
 
