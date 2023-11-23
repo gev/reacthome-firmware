@@ -6,7 +6,8 @@
 module Support.Lwip.IP_addr
     ( IP_ADDR_4_STRUCT
     , IP_ADDR_4
-
+    
+    , ipAddrAny
     , createIpAddr4
 
     , inclIP_addr
@@ -20,7 +21,7 @@ import           Ivory.Support
 
 
 fun :: ProcType f => Sym -> Def f
-fun = funFrom "ip_addr.h"
+fun = funFrom "lwip/ip_addr.h"
 
 
 
@@ -38,7 +39,7 @@ ipAddrAny :: IP_ADDR_4 Global
 ipAddrAny = addrOf ip_addr_any
 
 ip_addr_any :: MemArea (Struct IP_ADDR_4_STRUCT)
-ip_addr_any = area "ip_addr_any" $ Just $ istruct [ addr .= ival 0 ]
+ip_addr_any = area "ip4_addr_any" $ Just $ istruct [ addr .= ival 0 ]
 
 
 

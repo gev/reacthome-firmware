@@ -6,6 +6,7 @@
 module Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif   
     ( initEthernetifPtr
     , inputEthernetif
+    
     , inclEthernetif
     ) where
 

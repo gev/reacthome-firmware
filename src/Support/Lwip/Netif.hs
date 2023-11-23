@@ -1,9 +1,9 @@
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE QuasiQuotes       #-}
-{-# LANGUAGE TypeOperators     #-}
+{-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE QuasiQuotes                #-}
+{-# LANGUAGE TypeOperators              #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances          #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Support.Lwip.Netif
@@ -12,6 +12,9 @@ module Support.Lwip.Netif
 
     , NETIF_STRUCT
     , NETIF
+    , flags
+    , hwaddr
+    , hwaddr_len
 
     , NetifInitFn
     , PtrNetifInitFn
@@ -19,24 +22,29 @@ module Support.Lwip.Netif
     , NetifInputFn
     , PtrNetifInputFn
 
+    , NetifStatusCallbackFn
+    , PtrNetifStatusCallbackFn
+
     , addNetif
     , setNetifDefault
     , setUpNetif
     , setNetifStatusCallback
 
-    ,
+    , inclNetif
     ) where
 
 import           Ivory.Language
-import           Ivory.Language.Proc   (ProcType, ProcPtr)
-import           Ivory.Language.Syntax (Sym)
+import           Ivory.Language.Pointer
+import           Ivory.Language.Proc    (ProcPtr, ProcType)
+import           Ivory.Language.Syntax  (Sym)
 import           Ivory.Support
+import           Support.Lwip.Err
 import           Support.Lwip.IP_addr
 import           Support.Lwip.Pbuf
-import           Support.Lwip.Err
+
 
 headerFile :: HeaderFile
-headerFile = "netif.h"
+headerFile = "lwip/netif.h"
 
 fun :: ProcType f => Sym -> Def f
 fun = funFrom headerFile
@@ -46,17 +54,19 @@ ext  = extFrom headerFile
 
 
 newtype NETIF_FLAG = NETIF_FLAG Uint8
-    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar, IvoryEq, IvoryBits, Num)
 
 netif_flag_up = NETIF_FLAG $ ext "NETIF_FLAG_UP"
-
-
 
 type NETIF_STRUCT = "netif"
 type NETIF s = Ref s (Struct NETIF_STRUCT)
 
 [ivory|
-    abstract struct netif "netif.h"
+    struct netif 
+        { flags      :: Stored NETIF_FLAG
+        ; hwaddr     :: Array 6 (Stored Uint8)
+        ; hwaddr_len :: Stored Uint8
+        }
 |]
 
 
@@ -74,10 +84,10 @@ type PtrNetifStatusCallbackFn s = ProcPtr (NetifStatusCallbackFn s)
 
 
 
-addNetif :: NETIF s1 -> IP_ADDR_4 s2 -> NET_MASK s3 -> GW s4 -> ProcPtr ('[] :-> ()) -> PtrNetifInitFn s5 -> PtrNetifInputFn s6 s7 -> Ivory eff ErrT
+addNetif :: NETIF s1 -> IP_ADDR_4 s2 -> NET_MASK s3 -> GW s4 -> Ptr s5 (Stored ()) -> PtrNetifInitFn s6 -> PtrNetifInputFn s7 s8 -> Ivory eff ErrT
 addNetif = call netif_add
 
-netif_add :: Def ('[NETIF s1, IP_ADDR_4 s2, NET_MASK s3, GW s4, ProcPtr ('[] :-> ()), PtrNetifInitFn s5, PtrNetifInputFn s6 s7] :-> ErrT)
+netif_add :: Def ('[NETIF s1, IP_ADDR_4 s2, NET_MASK s3, GW s4, Ptr s5 (Stored ()), PtrNetifInitFn s6, PtrNetifInputFn s7 s8] :-> ErrT)
 netif_add = fun "netif_add"
 
 
@@ -108,7 +118,7 @@ inclNetif = do
     incl netif_set_default
     incl netif_set_up
     incl netif_set_status_callback
-    
+
     inclSym netif_flag_up
 
 

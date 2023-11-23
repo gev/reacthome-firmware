@@ -9,6 +9,7 @@ import           Build.Compiler.GCC.GD32F3x0
 import           Build.Compiler.GCC.GD32F4xx
 import           Build.Firmware
 import           Build.Shake
+import           Control.Monad               (join)
 import           Core.Formula
 import           Development.Shake
 import           Development.Shake.FilePath
@@ -68,9 +69,11 @@ instance Shake GCC where
             cmd_ oc "-O ihex" elf out
 
         "build//*.elf" %> \out -> do
-            ss <- getDirectoryFiles libs ["//*.c", "//*.s"]
-            let os = out -<.> "c" <.> "o"
-                   : ["build" </> libs </> s <.> "o" | s <- ss]
+            let go lib = do
+                    ss <- getDirectoryFiles lib ["//*.c", "//*.s"]
+                    pure ["build" </> lib </> s <.> "o" | s <- ss]
+            os' <- concat <$> mapM go libs
+            let os = out -<.> "c" <.> "o" : os'
             need os
             cmd_ cc ldflags ld os "-lc" "-o" out
 

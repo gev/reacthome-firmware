@@ -8,6 +8,9 @@ module Support.Lwip.Udp
     ( UdpRecvFn
     , PtrUdpRecvFn
 
+    , UDP_PCB_STRUCT
+    , UDP_PCB
+    
     , newUdp
     , bindUdp
     , sendUdp
@@ -28,20 +31,20 @@ import           Support.Lwip.Err
 
 
 fun :: ProcType f => Sym -> Def f
-fun = funFrom "udp.h"
+fun = funFrom "lwip/udp.h"
 
 
 
 type UDP_PCB_STRUCT = "udp_pcb"
-type UDP_PCB s = Ref s (Struct UDP_PCB_STRUCT)
+type UDP_PCB s = Ptr s (Struct UDP_PCB_STRUCT)
 
 [ivory|
     abstract struct udp_pcb "udp.h"
 |]
 
 
-type UdpRecvFn s1 s2 s3  = '[ProcPtr ('[] :-> ()), UDP_PCB s1, PBUF s2, IP_ADDR_4 s3, Uint16] :-> ErrT
-type PtrUdpRecvFn s1 s2 s3 = ProcPtr (UdpRecvFn s1 s2 s3)
+type UdpRecvFn s1 s2 s3 s4  = '[Ptr s1 (Stored ()), UDP_PCB s2, PBUF s3, IP_ADDR_4 s4, Uint16] :-> ErrT
+type PtrUdpRecvFn s1 s2 s3 s4 = ProcPtr (UdpRecvFn s1 s2 s3 s4)
 
 
 newUdp :: Ivory eff (UDP_PCB s)
@@ -79,10 +82,10 @@ udp_send :: Def ('[UDP_PCB s1, PBUF s2] :-> ErrT)
 udp_send = fun "udp_send"
 
 
-recvUdp :: UDP_PCB s1 -> PtrUdpRecvFn s2 s3 s4 -> ProcPtr ('[] :-> ()) -> Ivory eff ()
+recvUdp :: UDP_PCB s1 -> PtrUdpRecvFn s2 s3 s4 s5 -> Ptr s6 (Stored ()) -> Ivory eff ()
 recvUdp = call_ udp_recv
 
-udp_recv :: Def ('[UDP_PCB s1, PtrUdpRecvFn s2 s3 s4, ProcPtr ('[] :-> ())] :-> ())
+udp_recv :: Def ('[UDP_PCB s1, PtrUdpRecvFn s2 s3 s4 s5, Ptr s6 (Stored ())] :-> ())
 udp_recv = fun "udp_recv"
 
 

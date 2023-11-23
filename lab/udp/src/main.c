@@ -74,11 +74,11 @@ int main(void)
 
 
     while(1) {
-        /* check if any packet received */
-        if(enet_rxframe_size_get()) {
-            /* process received ethernet packet */
-            lwip_pkt_handle();
-        }
+        // /* check if any packet received */
+        // if(enet_rxframe_size_get()) {
+        //     /* process received ethernet packet */
+        //     lwip_pkt_handle();
+        // }
         
     lwip_periodic_handle(g_localtime);
     }

@@ -17,7 +17,7 @@ import           Ivory.Language.Syntax
 
 
 fun :: ProcType f => Sym -> Def f
-fun = funFrom "mem.h"
+fun = funFrom "lwip/mem.h"
 
 
 

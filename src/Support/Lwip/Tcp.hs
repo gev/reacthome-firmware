@@ -21,7 +21,7 @@ import           Ivory.Language.Syntax (Sym)
 
 
 headerFile :: HeaderFile
-headerFile = "tcp.h"
+headerFile = "lwip/tcp.h"
 
 fun :: ProcType f => Sym -> Def f
 fun = funFrom headerFile

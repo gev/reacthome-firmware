@@ -69,8 +69,8 @@ mkIndicator mkDisplay hue = do
     canvas    <- mkCanvas1D $ I.frameBuffer display "indicator"
     t         <- value    "indicator_t"           0
     dt        <- value    "indicator_dt"          1
-    phi        <- value   "indicator_phi"         0
-    dphi       <- value   "indicator_dphi"        1
+    phi       <- value    "indicator_phi"         0
+    dphi      <- value    "indicator_dphi"        1
     start     <- value    "indicator_start"       true
     findMe    <- value    "indicator_find_me"     false
     findMeMsg <- values   "indicator_find_me_msg" [0xfa, 0]

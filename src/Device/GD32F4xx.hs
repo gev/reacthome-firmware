@@ -20,6 +20,7 @@ import           Device.GD32F4xx.SysTick
 import           Device.GD32F4xx.Timer            (Timer, cfg_timer_1,
                                                    cfg_timer_2, cfg_timer_3, cfg_timer_6)
 import           Device.GD32F4xx.UART
+import           Device.GD32F4xx.ENET
 import           Interface.Mac                    (Mac)
 import           Interface.MCU
 import           Interface.OneWire
@@ -44,6 +45,7 @@ type Timer'        = forall m. MonadState Context m => Uint32 -> Uint32 -> m Tim
 type PWM'          = forall m. MonadState Context m => Uint32 -> Uint32 -> m PWM
 type NeoPixelPWM'  = forall m. MonadState Context m => m NeoPixelPWM
 type OneWire'      = forall m. MonadState Context m => m OpenDrain -> m OneWire
+type Enet'         = forall m. MonadState Context m => m ENET
 
 
 
@@ -247,6 +249,8 @@ data GD32F4xx = GD32F4xx
     , npx_pwm_3 :: NeoPixelPWM'
 
     , ow_0      :: OneWire'
+
+    , eth_0     :: Enet'
     }
 
 
@@ -536,6 +540,17 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
 
 
     , ow_0  = mkOneWire cfg_timer_6
+
+    , eth_0 = mkENET  (pa_1  af_11)
+                      (pa_2  af_11)
+                      (pc_1  af_11)
+                      (pa_7  af_11)
+                      (pc_4  af_11)
+                      (pc_5  af_11)
+                      (pb_11 af_11)
+                      (pb_12 af_11)
+                      (pb_13 af_11)
+                      enet_irqn
     }
 
 

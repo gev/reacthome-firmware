@@ -83,6 +83,7 @@ executable reacthome-firmware
                     , Feature.RS485.RBUS.Tx
                     , Feature.Server
                     , Feature.DS18B20
+                    , Feature.UdpEcho
 
                     , Formula.Blink330
                     , Formula.Blink450
@@ -93,6 +94,7 @@ executable reacthome-firmware
                     , Formula.DimmerDC12
                     , Formula.Mix6x12
                     , Formula.DI4
+                    , Formula.UdpEcho450
 
                     , Interface.Counter
                     , Interface.GPIO.Input
@@ -205,6 +207,7 @@ executable reacthome-firmware
                     , Support.Device.GD32F4xx.System
                     , Support.Device.GD32F4xx.ENET
                     , Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif
+                    , Support.Lwip.Ethernet 
 
                     , Support.Lwip.Mem
                     , Support.Lwip.Memp
