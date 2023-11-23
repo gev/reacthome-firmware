@@ -9,7 +9,6 @@ import           Build.Compiler.GCC.GD32F3x0
 import           Build.Compiler.GCC.GD32F4xx
 import           Build.Firmware
 import           Build.Shake
-import           Control.Monad               (join)
 import           Core.Formula
 import           Development.Shake
 import           Development.Shake.FilePath
