@@ -5,24 +5,23 @@
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE InstanceSigs #-}
 
 module Device.GD32F4xx.ENET where
 
-import           Control.Monad.State            (MonadState)
+import qualified Control.Monad
+import           Control.Monad.State                               (MonadState)
 import           Core.Context
 import           Core.Handler
-import qualified Device.GD32F4xx.GPIO.Port      as G
-import           Interface.ENET                 as I
+import qualified Device.GD32F4xx.GPIO.Port                         as G
+import           Interface.ENET                                    as I
 import           Interface.LwipPort
 import           Ivory.Stdlib
 import           Support.Device.GD32F4xx.ENET
 import           Support.Device.GD32F4xx.IRQ
+import           Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif
 import           Support.Device.GD32F4xx.Misc
 import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.SYSCFG
-import           Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif   
-import qualified Control.Monad
 
 
 
@@ -61,6 +60,8 @@ mkENET ethRmiiRefClk ethRmiiMdio ethRmiiMdc ethRmiiCrsDv ethRmiiRxd0 ethRmiiRxd1
     G.initPort ethRmiiTxEn
     G.initPort ethRmiiTxd0
     G.initPort ethRmiiTxd1
+
+    addModule inclEthernetif
 
     addInit "enet_" $ do
         setVectorTableNvic nvic_vecttab_flash 0
