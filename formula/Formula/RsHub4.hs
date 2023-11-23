@@ -12,9 +12,9 @@ import           Transport.UART.RBUS as U
 
 
 rsHub4 :: Formula GD32F4xx
-rsHub4 =  Formula { name       = "rs_hub4"
-                 , model      = 0xb2
-                 , version    = (1, 0)
+rsHub4 = Formula { name       = "rs_hub4"
+                 , model      = 0xc0
+                 , version    = (3, 0)
                  , shouldInit = true
                  , transport  = U.rbus uart_1
                  , features   = [ indicator npx_pwm_2 60
