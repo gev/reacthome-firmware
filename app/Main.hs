@@ -16,7 +16,7 @@ import           Formula.Mix6x12
 import           Formula.Relay12
 import           Formula.Server
 import           Formula.UdpEcho450
--- import           Formula.MixA6x12
+import           Formula.RsHub4
 
 
 main :: IO ()
@@ -30,6 +30,7 @@ main = do
                      ]
     gcc gd32f450vgt6 [ server
                      , udpEcho450
+                     , rsHub4
                     --  , blink450
                     --  , echo
                      ]
