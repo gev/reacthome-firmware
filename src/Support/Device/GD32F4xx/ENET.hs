@@ -1,14 +1,14 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
-{-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE TypeOperators              #-}
 
 
 module Support.Device.GD32F4xx.ENET
     ( MEDIAMODE
     , enet_auto_negotiation
-    
+
     , CHECKSUM_CONF
     , enet_no_autochecksum
 
@@ -23,12 +23,16 @@ module Support.Device.GD32F4xx.ENET
     , enet_dma_int_flag_rs_clr
     , enet_dma_int_flag_ni_clr
 
+    , ENET_FILTER
+    , enet_multicast_filter_pass
+
     , initENET
     , deinitENET
     , resetSoftwareENET
-    , enableInterruptENET 
+    , enableInterruptENET
     , clearEnetInterruptfFlag
     , getEnetRxframeSize
+    , enableEnetFilterFeature
 
     , inclENET
     ) where
@@ -67,6 +71,12 @@ newtype ENET_INTERRUPT_FLAG_CLEAR = ENET_INTERRUPT_FLAG_CLEAR Uint32
 
 enet_dma_int_flag_rs_clr  = ENET_INTERRUPT_FLAG_CLEAR $ ext "ENET_DMA_INT_FLAG_RS_CLR"
 enet_dma_int_flag_ni_clr  = ENET_INTERRUPT_FLAG_CLEAR $ ext "ENET_DMA_INT_FLAG_NI_CLR"
+
+
+newtype ENET_FILTER = ENET_FILTER Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
+
+enet_multicast_filter_pass  = ENET_FILTER $ ext "ENET_MULTICAST_FILTER_PASS"
 
 
 initENET :: MEDIAMODE -> CHECKSUM_CONF -> FRAME_RECEPT -> Ivory eff IBool
@@ -111,6 +121,13 @@ enet_rxframe_size_get :: Def ('[] :-> Uint32)
 enet_rxframe_size_get = fun "enet_rxframe_size_get"
 
 
+enableEnetFilterFeature :: ENET_FILTER -> Ivory eff ()
+enableEnetFilterFeature = call_ enet_fliter_feature_enable
+
+enet_fliter_feature_enable :: Def ('[ENET_FILTER] :-> ())
+enet_fliter_feature_enable = fun "enet_fliter_feature_enable"
+
+
 inclENET :: ModuleDef
 inclENET = do
     inclSym enet_auto_negotiation
@@ -123,6 +140,7 @@ inclENET = do
     inclSym enet_dma_int_rie
     inclSym enet_dma_int_flag_rs_clr
     inclSym enet_dma_int_flag_ni_clr
+    inclSym enet_multicast_filter_pass
 
     incl enet_init
     incl enet_deinit
@@ -130,3 +148,4 @@ inclENET = do
     incl enet_interrupt_enable
     incl enet_interrupt_flag_clear
     incl enet_rxframe_size_get
+    incl enet_fliter_feature_enable
