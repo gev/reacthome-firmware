@@ -157,14 +157,14 @@ void lwip_pkt_handle(void)
 */
 void lwip_periodic_handle(__IO uint32_t localtime)
 {
-#if LWIP_TCP
-    /* TCP periodic process every 250 ms */
-    if(localtime - tcp_timer >= TCP_TMR_INTERVAL) {
-        tcp_timer =  localtime;
-        tcp_tmr();
-    }
+// #if LWIP_TCP
+//     /* TCP periodic process every 250 ms */
+//     if(localtime - tcp_timer >= TCP_TMR_INTERVAL) {
+//         tcp_timer =  localtime;
+//         tcp_tmr();
+//     }
 
-#endif /* LWIP_TCP */
+// #endif /* LWIP_TCP */
 
     /* ARP periodic process every 5s */
     if((localtime - arp_timer) >= ARP_TMR_INTERVAL) {
