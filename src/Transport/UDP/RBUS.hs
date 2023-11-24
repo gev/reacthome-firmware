@@ -3,6 +3,8 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TypeOperators    #-}
+{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Transport.UDP.RBUS where
 
@@ -63,7 +65,9 @@ rbus enet = do
     addModule inclEtharp
     addModule inclIgmp
 
-    addProc netifStatusCallback
+    let rbus = RBUS { netif, igmpGroup }
+
+    addProc $ netifStatusCallback rbus
     addProc udpEchoReceiveCallback
 
     let sysNow :: Def ('[] :-> Uint32)
@@ -78,16 +82,15 @@ rbus enet = do
         createIpAddr4 ip4 192 168 88 9
         createIpAddr4 netmask 255 255 255 0
         createIpAddr4 gateway 192 168 88 1
-        createIpAddr4 igmpGroup 135 1 1 1
+        createIpAddr4 igmpGroup 235 1 1 1
         store (netif ~> hwaddr_len) 6
         arrayCopy (netif ~> hwaddr) (mac mcu) 0 6
 
         addNetif netif ip4 netmask gateway nullPtr (initLwipPortIf enet') inputEthernetPtr
         setNetifDefault netif
-        setNetifStatusCallback netif (procPtr netifStatusCallback)
+        setNetifStatusCallback netif (procPtr $ netifStatusCallback rbus)
         initIgmp
         startIgmp netif
-        joinIgmpGroupNetif netif igmpGroup
         setUpNetif netif
 
     addHandler $ HandleEnet enet' $ do
@@ -98,19 +101,20 @@ rbus enet = do
     addTask $ delay 1000 "eth_arp" tmrEtharp
     addTask $ delay 100 "igmp_tmr" tmrIgmp
 
-    pure RBUS
+    pure rbus 
 
 
 
 
-netifStatusCallback :: Def (NetifStatusCallbackFn s)
-netifStatusCallback = proc "netif_callback" $ \netif -> body $ do
+netifStatusCallback :: RBUS -> Def (NetifStatusCallbackFn s)
+netifStatusCallback RBUS{..} = proc "netif_callback" $ \netif -> body $ do
      flags' <- deref $ netif ~> flags
      when (flags' .& netif_flag_up /=?  0) $ do
         upcb <- newUdp
         when (upcb /=? nullPtr) $ do
           err <- bindUdp upcb ipAddrAny 2000
-          when (err ==? 0) $
+          when (err ==? 0) $ do
+            joinIgmpGroupNetif netif igmpGroup
             recvUdp upcb (procPtr udpEchoReceiveCallback) nullPtr
 
 
