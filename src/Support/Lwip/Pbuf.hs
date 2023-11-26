@@ -31,7 +31,7 @@ type PBUF s = Ref s (Struct PBUF_STRUCT)
 
 [ivory|
     struct pbuf
-    { len :: Stored Uint16
+    { len     :: Stored Uint16
     ; tot_len :: Stored Uint16
     }
 |]
