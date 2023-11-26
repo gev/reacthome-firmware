@@ -2,9 +2,8 @@
 {-# HLINT ignore "Use newtype instead of data" #-}
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE TypeOperators    #-}
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module Transport.UDP.RBUS where
 
@@ -50,9 +49,9 @@ rbus enet = do
     enet'     <- enet $ peripherals mcu
     ip4       <- record_ "ipaddr4"
     netmask   <- record_ "netmask"
-    gateway   <- record_ "gateway"
     netif     <- record_ "netif"
-    igmpGroup <- record_ "igmp_group"
+
+    let rbus   = RBUS { netif }
 
     addModule inclEthernet
     addModule inclEthernetif
@@ -65,30 +64,24 @@ rbus enet = do
     addModule inclEtharp
     addModule inclIgmp
 
-    let rbus = RBUS { netif, igmpGroup }
-
-    addProc $ netifStatusCallback rbus
-    addProc udpEchoReceiveCallback
-
     let sysNow :: Def ('[] :-> Uint32)
         sysNow = proc "sys_now" $ body $
             ret =<< getSystemTime (systemClock mcu)
 
     addProc sysNow
+    addProc netifStatusCallback
+    addProc udpEchoReceiveCallback
 
-    addInit "udp_echo" $ do
+    addInit "udp_init" $ do
         initMem
         initMemp
-        createIpAddr4 ip4 192 168 88 9
-        createIpAddr4 netmask 255 255 255 0
-        createIpAddr4 gateway 192 168 88 1
-        createIpAddr4 igmpGroup 235 1 1 1
+        createIpAddr4 ip4     169 254 47 94
+        createIpAddr4 netmask 255 255  0  0
         store (netif ~> hwaddr_len) 6
         arrayCopy (netif ~> hwaddr) (mac mcu) 0 6
-
-        addNetif netif ip4 netmask gateway nullPtr (initLwipPortIf enet') inputEthernetPtr
+        addNetif netif ip4 netmask ipAddrAny nullPtr (initLwipPortIf enet') inputEthernetPtr
         setNetifDefault netif
-        setNetifStatusCallback netif (procPtr $ netifStatusCallback rbus)
+        setNetifStatusCallback netif $ procPtr netifStatusCallback
         initIgmp
         startIgmp netif
         setUpNetif netif
@@ -98,34 +91,31 @@ rbus enet = do
         when (reval >? 1) $
             void $ inputLwipPortIf enet' netif
 
-    addTask $ delay 1000 "eth_arp" tmrEtharp
-    addTask $ delay 100 "igmp_tmr" tmrIgmp
+    addTask $ delay 1000 "tmr_arp"  tmrEtharp
+    addTask $ delay  100 "tmr_igmp" tmrIgmp
 
-    pure rbus 
-
-
+    pure rbus
 
 
-netifStatusCallback :: RBUS -> Def (NetifStatusCallbackFn s)
-netifStatusCallback RBUS{..} = proc "netif_callback" $ \netif -> body $ do
+
+netifStatusCallback :: Def (NetifStatusCallbackFn s)
+netifStatusCallback = proc "netif_callback" $ \netif -> body $ do
      flags' <- deref $ netif ~> flags
      when (flags' .& netif_flag_up /=?  0) $ do
         upcb <- newUdp
         when (upcb /=? nullPtr) $ do
           err <- bindUdp upcb ipAddrAny 2000
           when (err ==? 0) $ do
-            joinIgmpGroupNetif netif igmpGroup
             recvUdp upcb (procPtr udpEchoReceiveCallback) nullPtr
 
 
 
 udpEchoReceiveCallback :: Def (UdpRecvFn s1 s2 s3 s4)
-udpEchoReceiveCallback = proc "udp_echo_callback" $ \_ upcb p addr port -> body $ do
+udpEchoReceiveCallback = proc "udp_echo_callback" $ \_ upcb pbuff addr port -> body $ do
     connectUdp upcb addr port
-    sendUdp upcb p
+    sendUdp upcb pbuff
     disconnectUdp upcb
-    ret =<< freePbuf p
-
+    ret =<< freePbuf pbuff
 
 
 
