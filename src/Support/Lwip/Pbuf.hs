@@ -1,14 +1,13 @@
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE QuasiQuotes       #-}
-{-# LANGUAGE TypeOperators     #-}
+{-# LANGUAGE DataKinds     #-}
+{-# LANGUAGE QuasiQuotes   #-}
+{-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
-{-# LANGUAGE FlexibleInstances #-}
 
 module Support.Lwip.Pbuf
     ( PBUF_STRUCT
     , PBUF
-    
+
     , freePbuf
 
     , inclPbuf
@@ -26,13 +25,17 @@ fun :: ProcType f => Sym -> Def f
 fun = funFrom "lwip/pbuf.h"
 
 
+
 type PBUF_STRUCT = "pbuf"
 type PBUF s = Ref s (Struct PBUF_STRUCT)
 
-
 [ivory|
-    abstract struct pbuf "pbuf.h"
+    struct pbuf
+    { len :: Stored Uint16
+    ; tot_len :: Stored Uint16
+    }
 |]
+
 
 
 freePbuf :: PBUF s -> Ivory eff ErrT
@@ -40,6 +43,7 @@ freePbuf = call pbuf_free
 
 pbuf_free :: Def ('[PBUF s] :-> ErrT)
 pbuf_free = fun "pbuf_free"
+
 
 
 inclPbuf :: ModuleDef
