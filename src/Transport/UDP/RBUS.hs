@@ -104,7 +104,7 @@ netifStatusCallback = proc "netif_callback" $ \netif -> body $ do
      when (flags' .& netif_flag_up /=?  0) $ do
         upcb <- newUdp
         when (upcb /=? nullPtr) $ do
-          err <- bindUdp upcb ipAddrAny 2000
+          err <- bindUdp upcb ipAddrAny 2017
           when (err ==? 0) $ do
             recvUdp upcb (procPtr udpEchoReceiveCallback) nullPtr
 
