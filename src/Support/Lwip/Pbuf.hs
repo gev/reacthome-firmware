@@ -1,9 +1,9 @@
 {-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE QuasiQuotes                #-}
 {-# LANGUAGE TypeOperators              #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Support.Lwip.Pbuf
     ( PBUF_STRUCT
@@ -17,17 +17,17 @@ module Support.Lwip.Pbuf
     , pbuf_raw
 
     , PBUF_TYPE
-    , pbuf_ram 
-    , pbuf_rom 
-    , pbuf_ref 
+    , pbuf_ram
+    , pbuf_rom
+    , pbuf_ref
     , pbuf_pool
 
     , freePbuf
     , allocPbuf
     , allocPbufReference
     , getPbufAt
-    , memcmpPbuf
-    , memfindPbuf
+    , memCmpPbuf
+    , memFindPbuf
     , putPbufAt
     , takePbuf
     , takePbufAt
@@ -41,7 +41,6 @@ import           Ivory.Language.Proc   (ProcType)
 import           Ivory.Language.Syntax (Sym)
 import           Ivory.Support
 import           Support.Lwip.Err
-
 
 
 
@@ -111,18 +110,18 @@ getPbufAt :: PBUF s -> Uint16 -> Ivory eff Uint8
 getPbufAt = call pbuf_get_at
 
 pbuf_get_at :: Def ('[PBUF s, Uint16] :-> Uint8)
-pbuf_get_at = fun "pbuf_get_at" 
+pbuf_get_at = fun "pbuf_get_at"
 
 
-memcmpPbuf :: PBUF s -> Uint16 -> Ref s1 (CArray (Stored Uint8)) -> Ivory eff Uint16
-memcmpPbuf = call pbuf_memcmp
+memCmpPbuf :: PBUF s -> Uint16 -> Ref s1 (CArray (Stored Uint8)) -> Ivory eff Uint16
+memCmpPbuf = call pbuf_memcmp
 
 pbuf_memcmp :: Def ('[PBUF s, Uint16, Ref s1 (CArray (Stored Uint8))] :-> Uint16)
 pbuf_memcmp = fun "pbuf_memcmp"
 
 
-memfindPbuf :: PBUF s -> Ref s1 (CArray (Stored Uint8)) -> Uint16 -> Uint16 -> Ivory eff Uint16
-memfindPbuf = call pbuf_memfind
+memFindPbuf :: PBUF s -> Ref s1 (CArray (Stored Uint8)) -> Uint16 -> Uint16 -> Ivory eff Uint16
+memFindPbuf = call pbuf_memfind
 
 pbuf_memfind :: Def ('[PBUF s, Ref s1 (CArray (Stored Uint8)), Uint16, Uint16] :-> Uint16)
 pbuf_memfind = fun "pbuf_memfind"
@@ -136,7 +135,7 @@ pbuf_put_at = fun "pbuf_put_at"
 
 
 takePbuf :: PBUF s -> Ref s1 (CArray (Stored Uint8)) -> Uint16 ->  Ivory eff ErrT
-takePbuf = call pbuf_take  
+takePbuf = call pbuf_take
 
 pbuf_take ::  Def ('[PBUF s, Ref s1 (CArray (Stored Uint8)), Uint16] :-> ErrT)
 pbuf_take = fun "pbuf_take"
@@ -160,11 +159,11 @@ pbuf_try_get_at = fun "pbuf_try_get_at"
 inclPbuf :: ModuleDef
 inclPbuf = do
 
-    inclSym pbuf_transport 
-    inclSym pbuf_ip        
-    inclSym pbuf_link      
-    inclSym pbuf_raw_tx    
-    inclSym pbuf_raw       
+    inclSym pbuf_transport
+    inclSym pbuf_ip
+    inclSym pbuf_link
+    inclSym pbuf_raw_tx
+    inclSym pbuf_raw
     inclSym pbuf_ram
     inclSym pbuf_rom
     inclSym pbuf_ref
