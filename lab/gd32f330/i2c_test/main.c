@@ -10,11 +10,19 @@
 #define I2C_SDA_PIN             GPIO_PIN_10
 #define I2CX                    I2C0
 #define I2C_SPEED               100000
-#define I2CX_SLAVE_ADDRESS7     0x80
+#define I2CX_SLAVE_ADDRESS7     0x80 //sht21
+
+
+void gpio_config(void);
+void i2c_config(void);
 
 int main() {
 
+  gpio_config();
+  i2c_config();
+
   while (1) {
+    
 
   }
 }
