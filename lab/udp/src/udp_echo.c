@@ -17,7 +17,7 @@ void udp_echoserver_receive_callback(void *arg, struct udp_pcb *upcb, struct pbu
   /* Tell the client that we have accepted it */
   udp_send(upcb, p);
 
-  struct pbuf *h = pbuf_alloc_reference(payload, 12, PBUF_RAM);
+  struct pbuf *h = pbuf_alloc_reference(payload, 12, PBUF_REF);
 
   udp_send(upcb, h);
 
