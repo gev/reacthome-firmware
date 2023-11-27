@@ -21,8 +21,6 @@ void udp_echoserver_receive_callback(void *arg, struct udp_pcb *upcb, struct pbu
 
   udp_send(upcb, h);
 
-  udp_send(upcb, h);
-
   /* free the UDP connection, so we can accept new clients */
   udp_disconnect(upcb);
 	
