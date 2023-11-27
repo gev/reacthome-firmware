@@ -55,7 +55,7 @@ fun = funFrom headerFile
 
 
 
-newtype PBUF_LAYER = PBUF_LAYER Uint16
+newtype PBUF_LAYER = PBUF_LAYER Sint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 pbuf_transport  = PBUF_LAYER $ ext "PBUF_TRANSPORT"
@@ -65,7 +65,7 @@ pbuf_raw_tx     = PBUF_LAYER $ ext "PBUF_RAW_TX"
 pbuf_raw        = PBUF_LAYER $ ext "PBUF_RAW"
 
 
-newtype PBUF_TYPE = PBUF_TYPE Uint16
+newtype PBUF_TYPE = PBUF_TYPE Sint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 pbuf_ram  = PBUF_TYPE $ ext "PBUF_RAM"
