@@ -6,11 +6,12 @@
 
 void udp_echoserver_receive_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, const ip_addr_t *addr, u16_t port)
 {
-  printf("udp_callback\n");
+  // printf("udp_callback\n");
 
   /* Connect to the remote client */
   udp_connect(upcb, addr, port);
-
+  printf("payload: %s\n", (char *) p->payload);
+  printf("length: %i\n", (char *) p->len);
   /* Tell the client that we have accepted it */
   udp_send(upcb, p);
 
