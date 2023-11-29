@@ -61,6 +61,8 @@ C_SOURCES =  \
 ../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_usart.c \
 ../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_wwdgt.c \
 main.c \
+i2c0_ie.c \
+gd32f3x0_it.c \
 
 # ASM sources
 ASM_SOURCES =  \
@@ -192,9 +194,10 @@ erase:
 r_flash:
 	make
 #	JLinkExe ip tunnel:801031640::jlink-europe.segger.com -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink
-	JLinkExe ip 192.168.88.154 -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink
+	JLinkExe ip 192.168.88.128 -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink
 r_erase:
-	JLinkExe ip tunnel:801031640::jlink-europe.segger.com -Device GD32F330K8 -If SWD -Speed 1000 jlink/EraseMCU.jlink
+# JLinkExe ip tunnel:801031640::jlink-europe.segger.com -Device GD32F330K8 -If SWD -Speed 1000 jlink/EraseMCU.jlink
+	JLinkExe ip 192.168.88.128 -Device GD32F330K8 -If SWD -Speed 1000 jlink/EraseMCU.jlink
 koro_flash:
 	make
 	JLinkExe ip tunnel:69669681::jlink-europe.segger.com -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink
