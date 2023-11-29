@@ -9,7 +9,7 @@
 //         "type": "cortex-debug",
 //         "name": "J-link Debug",
 //         "cwd": "${workspaceRoot}",
-//         "executable": "${workspaceRoot}/build/gd32_uart_test.elf",
+//         "executable": "${workspaceRoot}/build/i2c_test.elf",
 //         "serverpath": "/Applications/SEGGER/JLink_V750a/JLinkGDBServerCLExe",
 //         "servertype": "jlink",
 //         "armToolchainPath": "/Applications/ARM/bin/",
@@ -36,7 +36,7 @@
       "servertype": "external",
       "interface": "swd",
       "gdbTarget": "localhost:2331",
-      "armToolchainPath": "/Applications/ARM/bin/",
+      "armToolchainPath": "/opt/homebrew/bin/",
       "preLaunchCommands": [
         "make r_flash",
       ]
