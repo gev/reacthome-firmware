@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "gd32f3x0.h": "c",
+        "stdint.h": "c"
+    }
+}
