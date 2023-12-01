@@ -40,14 +40,7 @@ OF SUCH DAMAGE.
 
 uint32_t event1;
 
-/*!
-    \brief      handle I2C0 event interrupt request
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
-void i2c0_event_irq_handler(void)
-{
+void i2c_transmit_handler(){
     if(i2c_interrupt_flag_get(I2C0, I2C_INT_FLAG_SBSEND)) {
         /* send slave address */
         i2c_master_addressing(I2C0, i2c_slave_addr, I2C_TRANSMITTER);
@@ -67,6 +60,62 @@ void i2c0_event_irq_handler(void)
             i2c_interrupt_disable(I2C0, I2C_INT_BUF);
             i2c_interrupt_disable(I2C0, I2C_INT_EV);
         }
+    }
+}
+
+void i2c_receive_handler(){
+    if(i2c_interrupt_flag_get(I2C0, I2C_INT_FLAG_SBSEND)) {
+        /* the master sends slave address */
+        i2c_master_addressing(I2C0, i2c_slave_addr, I2C_RECEIVER);
+    } else if(i2c_interrupt_flag_get(I2C0, I2C_INT_FLAG_ADDSEND)) {
+        if((1 == i2c_nbytes) || (2 == i2c_nbytes)) {
+            /* clear the ACKEN before the ADDSEND is cleared */
+            i2c_ack_config(I2C0, I2C_ACK_DISABLE);
+            /* clear the ADDSEND bit */
+            i2c_interrupt_flag_clear(I2C0, I2C_INT_FLAG_ADDSEND);
+        } else {
+            /* clear the ADDSEND bit */
+            i2c_interrupt_flag_clear(I2C0, I2C_INT_FLAG_ADDSEND);
+        }
+    } else if(i2c_interrupt_flag_get(I2C0, I2C_INT_FLAG_RBNE)) {
+        if(i2c_nbytes > 0) {
+            if(3 == i2c_nbytes) {
+                /* wait until the second last data byte is received into the shift register */
+                while(!i2c_interrupt_flag_get(I2C0, I2C_INT_FLAG_BTC));
+                /* send a NACK for the last data byte */
+                i2c_ack_config(I2C0, I2C_ACK_DISABLE);
+            }
+            /* read a data byte from I2C_DATA*/
+            i2c_rxbuffer[0] = i2c_data_receive(I2C0);
+            i2c_nbytes--;
+            if(0 == i2c_nbytes) {
+                /* send a stop condition */
+                i2c_stop_on_bus(I2C0);
+                // status = SUCCESS;
+                i2c_ack_config(I2C0, I2C_ACK_ENABLE);
+                i2c_ackpos_config(I2C0, I2C_ACKPOS_CURRENT);
+                /* disable the I2C0 interrupt */
+                i2c_interrupt_disable(I2C0, I2C_INT_ERR);
+                i2c_interrupt_disable(I2C0, I2C_INT_BUF);
+                i2c_interrupt_disable(I2C0, I2C_INT_EV);
+            }
+        }
+    }
+}
+
+/*!
+    \brief      handle I2C0 event interrupt request
+    \param[in]  none
+    \param[out] none
+    \retval     none
+*/
+
+void i2c0_event_irq_handler(void)
+{
+    if(i2c_flag_receive_transmit) {
+        i2c_transmit_handler();
+    } else {
+        i2c_receive_handler();
     }
 }
 

@@ -14,9 +14,13 @@
 #define SHT21_ADDRESS           0x80
 #define I2CX_OWN_ADDRESS        0x40
 
+#define I2C_RECEIVE             0
+#define I2C_TRANSMIT            1
+
 
 void gpio_config(void);
 void i2c_config(void);
+void i2c_nvic_config(void);
 void i2c_transmit(uint8_t slave_addr, uint8_t *buf, uint16_t size);
 void sht21_reset(void);
 void sht21_request_termperature(void);
@@ -29,6 +33,8 @@ volatile uint8_t* i2c_txbuffer;
 volatile uint8_t* i2c_rxbuffer;
 volatile uint16_t i2c_nbytes;
 volatile uint16_t i2c_sent_bytes;
+volatile uint16_t i2c_received_bytes;
+volatile uint8_t i2c_flag_receive_transmit;
 volatile uint8_t i2c_slave_addr;
 
 int main(void)
@@ -40,9 +46,6 @@ int main(void)
     /* configure the NVIC */
     i2c_nvic_config();
 
-    for(i = 0; i < 16; i++) {
-        i2c_buffer_transmitter[i] = i + 0b11111110;
-    }
 
     /* initialize i2c_txbuffer, i2c_rxbuffer, i2c_nbytes and status */
     i2c_txbuffer = i2c_buffer_transmitter;
@@ -53,6 +56,9 @@ int main(void)
         for(uint32_t i = 0; i < 1000000; i++);
         sht21_request_termperature();
         for(uint32_t i = 0; i < 1000000; i++);
+        sht21_read_termperature();
+        for(uint32_t i = 0; i < 1000000; i++);
+
     }
 }
 
@@ -69,7 +75,8 @@ void sht21_request_termperature(void)
 }
 
 void sht21_read_termperature(){
-
+    uint8_t temperature[2];
+    i2c_receive(SHT21_ADDRESS, temperature, sizeof(temperature));
 }
 
 void i2c_transmit(uint8_t slave_addr, uint8_t *buf, uint16_t size){
@@ -77,8 +84,28 @@ void i2c_transmit(uint8_t slave_addr, uint8_t *buf, uint16_t size){
     i2c_nbytes = size;
     i2c_slave_addr = slave_addr;
     i2c_sent_bytes = 0;
+    i2c_flag_receive_transmit = I2C_TRANSMIT;
 
     /* enable the I2C0 interrupt */
+    i2c_interrupt_enable(I2C0, I2C_INT_ERR);
+    i2c_interrupt_enable(I2C0, I2C_INT_EV);
+    i2c_interrupt_enable(I2C0, I2C_INT_BUF);
+
+    /* the master waits until the I2C bus is idle */
+    while(i2c_flag_get(I2C0, I2C_FLAG_I2CBSY));
+
+    /* the master sends a start condition to I2C bus */
+    i2c_start_on_bus(I2C0);
+}
+
+void i2c_receive(uint8_t slave_addr, uint8_t *buf, uint16_t size){
+    i2c_nbytes = size;
+    i2c_slave_addr = slave_addr;
+    // i2c_received_bytes = 0;
+    i2c_flag_receive_transmit = I2C_RECEIVE;
+
+    i2c_ack_config(I2CX, I2C_ACK_ENABLE);
+      /* enable the I2C0 interrupt */
     i2c_interrupt_enable(I2C0, I2C_INT_ERR);
     i2c_interrupt_enable(I2C0, I2C_INT_EV);
     i2c_interrupt_enable(I2C0, I2C_INT_BUF);
