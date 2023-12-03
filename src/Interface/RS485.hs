@@ -56,9 +56,9 @@ rs485 n uart' rede' = do
 
 
 transmit :: RS485
-         -> Ref r (CArray (Stored Uint16))
+         -> Ref s1 (CArray (Stored Uint16))
          -> Uint16
-         -> Ivory (ProcEffects s t) ()
+         -> Ivory (ProcEffects s2 t) ()
 transmit RS485{..} buffer length =
     set rede >> U.transmit uart buffer length
 
