@@ -44,6 +44,6 @@ class Handler HandleUART u => UART u where
 
     transmit      :: u -> Ref r (CArray (Stored Uint16))
                        -> Uint16
-                       -> Ivory (ProcEffects s ()) ()
+                       -> Ivory (ProcEffects s t) ()
 
     enable        :: u -> Ivory eff ()

@@ -215,7 +215,7 @@ transmitRBUS :: KnownNat n
              => [RBUS]
              -> Buffer n Uint8
              -> Uint8
-             -> Ivory (ProcEffects s ()) ()
+             -> Ivory (ProcEffects s t) ()
 transmitRBUS list buff size = do
     when (size >? 9) $ do
         port <- deref $ buff ! 7
@@ -245,7 +245,7 @@ transmitRB485 :: KnownNat n
               => [RBUS]
               -> Buffer n Uint8
               -> Uint8
-              -> Ivory (ProcEffects s ()) ()
+              -> Ivory (ProcEffects s t) ()
 transmitRB485 list buff size = do
     when (size >? 2) $ do
         port <- deref $ buff ! 1
@@ -265,7 +265,7 @@ initialize :: KnownNat n
            => [RBUS]
            -> Buffer n Uint8
            -> Uint8
-           -> Ivory (ProcEffects s ()) ()
+           -> Ivory (ProcEffects s t) ()
 initialize list buff size =
     when (size ==? 25) $ do
         let run r@RBUS{..} offset = do

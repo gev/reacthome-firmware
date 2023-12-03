@@ -24,9 +24,9 @@ import           Ivory.Stdlib
 
 data Echo = Echo
     { buff     :: Buffer 10 Uint8
-    , transmit :: forall n s. KnownNat n
+    , transmit :: forall n s t. KnownNat n
                => Buffer n Uint8
-               -> Ivory (ProcEffects s ()) ()
+               -> Ivory (ProcEffects s t) ()
     }
 
 

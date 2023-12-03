@@ -167,7 +167,7 @@ onDim DimmerDC{..} buff size = do
 
 
 
-onInit :: KnownNat n => DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
+onInit :: KnownNat n => DimmerDC -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onInit DimmerDC{..} buff size =
     when (size >=? 1 + n * 3) $ do
         offset <- local $ ival 1

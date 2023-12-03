@@ -50,7 +50,7 @@ data Indicator = forall d f t. (I.Display d f t, FrameBuffer f t) => Indicator
     , findMeMsg :: Buffer   2 Uint8
     , pixels    :: Records 20 RGB
     , transmit  :: forall n. KnownNat n
-                => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
+                => Buffer n Uint8 -> forall s t. Ivory (ProcEffects s t) ()
     }
 
 

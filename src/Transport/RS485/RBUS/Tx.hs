@@ -108,7 +108,7 @@ toRS transmit r@RBUS{..} =
 {--
     TODO: potential message overwriting in the msgBuff
 --}
-toQueue :: KnownNat l => RBUS -> Buffer l Uint8 -> Ivory (ProcEffects s ()) ()
+toQueue :: KnownNat l => RBUS -> Buffer l Uint8 -> Ivory (ProcEffects s t) ()
 toQueue RBUS{..} buff = do
     hasAddress' <- hasAddress protocol
     when hasAddress' $ do
@@ -133,10 +133,10 @@ rsTransmit RBUS{..} size = do
 
 run :: KnownNat l
     => Slave 255
-    -> (Slave 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) ())
+    -> (Slave 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ())
     -> Buffer l Uint16
     -> Uint16
-    -> Ivory (ProcEffects s ()) Uint16
+    -> Ivory (ProcEffects s t) Uint16
 run protocol transmit buff offset = do
     size  <- local $ ival 0
     let go :: Uint8 -> Ivory eff ()

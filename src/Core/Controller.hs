@@ -15,5 +15,5 @@ class Controller c where
            => c
            -> Buffer l Uint8
            -> Uint8
-           -> Ivory (ProcEffects s ()) [Cond (ProcEffects s ()) ()]
+           -> Ivory (ProcEffects s t) [Cond (ProcEffects s t) ()]
     handle _ _ _ = pure []

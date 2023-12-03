@@ -57,7 +57,7 @@ mkRules n m = do
 
 
 
-fillPayload :: Rules -> Uint8 -> Ivory (ProcEffects s ()) ()
+fillPayload :: Rules -> Uint8 -> Ivory (ProcEffects s t) ()
 fillPayload Rules{..} i = runPayload $ \payload -> do
     let payload' = addrOf payload
     store (payload' ! 0) 0x03

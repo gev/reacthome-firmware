@@ -45,7 +45,7 @@ data Relays = forall o. Output o => Relays
     , clock       :: SystemClock
     , current     :: Index Uint8
     , transmit    :: forall n. KnownNat n
-                  => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
+                  => Buffer n Uint8 -> forall s t. Ivory (ProcEffects s t) ()
     }
 
 
@@ -215,7 +215,7 @@ onDo :: KnownNat n
      => Relays
      -> Buffer n Uint8
      -> Uint8
-     -> Ivory (ProcEffects s ()) ()
+     -> Ivory (ProcEffects s t) ()
 onDo relays@Relays{..} buff size = do
     index <- deref $ buff ! 1
     when (size >=? 3 .&& index >=? 1 .&& index <=? n) $ do
@@ -255,7 +255,7 @@ onInit :: KnownNat n
         => Relays
         -> Buffer n Uint8
         -> Uint8
-        -> Ivory (ProcEffects s ()) ()
+        -> Ivory (ProcEffects s t) ()
 onInit rs@Relays{..} buff size =
     when (size >=? 1 + 5 * n + 6 * n) $ do
         offset <- local $ ival 1

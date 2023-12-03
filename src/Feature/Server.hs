@@ -76,7 +76,7 @@ instance Controller Server where
              ]
 
 
-onInit :: KnownNat n => Server -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
+onInit :: KnownNat n => Server -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onInit Server{..} buff size =
     when (size ==? 25 + n dimmer * 3) $ do
 
