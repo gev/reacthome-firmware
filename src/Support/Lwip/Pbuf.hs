@@ -8,6 +8,8 @@
 module Support.Lwip.Pbuf
     ( PBUF_STRUCT
     , PBUF
+    , len
+    , tot_len
 
     , PBUF_LAYER
     , pbuf_transport
@@ -113,17 +115,17 @@ pbuf_get_at :: Def ('[PBUF s, Uint16] :-> Uint8)
 pbuf_get_at = fun "pbuf_get_at"
 
 
-memCmpPbuf :: PBUF s -> Uint16 -> Ref s1 (CArray (Stored Uint8)) -> Ivory eff Uint16
+memCmpPbuf :: PBUF s1 -> Uint16 -> Ref s2 (CArray (Stored Uint8)) -> Ivory eff Uint16
 memCmpPbuf = call pbuf_memcmp
 
-pbuf_memcmp :: Def ('[PBUF s, Uint16, Ref s1 (CArray (Stored Uint8))] :-> Uint16)
+pbuf_memcmp :: Def ('[PBUF s1, Uint16, Ref s2 (CArray (Stored Uint8))] :-> Uint16)
 pbuf_memcmp = fun "pbuf_memcmp"
 
 
-memFindPbuf :: PBUF s -> Ref s1 (CArray (Stored Uint8)) -> Uint16 -> Uint16 -> Ivory eff Uint16
+memFindPbuf :: PBUF s1 -> Ref s2 (CArray (Stored Uint8)) -> Uint16 -> Uint16 -> Ivory eff Uint16
 memFindPbuf = call pbuf_memfind
 
-pbuf_memfind :: Def ('[PBUF s, Ref s1 (CArray (Stored Uint8)), Uint16, Uint16] :-> Uint16)
+pbuf_memfind :: Def ('[PBUF s1, Ref s2 (CArray (Stored Uint8)), Uint16, Uint16] :-> Uint16)
 pbuf_memfind = fun "pbuf_memfind"
 
 
@@ -134,17 +136,17 @@ pbuf_put_at :: Def ('[PBUF s, Uint16, Uint8] :-> ())
 pbuf_put_at = fun "pbuf_put_at"
 
 
-takePbuf :: PBUF s -> Ref s1 (CArray (Stored Uint8)) -> Uint16 ->  Ivory eff ErrT
+takePbuf :: PBUF s1 -> Ref s2 (CArray (Stored Uint8)) -> Uint16 ->  Ivory eff ErrT
 takePbuf = call pbuf_take
 
-pbuf_take ::  Def ('[PBUF s, Ref s1 (CArray (Stored Uint8)), Uint16] :-> ErrT)
+pbuf_take ::  Def ('[PBUF s1, Ref s2 (CArray (Stored Uint8)), Uint16] :-> ErrT)
 pbuf_take = fun "pbuf_take"
 
 
-takePbufAt :: PBUF s -> Ref s1 (CArray (Stored Uint8)) -> Uint16 -> Uint16 -> Ivory eff ErrT
+takePbufAt :: PBUF s1 -> Ref s2 (CArray (Stored Uint8)) -> Uint16 -> Uint16 -> Ivory eff ErrT
 takePbufAt = call pbuf_take_at
 
-pbuf_take_at :: Def ('[PBUF s, Ref s1 (CArray (Stored Uint8)), Uint16, Uint16] :-> ErrT)
+pbuf_take_at :: Def ('[PBUF s1, Ref s2 (CArray (Stored Uint8)), Uint16, Uint16] :-> ErrT)
 pbuf_take_at = fun "pbuf_take_at"
 
 

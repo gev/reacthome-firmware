@@ -29,6 +29,7 @@ module Support.Lwip.Netif
     , setNetifDefault
     , setUpNetif
     , setNetifStatusCallback
+    , setNetifAddr
 
     , inclNetif
     ) where
@@ -62,7 +63,7 @@ type NETIF_STRUCT = "netif"
 type NETIF s = Ref s (Struct NETIF_STRUCT)
 
 [ivory|
-    struct netif 
+    struct netif
         { flags      :: Stored NETIF_FLAG
         ; hwaddr     :: Array 6 (Stored Uint8)
         ; hwaddr_len :: Stored Uint8
@@ -112,12 +113,20 @@ netif_set_status_callback :: Def ('[NETIF s1, PtrNetifStatusCallbackFn s2] :-> (
 netif_set_status_callback = fun "netif_set_status_callback"
 
 
+setNetifAddr :: NETIF s1 -> IP_ADDR_4 s2 -> NET_MASK s3 -> GW s4 -> Ivory eff ()
+setNetifAddr = call_ netif_set_addr
+
+netif_set_addr :: Def ('[NETIF s1, IP_ADDR_4 s2, NET_MASK s3, GW s4] :-> ())
+netif_set_addr = fun "netif_set_addr"
+
+
 inclNetif :: ModuleDef
 inclNetif = do
     incl netif_add
     incl netif_set_default
     incl netif_set_up
     incl netif_set_status_callback
+    incl netif_set_addr
 
     inclSym netif_flag_up
 
