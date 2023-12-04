@@ -95,7 +95,7 @@ turnOffRelay Relays{..} index = runRelays $ \rs -> do
         store (r ~> timestamp) =<< getSystemTime clock
 
 
-turnOnRelay :: Relays -> G.Groups -> (forall n. KnownNat n => Ix n) -> Ivory ('Effects (Returns ()) r (Scope s)) ()
+turnOnRelay :: Relays -> G.Groups -> (forall n. KnownNat n => Ix n) -> Ivory ('Effects (Returns t) b (Scope s)) ()
 turnOnRelay Relays{..} groups index = runRelays $ \rs -> do
     let ix    = index - 1
     let rs'   = addrOf rs
@@ -114,7 +114,7 @@ turnOnRelay Relays{..} groups index = runRelays $ \rs -> do
     store (r ~> delayOff) =<< deref (r ~> defaultDelayOff)
 
 
-turnOnRelay' :: Relays -> G.Groups -> (forall n. KnownNat n => Ix n) -> Uint32 -> Ivory ('Effects (Returns ()) r (Scope s)) ()
+turnOnRelay' :: Relays -> G.Groups -> (forall n. KnownNat n => Ix n) -> Uint32 -> Ivory ('Effects (Returns t) b (Scope s)) ()
 turnOnRelay' Relays{..} groups index delayOff' = runRelays $ \rs -> do
     let ix    = index - 1
     let rs'   = addrOf rs
@@ -133,7 +133,7 @@ turnOnRelay' Relays{..} groups index delayOff' = runRelays $ \rs -> do
     store (r ~> delayOff) delayOff'
 
 
-toggleRelay :: Relays -> G.Groups -> (forall n. KnownNat n => Ix n) -> Ivory ('Effects (Returns ()) r (Scope s)) ()
+toggleRelay :: Relays -> G.Groups -> (forall n. KnownNat n => Ix n) -> Ivory ('Effects (Returns t) b (Scope s)) ()
 toggleRelay relays@Relays{..} groups index = runRelays $ \rs -> do
     let ix = index - 1
     let r  = addrOf rs ! ix
@@ -151,7 +151,7 @@ setRelayDelayOff Relays{..} index delay = runRelays $ \rs -> do
     store (r ~> synced         ) false
 
 
-setRelayGroup :: Relays -> Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
+setRelayGroup :: Relays -> Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 setRelayGroup Relays{..} index group' = runRelays $ \rs -> do
     let ix  = toIx (index - 1)
     let rs' = addrOf rs
@@ -167,7 +167,7 @@ getGroupDelay :: KnownNat n
               -> G.Groups
               -> Uint8
               -> Uint32
-              -> Ivory ('Effects (Returns ()) r (Scope s)) Uint32
+              -> Ivory ('Effects (Returns t) b (Scope s)) Uint32
 getGroupDelay rs groups i ts = do
     delay' <- G.runGroups groups $ \gs -> do
         let g = addrOf gs ! toIx (i - 1)
@@ -195,7 +195,7 @@ turnOffGroup :: KnownNat n
              -> Ix n
              -> Uint8
              -> Uint32
-             -> Ivory ('Effects (Returns ()) r (Scope s)) ()
+             -> Ivory ('Effects (Returns t) b (Scope s)) ()
 turnOffGroup rs ix g t =
     arrayMap $ \jx -> do
         when (jx /=? ix) $ do

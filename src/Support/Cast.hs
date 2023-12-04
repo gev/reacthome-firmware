@@ -27,16 +27,16 @@ inclCast = do
 
 
 
-castArrayUint8ToUint32 :: Ref r (CArray (Stored Uint8)) -> Ivory eff Uint32
+castArrayUint8ToUint32 :: Ref s (CArray (Stored Uint8)) -> Ivory eff Uint32
 castArrayUint8ToUint32 = call cast_array_uint8_to_uint32
 
-cast_array_uint8_to_uint32 :: Def ('[Ref r (CArray (Stored Uint8))] :-> Uint32)
+cast_array_uint8_to_uint32 :: Def ('[Ref s (CArray (Stored Uint8))] :-> Uint32)
 cast_array_uint8_to_uint32 = importProc "cast_to_uint32" "cast.h"
 
-castArrayUint16ToUint32 :: Ref r (CArray (Stored Uint16)) -> Ivory eff Uint32
+castArrayUint16ToUint32 :: Ref s (CArray (Stored Uint16)) -> Ivory eff Uint32
 castArrayUint16ToUint32 = call cast_array_uint16_to_uint32
 
-cast_array_uint16_to_uint32 :: Def ('[Ref r (CArray (Stored Uint16))] :-> Uint32)
+cast_array_uint16_to_uint32 :: Def ('[Ref s (CArray (Stored Uint16))] :-> Uint32)
 cast_array_uint16_to_uint32 = importProc "cast_to_uint32" "cast.h"
 
 

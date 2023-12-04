@@ -57,7 +57,7 @@ data Indicator = forall d f t. (I.Display d f t, FrameBuffer f t) => Indicator
     , dinputs   :: DInputs
     , relays    :: Relays
     , transmit  :: forall n. KnownNat n
-                => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
+                => Buffer n Uint8 -> forall s t. Ivory (ProcEffects s t) ()
     }
 
 
@@ -226,7 +226,7 @@ onFindMe :: KnownNat n
          => Indicator
          -> Buffer n Uint8
          -> Uint8
-         -> Ivory (ProcEffects s ()) ()
+         -> Ivory (ProcEffects s t) ()
 onFindMe Indicator{..} buff size =
     when (size >=? 2) $ do
         v <- unpack buff 1

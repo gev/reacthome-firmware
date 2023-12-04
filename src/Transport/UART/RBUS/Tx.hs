@@ -49,10 +49,10 @@ transmit RBUS{..} size = do
 toQueue :: KnownNat l
         => RBUS
         -> Buffer l Uint8
-        -> Ivory (ProcEffects s ()) ()
+        -> Ivory (ProcEffects s t) ()
 toQueue RBUS{..} buff = push msgQueue $ \i -> do
     index <- deref msgIndex
-    size <- run protocol (transmitMessage buff) msgBuff index
+    size  <- run protocol (transmitMessage buff) msgBuff index
     store msgIndex $ index + size
     let ix = toIx i
     store (msgOffset ! ix) index
@@ -61,10 +61,10 @@ toQueue RBUS{..} buff = push msgQueue $ \i -> do
 
 toQueue' :: RBUS
         -> ((Uint8 -> forall eff. Ivory eff ()) -> forall eff. Ivory eff ())
-        -> Ivory (ProcEffects s ()) ()
+        -> Ivory (ProcEffects s t) ()
 toQueue' RBUS{..} transmit = push msgQueue $ \i -> do
     index <- deref msgIndex
-    size <- run protocol (transmitMessage' transmit) msgBuff index
+    size  <- run protocol (transmitMessage' transmit) msgBuff index
     store msgIndex $ index + size
     let ix = toIx i
     store (msgOffset ! ix) index
@@ -74,10 +74,10 @@ toQueue' RBUS{..} transmit = push msgQueue $ \i -> do
 
 run :: KnownNat l
     => U.RBUS 255
-    -> (U.RBUS 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) ())
+    -> (U.RBUS 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ())
     -> Buffer l Uint16
     -> Uint16
-    -> Ivory (ProcEffects s ()) Uint16
+    -> Ivory (ProcEffects s t) Uint16
 run protocol transmit buff offset = do
     size  <- local $ ival 0
     let go :: Uint8 -> Ivory eff ()

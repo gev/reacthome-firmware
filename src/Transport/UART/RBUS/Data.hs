@@ -16,7 +16,7 @@ data RBUS where
      RBUS :: UART u
           => { name          :: String
              , clock         :: SystemClock
-             , uart         :: u
+             , uart          :: u
              , protocol      :: U.RBUS  255
              , rxBuff        :: Buffer  512 Uint16
              , rxQueue       :: Queue   512

@@ -22,7 +22,7 @@ transmitMessage :: KnownNat l
                 -> Uint8
                 -> Master n
                 -> (Uint8 -> forall eff. Ivory eff ())
-                -> Ivory (ProcEffects s ()) ()
+                -> Ivory (ProcEffects s t) ()
 transmitMessage address' payload' offset' size' Master{..} =
     run $ \transmit -> do
         transmit $ message txPreamble
@@ -39,7 +39,7 @@ transmitMessage address' payload' offset' size' Master{..} =
 transmitDiscovery :: Uint8
                   -> Master n
                   -> (Uint8 -> forall eff. Ivory eff ())
-                  -> Ivory (ProcEffects s ()) ()
+                  -> Ivory (ProcEffects s t) ()
 transmitDiscovery address' Master{..} =
     run $ \transmit -> lookupMac table address' $ \rec -> do
         transmit $ discovery txPreamble
@@ -51,7 +51,7 @@ transmitDiscovery address' Master{..} =
 transmitPing :: Uint8
              -> Master n
              -> (Uint8 -> forall eff. Ivory eff ())
-             -> Ivory (ProcEffects s ()) ()
+             -> Ivory (ProcEffects s t) ()
 transmitPing address' m =
     run $ \transmit -> do
         transmit $ ping txPreamble
@@ -62,7 +62,7 @@ transmitPing address' m =
 transmitConfirm :: Uint8
                 -> Master n
                 -> (Uint8 -> forall eff. Ivory eff ())
-                -> Ivory (ProcEffects s ()) ()
+                -> Ivory (ProcEffects s t) ()
 transmitConfirm address' m =
     run $ \transmit -> do
         transmit $ confirm txPreamble
@@ -70,9 +70,9 @@ transmitConfirm address' m =
 
 
 
-run :: ((Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) ())
+run :: ((Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ())
     -> (Uint8 -> forall eff. Ivory eff ())
-    -> Ivory (ProcEffects s ()) ()
+    -> Ivory (ProcEffects s t) ()
 run tx transmit = do
     crc <- local $ istruct initCRC16
     tx $ \v -> updateCRC16 crc v >> transmit v

@@ -122,9 +122,9 @@ void lwip_stack_init(void)
     your ethernet netif interface. The following code illustrates it's use.*/
 
     netif_add(&g_mynetif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &ethernet_input);
-    g_mynetif.flags |= NETIF_FLAG_IGMP;
+    // g_mynetif.flags |= NETIF_FLAG_IGMP;
     /* registers the default network interface */
-    netif_set_igmp_mac_filter(&g_mynetif, igmp_mac_filter);
+    // netif_set_igmp_mac_filter(&g_mynetif, igmp_mac_filter);
     netif_set_default(&g_mynetif);
     netif_set_status_callback(&g_mynetif, lwip_netif_status_callback);
 
@@ -157,14 +157,14 @@ void lwip_pkt_handle(void)
 */
 void lwip_periodic_handle(__IO uint32_t localtime)
 {
-#if LWIP_TCP
-    /* TCP periodic process every 250 ms */
-    if(localtime - tcp_timer >= TCP_TMR_INTERVAL) {
-        tcp_timer =  localtime;
-        tcp_tmr();
-    }
+// #if LWIP_TCP
+//     /* TCP periodic process every 250 ms */
+//     if(localtime - tcp_timer >= TCP_TMR_INTERVAL) {
+//         tcp_timer =  localtime;
+//         tcp_tmr();
+//     }
 
-#endif /* LWIP_TCP */
+// #endif /* LWIP_TCP */
 
     /* ARP periodic process every 5s */
     if((localtime - arp_timer) >= ARP_TMR_INTERVAL) {

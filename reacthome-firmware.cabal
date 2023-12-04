@@ -95,6 +95,7 @@ executable reacthome-firmware
                     , Formula.Mix6x12
                     , Formula.DI4
                     , Formula.UdpEcho450
+                    , Formula.RsHub4
 
                     , Interface.Counter
                     , Interface.GPIO.Input
@@ -135,6 +136,10 @@ executable reacthome-firmware
                     , Transport.UART.RBUS.Data
                     , Transport.UART.RBUS.Rx
                     , Transport.UART.RBUS.Tx
+                    , Transport.UDP.RBUS
+                    , Transport.UDP.RBUS.Data
+                    , Transport.UDP.RBUS.Rx
+                    , Transport.UDP.RBUS.Tx
 
                     , Device.GD32F3x0
                     , Device.GD32F3x0.Display.NeoPixel
@@ -218,6 +223,7 @@ executable reacthome-firmware
                     , Support.Lwip.Pbuf
                     , Support.Lwip.Tcp
                     , Support.Lwip.Etharp
+                    , Support.Lwip.Igmp
 
                     , Test
 

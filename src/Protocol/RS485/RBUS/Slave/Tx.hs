@@ -18,7 +18,7 @@ transmitMessage :: KnownNat l
                 => Buffer l Uint8
                 -> Slave n
                 -> (Uint8 -> forall eff. Ivory eff ())
-                -> Ivory (ProcEffects s ()) ()
+                -> Ivory (ProcEffects s t) ()
 transmitMessage payload Slave{..} transmit = do
     crc <- local $ istruct initCRC16
     let transmit' v = updateCRC16 crc v >> transmit v

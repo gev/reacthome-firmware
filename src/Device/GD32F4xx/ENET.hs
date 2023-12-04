@@ -5,24 +5,23 @@
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE InstanceSigs #-}
 
 module Device.GD32F4xx.ENET where
 
-import           Control.Monad.State            (MonadState)
+import qualified Control.Monad
+import           Control.Monad.State                               (MonadState)
 import           Core.Context
 import           Core.Handler
-import qualified Device.GD32F4xx.GPIO.Port      as G
-import           Interface.ENET                 as I
+import qualified Device.GD32F4xx.GPIO.Port                         as G
+import           Interface.ENET                                    as I
 import           Interface.LwipPort
 import           Ivory.Stdlib
 import           Support.Device.GD32F4xx.ENET
 import           Support.Device.GD32F4xx.IRQ
+import           Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif
 import           Support.Device.GD32F4xx.Misc
 import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.SYSCFG
-import           Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif   
-import qualified Control.Monad
 
 
 
@@ -62,6 +61,8 @@ mkENET ethRmiiRefClk ethRmiiMdio ethRmiiMdc ethRmiiCrsDv ethRmiiRxd0 ethRmiiRxd1
     G.initPort ethRmiiTxd0
     G.initPort ethRmiiTxd1
 
+    addModule inclEthernetif
+
     addInit "enet_" $ do
         setVectorTableNvic nvic_vecttab_flash 0
         setPriorityGroup nvic_prigroup_pre2_sub2
@@ -76,6 +77,7 @@ mkENET ethRmiiRefClk ethRmiiMdio ethRmiiMdc ethRmiiCrsDv ethRmiiRxd0 ethRmiiRxd1
         deinitENET
         resetSoftwareENET
         isReady <- initENET enet_auto_negotiation enet_no_autochecksum enet_broadcast_frames_pass
+        enableEnetFilterFeature enet_multicast_filter_pass
         when isReady $ do
             enableInterruptENET enet_dma_int_nie
             enableInterruptENET enet_dma_int_rie

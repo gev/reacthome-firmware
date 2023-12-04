@@ -6,13 +6,12 @@
 
 module Feature.UdpEcho where
 
-import           Control.Monad                                     (void)
-import           Control.Monad.Reader                              (MonadReader,
-                                                                    asks)
-import           Control.Monad.State                               (MonadState)
+import           Control.Monad         (void)
+import           Control.Monad.Reader  (MonadReader, asks)
+import           Control.Monad.State   (MonadState)
 import           Core.Context
 import           Core.Controller
-import           Core.Domain                                       as D
+import           Core.Domain           as D
 import           Core.Feature
 import           Core.Handler
 import           Core.Task
@@ -22,11 +21,10 @@ import           Device.GD32F4xx
 import           Interface.ENET
 import           Interface.LwipPort
 import           Interface.MCU
-import           Interface.SystemClock                             (getSystemTime)
+import           Interface.SystemClock (getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Ivory.Stdlib.Control
-import           Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif
 import           Support.Lwip.Etharp
 import           Support.Lwip.Ethernet
 import           Support.Lwip.IP_addr
@@ -52,7 +50,6 @@ mkUdpEcho enet = do
     netif     <- record_ "netif"
 
     addModule inclEthernet
-    addModule inclEthernetif
     addModule inclNetif
     addModule inclUdp
     addModule inclMem

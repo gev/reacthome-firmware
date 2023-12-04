@@ -60,7 +60,7 @@ data Mix = forall f. Flash f => Mix
     , etc        :: f
     , shouldInit :: Value IBool
     , transmit   :: forall n. KnownNat n
-                 => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
+                 => Buffer n Uint8 -> forall s t. Ivory (ProcEffects s t) ()
     }
 
 
@@ -140,7 +140,7 @@ instance Controller Mix where
 
 
 
-onRule :: KnownNat n => Mix -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
+onRule :: KnownNat n => Mix -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onRule mix@Mix{..} buff size = do
     let relaysN'  = fromIntegral relaysN
     let dinputsN' = fromIntegral dinputsN
@@ -159,7 +159,7 @@ onRule mix@Mix{..} buff size = do
         save mix
 
 
-onMode :: KnownNat n => Mix -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
+onMode :: KnownNat n => Mix -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onMode mix@Mix{..} buff size = do
     when (size ==? 2 ) $ do
         store (mode ats) =<< unpack buff 1
@@ -178,7 +178,7 @@ onGetState Mix{..} = do
 
 
 
-save :: Mix -> Ivory (ProcEffects s ()) ()
+save :: Mix -> Ivory (ProcEffects s t) ()
 save Mix{..} = do
     erasePage etc
     crc   <- local $ istruct initCRC16

@@ -47,7 +47,7 @@ data DimmerAC = forall p. I.PWM p => DimmerAC
     , period1        :: Value Uint32
     , current        :: Index Uint8
     , transmit       :: forall n. KnownNat n
-                     => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
+                     => Buffer n Uint8 -> forall s t. Ivory (ProcEffects s t) ()
     }
 
 
@@ -260,7 +260,7 @@ onDim DimmerAC{..} buff size = do
 
 
 
-onInit :: KnownNat n => DimmerAC -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
+onInit :: KnownNat n => DimmerAC -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onInit DimmerAC{..} buff size =
     when (size >=? 1 + n * 3) $ do
         offset <- local $ ival 1
