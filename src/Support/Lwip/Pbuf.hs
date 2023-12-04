@@ -101,10 +101,10 @@ pbuf_alloc :: Def ('[PBUF_LAYER, Uint16, PBUF_TYPE] :-> PBUF s)
 pbuf_alloc = fun "pbuf_alloc"
 
 
-allocPbufReference :: Ref s (CArray (Stored Uint8)) -> Uint16 -> PBUF_TYPE -> Ivory eff (PBUF s)
+allocPbufReference :: Ref s1 (CArray (Stored Uint8)) -> Uint16 -> PBUF_TYPE -> Ivory eff (PBUF s2)
 allocPbufReference = call pbuf_alloc_reference
 
-pbuf_alloc_reference :: Def ('[Ref s (CArray (Stored Uint8)), Uint16, PBUF_TYPE] :-> PBUF s)
+pbuf_alloc_reference :: Def ('[Ref s1 (CArray (Stored Uint8)), Uint16, PBUF_TYPE] :-> PBUF s2)
 pbuf_alloc_reference = fun "pbuf_alloc_reference"
 
 
