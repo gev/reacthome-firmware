@@ -5,7 +5,7 @@ import           Data.Color
 import           Device.GD32F4xx
 import           Feature.DS18B20
 import           Feature.Indicator
-import qualified Feature.Server      as F
+import qualified Feature.Server     as F
 import           Interface.RS485
 import           Ivory.Language
 import           Transport.UDP.RBUS as U
@@ -27,8 +27,8 @@ rsHub4 = Formula { name       = "rs_hub4"
                                            , pwm_1
                                            , pwm_2
                                            ]
-                                           [ in_pa_8 
-                                           , in_pb_4 
+                                           [ in_pa_8
+                                           , in_pb_4
                                            , in_pb_10
                                            , in_pa_15
                                            ]

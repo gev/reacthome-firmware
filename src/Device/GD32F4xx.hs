@@ -7,6 +7,7 @@ module Device.GD32F4xx where
 import           Control.Monad.State
 import           Core.Context
 import           Device.GD32F4xx.Display.NeoPixel
+import           Device.GD32F4xx.ENET
 import           Device.GD32F4xx.Flash
 import           Device.GD32F4xx.GPIO
 import           Device.GD32F4xx.GPIO.Input
@@ -18,9 +19,9 @@ import           Device.GD32F4xx.PWM
 import           Device.GD32F4xx.SystemClock      as G
 import           Device.GD32F4xx.SysTick
 import           Device.GD32F4xx.Timer            (Timer, cfg_timer_1,
-                                                   cfg_timer_2, cfg_timer_3, cfg_timer_6)
+                                                   cfg_timer_2, cfg_timer_3,
+                                                   cfg_timer_6)
 import           Device.GD32F4xx.UART
-import           Device.GD32F4xx.ENET
 import           Interface.Mac                    (Mac)
 import           Interface.MCU
 import           Interface.OneWire
