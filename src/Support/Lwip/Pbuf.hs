@@ -34,6 +34,7 @@ module Support.Lwip.Pbuf
     , takePbuf
     , takePbufAt
     , tryGetPbufAt
+    , chainPbuf
 
     , inclPbuf
     ) where
@@ -157,6 +158,12 @@ pbuf_try_get_at :: Def ('[PBUF s, Uint16] :-> Sint32)
 pbuf_try_get_at = fun "pbuf_try_get_at"
 
 
+chainPbuf :: PBUF s1 -> PBUF s2 -> Ivory eff ()
+chainPbuf = call_ pbuf_chain
+
+pbuf_chain :: Def ('[PBUF s1, PBUF s2] :-> ())
+pbuf_chain = fun "pbuf_chain"
+
 
 inclPbuf :: ModuleDef
 inclPbuf = do
@@ -181,3 +188,4 @@ inclPbuf = do
     incl pbuf_take
     incl pbuf_take_at
     incl pbuf_try_get_at
+    incl pbuf_chain

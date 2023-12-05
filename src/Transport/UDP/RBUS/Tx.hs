@@ -26,11 +26,14 @@ transmit' ip RBUS{..} buff = do
     upcb' <- deref upcb
     err <- connectUdp upcb' ip =<< deref serverPort
     when (err ==? 0) $ do
-        arrayMap $ \ix -> store (txBuff ! toIx (6 + fromIx ix)) =<< deref (buff ! ix)
-        pbuff <- allocPbufReference (toCArray txBuff) (6 + arrayLen buff) pbuf_ref
-        sendUdp upcb' pbuff
+        hbuff <- allocPbufReference (toCArray mac) 6 pbuf_ref
+        tbuff <- allocPbufReference (toCArray buff) (arrayLen buff) pbuf_ref
+        chainPbuf hbuff tbuff
+        sendUdp upcb' hbuff
         disconnectUdp upcb'
-        void $ freePbuf pbuff
+        freePbuf hbuff
+        freePbuf tbuff
+        pure ()
 
 
 
@@ -42,10 +45,15 @@ lazyTransmit' RBUS{..} transmit = do
     err <- connectUdp upcb' serverIP =<< deref serverPort
     when (err ==? 0) $ do
         len   <- run transmit txBuff
-        pbuff <- allocPbufReference (toCArray txBuff) len pbuf_ref
-        sendUdp upcb' pbuff
+        hbuff <- allocPbufReference (toCArray mac) 6 pbuf_ref
+        tbuff <- allocPbufReference (toCArray txBuff) len pbuf_ref
+        chainPbuf hbuff tbuff
+        sendUdp upcb' hbuff
         disconnectUdp upcb'
-        void $ freePbuf pbuff
+        freePbuf hbuff
+        freePbuf tbuff
+        pure ()
+
 
 
 run :: KnownNat n
@@ -53,7 +61,7 @@ run :: KnownNat n
     -> Buffer n Uint8
     -> Ivory (ProcEffects s t) Uint16
 run transmit buff = do
-    len <- local $ ival 6
+    len <- local $ ival 0
     let go :: Uint8 -> Ivory eff ()
         go v = do
             i <- deref len
