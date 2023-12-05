@@ -50,25 +50,26 @@ import           Transport.UDP.RBUS.Tx
 rbus :: (MonadState Context m, MonadReader (D.Domain p t) m, Enet e, LwipPort e)
       => (p -> m e) -> m RBUS
 rbus enet' = do
-    mcu         <- asks D.mcu
-    model       <- asks D.model
-    version     <- asks D.version
-    let mac      = I.mac mcu
-    features    <- asks D.features
-    enet        <- enet' $ peripherals mcu
-    netif       <- record_ "udp_netif"
-    upcb        <- value_  "udp_upcb"
-    serverIP    <- record_ "udp_server_ip"
-    serverPort  <- value   "udp_server_port" 2017
-    localIP     <- record_ "udp_local_ip"
-    netmask     <- record_ "udp_netmask"
-    broadcastIP <- record_ "udp_broadcast_ip"
-    hasIP       <- value   "udp_has_ip" false
-    rxBuff      <- buffer  "udp_rx"
-    txBuff      <- buffer  "udp_tx"
-    discovery   <- buffer  "udp_discovery"
-    requestIP   <- buffer  "udp_request_ip"
-    requestInit <- buffer  "udp_request_init"
+    mcu             <- asks D.mcu
+    model           <- asks D.model
+    version         <- asks D.version
+    let mac          = I.mac mcu
+    features        <- asks D.features
+    enet            <- enet' $ peripherals mcu
+    netif           <- record_ "udp_netif"
+    upcb            <- value_  "udp_upcb"
+    serverIP        <- record_ "udp_server_ip"
+    serverPort      <- value   "udp_server_port" 2017
+    localIP         <- record_ "udp_local_ip"
+    netmask         <- record_ "udp_netmask"
+    broadcastIP     <- record_ "udp_broadcast_ip"
+    hasIP           <- value   "udp_has_ip" false
+    rxBuff          <- buffer  "udp_rx"
+    txBuff          <- buffer  "udp_tx"
+    discovery       <- buffer  "udp_discovery"
+    requestIP       <- buffer  "udp_request_ip"
+    requestInit     <- buffer  "udp_request_init"
+    shouldDiscovery <- value "udp_should_discovery" false
 
     {--
         TODO: move dispatcher outside
@@ -87,6 +88,7 @@ rbus enet' = do
                       , discovery
                       , requestIP
                       , requestInit
+                      , shouldDiscovery
                       , onMessage
                       }
 
@@ -122,7 +124,7 @@ rbus enet' = do
         arrayMap $ \ix -> do
             m <- deref (mac ! ix)
             store (netif ~> hwaddr ! ix) m
-            store (txBuff ! toIx ix) m
+            -- store (txBuff ! toIx ix) m
 
         store (discovery   ! 0) 0xf0
         store (discovery   ! 1) =<< deref model
@@ -149,8 +151,21 @@ rbus enet' = do
 
     addTask $ delay 1000 "tmr_arp"  tmrEtharp
     addTask $ delay  100 "tmr_igmp" tmrIgmp
+    addTask $ yeld  "udp_discovery" $ discoveryTask rbus
 
     pure rbus
+
+
+
+discoveryTask :: RBUS -> Ivory (ProcEffects s t) ()
+discoveryTask rbus@RBUS{..} = do
+    shouldDiscovery' <- deref shouldDiscovery
+    when shouldDiscovery' $ do
+        hasIP' <- deref hasIP
+        ifte_ hasIP'
+            (transmit  rbus discovery)
+            (broadcast rbus requestIP)
+        store shouldDiscovery false
 
 
 

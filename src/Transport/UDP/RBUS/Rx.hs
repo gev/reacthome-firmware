@@ -40,16 +40,13 @@ receive rbus@RBUS{..} len = do
 handleDiscovery :: RBUS -> Uint8 -> Ivory (ProcEffects s t) ()
 handleDiscovery rbus@RBUS{..} len =
     when (len ==? 7) $ do
-        hasIP' <- deref hasIP
         ip1 <- unpack rxBuff 1
         ip2 <- unpack rxBuff 2
         ip3 <- unpack rxBuff 3
         ip4 <- unpack rxBuff 4
         createIpAddr4 serverIP ip1 ip2 ip3 ip4
         store serverPort =<< unpackBE rxBuff 5
-        ifte_ hasIP'
-            (transmit  rbus discovery)
-            (broadcast rbus requestIP)
+        store shouldDiscovery true
 
 
 
