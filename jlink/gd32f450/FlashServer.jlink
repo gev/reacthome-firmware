@@ -1,0 +1,7 @@
+r
+h
+loadbin build/firmware/server.bin, 0x8000000
+g
+verifybin build/firmware/server.bin, 0x8000000
+r
+q
