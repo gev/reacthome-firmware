@@ -78,8 +78,8 @@ void LVD_IRQHandler(void)
           // write 32 bit data
       fmc_unlock();
       fmc_flag_clear(FMC_FLAG_END | FMC_FLAG_WPERR | FMC_FLAG_PGERR);
-      for (uint32_t x = 0; x < 200; x++) {
-        fmc_word_program(PAGE_ADDR + (x * 4), flash_data);
+      for (uint32_t i = 0; i < 256; i++) {
+        fmc_word_program(PAGE_ADDR + (i * 4), flash_data);
         fmc_flag_clear(FMC_FLAG_END | FMC_FLAG_WPERR | FMC_FLAG_PGERR);
       }
       fmc_lock();
@@ -101,8 +101,8 @@ void leds_on(void){
 	gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_15);
 
 	sk6812_initialize();
-  for (uint32_t x = 0; x < 20; x++) {
-    sk6812_set(x, 255, 255, 255);
+  for (uint32_t i = 0; i < 20; i++) {
+    sk6812_set(i, 255, 255, 255);
   }
 
 

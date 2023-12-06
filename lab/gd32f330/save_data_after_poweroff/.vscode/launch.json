@@ -36,7 +36,7 @@
       "servertype": "external",
       "interface": "swd",
       "gdbTarget": "localhost:2331",
-      "armToolchainPath": "/Applications/ARM/bin/",
+      "armToolchainPath": "/opt/homebrew/bin/",
       "preLaunchCommands": [
         "make r_flash",
       ]
