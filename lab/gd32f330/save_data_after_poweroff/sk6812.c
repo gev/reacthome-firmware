@@ -89,6 +89,7 @@ void sk6812_send_colors() {
       }
     }
   }
+  for (uint32_t i = 0; i < 1000; i++);
 }
 
 void sk6812_set(uint8_t sequence, uint8_t r, uint8_t g, uint8_t b) {

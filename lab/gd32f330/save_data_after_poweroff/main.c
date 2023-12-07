@@ -13,9 +13,9 @@ int main(){
   flash_data = *((uint32_t*)PAGE_ADDR) + 0x01010101;
   rcu_periph_clock_enable(RCU_GPIOA);
 
-	gpio_mode_set(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_11);
-	gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_11);
-  gpio_bit_reset(GPIOA, GPIO_PIN_11);
+	// gpio_mode_set(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_11);
+	// gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_11);
+  // gpio_bit_reset(GPIOA, GPIO_PIN_11);
 
   set_pin_output(GPIOA, GPIO_PIN_0);
   set_pin_output(GPIOA, GPIO_PIN_1);
@@ -42,8 +42,29 @@ int main(){
   /* configure the lvd threshold to 3.1v */
   pmu_lvd_select(PMU_LVDT_7);
 
-  leds_on();
+  // leds_on();
 
+  // gpio_bit_set(GPIOA, GPIO_PIN_11);
+
+  //     // erase page
+  // fmc_unlock();
+  // fmc_flag_clear(FMC_FLAG_END | FMC_FLAG_WPERR | FMC_FLAG_PGERR);
+  // fmc_page_erase(PAGE_ADDR);
+  // fmc_flag_clear(FMC_FLAG_END | FMC_FLAG_WPERR | FMC_FLAG_PGERR);
+  // fmc_lock();
+      
+  // gpio_bit_reset(GPIOA, GPIO_PIN_11);
+
+  //     // write 32 bit data
+  // fmc_unlock();
+  // fmc_flag_clear(FMC_FLAG_END | FMC_FLAG_WPERR | FMC_FLAG_PGERR);
+  // for (uint32_t i = 0; i < 256; i++) {
+  //   fmc_word_program(PAGE_ADDR + (i * 4), flash_data);
+  //   fmc_flag_clear(FMC_FLAG_END | FMC_FLAG_WPERR | FMC_FLAG_PGERR);
+  // }
+  // fmc_lock();
+
+  // gpio_bit_set(GPIOA, GPIO_PIN_11);
 
 
   while(1){
@@ -65,8 +86,8 @@ void LVD_IRQHandler(void)
 
       // gpio_bit_set(GPIOA, GPIO_PIN_11);
 
-      gpio_deinit(GPIOA);
-      gpio_deinit(GPIOB);
+      // gpio_deinit(GPIOA);
+      // gpio_deinit(GPIOB);
 
        // erase page
       fmc_unlock();
@@ -92,13 +113,6 @@ void leds_on(void){
 
 	gpio_mode_set(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_8);
 	gpio_output_options_set(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_8);
-
-	gpio_mode_set(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_4);
-	gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_4);
-	gpio_bit_reset(GPIOA, GPIO_PIN_4);
-
-	gpio_mode_set(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_15);
-	gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_15);
 
 	sk6812_initialize();
   for (uint32_t i = 0; i < 20; i++) {
