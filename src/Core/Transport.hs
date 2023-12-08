@@ -11,6 +11,7 @@ import           Ivory.Language
 
 class LazyTransport x where
     lazyTransmit     :: x
+                     -> Uint8
                      -> ((Uint8 -> forall eff. Ivory eff ())
                                 -> forall eff. Ivory eff ())
                      -> Ivory (ProcEffects s t) ()

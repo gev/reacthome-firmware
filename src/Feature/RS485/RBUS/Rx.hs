@@ -56,8 +56,7 @@ rxRS485 RBUS{..} = do
             store (rsBuff ! toIx rsSize') . castDefault =<< deref (rxBuff ! toIx i)
             store rsSize $ rsSize' + 1
         when (rsSize' >? 0 .&& t1 - t0 >? dt) $ do
-            lazyTransmit transport $ \transmit -> do
-                transmit $ rsSize' + 2
+            lazyTransmit transport (rsSize' + 2) $ \transmit -> do
                 transmit 0xa2
                 transmit $ fromIntegral index
                 for (toIx rsSize') $ \ix ->

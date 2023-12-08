@@ -1,5 +1,4 @@
-{-# LANGUAGE RankNTypes      #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RankNTypes #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
 
@@ -15,10 +14,9 @@ import           Util.CRC16
 
 transmitMessage :: KnownNat l
                 => Buffer l Uint8
-                -> RBUS n
                 -> (Uint8 -> forall eff. Ivory eff ())
                 -> Ivory (ProcEffects s t) ()
-transmitMessage payload RBUS{..} transmit = do
+transmitMessage payload transmit = do
     crc <- local $ istruct initCRC16
     let transmit' v = updateCRC16 crc v >> transmit v
     transmit' $ message preamble
@@ -28,14 +26,15 @@ transmitMessage payload RBUS{..} transmit = do
     transmit =<< deref (crc ~> lsb)
 
 
-transmitMessage' :: ((Uint8 -> forall eff. Ivory eff ()) -> forall eff. Ivory eff ())
-                 -> RBUS n
+transmitMessage' :: Uint8 
+                 -> ((Uint8 -> forall eff. Ivory eff ()) -> forall eff. Ivory eff ())
                  -> (Uint8 -> forall eff. Ivory eff ())
                  -> Ivory (ProcEffects s t) ()
-transmitMessage' run RBUS{..} transmit = do
+transmitMessage' size run transmit = do
     crc <- local $ istruct initCRC16
     let transmit' v = updateCRC16 crc v >> transmit v
     transmit' $ message preamble
+    transmit' size
     run transmit'
     transmit =<< deref (crc ~> msb)
     transmit =<< deref (crc ~> lsb)

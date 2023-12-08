@@ -93,8 +93,7 @@ rbus' rs485 index = do
 
     let onMessage mac address buff n shouldHandle = do
             when shouldHandle $ do
-                T.lazyTransmit transport $ \transmit -> do
-                    transmit (9 + n)
+                T.lazyTransmit transport (9 + n) $ \transmit -> do
                     transmit 0xa1
                     arrayMap $ \ix ->
                         transmit =<< deref (mac ! ix)
@@ -112,8 +111,7 @@ rbus' rs485 index = do
             when (address ==? safeCast address') $ remove msgQueue
 
     let onPing mac address model version = do
-            T.lazyTransmit transport $ \transmit -> do
-                transmit 13
+            T.lazyTransmit transport 13 $ \transmit -> do
                 transmit 0xa1
                 arrayMap $ \ix ->
                     transmit =<< deref (mac ! ix)

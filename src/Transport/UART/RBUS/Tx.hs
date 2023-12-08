@@ -60,11 +60,12 @@ toQueue RBUS{..} buff = push msgQueue $ \i -> do
 
 
 toQueue' :: RBUS
+        -> Uint8
         -> ((Uint8 -> forall eff. Ivory eff ()) -> forall eff. Ivory eff ())
         -> Ivory (ProcEffects s t) ()
-toQueue' RBUS{..} transmit = push msgQueue $ \i -> do
+toQueue' RBUS{..} size' transmit = push msgQueue $ \i -> do
     index <- deref msgIndex
-    size  <- run protocol (transmitMessage' transmit) msgBuff index
+    size  <- run protocol (transmitMessage' size' transmit) msgBuff index
     store msgIndex $ index + size
     let ix = toIx i
     store (msgOffset ! ix) index
@@ -74,7 +75,7 @@ toQueue' RBUS{..} transmit = push msgQueue $ \i -> do
 
 run :: KnownNat l
     => U.RBUS 255
-    -> (U.RBUS 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ())
+    -> ((Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ())
     -> Buffer l Uint16
     -> Uint16
     -> Ivory (ProcEffects s t) Uint16
@@ -86,5 +87,5 @@ run protocol transmit buff offset = do
             let ix = toIx $ offset + i
             store (buff ! ix) $ safeCast v
             store size $ i + 1
-    transmit protocol go
+    transmit go
     deref size

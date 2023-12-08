@@ -37,10 +37,12 @@ transmit' ip RBUS{..} buff = do
 
 
 
-lazyTransmit' :: RBUS -> ((Uint8 -> forall eff. Ivory eff ())
-                                 -> forall eff. Ivory eff ())
-                      -> Ivory (ProcEffects s t) ()
-lazyTransmit' RBUS{..} transmit = do
+lazyTransmit' :: RBUS
+              -> Uint8
+              -> ((Uint8 -> forall eff. Ivory eff ())
+                         -> forall eff. Ivory eff ())
+              -> Ivory (ProcEffects s t) ()
+lazyTransmit' RBUS{..} _ transmit = do
     upcb' <- deref upcb
     err <- connectUdp upcb' serverIP =<< deref serverPort
     when (err ==? 0) $ do
