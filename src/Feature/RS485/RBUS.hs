@@ -225,7 +225,7 @@ transmitRBUS list buff size = do
                     let macTable = P.table protocol
                     lookupMac macTable address $ \rec -> do
                         found <- local $ ival true
-                        let mac'  = rec ~> T.mac
+                        let mac' = rec ~> T.mac
                         arrayMap $ \ix -> do
                             m1 <- deref $ mac' ! ix
                             m2 <- deref $ buff ! toIx (1 + fromIx ix)
