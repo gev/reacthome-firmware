@@ -200,9 +200,9 @@ r_erase:
 	JLinkExe ip 192.168.88.128 -Device GD32F330K8 -If SWD -Speed 1000 jlink/EraseMCU.jlink
 koro_flash:
 	make
-	JLinkExe ip tunnel:69669681::jlink-europe.segger.com -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink
+	JLinkExe ip tunnel:69667069::jlink-europe.segger.com -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink
 koro_erase:
-	JLinkExe ip tunnel:69669681::jlink-europe.segger.com -Device GD32F330K8 -If SWD -Speed 1000 jlink/EraseMCU.jlink
+	JLinkExe ip tunnel:69667069::jlink-europe.segger.com -Device GD32F330K8 -If SWD -Speed 1000 jlink/EraseMCU.jlink
 flash_rasp_loc:
 	make
 	JLinkExe ip 192.168.31.93 -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink

@@ -36,6 +36,7 @@ volatile uint16_t i2c_sent_bytes;
 volatile uint16_t i2c_received_bytes;
 volatile uint8_t i2c_flag_receive_transmit;
 volatile uint8_t i2c_slave_addr;
+volatile uint8_t i2c_counter;
 
 int main(void)
 {

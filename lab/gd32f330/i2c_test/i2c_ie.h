@@ -51,6 +51,7 @@ extern volatile uint16_t i2c_sent_bytes;
 extern volatile uint16_t i2c_reseived_bytes;
 extern volatile uint8_t i2c_flag_receive_transmit;
 extern volatile uint8_t i2c_slave_addr;
+extern volatile uint8_t i2c_counter;
 
 /* function declarations */
 /* handle I2C0 event interrupt request */
