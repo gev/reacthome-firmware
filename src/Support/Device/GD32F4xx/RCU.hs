@@ -30,6 +30,8 @@ module Support.Device.GD32F4xx.RCU
     , rcu_enet  
     , rcu_enettx
     , rcu_enetrx
+    , rcu_i2c0
+    , rcu_i2c1
 
     , enablePeriphClock
 
@@ -67,6 +69,8 @@ rcu_syscfg = RCU_PERIPH $ ext "RCU_SYSCFG"
 rcu_enet   = RCU_PERIPH $ ext "RCU_ENET"
 rcu_enettx = RCU_PERIPH $ ext "RCU_ENETTX"
 rcu_enetrx = RCU_PERIPH $ ext "RCU_ENETRX"
+rcu_i2c0    = RCU_PERIPH $ ext "RCU_I2C0"
+rcu_i2c1    = RCU_PERIPH $ ext "RCU_I2C1"
 
 
 
@@ -103,5 +107,7 @@ inclRCU = do
     inclSym rcu_enet
     inclSym rcu_enettx
     inclSym rcu_enetrx
+    inclSym rcu_i2c0
+    inclSym rcu_i2c1
 
     incl rcu_periph_clock_enable
