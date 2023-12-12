@@ -19,6 +19,10 @@ module Support.Device.GD32F3x0.IRQ
     , exti0_1_irqn
     , exti2_3_irqn
     , exti4_15_irqn
+    , i2c0_ev_irqn
+    , i2c0_er_irqn
+    , i2c1_ev_irqn
+    , i2c1_er_irqn
 
     , makeIRQHandler
 
@@ -48,6 +52,10 @@ dma_channel5_6_irqn = IRQn $ ext "DMA_Channel5_6_IRQn"
 exti0_1_irqn        = IRQn $ ext "EXTI0_1_IRQn"
 exti2_3_irqn        = IRQn $ ext "EXTI2_3_IRQn"
 exti4_15_irqn       = IRQn $ ext "EXTI4_15_IRQn"
+i2c0_ev_irqn        = IRQn $ ext "I2C0_EV_IRQn"
+i2c0_er_irqn        = IRQn $ ext "I2C0_ER_IRQn"
+i2c1_ev_irqn        = IRQn $ ext "I2C0_EV_IRQn"
+i2c1_er_irqn        = IRQn $ ext "I2C0_ER_IRQn"
 
 
 
@@ -74,3 +82,7 @@ inclIRQ = do
     inclSym exti0_1_irqn
     inclSym exti2_3_irqn
     inclSym exti4_15_irqn
+    inclSym i2c0_ev_irqn 
+    inclSym i2c0_er_irqn 
+    inclSym i2c1_ev_irqn 
+    inclSym i2c1_er_irqn 
