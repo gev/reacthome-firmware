@@ -1,6 +1,8 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE RankNTypes                 #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Support.Device.GD32F3x0.I2C
     ( I2C_PERIPH
@@ -70,6 +72,7 @@ module Support.Device.GD32F3x0.I2C
 
 import           Ivory.Language
 import           Ivory.Support.Device.GD32F3x0
+import           Ivory.Support
 
 
 newtype I2C_PERIPH = I2C_PERIPH Uint32
@@ -241,7 +244,7 @@ i2c_data_transmit = fun "i2c_data_transmit"
 
 
 receiveDataI2C :: I2C_PERIPH -> Ivory eff Uint16
-receiveDataI2C = call_ i2c_data_receive
+receiveDataI2C = call i2c_data_receive
 
 i2c_data_receive :: Def ('[I2C_PERIPH] :-> Uint16)
 i2c_data_receive = fun "i2c_data_receive"
