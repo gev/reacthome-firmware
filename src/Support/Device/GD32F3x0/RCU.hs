@@ -19,6 +19,8 @@ module Support.Device.GD32F3x0.RCU
     , rcu_usart0
     , rcu_usart1
     , rcu_cfgcmp
+    , rcu_i2c0
+    , rcu_i2c1
 
     , enablePeriphClock
 
@@ -44,6 +46,8 @@ rcu_timer15 = RCU_PERIPH $ ext "RCU_TIMER15"
 rcu_usart0  = RCU_PERIPH $ ext "RCU_USART0"
 rcu_usart1  = RCU_PERIPH $ ext "RCU_USART1"
 rcu_cfgcmp  = RCU_PERIPH $ ext "RCU_CFGCMP"
+rcu_i2c0    = RCU_PERIPH $ ext "RCU_I2C0"
+rcu_i2c1    = RCU_PERIPH $ ext "RCU_I2C1"
 
 
 
@@ -68,5 +72,7 @@ inclRCU = do
     inclSym rcu_usart0
     inclSym rcu_usart1
     inclSym rcu_cfgcmp
+    inclSym rcu_i2c0
+    inclSym rcu_i2c1
 
     incl rcu_periph_clock_enable
