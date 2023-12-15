@@ -1,4 +1,4 @@
-module Formula.Smart.SmartTop.SmartTopA6P where
+module Formula.Smart.Bottom.Bottom1 where
 
 import           Core.Formula
 import           Device.GD32F3x0
@@ -8,17 +8,17 @@ import           Interface.RS485
 import           Ivory.Language
 import           Transport.RS485.RBUS
 
-smartTopA6P ::  Formula GD32F3x0
-smartTopA6P =   Formula { name       = "smartTopA6P"
+smartBottom1 :: Formula GD32F3x0
+smartBottom1 =  Formula { name       = "smartBottom1"
                         , model      = 0x20
                         , version    = (4, 3)
                         , shouldInit = false
                         , transport  = rbus $ rs485 1 uart_1 out_pa_4
-                        , features   = [ dinputs [  in_pa_12
-                                                 ,  in_pa_11
-                                                 ,  in_pa_10
-                                                 ,  in_pa_9
+                        , features   = [ dinputs [  in_pa_5
+                                                 ,  in_pa_6
+                                                 ,  in_pb_0
+                                                 ,  in_pb_1
                                                  ]
-                                    --    , ds18b20 ow_0 od_pa_8
+                                       , ds18b20 ow_0 od_pa_15
                                        ]
                         }

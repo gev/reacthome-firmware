@@ -17,8 +17,8 @@ import           Formula.Relay12
 import           Formula.Server
 import           Formula.UdpEcho450
 import           Formula.RsHub4
-import           Formula.Smart.SmartBottom.SmartBottom1
-import           Formula.Smart.SmartTop.SmartTopA6P 
+import           Formula.Smart.Bottom.Bottom1
+import           Formula.Smart.Top.TopA6P 
 
 
 main :: IO ()
