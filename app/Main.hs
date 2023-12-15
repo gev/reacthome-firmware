@@ -17,6 +17,8 @@ import           Formula.Relay12
 import           Formula.Server
 import           Formula.UdpEcho450
 import           Formula.RsHub4
+import           Formula.Smart.SmartBottom.SmartBottom1
+import           Formula.Smart.SmartTop.SmartTopA6P 
 
 
 main :: IO ()
@@ -26,6 +28,8 @@ main = do
                      , dimmerAC12
                      , mix6x12
                      , di4
+                     , smartBottom1
+                     , smartTopA6P
                     --  , blink330
                      ]
     gcc gd32f450vgt6 [ server

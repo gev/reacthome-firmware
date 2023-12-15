@@ -96,6 +96,8 @@ executable reacthome-firmware
                     , Formula.DI4
                     , Formula.UdpEcho450
                     , Formula.RsHub4
+                    , Formula.Smart.SmartTop.SmartTopA6P
+                    , Formula.Smart.SmartBottom.SmartBottom1
 
                     , Interface.Counter
                     , Interface.GPIO.Input
