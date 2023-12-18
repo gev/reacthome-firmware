@@ -1,6 +1,7 @@
 module Formula.DimmerAC12 where
 
 import           Core.Formula
+import           Core.Models
 import           Device.GD32F3x0
 import           Feature.Dimmer.AC    (dimmerAC)
 import           Feature.Indicator
@@ -11,7 +12,7 @@ import           Transport.RS485.RBUS
 
 dimmerAC12 :: Formula GD32F3x0
 dimmerAC12 = Formula { name       = "dimmerAC12"
-                     , model      = 0xb3
+                     , model      = deviceTypeDim12AcRs
                      , version    = (2, 1)
                      , shouldInit = true
                      , transport  = rbus $ rs485 1 uart_0 out_pb_2

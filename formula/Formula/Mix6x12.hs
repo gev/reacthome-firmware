@@ -1,6 +1,7 @@
 module Formula.Mix6x12 where
 
 import           Core.Formula
+import           Core.Models
 import           Device.GD32F3x0
 import           Feature.Indicator
 import           Feature.Mix          (mix)
@@ -11,7 +12,7 @@ import           Transport.RS485.RBUS
 
 mix6x12 :: Formula GD32F3x0
 mix6x12 = Formula { name       = "mix6x12"
-                  , model      = 0xb5
+                  , model      = deviceTypeMix6x12Rs
                   , version    = (3, 1)
                   , shouldInit = true
                   , transport  = rbus $ rs485 1 uart_0 out_pb_2

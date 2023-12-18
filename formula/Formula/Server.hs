@@ -1,6 +1,7 @@
 module Formula.Server where
 
 import           Core.Formula
+import           Core.Models
 import           Data.Color
 import           Device.GD32F4xx
 import           Feature.DS18B20
@@ -13,7 +14,7 @@ import           Transport.UART.RBUS as U
 
 server :: Formula GD32F4xx
 server = Formula { name       = "server"
-                 , model      = 0xc0
+                 , model      = deviceTypeServer
                  , version    = (4, 0)
                  , shouldInit = true
                  , transport  = U.rbus uart_1
