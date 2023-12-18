@@ -37,6 +37,7 @@ executable reacthome-firmware
                     , Core.Task
                     , Core.Transport
                     , Core.Version
+                    , Core.Models
 
                     , Build.Compiler
                     , Build.Compiler.GCC
