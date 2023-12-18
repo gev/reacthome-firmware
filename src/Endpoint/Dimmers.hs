@@ -8,6 +8,7 @@
 module Endpoint.Dimmers where
 
 import           Control.Monad.State (MonadState)
+import           Core.Actions
 import           Core.Context
 import           Data.Buffer
 import           Data.Record
@@ -62,7 +63,7 @@ message :: Dimmers -> Uint8 -> Ivory eff (Buffer 6 Uint8)
 message Dimmers{..} i = do
     runDimmers $ \d -> do
         let dimmer = addrOf d ! toIx i
-        pack payload 0 (0xd0 :: Uint8)
+        pack payload 0 actionDim
         pack payload 1 $ i + 1
         pack payload 2 =<< deref (dimmer ~> group)
         pack payload 3 =<< deref (dimmer ~> mode )

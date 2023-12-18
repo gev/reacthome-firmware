@@ -11,6 +11,7 @@ module Feature.Dimmer.AC where
 import           Control.Monad        (void, zipWithM_)
 import           Control.Monad.Reader (MonadReader, asks)
 import           Control.Monad.State  (MonadState)
+import           Core.Actions
 import           Core.Context
 import           Core.Controller
 import qualified Core.Domain          as D
@@ -218,10 +219,10 @@ sync DimmerAC{..} = do
 instance Controller DimmerAC where
     handle ds buff size = do
         action <- deref $ buff ! 0
-        pure [ action ==? 0x00 ==> onDo       ds buff size
-             , action ==? 0xd0 ==> onDim      ds buff size
-             , action ==? 0xf2 ==> onInit     ds buff size
-             , action ==? 0xf4 ==> onGetState ds
+        pure [ action ==? actionDo         ==> onDo       ds buff size
+             , action ==? actionDim        ==> onDim      ds buff size
+             , action ==? actionInitialize ==> onInit     ds buff size
+             , action ==? actionGetState   ==> onGetState ds
              ]
 
 
