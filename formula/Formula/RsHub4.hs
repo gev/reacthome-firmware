@@ -1,6 +1,7 @@
 module Formula.RsHub4 where
 
 import           Core.Formula
+import           Core.Models
 import           Data.Color
 import           Device.GD32F4xx
 import           Feature.DS18B20
@@ -13,7 +14,7 @@ import           Transport.UDP.RBUS as U
 
 rsHub4 :: Formula GD32F4xx
 rsHub4 = Formula { name       = "rs_hub4"
-                 , model      = 0xc1
+                 , model      = deviceTypeRsHub4
                  , version    = (4, 0)
                  , shouldInit = true
                  , transport  = U.rbus eth_0
