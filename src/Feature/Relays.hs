@@ -12,6 +12,7 @@ module Feature.Relays where
 import           Control.Monad         (zipWithM_)
 import           Control.Monad.Reader  (MonadReader, asks)
 import           Control.Monad.State   (MonadState)
+import           Core.Actions
 import           Core.Context
 import           Core.Controller
 import qualified Core.Domain           as D
@@ -200,12 +201,12 @@ instance Controller Relays where
         shouldInit' <- deref $ shouldInit rs
         pure [ size >=? 3 ==> do
                 action <- deref $ buff ! 0
-                cond_ [ iNot shouldInit' ==> cond_
-                      [ action ==? 0x00  ==> onDo       rs buff size
-                      , action ==? 0x02  ==> onGroup    rs buff size
-                      , action ==? 0xf4  ==> onGetState rs
+                cond_ [ iNot       shouldInit'      ==> cond_
+                      [ action ==? actionDo         ==> onDo       rs buff size
+                      , action ==? actionGroup      ==> onGroup    rs buff size
+                      , action ==? actionGetState   ==> onGetState rs
                       ]
-                      , action ==? 0xf2  ==> onInit     rs buff size
+                      , action ==? actionInitialize ==> onInit     rs buff size
                       ]
              ]
 

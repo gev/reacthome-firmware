@@ -9,6 +9,7 @@
 module Endpoint.DInputs where
 
 import           Control.Monad.State (MonadState)
+import           Core.Actions
 import           Core.Context
 import           Data.Buffer
 import           Data.Record
@@ -54,7 +55,7 @@ message :: DInputs -> Uint8 -> Ivory eff (Buffer 3 Uint8)
 message DInputs{..} i = do
     runDInputs $ \di -> do
         let dinput = addrOf di ! toIx i
-        pack   payload 0 (1 :: Uint8)
+        pack   payload 0 actionDi
         pack   payload 1 $ i + 1
         pack   payload 2 =<< deref (dinput ~> state)
     pure payload

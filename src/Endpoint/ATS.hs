@@ -9,6 +9,7 @@ module Endpoint.ATS where
 
 import           Control.Monad.Reader  (MonadReader, asks)
 import           Control.Monad.State   (MonadState)
+import           Core.Actions
 import           Core.Context
 import           Core.Domain           (Domain (mcu))
 import qualified Core.Domain           as D
@@ -85,7 +86,7 @@ mkATS = do
 
 message :: ATS -> Ivory eff (Buffer 8 Uint8)
 message ATS{..} = do
-    store (payload ! 0) 0x4
+    store (payload ! 0) actionMix
     store (payload ! 1) =<< deref mode
     store (payload ! 2) =<< deref source
     store (payload ! 3) =<< deref attempt

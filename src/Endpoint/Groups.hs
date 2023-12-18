@@ -8,6 +8,7 @@
 module Endpoint.Groups where
 
 import           Control.Monad.State
+import           Core.Actions
 import           Core.Context
 import           Data.Buffer
 import           Data.Record
@@ -52,7 +53,7 @@ message :: Groups -> Uint8 -> Ivory eff (Buffer 7 Uint8)
 message (Groups runGroup payload) i = do
     runGroup $ \r -> do
         let group = addrOf r ! toIx i
-        pack   payload 0 (2 :: Uint8)
+        pack   payload 0 actionGroup
         pack   payload 1 $ i + 1
         pack   payload 2 =<< deref (group ~> enabled)
         packLE payload 3 =<< deref (group ~> delay)
