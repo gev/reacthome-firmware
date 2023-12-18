@@ -4,6 +4,7 @@
 
 module Transport.UDP.RBUS.Rx    where
 
+import           Core.Actions
 import           Data.Serialize
 import           Ivory.Language
 import           Ivory.Stdlib
@@ -30,9 +31,9 @@ receiveCallback rbus@RBUS{..} = proc "udp_echo_callback" $ \_ upcb pbuff addr po
 receive :: RBUS -> Uint8 -> Ivory (ProcEffects s t) ()
 receive rbus@RBUS{..} len = do
     action <- deref $ rxBuff ! 0
-    cond_ [ action ==? 0xf0 ==> handleDiscovery rbus len
-          , action ==? 0xfd ==> handleAddress   rbus len
-          , true            ==> handleMessage   rbus len
+    cond_ [ action ==? actionDiscovery ==> handleDiscovery rbus len
+          , action ==? actionIpAddress ==> handleAddress   rbus len
+          , true                       ==> handleMessage   rbus len
           ]
 
 

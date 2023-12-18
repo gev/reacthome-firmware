@@ -10,6 +10,7 @@ module Endpoint.Relays where
 
 import           Control.Monad.Reader  (MonadReader, asks)
 import           Control.Monad.State   (MonadState)
+import           Core.Actions
 import           Core.Context
 import qualified Core.Domain           as D
 import           Data.Buffer
@@ -73,7 +74,7 @@ message :: Relays -> Uint8 -> Ivory eff (Buffer 8 Uint8)
 message Relays{..} i = do
     runRelays $ \r -> do
         let relay = addrOf r ! toIx i
-        pack   payload 0 (0 :: Uint8)
+        pack   payload 0 actionDo
         pack   payload 1 $ i + 1
         pack   payload 2 =<< deref (relay ~> state)
         pack   payload 3 =<< deref (relay ~> group)

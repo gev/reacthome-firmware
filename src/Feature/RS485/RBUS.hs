@@ -12,6 +12,7 @@ module Feature.RS485.RBUS where
 import           Control.Monad                       (zipWithM, zipWithM_)
 import           Control.Monad.Reader                (MonadReader, asks)
 import           Control.Monad.State                 (MonadState)
+import           Core.Actions
 import           Core.Context
 import           Core.Controller
 import qualified Core.Domain                         as D
@@ -180,7 +181,7 @@ syncTask r@RBUS{..} = do
 
 message :: RBUS -> Ivory eff (Buffer 8 Uint8)
 message RBUS{..} = do
-    pack   payload 0 (0xa0 :: Uint8)
+    pack   payload 0 actionRs485Mode
     pack   payload 1 (fromIntegral index :: Uint8)
     pack   payload 2 =<< deref mode
     packLE payload 3 =<< deref baudrate
@@ -332,11 +333,11 @@ instance Controller [RBUS] where
     handle list buff size =
         pure [ size >? 1 ==> do
                 action <- deref $ buff ! 0
-                cond_ [ action ==? 0xa0 ==> setMode       list buff size
-                      , action ==? 0xa1 ==> transmitRBUS  list buff size
-                      , action ==? 0xa2 ==> transmitRB485 list buff size
-                      , action ==? 0xf2 ==> initialize    list buff size
-                      , action ==? 0xf4 ==> onGetState    list
+                cond_ [ action ==? actionRs485Mode     ==> setMode       list buff size
+                      , action ==? actionRbusTransmit  ==> transmitRBUS  list buff size
+                      , action ==? actionRs485Transmit ==> transmitRB485 list buff size
+                      , action ==? actionInitialize    ==> initialize    list buff size
+                      , action ==? actionGetState      ==> onGetState    list
                       ]
              ]
 

@@ -6,6 +6,7 @@ module Feature.Server where
 import           Control.Monad           (zipWithM_)
 import           Control.Monad.Reader    (MonadReader, asks)
 import           Control.Monad.State     (MonadState)
+import           Core.Actions
 import           Core.Context
 import           Core.Controller
 import qualified Core.Domain             as D
@@ -66,13 +67,13 @@ server rs485 pwms inputs = do
 instance Controller Server where
     handle s@Server{..} buff size = do
         action <- deref $ buff ! 0
-        pure [ action ==? 0x00 ==> onDo          dimmer buff size
-             , action ==? 0xd0 ==> onDim         dimmer buff size
-             , action ==? 0xa0 ==> setMode       rbus   buff size
-             , action ==? 0xa1 ==> transmitRBUS  rbus   buff size
-             , action ==? 0xa2 ==> transmitRB485 rbus   buff size
-             , action ==? 0xf2 ==> onInit        s      buff size
-             , action ==? 0xf4 ==> onGetState    s
+        pure [ action ==? actionDo            ==> onDo          dimmer buff size
+             , action ==? actionDim           ==> onDim         dimmer buff size
+             , action ==? actionRs485Mode     ==> setMode       rbus   buff size
+             , action ==? actionRbusTransmit  ==> transmitRBUS  rbus   buff size
+             , action ==? actionRs485Transmit ==> transmitRB485 rbus   buff size
+             , action ==? actionInitialize    ==> onInit        s      buff size
+             , action ==? actionGetState      ==> onGetState    s
              ]
 
 

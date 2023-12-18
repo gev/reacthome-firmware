@@ -10,6 +10,7 @@ module Feature.Indicator where
 
 import           Control.Monad.Reader     (MonadReader, asks)
 import           Control.Monad.State      (MonadState)
+import           Core.Actions
 import           Core.Context
 import           Core.Controller
 import           Core.Domain              as D
@@ -158,7 +159,7 @@ render Indicator{..} = do
 instance Controller Indicator where
     handle Indicator{..} buff size = do
         action <- deref $ buff ! 0
-        pure [ action ==? 0xfa ==>
+        pure [ action ==? actionFindMe ==>
                 when (size >=? 2)
                      (do
                         v <- unpack buff 1

@@ -10,6 +10,7 @@ module Feature.Mix where
 import           Control.Monad               (zipWithM_)
 import           Control.Monad.Reader        (MonadReader, asks)
 import           Control.Monad.State         (MonadState)
+import           Core.Actions
 import           Core.Context
 import           Core.Controller
 import           Core.Domain                 as D
@@ -128,14 +129,14 @@ instance Controller Mix where
     handle  mix@Mix{..} buff size = do
         shouldInit' <- deref shouldInit
         action <- deref $ buff ! 0
-        pure [ action ==? 0x00 .&& iNot shouldInit' ==> onDo       relays    buff size
-             , action ==? 0x02 .&& iNot shouldInit' ==> onGroup    relays    buff size
-             , action ==? 0x03 .&& iNot shouldInit' ==> onRule     mix       buff size
-             , action ==? 0x04 .&& iNot shouldInit' ==> onMode     mix       buff size
-             , action ==? 0xf2                      ==> onInit     relays    buff size
-             , action ==? 0xf4                      ==> onGetState mix
-             , action ==? 0xfa                      ==> onFindMe   indicator buff size
-             , action ==? 0xff                      ==> resetError ats
+        pure [ action ==? actionDo          .&& iNot shouldInit' ==> onDo       relays    buff size
+             , action ==? actionGroup       .&& iNot shouldInit' ==> onGroup    relays    buff size
+             , action ==? actionDiRelaySync .&& iNot shouldInit' ==> onRule     mix       buff size
+             , action ==? actionMix         .&& iNot shouldInit' ==> onMode     mix       buff size
+             , action ==? actionInitialize                       ==> onInit     relays    buff size
+             , action ==? actionGetState                         ==> onGetState mix
+             , action ==? actionFindMe                           ==> onFindMe   indicator buff size
+             , action ==? actionError                            ==> resetError ats
              ]
 
 
