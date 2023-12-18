@@ -73,6 +73,7 @@ executable reacthome-firmware
                     , Feature.DInputs
                     , Feature.Dimmer.AC
                     , Feature.Dimmer.DC
+                    , Feature.DS18B20
                     , Feature.Indicator
                     , Feature.Mix
                     , Feature.Mix.Indicator
@@ -82,7 +83,7 @@ executable reacthome-firmware
                     , Feature.RS485.RBUS.Rx
                     , Feature.RS485.RBUS.Tx
                     , Feature.Server
-                    , Feature.DS18B20
+                    , Feature.Smart.Top
                     , Feature.UdpEcho
 
                     , Formula.Blink330
