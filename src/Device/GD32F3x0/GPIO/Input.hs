@@ -24,9 +24,3 @@ mkInput p = do
 
 instance I.Input Input where
     get (Input Port{..}) = S.getInputBit gpio pin
-    setPUPD (Input Port{..}) pupd = S.setMode gpio gpio_mode_input (coercePUPD pupd) pin
-
-
-coercePUPD I.PullUp = gpio_pupd_pullup
-coercePUPD I.PullDown = gpio_pupd_pulldown
-coercePUPD I.PullNone = gpio_pupd_none
