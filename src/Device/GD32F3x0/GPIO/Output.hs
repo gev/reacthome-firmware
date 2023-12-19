@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RecordWildCards  #-}
+{-# OPTIONS_GHC -Wno-missing-methods #-}
 
 module Device.GD32F3x0.GPIO.Output where
 
