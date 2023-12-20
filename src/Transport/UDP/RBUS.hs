@@ -24,7 +24,7 @@ import           Core.Version
 import           Data.Buffer
 import           Data.Record
 import           Data.Value
-import           Feature.Server          (server)
+import           Feature.Server          (Server (shouldInit), server)
 import           Interface.ENET
 import           Interface.LwipPort
 import           Interface.MCU           as I
@@ -53,6 +53,7 @@ rbus enet' = do
     mcu             <- asks D.mcu
     model           <- asks D.model
     version         <- asks D.version
+    shouldInit      <- asks D.shouldInit
     let mac          = I.mac mcu
     features        <- asks D.features
     enet            <- enet' $ peripherals mcu
@@ -70,6 +71,7 @@ rbus enet' = do
     requestIP       <- buffer  "udp_request_ip"
     requestInit     <- buffer  "udp_request_init"
     shouldDiscovery <- value "udp_should_discovery" false
+
 
     {--
         TODO: move dispatcher outside
@@ -89,6 +91,7 @@ rbus enet' = do
                       , requestIP
                       , requestInit
                       , shouldDiscovery
+                      , shouldInit
                       , onMessage
                       }
 
@@ -163,7 +166,12 @@ discoveryTask rbus@RBUS{..} = do
     when shouldDiscovery' $ do
         hasIP' <- deref hasIP
         ifte_ hasIP'
-            (transmit  rbus discovery)
+            (do
+                shouldInit' <- deref shouldInit
+                ifte_ shouldInit'
+                    (transmit rbus requestInit)
+                    (transmit  rbus discovery)
+            )
             (broadcast rbus requestIP)
         store shouldDiscovery false
 

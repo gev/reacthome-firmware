@@ -75,7 +75,6 @@ handleAddress rbus@RBUS{..} len =
             createIpAddr4 netmask nm1 nm2 nm3 nm4
             setNetifAddr netif localIP netmask ipAddrAny
             store hasIP true
-            transmit rbus requestInit
 
 
 handleMessage :: RBUS -> Uint8 -> Ivory (ProcEffects s t) ()
