@@ -179,7 +179,7 @@ requestInitTask :: RBUS -> Ivory (ProcEffects s t) ()
 requestInitTask rbus@RBUS{..} = do
     hasIP'      <- deref hasIP
     shouldInit' <- deref shouldInit
-    when (hasIP' .&& shouldInit') $ do
+    when (hasIP' .&& shouldInit') $
         transmit rbus requestInit
 
 
