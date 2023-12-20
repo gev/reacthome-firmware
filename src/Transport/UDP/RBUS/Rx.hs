@@ -55,7 +55,7 @@ handleAddress :: RBUS -> Uint8 -> Ivory (ProcEffects s t) ()
 handleAddress rbus@RBUS{..} len =
     when (len ==? 15) $ do
         isValid <- local $ ival true
-        for 6 $ \ix -> do
+        arrayMap $ \ix -> do
             m  <- deref $ mac ! ix
             m' <- deref $ rxBuff ! toIx (1 + fromIx ix)
             when (m /=? m') $ do
