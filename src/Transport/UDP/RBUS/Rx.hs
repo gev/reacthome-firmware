@@ -56,11 +56,11 @@ handleAddress rbus@RBUS{..} len =
     when (len ==? 15) $ do
         isValid <- local $ ival true
         for 6 $ \ix -> do
-            isValid' <- deref isValid
             m  <- deref $ mac ! ix
             m' <- deref $ rxBuff ! toIx (1 + fromIx ix)
-            when (m ==? m') $
-                store isValid (isValid' .&& m ==? m')
+            when (m /=? m') $ do
+                store isValid false
+                breakOut
         isValid' <- deref isValid
         when isValid' $ do
             ip1 <- unpack rxBuff  7
