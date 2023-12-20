@@ -1,7 +1,8 @@
 {-# LANGUAGE RankNTypes      #-}
 {-# LANGUAGE RecordWildCards #-}
+
 module Transport.UDP.RBUS.Tx where
-import           Control.Monad           (void)
+
 import           Data.Buffer
 import           GHC.TypeNats
 import           Ivory.Language
@@ -12,8 +13,10 @@ import           Support.Lwip.Udp
 import           Transport.UDP.RBUS.Data
 
 
+
 transmit :: KnownNat n => RBUS -> Buffer n Uint8 -> Ivory (ProcEffects s t) ()
 transmit rbus@RBUS{..} = transmit' serverIP rbus
+
 
 
 broadcast :: KnownNat n => RBUS -> Buffer n Uint8 -> Ivory (ProcEffects s t) ()
