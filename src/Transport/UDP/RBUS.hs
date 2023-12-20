@@ -70,7 +70,7 @@ rbus enet' = do
     discovery       <- buffer  "udp_discovery"
     requestIP       <- buffer  "udp_request_ip"
     requestInit     <- buffer  "udp_request_init"
-    shouldDiscovery <- value "udp_should_discovery" false
+    shouldDiscovery <- value   "udp_should_discovery" false
 
 
     {--
