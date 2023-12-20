@@ -50,7 +50,7 @@ mkENET :: MonadState Context m
        -> G.Port
        -> IRQn
        -> m ENET
-mkENET ethRmiiRefClk ethRmiiMdio ethRmiiMdc ethRmiiCrsDv ethRmiiRxd0 ethRmiiRxd1 ethRmiiTxEn ethRmiiTxd0 ethRmiiTxd1 enetIRQ= do
+mkENET ethRmiiRefClk ethRmiiMdio ethRmiiMdc ethRmiiCrsDv ethRmiiRxd0 ethRmiiRxd1 ethRmiiTxEn ethRmiiTxd0 ethRmiiTxd1 enetIRQ = do
     G.initPort ethRmiiRefClk
     G.initPort ethRmiiMdio
     G.initPort ethRmiiMdc
@@ -74,13 +74,6 @@ mkENET ethRmiiRefClk ethRmiiMdio ethRmiiMdc ethRmiiCrsDv ethRmiiRxd0 ethRmiiRxd1
         enablePeriphClock rcu_enet
         enablePeriphClock rcu_enettx
         enablePeriphClock rcu_enetrx
-        deinitENET
-        resetSoftwareENET
-        isReady <- initENET enet_auto_negotiation enet_no_autochecksum enet_broadcast_frames_pass
-        enableEnetFilterFeature enet_multicast_filter_pass
-        when isReady $ do
-            enableInterruptENET enet_dma_int_nie
-            enableInterruptENET enet_dma_int_rie
 
     pure ENET { ethRmiiRefClk, ethRmiiMdio, ethRmiiMdc, ethRmiiCrsDv, ethRmiiRxd0, ethRmiiRxd1, ethRmiiTxEn, ethRmiiTxd0, ethRmiiTxd1, enetIRQ }
 
@@ -96,6 +89,17 @@ handleENET handle = do
     handle
 
 instance I.Enet ENET where
+
+    initEth ENET{..} = do
+        deinitENET
+        resetSoftwareENET
+        isReady <- initENET enet_auto_negotiation enet_no_autochecksum enet_broadcast_frames_pass
+        when isReady $ do
+            enableEnetFilterFeature enet_multicast_filter_pass
+            enableInterruptENET enet_dma_int_nie
+            enableInterruptENET enet_dma_int_rie
+        pure isReady
+
     rxFrameSize _ = getEnetRxframeSize
 
 instance LwipPort ENET where
