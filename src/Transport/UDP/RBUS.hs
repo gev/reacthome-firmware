@@ -1,11 +1,12 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE RecordWildCards  #-}
-{-# LANGUAGE TypeOperators    #-}
+{-# LANGUAGE DataKinds          #-}
+{-# LANGUAGE FlexibleContexts   #-}
+{-# LANGUAGE NamedFieldPuns     #-}
+{-# LANGUAGE RankNTypes         #-}
+{-# LANGUAGE RecordWildCards    #-}
+{-# LANGUAGE TypeOperators      #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
+{-# LANGUAGE NumericUnderscores #-}
 
 module Transport.UDP.RBUS where
 
@@ -41,6 +42,7 @@ import           Support.Lwip.Memp
 import           Support.Lwip.Netif
 import           Support.Lwip.Pbuf
 import           Support.Lwip.Udp
+import           Transport.RS485.RBUS.Tx (initTask)
 import           Transport.UDP.RBUS.Data
 import           Transport.UDP.RBUS.Rx
 import           Transport.UDP.RBUS.Tx
@@ -152,9 +154,10 @@ rbus enet' = do
         when (reval >? 1) $
             void $ inputLwipPortIf enet netif
 
-    addTask $ delay 1000 "tmr_arp"  tmrEtharp
-    addTask $ delay  100 "tmr_igmp" tmrIgmp
-    addTask $ yeld  "udp_discovery" $ discoveryTask rbus
+    addTask $ delay 1_000 "tmr_arp"         tmrEtharp
+    addTask $ delay   100 "tmr_igmp"        tmrIgmp
+    addTask $ yeld        "udp_discovery" $ discoveryTask   rbus
+    addTask $ delay 2_000 "request_init"  $ requestInitTask rbus
 
     pure rbus
 
@@ -166,13 +169,18 @@ discoveryTask rbus@RBUS{..} = do
     when shouldDiscovery' $ do
         hasIP' <- deref hasIP
         ifte_ hasIP'
-            (do
-                transmit rbus discovery
-                shouldInit' <- deref shouldInit
-                when shouldInit' $ transmit rbus requestInit
-            )
+            (transmit rbus discovery)
             (broadcast rbus requestIP)
         store shouldDiscovery false
+
+
+
+requestInitTask :: RBUS -> Ivory (ProcEffects s t) ()
+requestInitTask rbus@RBUS{..} = do
+    hasIP'      <- deref hasIP
+    shouldInit' <- deref shouldInit
+    when (hasIP' .&& shouldInit') $ do
+        transmit rbus requestInit
 
 
 
