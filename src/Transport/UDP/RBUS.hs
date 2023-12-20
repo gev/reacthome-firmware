@@ -167,10 +167,9 @@ discoveryTask rbus@RBUS{..} = do
         hasIP' <- deref hasIP
         ifte_ hasIP'
             (do
+                transmit rbus discovery
                 shouldInit' <- deref shouldInit
-                ifte_ shouldInit'
-                    (transmit rbus requestInit)
-                    (transmit rbus discovery)
+                when shouldInit' $ transmit rbus requestInit
             )
             (broadcast rbus requestIP)
         store shouldDiscovery false
