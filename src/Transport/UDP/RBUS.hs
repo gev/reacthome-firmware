@@ -142,6 +142,14 @@ rbus enet' = do
         store (requestIP   ! 0) 0xfd
 
         store (requestInit ! 0) 0xf2
+        addNetif netif localIP netmask ipAddrAny nullPtr (initLwipPortIf enet) inputEthernetPtr
+        setNetifDefault netif
+        setNetifStatusCallback netif $ procPtr $ netifStatusCallback rbus
+
+        initIgmp
+
+        startIgmp netif
+        setUpNetif netif
 
 
     addHandler $ HandleEnet enet $ do
@@ -149,11 +157,11 @@ rbus enet' = do
         when (reval >? 1) $
             void $ inputLwipPortIf enet netif
 
-    addTask $ delayPhase 10_000 1_000 "udp_init"      $ udpInitTask     rbus
-    addTask $ delay       1_000       "tmr_arp"       $ arpTask         rbus
-    addTask $ delay         100       "tmr_igmp"      $ igmpTask        rbus
-    addTask $ yeld                    "udp_discovery" $ discoveryTask   rbus
-    addTask $ delay       2_000       "request_init"  $ requestInitTask rbus
+    addTask $ delay 1_000 "udp_init"       $ udpInitTask    rbus
+    addTask $ delay 1_000 "tmr_arp"         tmrEtharp
+    addTask $ delay   100 "tmr_igmp"        tmrIgmp
+    addTask $ yeld        "udp_discovery" $ discoveryTask   rbus
+    addTask $ delay 2_000 "request_init"  $ requestInitTask rbus
 
     pure rbus
 
@@ -172,20 +180,6 @@ udpInitTask rbus@RBUS{..} = do
             startIgmp netif
             setUpNetif netif
         store isReady true
-
-
-
-arpTask :: RBUS -> Ivory (ProcEffects s t) ()
-arpTask rbus@RBUS{..} = do
-    isReady' <- deref isReady
-    when isReady' tmrEtharp
-
-
-
-igmpTask :: RBUS -> Ivory (ProcEffects s t) ()
-igmpTask rbus@RBUS{..} = do
-    isReady' <- deref isReady
-    when isReady' tmrIgmp
 
 
 

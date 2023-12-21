@@ -26,19 +26,17 @@ broadcast rbus@RBUS{..} = transmit' broadcastIP rbus
 
 transmit' :: KnownNat n => IP_ADDR_4 s1 -> RBUS -> Buffer n Uint8 -> Ivory (ProcEffects s2 t) ()
 transmit' ip RBUS{..} buff = do
-    isReady' <- deref isReady
-    when isReady' $ do
-        upcb' <- deref upcb
-        err <- connectUdp upcb' ip =<< deref serverPort
-        when (err ==? 0) $ do
-            hbuff <- allocPbufReference (toCArray mac) 6 pbuf_ref
-            tbuff <- allocPbufReference (toCArray buff) (arrayLen buff) pbuf_ref
-            chainPbuf hbuff tbuff
-            sendUdp upcb' hbuff
-            disconnectUdp upcb'
-            freePbuf hbuff
-            freePbuf tbuff
-            pure ()
+    upcb' <- deref upcb
+    err <- connectUdp upcb' ip =<< deref serverPort
+    when (err ==? 0) $ do
+        hbuff <- allocPbufReference (toCArray mac) 6 pbuf_ref
+        tbuff <- allocPbufReference (toCArray buff) (arrayLen buff) pbuf_ref
+        chainPbuf hbuff tbuff
+        sendUdp upcb' hbuff
+        disconnectUdp upcb'
+        freePbuf hbuff
+        freePbuf tbuff
+        pure ()
 
 
 
@@ -48,20 +46,18 @@ lazyTransmit' :: RBUS
                          -> forall eff. Ivory eff ())
               -> Ivory (ProcEffects s t) ()
 lazyTransmit' RBUS{..} _ transmit = do
-    isReady' <- deref isReady
-    when isReady' $ do
-        upcb' <- deref upcb
-        err <- connectUdp upcb' serverIP =<< deref serverPort
-        when (err ==? 0) $ do
-            len   <- run transmit txBuff
-            hbuff <- allocPbufReference (toCArray mac) 6 pbuf_ref
-            tbuff <- allocPbufReference (toCArray txBuff) len pbuf_ref
-            chainPbuf hbuff tbuff
-            sendUdp upcb' hbuff
-            disconnectUdp upcb'
-            freePbuf hbuff
-            freePbuf tbuff
-            pure ()
+    upcb' <- deref upcb
+    err <- connectUdp upcb' serverIP =<< deref serverPort
+    when (err ==? 0) $ do
+        len   <- run transmit txBuff
+        hbuff <- allocPbufReference (toCArray mac) 6 pbuf_ref
+        tbuff <- allocPbufReference (toCArray txBuff) len pbuf_ref
+        chainPbuf hbuff tbuff
+        sendUdp upcb' hbuff
+        disconnectUdp upcb'
+        freePbuf hbuff
+        freePbuf tbuff
+        pure ()
 
 
 
