@@ -8,6 +8,10 @@
 module Support.Device.GD32F4xx.ENET
     ( MEDIAMODE
     , enet_auto_negotiation
+    , enet_100m_fullduplex
+    , enet_100m_halfduplex
+    , enet_10m_fullduplex 
+    , enet_10m_halfduplex 
 
     , CHECKSUM_CONF
     , enet_no_autochecksum
@@ -45,6 +49,11 @@ newtype MEDIAMODE = MEDIAMODE Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 enet_auto_negotiation  = MEDIAMODE $ ext "ENET_AUTO_NEGOTIATION"
+enet_100m_fullduplex   = MEDIAMODE $ ext "ENET_100M_FULLDUPLEX"
+enet_100m_halfduplex   = MEDIAMODE $ ext "ENET_100M_HALFDUPLEX"
+enet_10m_fullduplex    = MEDIAMODE $ ext "ENET_10M_FULLDUPLEX"
+enet_10m_halfduplex    = MEDIAMODE $ ext "ENET_10M_HALFDUPLEX"
+
 
 
 newtype CHECKSUM_CONF = CHECKSUM_CONF Uint32
@@ -131,6 +140,10 @@ enet_fliter_feature_enable = fun "enet_fliter_feature_enable"
 inclENET :: ModuleDef
 inclENET = do
     inclSym enet_auto_negotiation
+    inclSym enet_100m_fullduplex
+    inclSym enet_100m_halfduplex
+    inclSym enet_10m_fullduplex 
+    inclSym enet_10m_halfduplex 
 
     inclSym enet_no_autochecksum
 

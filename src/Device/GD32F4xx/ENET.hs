@@ -76,7 +76,7 @@ mkENET ethRmiiRefClk ethRmiiMdio ethRmiiMdc ethRmiiCrsDv ethRmiiRxd0 ethRmiiRxd1
         enablePeriphClock rcu_enetrx
         deinitENET
         resetSoftwareENET
-        isReady <- initENET enet_auto_negotiation enet_no_autochecksum enet_broadcast_frames_pass
+        isReady <- initENET enet_100m_fullduplex enet_no_autochecksum enet_broadcast_frames_pass
         enableEnetFilterFeature enet_multicast_filter_pass
         when isReady $ do
             enableInterruptENET enet_dma_int_nie
