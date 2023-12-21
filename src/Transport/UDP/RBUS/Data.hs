@@ -1,5 +1,4 @@
 {-# LANGUAGE DataKinds  #-}
-{-# LANGUAGE GADTs      #-}
 {-# LANGUAGE RankNTypes #-}
 
 module Transport.UDP.RBUS.Data where
@@ -7,8 +6,6 @@ import           Data.Buffer
 import           Data.Record
 import           Data.Value
 import           Feature.RS485.RBUS.Data  (RBUS (shouldDiscovery))
-import           Interface.ENET
-import           Interface.LwipPort
 import           Interface.Mac
 import           Ivory.Language
 import           Support.Lwip.IP_addr
@@ -16,12 +13,10 @@ import           Support.Lwip.Netif
 import           Support.Lwip.Udp
 import           Transport.UART.RBUS.Data (RBUS (txBuff))
 
-data RBUS = forall e. (Enet e, LwipPort e) => RBUS
+data RBUS = RBUS
     { mac             :: Mac
-    , enet            :: e
     , netif           :: Record     NETIF_STRUCT
     , upcb            :: Value     (UDP_PCB Global)
-    , isReady         :: Value      IBool
     , hasIP           :: Value      IBool
     , serverIP        :: Record     IP_ADDR_4_STRUCT
     , serverPort      :: Value      Uint16

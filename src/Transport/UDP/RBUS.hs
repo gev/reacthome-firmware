@@ -66,7 +66,6 @@ rbus enet' = do
     localIP         <- record_ "udp_local_ip"
     netmask         <- record_ "udp_netmask"
     broadcastIP     <- record_ "udp_broadcast_ip"
-    isReady         <- value   "udp_is_ready" false
     hasIP           <- value   "udp_has_ip" false
     rxBuff          <- buffer  "udp_rx"
     txBuff          <- buffer  "udp_tx"
@@ -82,13 +81,11 @@ rbus enet' = do
     let onMessage = makeDispatcher features
 
     let rbus   = RBUS { mac
-                      , enet
                       , netif
                       , upcb
                       , serverIP, serverPort
                       , localIP, netmask
                       , broadcastIP
-                      , isReady
                       , hasIP
                       , txBuff
                       , rxBuff
@@ -142,6 +139,7 @@ rbus enet' = do
         store (requestIP   ! 0) 0xfd
 
         store (requestInit ! 0) 0xf2
+
         addNetif netif localIP netmask ipAddrAny nullPtr (initLwipPortIf enet) inputEthernetPtr
         setNetifDefault netif
         setNetifStatusCallback netif $ procPtr $ netifStatusCallback rbus
@@ -151,35 +149,17 @@ rbus enet' = do
         startIgmp netif
         setUpNetif netif
 
-
     addHandler $ HandleEnet enet $ do
         reval <- rxFrameSize enet
         when (reval >? 1) $
             void $ inputLwipPortIf enet netif
 
-    addTask $ delay 1_000 "udp_init"       $ udpInitTask    rbus
     addTask $ delay 1_000 "tmr_arp"         tmrEtharp
     addTask $ delay   100 "tmr_igmp"        tmrIgmp
     addTask $ yeld        "udp_discovery" $ discoveryTask   rbus
     addTask $ delay 2_000 "request_init"  $ requestInitTask rbus
 
     pure rbus
-
-
-
-udpInitTask :: RBUS -> Ivory (ProcEffects s t) ()
-udpInitTask rbus@RBUS{..} = do
-    isReady' <- deref isReady
-    when (iNot isReady') $ do
-        isEthReady <- initEth enet
-        when isEthReady $ do
-            addNetif netif localIP netmask ipAddrAny nullPtr (initLwipPortIf enet) inputEthernetPtr
-            setNetifDefault netif
-            setNetifStatusCallback netif $ procPtr $ netifStatusCallback rbus
-            initIgmp
-            startIgmp netif
-            setUpNetif netif
-        store isReady true
 
 
 
