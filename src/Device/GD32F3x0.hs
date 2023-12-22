@@ -23,7 +23,6 @@ import           Device.GD32F3x0.Timer            (Timer, cfg_timer_0,
                                                    cfg_timer_1, cfg_timer_14,
                                                    cfg_timer_15, cfg_timer_2)
 import           Device.GD32F3x0.UART
-import           Interface.GPIO.Input             as I
 import           Interface.Mac                    (Mac)
 import           Interface.MCU
 import           Interface.OneWire
@@ -42,7 +41,7 @@ import           Support.Device.GD32F3x0.USART
 
 
 type UART'        = forall m. MonadState Context m => m UART
-type Input'       = forall m. MonadState Context m => Pull -> m Input
+type Input'       = forall m. MonadState Context m => m Input
 type Output'      = forall m. MonadState Context m => m Output
 type OpenDrain'   = forall m. MonadState Context m => m OpenDrain
 type Timer'       = forall m. MonadState Context m => Uint32 -> Uint32 -> m Timer
@@ -303,13 +302,13 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
                                 timer_ch_0 dma_ch2
                                 (pb_8 af_2)
 
-    , exti_pa_0 = mkEXTI (mkInput pa_0 I.PullNone)
+    , exti_pa_0 = mkEXTI (mkInput pa_0)
                          exti0_1_irqn
                          exti_source_gpioa
                          exti_source_pin0
                          exti_0
 
-    , exti_pa_5 = mkEXTI (mkInput pa_5 I.PullNone)
+    , exti_pa_5 = mkEXTI (mkInput pa_5)
                          exti4_15_irqn
                          exti_source_gpioa
                          exti_source_pin5

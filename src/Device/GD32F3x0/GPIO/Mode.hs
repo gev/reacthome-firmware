@@ -8,19 +8,19 @@ import           Support.Device.GD32F3x0.GPIO
 
 
 data Mode
-    = MF GPIO_MODE GPIO_OTYPE GPIO_PUPD
+    = MF GPIO_MODE GPIO_OTYPE
     | AF GPIO_AF
 
 
 
-input :: GPIO_PUPD -> Mode
+input :: Mode
 input = MF gpio_mode_input gpio_otype_pp
 
 output :: Mode
-output = MF gpio_mode_output gpio_otype_pp gpio_pupd_none
+output = MF gpio_mode_output gpio_otype_pp
 
 openDrain :: Mode
-openDrain = MF gpio_mode_output gpio_otype_od gpio_pupd_none
+openDrain = MF gpio_mode_output gpio_otype_od
 
 
 

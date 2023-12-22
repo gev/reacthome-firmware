@@ -28,12 +28,12 @@ initPort :: MonadState Context m => Port -> m (Def ('[] ':-> ()))
 initPort p@Port{..} = addInit (show p) $ do
     enablePeriphClock rcu
     case mode of
-        (MF mode otype pupd) -> initMode mode otype pupd
-        (AF mode)            -> initMode gpio_mode_af gpio_otype_pp gpio_pupd_none
-                             >> setAF gpio mode pin
-    where initMode mode otype pupd = do
+        (MF mode otype) -> initMode mode otype
+        (AF mode)       -> initMode gpio_mode_af gpio_otype_pp
+                        >> setAF gpio mode pin
+    where initMode mode otype = do
             setOutputOptions gpio otype gpio_ospeed_50mhz pin
-            setMode gpio mode pupd pin
+            setMode gpio mode gpio_pupd_none pin
 
 
 instance Show Port where
