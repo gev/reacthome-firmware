@@ -1,20 +1,20 @@
-{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RankNTypes       #-}
 
 module Interface.I2C where
-    
-import Ivory.Language
-import Core.Handler
-import Data.Buffer
+
+import           Core.Handler
+import           Data.Buffer
+import           Ivory.Language
 
 
 type Address = Uint8
 
 data HandleI2C i = HandleI2C
-    { i2c  :: i
-    , handle :: forall eff. Ivory eff ()
+    { i2c    :: i
+    , handle :: forall n eff. Buffer n Uint8 -> Ivory eff ()
     }
 
 class Handler HandleI2C i => I2C i where
     transmit :: i -> Address -> Buffer n Uint8 -> Ivory eff ()
-    receive  :: i -> Address -> Uint32 -> Ivory eff ()
+    receive  :: i -> Address -> Buffer n Uint8 -> Ivory eff ()
