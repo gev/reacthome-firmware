@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleContexts   #-}
 {-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE RankNTypes         #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 module Device.GD32F4xx where
 
@@ -22,6 +23,7 @@ import           Device.GD32F4xx.Timer            (Timer, cfg_timer_1,
                                                    cfg_timer_2, cfg_timer_3,
                                                    cfg_timer_6)
 import           Device.GD32F4xx.UART
+import           Interface.GPIO.Port
 import           Interface.Mac                    (Mac)
 import           Interface.MCU
 import           Interface.OneWire
@@ -39,8 +41,8 @@ import           Support.Device.GD32F4xx.USART
 
 
 type UART'         = forall m. MonadState Context m => m UART
-type Input'        = forall m. MonadState Context m => m Input
-type Output'       = forall m. MonadState Context m => m Output
+type Input'        = forall m. MonadState Context m => GPIO_PUPD -> m Input
+type Output'       = forall m. MonadState Context m => GPIO_PUPD -> m Output
 type OpenDrain'    = forall m. MonadState Context m => m OpenDrain
 type Timer'        = forall m. MonadState Context m => Uint32 -> Uint32 -> m Timer
 type PWM'          = forall m. MonadState Context m => Uint32 -> Uint32 -> m PWM
@@ -561,3 +563,9 @@ gd32f450vgt6 = gd32f4xx "gd32f450" "vgt6"
 
 gd32f450vit6 :: MCUmod GD32F4xx
 gd32f450vit6 = gd32f4xx "gd32f450" "vit6"
+
+
+instance Pull GD32F4xx GPIO_PUPD where
+    pullNone _ = gpio_pupd_none
+    pullUp   _ = gpio_pupd_pullup
+    pullDown _ = gpio_pupd_pulldown

@@ -29,6 +29,7 @@ import           Support.Device.GD32F4xx.IRQ
 import           Support.Device.GD32F4xx.Misc
 import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.USART as S
+import Support.Device.GD32F4xx.GPIO
 
 
 data UART = UART
@@ -56,10 +57,10 @@ mkUART :: MonadState Context m
        -> DMA_CHANNEL
        -> DMA_SUBPERIPH
        -> IRQn
-       -> G.Port
-       -> G.Port
+       -> (GPIO_PUPD -> G.Port)
+       -> (GPIO_PUPD -> G.Port)
        -> m UART
-mkUART uart rcu uartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn rx tx = do
+mkUART uart rcu uartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn rx' tx' = do
 
     let dmaInit = dmaParam [ periph_inc          .= ival dma_periph_increase_disable
                            , memory_inc          .= ival dma_memory_increase_enable
@@ -69,6 +70,9 @@ mkUART uart rcu uartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn rx tx = do
                            , priority            .= ival dma_priority_ultra_high
                            ]
     dmaParams  <- record (symbol uart <> "_dma_param") dmaInit
+
+    let rx = rx' gpio_pupd_none
+    let tx = tx' gpio_pupd_none
 
     G.initPort rx
     G.initPort tx

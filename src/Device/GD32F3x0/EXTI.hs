@@ -3,7 +3,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE TypeOperators         #-}
 
 module Device.GD32F3x0.EXTI where
 
@@ -12,11 +11,14 @@ import           Control.Monad.State            (MonadState)
 import           Core.Context
 import           Core.Handler
 import           Device.GD32F3x0.GPIO.Input
+import           Device.GD32F3x0.GPIO.Mode
+import           Device.GD32F3x0.GPIO.Port
 import qualified Interface.EXTI                 as I
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Ivory.Support
 import           Support.Device.GD32F3x0.EXTI
+import           Support.Device.GD32F3x0.GPIO
 import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
@@ -32,9 +34,9 @@ data EXTI = EXTI
     , ex      :: EXTI_LINE
     }
 
-mkEXTI :: MonadState Context m => m Input -> IRQn -> EXTI_PORT -> EXTI_PIN -> EXTI_LINE -> m EXTI
+mkEXTI :: MonadState Context m => (Mode -> GPIO_PUPD -> Port) -> IRQn -> EXTI_PORT -> EXTI_PIN -> EXTI_LINE -> m EXTI
 mkEXTI input extiIRQ srcPort srcPin ex = do
-    port <- input
+    port <- mkInput input gpio_pupd_none
     addInit (symbol srcPort <> "_" <> symbol srcPin) $ do
             enablePeriphClock       rcu_cfgcmp
             enableIrqNvic           extiIRQ 0 0

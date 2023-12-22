@@ -16,6 +16,7 @@ import qualified Interface.Timer                as I
 import           Ivory.Language
 import           Support.Device.GD32F3x0.System
 import           Support.Device.GD32F3x0.Timer
+import Support.Device.GD32F3x0.GPIO
 
 
 {--
@@ -31,14 +32,16 @@ data PWM = PWM
 mkPWM :: MonadState Context m
       => (Uint32 -> Uint32 -> m Timer)
       -> TIMER_CHANNEL
-      -> Port
+      -> (GPIO_PUPD -> Port)
       -> Uint32
       -> Uint32
       -> m PWM
-mkPWM timer' pwmChannel port frequency period = do
+mkPWM timer' pwmChannel port' frequency period = do
     pwmTimer <- timer' frequency period
+    let port  = port' gpio_pupd_none
 
-    initPort port
+    initPort port 
+
     addInit (show port <> "_pwm") $ do
             let t = timer pwmTimer
             initChannelOcTimer            t pwmChannel =<< local (istruct timerOcDefaultParam)

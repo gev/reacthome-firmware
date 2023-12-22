@@ -15,9 +15,9 @@ import           Support.Device.GD32F4xx.GPIO as S
 newtype OpenDrain = OpenDrain {getOpenDrain :: Port}
 
 
-mkOpenDrain :: MonadState Context m => (Mode -> Port) -> m OpenDrain
+mkOpenDrain :: MonadState Context m => (Mode -> GPIO_PUPD -> Port) -> m OpenDrain
 mkOpenDrain p = do
-    let port = p openDrain
+    let port = p openDrain gpio_pupd_none
     initPort port
     pure $ OpenDrain port
 

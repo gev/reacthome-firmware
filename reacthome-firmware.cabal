@@ -103,6 +103,7 @@ executable reacthome-firmware
                     , Interface.GPIO.Input
                     , Interface.GPIO.Output
                     , Interface.GPIO.OpenDrain
+                    , Interface.GPIO.Port
                     , Interface.Mac
                     , Interface.MCU
                     , Interface.SystemClock

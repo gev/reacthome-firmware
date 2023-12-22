@@ -34,6 +34,7 @@ import           Interface.MCU         (MCU, peripherals, systemClock)
 import           Interface.SystemClock (SystemClock, getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
+import Interface.GPIO.Port
 
 
 
@@ -51,13 +52,14 @@ data Relays = forall o. Output o => Relays
 
 
 
-mkRelays :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Output o)
-         => [p -> m o] -> m Relays
+mkRelays :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Output o, Pull p d)
+         => [p -> d -> m o] -> m Relays
 mkRelays outs = do
     mcu        <- asks D.mcu
     transport  <- asks D.transport
     shouldInit <- asks D.shouldInit
-    os         <- mapM ($ peripherals mcu) outs
+    let peripherals' = peripherals mcu
+    os         <- mapM (($ pullNone peripherals') . ($ peripherals')) outs
     let n       = length os
     getRelays  <- R.relays "relays" n
     getGroups  <- G.groups "groups" n
@@ -75,8 +77,8 @@ mkRelays outs = do
 
 
 
-relays :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Output o)
-       => [p -> m o] -> m Feature
+relays :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Output o, Pull p d)
+       => [p -> d -> m o] -> m Feature
 relays outs = do
     relays <- mkRelays outs
 

@@ -30,6 +30,7 @@ import           Interface.MCU         (MCU, peripherals, systemClock)
 import           Interface.SystemClock (SystemClock, getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
+import Interface.GPIO.Port
 
 
 
@@ -45,13 +46,14 @@ data DInputs = forall i. Input i => DInputs
 
 
 
-mkDInputs :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Input i)
-          => [p -> m i] -> m DInputs
+mkDInputs :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Input i, Pull p d)
+          => [p -> d -> m i]  -> m DInputs
 mkDInputs inputs = do
     mcu        <- asks D.mcu
     let clock   = systemClock mcu
     transport  <- asks D.transport
-    is         <- mapM ($ peripherals mcu) inputs
+    let peripherals' = peripherals mcu
+    is         <- mapM (($ pullNone peripherals') . ($ peripherals')) inputs
     let n       = length is
     getDInputs <- DI.dinputs "dinputs" n
     current    <- index "current_dinput"
@@ -65,10 +67,10 @@ mkDInputs inputs = do
 
 
 
-dinputs :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Input i)
-        => [p -> m i] -> m Feature
+dinputs :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Input i, Pull p d)
+        => [p -> d -> m i] -> m Feature
 dinputs inputs = do
-    dinputs <-  mkDInputs inputs
+    dinputs <- mkDInputs inputs
 
     addTask  $ delay 10 "dinputs_manage" $ manageDInputs dinputs
     addTask  $ yeld     "dinputs_sync"   $ syncDInputs   dinputs

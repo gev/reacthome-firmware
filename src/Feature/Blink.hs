@@ -18,6 +18,7 @@ import           Interface.GPIO.Output
 import           Interface.MCU         (MCU (peripherals))
 import           Interface.Timer
 import           Ivory.Language
+import Interface.GPIO.Port
 
 data Blink where
     Blink :: Output o
@@ -27,13 +28,14 @@ data Blink where
              } -> Blink
 
 
-blink :: (MonadState Context m, MonadReader (Domain p t) m, Output o)
-      => Int -> (p -> m o) -> m Feature
+blink :: (MonadState Context m, MonadReader (Domain p t) m, Output o, Pull p u)
+      => Int -> (p -> u -> m o) -> m Feature
 blink n o = do
     let name  = "blink_" <> show n
 
     mcu      <- asks mcu
-    out      <- o $ peripherals mcu
+    let peripherals' = peripherals mcu
+    out      <- o peripherals' $ pullNone peripherals'
     state    <- value (name <> "_state") false
 
     let feature = Feature $ Blink { name, out, state }
