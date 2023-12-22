@@ -12,15 +12,19 @@ import           Ivory.Language
 import           Support.Device.GD32F3x0.GPIO as S
 
 
+
 newtype Input = Input {getInput :: Port}
 
 
-mkInput :: MonadState Context m => (Mode -> Port) -> m Input
-mkInput p = do
-    let port = p input
+mkInput :: MonadState Context m => (Mode -> Port) -> I.Pull -> m Input
+mkInput p pull = do
+    let port = p . input $ coercePull pull
     initPort port
     pure $ Input port
 
+coercePull I.PullDown = S.gpio_pupd_pulldown
+coercePull I.PullUp   = S.gpio_pupd_pullup
+coercePull I.PullNone = S.gpio_pupd_none
 
 instance I.Input Input where
     get (Input Port{..}) = S.getInputBit gpio pin
