@@ -13,10 +13,10 @@ smartTopA6P =  Formula { name       = "smart-top-a6p"
                        , version    = (1, 0)
                        , shouldInit = false
                        , transport  = rbus uart_1
-                       , features   = [ dinputs [  in_pa_12
-                                                ,  in_pa_11
-                                                ,  in_pa_10
-                                                ,  in_pa_9
+                       , features   = [ dinputs [ in_pa_12
+                                                , in_pa_11
+                                                , in_pa_10
+                                                , in_pa_9
                                                 ]
                                       ]
                        }
