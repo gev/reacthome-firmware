@@ -13,12 +13,10 @@ actionVibro                   = 0x0A :: Uint8
 actionIr                      = 0x10 :: Uint8
 actionIrConfig                = 0x11 :: Uint8
 
-actionWiegand                 = 0x1A :: Uint8
-
 actionLanamp                  = 0x20 :: Uint8
 actionRtp                     = 0x21 :: Uint8
 
-actionIbuttonRead             = 0x30 :: Uint8
+actionSmartTop                = 0x30 :: Uint8
 
 actionRs485Mode               = 0xA0 :: Uint8
 actionRbusTransmit            = 0xA1 :: Uint8
