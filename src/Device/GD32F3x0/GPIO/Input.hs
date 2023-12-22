@@ -15,9 +15,9 @@ import           Support.Device.GD32F3x0.GPIO as S
 newtype Input = Input {getInput :: Port}
 
 
-mkInput :: MonadState Context m => (Mode -> Port) -> m Input
-mkInput p = do
-    let port = p input
+mkInput :: MonadState Context m => (Mode -> GPIO_PUPD -> Port) -> GPIO_PUPD -> m Input
+mkInput p pupd = do
+    let port = p input pupd
     initPort port
     pure $ Input port
 

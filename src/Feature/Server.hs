@@ -34,6 +34,7 @@ import           Interface.PWM           (PWM)
 import           Interface.RS485
 import           Ivory.Language
 import           Ivory.Stdlib
+import Interface.GPIO.Port
 
 
 data Server = Server
@@ -46,12 +47,12 @@ data Server = Server
 
 server :: ( MonadState Context m
           , MonadReader (D.Domain p t) m
-          , LazyTransport t, Transport t, PWM o, Input i
-          ) => [m RS485] -> [p -> Uint32 -> Uint32 -> m o] -> [p -> m i] -> m Feature
+          , LazyTransport t, Transport t, PWM o, Input i, Pull p u
+          ) => [m RS485] -> [p -> Uint32 -> Uint32 -> m o] -> [p -> u -> m i] -> m Feature
 server rs485 pwms inputs = do
     rbus       <- mkRBUS     rs485
     dimmer     <- mkDimmerDC pwms
-    dinputs    <- mkDInputs  inputs
+    dinputs    <- mkDInputs  inputs 
     shouldInit <- asks D.shouldInit
 
     addTask  $ delay 10 "dinputs_manage" $ manageDInputs dinputs

@@ -46,6 +46,7 @@ import           Ivory.Language
 import           Ivory.Stdlib
 import           Prelude                     hiding (error)
 import           Util.CRC16
+import Interface.GPIO.Port
 
 
 
@@ -67,11 +68,15 @@ data Mix = forall f. Flash f => Mix
 
 mix :: ( MonadState Context m
        , MonadReader (Domain p t) m
-       , Transport t, Output o, Input i, Flash f, Display d b w, FrameBuffer b w
-       ) => [p -> m i] -> [p -> m o] -> (p -> m d) -> (p -> f) -> m Feature
+       , Transport t
+       , Output o, Input i
+       , Flash f
+       , Display d b w, FrameBuffer b w
+       , Pull p u
+       ) => [p -> u -> m i] -> [p -> u -> m o] -> (p -> m d) -> (p -> f) -> m Feature
 mix inputs outputs display etc = do
-    relays       <- mkRelays outputs
-    let relaysN   = length outputs
+    relays       <- mkRelays outputs 
+    let relaysN   = length outputs 
     dinputs      <- mkDInputs inputs
     let dinputsN  = length inputs
     rules        <- mkRules dinputsN relaysN

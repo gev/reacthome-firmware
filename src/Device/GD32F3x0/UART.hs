@@ -29,6 +29,7 @@ import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.SYSCFG
 import           Support.Device.GD32F3x0.USART  as S
+import Support.Device.GD32F3x0.GPIO
 
 
 data UART = UART
@@ -49,10 +50,10 @@ mkUART :: MonadState Context m
        -> IRQn
        -> DMA_CHANNEL
        -> IRQn
-       -> Port
-       -> Port
+       -> (GPIO_PUPD -> Port)
+       -> (GPIO_PUPD -> Port)
        -> m UART
-mkUART uart rcu uartIRQ dma dmaIRQn rx tx = do
+mkUART uart rcu uartIRQ dma dmaIRQn rx' tx' = do
 
     let dmaInit = dmaParam [ direction    .= ival dma_memory_to_peripheral
                            , memory_inc   .= ival dma_memory_increase_enable
@@ -66,6 +67,9 @@ mkUART uart rcu uartIRQ dma dmaIRQn rx tx = do
 {-
     TODO: Generalize  remap dma
 -}
+
+    let rx = rx' gpio_pupd_none
+    let tx = tx' gpio_pupd_none
 
     initPort rx
     initPort tx
