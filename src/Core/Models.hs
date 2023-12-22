@@ -5,6 +5,8 @@ import           Ivory.Language
 
 deviceTypeUnknown       = 0x00 :: Uint8
 
+
+
 {-
     Legacy device types based on the PIC18 MCU family
 -}
@@ -51,6 +53,16 @@ deviceTypeSmart6Push    = 0x2C :: Uint8
 
 
 {-
+    Modern two component SMART devices
+-}
+
+deviceTypeSmartTopA6P   = 0x30 :: Uint8
+
+deviceTypeSmartBottom1  = 0x3a :: Uint8
+
+
+
+{-
     The DIN rail devices
     Legacy device types based on the PIC32 MCU family
     Modern device types based on the GD32 MCU family
@@ -91,6 +103,7 @@ deviceTypeRsHub4        = 0xC1 :: Uint8
 -}
 deviceTypeTemperatureExt= 0xF0 :: Uint8
 deviceTypePlc           = 0xFE :: Uint8
+
 
 
 {-
