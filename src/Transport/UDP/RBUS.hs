@@ -1,11 +1,12 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE RecordWildCards  #-}
-{-# LANGUAGE TypeOperators    #-}
+{-# LANGUAGE DataKinds          #-}
+{-# LANGUAGE FlexibleContexts   #-}
+{-# LANGUAGE NamedFieldPuns     #-}
+{-# LANGUAGE RankNTypes         #-}
+{-# LANGUAGE RecordWildCards    #-}
+{-# LANGUAGE TypeOperators      #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
+{-# LANGUAGE NumericUnderscores #-}
 
 module Transport.UDP.RBUS where
 
@@ -24,7 +25,7 @@ import           Core.Version
 import           Data.Buffer
 import           Data.Record
 import           Data.Value
-import           Feature.Server          (server)
+import           Feature.Server          (Server (shouldInit), server)
 import           Interface.ENET
 import           Interface.LwipPort
 import           Interface.MCU           as I
@@ -41,6 +42,7 @@ import           Support.Lwip.Memp
 import           Support.Lwip.Netif
 import           Support.Lwip.Pbuf
 import           Support.Lwip.Udp
+import           Transport.RS485.RBUS.Tx (initTask)
 import           Transport.UDP.RBUS.Data
 import           Transport.UDP.RBUS.Rx
 import           Transport.UDP.RBUS.Tx
@@ -53,6 +55,7 @@ rbus enet' = do
     mcu             <- asks D.mcu
     model           <- asks D.model
     version         <- asks D.version
+    shouldInit      <- asks D.shouldInit
     let mac          = I.mac mcu
     features        <- asks D.features
     enet            <- enet' $ peripherals mcu
@@ -69,7 +72,8 @@ rbus enet' = do
     discovery       <- buffer  "udp_discovery"
     requestIP       <- buffer  "udp_request_ip"
     requestInit     <- buffer  "udp_request_init"
-    shouldDiscovery <- value "udp_should_discovery" false
+    shouldDiscovery <- value   "udp_should_discovery" false
+
 
     {--
         TODO: move dispatcher outside
@@ -89,6 +93,7 @@ rbus enet' = do
                       , requestIP
                       , requestInit
                       , shouldDiscovery
+                      , shouldInit
                       , onMessage
                       }
 
@@ -149,9 +154,10 @@ rbus enet' = do
         when (reval >? 1) $
             void $ inputLwipPortIf enet netif
 
-    addTask $ delay 1000 "tmr_arp"  tmrEtharp
-    addTask $ delay  100 "tmr_igmp" tmrIgmp
-    addTask $ yeld  "udp_discovery" $ discoveryTask rbus
+    addTask $ delay 1_000 "tmr_arp"         tmrEtharp
+    addTask $ delay   100 "tmr_igmp"        tmrIgmp
+    addTask $ yeld        "udp_discovery" $ discoveryTask   rbus
+    addTask $ delay 2_000 "request_init"  $ requestInitTask rbus
 
     pure rbus
 
@@ -163,9 +169,18 @@ discoveryTask rbus@RBUS{..} = do
     when shouldDiscovery' $ do
         hasIP' <- deref hasIP
         ifte_ hasIP'
-            (transmit  rbus discovery)
+            (transmit rbus discovery)
             (broadcast rbus requestIP)
         store shouldDiscovery false
+
+
+
+requestInitTask :: RBUS -> Ivory (ProcEffects s t) ()
+requestInitTask rbus@RBUS{..} = do
+    hasIP'      <- deref hasIP
+    shouldInit' <- deref shouldInit
+    when (hasIP' .&& shouldInit') $
+        transmit rbus requestInit
 
 
 

@@ -46,8 +46,8 @@ pb_15 = pb gpio_pin_15
 
 
 
-pa :: GPIO_PIN -> Mode -> Port
+pa :: GPIO_PIN -> Mode -> GPIO_PUPD -> Port
 pa = Port rcu_gpioa gpioa
 
-pb :: GPIO_PIN -> Mode -> Port
+pb :: GPIO_PIN -> Mode -> GPIO_PUPD -> Port
 pb = Port rcu_gpiob gpiob

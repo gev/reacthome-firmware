@@ -29,5 +29,6 @@ data RBUS = RBUS
     , requestIP       :: Buffer   1 Uint8
     , requestInit     :: Buffer   1 Uint8
     , shouldDiscovery :: Value      IBool
+    , shouldInit      :: Value      IBool
     , onMessage       :: Buffer 256 Uint8 -> Uint8 -> forall s t. Ivory (ProcEffects s t) ()
     }

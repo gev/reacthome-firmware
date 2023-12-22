@@ -22,44 +22,34 @@ import           Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif
 import           Support.Device.GD32F4xx.Misc
 import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.SYSCFG
+import Support.Device.GD32F4xx.GPIO
 
 
 
-data ENET = ENET
-    { ethRmiiRefClk :: G.Port
-    , ethRmiiMdio   :: G.Port
-    , ethRmiiMdc    :: G.Port
-    , ethRmiiCrsDv  :: G.Port
-    , ethRmiiRxd0   :: G.Port
-    , ethRmiiRxd1   :: G.Port
-    , ethRmiiTxEn   :: G.Port
-    , ethRmiiTxd0   :: G.Port
-    , ethRmiiTxd1   :: G.Port
-    , enetIRQ       :: IRQn
-    }
+newtype ENET = ENET { enetIRQ :: IRQn }
 
 mkENET :: MonadState Context m
-       => G.Port
-       -> G.Port
-       -> G.Port
-       -> G.Port
-       -> G.Port
-       -> G.Port
-       -> G.Port
-       -> G.Port
-       -> G.Port
+       => (GPIO_PUPD -> G.Port)
+       -> (GPIO_PUPD -> G.Port)
+       -> (GPIO_PUPD -> G.Port)
+       -> (GPIO_PUPD -> G.Port)
+       -> (GPIO_PUPD -> G.Port)
+       -> (GPIO_PUPD -> G.Port)
+       -> (GPIO_PUPD -> G.Port)
+       -> (GPIO_PUPD -> G.Port)
+       -> (GPIO_PUPD -> G.Port)
        -> IRQn
        -> m ENET
-mkENET ethRmiiRefClk ethRmiiMdio ethRmiiMdc ethRmiiCrsDv ethRmiiRxd0 ethRmiiRxd1 ethRmiiTxEn ethRmiiTxd0 ethRmiiTxd1 enetIRQ= do
-    G.initPort ethRmiiRefClk
-    G.initPort ethRmiiMdio
-    G.initPort ethRmiiMdc
-    G.initPort ethRmiiCrsDv
-    G.initPort ethRmiiRxd0
-    G.initPort ethRmiiRxd1
-    G.initPort ethRmiiTxEn
-    G.initPort ethRmiiTxd0
-    G.initPort ethRmiiTxd1
+mkENET ethRmiiRefClk ethRmiiMdio ethRmiiMdc ethRmiiCrsDv ethRmiiRxd0 ethRmiiRxd1 ethRmiiTxEn ethRmiiTxd0 ethRmiiTxd1 enetIRQ = do
+    G.initPort $ ethRmiiRefClk gpio_pupd_none
+    G.initPort $ ethRmiiMdio   gpio_pupd_none
+    G.initPort $ ethRmiiMdc    gpio_pupd_none
+    G.initPort $ ethRmiiCrsDv  gpio_pupd_none
+    G.initPort $ ethRmiiRxd0   gpio_pupd_none
+    G.initPort $ ethRmiiRxd1   gpio_pupd_none
+    G.initPort $ ethRmiiTxEn   gpio_pupd_none
+    G.initPort $ ethRmiiTxd0   gpio_pupd_none
+    G.initPort $ ethRmiiTxd1   gpio_pupd_none
 
     addModule inclEthernetif
 
@@ -76,13 +66,13 @@ mkENET ethRmiiRefClk ethRmiiMdio ethRmiiMdc ethRmiiCrsDv ethRmiiRxd0 ethRmiiRxd1
         enablePeriphClock rcu_enetrx
         deinitENET
         resetSoftwareENET
-        isReady <- initENET enet_auto_negotiation enet_no_autochecksum enet_broadcast_frames_pass
+        isReady <- initENET enet_100m_fullduplex enet_no_autochecksum enet_broadcast_frames_pass
         enableEnetFilterFeature enet_multicast_filter_pass
         when isReady $ do
             enableInterruptENET enet_dma_int_nie
             enableInterruptENET enet_dma_int_rie
 
-    pure ENET { ethRmiiRefClk, ethRmiiMdio, ethRmiiMdc, ethRmiiCrsDv, ethRmiiRxd0, ethRmiiRxd1, ethRmiiTxEn, ethRmiiTxd0, ethRmiiTxd1, enetIRQ }
+    pure ENET { enetIRQ }
 
 
 

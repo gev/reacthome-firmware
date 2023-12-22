@@ -20,6 +20,7 @@ data Port = Port
     , gpio :: GPIO_PERIPH
     , pin  :: GPIO_PIN
     , mode :: Mode
+    , pupd :: GPIO_PUPD
     }
 
 
@@ -33,8 +34,9 @@ initPort p@Port{..} = addInit (show p) $ do
                         >> setAF gpio mode pin
     where initMode mode otype = do
             setOutputOptions gpio otype gpio_ospeed_50mhz pin
-            setMode gpio mode gpio_pupd_none pin
+            setMode gpio mode pupd pin
 
 
 instance Show Port where
     show Port{..} = symbol gpio <> "_" <> symbol pin
+

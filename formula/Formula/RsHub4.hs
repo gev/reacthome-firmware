@@ -15,7 +15,7 @@ import           Transport.UDP.RBUS as U
 rsHub4 :: Formula GD32F4xx
 rsHub4 = Formula { name       = "rs_hub4"
                  , model      = deviceTypeRsHub4
-                 , version    = (4, 0)
+                 , version    = (4, 1)
                  , shouldInit = true
                  , transport  = U.rbus eth_0
                  , features   = [ indicator npx_pwm_2 50

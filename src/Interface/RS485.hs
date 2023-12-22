@@ -23,6 +23,7 @@ import           Interface.GPIO.Output
 import           Interface.MCU
 import           Interface.UART        as U
 import           Ivory.Language
+import           Interface.GPIO.Port
 
 
 
@@ -43,12 +44,13 @@ data HandleRS485 r = HandleRS485
 
 
 
-rs485 :: (MonadState Context m, MonadReader (D.Domain p t) m, UART u, Output o)
-      => Int -> (p -> m u) -> (p -> m o) -> m RS485
+rs485 :: (MonadState Context m, MonadReader (D.Domain p t) m, UART u, Output o, Pull p d)
+      => Int -> (p -> m u) -> (p -> d -> m o) -> m RS485
 rs485 n uart' rede' = do
     mcu' <- asks D.mcu
-    uart <- uart' $ peripherals mcu'
-    rede <- rede' $ peripherals mcu'
+    let peripherals' = peripherals mcu'
+    uart <- uart' peripherals'
+    rede <- rede' peripherals' (pullNone peripherals')
 
     addInit ("rs485_" <> show n) $ reset rede
 

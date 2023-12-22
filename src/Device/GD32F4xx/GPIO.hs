@@ -97,17 +97,17 @@ pe_15 = pe gpio_pin_15
 
 
 
-pa :: GPIO_PIN -> Mode -> Port
+pa :: GPIO_PIN -> Mode -> GPIO_PUPD -> Port
 pa = Port rcu_gpioa gpioa
 
-pb :: GPIO_PIN -> Mode -> Port
+pb :: GPIO_PIN -> Mode -> GPIO_PUPD -> Port
 pb = Port rcu_gpiob gpiob
 
-pc :: GPIO_PIN -> Mode -> Port
+pc :: GPIO_PIN -> Mode -> GPIO_PUPD -> Port
 pc = Port rcu_gpioc gpioc
 
-pd :: GPIO_PIN -> Mode -> Port
+pd :: GPIO_PIN -> Mode -> GPIO_PUPD -> Port
 pd = Port rcu_gpiod gpiod
 
-pe :: GPIO_PIN -> Mode -> Port
+pe :: GPIO_PIN -> Mode -> GPIO_PUPD -> Port
 pe = Port rcu_gpioe gpioe

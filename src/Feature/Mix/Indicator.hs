@@ -38,6 +38,7 @@ import           Interface.SystemClock    (getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Support.Cast
+import Interface.GPIO.Port
 
 
 
@@ -72,7 +73,7 @@ mkIndicator :: ( MonadState Context m
 mkIndicator mkDisplay hue ats dinputs relays = do
     mcu       <- asks D.mcu
     transport <- asks D.transport
-    display   <- mkDisplay $ peripherals mcu
+    display   <- mkDisplay $ peripherals mcu 
     canvas    <- mkCanvas1D $ I.frameBuffer display "indicator"
     t         <- value    "indicator_t"           0
     dt        <- value    "indicator_dt"          1

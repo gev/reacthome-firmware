@@ -27,6 +27,7 @@ import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.System
 import           Support.Device.GD32F3x0.Timer
+import Support.Device.GD32F3x0.GPIO
 
 
 
@@ -47,9 +48,9 @@ mkNeoPixelPWM :: MonadState Context m
               => (Uint32 -> Uint32 -> m Timer)
               -> TIMER_CHANNEL
               -> DMA_CHANNEL
-              -> Port
+              -> (GPIO_PUPD -> Port)
               -> m NeoPixelPWM
-mkNeoPixelPWM timer' pwmChannel dmaChannel pwmPort = do
+mkNeoPixelPWM timer' pwmChannel dmaChannel pwmPort' = do
     pwmTimer     <- timer' system_core_clock pwmPeriod
     let dmaInit   = dmaParam [ direction    .= ival dma_memory_to_peripheral
                              , memory_inc   .= ival dma_memory_increase_enable
@@ -60,6 +61,7 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel pwmPort = do
                              ]
     dmaParams    <- record (symbol dmaChannel <> "_dma_param") dmaInit
     frameRequest <- value  (symbol dmaChannel <> "_frame_request" ) true
+    let pwmPort   = pwmPort' gpio_pupd_none
 
     initPort pwmPort
 

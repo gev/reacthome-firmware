@@ -55,12 +55,12 @@ handleAddress :: RBUS -> Uint8 -> Ivory (ProcEffects s t) ()
 handleAddress rbus@RBUS{..} len =
     when (len ==? 15) $ do
         isValid <- local $ ival true
-        for 6 $ \ix -> do
-            isValid' <- deref isValid
+        arrayMap $ \ix -> do
             m  <- deref $ mac ! ix
             m' <- deref $ rxBuff ! toIx (1 + fromIx ix)
-            when (m ==? m') $
-                store isValid (isValid' .&& m ==? m')
+            when (m /=? m') $ do
+                store isValid false
+                breakOut
         isValid' <- deref isValid
         when isValid' $ do
             ip1 <- unpack rxBuff  7
@@ -75,7 +75,6 @@ handleAddress rbus@RBUS{..} len =
             createIpAddr4 netmask nm1 nm2 nm3 nm4
             setNetifAddr netif localIP netmask ipAddrAny
             store hasIP true
-            transmit rbus requestInit
 
 
 handleMessage :: RBUS -> Uint8 -> Ivory (ProcEffects s t) ()
