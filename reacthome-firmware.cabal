@@ -119,7 +119,7 @@ executable reacthome-firmware
                     , Interface.I2C
 
                     , Protocol.OneWire.Master
-                    , Protocol.RS485.RBUS
+                                        , Protocol.RS485.RBUS
                     , Protocol.RS485.RBUS.Master
                     , Protocol.RS485.RBUS.Master.MacTable
                     , Protocol.RS485.RBUS.Master.Rx
