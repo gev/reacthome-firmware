@@ -17,6 +17,7 @@ import           Formula.Relay12
 import           Formula.Server
 import           Formula.UdpEcho450
 import           Formula.RsHub4
+import           Formula.Sht21
 
 
 main :: IO ()
@@ -26,6 +27,7 @@ main = do
                      , dimmerAC12
                      , mix6x12
                      , di4
+                     , sht21_test
                     --  , blink330
                      ]
     gcc gd32f450vgt6 [ server

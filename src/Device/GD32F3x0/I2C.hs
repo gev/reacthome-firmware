@@ -4,6 +4,7 @@
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RecordWildCards       #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Device.GD32F3x0.I2C where
 
@@ -22,6 +23,7 @@ import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import GHC.TypeNats
+import Support.Device.GD32F3x0.GPIO
 
 
 data I2C n = I2C
@@ -31,7 +33,7 @@ data I2C n = I2C
     , mode     :: Value IBool
     , address  :: Value Uint8
     , txBuff   :: Buffer n Uint8
-    , index    :: Value (Ix n)
+    , index    :: Value Uint16
     , size     :: Value Sint32
     }
 
@@ -41,16 +43,19 @@ mkI2C :: (MonadState Context m, KnownNat n)
        -> RCU_PERIPH
        -> IRQn
        -> IRQn
-       -> Port
-       -> Port
+       -> (GPIO_PUPD -> Port)
+       -> (GPIO_PUPD -> Port)
        -> m (I2C n)
-mkI2C i2c rcu eventIrq errorIrq sda scl = do
+mkI2C i2c rcu eventIrq errorIrq sda' scl' = do
 
-    mode    <- value_ (symbol i2c <> "_mode")
-    address <- value_ (symbol i2c <> "_address")
-    txBuff  <- buffer (symbol i2c <> "_txbuffer")
-    index   <- value_ (symbol i2c <> "_tx_index")
-    size    <- value_ (symbol i2c <> "_tx_size")
+    mode    <- value_ $ symbol i2c <> "_mode"
+    address <- value_ $ symbol i2c <> "_address"
+    txBuff  <- buffer $ symbol i2c <> "_tx_buff"
+    index   <- value_ $ symbol i2c <> "_tx_index"
+    size    <- value_ $ symbol i2c <> "_tx_size"
+
+    let sda = sda' gpio_pupd_none
+    let scl = scl' gpio_pupd_none
 
     initPort sda
     initPort scl
@@ -71,16 +76,26 @@ mkI2C i2c rcu eventIrq errorIrq sda scl = do
 instance KnownNat n => I.I2C I2C n where
 
     receive  I2C{..} addr len = do
+        store mode false
         store size $ safeCast len
         store address addr
         store index 0
+        configAckI2C i2c i2c_ack_enable
+        enableInterruptI2C i2c i2c_int_ev
+        enableInterruptI2C i2c i2c_int_buf
+        enableInterruptI2C i2c i2c_int_err
+        startOnBusI2C i2c
 
     transmit I2C{..} addr buff = do
-        arrayMap $ \ix -> store (txBuff ! ix) =<< deref (txBuff ! ix)
+        store mode true
         store size $ arrayLen buff
         store address addr
         store index 0
-
+        enableInterruptI2C i2c i2c_int_ev
+        enableInterruptI2C i2c i2c_int_buf
+        enableInterruptI2C i2c i2c_int_err
+        startOnBusI2C i2c
+        
 
 
 instance KnownNat n => Handler I.HandleI2C (I2C n) where
@@ -90,7 +105,7 @@ instance KnownNat n => Handler I.HandleI2C (I2C n) where
 
 
 
-handleEvent :: KnownNat n => I2C n -> (Uint8 -> Ix n -> Ivory eff a) -> Ivory eff ()
+handleEvent :: KnownNat n => I2C n -> (Uint8 -> Uint16 -> Ivory eff ()) -> Ivory eff ()
 handleEvent i2c receive = do
     mode' <- deref $ mode i2c
     ifte_ mode'
@@ -99,7 +114,7 @@ handleEvent i2c receive = do
 
 
 
-handleTransmit :: KnownNat len => I2C len -> Ivory eff ()
+handleTransmit :: KnownNat n => I2C n -> Ivory eff ()
 handleTransmit I2C{..} = do
     sbsend <- getInterruptFlagI2C i2c i2c_int_flag_sbsend
     ifte_ sbsend
@@ -119,9 +134,9 @@ handleTransmit I2C{..} = do
                     when tbe $ do
                         index' <- deref index
                         size'  <- deref size
-                        ifte_ (fromIx index' <? size')
+                        ifte_ (safeCast index' <? size')
                             (do
-                                transmitDataI2C i2c =<< deref (txBuff ! index')
+                                transmitDataI2C i2c =<< deref (txBuff ! toIx index')
                                 store index $ index' + 1
                             )
                             (do
@@ -136,7 +151,7 @@ handleTransmit I2C{..} = do
 
 
 
-handleReceive :: KnownNat n => I2C n -> (Uint8 -> Ix n -> Ivory eff a) -> Ivory eff ()
+handleReceive :: I2C n -> (Uint8 -> Uint16 -> Ivory eff a) -> Ivory eff ()
 handleReceive I2C{..} receive = do
     sbsend <- getInterruptFlagI2C i2c i2c_int_flag_sbsend
     ifte_ sbsend
@@ -145,7 +160,7 @@ handleReceive I2C{..} receive = do
                 Should clear i2c_int_flag_sbsend?
             -}
             address' <- safeCast <$> deref address
-            addressingMasterI2C i2c address' i2c_transmitter
+            addressingMasterI2C i2c address' i2c_receiver
         )
         (do
             addsend <- getInterruptFlagI2C i2c i2c_int_flag_addsend

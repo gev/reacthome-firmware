@@ -23,7 +23,7 @@ data RBUS where
              , msgOffset     :: Buffer  256 Uint16
              , msgSize       :: Buffer  256 Uint16
              , msgQueue      :: Queue   256
-             , msgBuff       :: Buffer 4096 Uint16
+             , msgBuff       :: Buffer  256 Uint16
              , msgIndex      :: Value       Uint16
              , txBuff        :: Buffer  512 Uint16
              , txLock        :: Value       IBool
