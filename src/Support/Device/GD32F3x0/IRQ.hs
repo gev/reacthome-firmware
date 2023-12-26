@@ -54,8 +54,8 @@ exti2_3_irqn        = IRQn $ ext "EXTI2_3_IRQn"
 exti4_15_irqn       = IRQn $ ext "EXTI4_15_IRQn"
 i2c0_ev_irqn        = IRQn $ ext "I2C0_EV_IRQn"
 i2c0_er_irqn        = IRQn $ ext "I2C0_ER_IRQn"
-i2c1_ev_irqn        = IRQn $ ext "I2C0_EV_IRQn"
-i2c1_er_irqn        = IRQn $ ext "I2C0_ER_IRQn"
+i2c1_ev_irqn        = IRQn $ ext "I2C1_EV_IRQn"
+i2c1_er_irqn        = IRQn $ ext "I2C1_ER_IRQn"
 
 
 
