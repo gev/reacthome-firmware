@@ -67,7 +67,7 @@ doTransmitMessage r@RBUS{..} = do
                     store sx $ sx' + 1
                     store (txBuff ! dx) v
                 store (msgTTL ! ix) $ ttl - 1
-                rsTransmit r size
+                rsTransmit r $ safeCast size
             )
             (remove msgQueue)
 
@@ -102,7 +102,7 @@ toRS :: (Slave 255 -> (Uint8 -> Ivory eff ()) -> Ivory (ProcEffects s ()) ())
      -> RBUS
      -> Ivory (ProcEffects s ()) ()
 toRS transmit r@RBUS{..} =
-    rsTransmit r =<< run protocol transmit txBuff 0
+    rsTransmit r . safeCast =<< run protocol transmit txBuff 0
 
 
 {--
@@ -115,7 +115,7 @@ toQueue RBUS{..} buff = do
         push msgQueue $ \i -> do
             index <- deref msgIndex
             size <- run protocol (transmitMessage buff) msgBuff index
-            store msgIndex $ index + size
+            store msgIndex $ index + safeCast size
             let ix = toIx i
             store (msgOffset ! ix) index
             store (msgSize   ! ix) size
@@ -136,13 +136,13 @@ run :: KnownNat l
     -> (Slave 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ())
     -> Buffer l Uint16
     -> Uint16
-    -> Ivory (ProcEffects s t) Uint16
+    -> Ivory (ProcEffects s t) Uint8
 run protocol transmit buff offset = do
     size  <- local $ ival 0
     let go :: Uint8 -> Ivory eff ()
         go v = do
             i <- deref size
-            let ix = toIx $ offset + i
+            let ix = toIx $ offset + safeCast i
             store (buff ! ix) $ safeCast v
             store size $ i + 1
     transmit protocol go
