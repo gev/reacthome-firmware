@@ -1,27 +1,42 @@
 module Core.Models where
 
-import Ivory.Language
+import           Ivory.Language
 
 
 deviceTypeUnknown       = 0x00 :: Uint8
-deviceTypeSensor4       = 0x01 :: Uint8            
-deviceTypeSensor6       = 0x02 :: Uint8            
-deviceTypeThi           = 0x03 :: Uint8        
-deviceTypeDopplerLegacy = 0x04 :: Uint8                
-deviceTypeDmx           = 0x05 :: Uint8        
-deviceTypeRs485         = 0x06 :: Uint8        
-deviceTypeIr6           = 0x07 :: Uint8        
-deviceTypeDi16          = 0x08 :: Uint8        
-deviceTypeDi32          = 0x09 :: Uint8        
-deviceTypeDo8           = 0x0A :: Uint8        
-deviceTypeDo16          = 0x0B :: Uint8        
-deviceTypeDi16Do8       = 0x0C :: Uint8            
-deviceTypeDo8Di16       = 0x0D :: Uint8            
 
-deviceTypeIrReceiver    = 0x10 :: Uint8                
-deviceTypeDo12          = 0x11 :: Uint8        
-deviceTypeDi24          = 0x12 :: Uint8        
-deviceTypeIr1           = 0x14 :: Uint8        
+
+
+{-
+    Legacy device types based on the PIC18 MCU family
+-}
+
+deviceTypeSensor4       = 0x01 :: Uint8
+deviceTypeSensor6       = 0x02 :: Uint8
+deviceTypeThi           = 0x03 :: Uint8
+deviceTypeDoppler'      = 0x04 :: Uint8
+deviceTypeRs485         = 0x06 :: Uint8
+deviceTypeIr6           = 0x07 :: Uint8
+deviceTypeDi16          = 0x08 :: Uint8
+deviceTypeDi32          = 0x09 :: Uint8
+deviceTypeDo8           = 0x0A :: Uint8
+deviceTypeDo16          = 0x0B :: Uint8
+deviceTypeDi16Do8       = 0x0C :: Uint8
+deviceTypeDo8Di16       = 0x0D :: Uint8
+deviceTypeDim4'         = 0x0e :: Uint8
+deviceTypeDim8'         = 0x0f :: Uint8
+deviceTypeIrReceiver    = 0x10 :: Uint8
+deviceTypeDo12          = 0x11 :: Uint8
+deviceTypeDi24          = 0x12 :: Uint8
+deviceTypeIr1           = 0x14 :: Uint8
+
+
+
+{-
+    The field devices
+    Legacy device types based on the PIC32 MCU family
+    Modern device types based on the GD32 MCU family
+-}
 
 deviceTypeDi4           = 0x20 :: Uint8
 deviceTypeClimate       = 0x21 :: Uint8
@@ -31,11 +46,28 @@ deviceTypeIr4           = 0x24 :: Uint8
 deviceTypeSmart4g       = 0x25 :: Uint8
 deviceTypeSmart4gd      = 0x26 :: Uint8
 deviceTypeSmart4a       = 0x27 :: Uint8
-deviceTypeDi4W          = 0x28 :: Uint8
-deviceTypeIbutton       = 0x29 :: Uint8
 deviceTypeSmart4am      = 0x2A :: Uint8
 deviceTypeCo2           = 0x2B :: Uint8
 deviceTypeSmart6Push    = 0x2C :: Uint8
+
+
+
+{-
+    Modern two component SMART devices
+-}
+
+deviceTypeSmartTopA6P   = 0x30 :: Uint8
+
+deviceTypeSmartBottom1  = 0x3a :: Uint8
+
+
+
+{-
+    The DIN rail devices
+    Legacy device types based on the PIC32 MCU family
+    Modern device types based on the GD32 MCU family
+    And one based on the Raspberry Pi
+-}
 
 deviceTypeRelay6        = 0xA0 :: Uint8
 deviceTypeRelay12       = 0xA1 :: Uint8
@@ -64,12 +96,18 @@ deviceTypeMix6x12Rs     = 0xB5 :: Uint8
 deviceTypeServer        = 0xC0 :: Uint8
 deviceTypeRsHub4        = 0xC1 :: Uint8
 
-deviceTypePnp           = 0xE0 :: Uint8        
 
-deviceTypeTemperatureExt= 0xF0 :: Uint8                    
-deviceTypePlc           = 0xFE :: Uint8        
+
+{-
+    Legacy device types based on the PLC Owen family
+-}
+deviceTypeTemperatureExt= 0xF0 :: Uint8
+deviceTypePlc           = 0xFE :: Uint8
+
+
+
+{-
+  Legacy common device type with a bootloader
+  based on the PIC18 MCU family
+-}
 deviceTypeBootloader    = 0xFF :: Uint8
-
-                        
--- deviceTypeDim4          = 0x0e :: Uint8   ?? already present
--- deviceTypeDim8          = 0x0f :: Uint8     ??  already present

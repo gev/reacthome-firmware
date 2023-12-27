@@ -18,6 +18,8 @@ import           Formula.Server
 import           Formula.UdpEcho450
 import           Formula.RsHub4
 import           Formula.Sht21
+import           Formula.Smart.Bottom.Bottom1
+import           Formula.Smart.Top.TopA6P 
 
 
 main :: IO ()
@@ -28,6 +30,8 @@ main = do
                      , mix6x12
                      , di4
                      , sht21_test
+                     , smartBottom1
+                     , smartTopA6P
                     --  , blink330
                      ]
     gcc gd32f450vgt6 [ server

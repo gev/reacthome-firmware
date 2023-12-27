@@ -130,6 +130,7 @@ data GD32F3x0 = GD32F3x0
     , out_pb_15 :: Output'
 
     , od_pa_8   :: OpenDrain'
+    , od_pa_15  :: OpenDrain'
 
     , timer_0   :: Timer'
     , timer_1   :: Timer'
@@ -250,6 +251,7 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
     , out_pb_15 = mkOutput pb_15
 
     , od_pa_8   = mkOpenDrain pa_8
+    , od_pa_15   = mkOpenDrain pa_15
 
     , timer_0   =  cfg_timer_0
     , timer_1   =  cfg_timer_1
