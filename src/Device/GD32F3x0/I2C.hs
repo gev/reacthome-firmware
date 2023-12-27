@@ -76,9 +76,9 @@ mkI2C i2c rcu eventIrq errorIrq sda' scl' = do
 instance KnownNat n => I.I2C I2C n where
 
     receive  I2C{..} addr len = do
-        store mode false
         store size $ safeCast len
         store address addr
+        store mode false
         store index 0
         configAckI2C i2c i2c_ack_enable
         enableInterruptI2C i2c i2c_int_ev
@@ -87,9 +87,10 @@ instance KnownNat n => I.I2C I2C n where
         startOnBusI2C i2c
 
     transmit I2C{..} addr buff = do
-        store mode true
+        arrayMap $ \ix -> store (txBuff ! ix) =<< deref (buff ! ix)
         store size $ arrayLen buff
         store address addr
+        store mode true
         store index 0
         enableInterruptI2C i2c i2c_int_ev
         enableInterruptI2C i2c i2c_int_buf
