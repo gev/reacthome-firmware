@@ -14,6 +14,7 @@ import           Support.Device.GD32F3x0.System
 import           Support.Device.GD32F3x0.Timer
 import           Support.Device.GD32F3x0.USART
 import           Support.Device.GD32F3x0.FMC
+import           Support.Device.GD32F3x0.I2C
 
 
 inclGD32F3x0 :: ModuleDef
@@ -29,5 +30,6 @@ inclGD32F3x0 = do
     inclSystem
     inclTimer
     inclUSART
+    inclI2C
     inclFMC
     inclCoreCM4

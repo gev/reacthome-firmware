@@ -16,6 +16,7 @@ import           Device.GD32F3x0.GPIO.Input
 import           Device.GD32F3x0.GPIO.Mode
 import           Device.GD32F3x0.GPIO.OpenDrain
 import           Device.GD32F3x0.GPIO.Output
+import           Device.GD32F3x0.I2C
 import           Device.GD32F3x0.Mac              (makeMac)
 import           Device.GD32F3x0.PWM
 import           Device.GD32F3x0.SystemClock      as G
@@ -39,18 +40,21 @@ import           Support.Device.GD32F3x0.RCU      as R
 import           Support.Device.GD32F3x0.SYSCFG
 import           Support.Device.GD32F3x0.Timer
 import           Support.Device.GD32F3x0.USART
+import           Support.Device.GD32F3x0.I2C
+import           GHC.TypeNats
 
 
 
-type UART'        = forall m. MonadState Context m => m UART
-type Input'       = forall m. MonadState Context m => GPIO_PUPD -> m Input
-type Output'      = forall m. MonadState Context m => GPIO_PUPD -> m Output
-type OpenDrain'   = forall m. MonadState Context m => m OpenDrain
-type Timer'       = forall m. MonadState Context m => Uint32 -> Uint32 -> m Timer
-type PWM'         = forall m. MonadState Context m => Uint32 -> Uint32 -> m PWM
-type NeoPixelPWM' = forall m. MonadState Context m => m NeoPixelPWM
-type EXTI'        = forall m. MonadState Context m => m EXTI
-type OneWire'     = forall m. MonadState Context m => m OpenDrain -> m OneWire
+type UART'        = forall m.   MonadState Context m => m UART
+type I2C'         = forall m n. KnownNat n => MonadState Context m => m (I2C n)
+type Input'       = forall m.   MonadState Context m => GPIO_PUPD -> m Input
+type Output'      = forall m.   MonadState Context m => GPIO_PUPD -> m Output
+type OpenDrain'   = forall m.   MonadState Context m => m OpenDrain
+type Timer'       = forall m.   MonadState Context m => Uint32 -> Uint32 -> m Timer
+type PWM'         = forall m.   MonadState Context m => Uint32 -> Uint32 -> m PWM
+type NeoPixelPWM' = forall m.   MonadState Context m => m NeoPixelPWM
+type EXTI'        = forall m.   MonadState Context m => m EXTI
+type OneWire'     = forall m.   MonadState Context m => m OpenDrain -> m OneWire
 
 
 data GD32F3x0 = GD32F3x0
@@ -154,6 +158,8 @@ data GD32F3x0 = GD32F3x0
     , ow_0      :: OneWire'
 
     , etc       :: PageAddr
+
+    , i2c_0      :: I2C'
     }
 
 
@@ -320,6 +326,13 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
     , ow_0  = mkOneWire cfg_timer_15
 
     , etc = mkPage 0x800_fc00
+
+    , i2c_0 = mkI2C i2c0 
+                    rcu_i2c0 
+                    i2c0_ev_irqn 
+                    i2c0_er_irqn 
+                    (pa_10 af_4) 
+                    (pa_9  af_4)
     }
 
 

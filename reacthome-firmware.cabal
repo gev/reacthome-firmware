@@ -86,6 +86,7 @@ executable reacthome-firmware
                     , Feature.Server
                     , Feature.DS18B20
                     , Feature.UdpEcho
+                    , Feature.Sht21
 
                     , Formula.Blink330
                     , Formula.Blink450
@@ -98,6 +99,7 @@ executable reacthome-firmware
                     , Formula.DI4
                     , Formula.UdpEcho450
                     , Formula.RsHub4
+                    , Formula.Sht21
 
                     , Interface.Counter
                     , Interface.GPIO.Input

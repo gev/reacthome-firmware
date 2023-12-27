@@ -136,7 +136,7 @@ newtype I2C_INTERRUPT = I2C_INTERRUPT Uint32
 
 i2c_int_err = I2C_INTERRUPT $ ext "I2C_INT_ERR"
 i2c_int_buf = I2C_INTERRUPT $ ext "I2C_INT_BUF"
-i2c_int_ev  = I2C_INTERRUPT $ ext "I2C_INT_BUF"
+i2c_int_ev  = I2C_INTERRUPT $ ext "I2C_INT_EV"
 
 
 newtype I2C_TRANSFER_DIRECTION = I2C_TRANSFER_DIRECTION Uint32
