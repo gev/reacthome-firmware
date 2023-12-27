@@ -111,7 +111,7 @@ transmit' sht21@SHT21{..} action calculate = do
     when isReady' $ do
         store (txBuff ! 0) action
         value <- calculate sht21
-        packBE txBuff 1 value
+        packLE txBuff 1 value
         transmit txBuff
 
 
