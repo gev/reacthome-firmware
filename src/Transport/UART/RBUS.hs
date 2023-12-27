@@ -9,7 +9,7 @@ module Transport.UART.RBUS    where
 
 import           Control.Monad.Reader     (MonadReader, asks)
 import           Control.Monad.State      (MonadState)
-import           Core.Actions             (actionDiscovery)
+import           Core.Actions
 import           Core.Context
 import           Core.Dispatcher
 import qualified Core.Domain              as D
@@ -21,10 +21,7 @@ import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Data.Value
 import qualified Interface.MCU            as I
-import           Interface.UART           (HandleUART (HandleUART),
-                                           Parity (None), StopBit (SB_1b),
-                                           UART (configUART),
-                                           WordLength (WL_8b))
+import           Interface.UART
 import           Ivory.Language
 import qualified Protocol.UART.RBUS       as U
 import           Transport.UART.RBUS.Data
