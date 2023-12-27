@@ -36,15 +36,23 @@ rbus uart' = do
 
     mcu           <- asks D.mcu
     features      <- asks D.features
+    uart          <- uart' $ I.peripherals mcu
+    let name       = "transport_uart_rbus"
+    {--
+        TODO: move dispatcher outside
+    --}
+    mkRbus name uart $ makeDispatcher features
 
+
+
+mkRbus :: (MonadState Context m, MonadReader (D.Domain p t) m, UART u)
+     => String -> u -> (forall s. Buffer 255 Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()) -> m RBUS
+mkRbus name uart onMessage = do
+    mcu           <- asks D.mcu
     model         <- asks D.model
     version       <- asks D.version
     let mac        = I.mac mcu
-
-    let name       = "transport_uart_rbus"
     let clock      = I.systemClock mcu
-
-    uart          <- uart' $ I.peripherals mcu
     rxBuff        <- buffer (name <> "_rx"          )
     rxQueue       <- queue  (name <> "_rx"          )
     msgOffset     <- buffer (name <> "_msg_offset"  )
@@ -56,11 +64,6 @@ rbus uart' = do
     discoveryBuff <- buffer (name <> "_discovery"   )
     txLock        <- value  (name <> "_tx_lock"     ) false
     rxTimestamp   <- value  (name <> "_timestamp_rx") 0
-
-    {--
-        TODO: move dispatcher outside
-    --}
-    let onMessage = makeDispatcher features
 
     protocol <- U.rbus name onMessage
 
