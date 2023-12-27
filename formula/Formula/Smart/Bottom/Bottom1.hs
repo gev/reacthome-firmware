@@ -4,7 +4,7 @@ import           Core.Formula
 import           Core.Models
 import           Device.GD32F3x0
 import           Feature.DInputs
-import           Feature.DS18B20      (ds18b20)
+import           Feature.DS18B20
 import           Feature.Smart.Top
 import           Interface.RS485
 import           Ivory.Language
