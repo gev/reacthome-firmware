@@ -24,9 +24,8 @@ mkTop uart' pin' = do
     mcu       <- asks D.mcu
     let peripherals' = peripherals mcu
     uart      <- uart' peripherals'
-    pin       <- pin' peripherals' $ pullDown peripherals'
+    pin       <- pin' peripherals' $ pullNone peripherals'
     transport <- asks D.transport
-
 
     pure Top
 
