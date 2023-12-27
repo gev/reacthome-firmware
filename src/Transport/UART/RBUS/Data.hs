@@ -18,14 +18,14 @@ data RBUS where
              , clock         :: SystemClock
              , uart          :: u
              , protocol      :: U.RBUS  255
-             , rxBuff        :: Buffer  512 Uint16
-             , rxQueue       :: Queue   512
-             , msgOffset     :: Buffer  256 Uint16
-             , msgSize       :: Buffer  256 Uint16
-             , msgQueue      :: Queue   256
-             , msgBuff       :: Buffer 4096 Uint16
+             , rxBuff        :: Buffer  300 Uint8
+             , rxQueue       :: Queue   300
+             , msgOffset     :: Buffer   64 Uint16
+             , msgSize       :: Buffer   64 Uint8
+             , msgQueue      :: Queue    64
+             , msgBuff       :: Buffer 1024 Uint8
              , msgIndex      :: Value       Uint16
-             , txBuff        :: Buffer  512 Uint16
+             , txBuff        :: Buffer  300 Uint16
              , txLock        :: Value       IBool
              , rxTimestamp   :: Value       Uint32
              } -> RBUS
