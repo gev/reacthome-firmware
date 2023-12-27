@@ -15,7 +15,7 @@ import           Transport.UART.RBUS as U
 server :: Formula GD32F4xx
 server = Formula { name       = "server"
                  , model      = deviceTypeServer
-                 , version    = (4, 0)
+                 , version    = (5, 0)
                  , shouldInit = true
                  , transport  = U.rbus uart_1
                  , features   = [ indicator npx_pwm_2 120

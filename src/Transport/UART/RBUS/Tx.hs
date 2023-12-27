@@ -16,10 +16,17 @@ import           Ivory.Stdlib
 import qualified Protocol.UART.RBUS       as U
 import           Protocol.UART.RBUS.Tx
 import           Transport.UART.RBUS.Data
+import           Transport.UDP.RBUS       (discoveryTask)
+
+
+
+discoveryTask rbus@RBUS{..} = toQueue rbus discoveryBuff
+
 
 
 txHandle :: RBUS -> Ivory eff ()
 txHandle RBUS{..} = store txLock false
+
 
 
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()
