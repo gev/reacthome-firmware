@@ -1,8 +1,8 @@
+{-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE RankNTypes                 #-}
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE TypeOperators              #-}
 
 module Support.Device.GD32F3x0.I2C
     ( I2C_PERIPH
@@ -29,6 +29,7 @@ module Support.Device.GD32F3x0.I2C
     , i2c_int_flag_sbsend
     , i2c_int_flag_addsend
     , i2c_int_flag_rbne
+    , i2c_int_flag_tbe
     , i2c_int_flag_aerr
     , i2c_int_flag_smbalt
     , i2c_int_flag_smbto
@@ -71,8 +72,8 @@ module Support.Device.GD32F3x0.I2C
     ) where
 
 import           Ivory.Language
-import           Ivory.Support.Device.GD32F3x0
 import           Ivory.Support
+import           Ivory.Support.Device.GD32F3x0
 
 
 newtype I2C_PERIPH = I2C_PERIPH Uint32
@@ -120,6 +121,7 @@ newtype I2C_INTERRUPT_FLAG = I2C_INTERRUPT_FLAG Uint32
 i2c_int_flag_sbsend  = I2C_INTERRUPT_FLAG $ ext "I2C_INT_FLAG_SBSEND"
 i2c_int_flag_addsend = I2C_INTERRUPT_FLAG $ ext "I2C_INT_FLAG_ADDSEND"
 i2c_int_flag_rbne    = I2C_INTERRUPT_FLAG $ ext "I2C_INT_FLAG_RBNE"
+i2c_int_flag_tbe     = I2C_INTERRUPT_FLAG $ ext "I2C_INT_FLAG_TBE"
 i2c_int_flag_aerr    = I2C_INTERRUPT_FLAG $ ext "I2C_INT_FLAG_AERR"
 i2c_int_flag_smbalt  = I2C_INTERRUPT_FLAG $ ext "I2C_INT_FLAG_SMBALT"
 i2c_int_flag_smbto   = I2C_INTERRUPT_FLAG $ ext "I2C_INT_FLAG_SMBTO"
@@ -134,7 +136,7 @@ newtype I2C_INTERRUPT = I2C_INTERRUPT Uint32
 
 i2c_int_err = I2C_INTERRUPT $ ext "I2C_INT_ERR"
 i2c_int_buf = I2C_INTERRUPT $ ext "I2C_INT_BUF"
-i2c_int_ev  = I2C_INTERRUPT $ ext "I2C_INT_BUF"
+i2c_int_ev  = I2C_INTERRUPT $ ext "I2C_INT_EV"
 
 
 newtype I2C_TRANSFER_DIRECTION = I2C_TRANSFER_DIRECTION Uint32
@@ -180,10 +182,10 @@ i2c_ack_config :: Def ('[I2C_PERIPH, I2C_ACK] :-> ())
 i2c_ack_config = fun "i2c_ack_config"
 
 
-getInterruptFlagI2C :: I2C_PERIPH -> I2C_INTERRUPT_FLAG -> Ivory eff ()
-getInterruptFlagI2C = call_ i2c_interrupt_flag_get
+getInterruptFlagI2C :: I2C_PERIPH -> I2C_INTERRUPT_FLAG -> Ivory eff IBool
+getInterruptFlagI2C = call i2c_interrupt_flag_get
 
-i2c_interrupt_flag_get :: Def ('[I2C_PERIPH, I2C_INTERRUPT_FLAG] :-> ())
+i2c_interrupt_flag_get :: Def ('[I2C_PERIPH, I2C_INTERRUPT_FLAG] :-> IBool)
 i2c_interrupt_flag_get = fun "i2c_interrupt_flag_get"
 
 
@@ -236,17 +238,17 @@ i2c_master_addressing :: Def ('[I2C_PERIPH, Uint32, I2C_TRANSFER_DIRECTION] :-> 
 i2c_master_addressing = fun "i2c_master_addressing"
 
 
-transmitDataI2C :: I2C_PERIPH -> Uint16 -> Ivory eff ()
+transmitDataI2C :: I2C_PERIPH -> Uint8 -> Ivory eff ()
 transmitDataI2C = call_ i2c_data_transmit
 
-i2c_data_transmit :: Def ('[I2C_PERIPH, Uint16] :-> ())
+i2c_data_transmit :: Def ('[I2C_PERIPH, Uint8] :-> ())
 i2c_data_transmit = fun "i2c_data_transmit"
 
 
-receiveDataI2C :: I2C_PERIPH -> Ivory eff Uint16
+receiveDataI2C :: I2C_PERIPH -> Ivory eff Uint8
 receiveDataI2C = call i2c_data_receive
 
-i2c_data_receive :: Def ('[I2C_PERIPH] :-> Uint16)
+i2c_data_receive :: Def ('[I2C_PERIPH] :-> Uint8)
 i2c_data_receive = fun "i2c_data_receive"
 
 
@@ -281,7 +283,7 @@ inclI2C = do
     inclSym i2c_dtcy_2
 
     inclSym i2c_i2cmode_enable
-    
+
     inclSym i2c_addformat_7bits
 
     inclSym i2c_ack_enable
@@ -292,6 +294,7 @@ inclI2C = do
     inclSym i2c_int_flag_sbsend
     inclSym i2c_int_flag_addsend
     inclSym i2c_int_flag_rbne
+    inclSym i2c_int_flag_tbe
     inclSym i2c_int_flag_aerr
     inclSym i2c_int_flag_smbalt
     inclSym i2c_int_flag_smbto
