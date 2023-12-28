@@ -84,11 +84,11 @@ getMeasurement SCD40{..} = do
 
 
 transmitHumidity :: SCD40 -> Ivory (ProcEffects s ()) ()
-transmitHumidity = transmit' actionHumidity $ magic calculateHumidity 6
+transmitHumidity = transmit' actionHumidity $ convert calculateHumidity 6
 
 
 transmitTemperature :: SCD40 -> Ivory (ProcEffects s ()) ()
-transmitTemperature = transmit' actionTemperature $ magic calculateTemperature 3
+transmitTemperature = transmit' actionTemperature $ convert calculateTemperature 3
 
 
 transmitCO2 :: SCD40 -> Ivory (ProcEffects s ()) ()
@@ -117,8 +117,8 @@ receive SCD40{..} value index = do
 
 
 
-magic :: (IFloat -> IFloat) -> Ix 9 -> SCD40 -> Ivory eff ()
-magic calculate index SCD40{..} =
+convert :: (IFloat -> IFloat) -> Ix 9 -> SCD40 -> Ivory eff ()
+convert calculate index SCD40{..} =
     packLE txBuff 1 . coerce calculate =<< unpackBE rxBuff index
 
 

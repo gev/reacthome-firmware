@@ -124,8 +124,8 @@ receive SHT21{..} value index = do
 
 
 
-magic :: IFloat -> IFloat -> IFloat -> IFloat
-magic a b x = (a + b * x / 65_536) * 100
+convert :: IFloat -> IFloat -> IFloat -> IFloat
+convert a b x = (a + b * x / 65_536) * 100
 
 
 coerce :: (IFloat -> IFloat) -> Uint16 -> Uint16
@@ -133,11 +133,11 @@ coerce calculate = castDefault . calculate . safeCast
 
 
 calculateTemperature :: IFloat -> IFloat
-calculateTemperature = magic (-46.88) 175.72
+calculateTemperature = convert (-46.88) 175.72
 
 
 calculateHumidity :: IFloat -> IFloat
-calculateHumidity = magic (-6.0) 125.0
+calculateHumidity = convert (-6.0) 125.0
 
 
 
