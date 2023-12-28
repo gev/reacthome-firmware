@@ -127,14 +127,15 @@ receive SCD40{..} value index = do
 
 
 
+magic :: (IFloat -> IFloat) -> Uint16 -> Uint16
+magic f = castDefault . f . safeCast
+
 calculateHumidity :: Uint16 -> Uint16
-calculateHumidity x =
-    castDefault $ ((10_000 :: IFloat) * safeCast x) / 65_536
+calculateHumidity = magic $ \x -> 10_000 *  x / 65_536
 
 
 calculateTemperature :: Uint16 -> Uint16
-calculateTemperature x = do
-    castDefault $ (((175 :: IFloat) * safeCast x) / 65_536 - 45) * 100
+calculateTemperature = magic $ \x -> (175 * x / 65_536 - 45) * 100
 
 
 
