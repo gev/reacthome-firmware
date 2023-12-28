@@ -19,55 +19,55 @@ import           Core.Handler
 import           Core.Task
 import           Core.Transport
 import           Data.Buffer
+import           Data.Serialize
 import           Data.Value
 import qualified Interface.I2C        as I
 import           Interface.MCU
 import           Ivory.Language
 import           Ivory.Stdlib
-import Data.Serialize
 
 
 
 data SHT21 = forall i. I.I2C i 1 => SHT21
-    { i2c                  :: i 1
-    , address              :: Uint8
-    , resetCmd             :: Values 1 Uint8
-    , mesureTemperatureCmd :: Values 1 Uint8
-    , mesureHumidityCmd    :: Values 1 Uint8
-    , rxBuff               :: Values 2 Uint8
-    , txBuff               :: Values 3 Uint8
-    , isReady              :: Value    IBool
-    , transmit             :: forall s t. Buffer 3 Uint8 -> Ivory (ProcEffects s t) ()
+    { i2c                   :: i 1
+    , address               :: Uint8
+    , resetCmd              :: Values 1 Uint8
+    , measureTemperatureCmd :: Values 1 Uint8
+    , measureHumidityCmd    :: Values 1 Uint8
+    , rxBuff                :: Values 2 Uint8
+    , txBuff                :: Values 3 Uint8
+    , isReady               :: Value    IBool
+    , transmit              :: forall s t. Buffer 3 Uint8 -> Ivory (ProcEffects s t) ()
     }
 
 sht21 :: (MonadState Context m, MonadReader (D.Domain p t) m, I.I2C i 1, Transport t)
       => (p -> m (i 1)) -> Uint8 -> m Feature
 sht21 i2c' address = do
-    mcu                  <- asks D.mcu
-    i2c                  <- i2c' $ peripherals mcu
-    transport            <- asks D.transport
-    resetCmd             <- values  "reset_cmd"              [0xfe]
-    mesureTemperatureCmd <- values  "mesure_temperature_cmd" [0xf3]
-    mesureHumidityCmd    <- values  "mesure_humidity_cmd"    [0xf5]
-    rxBuff               <- values_ "rx_buff"
-    txBuff               <- values_ "tx_buff"
-    isReady              <- value   "is_ready"               false
+    mcu                   <- asks D.mcu
+    i2c                   <- i2c' $ peripherals mcu
+    transport             <- asks D.transport
+    resetCmd              <- values  "reset_cmd"               [0xfe]
+    measureTemperatureCmd <- values  "measure_temperature_cmd" [0xf3]
+    measureHumidityCmd    <- values  "measure_humidity_cmd"    [0xf5]
+    rxBuff                <- values_ "rx_buff"
+    txBuff                <- values_ "tx_buff"
+    isReady               <- value   "is_ready"                false
 
 
     let sht21 = SHT21 { i2c, address
-                      , resetCmd, mesureTemperatureCmd, mesureHumidityCmd
+                      , resetCmd, measureTemperatureCmd, measureHumidityCmd
                       , rxBuff, txBuff
                       , isReady
                       , transmit = transmitBuffer transport
                       }
 
-    addTask $ delay      5_000       "sht21_reset"                $ reset               sht21
-    addTask $ delayPhase 5_000 15    "sht21_mesure_humidity"      $ mesureHumidity      sht21
-    addTask $ delayPhase 5_000 45    "sht21_get_humidity"         $ getData             sht21
-    addTask $ delayPhase 5_000 46    "sht21_transmit_humidity"    $ transmitHumidity    sht21
-    addTask $ delayPhase 5_000 2_045 "sht21_mesure_temperature"   $ mesureTemperature   sht21
-    addTask $ delayPhase 5_000 2_130 "sht21_get_temperature"      $ getData             sht21
-    addTask $ delayPhase 5_000 2_131 "sht21_transmit_temperature" $ transmitTemperature sht21
+    addTask $ delay      15_000       "sht21_reset"                $ reset               sht21
+    addTask $ delayPhase 15_000    15 "sht21_measure_humidity"     $ measureHumidity     sht21
+    addTask $ delayPhase 15_000    45 "sht21_get_humidity"         $ getData             sht21
+    addTask $ delayPhase 15_000    46 "sht21_transmit_humidity"    $ transmitHumidity    sht21
+    addTask $ delayPhase 15_000 2_045 "sht21_measure_temperature"  $ measureTemperature  sht21
+    addTask $ delayPhase 15_000 2_130 "sht21_get_temperature"      $ getData             sht21
+    addTask $ delayPhase 15_000 2_131 "sht21_transmit_temperature" $ transmitTemperature sht21
 
     addHandler $ I.HandleI2C i2c $ receive sht21
 
@@ -78,11 +78,11 @@ sht21 i2c' address = do
 reset :: SHT21 -> Ivory eff ()
 reset SHT21{..} = I.transmit i2c address resetCmd
 
-mesureTemperature :: SHT21 -> Ivory eff ()
-mesureTemperature SHT21{..} = I.transmit i2c address mesureTemperatureCmd
+measureTemperature :: SHT21 -> Ivory eff ()
+measureTemperature SHT21{..} = I.transmit i2c address measureTemperatureCmd
 
-mesureHumidity :: SHT21 -> Ivory eff ()
-mesureHumidity SHT21{..} = I.transmit i2c address mesureHumidityCmd
+measureHumidity :: SHT21 -> Ivory eff ()
+measureHumidity SHT21{..} = I.transmit i2c address measureHumidityCmd
 
 getData :: SHT21 -> Ivory eff ()
 getData SHT21{..} = do
@@ -93,7 +93,7 @@ getData SHT21{..} = do
 
 
 transmitHumidity :: SHT21 -> Ivory (ProcEffects s ()) ()
-transmitHumidity sht21@SHT21{..} = 
+transmitHumidity sht21@SHT21{..} =
     transmit' sht21 actionHumidity calculateHumidity
 
 
@@ -102,8 +102,8 @@ transmitTemperature sht21@SHT21{..} = do
     transmit' sht21 actionTemperature calculateTemperature
 
 
-transmit' :: SHT21 
-          -> Uint8 
+transmit' :: SHT21
+          -> Uint8
           -> (SHT21 -> Ivory (ProcEffects s t) Uint16)
           -> Ivory (ProcEffects s t) ()
 transmit' sht21@SHT21{..} action calculate = do
@@ -150,5 +150,3 @@ calculateHumidity = magic (-6.0) 125.0
 -- }
 
 instance Controller SHT21
-
-

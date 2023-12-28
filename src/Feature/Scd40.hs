@@ -19,23 +19,23 @@ import           Core.Handler
 import           Core.Task
 import           Core.Transport
 import           Data.Buffer
+import           Data.Serialize
 import           Data.Value
 import qualified Interface.I2C        as I
 import           Interface.MCU
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Data.Serialize
 
 
 
 data SCD40 = forall i. I.I2C i 2 => SCD40
-    { i2c                        :: i 2
+    { i2c                       :: i 2
     , address                   :: Uint8
     , startPeriodicMeasureCmd   :: Values 2 Uint8
     , readMeasureCmd            :: Values 2 Uint8
     , rxBuff                    :: Values 9 Uint8
     , txBuff                    :: Values 3 Uint8
-    , isMeasured                    :: Value    IBool
+    , isMeasured                :: Value    IBool
     , isReady                   :: Value    IBool
     , transmit                  :: forall s t. Buffer 3 Uint8 -> Ivory (ProcEffects s t) ()
     }
@@ -47,12 +47,11 @@ scd40 i2c' address = do
     i2c                         <- i2c' $ peripherals mcu
     transport                   <- asks D.transport
     startPeriodicMeasureCmd     <- values  "start_periodic_measure_cmd" [0x21, 0xb1]
-    readMeasureCmd              <- values  "read_mesure_cmd"            [0xec, 0x05]
+    readMeasureCmd              <- values  "read_measure_cmd"           [0xec, 0x05]
     rxBuff                      <- values_ "rx_buff"
     txBuff                      <- values_ "tx_buff"
     isMeasured                  <- value   "is_init"                    false
     isReady                     <- value   "is_ready"                   false
-
 
     let scd40 = SCD40 { i2c, address
                       , startPeriodicMeasureCmd, readMeasureCmd
@@ -61,12 +60,11 @@ scd40 i2c' address = do
                       , transmit = transmitBuffer transport
                       }
 
-    addTask $ delay      5_000       "scd40_start_measuring"      $ startMeasuring      scd40
-    addTask $ delayPhase 15_000 15   "scd40_get_measurement"      $ getMeasurement      scd40
-    addTask $ delayPhase 15_000 20   "scd40_transmit_humidity"    $ transmitHumidity    scd40
-    addTask $ delayPhase 15_000 25   "scd40_transmit_temperature" $ transmitTemperature scd40
-    addTask $ delayPhase 15_000 30   "scd40_transmit_co2"         $ transmitCO2         scd40
-
+    addTask $ delay      15_000    "scd40_start_measuring"      $ startMeasuring      scd40
+    addTask $ delayPhase 15_000 15 "scd40_get_measurement"      $ getMeasurement      scd40
+    addTask $ delayPhase 15_000 20 "scd40_transmit_humidity"    $ transmitHumidity    scd40
+    addTask $ delayPhase 15_000 25 "scd40_transmit_temperature" $ transmitTemperature scd40
+    addTask $ delayPhase 15_000 30 "scd40_transmit_co2"         $ transmitCO2         scd40
 
     addHandler $ I.HandleI2C i2c $ receive scd40
 
@@ -139,5 +137,3 @@ receive SCD40{..} value index = do
 
 
 instance Controller SCD40
-
-
