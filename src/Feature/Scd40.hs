@@ -84,32 +84,27 @@ getMeasurement SCD40{..} = do
 
 
 transmitHumidity :: SCD40 -> Ivory (ProcEffects s ()) ()
-transmitHumidity scd40@SCD40{..} =
-    transmit' scd40 actionHumidity $
-        packLE txBuff 1 . calculateHumidity =<< unpackBE rxBuff 6
+transmitHumidity = transmit' actionHumidity $ magic 6 calculateHumidity
 
 
 transmitTemperature :: SCD40 -> Ivory (ProcEffects s ()) ()
-transmitTemperature scd40@SCD40{..} =
-    transmit' scd40 actionTemperature $
-        packLE txBuff 1 . calculateTemperature =<< unpackBE rxBuff 3
+transmitTemperature = transmit' actionTemperature $ magic 3 calculateTemperature
 
 
 transmitCO2 :: SCD40 -> Ivory (ProcEffects s ()) ()
-transmitCO2 scd40@SCD40{..} =
-    transmit' scd40 actionCo2 $ do
+transmitCO2 = transmit' actionCo2 $ \SCD40{..} -> do
         store (txBuff ! 1) =<< deref (rxBuff ! 1)
         store (txBuff ! 2) =<< deref (rxBuff ! 0)
 
 
-transmit' :: SCD40
-          -> Uint8
+transmit' :: Uint8
+          -> (SCD40 -> Ivory (ProcEffects s t) ())
+          -> SCD40
           -> Ivory (ProcEffects s t) ()
-          -> Ivory (ProcEffects s t) ()
-transmit' SCD40{..} action transform = do
+transmit' action transform sdc40@SCD40{..} = do
     isReady' <- deref isReady
     when isReady' $ do
-        transform
+        transform sdc40
         store (txBuff ! 0) action
         transmit txBuff
 
@@ -122,15 +117,21 @@ receive SCD40{..} value index = do
 
 
 
-magic :: (IFloat -> IFloat) -> Uint16 -> Uint16
-magic calculate = castDefault . calculate . safeCast
-
-calculateHumidity :: Uint16 -> Uint16
-calculateHumidity = magic $ \x -> 10_000 *  x / 65_536
+magic :: Ix 9 -> (IFloat -> IFloat) -> SCD40 -> Ivory eff ()
+magic index calculate SCD40{..} =
+    packLE txBuff 1 . coerce calculate =<< unpackBE rxBuff index
 
 
-calculateTemperature :: Uint16 -> Uint16
-calculateTemperature = magic $ \x -> (175 * x / 65_536 - 45) * 100
+coerce :: (IFloat -> IFloat) -> Uint16 -> Uint16
+coerce calculate = castDefault . calculate . safeCast
+
+
+calculateHumidity :: IFloat -> IFloat
+calculateHumidity x = 10_000 *  x / 65_536
+
+
+calculateTemperature :: IFloat -> IFloat
+calculateTemperature x = (175 * x / 65_536 - 45) * 100
 
 
 

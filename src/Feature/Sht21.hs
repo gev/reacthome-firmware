@@ -97,11 +97,11 @@ getData SHT21{..} = do
 
 
 transmitHumidity :: SHT21 -> Ivory (ProcEffects s ()) ()
-transmitHumidity = transmit' actionHumidity calculateHumidity
+transmitHumidity = transmit' actionHumidity $ coerce calculateHumidity
 
 
 transmitTemperature :: SHT21 -> Ivory (ProcEffects s ()) ()
-transmitTemperature = transmit' actionTemperature calculateTemperature
+transmitTemperature = transmit' actionTemperature $ coerce calculateTemperature
 
 
 transmit' :: Uint8
@@ -124,15 +124,19 @@ receive SHT21{..} value index = do
 
 
 
-magic :: IFloat -> IFloat -> Uint16 -> Uint16
-magic a b x = castDefault $ (a + b * safeCast x / 65_536) * 100
+magic :: IFloat -> IFloat -> IFloat -> IFloat
+magic a b x = (a + b * x / 65_536) * 100
 
 
-calculateTemperature :: Uint16 -> Uint16
+coerce :: (IFloat -> IFloat) -> Uint16 -> Uint16
+coerce calculate = castDefault . calculate . safeCast
+
+
+calculateTemperature :: IFloat -> IFloat
 calculateTemperature = magic (-46.88) 175.72
 
 
-calculateHumidity :: Uint16 -> Uint16
+calculateHumidity :: IFloat -> IFloat
 calculateHumidity = magic (-6.0) 125.0
 
 
