@@ -89,12 +89,12 @@ getMeasurement SCD40{..} = do
 
 calculateHumidity :: Uint16 -> Uint16
 calculateHumidity x =
-    castDefault $ ((10_000 :: IFloat) * safeCast x) / 65_536 :: Uint16
+    castDefault $ ((10_000 :: IFloat) * safeCast x) / 65_536
 
 
 calculateTemperature :: Uint16 -> Uint16
 calculateTemperature x = do
-    castDefault $ (((175 :: IFloat) * safeCast x) / 65_536 - 45) * 100 :: Uint16
+    castDefault $ (((175 :: IFloat) * safeCast x) / 65_536 - 45) * 100
 
 
 transmitHumidity :: SCD40 -> Ivory (ProcEffects s ()) ()
@@ -106,7 +106,7 @@ transmitHumidity scd40@SCD40{..} = do
 transmitTemperature :: SCD40 -> Ivory (ProcEffects s ()) ()
 transmitTemperature scd40@SCD40{..} = do
     transmit' scd40 actionTemperature $
-        packLE txBuff 1 . calculateHumidity =<< unpackBE rxBuff 3
+        packLE txBuff 1 . calculateTemperature =<< unpackBE rxBuff 3
 
 
 transmitCO2 :: SCD40 -> Ivory (ProcEffects s ()) ()
