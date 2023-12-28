@@ -111,7 +111,7 @@ transmit' :: SCD40
           -> Uint8
           -> Ivory (ProcEffects s t) ()
           -> Ivory (ProcEffects s t) ()
-transmit' scd40@SCD40{..} action transform = do
+transmit' SCD40{..} action transform = do
     isReady' <- deref isReady
     when isReady' $ do
         transform
