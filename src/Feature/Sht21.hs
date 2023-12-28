@@ -41,8 +41,8 @@ data SHT21 = forall i. I.I2C i 1 => SHT21
     }
 
 sht21 :: (MonadState Context m, MonadReader (D.Domain p t) m, I.I2C i 1, Transport t)
-      => (p -> m (i 1)) -> Uint8 -> m Feature
-sht21 i2c' address = do
+      => (p -> m (i 1)) -> m Feature
+sht21 i2c' = do
     mcu                   <- asks D.mcu
     i2c                   <- i2c' $ peripherals mcu
     transport             <- asks D.transport
@@ -54,7 +54,7 @@ sht21 i2c' address = do
     isReady               <- value   "is_ready"                false
 
 
-    let sht21 = SHT21 { i2c, address
+    let sht21 = SHT21 { i2c, address = 0x80
                       , resetCmd, measureTemperatureCmd, measureHumidityCmd
                       , rxBuff, txBuff
                       , isReady

@@ -13,6 +13,6 @@ sht21_test = Formula { name       = "sht21"
                      , version    = (1, 0)
                      , shouldInit = false
                      , transport  = rbus uart_0
-                     , features   = [ sht21 i2c_0 0x80
+                     , features   = [ sht21 i2c_0
                                     ]
                      }

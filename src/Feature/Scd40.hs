@@ -40,8 +40,8 @@ data SCD40 = forall i. I.I2C i 2 => SCD40
     }
 
 scd40 :: (MonadState Context m, MonadReader (D.Domain p t) m, I.I2C i 2, Transport t)
-      => (p -> m (i 2)) -> Uint8 -> m Feature
-scd40 i2c' address = do
+      => (p -> m (i 2)) -> m Feature
+scd40 i2c' = do
     mcu                         <- asks D.mcu
     i2c                         <- i2c' $ peripherals mcu
     transport                   <- asks D.transport
@@ -51,7 +51,7 @@ scd40 i2c' address = do
     txBuff                      <- values_ "tx_buff"
     isReady                     <- value   "is_ready"                   false
 
-    let scd40 = SCD40 { i2c, address
+    let scd40 = SCD40 { i2c, address = 0xc4
                       , startPeriodicMeasureCmd, readMeasureCmd
                       , rxBuff, txBuff
                       , isReady
