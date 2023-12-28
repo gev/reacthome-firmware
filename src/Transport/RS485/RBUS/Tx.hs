@@ -1,6 +1,7 @@
-{-# LANGUAGE DataKinds       #-}
-{-# LANGUAGE RankNTypes      #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE RecordWildCards  #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
 
@@ -65,9 +66,9 @@ doTransmitMessage r@RBUS{..} = do
                     sx' <- deref sx
                     v <- deref $ msgBuff ! toIx sx'
                     store sx $ sx' + 1
-                    store (txBuff ! dx) v
+                    store (txBuff ! dx) $ safeCast v
                 store (msgTTL ! ix) $ ttl - 1
-                rsTransmit r size
+                rsTransmit r $ safeCast size
             )
             (remove msgQueue)
 
@@ -102,7 +103,7 @@ toRS :: (Slave 255 -> (Uint8 -> Ivory eff ()) -> Ivory (ProcEffects s ()) ())
      -> RBUS
      -> Ivory (ProcEffects s ()) ()
 toRS transmit r@RBUS{..} =
-    rsTransmit r =<< run protocol transmit txBuff 0
+    rsTransmit r . safeCast =<< run protocol transmit txBuff 0
 
 
 {--
@@ -114,8 +115,26 @@ toQueue RBUS{..} buff = do
     when hasAddress' $ do
         push msgQueue $ \i -> do
             index <- deref msgIndex
-            size <- run protocol (transmitMessage buff) msgBuff index
-            store msgIndex $ index + size
+            size  <- run protocol (transmitMessage buff) msgBuff index
+            store msgIndex $ index + safeCast size
+            let ix = toIx i
+            store (msgOffset ! ix) index
+            store (msgSize   ! ix) size
+            store (msgTTL    ! ix) messageTTL
+
+
+
+toQueue' :: RBUS
+         -> Uint8
+         -> ((Uint8 -> forall eff. Ivory eff ()) -> forall eff. Ivory eff ())
+         -> Ivory (ProcEffects s t) ()
+toQueue' RBUS{..} size' transmit = do
+    hasAddress' <- hasAddress protocol
+    when hasAddress' $ do
+        push msgQueue $ \i -> do
+            index <- deref msgIndex
+            size  <- run protocol (transmitMessage' size' transmit) msgBuff index
+            store msgIndex $ index + safeCast size
             let ix = toIx i
             store (msgOffset ! ix) index
             store (msgSize   ! ix) size
@@ -131,18 +150,18 @@ rsTransmit RBUS{..} size = do
     store txLock true
 
 
-run :: KnownNat l
+run :: (KnownNat l, SafeCast Uint8 v, IvoryStore v)
     => Slave 255
     -> (Slave 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ())
-    -> Buffer l Uint16
+    -> Buffer l v
     -> Uint16
-    -> Ivory (ProcEffects s t) Uint16
+    -> Ivory (ProcEffects s t) Uint8
 run protocol transmit buff offset = do
     size  <- local $ ival 0
     let go :: Uint8 -> Ivory eff ()
         go v = do
             i <- deref size
-            let ix = toIx $ offset + i
+            let ix = toIx $ offset + safeCast i
             store (buff ! ix) $ safeCast v
             store size $ i + 1
     transmit protocol go
