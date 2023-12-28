@@ -15,13 +15,13 @@ data RBUS = RBUS
     { clock         :: SystemClock
     , rs            :: RS485
     , protocol      :: Slave   255
-    , rxBuff        :: Buffer  300 Uint16
+    , rxBuff        :: Buffer  300 Uint8
     , rxQueue       :: Queue   300
     , msgOffset     :: Buffer   32 Uint16
     , msgSize       :: Buffer   32 Uint8
     , msgTTL        :: Buffer   32 Uint8
     , msgQueue      :: Queue    32
-    , msgBuff       :: Buffer  512 Uint16
+    , msgBuff       :: Buffer  600 Uint8
     , msgIndex      :: Value       Uint16
     , txBuff        :: Buffer  300 Uint16
     , initBuff      :: Buffer    1 Uint8
