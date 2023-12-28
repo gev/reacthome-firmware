@@ -33,7 +33,6 @@ import           Transport.UART.RBUS.Tx
 rbus :: (MonadState Context m, MonadReader (D.Domain p RBUS) m, UART u)
      => (p -> m u) -> m RBUS
 rbus uart' = do
-
     mcu           <- asks D.mcu
     features      <- asks D.features
     uart          <- uart' $ I.peripherals mcu
@@ -41,7 +40,11 @@ rbus uart' = do
     {--
         TODO: move dispatcher outside
     --}
-    mkRbus name uart $ makeDispatcher features
+    rbus <- mkRbus name uart $ makeDispatcher features
+
+    addTask $ delay 1_000 (name <> "_discovery") $ discoveryTask rbus
+
+    pure rbus
 
 
 
@@ -85,7 +88,6 @@ mkRbus name uart onMessage = do
     addTask $ yeld        (name <> "_rx"       ) $ rxTask        rbus
     addTask $ yeld        (name <> "_tx"       ) $ txTask        rbus
     addTask $ yeld        (name <> "_reset"    ) $ resetTask     rbus
-    addTask $ delay 1_000 (name <> "_discovery") $ discoveryTask rbus
 
     pure rbus
 
