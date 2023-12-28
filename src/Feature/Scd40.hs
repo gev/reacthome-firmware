@@ -127,7 +127,7 @@ coerce calculate = castDefault . calculate . safeCast
 
 
 calculateHumidity :: IFloat -> IFloat
-calculateHumidity x = 10_000 *  x / 65_536
+calculateHumidity x = 10_000 * x / 65_536
 
 
 calculateTemperature :: IFloat -> IFloat
