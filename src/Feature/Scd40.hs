@@ -55,7 +55,7 @@ scd40 i2c' address = do
 
 
     let scd40 = SCD40 { i2c, address
-                      , startPeriodicMeasureCmd, readMeasureCmd 
+                      , startPeriodicMeasureCmd, readMeasureCmd
                       , rxBuff, txBuff
                       , isMeasured, isReady
                       , transmit = transmitBuffer transport
@@ -75,7 +75,7 @@ scd40 i2c' address = do
 
 
 startMeasuring :: SCD40 -> Ivory eff ()
-startMeasuring SCD40{..} = do 
+startMeasuring SCD40{..} = do
     isMeasured' <- deref isMeasured
     when (isMeasured' ==? false) $ do
         I.transmit i2c address startPeriodicMeasureCmd
@@ -89,42 +89,44 @@ getMeasurement SCD40{..} = do
     I.receive i2c address 9
 
 
+calculateHumidity :: Uint16 -> Uint16
+calculateHumidity x =
+    castDefault $ ((10_000 :: IFloat) * safeCast x) / 65_536 :: Uint16
+
+
+calculateTemperature :: Uint16 -> Uint16
+calculateTemperature x = do
+    castDefault $ (((175 :: IFloat) * safeCast x) / 65_536 - 45) * 100 :: Uint16
+
 
 transmitHumidity :: SCD40 -> Ivory (ProcEffects s ()) ()
 transmitHumidity scd40@SCD40{..} = do
-    v0 <- safeCast <$> deref (rxBuff ! 6)
-    v1 <- safeCast <$> deref (rxBuff ! 7)
-    let x = (v0 `iShiftL` 8) .| v1 :: Uint16
-    let value = castDefault $ ((10_000 :: IFloat) * safeCast x) / 65_536 :: Uint16
-    transmit' scd40 actionHumidity value
+    transmit' scd40 actionHumidity $
+        packLE txBuff 1 . calculateHumidity =<< unpackBE rxBuff 6
 
 
 transmitTemperature :: SCD40 -> Ivory (ProcEffects s ()) ()
 transmitTemperature scd40@SCD40{..} = do
-    v0 <- safeCast <$> deref (rxBuff ! 3)
-    v1 <- safeCast <$> deref (rxBuff ! 4)
-    let x = (v0 `iShiftL` 8) .| v1 :: Uint16
-    let value = castDefault $ (((175 :: IFloat) * safeCast x) / 65_536 - 45) * 100
-    transmit' scd40 actionTemperature value
+    transmit' scd40 actionTemperature $
+        packLE txBuff 1 . calculateHumidity =<< unpackBE rxBuff 3
 
 
 transmitCO2 :: SCD40 -> Ivory (ProcEffects s ()) ()
 transmitCO2 scd40@SCD40{..} = do
-    v0 <- safeCast <$> deref (rxBuff ! 0)
-    v1 <- safeCast <$> deref (rxBuff ! 1)
-    let value = (v0 `iShiftL` 8) .| v1 :: Uint16
-    transmit' scd40 actionCo2 value
+    transmit' scd40 actionCo2 $ do
+        store (txBuff ! 1) =<< deref (rxBuff ! 1)
+        store (txBuff ! 2) =<< deref (rxBuff ! 0)
 
 
-transmit' :: SCD40 
-          -> Uint8 
-          -> Uint16
+transmit' :: SCD40
+          -> Uint8
           -> Ivory (ProcEffects s t) ()
-transmit' scd40@SCD40{..} action value = do
+          -> Ivory (ProcEffects s t) ()
+transmit' scd40@SCD40{..} action calculate = do
     isReady' <- deref isReady
     when isReady' $ do
+        calculate
         store (txBuff ! 0) action
-        packLE txBuff 1 value
         transmit txBuff
 
 
