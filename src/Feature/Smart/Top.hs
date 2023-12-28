@@ -48,7 +48,6 @@ mkTop uart' pin' = do
             for (toIx size) $ \ix -> transmit =<< deref (buff ! ix)
 
     transportDown   <- mkRbus "transport_uart_rbus" uart onMessage'
-
     let transmitDown = lazyTransmit transportDown
 
     let onMessage buff size = transmitDown (size - 1) $ \transmit -> do
