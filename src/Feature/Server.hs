@@ -31,11 +31,11 @@ import           Feature.RS485.RBUS      (configureMode, forceSyncRBUS,
 import           Feature.RS485.RBUS.Data (RBUS (RBUS, baudrate, lineControl, mode))
 import           GHC.TypeNats
 import           Interface.GPIO.Input
+import           Interface.GPIO.Port
 import           Interface.PWM           (PWM)
 import           Interface.RS485
 import           Ivory.Language
 import           Ivory.Stdlib
-import Interface.GPIO.Port
 
 
 data Server = Server
@@ -53,7 +53,7 @@ server :: ( MonadState Context m
 server rs485 pwms inputs = do
     rbus       <- mkRBUS     rs485
     dimmer     <- mkDimmerDC pwms
-    dinputs    <- mkDInputs  inputs 
+    dinputs    <- mkDInputs  inputs True
     shouldInit <- asks D.shouldInit
 
     addTask  $ delay 10 "dinputs_manage" $ manageDInputs dinputs
