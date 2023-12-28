@@ -97,22 +97,22 @@ getData SHT21{..} = do
 
 
 transmitHumidity :: SHT21 -> Ivory (ProcEffects s ()) ()
-transmitHumidity = transmit' actionHumidity $ coerce calculateHumidity
+transmitHumidity = transmit' actionHumidity calculateHumidity
 
 
 transmitTemperature :: SHT21 -> Ivory (ProcEffects s ()) ()
-transmitTemperature = transmit' actionTemperature $ coerce calculateTemperature
+transmitTemperature = transmit' actionTemperature calculateTemperature
 
 
 transmit' :: Uint8
-          -> (Uint16 -> Uint16)
+          -> (IFloat -> IFloat)
           -> SHT21
           -> Ivory (ProcEffects s t) ()
 transmit' action calculate sht21@SHT21{..} = do
     isReady' <- deref isReady
     when isReady' $ do
         store (txBuff ! 0) action
-        packLE txBuff 1 . calculate =<< unpackBE rxBuff 0
+        packLE txBuff 1 . coerce calculate =<< unpackBE rxBuff 0
         transmit txBuff
 
 
