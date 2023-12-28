@@ -97,25 +97,22 @@ getData SHT21{..} = do
 
 
 transmitHumidity :: SHT21 -> Ivory (ProcEffects s ()) ()
-transmitHumidity sht21@SHT21{..} =
-    transmit' sht21 actionHumidity calculateHumidity
+transmitHumidity = transmit' actionHumidity calculateHumidity
 
 
 transmitTemperature :: SHT21 -> Ivory (ProcEffects s ()) ()
-transmitTemperature sht21@SHT21{..} = do
-    transmit' sht21 actionTemperature calculateTemperature
+transmitTemperature = transmit' actionTemperature calculateTemperature
 
 
-transmit' :: SHT21
-          -> Uint8
-          -> (SHT21 -> Ivory (ProcEffects s t) Uint16)
+transmit' :: Uint8
+          -> (Uint16 -> Uint16)
+          -> SHT21
           -> Ivory (ProcEffects s t) ()
-transmit' sht21@SHT21{..} action calculate = do
+transmit' action calculate sht21@SHT21{..} = do
     isReady' <- deref isReady
     when isReady' $ do
         store (txBuff ! 0) action
-        value <- calculate sht21
-        packLE txBuff 1 value
+        packLE txBuff 1 . calculate =<< unpackBE rxBuff 0
         transmit txBuff
 
 
@@ -127,19 +124,15 @@ receive SHT21{..} value index = do
 
 
 
-magic :: IFloat -> IFloat -> SHT21 -> Ivory eff Uint16
-magic a b SHT21{..}= do
-    v0 <- safeCast <$> deref (rxBuff ! 0)
-    v1 <- safeCast <$> deref (rxBuff ! 1)
-    let x = (v0 `iShiftL` 8) .| v1 :: Uint16
-    pure . castDefault $ (a + b * safeCast x / 65_536) * 100
+magic :: IFloat -> IFloat -> Uint16 -> Uint16
+magic a b x = castDefault $ (a + b * safeCast x / 65_536) * 100
 
 
-calculateTemperature :: SHT21 -> Ivory eff Uint16
+calculateTemperature :: Uint16 -> Uint16
 calculateTemperature = magic (-46.88) 175.72
 
 
-calculateHumidity :: SHT21 -> Ivory eff Uint16
+calculateHumidity :: Uint16 -> Uint16
 calculateHumidity = magic (-6.0) 125.0
 
 

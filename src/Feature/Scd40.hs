@@ -89,19 +89,19 @@ getMeasurement SCD40{..} = do
 
 
 transmitHumidity :: SCD40 -> Ivory (ProcEffects s ()) ()
-transmitHumidity scd40@SCD40{..} = do
+transmitHumidity scd40@SCD40{..} =
     transmit' scd40 actionHumidity $
         packLE txBuff 1 . calculateHumidity =<< unpackBE rxBuff 6
 
 
 transmitTemperature :: SCD40 -> Ivory (ProcEffects s ()) ()
-transmitTemperature scd40@SCD40{..} = do
+transmitTemperature scd40@SCD40{..} =
     transmit' scd40 actionTemperature $
         packLE txBuff 1 . calculateTemperature =<< unpackBE rxBuff 3
 
 
 transmitCO2 :: SCD40 -> Ivory (ProcEffects s ()) ()
-transmitCO2 scd40@SCD40{..} = do
+transmitCO2 scd40@SCD40{..} =
     transmit' scd40 actionCo2 $ do
         store (txBuff ! 1) =<< deref (rxBuff ! 1)
         store (txBuff ! 2) =<< deref (rxBuff ! 0)
@@ -111,10 +111,10 @@ transmit' :: SCD40
           -> Uint8
           -> Ivory (ProcEffects s t) ()
           -> Ivory (ProcEffects s t) ()
-transmit' scd40@SCD40{..} action calculate = do
+transmit' scd40@SCD40{..} action transform = do
     isReady' <- deref isReady
     when isReady' $ do
-        calculate
+        transform
         store (txBuff ! 0) action
         transmit txBuff
 
