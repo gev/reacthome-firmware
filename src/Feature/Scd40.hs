@@ -60,7 +60,7 @@ scd40 i2c' address = do
                       , transmit = transmitBuffer transport
                       }
 
-    addTask $ delay      15_000    "scd40_start_measuring"      $ startMeasuring      scd40
+    addTask $ delay       5_000    "scd40_start_measuring"      $ startMeasuring      scd40
     addTask $ delayPhase 15_000 15 "scd40_get_measurement"      $ getMeasurement      scd40
     addTask $ delayPhase 15_000 20 "scd40_transmit_humidity"    $ transmitHumidity    scd40
     addTask $ delayPhase 15_000 25 "scd40_transmit_temperature" $ transmitTemperature scd40
@@ -86,15 +86,6 @@ getMeasurement SCD40{..} = do
     store isReady false
     I.receive i2c address 9
 
-
-calculateHumidity :: Uint16 -> Uint16
-calculateHumidity x =
-    castDefault $ ((10_000 :: IFloat) * safeCast x) / 65_536
-
-
-calculateTemperature :: Uint16 -> Uint16
-calculateTemperature x = do
-    castDefault $ (((175 :: IFloat) * safeCast x) / 65_536 - 45) * 100
 
 
 transmitHumidity :: SCD40 -> Ivory (ProcEffects s ()) ()
@@ -133,6 +124,17 @@ receive :: SCD40 -> Uint8 -> Uint16 -> Ivory eff ()
 receive SCD40{..} value index = do
     store (rxBuff ! toIx index) value
     when (index ==? 8) $ store isReady true
+
+
+
+calculateHumidity :: Uint16 -> Uint16
+calculateHumidity x =
+    castDefault $ ((10_000 :: IFloat) * safeCast x) / 65_536
+
+
+calculateTemperature :: Uint16 -> Uint16
+calculateTemperature x = do
+    castDefault $ (((175 :: IFloat) * safeCast x) / 65_536 - 45) * 100
 
 
 

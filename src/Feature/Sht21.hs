@@ -78,11 +78,16 @@ sht21 i2c' address = do
 reset :: SHT21 -> Ivory eff ()
 reset SHT21{..} = I.transmit i2c address resetCmd
 
+
+
 measureTemperature :: SHT21 -> Ivory eff ()
 measureTemperature SHT21{..} = I.transmit i2c address measureTemperatureCmd
 
+
 measureHumidity :: SHT21 -> Ivory eff ()
 measureHumidity SHT21{..} = I.transmit i2c address measureHumidityCmd
+
+
 
 getData :: SHT21 -> Ivory eff ()
 getData SHT21{..} = do
@@ -119,7 +124,6 @@ receive :: SHT21 -> Uint8 -> Uint16 -> Ivory eff ()
 receive SHT21{..} value index = do
     store (rxBuff ! toIx index) value
     when (index ==? 1) $ store isReady true
-
 
 
 
