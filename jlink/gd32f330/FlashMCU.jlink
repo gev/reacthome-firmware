@@ -1,7 +1,7 @@
 r
 h
-loadbin build/firmware/sht21.bin, 0x8000000
+loadbin build/firmware/scd40.bin, 0x8000000
 g
-verifybin build/firmware/sht21.bin, 0x8000000
+verifybin build/firmware/scd40.bin, 0x8000000
 r
 q
