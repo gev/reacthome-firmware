@@ -43,9 +43,10 @@ mkTop uart' pin' = do
     transportUp     <- asks D.transport
     let transmitUp   = lazyTransmit transportUp
 
-    let onMessage' buff size = transmitUp (size + 1) $ \transmit -> do
+    let onMessage' buff size = transmitUp 2 $ \transmit -> do
             transmit actionSmartTop
-            arrayMap $ \ix -> transmit =<< deref (buff ! ix)
+            transmit size
+            -- arrayMap $ \ix -> transmit =<< deref (buff ! ix)
 
     transportDown   <- mkRbus "transport_uart_rbus" uart onMessage'
 
