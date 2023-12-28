@@ -42,12 +42,12 @@ import           Interface.Display
 import           Interface.Flash             as F
 import           Interface.GPIO.Input
 import           Interface.GPIO.Output
+import           Interface.GPIO.Port
 import           Interface.MCU               as I
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Prelude                     hiding (error)
 import           Util.CRC16
-import Interface.GPIO.Port
 
 
 
@@ -76,9 +76,9 @@ mix :: ( MonadState Context m
        , Pull p u
        ) => [p -> u -> m i] -> [p -> u -> m o] -> (p -> m d) -> (p -> f) -> m Feature
 mix inputs outputs display etc = do
-    relays       <- mkRelays outputs 
-    let relaysN   = length outputs 
-    dinputs      <- mkDInputs inputs
+    relays       <- mkRelays outputs
+    let relaysN   = length outputs
+    dinputs      <- mkDInputs inputs True
     let dinputsN  = length inputs
     rules        <- mkRules dinputsN relaysN
     ats          <- mkATS

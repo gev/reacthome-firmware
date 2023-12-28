@@ -4,7 +4,7 @@ import           Core.Formula
 import           Core.Models
 import           Device.GD32F3x0
 import           Feature.DInputs
-import           Feature.Sht21 
+import           Feature.Sht21
 import           Ivory.Language
 import           Transport.UART.RBUS
 
@@ -21,6 +21,6 @@ smartTopA6P =  Formula { name       = "smart-top-a6p"
                                                 , in_pb_1
                                                 , in_pa_6
                                                 , in_pb_0
-                                                ]
+                                                ] False
                                       ]
                        }
