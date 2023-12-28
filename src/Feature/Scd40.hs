@@ -35,7 +35,6 @@ data SCD40 = forall i. I.I2C i 2 => SCD40
     , readMeasureCmd            :: Values 2 Uint8
     , rxBuff                    :: Values 9 Uint8
     , txBuff                    :: Values 3 Uint8
-    , isMeasured                :: Value    IBool
     , isReady                   :: Value    IBool
     , transmit                  :: forall s t. Buffer 3 Uint8 -> Ivory (ProcEffects s t) ()
     }
@@ -50,13 +49,12 @@ scd40 i2c' address = do
     readMeasureCmd              <- values  "read_measure_cmd"           [0xec, 0x05]
     rxBuff                      <- values_ "rx_buff"
     txBuff                      <- values_ "tx_buff"
-    isMeasured                  <- value   "is_init"                    false
     isReady                     <- value   "is_ready"                   false
 
     let scd40 = SCD40 { i2c, address
                       , startPeriodicMeasureCmd, readMeasureCmd
                       , rxBuff, txBuff
-                      , isMeasured, isReady
+                      , isReady
                       , transmit = transmitBuffer transport
                       }
 
@@ -73,11 +71,8 @@ scd40 i2c' address = do
 
 
 startMeasuring :: SCD40 -> Ivory eff ()
-startMeasuring SCD40{..} = do
-    isMeasured' <- deref isMeasured
-    when (iNot isMeasured') $ do
-        I.transmit i2c address startPeriodicMeasureCmd
-        store isMeasured true
+startMeasuring SCD40{..} =
+    I.transmit i2c address startPeriodicMeasureCmd
 
 
 
