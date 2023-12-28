@@ -138,14 +138,6 @@ calculateTemperature = magic (-46.88) 175.72
 calculateHumidity :: SHT21 -> Ivory eff Uint16
 calculateHumidity = magic (-6.0) 125.0
 
---     sht21_temperature_action.temperature = sht21(-46.85, 175.72, res) + correction;
---     sht21_humidity_action.humidity = sht21(-6.0, 125.0, res);
 
-
--- uint16_t sht21(double a, double b, uint8_t * raw)
--- {
---     uint16_t x = (((uint16_t) raw[0]) << 8) | (raw[1] & 0xfc);
---     return (a + b * x / 65536) * 100;
--- }
 
 instance Controller SHT21
