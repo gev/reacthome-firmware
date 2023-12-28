@@ -85,9 +85,9 @@ mkRbus name uart onMessage = do
 
     addInit name $ initialize rbus
 
-    addTask $ yeld        (name <> "_rx"       ) $ rxTask        rbus
-    addTask $ yeld        (name <> "_tx"       ) $ txTask        rbus
-    addTask $ yeld        (name <> "_reset"    ) $ resetTask     rbus
+    addTask $ yeld (name <> "_rx"   ) $ rxTask    rbus
+    addTask $ yeld (name <> "_tx"   ) $ txTask    rbus
+    addTask $ yeld (name <> "_reset") $ resetTask rbus
 
     pure rbus
 
