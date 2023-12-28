@@ -29,27 +29,27 @@ import           Ivory.Stdlib
 
 
 data SCD40 = forall i. I.I2C i 2 => SCD40
-    { i2c                       :: i 2
-    , address                   :: Uint8
-    , startPeriodicMeasureCmd   :: Values 2 Uint8
-    , readMeasureCmd            :: Values 2 Uint8
-    , rxBuff                    :: Values 9 Uint8
-    , txBuff                    :: Values 3 Uint8
-    , isReady                   :: Value    IBool
-    , transmit                  :: forall s t. Buffer 3 Uint8 -> Ivory (ProcEffects s t) ()
+    { i2c                     :: i 2
+    , address                 :: Uint8
+    , startPeriodicMeasureCmd :: Values 2 Uint8
+    , readMeasureCmd          :: Values 2 Uint8
+    , rxBuff                  :: Values 9 Uint8
+    , txBuff                  :: Values 3 Uint8
+    , isReady                 :: Value    IBool
+    , transmit                :: forall s t. Buffer 3 Uint8 -> Ivory (ProcEffects s t) ()
     }
 
 scd40 :: (MonadState Context m, MonadReader (D.Domain p t) m, I.I2C i 2, Transport t)
       => (p -> m (i 2)) -> m Feature
 scd40 i2c' = do
-    mcu                         <- asks D.mcu
-    i2c                         <- i2c' $ peripherals mcu
-    transport                   <- asks D.transport
-    startPeriodicMeasureCmd     <- values  "start_periodic_measure_cmd" [0x21, 0xb1]
-    readMeasureCmd              <- values  "read_measure_cmd"           [0xec, 0x05]
-    rxBuff                      <- values_ "rx_buff"
-    txBuff                      <- values_ "tx_buff"
-    isReady                     <- value   "is_ready"                   false
+    mcu                     <- asks D.mcu
+    i2c                     <- i2c' $ peripherals mcu
+    transport               <- asks D.transport
+    startPeriodicMeasureCmd <- values  "start_periodic_measure_cmd" [0x21, 0xb1]
+    readMeasureCmd          <- values  "read_measure_cmd"           [0xec, 0x05]
+    rxBuff                  <- values_ "rx_buff"
+    txBuff                  <- values_ "tx_buff"
+    isReady                 <- value   "is_ready"                   false
 
     let scd40 = SCD40 { i2c, address = 0xc4
                       , startPeriodicMeasureCmd, readMeasureCmd
