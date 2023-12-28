@@ -19,7 +19,7 @@ di4 = Formula { name       = "di4"
                                        , in_pa_11
                                        , in_pa_10
                                        , in_pa_9
-                                       ]
+                                       ] True
                              , ds18b20 ow_0 od_pa_8
                              ]
               }

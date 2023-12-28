@@ -21,7 +21,7 @@ smartBottom1 =  Formula { name       = "smart-bottom-1"
                                                  , in_pb_0
                                                  , in_pa_6
                                                  , in_pa_5
-                                                 ]
+                                                 ] True
                                        , ds18b20 ow_0 od_pa_15
                                        ]
                         }
