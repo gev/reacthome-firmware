@@ -75,7 +75,7 @@ scd40 i2c' address = do
 startMeasuring :: SCD40 -> Ivory eff ()
 startMeasuring SCD40{..} = do
     isMeasured' <- deref isMeasured
-    when (isMeasured' ==? false) $ do
+    when (iNot isMeasured') $ do
         I.transmit i2c address startPeriodicMeasureCmd
         store isMeasured true
 
