@@ -91,7 +91,6 @@ getData SHT21{..} = do
 
 
 
-
 transmitHumidity :: SHT21 -> Ivory (ProcEffects s ()) ()
 transmitHumidity sht21@SHT21{..} =
     transmit' sht21 actionHumidity calculateHumidity
