@@ -33,6 +33,25 @@ transmitMessage payload Slave{..} transmit = do
     transmit =<< deref (crc ~> lsb)
 
 
+transmitMessage' :: Uint8
+                -> ((Uint8 -> forall eff. Ivory eff ()) -> forall eff. Ivory eff ())
+                -> Slave n
+                -> (Uint8 -> forall eff. Ivory eff ())
+                -> Ivory (ProcEffects s t) ()
+transmitMessage' size' run Slave{..} transmit = do
+    crc <- local $ istruct initCRC16
+    let transmit' v = updateCRC16 crc v >> transmit v
+    transmit' $ message txPreamble
+    transmit' =<< deref address
+    id <- deref tidTx
+    transmit' id
+    store tidTx $ id + 1
+    transmit' size'
+    run transmit'
+    transmit =<< deref (crc ~> msb)
+    transmit =<< deref (crc ~> lsb)
+
+
 
 transmitDiscovery :: Slave n -> (Uint8 -> Ivory (AllowBreak eff) ()) -> Ivory eff ()
 transmitDiscovery = transmit . buffDisc

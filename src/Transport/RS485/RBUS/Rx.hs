@@ -15,7 +15,7 @@ rxHandle RBUS{..} value = do
     store rxLock true
     store rxTimestamp =<< getSystemTime clock
     push rxQueue $ \i ->
-        store (rxBuff ! toIx i) value
+        store (rxBuff ! toIx i) $ castDefault value
 
 
 rxTask :: RBUS -> Ivory (ProcEffects s ()) ()

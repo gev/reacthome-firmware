@@ -112,3 +112,7 @@ rbus rs485 = do
 
 instance Transport RBUS where
     transmitBuffer = toQueue
+
+
+instance LazyTransport RBUS where
+    lazyTransmit = toQueue'

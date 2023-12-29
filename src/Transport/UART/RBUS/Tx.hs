@@ -16,10 +16,17 @@ import           Ivory.Stdlib
 import qualified Protocol.UART.RBUS       as U
 import           Protocol.UART.RBUS.Tx
 import           Transport.UART.RBUS.Data
+import           Transport.UDP.RBUS       (discoveryTask)
+
+
+
+discoveryTask rbus@RBUS{..} = toQueue rbus discoveryBuff
+
 
 
 txHandle :: RBUS -> Ivory eff ()
 txHandle RBUS{..} = store txLock false
+
 
 
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()
@@ -35,13 +42,13 @@ txTask r@RBUS{..} = do
                 sx' <- deref sx
                 v <- deref $ msgBuff ! toIx sx'
                 store sx $ sx' + 1
-                store (txBuff ! dx) v
-            transmit r size
+                store (txBuff ! dx) $ safeCast v
+            transmit r $ safeCast size
 
 transmit :: RBUS -> Uint16 -> Ivory (ProcEffects s ()) ()
 transmit RBUS{..} size = do
     let array = toCArray txBuff
-    U.transmit uart array size
+    U.transmit uart array $ safeCast size
     store txLock true
 
 
@@ -53,7 +60,7 @@ toQueue :: KnownNat l
 toQueue RBUS{..} buff = push msgQueue $ \i -> do
     index <- deref msgIndex
     size  <- run protocol (transmitMessage buff) msgBuff index
-    store msgIndex $ index + size
+    store msgIndex $ index + safeCast size
     let ix = toIx i
     store (msgOffset ! ix) index
     store (msgSize   ! ix) size
@@ -66,7 +73,7 @@ toQueue' :: RBUS
 toQueue' RBUS{..} size' transmit = push msgQueue $ \i -> do
     index <- deref msgIndex
     size  <- run protocol (transmitMessage' size' transmit) msgBuff index
-    store msgIndex $ index + size
+    store msgIndex $ index + safeCast size
     let ix = toIx i
     store (msgOffset ! ix) index
     store (msgSize   ! ix) size
@@ -76,15 +83,15 @@ toQueue' RBUS{..} size' transmit = push msgQueue $ \i -> do
 run :: KnownNat l
     => U.RBUS 255
     -> ((Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ())
-    -> Buffer l Uint16
+    -> Buffer l Uint8
     -> Uint16
-    -> Ivory (ProcEffects s t) Uint16
+    -> Ivory (ProcEffects s t) Uint8
 run protocol transmit buff offset = do
     size  <- local $ ival 0
     let go :: Uint8 -> Ivory eff ()
         go v = do
             i <- deref size
-            let ix = toIx $ offset + i
+            let ix = toIx $ offset + safeCast i
             store (buff ! ix) $ safeCast v
             store size $ i + 1
     transmit go

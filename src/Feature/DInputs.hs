@@ -26,16 +26,17 @@ import           Data.Value
 import qualified Endpoint.DInputs      as DI
 import           GHC.TypeNats
 import           Interface.GPIO.Input
+import           Interface.GPIO.Port
 import           Interface.MCU         (MCU, peripherals, systemClock)
 import           Interface.SystemClock (SystemClock, getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
-import Interface.GPIO.Port
 
 
 
 data DInputs = forall i. Input i => DInputs
     { n          :: Uint8
+    , zero       :: IBool
     , getDInputs :: DI.DInputs
     , getInputs  :: [i]
     , current    :: Index Uint8
@@ -47,17 +48,19 @@ data DInputs = forall i. Input i => DInputs
 
 
 mkDInputs :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Input i, Pull p d)
-          => [p -> d -> m i]  -> m DInputs
-mkDInputs inputs = do
+          => [p -> d -> m i] -> Bool -> m DInputs
+mkDInputs inputs zero' = do
     mcu        <- asks D.mcu
     let clock   = systemClock mcu
     transport  <- asks D.transport
     let peripherals' = peripherals mcu
-    is         <- mapM (($ pullNone peripherals') . ($ peripherals')) inputs
+    let pull    = if zero' then pullUp else pullDown
+    is         <- mapM (($ pull peripherals') . ($ peripherals')) inputs
     let n       = length is
     getDInputs <- DI.dinputs "dinputs" n
     current    <- index "current_dinput"
     pure DInputs { n = fromIntegral n
+                 , zero = if zero' then true else false
                  , getDInputs
                  , getInputs = is
                  , current
@@ -68,9 +71,9 @@ mkDInputs inputs = do
 
 
 dinputs :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Input i, Pull p d)
-        => [p -> d -> m i] -> m Feature
-dinputs inputs = do
-    dinputs <- mkDInputs inputs
+        => [p -> d -> m i] -> Bool -> m Feature
+dinputs inputs zero = do
+    dinputs <- mkDInputs inputs zero
 
     addTask  $ delay 10 "dinputs_manage" $ manageDInputs dinputs
     addTask  $ yeld     "dinputs_sync"   $ syncDInputs   dinputs
@@ -94,20 +97,21 @@ manageDInputs DInputs{..} = zipWithM_ zip getInputs [0..]
         zip input i = DI.runDInputs getDInputs $ \dis -> do
             let ix = fromIntegral i
             let di = addrOf dis ! ix
-            manageDInput di input =<< getSystemTime clock
+            manageDInput zero di input =<< getSystemTime clock
 
 
 
 manageDInput :: Input i
-             => Record DI.DInputStruct
+             => IBool
+             -> Record DI.DInputStruct
              -> i
              -> Uint32
              -> Ivory eff ()
-manageDInput di input t  = do
+manageDInput zero di input t  = do
     value <- iNot <$> get input
     state <- deref $ di ~> DI.state
     when (value /=? state) $ do
-        store (di ~> DI.state    ) value
+        store (di ~> DI.state    ) $ value /=? zero
         store (di ~> DI.timestamp) t
         store (di ~> DI.synced   ) false
 
