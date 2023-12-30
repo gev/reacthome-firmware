@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+
 module Core.FSM where
 import           Ivory.Language
 import           Ivory.Stdlib
@@ -12,8 +13,8 @@ transit = (,)
 
 
 
-runState :: (IvoryStore a, IvoryVar (ref s (Stored a)), IvoryRef ref, IvoryEq a)
-         => (t -> ref s (Stored a))
+runState :: (IvoryStore a, IvoryEq a)
+         => (t -> Ref s (Stored a))
          -> [(a, t -> p -> Ivory eff ())]
          -> t
          -> p
@@ -25,8 +26,8 @@ runState f ts st i = do
 
 
 
-runState' :: (IvoryStore a, IvoryVar (ref s (Stored a)), IvoryRef ref, IvoryEq a)
-         => (t -> ref s (Stored a))
+runState' :: (IvoryStore a, IvoryEq a)
+         => (t -> Ref s (Stored a))
          -> [(a, t -> Ivory eff ())]
          -> t
          -> Ivory eff ()
