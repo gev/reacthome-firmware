@@ -70,7 +70,7 @@ data Mix = forall f. Flash f => Mix
 
 
 mix :: ( MonadState Context m
-       , MonadReader (Domain p t Mix) m
+       , MonadReader (Domain p t c) m
        , Transport t
        , Flash f
        ) => (Bool -> m DInputs) -> m Relays -> (ATS -> DI.DInputs -> R.Relays -> m Indicator) -> (p -> f) -> m Mix
