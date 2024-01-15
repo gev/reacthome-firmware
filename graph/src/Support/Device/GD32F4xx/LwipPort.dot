@@ -1,0 +1,36 @@
+digraph G {
+size="6,4";
+ratio="fill";
+subgraph cluster_0 {
+label="Support";
+color="#0000000F";
+style="filled";
+subgraph cluster_1 {
+label="Device";
+color="#0000000F";
+style="filled";
+subgraph cluster_2 {
+label="GD32F4xx";
+color="#0000000F";
+style="filled";
+subgraph cluster_3 {
+label="LwipPort";
+color="#0000000F";
+style="filled";
+subgraph cluster_4 {
+label="Basic";
+color="#0000000F";
+style="filled";
+u0[label="Ethernetif",style="filled",fillcolor="#ffbbff",penwidth="0"];
+
+}
+
+}
+
+}
+
+}
+
+}
+
+}

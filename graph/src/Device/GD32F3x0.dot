@@ -16,7 +16,8 @@ u4[label="SysTick",style="filled",fillcolor="#bbbbff",penwidth="0"];
 u5[label="EXTI",style="filled",fillcolor="#bbbbff",penwidth="0"];
 u6[label="PWM",style="filled",fillcolor="#bbbbff",penwidth="0"];
 u7[label="SystemClock",style="filled",fillcolor="#bbbbff",penwidth="0"];
-u14[label="Timer",style="filled",fillcolor="#bbbbff",penwidth="0"];
+u14[label="I2C",style="filled",fillcolor="#bbbbff",penwidth="0"];
+u15[label="Timer",style="filled",fillcolor="#bbbbff",penwidth="0"];
 subgraph cluster_2 {
 label="Display";
 color="#0000000F";
@@ -44,12 +45,14 @@ u0 -> u13;
 u2 -> u10;
 u2 -> u13;
 u5 -> u9;
+u5 -> u10;
+u5 -> u13;
 u6 -> u13;
-u6 -> u14;
+u6 -> u15;
 u7 -> u4;
-u7 -> u14;
+u7 -> u15;
 u8 -> u13;
-u8 -> u14;
+u8 -> u15;
 u9 -> u10;
 u9 -> u13;
 u11 -> u10;
@@ -57,5 +60,6 @@ u11 -> u13;
 u12 -> u10;
 u12 -> u13;
 u13 -> u10;
+u14 -> u13;
 
 }

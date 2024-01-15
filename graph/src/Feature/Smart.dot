@@ -6,11 +6,10 @@ label="Feature";
 color="#0000000F";
 style="filled";
 subgraph cluster_1 {
-label="Dimmer";
+label="Smart";
 color="#0000000F";
 style="filled";
-u0[label="DC",style="filled",fillcolor="#bbbbff",penwidth="0"];
-u1[label="AC",style="filled",fillcolor="#bbbbff",penwidth="0"];
+u0[label="Top",style="filled",fillcolor="#bbbbff",penwidth="0"];
 
 }
 

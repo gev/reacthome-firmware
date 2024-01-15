@@ -12,6 +12,7 @@ style="filled";
 u0[label="Input",style="filled",fillcolor="#bbbbff",penwidth="0"];
 u1[label="Output",style="filled",fillcolor="#bbbbff",penwidth="0"];
 u2[label="OpenDrain",style="filled",fillcolor="#bbbbff",penwidth="0"];
+u3[label="Port",style="filled",fillcolor="#bbbbff",penwidth="0"];
 
 }
 

@@ -13,10 +13,10 @@ subgraph cluster_2 {
 label="RBUS";
 color="#0000000F";
 style="filled";
-u7[label="RBUS",style="filled,bold",fillcolor="#bbbbff"];
-u4[label="Data",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u5[label="Tx",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u6[label="Rx",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u11[label="RBUS",style="filled,bold",fillcolor="#bbbbff"];
+u8[label="Data",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u9[label="Tx",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u10[label="Rx",style="filled",fillcolor="#ffbbbb",penwidth="0"];
 
 }
 
@@ -29,25 +29,50 @@ subgraph cluster_4 {
 label="RBUS";
 color="#0000000F";
 style="filled";
-u3[label="RBUS",style="filled,bold",fillcolor="#bbffff"];
-u0[label="Data",style="filled",fillcolor="#ffbbff",penwidth="0"];
-u1[label="Tx",style="filled",fillcolor="#ffbbff",penwidth="0"];
-u2[label="Rx",style="filled",fillcolor="#ffbbff",penwidth="0"];
+u7[label="RBUS",style="filled,bold",fillcolor="#bbffff"];
+u4[label="Data",style="filled",fillcolor="#ffbbff",penwidth="0"];
+u5[label="Tx",style="filled",fillcolor="#ffbbff",penwidth="0"];
+u6[label="Rx",style="filled",fillcolor="#ffbbff",penwidth="0"];
+
+}
+
+}
+subgraph cluster_5 {
+label="UDP";
+color="#0000000F";
+style="filled";
+subgraph cluster_6 {
+label="RBUS";
+color="#0000000F";
+style="filled";
+u3[label="RBUS",style="filled,bold",fillcolor="#77ff77"];
+u0[label="Data",style="filled",fillcolor="#ffff77",penwidth="0"];
+u1[label="Tx",style="filled",fillcolor="#ffff77",penwidth="0"];
+u2[label="Rx",style="filled",fillcolor="#ffff77",penwidth="0"];
 
 }
 
 }
 
 }
+u0 -> u4;
 u1 -> u0;
 u2 -> u0;
+u2 -> u1;
 u3 -> u0;
 u3 -> u1;
 u3 -> u2;
+u3 -> u9;
+u5 -> u3;
 u5 -> u4;
 u6 -> u4;
 u7 -> u4;
 u7 -> u5;
 u7 -> u6;
+u9 -> u8;
+u10 -> u8;
+u11 -> u8;
+u11 -> u9;
+u11 -> u10;
 
 }
