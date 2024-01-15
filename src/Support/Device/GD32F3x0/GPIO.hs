@@ -14,6 +14,7 @@ module Support.Device.GD32F3x0.GPIO
     , gpio_mode_input
     , gpio_mode_output
     , gpio_mode_af
+    , gpio_mode_analog
 
     , GPIO_PUPD
     , gpio_pupd_none
@@ -83,6 +84,7 @@ newtype GPIO_MODE = GPIO_MODE Uint32
 gpio_mode_input  = GPIO_MODE $ ext "GPIO_MODE_INPUT"
 gpio_mode_output = GPIO_MODE $ ext "GPIO_MODE_OUTPUT"
 gpio_mode_af     = GPIO_MODE $ ext "GPIO_MODE_AF"
+gpio_mode_analog = GPIO_MODE $ ext "GPIO_MODE_ANALOG"
 
 
 
@@ -200,6 +202,7 @@ inclGPIO = do
     inclSym gpio_mode_input
     inclSym gpio_mode_output
     inclSym gpio_mode_af
+    inclSym gpio_mode_analog
 
     inclSym gpio_pupd_none
     inclSym gpio_pupd_pullup
