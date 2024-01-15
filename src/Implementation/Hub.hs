@@ -94,5 +94,7 @@ onInit Hub{..} buff size =
 
 onGetState Hub{..} = do
     forceSyncDInputs dinputs
-    forceSync dimmers
-    forceSyncRBUS' rbus
+    initialized <- iNot <$> deref shouldInit
+    when initialized $ do
+        forceSync dimmers
+        forceSyncRBUS' rbus
