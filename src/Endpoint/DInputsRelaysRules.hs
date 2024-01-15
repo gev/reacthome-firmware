@@ -35,7 +35,7 @@ data Rules = Rules
 
 
 
-mkRules :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t)
+mkRules :: (MonadState Context m, MonadReader (D.Domain p t i) m, T.Transport t)
         => Int -> Int -> m Rules
 mkRules n m = do
     mcu             <- asks D.mcu

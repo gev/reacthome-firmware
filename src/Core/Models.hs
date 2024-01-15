@@ -59,6 +59,7 @@ deviceTypeSmart6Push    = 0x2C :: Uint8
 deviceTypeSmartTopA6P   = 0x30 :: Uint8
 
 deviceTypeSmartBottom1  = 0x3a :: Uint8
+deviceTypeSmartBottom2  = 0x3b :: Uint8
 
 
 

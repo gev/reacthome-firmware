@@ -12,9 +12,7 @@ import           Control.Monad.Reader     (MonadReader, asks)
 import           Control.Monad.State      (MonadState)
 import           Core.Actions
 import           Core.Context
-import           Core.Controller
 import           Core.Domain              as D
-import           Core.Feature
 import           Core.Handler
 import           Core.Task
 import qualified Core.Transport           as T
@@ -42,28 +40,28 @@ data Indicator = forall d f t. (I.Display d f t, FrameBuffer f t) => Indicator
     { display   :: d
     , canvas    :: Canvas1D 20 (f t)
     , hue       :: IFloat
-    , t         :: Value Sint32
-    , dt        :: Value Sint32
-    , phi       :: Value Sint32
-    , dphi      :: Value Sint32
-    , start     :: Value IBool
-    , findMe    :: Value IBool
-    , findMeMsg :: Buffer   2 Uint8
-    , pixels    :: Records 20 RGB
-    , transmit  :: forall n. KnownNat n
-                => Buffer n Uint8 -> forall s t. Ivory (ProcEffects s t) ()
+    , t         :: Value        Sint32
+    , dt        :: Value        Sint32
+    , phi       :: Value        Sint32
+    , dphi      :: Value        Sint32
+    , start     :: Value        IBool
+    , findMe    :: Value        IBool
+    , findMeMsg :: Buffer   2   Uint8
+    , pixels    :: Records 20   RGB
+    , transmit  :: forall   n. KnownNat n
+                => Buffer   n  Uint8 -> forall s t. Ivory (ProcEffects s t) ()
     }
 
 
 maxValue = 0.3 :: IFloat
 
-mkIndicator :: ( MonadState Context m
-               , MonadReader (D.Domain p t) m
-               , FrameBuffer f w
-               , I.Display d f w
-               , T.Transport t
-               ) => (p -> m d) -> IFloat -> m Indicator
-mkIndicator mkDisplay hue = do
+indicator :: ( MonadState Context m
+             , MonadReader (D.Domain p t c) m
+             , FrameBuffer f w
+             , I.Display d f w
+             , T.Transport t
+             ) => (p -> m d) -> IFloat -> m Indicator
+indicator mkDisplay hue = do
     mcu       <- asks D.mcu
     transport <- asks D.transport
     display   <- mkDisplay $ peripherals mcu
@@ -93,18 +91,6 @@ mkIndicator mkDisplay hue = do
         render indicator
 
     pure indicator
-
-
-
-indicator :: ( MonadState Context m
-             , MonadReader (D.Domain p t) m
-             , FrameBuffer f w
-             , I.Display d f w
-             , T.Transport t
-             ) => (p -> m d) -> IFloat -> m Feature
-indicator mkDisplay hue = do
-    indicator <- mkIndicator mkDisplay hue
-    pure $ Feature indicator
 
 
 
@@ -155,19 +141,13 @@ render Indicator{..} = do
     transmitFrameBuffer display $ getBuffer canvas
 
 
-
-instance Controller Indicator where
-    handle Indicator{..} buff size = do
-        action <- deref $ buff ! 0
-        pure [ action ==? actionFindMe ==>
-                when (size >=? 2)
-                     (do
-                        v <- unpack buff 1
-                        pack findMeMsg 1 v
-                        store findMe v
-                        transmit findMeMsg
-                     )
-             ]
+onFindMe :: KnownNat n => Indicator -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onFindMe Indicator{..} buff size =
+    when (size >=? 2) $ do
+        v <- unpack buff 1
+        pack findMeMsg 1 v
+        store findMe v
+        transmit findMeMsg
 
 
 

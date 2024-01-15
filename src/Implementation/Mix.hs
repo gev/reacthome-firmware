@@ -5,7 +5,7 @@
 {-# LANGUAGE RankNTypes       #-}
 {-# LANGUAGE RecordWildCards  #-}
 
-module Feature.Mix where
+module Implementation.Mix where
 
 import           Control.Monad               (zipWithM_)
 import           Control.Monad.Reader        (MonadReader, asks)
@@ -14,7 +14,6 @@ import           Core.Actions
 import           Core.Context
 import           Core.Controller
 import           Core.Domain                 as D
-import           Core.Feature
 import           Core.Task
 import           Core.Transport
 import qualified Core.Transport              as T
@@ -28,14 +27,17 @@ import qualified Endpoint.DInputs            as DI
 import           Endpoint.DInputsRelaysRules
 import qualified Endpoint.Groups             as G
 import qualified Endpoint.Relays             as R
-import           Feature.DInputs             (DInputs (DInputs, getDInputs, getInputs),
-                                              forceSyncDInputs, manageDInputs,
-                                              mkDInputs, syncDInputs)
-import           Feature.Mix.Indicator       (Indicator, mkIndicator, onFindMe)
-import           Feature.Relays              (Relays (Relays, getGroups, getRelays),
-                                              forceSyncRelays, manageRelays,
-                                              mkRelays, onDo, onGroup, onInit,
-                                              syncRelays)
+import           Feature.DInputs             as FDI (DInputs (DInputs, getDInputs, getInputs),
+                                                     dinputs, forceSyncDInputs,
+                                                     manageDInputs, n,
+                                                     syncDInputs)
+import           Feature.Mix.Indicator       as FI (Indicator, indicator,
+                                                    onFindMe)
+import           Feature.Relays              as FR (Relays (Relays, getGroups, getRelays),
+                                                    forceSyncRelays,
+                                                    manageRelays, n, onDo,
+                                                    onGroup, onInit, relays,
+                                                    syncRelays)
 import           GHC.RTS.Flags               (DebugFlags (stable))
 import           GHC.TypeNats
 import           Interface.Display
@@ -68,21 +70,18 @@ data Mix = forall f. Flash f => Mix
 
 
 mix :: ( MonadState Context m
-       , MonadReader (Domain p t) m
+       , MonadReader (Domain p t Mix) m
        , Transport t
-       , Output o, Input i
        , Flash f
-       , Display d b w, FrameBuffer b w
-       , Pull p u
-       ) => [p -> u -> m i] -> [p -> u -> m o] -> (p -> m d) -> (p -> f) -> m Feature
-mix inputs outputs display etc = do
-    relays       <- mkRelays outputs
-    let relaysN   = length outputs
-    dinputs      <- mkDInputs inputs True
-    let dinputsN  = length inputs
+       ) => (Bool -> m DInputs) -> m Relays -> (IFloat -> ATS -> DI.DInputs -> R.Relays -> m Indicator) -> (p -> f) -> m Mix
+mix dinputs' relays' indicator' etc = do
+    relays       <- relays'
+    let relaysN   = FR.n relays
+    dinputs      <- dinputs' True
+    let dinputsN  = FDI.n dinputs
     rules        <- mkRules dinputsN relaysN
     ats          <- mkATS
-    indicator    <- mkIndicator display 150 ats (getDInputs dinputs) (getRelays relays)
+    indicator    <- indicator' 150 ats (getDInputs dinputs) (getRelays relays)
     transport    <- asks D.transport
     mcu          <- asks D.mcu
     shouldInit   <- asks D.shouldInit
@@ -108,7 +107,7 @@ mix inputs outputs display etc = do
     addSync "rules"   $ forceSyncRules   rules
     addSync "ats"     $ forceSyncATS     ats
 
-    pure $ Feature mix
+    pure mix
 
 
 
@@ -134,15 +133,15 @@ instance Controller Mix where
     handle  mix@Mix{..} buff size = do
         shouldInit' <- deref shouldInit
         action <- deref $ buff ! 0
-        pure [ action ==? actionDo          .&& iNot shouldInit' ==> onDo       relays    buff size
-             , action ==? actionGroup       .&& iNot shouldInit' ==> onGroup    relays    buff size
-             , action ==? actionDiRelaySync .&& iNot shouldInit' ==> onRule     mix       buff size
-             , action ==? actionMix         .&& iNot shouldInit' ==> onMode     mix       buff size
-             , action ==? actionInitialize                       ==> onInit     relays    buff size
-             , action ==? actionGetState                         ==> onGetState mix
-             , action ==? actionFindMe                           ==> onFindMe   indicator buff size
-             , action ==? actionError                            ==> resetError ats
-             ]
+        cond_ [ action ==? actionDo          .&& iNot shouldInit' ==> onDo       relays    buff size
+              , action ==? actionGroup       .&& iNot shouldInit' ==> onGroup    relays    buff size
+              , action ==? actionDiRelaySync .&& iNot shouldInit' ==> onRule     mix       buff size
+              , action ==? actionMix         .&& iNot shouldInit' ==> onMode     mix       buff size
+              , action ==? actionInitialize                       ==> onInit     relays    buff size
+              , action ==? actionGetState                         ==> onGetState mix
+              , action ==? actionFindMe                           ==> onFindMe   indicator buff size
+              , action ==? actionError                            ==> resetError ats
+              ]
 
 
 

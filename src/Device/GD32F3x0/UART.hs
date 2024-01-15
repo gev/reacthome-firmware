@@ -24,12 +24,12 @@ import           Ivory.Support.Device.GD32F3x0
 import           Support.Cast
 import           Support.Device.GD32F3x0
 import           Support.Device.GD32F3x0.DMA
+import           Support.Device.GD32F3x0.GPIO
 import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.SYSCFG
 import           Support.Device.GD32F3x0.USART  as S
-import Support.Device.GD32F3x0.GPIO
 
 
 data UART = UART
@@ -173,3 +173,8 @@ coerceParity :: I.Parity -> USART_PARITY_CFG
 coerceParity I.None = usart_pm_none
 coerceParity I.Even = usart_pm_even
 coerceParity I.Odd  = usart_pm_odd
+
+
+
+instance Show UART where
+    show UART{..} = symbol uart

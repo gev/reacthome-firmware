@@ -12,9 +12,7 @@ import           Control.Monad.Reader (MonadReader, asks)
 import           Control.Monad.State  (MonadState)
 import           Core.Actions
 import           Core.Context
-import           Core.Controller      (Controller)
 import qualified Core.Domain          as D
-import           Core.Feature
 import           Core.Handler
 import           Core.Task
 import           Core.Transport
@@ -39,8 +37,8 @@ data SCD40 = forall i. I.I2C i 2 => SCD40
     , transmit                :: forall s t. Buffer 3 Uint8 -> Ivory (ProcEffects s t) ()
     }
 
-scd40 :: (MonadState Context m, MonadReader (D.Domain p t) m, I.I2C i 2, Transport t)
-      => (p -> m (i 2)) -> m Feature
+scd40 :: (MonadState Context m, MonadReader (D.Domain p t c) m, I.I2C i 2, Transport t)
+        => (p -> m (i 2)) -> m SCD40
 scd40 i2c' = do
     mcu                     <- asks D.mcu
     i2c                     <- i2c' $ peripherals mcu
@@ -66,7 +64,7 @@ scd40 i2c' = do
 
     addHandler $ I.HandleI2C i2c $ receive scd40
 
-    pure $ Feature scd40
+    pure scd40
 
 
 
@@ -132,7 +130,3 @@ calculateHumidity x = 10_000 * x / 65_536
 
 calculateTemperature :: IFloat -> IFloat
 calculateTemperature x = (175 * x / 65_536 - 45) * 100
-
-
-
-instance Controller SCD40

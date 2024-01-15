@@ -29,7 +29,6 @@ executable reacthome-firmware
                     , Core.Context
                     , Core.Domain
                     , Core.Dispatcher
-                    , Core.Feature                    
                     , Core.Formula
                     , Core.FSM
                     , Core.Handler
@@ -70,23 +69,19 @@ executable reacthome-firmware
                     , Endpoint.Dimmers
                     , Endpoint.Relays
 
-                    , Feature.Blink
-                    , Feature.Echo
                     , Feature.DInputs
-                    , Feature.Dimmer.AC
-                    , Feature.Dimmer.DC
+                    , Feature.Dimmers
+                    , Feature.Dimmers.AC
+                    , Feature.Dimmers.DC
                     , Feature.DS18B20
                     , Feature.Indicator
-                    , Feature.Mix
                     , Feature.Mix.Indicator
                     , Feature.Relays
                     , Feature.RS485.RBUS
                     , Feature.RS485.RBUS.Data
                     , Feature.RS485.RBUS.Rx
                     , Feature.RS485.RBUS.Tx
-                    , Feature.Server
                     , Feature.Smart.Top
-                    , Feature.UdpEcho
                     , Feature.Sht21
                     , Feature.Scd40
 
@@ -105,6 +100,19 @@ executable reacthome-firmware
                     , Formula.Scd40
                     , Formula.Smart.Top.TopA6P
                     , Formula.Smart.Bottom.Bottom1
+                    , Formula.Smart.Bottom.Bottom2
+
+                    , Implementation.Blink
+                    , Implementation.DI
+                    , Implementation.Dimmer
+                    , Implementation.Dummy
+                    , Implementation.Echo
+                    , Implementation.Hub
+                    , Implementation.Mix
+                    , Implementation.Smart.Bottom
+                    , Implementation.Smart.Top
+                    , Implementation.UdpEcho
+                    , Implementation.Relay
 
                     , Interface.Counter
                     , Interface.GPIO.Input
@@ -127,7 +135,7 @@ executable reacthome-firmware
                     , Interface.I2C
 
                     , Protocol.OneWire.Master
-                                        , Protocol.RS485.RBUS
+                    , Protocol.RS485.RBUS
                     , Protocol.RS485.RBUS.Master
                     , Protocol.RS485.RBUS.Master.MacTable
                     , Protocol.RS485.RBUS.Master.Rx

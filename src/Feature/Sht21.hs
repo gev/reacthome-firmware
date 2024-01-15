@@ -12,9 +12,7 @@ import           Control.Monad.Reader (MonadReader, asks)
 import           Control.Monad.State  (MonadState)
 import           Core.Actions
 import           Core.Context
-import           Core.Controller      (Controller)
 import qualified Core.Domain          as D
-import           Core.Feature
 import           Core.Handler
 import           Core.Task
 import           Core.Transport
@@ -40,8 +38,8 @@ data SHT21 = forall i. I.I2C i 1 => SHT21
     , transmit              :: forall s t. Buffer 3 Uint8 -> Ivory (ProcEffects s t) ()
     }
 
-sht21 :: (MonadState Context m, MonadReader (D.Domain p t) m, I.I2C i 1, Transport t)
-      => (p -> m (i 1)) -> m Feature
+sht21 :: (MonadState Context m, MonadReader (D.Domain p t c) m, I.I2C i 1, Transport t)
+        => (p -> m (i 1)) -> m SHT21
 sht21 i2c' = do
     mcu                   <- asks D.mcu
     i2c                   <- i2c' $ peripherals mcu
@@ -71,7 +69,7 @@ sht21 i2c' = do
 
     addHandler $ I.HandleI2C i2c $ receive sht21
 
-    pure $ Feature sht21
+    pure sht21
 
 
 
@@ -138,7 +136,3 @@ calculateTemperature = convert (-46.88) 175.72
 
 calculateHumidity :: IFloat -> IFloat
 calculateHumidity = convert (-6.0) 125.0
-
-
-
-instance Controller SHT21

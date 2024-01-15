@@ -11,9 +11,7 @@ module Feature.Mix.Indicator where
 import           Control.Monad.Reader     (MonadReader, asks)
 import           Control.Monad.State      (MonadState)
 import           Core.Context
-import           Core.Controller
 import           Core.Domain              as D
-import           Core.Feature
 import           Core.Handler
 import           Core.Task
 import qualified Core.Transport           as T
@@ -32,13 +30,13 @@ import           GHC.TypeNats
 import           Interface.Counter
 import           Interface.Display        (Display (transmitFrameBuffer))
 import qualified Interface.Display        as I
+import           Interface.GPIO.Port
 import           Interface.Mac
 import           Interface.MCU
 import           Interface.SystemClock    (getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Support.Cast
-import Interface.GPIO.Port
 
 
 
@@ -64,16 +62,16 @@ data Indicator = forall d f t. (I.Display d f t, FrameBuffer f t) => Indicator
 
 maxValue = 0.3 :: IFloat
 
-mkIndicator :: ( MonadState Context m
-               , MonadReader (D.Domain p t) m
-               , FrameBuffer f w
-               , I.Display d f w
-               , T.Transport t
-               ) => (p -> m d) -> IFloat -> ATS -> DInputs -> Relays ->  m Indicator
-mkIndicator mkDisplay hue ats dinputs relays = do
+indicator :: ( MonadState Context m
+             , MonadReader (D.Domain p t c) m
+             , FrameBuffer f w
+             , I.Display d f w
+             , T.Transport t
+             ) => (p -> m d) -> IFloat -> ATS -> DInputs -> Relays ->  m Indicator
+indicator mkDisplay hue ats dinputs relays = do
     mcu       <- asks D.mcu
     transport <- asks D.transport
-    display   <- mkDisplay $ peripherals mcu 
+    display   <- mkDisplay $ peripherals mcu
     canvas    <- mkCanvas1D $ I.frameBuffer display "indicator"
     t         <- value    "indicator_t"           0
     dt        <- value    "indicator_dt"          1

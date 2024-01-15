@@ -11,6 +11,7 @@ import           Control.Monad.Reader     (MonadReader, asks)
 import           Control.Monad.State      (MonadState)
 import           Core.Actions
 import           Core.Context
+import           Core.Controller
 import           Core.Dispatcher
 import qualified Core.Domain              as D
 import           Core.Handler
@@ -30,17 +31,17 @@ import           Transport.UART.RBUS.Tx
 
 
 
-rbus :: (MonadState Context m, MonadReader (D.Domain p RBUS) m, UART u)
+rbus :: (MonadState Context m, MonadReader (D.Domain p t c) m, UART u, Controller c)
      => (p -> m u) -> m RBUS
 rbus uart' = do
-    mcu           <- asks D.mcu
-    features      <- asks D.features
-    uart          <- uart' $ I.peripherals mcu
-    let name       = "transport_uart_rbus"
+    mcu            <- asks D.mcu
+    implementation <- asks D.implementation
+    uart           <- uart' $ I.peripherals mcu
+    let name        = "transport_uart_rbus"
     {--
         TODO: move dispatcher outside
     --}
-    rbus <- mkRbus name uart $ makeDispatcher features
+    rbus <- mkRbus name uart $ makeDispatcher implementation
 
     addTask $ delay 1_000 (name <> "_discovery") $ discoveryTask rbus
 
@@ -48,7 +49,7 @@ rbus uart' = do
 
 
 
-mkRbus :: (MonadState Context m, MonadReader (D.Domain p t) m, UART u)
+mkRbus :: (MonadState Context m, MonadReader (D.Domain p t c) m, UART u)
      => String -> u -> (forall s. Buffer 255 Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()) -> m RBUS
 mkRbus name uart onMessage = do
     mcu           <- asks D.mcu

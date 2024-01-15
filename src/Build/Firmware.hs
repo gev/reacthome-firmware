@@ -27,19 +27,15 @@ cook mcu Formula{..} = do
     incl  loop
     incl  main
 
-    where (domain'   , domainContext'   ) = runState (domain model version mcu' shouldInit transport' features') mempty
-          (mcu'      , mcuContext'      ) = runState mcu mempty
-          (features' , featuresContexts') = unzip $ run <$> features
-          (transport', transportContext') = runReader (runStateT transport featuresContext') domain'
-
-          featuresContext' = mconcat featuresContexts'
-
-          run f = runReader (runStateT f mempty) domain'
+    where (domain'         , domainContext'        ) = runState (domain model version mcu' shouldInit transport' implementation') mempty
+          (mcu'            , mcuContext'           ) = runState mcu mempty
+          (implementation' , implementationContext') = runReader (runStateT implementation mempty) domain'
+          (transport'      , transportContext'     ) = runReader (runStateT transport mempty) domain'
 
           (Context inclModule inits tasks syncs) = mcuContext'
                                                 <> domainContext'
                                                 <> transportContext'
-                                                <> featuresContext'
+                                                <> implementationContext'
 
           loop = mkLoop (systemClock mcu') tasks
 

@@ -4,7 +4,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TypeOperators    #-}
 
-module Feature.UdpEcho where
+module Implementation.UdpEcho where
 
 import           Control.Monad         (void)
 import           Control.Monad.Reader  (MonadReader, asks)
@@ -12,7 +12,6 @@ import           Control.Monad.State   (MonadState)
 import           Core.Context
 import           Core.Controller
 import           Core.Domain           as D
-import           Core.Feature
 import           Core.Handler
 import           Core.Task
 import           Data.Record
@@ -36,12 +35,11 @@ import           Support.Lwip.Udp
 
 
 
-data UdpEcho = UdpEcho
 
 
-mkUdpEcho :: (MonadState Context m, MonadReader (Domain p t) m, Enet e, LwipPort e)
-      => (p -> m e) -> m UdpEcho
-mkUdpEcho enet = do
+udpEcho :: (MonadState Context m, MonadReader (Domain p t ()) m, Enet e, LwipPort e)
+      => (p -> m e) -> m ()
+udpEcho enet = do
     mcu       <- asks D.mcu
     enet'     <- enet $ peripherals mcu
     ip4       <- record_ "ipaddr4"
@@ -88,16 +86,6 @@ mkUdpEcho enet = do
 
     addTask $ delay 1000 "eth_arp" tmrEtharp
 
-    pure UdpEcho
-
-
-
-udpEcho :: (MonadState Context m, MonadReader (Domain p t) m, Enet e, LwipPort e)
-      => (p -> m e) -> m Feature
-udpEcho enet = do
-    udpEcho <- mkUdpEcho enet
-    pure $ Feature udpEcho
-
 
 
 netifStatusCallback :: Def (NetifStatusCallbackFn s)
@@ -118,8 +106,3 @@ udpEchoReceiveCallback = proc "udp_echo_callback" $ \_ upcb p addr port -> body 
     sendUdp upcb p
     disconnectUdp upcb
     ret =<< freePbuf p
-
-
-
-
-instance Controller UdpEcho

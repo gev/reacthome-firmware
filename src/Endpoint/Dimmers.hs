@@ -19,6 +19,7 @@ import           Ivory.Stdlib
 import           Support.Cast
 
 
+
 type DimmerStruct = "dimmer_struct"
 
 [ivory|
@@ -40,8 +41,10 @@ data Dimmers = Dimmers
     , payload    :: Buffer 6 Uint8
     }
 
-dimmers :: MonadState Context m => String -> Int -> m Dimmers
-dimmers name n = do
+
+
+mkDimmers :: MonadState Context m => String -> Int -> m Dimmers
+mkDimmers name n = do
     addStruct (Proxy :: Proxy DimmerStruct)
     let runDimmers = runRecords name $ go . fromIntegral <$> [1..n]
     payload       <- buffer "dimmer_message"
