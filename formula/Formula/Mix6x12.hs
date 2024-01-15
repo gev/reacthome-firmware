@@ -40,6 +40,6 @@ mix6x12 = Formula { name       = "mix6x12"
                                                   , out_pa_7
                                                   ]
                                        )
-                                       (indicator npx_pwm_0)
+                                       (indicator npx_pwm_0 150)
                                        etc
                   }

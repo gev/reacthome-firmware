@@ -73,7 +73,7 @@ mix :: ( MonadState Context m
        , MonadReader (Domain p t Mix) m
        , Transport t
        , Flash f
-       ) => (Bool -> m DInputs) -> m Relays -> (IFloat -> ATS -> DI.DInputs -> R.Relays -> m Indicator) -> (p -> f) -> m Mix
+       ) => (Bool -> m DInputs) -> m Relays -> (ATS -> DI.DInputs -> R.Relays -> m Indicator) -> (p -> f) -> m Mix
 mix dinputs' relays' indicator' etc = do
     relays       <- relays'
     let relaysN   = FR.n relays
@@ -81,7 +81,7 @@ mix dinputs' relays' indicator' etc = do
     let dinputsN  = FDI.n dinputs
     rules        <- mkRules dinputsN relaysN
     ats          <- mkATS
-    indicator    <- indicator' 150 ats (getDInputs dinputs) (getRelays relays)
+    indicator    <- indicator' ats (getDInputs dinputs) (getRelays relays)
     transport    <- asks D.transport
     mcu          <- asks D.mcu
     shouldInit   <- asks D.shouldInit
