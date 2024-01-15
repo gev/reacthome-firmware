@@ -8,6 +8,7 @@ module Transport.RS485.RBUS    where
 import           Control.Monad.Reader      (MonadReader, asks)
 import           Control.Monad.State       (MonadState, gets)
 import           Core.Context
+import           Core.Controller
 import           Core.Dispatcher
 import qualified Core.Domain               as D
 import           Core.Handler
@@ -28,42 +29,42 @@ import           Transport.RS485.RBUS.Tx
 
 
 
-rbus :: (MonadState Context m, MonadReader (D.Domain p RBUS) m)
+rbus :: (MonadState Context m, MonadReader (D.Domain p RBUS c) m, Controller c)
      => m RS485 -> m RBUS
 rbus rs485 = do
 
-    model         <- asks D.model
-    version       <- asks D.version
-    mcu           <- asks D.mcu
-    mustInit      <- asks D.mustInit
-    shouldInit    <- asks D.shouldInit
-    features      <- asks D.features
+    model          <- asks D.model
+    version        <- asks D.version
+    mcu            <- asks D.mcu
+    mustInit       <- asks D.mustInit
+    shouldInit     <- asks D.shouldInit
+    implementation <- asks D.implementation
 
-    let name       = "transport_rs485_rbus"
-    let clock      = systemClock mcu
+    let name        = "transport_rs485_rbus"
+    let clock       = systemClock mcu
 
-    rs            <- rs485
-    rxBuff        <- buffer (name <> "_rx"            )
-    rxQueue       <- queue  (name <> "_rx"            )
-    msgOffset     <- buffer (name <> "_msg_offset"    )
-    msgSize       <- buffer (name <> "_msg_size"      )
-    msgTTL        <- buffer (name <> "_msg_ttl"       )
-    msgQueue      <- queue  (name <> "_msg"           )
-    msgBuff       <- buffer (name <> "_msg"           )
-    msgIndex      <- value  (name <> "_msg_index"     ) 0
-    txBuff        <- buffer (name <> "_tx"            )
-    initBuff      <- values (name <> "_init_request"  ) [0xf2]
-    rxLock        <- value  (name <> "_rx_lock"       ) false
-    txLock        <- value  (name <> "_tx_lock"       ) false
-    rxTimestamp   <- value  (name <> "_timestamp_rx"  ) 0
-    txTimestamp   <- value  (name <> "_timestamp_tx"  ) 0
-    initTimestamp <- value  (name <> "_timestamp_init") 0
-    shouldConfirm <- value  (name <> "_should_confirm") false
+    rs             <- rs485
+    rxBuff         <- buffer (name <> "_rx"            )
+    rxQueue        <- queue  (name <> "_rx"            )
+    msgOffset      <- buffer (name <> "_msg_offset"    )
+    msgSize        <- buffer (name <> "_msg_size"      )
+    msgTTL         <- buffer (name <> "_msg_ttl"       )
+    msgQueue       <- queue  (name <> "_msg"           )
+    msgBuff        <- buffer (name <> "_msg"           )
+    msgIndex       <- value  (name <> "_msg_index"     ) 0
+    txBuff         <- buffer (name <> "_tx"            )
+    initBuff       <- values (name <> "_init_request"  ) [0xf2]
+    rxLock         <- value  (name <> "_rx_lock"       ) false
+    txLock         <- value  (name <> "_tx_lock"       ) false
+    rxTimestamp    <- value  (name <> "_timestamp_rx"  ) 0
+    txTimestamp    <- value  (name <> "_timestamp_tx"  ) 0
+    initTimestamp  <- value  (name <> "_timestamp_init") 0
+    shouldConfirm  <- value  (name <> "_should_confirm") false
 
     {--
         TODO: move dispatcher outside
     --}
-    let dispatch = makeDispatcher features
+    let dispatch = makeDispatcher implementation
 
     let onMessage buff n shouldHandle = do
             when (n >? 0 .&& shouldHandle) $ dispatch buff n

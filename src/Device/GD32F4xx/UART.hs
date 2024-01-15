@@ -16,7 +16,7 @@ import           Core.Handler
 import           Data.Foldable
 import           Data.Maybe
 import           Data.Record
-import qualified Device.GD32F4xx.GPIO.Port          as G
+import qualified Device.GD32F4xx.GPIO.Port     as G
 import           Interface.UART                (HandleUART (onDrain))
 import qualified Interface.UART                as I
 import           Ivory.Language
@@ -25,11 +25,11 @@ import           Ivory.Support
 import           Ivory.Support.Device.GD32F4xx
 import           Support.Cast
 import           Support.Device.GD32F4xx.DMA
+import           Support.Device.GD32F4xx.GPIO
 import           Support.Device.GD32F4xx.IRQ
 import           Support.Device.GD32F4xx.Misc
 import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.USART as S
-import Support.Device.GD32F4xx.GPIO
 
 
 data UART = UART
@@ -180,3 +180,8 @@ coerceParity :: I.Parity -> USART_PARITY_CFG
 coerceParity I.None = usart_pm_none
 coerceParity I.Even = usart_pm_even
 coerceParity I.Odd  = usart_pm_odd
+
+
+
+instance Show UART where
+    show UART{..} = symbol uart

@@ -14,13 +14,14 @@ import           Formula.DimmerDC12
 import           Formula.Echo
 import           Formula.Mix6x12
 import           Formula.Relay12
-import           Formula.Server
-import           Formula.UdpEcho450
 import           Formula.RsHub4
-import           Formula.Sht21
 import           Formula.Scd40
+import           Formula.Server
+import           Formula.Sht21
 import           Formula.Smart.Bottom.Bottom1
-import           Formula.Smart.Top.TopA6P 
+import           Formula.Smart.Bottom.Bottom2
+import           Formula.Smart.Top.TopA6P
+import           Formula.UdpEcho450
 
 
 main :: IO ()
@@ -32,6 +33,7 @@ main = do
                      , di4
                      , sht21_test
                      , smartBottom1
+                     , smartBottom2
                      , smartTopA6P
                      , scd40_test
                     --  , blink330

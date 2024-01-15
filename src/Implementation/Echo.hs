@@ -4,7 +4,7 @@
 {-# LANGUAGE RankNTypes       #-}
 {-# LANGUAGE RecordWildCards  #-}
 
-module Feature.Echo where
+module Implementation.Echo where
 
 import           Control.Monad.Reader
 import           Control.Monad.State
@@ -12,7 +12,6 @@ import           Core.Context
 import           Core.Controller
 import           Core.Domain
 import qualified Core.Domain          as D
-import           Core.Feature
 import           Core.Task
 import qualified Core.Transport       as T
 import           Data.Buffer
@@ -31,15 +30,15 @@ data Echo = Echo
 
 
 echo :: ( MonadState Context m
-        , MonadReader (Domain p t) m
+        , MonadReader (Domain p t Echo) m
         , T.Transport t
-        ) => m Feature
+        ) => m Echo
 echo = do
     buff <- values "echo_buffer" [9,8,7,6,5,4,3,2,1,0]
     transport  <- asks D.transport
     let echo = Echo { buff, transmit = T.transmitBuffer transport }
     -- addTask $ echoTask echo
-    pure $ Feature echo
+    pure echo
 
 
 echoTask :: Echo -> Task
@@ -47,6 +46,4 @@ echoTask Echo{..} = delay 100 "echo_tx" $ transmit buff
 
 
 instance Controller Echo where
-    handle Echo{..} request n = do
-        pure [ true ==> transmit request
-             ]
+    handle Echo{..} request n = transmit request

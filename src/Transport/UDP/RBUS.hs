@@ -16,8 +16,8 @@ import           Control.Monad.State     (MonadState)
 import           Core.Context
 import           Core.Controller
 import           Core.Dispatcher
+import           Core.Domain             (Domain (implementation))
 import qualified Core.Domain             as D
-import           Core.Feature
 import           Core.Handler
 import           Core.Task
 import           Core.Transport
@@ -25,7 +25,6 @@ import           Core.Version
 import           Data.Buffer
 import           Data.Record
 import           Data.Value
-import           Feature.Server          (Server (shouldInit), server)
 import           Interface.ENET
 import           Interface.LwipPort
 import           Interface.MCU           as I
@@ -49,7 +48,7 @@ import           Transport.UDP.RBUS.Tx
 
 
 
-rbus :: (MonadState Context m, MonadReader (D.Domain p t) m, Enet e, LwipPort e)
+rbus :: (MonadState Context m, MonadReader (D.Domain p t c) m, Enet e, LwipPort e, Controller c)
       => (p -> m e) -> m RBUS
 rbus enet' = do
     mcu             <- asks D.mcu
@@ -57,7 +56,7 @@ rbus enet' = do
     version         <- asks D.version
     shouldInit      <- asks D.shouldInit
     let mac          = I.mac mcu
-    features        <- asks D.features
+    implementation  <- asks D.implementation
     enet            <- enet' $ peripherals mcu
     netif           <- record_ "udp_netif"
     upcb            <- value_  "udp_upcb"
@@ -78,7 +77,7 @@ rbus enet' = do
     {--
         TODO: move dispatcher outside
     --}
-    let onMessage = makeDispatcher features
+    let onMessage = makeDispatcher implementation
 
     let rbus   = RBUS { mac
                       , netif

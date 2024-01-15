@@ -57,7 +57,7 @@ data ATS = ATS
     }
 
 
-mkATS :: (MonadState Context m, MonadReader (Domain p t) m, T.Transport t) => m ATS
+mkATS :: (MonadState Context m, MonadReader (Domain p t i) m, T.Transport t) => m ATS
 mkATS = do
     mcu             <- asks D.mcu
     transport       <- asks D.transport

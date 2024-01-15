@@ -15,9 +15,7 @@ module Feature.DS18B20
 import           Control.Monad.Reader     (MonadReader, asks)
 import           Control.Monad.State      (MonadState)
 import           Core.Context
-import           Core.Controller
 import qualified Core.Domain              as D
-import           Core.Feature
 import           Core.Task
 import qualified Core.Transport           as T
 import           Data.Buffer
@@ -49,8 +47,8 @@ data DS18B20 = DS18B20
     }
 
 
-ds18b20 :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, OpenDrain od)
-        => (p -> m od -> m OneWire) -> (p -> m od) -> m Feature
+ds18b20 :: (MonadState Context m, MonadReader (D.Domain p t c) m, T.Transport t, OpenDrain od)
+          => (p -> m od -> m OneWire) -> (p -> m od) -> m DS18B20
 ds18b20 ow od = do
     let name   = "ds18b20"
     mcu       <- asks $ peripherals . D.mcu
@@ -81,7 +79,7 @@ ds18b20 ow od = do
     addTask $ delayPhase 15_000 6_000 (name <> "_measure_temperature") $ measureTemperature ds master
     addTask $ delayPhase 15_000 6_700 (name <> "_get_temperature"    ) $ getTemperature     ds master
 
-    pure $ Feature ds
+    pure ds
 
 
 
@@ -177,7 +175,3 @@ getCRC = proc "ds18b20_get_crc" $ \buff -> body $ do
                 store crc $ crc'' .^ 0x8c
             store inbyte $ inbyte' `iShiftR` 1
     ret =<< deref crc
-
-
-
-instance Controller DS18B20
