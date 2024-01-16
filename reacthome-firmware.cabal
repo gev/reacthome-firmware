@@ -252,7 +252,7 @@ executable reacthome-firmware
                     , Util.CRC16
                     , Util.String
 
-    build-depends:    base ^>=4.16.4.0
+    build-depends:    base >=4.16 && <5.0
                     , mtl  
                     , ivory
                     , ivory-backend-c
