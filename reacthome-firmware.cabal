@@ -133,6 +133,7 @@ executable reacthome-firmware
                     , Interface.ENET
                     , Interface.LwipPort
                     , Interface.I2C
+                    , Interface.ADC
 
                     , Protocol.OneWire.Master
                     , Protocol.RS485.RBUS
