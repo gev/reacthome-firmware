@@ -1,6 +1,6 @@
 r
 h
-loadbin build/firmware/smar_bottom_2.bin, 0x8000000
+loadbin build/firmware/smart_bottom_2.bin, 0x8000000
 g
 verifybin build/firmware/smart_bottom_2.bin, 0x8000000
 r
