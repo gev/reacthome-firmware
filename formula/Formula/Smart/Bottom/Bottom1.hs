@@ -13,7 +13,7 @@ import           Ivory.Language
 import           Transport.RS485.RBUS
 
 smartBottom1 :: Formula GD32F3x0
-smartBottom1 =  Formula { name           = "smart-bottom-1"
+smartBottom1 =  Formula { name           = "smart_bottom_1"
                         , model          = deviceTypeSmartBottom1
                         , version        = (1, 0)
                         , shouldInit     = false

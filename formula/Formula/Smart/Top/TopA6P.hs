@@ -10,7 +10,7 @@ import           Ivory.Language
 import           Transport.UART.RBUS
 
 smartTopA6P :: Formula GD32F3x0
-smartTopA6P =  Formula { name           = "smart-top-a6p"
+smartTopA6P =  Formula { name           = "smart_top_a6p"
                        , model          = deviceTypeSmartTopA6P
                        , version        = (1, 0)
                        , shouldInit     = false
