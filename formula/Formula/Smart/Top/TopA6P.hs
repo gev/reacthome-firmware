@@ -24,4 +24,5 @@ smartTopA6P =  Formula { name           = "smart_top_a6p"
                                                        ]
                                               )
                                               (sht21 i2c_0)
+                                            -- npx_pwm_0
                        }
