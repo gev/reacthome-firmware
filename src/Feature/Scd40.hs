@@ -56,11 +56,9 @@ scd40 i2c' = do
                       , transmit = transmitBuffer transport
                       }
 
-    addInit                        "scd40_start_measuring"      $ startMeasuring      scd40
-    addTask $ delayPhase 15_000 15 "scd40_get_measurement"      $ getMeasurement      scd40
-    addTask $ delayPhase 15_000 20 "scd40_transmit_humidity"    $ transmitHumidity    scd40
-    addTask $ delayPhase 15_000 25 "scd40_transmit_temperature" $ transmitTemperature scd40
-    addTask $ delayPhase 15_000 30 "scd40_transmit_co2"         $ transmitCO2         scd40
+    addInit                           "scd40_start_measuring" $ startMeasuring scd40
+    addTask $ delayPhase 15_000 3_000 "scd40_get_measurement" $ getMeasurement scd40
+    addTask $ delayPhase 15_000 3_010 "scd40_transmit_data"   $ transmitData   scd40
 
     addHandler $ I.HandleI2C i2c $ receive scd40
 
@@ -78,6 +76,14 @@ getMeasurement :: SCD40 -> Ivory eff ()
 getMeasurement SCD40{..} = do
     store isReady false
     I.receive i2c address 9
+
+
+
+transmitData :: SCD40 -> Ivory (ProcEffects s ()) ()
+transmitData scd40 = do
+    transmitHumidity    scd40
+    transmitTemperature scd40
+    transmitCO2         scd40
 
 
 
