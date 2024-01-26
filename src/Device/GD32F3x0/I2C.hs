@@ -1,10 +1,10 @@
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE RankNTypes #-}
 
 module Device.GD32F3x0.I2C where
 
@@ -14,16 +14,16 @@ import           Core.Handler
 import           Data.Buffer
 import           Data.Value
 import           Device.GD32F3x0.GPIO.Port    hiding (mode, rcu)
+import           GHC.TypeNats
 import qualified Interface.I2C                as I
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Ivory.Support
+import           Support.Device.GD32F3x0.GPIO
 import           Support.Device.GD32F3x0.I2C
 import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
-import GHC.TypeNats
-import Support.Device.GD32F3x0.GPIO
 
 
 data I2C n = I2C
@@ -66,8 +66,8 @@ mkI2C i2c rcu eventIrq errorIrq sda' scl' = do
         configModeAddrI2C i2c i2c_i2cmode_enable i2c_addformat_7bits 0
         enableI2C i2c
         -- configAckI2C i2c i2c_ack_enable
-        enableIrqNvic       eventIrq 0 0
-        enableIrqNvic       errorIrq 0 0
+        enableIrqNvic       eventIrq 2 0
+        enableIrqNvic       errorIrq 2 1
 
     pure I2C { i2c, eventIrq, errorIrq, mode, address, txBuff, index, size }
 
@@ -96,7 +96,7 @@ instance KnownNat n => I.I2C I2C n where
         enableInterruptI2C i2c i2c_int_buf
         enableInterruptI2C i2c i2c_int_err
         startOnBusI2C i2c
-        
+
 
 
 instance KnownNat n => Handler I.HandleI2C (I2C n) where
@@ -141,7 +141,7 @@ handleTransmit I2C{..} = do
                                 store index $ index' + 1
                             )
                             (do
-                                stopOnBusI2C i2c 
+                                stopOnBusI2C i2c
                                 disableInterruptI2C i2c i2c_int_err
                                 disableInterruptI2C i2c i2c_int_buf
                                 disableInterruptI2C i2c i2c_int_ev
@@ -165,18 +165,18 @@ handleReceive I2C{..} receive = do
         )
         (do
             addsend <- getInterruptFlagI2C i2c i2c_int_flag_addsend
-            ifte_ addsend 
-                (do 
+            ifte_ addsend
+                (do
                     size' <- deref size
                     when (size' ==? 1) $ do
                         configAckI2C i2c i2c_ack_disable
                     clearInterruptFlagI2C i2c i2c_int_flag_addsend
                 )
-                (do 
+                (do
                     size' <- deref size
                     rbne  <- getInterruptFlagI2C i2c i2c_int_flag_rbne
                     when rbne $ do
-                        cond_ 
+                        cond_
                             [ size' ==? 2 ==> configAckI2C i2c i2c_ack_disable
                             , size' ==? 1 ==> do
                                 stopOnBusI2C i2c
@@ -185,14 +185,14 @@ handleReceive I2C{..} receive = do
                                 disableInterruptI2C i2c i2c_int_buf
                                 disableInterruptI2C i2c i2c_int_ev
                             ]
-                            
+
                         store size $ size' - 1
 
                         index' <- deref index
-                        v      <- receiveDataI2C i2c    
+                        v      <- receiveDataI2C i2c
                         receive v index'
                         store index $ index' + 1
-                    
+
                         clearInterruptFlagI2C i2c i2c_int_flag_rbne
                 )
         )
@@ -208,5 +208,3 @@ handleError I2C{..} = do
     clearInterruptFlagI2C i2c i2c_int_flag_lostarb
     clearInterruptFlagI2C i2c i2c_int_flag_berr
     clearInterruptFlagI2C i2c i2c_int_flag_pecerr
-
-
