@@ -96,7 +96,7 @@ transmitTemperature = transmit' actionTemperature $ convert calculateTemperature
 
 
 transmitCO2 :: SCD40 -> Ivory (ProcEffects s ()) ()
-transmitCO2 = transmit' actionCo2 $ \SCD40{..} -> do
+transmitCO2 = transmit' actionCO2 $ \SCD40{..} -> do
         store (txBuff ! 1) =<< deref (rxBuff ! 1)
         store (txBuff ! 2) =<< deref (rxBuff ! 0)
 
