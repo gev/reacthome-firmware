@@ -3,17 +3,18 @@ module Formula.Smart.Top.TopA6P where
 import           Core.Formula
 import           Core.Models
 import           Device.GD32F3x0
-import           Feature.DInputs
-import           Feature.Sht21
-import           Implementation.Smart.Top
+import           Feature.DInputs          (dinputs)
+import           Feature.Sht21            (sht21)
+import           Feature.Smart.Top.LEDs   (leds)
+import           Implementation.Smart.Top (top)
 import           Ivory.Language
-import           Transport.UART.RBUS
+import           Transport.UART.RBUS      (rbus)
 
 smartTopA6P :: Formula GD32F3x0
 smartTopA6P =  Formula { name           = "smart_top_a6p"
                        , model          = deviceTypeSmartTopA6P
                        , version        = (1, 0)
-                       , shouldInit     = false
+                       , shouldInit     = true
                        , transport      = rbus uart_0
                        , implementation = top (dinputs [ in_pa_4
                                                        , in_pb_2
@@ -24,5 +25,5 @@ smartTopA6P =  Formula { name           = "smart_top_a6p"
                                                        ]
                                               )
                                               (sht21 i2c_0)
-                                            -- npx_pwm_0 [led1, led4, led2, led5, led3, led6]
+                                              (leds npx_pwm_0)
                        }
