@@ -25,7 +25,7 @@ di dinputs' ds18b20 = do
 
 
 instance Controller DI where
-    handle DI{..} buff size = do
+    handle DI{..} buff _ = do
         action <- deref $ buff ! 0
         cond_ [ action ==? actionGetState ==> forceSyncDInputs dinputs
               ]
