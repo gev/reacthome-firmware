@@ -35,3 +35,6 @@ af_2 = AF gpio_af_2
 
 af_4 :: Mode
 af_4 = AF gpio_af_4
+
+af_5 :: Mode
+af_5 = AF gpio_af_5
