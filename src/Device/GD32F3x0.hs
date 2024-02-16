@@ -152,6 +152,7 @@ data GD32F3x0 = GD32F3x0
     , pwm_11    :: PWM'
 
     , npx_pwm_0 :: NeoPixelPWM'
+    , npx_pwm_1 :: NeoPixelPWM'
 
     , exti_pa_0 :: EXTI'
     , exti_pa_5 :: EXTI'
@@ -311,6 +312,10 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
     , npx_pwm_0 = mkNeoPixelPWM cfg_timer_15
                                 timer_ch_0 dma_ch2
                                 (pb_8 af_2)
+    
+    , npx_pwm_1 = mkNeoPixelPWM cfg_timer_15
+                                timer_ch_0 dma_ch2
+                                (pa_6 af_5)
 
     , exti_pa_0 = mkEXTI pa_0
                          exti0_1_irqn
