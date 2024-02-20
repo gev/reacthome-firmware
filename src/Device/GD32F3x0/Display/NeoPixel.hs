@@ -22,12 +22,12 @@ import           Ivory.Stdlib
 import           Ivory.Support
 import           Support.Cast
 import           Support.Device.GD32F3x0.DMA
+import           Support.Device.GD32F3x0.GPIO
 import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.System
 import           Support.Device.GD32F3x0.Timer
-import Support.Device.GD32F3x0.GPIO
 
 
 
