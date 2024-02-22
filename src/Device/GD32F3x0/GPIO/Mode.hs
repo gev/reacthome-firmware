@@ -10,6 +10,7 @@ import           Support.Device.GD32F3x0.GPIO
 data Mode
     = MF GPIO_MODE GPIO_OTYPE
     | AF GPIO_AF
+    | AN GPIO_MODE
 
 
 
@@ -35,3 +36,7 @@ af_2 = AF gpio_af_2
 
 af_4 :: Mode
 af_4 = AF gpio_af_4
+
+
+analog :: Mode
+analog = AN gpio_mode_analog
