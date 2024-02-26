@@ -15,12 +15,6 @@ module Support.Device.GD32F3x0.ADC
     , CHANNEL_GROUP_ADC
     , adc_regular_channel
 
-    , CHANNEL_ADC
-    , adc_channel_1
-    , adc_channel_2
-    , adc_channel_3
-    , adc_channel_4
-
     , SAMPLE_TIME_ADC
     , adc_sampletime_55point5
 
@@ -108,10 +102,10 @@ adc_channel_length_config :: Def ('[CHANNEL_GROUP_ADC, Uint32] :-> ())
 adc_channel_length_config = fun "adc_channel_length_config"
 
 
-configRegularChannelADC :: Uint8 -> CHANNEL_ADC -> SAMPLE_TIME_ADC -> Ivory eff ()
+configRegularChannelADC :: Uint8 -> Uint8 -> SAMPLE_TIME_ADC -> Ivory eff ()
 configRegularChannelADC = call_ adc_regular_channel_config
 
-adc_regular_channel_config :: Def ('[Uint8, CHANNEL_ADC, SAMPLE_TIME_ADC] :-> ())
+adc_regular_channel_config :: Def ('[Uint8, Uint8, SAMPLE_TIME_ADC] :-> ())
 adc_regular_channel_config = fun "adc_regular_channel_config"
 
 
@@ -173,10 +167,6 @@ inclADC = do
 
     inclSym adc_regular_channel
 
-    inclSym adc_channel_1
-    inclSym adc_channel_2
-    inclSym adc_channel_3
-    inclSym adc_channel_4
 
     inclSym adc_sampletime_55point5
 
