@@ -6,15 +6,14 @@
 {-# LANGUAGE NamedFieldPuns            #-}
 {-# LANGUAGE RankNTypes                #-}
 {-# LANGUAGE RecordWildCards           #-}
-{-# LANGUAGE TypeOperators             #-}
 
 module Device.GD32F3x0.Timer where
 
-import           Control.Monad.State           (MonadState)
+import           Control.Monad.State            (MonadState)
 import           Core.Context
 import           Core.Handler
-import qualified Interface.Counter             as I
-import qualified Interface.Timer               as I
+import qualified Interface.Counter              as I
+import qualified Interface.Timer                as I
 import           Ivory.Language
 import           Ivory.Language.Module
 import           Ivory.Stdlib
@@ -23,8 +22,8 @@ import           Support.Device.GD32F3x0
 import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
-import           Support.Device.GD32F3x0.Timer
 import           Support.Device.GD32F3x0.System (system_core_clock)
+import           Support.Device.GD32F3x0.Timer
 
 
 

@@ -51,6 +51,7 @@ module Support.Device.GD32F3x0.GPIO
     , gpio_af_1
     , gpio_af_2
     , gpio_af_4
+    , gpio_af_5
 
     , setMode
     , setOutputOptions
@@ -142,6 +143,7 @@ gpio_af_0  = GPIO_AF $ ext "GPIO_AF_0"
 gpio_af_1  = GPIO_AF $ ext "GPIO_AF_1"
 gpio_af_2  = GPIO_AF $ ext "GPIO_AF_2"
 gpio_af_4  = GPIO_AF $ ext "GPIO_AF_4"
+gpio_af_5  = GPIO_AF $ ext "GPIO_AF_5"
 
 
 
@@ -234,6 +236,7 @@ inclGPIO = do
     inclSym gpio_af_1
     inclSym gpio_af_2
     inclSym gpio_af_4
+    inclSym gpio_af_5
 
     incl gpio_output_options_set
     incl gpio_mode_set

@@ -13,7 +13,6 @@ import           Control.Monad.State      (MonadState)
 import           Core.Context
 import           Core.Domain              as D
 import           Core.Handler
-import           Core.Task
 import qualified Core.Transport           as T
 import           Data.Buffer
 import           Data.Color
@@ -25,18 +24,13 @@ import           Data.Value
 import           Endpoint.ATS
 import           Endpoint.DInputs         as DI
 import           Endpoint.Relays          as R
-import           Feature.RS485.RBUS.Data  (RBUS (clock))
 import           GHC.TypeNats
-import           Interface.Counter
 import           Interface.Display        (Display (transmitFrameBuffer))
 import qualified Interface.Display        as I
-import           Interface.GPIO.Port
-import           Interface.Mac
 import           Interface.MCU
 import           Interface.SystemClock    (getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Support.Cast
 
 
 
@@ -75,8 +69,8 @@ indicator mkDisplay hue ats dinputs relays = do
     canvas    <- mkCanvas1D $ I.frameBuffer display "indicator"
     t         <- value    "indicator_t"           0
     dt        <- value    "indicator_dt"          1
-    phi        <- value   "indicator_phi"         0
-    dphi       <- value   "indicator_dphi"        1
+    phi       <- value    "indicator_phi"         0
+    dphi      <- value    "indicator_dphi"        1
     start     <- value    "indicator_start"       true
     findMe    <- value    "indicator_find_me"     false
     findMeMsg <- values   "indicator_find_me_msg" [0xfa, 0]

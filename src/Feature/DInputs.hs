@@ -100,10 +100,10 @@ manageDInput :: Input i
              -> Uint32
              -> Ivory eff ()
 manageDInput zero di input t  = do
-    value <- iNot <$> get input
-    state <- deref $ di ~> DI.state
-    when (value /=? state) $ do
-        store (di ~> DI.state    ) $ value /=? zero
+    state0 <- deref $ di ~> DI.state
+    state1 <- (/=? zero) <$> get input
+    when (state1 /=? state0) $ do
+        store (di ~> DI.state    ) state1
         store (di ~> DI.timestamp) t
         store (di ~> DI.synced   ) false
 

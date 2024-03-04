@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RecordWildCards  #-}
 
 module Implementation.Smart.Bottom where
@@ -16,13 +17,19 @@ import           Ivory.Stdlib
 
 
 
-newtype Bottom = Bottom { top :: Top}
+data Bottom = Bottom
+    { top     :: Top
+    , dinputs :: DInputs
+    }
 
 
 
 bottom1 :: Monad m => m Top  -> (Bool -> m DInputs) -> m DS18B20 -> m Bottom
-bottom1 top dinputs ds18b20 =
-    ds18b20 >> dinputs True >> Bottom <$> top
+bottom1 top' dinputs' ds18b20 = do
+    ds18b20
+    dinputs <- dinputs' True
+    top     <- top'
+    pure Bottom { top, dinputs }
 
 
 
@@ -32,8 +39,16 @@ bottom2 top dinputs ds18b20 scd40 =
 
 
 
+onGetState Bottom{..} buff size = do
+    forceSyncDInputs dinputs
+    forceSyncTop top
+
+
+
 instance Controller Bottom where
-    handle Bottom{..} buff size = do
+    handle b@Bottom{..} buff size = do
         action <- deref $ buff ! 0
-        cond_ [ action ==? actionSmartTop ==> onMessage top buff size
+        cond_ [ action ==? actionSmartTop ==> onMessage  top buff size
+              , action ==? actionFindMe   ==> onFindMe   top buff size
+              , action ==? actionGetState ==> onGetState b   buff size
               ]

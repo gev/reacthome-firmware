@@ -17,6 +17,7 @@ actionLanamp                  = 0x20 :: Uint8
 actionRtp                     = 0x21 :: Uint8
 
 actionSmartTop                = 0x30 :: Uint8
+actionSmartTopDetect          = 0x31 :: Uint8
 
 actionRs485Mode               = 0xA0 :: Uint8
 actionRbusTransmit            = 0xA1 :: Uint8
@@ -30,13 +31,13 @@ actionTemperatureExternal0    = 0xC1 :: Uint8  --deprecated
 actionHumidity                = 0xC2 :: Uint8
 actionIllumination            = 0xC3 :: Uint8
 actionTemperatureExternal1    = 0xC4 :: Uint8  --deprecated
-actionCo2                     = 0xC5 :: Uint8
+actionCO2                     = 0xC5 :: Uint8
 actionTemperatureExternal     = 0xC6 :: Uint8
 actionTemperatureCorrection   = 0xCF :: Uint8
 
 actionDim                     = 0xD0 :: Uint8
 
-actionRgb                     = 0xE0 :: Uint8
+actionRGB                     = 0xE0 :: Uint8
 actionImage                   = 0xE1 :: Uint8
 
 actionDiscovery               = 0xF0 :: Uint8

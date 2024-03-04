@@ -77,8 +77,8 @@ mkUART uart rcu uartIRQ dma dmaIRQn rx' tx' = do
     addInit (symbol uart) $ do
             store (dmaParams ~> periph_addr) =<< tdata uart
             enablePeriphClock   rcu_dma
-            enableIrqNvic       uartIRQ 1 0
-            enableIrqNvic       dmaIRQn 1 1
+            enableIrqNvic       uartIRQ 0 0
+            enableIrqNvic       dmaIRQn 0 1
             enablePeriphClock   rcu
 
     pure UART { uart, rcu, uartIRQ, dma, dmaIRQn, dmaParams, rx, tx }

@@ -8,8 +8,8 @@ import           Core.Context
 import           Ivory.Language
 
 
-mkArea :: (MonadState Context m, IvoryArea area, IvoryZero area)
-    => String -> Maybe (Init area) -> m (Ref Global area)
+mkArea :: (MonadState Context m, IvoryArea a, IvoryZero a)
+    => String -> Maybe (Init a) -> m (Ref Global a)
 mkArea id v = do
     let a = area id v
     addArea a

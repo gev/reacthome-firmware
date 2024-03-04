@@ -31,15 +31,15 @@ mix6x12 = Formula { name       = "mix6x12"
                                                   , in_pb_1
                                                   , in_pa_11
                                                   ]
-                                       )
-                                       ( relays   [ out_pa_0
+                                         )
+                                         (relays  [ out_pa_0
                                                   , out_pa_1
                                                   , out_pa_2
                                                   , out_pa_3
                                                   , out_pa_6
                                                   , out_pa_7
                                                   ]
-                                       )
-                                       (indicator npx_pwm_0 150)
-                                       etc
+                                         )
+                                         (indicator npx_pwm_0 150)
+                                         etc
                   }
