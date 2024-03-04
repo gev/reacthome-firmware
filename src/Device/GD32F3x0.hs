@@ -8,6 +8,7 @@ module Device.GD32F3x0 where
 
 import           Control.Monad.State
 import           Core.Context
+import           Device.GD32F3x0.ADC
 import           Device.GD32F3x0.Display.NeoPixel
 import           Device.GD32F3x0.EXTI
 import           Device.GD32F3x0.Flash
@@ -25,6 +26,7 @@ import           Device.GD32F3x0.Timer            (Timer, cfg_timer_0,
                                                    cfg_timer_1, cfg_timer_14,
                                                    cfg_timer_15, cfg_timer_2)
 import           Device.GD32F3x0.UART
+import           GHC.TypeNats
 import           Interface.GPIO.Port
 import           Interface.Mac                    (Mac)
 import           Interface.MCU
@@ -32,16 +34,16 @@ import           Interface.OneWire
 import           Interface.SystemClock            (SystemClock, systemClock)
 import           Ivory.Language
 import           Support.Device.GD32F3x0
+import           Support.Device.GD32F3x0.ADC
 import           Support.Device.GD32F3x0.DMA
 import           Support.Device.GD32F3x0.EXTI
 import           Support.Device.GD32F3x0.GPIO
+import           Support.Device.GD32F3x0.I2C
 import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.RCU      as R
 import           Support.Device.GD32F3x0.SYSCFG
 import           Support.Device.GD32F3x0.Timer
 import           Support.Device.GD32F3x0.USART
-import           Support.Device.GD32F3x0.I2C
-import           GHC.TypeNats
 
 
 
@@ -50,6 +52,7 @@ type I2C'         = forall m n. KnownNat n => MonadState Context m => m (I2C n)
 type Input'       = forall m.   MonadState Context m => GPIO_PUPD -> m Input
 type Output'      = forall m.   MonadState Context m => GPIO_PUPD -> m Output
 type OpenDrain'   = forall m.   MonadState Context m => m OpenDrain
+type ADC'         = forall m.   MonadState Context m => m ADC
 type Timer'       = forall m.   MonadState Context m => Uint32 -> Uint32 -> m Timer
 type PWM'         = forall m.   MonadState Context m => Uint32 -> Uint32 -> m PWM
 type NeoPixelPWM' = forall m.   MonadState Context m => m NeoPixelPWM
@@ -161,7 +164,9 @@ data GD32F3x0 = GD32F3x0
 
     , etc       :: PageAddr
 
-    , i2c_0      :: I2C'
+    , i2c_0     :: I2C'
+
+    , adc_pa_0     :: ADC'
     }
 
 
@@ -252,7 +257,7 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
     , out_pb_15 = mkOutput pb_15
 
     , od_pa_8   = mkOpenDrain pa_8
-    , od_pa_15   = mkOpenDrain pa_15
+    , od_pa_15  = mkOpenDrain pa_15
 
     , timer_0   =  cfg_timer_0
     , timer_1   =  cfg_timer_1
@@ -334,12 +339,16 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
 
     , etc = mkPage 0x800_fc00
 
-    , i2c_0 = mkI2C i2c0 
-                    rcu_i2c0 
-                    i2c0_ev_irqn 
-                    i2c0_er_irqn 
-                    (pa_10 af_4) 
+    , i2c_0 = mkI2C i2c0
+                    rcu_i2c0
+                    i2c0_ev_irqn
+                    i2c0_er_irqn
+                    (pa_10 af_4)
                     (pa_9  af_4)
+
+    , adc_pa_0 = mkADC (pa_0 analog) 0
+
+
     }
 
 

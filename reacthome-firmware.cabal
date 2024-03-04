@@ -134,6 +134,7 @@ executable reacthome-firmware
                     , Interface.ENET
                     , Interface.LwipPort
                     , Interface.I2C
+                    , Interface.ADC
 
                     , Protocol.OneWire.Master
                     , Protocol.RS485.RBUS
@@ -178,6 +179,7 @@ executable reacthome-firmware
                     , Device.GD32F3x0.UART
                     , Device.GD32F3x0.Flash
                     , Device.GD32F3x0.I2C
+                    , Device.GD32F3x0.ADC
                     
                     , Device.GD32F4xx
                     , Device.GD32F4xx.Display.NeoPixel
