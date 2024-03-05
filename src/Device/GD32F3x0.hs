@@ -166,7 +166,11 @@ data GD32F3x0 = GD32F3x0
 
     , i2c_0     :: I2C'
 
-    , adc_pa_0     :: ADC'
+    , adc_pa_0  :: ADC'
+    , adc_pa_1  :: ADC'
+    , adc_pa_5  :: ADC'
+    , adc_pa_6  :: ADC'
+    , adc_pa_7  :: ADC'
     }
 
 
@@ -347,7 +351,10 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
                     (pa_9  af_4)
 
     , adc_pa_0 = mkADC (pa_0 analog) 0
-
+    , adc_pa_1 = mkADC (pa_1 analog) 1
+    , adc_pa_5 = mkADC (pa_5 analog) 5
+    , adc_pa_6 = mkADC (pa_6 analog) 6
+    , adc_pa_7 = mkADC (pa_7 analog) 7
 
     }
 

@@ -85,6 +85,7 @@ executable reacthome-firmware
                     , Feature.Smart.Top.LEDs
                     , Feature.Sht21
                     , Feature.Scd40
+                    , Feature.Dopplers
 
                     , Formula.Blink330
                     , Formula.Blink450
@@ -102,6 +103,7 @@ executable reacthome-firmware
                     , Formula.Smart.Top.TopA6P
                     , Formula.Smart.Bottom.Bottom1
                     , Formula.Smart.Bottom.Bottom2
+                    , Formula.Doppler5
 
                     , Implementation.Blink
                     , Implementation.DI
@@ -114,6 +116,7 @@ executable reacthome-firmware
                     , Implementation.Smart.Top
                     , Implementation.UdpEcho
                     , Implementation.Relay
+                    , Implementation.Doppler
 
                     , Interface.Counter
                     , Interface.GPIO.Input
