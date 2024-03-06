@@ -65,7 +65,7 @@ leds mkDisplay dinputs = do
     transport  <- asks D.transport
     display    <- mkDisplay $ peripherals mcu
     canvas     <- mkCanvas1D $ I.frameBuffer display "leds"
-    order      <- values   "leds_order"       [0, 3, 1, 4, 2, 5]
+    order      <- values   "leds_order"       [0, 5, 1, 4, 2, 3]
     t          <- value    "leds_t"           0
     start      <- value    "leds_start"       true
     findMe     <- value    "leds_find_me"     false
