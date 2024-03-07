@@ -119,7 +119,7 @@ update LEDs{..} = do
                 (run (pixels ! jx) pixel'')
                 (ifte_ start'
                     (run (pixels ! jx) pixel')
-                    (run (pixels ! jx) $ colors ! jx)
+                    (run (pixels ! jx) $ colors ! toIx ix)
                 )
     where
         run dst src = do
@@ -157,7 +157,7 @@ onSetColor LEDs{..} buff size =
     when (size ==? 5) $ do
         i  <- deref (buff ! 1)
         when (i >=? 1 .&& i <=? 6) $ do
-            let ix = toIx $ i - 1
+            let ix = toIx $ i - 1 
             store (colorMsg ! 1) i
             run ix 2 r
             run ix 3 g
