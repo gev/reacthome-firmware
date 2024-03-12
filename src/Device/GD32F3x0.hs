@@ -55,7 +55,7 @@ type OpenDrain'   = forall m.   MonadState Context m => m OpenDrain
 type ADC'         = forall m.   MonadState Context m => m ADC
 type Timer'       = forall m.   MonadState Context m => Uint32 -> Uint32 -> m Timer
 type PWM'         = forall m.   MonadState Context m => Uint32 -> Uint32 -> m PWM
-type NeoPixelPWM' = forall m.   MonadState Context m => m NeoPixelPWM
+type NeoPixel'    = forall m.   MonadState Context m => m NeoPixel
 type EXTI'        = forall m.   MonadState Context m => m EXTI
 type OneWire'     = forall m.   MonadState Context m => m OpenDrain -> m OneWire
 
@@ -154,8 +154,8 @@ data GD32F3x0 = GD32F3x0
     , pwm_10    :: PWM'
     , pwm_11    :: PWM'
 
-    , npx_pwm_0 :: NeoPixelPWM'
-    , npx_pwm_1 :: NeoPixelPWM'
+    , npx_pwm_0 :: NeoPixel'
+    , npx_pwm_1 :: NeoPixel'
 
     , exti_pa_0 :: EXTI'
     , exti_pa_5 :: EXTI'
@@ -166,7 +166,7 @@ data GD32F3x0 = GD32F3x0
 
     , i2c_0     :: I2C'
 
-    , adc_pa_0     :: ADC'
+    , adc_pa_0  :: ADC'
     }
 
 
@@ -318,7 +318,7 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
                                 timer_ch_0 dma_ch2
                                 dma_channel1_2_irqn
                                 (pb_8 af_2)
-    
+
     , npx_pwm_1 = mkNeoPixelPWM cfg_timer_15
                                 timer_ch_0 dma_ch2
                                 dma_channel1_2_irqn

@@ -1,7 +1,7 @@
-{-# LANGUAGE FlexibleContexts   #-}
-{-# LANGUAGE NumericUnderscores #-}
-{-# LANGUAGE RankNTypes         #-}
+{-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE NumericUnderscores    #-}
+{-# LANGUAGE RankNTypes            #-}
 
 module Device.GD32F4xx where
 
@@ -46,7 +46,7 @@ type Output'       = forall m. MonadState Context m => GPIO_PUPD -> m Output
 type OpenDrain'    = forall m. MonadState Context m => m OpenDrain
 type Timer'        = forall m. MonadState Context m => Uint32 -> Uint32 -> m Timer
 type PWM'          = forall m. MonadState Context m => Uint32 -> Uint32 -> m PWM
-type NeoPixelPWM'  = forall m. MonadState Context m => m NeoPixelPWM
+type NeoPixel'     = forall m. MonadState Context m => m NeoPixel
 type OneWire'      = forall m. MonadState Context m => m OpenDrain -> m OneWire
 type Enet'         = forall m. MonadState Context m => m ENET
 
@@ -246,10 +246,10 @@ data GD32F4xx = GD32F4xx
     , pwm_2     :: PWM'
     , pwm_3     :: PWM'
 
-    , npx_pwm_0 :: NeoPixelPWM'
-    , npx_pwm_1 :: NeoPixelPWM'
-    , npx_pwm_2 :: NeoPixelPWM'
-    , npx_pwm_3 :: NeoPixelPWM'
+    , npx_pwm_0 :: NeoPixel'
+    , npx_pwm_1 :: NeoPixel'
+    , npx_pwm_2 :: NeoPixel'
+    , npx_pwm_3 :: NeoPixel'
 
     , ow_0      :: OneWire'
 
