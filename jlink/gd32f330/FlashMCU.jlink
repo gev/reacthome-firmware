@@ -1,7 +1,7 @@
 r
 h
-loadbin build/firmware/scd40.bin, 0x8000000
+loadbin build/firmware/doppler1.bin, 0x8000000
 g
-verifybin build/firmware/scd40.bin, 0x8000000
+verifybin build/firmware/doppler1.bin, 0x8000000
 r
 q
