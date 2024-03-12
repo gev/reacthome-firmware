@@ -39,14 +39,13 @@ mkADC mkPin channel = do
     buff <- buffer "adc"
 
     let dmaInit = dmaParam [ direction    .= ival dma_peripheral_to_memory
-                        , memory_inc   .= ival dma_memory_increase_disable
-                        , memory_width .= ival dma_memory_width_16bit
-                        , periph_inc   .= ival dma_periph_increase_disable
-                        , periph_width .= ival dma_peripheral_width_16bit
-                        , priority     .= ival dma_priority_ultra_high
-                        -- , memory_addr  .= ival addr
-                        , number       .= ival 16
-                        ]
+                           , memory_inc   .= ival dma_memory_increase_enable
+                           , memory_width .= ival dma_memory_width_16bit
+                           , periph_inc   .= ival dma_periph_increase_disable
+                           , periph_width .= ival dma_peripheral_width_16bit
+                           , priority     .= ival dma_priority_ultra_high
+                           , number       .= ival 16
+                           ]
     dmaParams <- record "dma0_dma_param" dmaInit
 
     let adc = ADC {buff, dmaParams, channel}
@@ -62,16 +61,17 @@ initADC ADC{..} = do
     configClockADC    rcu_adcck_apb2_div2
 
     store (dmaParams ~> memory_addr) =<< castArrayUint16ToUint32 (toCArray buff)
+    store (dmaParams ~> periph_addr)  adc_rdata
     deinitDMA dma_ch0
     initDMA dma_ch0 dmaParams
     enableCirculationDMA dma_ch0
     enableChannelDMA dma_ch0
 
 
-    configSpecialFunctionADC        adc_continuous_mode true
-    configSpecialFunctionADC        adc_scan_mode true
-    configDataAlignmentADC          adc_dataalign_right
-    configChannelLengthADC          adc_regular_channel 16
+    configSpecialFunctionADC         adc_continuous_mode true
+    configSpecialFunctionADC         adc_scan_mode true
+    configDataAlignmentADC           adc_dataalign_right
+    configChannelLengthADC           adc_regular_channel 16
     configRegularChannelADC          0  0 adc_sampletime_55point5
     configRegularChannelADC          1  1 adc_sampletime_55point5
     configRegularChannelADC          2  2 adc_sampletime_55point5
@@ -83,7 +83,8 @@ initADC ADC{..} = do
     configRegularChannelADC          8  8 adc_sampletime_55point5
     configRegularChannelADC          9  9 adc_sampletime_55point5
     configRegularChannelADC         10 10 adc_sampletime_55point5
-    configRegularChannelADC         11 12 adc_sampletime_55point5
+    configRegularChannelADC         11 11 adc_sampletime_55point5
+    configRegularChannelADC         12 12 adc_sampletime_55point5
     configRegularChannelADC         13 13 adc_sampletime_55point5
     configRegularChannelADC         14 14 adc_sampletime_55point5
     configRegularChannelADC         15 15 adc_sampletime_55point5
