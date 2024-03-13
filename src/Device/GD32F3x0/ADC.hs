@@ -5,7 +5,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NamedFieldPuns   #-}
 {-# OPTIONS_GHC -Wno-missing-fields #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RecordWildCards  #-}
 
 module Device.GD32F3x0.ADC where
 
@@ -13,15 +13,15 @@ module Device.GD32F3x0.ADC where
 import           Control.Monad.State          (MonadState)
 import           Core.Context
 import           Data.Buffer
+import           Data.Record
 import           Device.GD32F3x0.GPIO.Port
+import qualified Interface.ADC                as I
 import           Ivory.Language
 import           Support.Cast
 import           Support.Device.GD32F3x0.ADC
 import           Support.Device.GD32F3x0.DMA
 import           Support.Device.GD32F3x0.GPIO hiding (mode, rcu)
 import           Support.Device.GD32F3x0.RCU
-import qualified Interface.ADC as I
-import Data.Record
 
 
 
@@ -97,4 +97,5 @@ initADC ADC{..} = do
 
 
 instance I.ADC ADC where
+    getResolution = const 12
     getAnalog ADC{..} = deref $ buff ! toIx channel

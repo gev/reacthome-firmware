@@ -4,7 +4,7 @@
 module Implementation.Doppler where
 
 import           Core.Actions
-import           Core.Controller  
+import           Core.Controller
 import           Feature.DInputs
 import           Feature.Dopplers
 import           Ivory.Language

@@ -1,80 +1,161 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# OPTIONS_GHC -Wno-missing-fields #-}
-{-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE GADTs #-}
+{-# LANGUAGE GADTs            #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE RecordWildCards  #-}
 
-module Feature.Dopplers where
+module Feature.Dopplers
+    ( Dopplers
+    , dopplers
+    ) where
 
 
-import           Control.Monad        (zipWithM_)
+
+import           Control.Monad        (zipWithM)
 import           Control.Monad.Reader (MonadReader, asks)
 import           Control.Monad.State  (MonadState)
-import           Interface.MCU        (MCU, peripherals, systemClock)
+import           Core.Actions
+import           Core.Context
+import qualified Core.Domain          as D
+import           Core.Task
+import qualified Core.Transport       as T
+import           Data.Buffer
+import           Data.Value
+import qualified Interface.ADC        as I
+import           Interface.MCU
 import           Ivory.Language
 import           Ivory.Stdlib
 
-import           Core.Context
-import qualified Core.Domain          as D
-import qualified Core.Transport       as T
-import           Data.Buffer
-import           Data.Index
-import qualified Interface.ADC        as I
-import Data.Value
-import Core.Task (delay)
-import Ivory.Language.Uint (Uint8(Uint8))
-import Core.Actions
 
 
-data Dopplers = forall a. I.ADC a => Dopplers
-    { adc         ::  a
-    , index       ::  Value Uint8
-    , buff        ::  Buffer 129 Uint8
-    , transmit    ::  forall s t. Buffer 129 Uint8 -> Ivory (ProcEffects s t) ()
+data Doppler a = Doppler
+    { adc         :: a
+    , expectation :: Value IFloat
+    , measurement :: Value IFloat
+    , threshold   :: Value IFloat
+    , current     :: Value Uint8
+    , previous    :: Value Uint8
     }
+
+
+
+data Dopplers = forall a t. (I.ADC a, T.LazyTransport t) => Dopplers
+    { n         :: Int
+    , doppler   :: [Doppler a]
+    , transport :: t
+    }
+
 
 
 dopplers :: ( MonadState Context m
             , MonadReader (D.Domain p t c) m
-            , T.Transport t
+            , T.LazyTransport t
             , I.ADC a
-            ) => (p -> m a) -> m Dopplers
+            ) => [p -> m a] -> m Dopplers
 dopplers analogInput = do
     mcu              <- asks D.mcu
-    let clock        = systemClock mcu
     transport        <- asks D.transport
-    let peripherals' = peripherals mcu
+    doppler          <- zipWithM mkDoppler [1..] analogInput
+
+    let dopplers = Dopplers { n = length analogInput
+                            , doppler
+                            , transport
+                            }
+
+    addTask $ delay   1 "doppler_measure" $ mapM_ measure doppler
+    addTask $ delay 200 "doppler_sync"    $ sync dopplers
+
+    pure dopplers
+
+
+
+mkDoppler :: ( MonadState Context m
+             , MonadReader (D.Domain p timeout c) m
+             , T.LazyTransport timeout
+             , I.ADC a
+             ) => Int -> (p -> m a) -> m (Doppler a)
+mkDoppler index analogInput = do
+    let name          = "doppler_" <> show index <> "_"
+    mcu              <- asks D.mcu
+    let peripherals'  = peripherals mcu
     adc              <- analogInput peripherals'
-    buff             <- values "doppler_tx_buffer" $ actionDopplerRaw : replicate 128 0
-    index            <- value  "doppler_index"  1
+    measurement      <- value (name <> "measurement")   0
+    expectation      <- value (name <> "expectation") 0.5
+    threshold        <- value (name <> "threshold"  )   1
+    current          <- value (name <> "current"    )   0
+    previous         <- value (name <> "previous"   )   0
 
-    let dopp = Dopplers { adc
-                        , index
-                        , buff
-                        , transmit = T.transmitBuffer transport
-                        }
+    let doppler = Doppler { adc
+                          , measurement
+                          , expectation
+                          , threshold
+                          , current
+                          , previous
+                          }
 
-    -- addInit "doppler_init" $ 
-    --     store (buff ! 0) actionDopplerRaw
-
-    addTask $ delay   1 "doppler_measure"  $ measure dopp
-    addTask $ delay 128 "doppler_send_raw" $ sendRAW dopp
-
-    pure dopp
-
-
-measure :: Dopplers -> Ivory (ProcEffects s ()) ()
-measure Dopplers {..} = do
-    index' <- deref index
-    store (buff ! toIx index') . castDefault . (`iDiv` 16) =<< I.getAnalog adc
-    ifte_ (index' <? 128) 
-          (store index $ index' + 1)
-          (store index 1)
+    pure doppler
 
 
-sendRAW :: Dopplers -> Ivory (ProcEffects s ()) ()
-sendRAW Dopplers {..} = transmit buff
+
+measure :: I.ADC a => Doppler a -> Ivory (ProcEffects s ()) ()
+measure Doppler {..} = do
+    a <- I.getReduced adc
+
+    expectation' <- deref expectation
+    store expectation $ average long expectation' a
+
+    let diff = abs $ a - expectation'
+
+    measurement' <- deref measurement
+    let measurement'' = average short measurement' diff
+    store measurement measurement''
+
+    threshold' <- deref threshold
+    when (measurement'' <? 3 * threshold')
+         (store threshold $ average long threshold' measurement'')
+
+    let range = iMax expectation' $ 1 - expectation'
+
+    let threshold'' = 5 * threshold'
+    let current'' = (measurement'' >? threshold'')
+          ? (castDefault $ 255 * sqrt (measurement'' - threshold'') / (range - threshold''), 0)
+
+    current' <- deref current
+    store current $ iMax current' current''
 
 
+
+sync :: Dopplers -> Ivory (ProcEffects s t) ()
+sync Dopplers {..} = do
+    shouldSync <- mapM syncDoppler doppler
+    let shouldTransmit = foldr (.||) false shouldSync
+    when shouldTransmit $ T.lazyTransmit transport (1 + fromIntegral n) (\transmit -> do
+            transmit actionDoppler
+            mapM_ transmit =<< mapM deref (current <$> doppler)
+        )
+    mapM_ ((`store` 0) . current) doppler
+
+
+syncDoppler :: Doppler a -> Ivory (ProcEffects s t) IBool
+syncDoppler Doppler{..} = do
+    current' <- deref current
+    previous' <- deref previous
+    let shouldSync = current' /=? previous'
+    when shouldSync $ store previous current'
+    pure shouldSync
+
+
+
+average :: Num a => a -> a -> a -> a
+average alpha a b = a * (1 - alpha) + b * alpha
+
+
+
+iMax :: IvoryOrd a => a -> a -> a
+iMax a b = (a >? b) ? (a, b)
+
+
+
+short   = 0.05     :: IFloat
+long    = 0.0005   :: IFloat
