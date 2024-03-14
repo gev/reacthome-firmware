@@ -16,13 +16,13 @@ doppler1 = Formula { name           = "doppler1"
                    , version        = (1, 0)
                    , shouldInit     = false
                    , transport      = rbus $ rs485 uart_1 out_pa_4
-                   , implementation = doppler  (dopplers [ adc_pa_7
-                                                         ]
-                                               )
-                                               (dinputs  [ in_pa_12
-                                                         , in_pa_11
-                                                         , in_pa_10
-                                                         , in_pa_9
-                                                         ]
-                                               )
+                   , implementation = doppler (dopplers [ adc_pa_7
+                                                        ]
+                                              )
+                                              (dinputs  [ in_pa_12
+                                                        , in_pa_11
+                                                        , in_pa_10
+                                                        , in_pa_9
+                                                        ]
+                                              )
                     }
