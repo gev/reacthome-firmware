@@ -41,7 +41,7 @@ data Doppler a = Doppler
 
 
 data Dopplers = forall a t. (I.ADC a, T.LazyTransport t) => Dopplers
-    { n         :: Int
+    { n         :: Uint8
     , doppler   :: [Doppler a]
     , transport :: t
     }
@@ -58,7 +58,7 @@ dopplers analogInput = do
     transport        <- asks D.transport
     doppler          <- zipWithM mkDoppler [1..] analogInput
 
-    let dopplers = Dopplers { n = length analogInput
+    let dopplers = Dopplers { n = fromIntegral $ length analogInput
                             , doppler
                             , transport
                             }
@@ -130,11 +130,12 @@ sync :: Dopplers -> Ivory (ProcEffects s t) ()
 sync Dopplers {..} = do
     shouldSync <- mapM syncDoppler doppler
     let shouldTransmit = foldr (.||) false shouldSync
-    when shouldTransmit $ T.lazyTransmit transport (1 + fromIntegral n) (\transmit -> do
+    when shouldTransmit $ T.lazyTransmit transport (1 + n) (\transmit -> do
             transmit actionDoppler1
             mapM_ transmit =<< mapM deref (current <$> doppler)
         )
     mapM_ ((`store` 0) . current) doppler
+
 
 
 syncDoppler :: Doppler a -> Ivory (ProcEffects s t) IBool
