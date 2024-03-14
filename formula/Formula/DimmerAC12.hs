@@ -16,7 +16,7 @@ dimmerAC12 = Formula { name       = "dimmerAC12"
                      , version    = (2, 1)
                      , shouldInit = true
                      , transport  = rbus $ rs485 1 uart_0 out_pb_2
-                     , features   = [ indicator npx_pwm_0 30
+                     , features   = [ indicator npx_pwm_0 20
                                     , dimmerAC [ pwm_11
                                                , pwm_7
                                                , pwm_6
