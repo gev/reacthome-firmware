@@ -104,7 +104,7 @@ executable reacthome-firmware
                     , Formula.Smart.Bottom.Bottom1
                     , Formula.Smart.Bottom.Bottom2
                     , Formula.Doppler1
-                    -- , Formula.Doppler5
+                    , Formula.Doppler5
 
                     , Implementation.Blink
                     , Implementation.DI

@@ -19,6 +19,7 @@ import           Formula.Scd40
 import           Formula.Server
 import           Formula.Sht21
 import           Formula.Doppler1
+import           Formula.Doppler5
 import           Formula.Smart.Bottom.Bottom1
 import           Formula.Smart.Bottom.Bottom2
 import           Formula.Smart.Top.TopA6P
@@ -38,6 +39,7 @@ main = do
                     --  , smartTopA6P
                      , scd40_test
                      , doppler1
+                     , doppler5
                     --  , blink330
                      ]
     gcc gd32f450vgt6 [ server
