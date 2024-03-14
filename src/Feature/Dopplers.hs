@@ -25,6 +25,8 @@ import           Data.Value
 import qualified Interface.ADC        as I
 import           Interface.MCU
 import           Ivory.Language
+import           Ivory.Language.Float (IFloat (IFloat))
+import           Ivory.Language.Uint  (Uint8 (Uint8))
 import           Ivory.Stdlib
 
 
@@ -112,12 +114,12 @@ measure Doppler {..} = do
     store measurement measurement''
 
     threshold' <- deref threshold
-    when (measurement'' <? 3 * threshold')
+    when (measurement'' <? low * threshold')
          (store threshold $ average long threshold' measurement'')
 
     let range = iMax expectation' $ 1 - expectation'
 
-    let threshold'' = 5 * threshold'
+    let threshold'' = high * threshold'
     let current'' = (measurement'' >? threshold'')
           ? (castDefault $ 255 * sqrt (measurement'' - threshold'') / (range - threshold''), 0)
 
@@ -158,5 +160,7 @@ iMax a b = (a >? b) ? (a, b)
 
 
 
-short   = 0.05     :: IFloat
-long    = 0.0005   :: IFloat
+short = 0.02
+long  = 0.0002
+low   = 2.2
+high  = 2.8
