@@ -131,7 +131,7 @@ sync Dopplers {..} = do
     shouldSync <- mapM syncDoppler doppler
     let shouldTransmit = foldr (.||) false shouldSync
     when shouldTransmit $ T.lazyTransmit transport (1 + fromIntegral n) (\transmit -> do
-            transmit actionDoppler
+            transmit actionDoppler1
             mapM_ transmit =<< mapM deref (current <$> doppler)
         )
     mapM_ ((`store` 0) . current) doppler
