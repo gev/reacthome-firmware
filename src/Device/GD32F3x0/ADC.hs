@@ -35,9 +35,7 @@ data ADC = ADC
 
 mkADC :: (MonadState Context m) => (GPIO_PUPD -> Port) -> Uint8 -> m ADC
 mkADC mkPin channel = do
-    initPort (mkPin gpio_pupd_none)
     buff <- buffer "adc"
-
     let dmaInit = dmaParam [ direction    .= ival dma_peripheral_to_memory
                            , memory_inc   .= ival dma_memory_increase_enable
                            , memory_width .= ival dma_memory_width_16bit
@@ -47,9 +45,9 @@ mkADC mkPin channel = do
                            , number       .= ival 16
                            ]
     dmaParams <- record "dma0_dma_param" dmaInit
-
     let adc = ADC {buff, dmaParams, channel}
     addInit "adc" $ initADC adc
+    initPort (mkPin gpio_pupd_none)
     pure adc
 
 
