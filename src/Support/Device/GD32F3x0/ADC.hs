@@ -21,6 +21,8 @@ module Support.Device.GD32F3x0.ADC
     , EXTERNAL_TRIGGER_ADC
     , adc_exttrig_regular_none
 
+    , adc_rdata
+
     , configSpecialFunctionADC
     , configDataAlignmentADC
     , configChannelLengthADC
@@ -31,7 +33,6 @@ module Support.Device.GD32F3x0.ADC
     , enableCalibrationADC
     , enableDmaModeADC
     , enableSoftwareTriggerADC
-    , rdataADC
 
     , inclADC
     ) where
@@ -79,6 +80,9 @@ newtype EXTERNAL_TRIGGER_ADC = EXTERNAL_TRIGGER_ADC Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 adc_exttrig_regular_none  = EXTERNAL_TRIGGER_ADC $ ext "ADC_EXTTRIG_REGULAR_NONE"
+
+
+adc_rdata  = ext "(uint32_t) &ADC_RDATA" :: Uint32
 
 
 configSpecialFunctionADC :: SPECIAL_FUNCTION_ADC -> IBool -> Ivory eff ()
@@ -151,12 +155,6 @@ adc_software_trigger_enable :: Def ('[CHANNEL_GROUP_ADC] :-> ())
 adc_software_trigger_enable = fun "adc_software_trigger_enable"
 
 
-rdataADC :: Ivory eff Uint32
-rdataADC = call adc_rdata
-
-adc_rdata :: Def ('[] :-> Uint32)
-adc_rdata = fun "(uint32_t) &ADC_RDATA"
-
 
 inclADC :: ModuleDef
 inclADC = do
@@ -172,6 +170,8 @@ inclADC = do
 
     inclSym adc_exttrig_regular_none
 
+    inclSym adc_rdata
+
     incl adc_special_function_config
     incl adc_data_alignment_config
     incl adc_channel_length_config
@@ -182,4 +182,3 @@ inclADC = do
     incl adc_calibration_enable
     incl adc_dma_mode_enable
     incl adc_software_trigger_enable
-    incl adc_rdata

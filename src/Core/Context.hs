@@ -73,7 +73,7 @@ addStruct = addModule . defStruct
 
 instance Semigroup Context where
   (Context m1 i1 t1 s1) <> (Context m2 i2 t2 s2) =
-    Context (m1 <> m2) (i1 <> i2) (nub $ t1 <> t2) (s1 <> s2)
+    Context (m1 <> m2) (nub $ i1 <> i2) (nub $ t1 <> t2) (nub $ s1 <> s2)
 
 instance Monoid Context where
   mempty = Context mempty mempty mempty mempty

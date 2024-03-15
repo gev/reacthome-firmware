@@ -11,6 +11,8 @@ import           Formula.Blink450
 import           Formula.DI4
 import           Formula.DimmerAC12
 import           Formula.DimmerDC12
+import           Formula.Doppler1
+import           Formula.Doppler5
 import           Formula.Echo
 import           Formula.Mix6x12
 import           Formula.Relay12
@@ -36,6 +38,8 @@ main = do
                      , smartBottom2
                      , smartTopA6P
                      , scd40_test
+                     , doppler1
+                     , doppler5
                     --  , blink330
                      ]
     gcc gd32f450vgt6 [ server
