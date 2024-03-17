@@ -5,7 +5,6 @@
 {-# LANGUAGE RecordWildCards       #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
-{-# LANGUAGE RankNTypes            #-}
 
 module Device.GD32F3x0.Display.NeoPixel where
 
@@ -47,10 +46,6 @@ data NeoPixel = NeoPixel
     , dmaChannel :: DMA_CHANNEL
     , dmaIRQn    :: IRQn
     , dmaParams  :: Record DMA_PARAM_STRUCT
-    , index      :: Value Uint8
-    , size       :: Value Uint8
-    , dstBuffer  :: FrameBufferNeoPixel Uint8
-    -- , srcBuffer  :: forall n. Value (Ptr Global (Array n (Stored Uint8)))
     }
 
 mkNeoPixelPWM :: MonadState Context m
@@ -71,12 +66,8 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn pwmPort' = do
                              , periph_width .= ival dma_peripheral_width_16bit
                              , priority     .= ival dma_priority_ultra_high
                              ]
-
     dmaParams    <- record (symbol dmaChannel <> "_dma_param") dmaInit
-    index        <- value  "neopixel_pwm_index" 0
-    size         <- value_ "neopixel_pwm_size"
-    dstBuffer    <- neoPixelBuffer pwmPeriod "neopixel_pwm_dst" 3
-
+    frameRequest <- value  (symbol dmaChannel <> "_frame_request" ) true
     let pwmPort   = pwmPort' gpio_pupd_none
 
     initPort pwmPort
@@ -95,13 +86,13 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn pwmPort' = do
             enableIrqNvic       dmaIRQn 0 0
 
 
-    pure NeoPixel { pwmTimer, pwmChannel, pwmPort, dmaChannel, dmaIRQn, dmaParams, index, size, dstBuffer }
+    pure NeoPixel { pwmTimer, pwmChannel, dmaIRQn, pwmPort, dmaChannel, dmaParams }
 
 
 
 instance Handler I.Render NeoPixel where
   addHandler (I.Render npx@NeoPixel{..} frameRate render) = do
-    addModule $ makeIRQHandler dmaIRQn (handleDMA npx)
+    -- addModule $ makeIRQHandler dmaIRQn (handleDMA npx)
     addTask $ delay (1000 `iDiv` frameRate)
                     (show pwmPort <> "neo_pixel")
                     render
@@ -112,27 +103,20 @@ handleDMA NeoPixel {..} = do
     f <- getInterruptFlagDMA dmaChannel dma_int_flag_ftf
     when f $ do
         clearInterruptFlagDMA dmaChannel dma_int_flag_g
-        index' <- deref index
-        store index $ index' + 3
+        -- index' <- deref index
+        -- store index $ index' + 3
 
 
 instance I.Display NeoPixel FrameBufferNeoPixel Uint8 where
     frameBuffer _ = neoPixelBuffer pwmPeriod
 
-    transmitFrameBuffer NeoPixel{..} srcFrame = do
-        store index 0
-        runFrame srcFrame $ \src -> do
-            let src' = addrOf src
-            store size $ arrayLen src'
-            runFrame dstBuffer $ \dst -> do
-                let dst' = addrOf dst
-                for 3 $ \ix ->
-                    store (dst' ! ix) =<< deref (src' ! toIx (fromIx ix))
-                store (dmaParams ~> memory_addr) =<< castArrayUint8ToUint32 (toCArray dst')
-                store (dmaParams ~> number) $ arrayLen dst'
-        deinitDMA                   dmaChannel
-        initDMA                     dmaChannel dmaParams
-        disableCirculationDMA       dmaChannel
-        disableMemoryToMemoryDMA    dmaChannel
-        I.resetCounter              pwmTimer
-        enableChannelDMA            dmaChannel
+    transmitFrameBuffer NeoPixel{..} FrameBufferNeoPixel{..} =
+        runFrame $ \frame -> do
+            let frame' = addrOf frame
+            store (dmaParams ~> memory_addr) =<< castArrayUint8ToUint32 (toCArray frame')
+            store (dmaParams ~> number) $ arrayLen frame'
+            deinitDMA                     dmaChannel
+            initDMA                       dmaChannel dmaParams
+            disableCirculationDMA         dmaChannel
+            I.resetCounter                pwmTimer
+            enableChannelDMA              dmaChannel
