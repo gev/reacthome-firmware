@@ -12,6 +12,7 @@ import           Core.Context
 import           Core.Domain
 import           Core.Formula
 import           Core.Scheduler
+import           Data.List
 import           Interface.MCU
 import           Ivory.Compile.C.CmdlineFrontend
 import           Ivory.Language
@@ -22,20 +23,30 @@ import           Ivory.Language.Module
 cook :: State Context (MCU p) -> Formula p -> ModuleDef
 cook mcu Formula{..} = do
 
+
     inclModule
+    mapM_ incl multiBodyFunctions
     incl  init
     incl  loop
     incl  main
+
 
     where (domain'         , domainContext'        ) = runState (domain model version mcu' shouldInit transport' implementation') mempty
           (mcu'            , mcuContext'           ) = runState mcu mempty
           (implementation' , implementationContext') = runReader (runStateT implementation mempty) domain'
           (transport'      , transportContext'     ) = runReader (runStateT transport mempty) domain'
 
-          (Context inclModule inits tasks syncs) = mcuContext'
-                                                <> domainContext'
-                                                <> transportContext'
-                                                <> implementationContext'
+          (Context inclModule inits tasks syncs bodies) = mcuContext'
+                                                       <> domainContext'
+                                                       <> transportContext'
+                                                       <> implementationContext'
+
+          bodyNames = nub . fst <$> bodies
+
+          multiBodyFunctions = mkMultiBodyFunction <$> bodyNames
+
+          mkMultiBodyFunction :: String -> Def ('[] :-> ())
+          mkMultiBodyFunction name = proc name $ body $ mapM_ snd $ filter (\(id, _) -> id == name) bodies
 
           loop = mkLoop (systemClock mcu') tasks
 
