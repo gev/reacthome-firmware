@@ -38,17 +38,19 @@ deviceTypeIr1           = 0x14 :: Uint8
     Modern device types based on the GD32 MCU family
 -}
 
-deviceTypeDi4           = 0x20 :: Uint8
-deviceTypeClimate       = 0x21 :: Uint8
-deviceTypeDoppler       = 0x22 :: Uint8
-deviceTypeRelay2        = 0x23 :: Uint8
-deviceTypeIr4           = 0x24 :: Uint8
-deviceTypeSmart4g       = 0x25 :: Uint8
-deviceTypeSmart4gd      = 0x26 :: Uint8
-deviceTypeSmart4a       = 0x27 :: Uint8
-deviceTypeSmart4am      = 0x2A :: Uint8
-deviceTypeCo2           = 0x2B :: Uint8
-deviceTypeSmart6Push    = 0x2C :: Uint8
+deviceTypeDi4            = 0x20 :: Uint8
+deviceTypeClimate        = 0x21 :: Uint8
+deviceTypeDoppler        = 0x22 :: Uint8
+deviceTypeRelay2         = 0x23 :: Uint8
+deviceTypeIr4            = 0x24 :: Uint8
+deviceTypeSmart4g        = 0x25 :: Uint8
+deviceTypeSmart4gd       = 0x26 :: Uint8
+deviceTypeSmart4a        = 0x27 :: Uint8
+deviceTypeSmart4am       = 0x2A :: Uint8
+deviceTypeCo2            = 0x2B :: Uint8
+deviceTypeSmart6Push     = 0x2C :: Uint8
+deviceTypeDoppler1Di4    = 0x2D :: Uint8
+deviceTypeDoppler5Di4    = 0x2E :: Uint8
 
 
 

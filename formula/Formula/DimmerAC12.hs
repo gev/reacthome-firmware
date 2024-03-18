@@ -32,5 +32,5 @@ dimmerAC12 = Formula { name           = "dimmerAC12"
                                                           , pwm_5
                                                           ] exti_pa_5
                                                 )
-                                                (indicator npx_pwm_0 30)
+                                                (indicator npx_pwm_0 20)
                      }

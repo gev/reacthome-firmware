@@ -23,8 +23,9 @@ actionRs485Mode               = 0xA0 :: Uint8
 actionRbusTransmit            = 0xA1 :: Uint8
 actionRs485Transmit           = 0xA2 :: Uint8
 
-actionDoppler                 = 0xB0 :: Uint8
+actionDoppler0                = 0xB0 :: Uint8  --deprecated
 actionDopplerRaw              = 0xB1 :: Uint8
+actionDoppler1                = 0xB2 :: Uint8
 
 actionTemperature             = 0xC0 :: Uint8
 actionTemperatureExternal0    = 0xC1 :: Uint8  --deprecated

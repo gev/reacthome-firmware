@@ -21,6 +21,7 @@ data Context = Context
     , getInits  :: [Def ('[] :-> ())]
     , getTasks  :: [Task]
     , getSyncs  :: [Def ('[] :-> ())]
+    , getBody   :: forall s. [(String, Ivory (ProcEffects s ()) ())]
     }
 
 
@@ -30,12 +31,12 @@ addContext context = modify (<> context)
 
 
 addModule :: MonadState Context m => ModuleDef -> m ()
-addModule m = addContext $ Context m mempty mempty mempty
+addModule m = addContext $ Context m mempty mempty mempty mempty
 
 
 addInit :: MonadState Context m => String -> (forall s. Ivory (ProcEffects s ()) ()) -> m (Def ('[] :-> ()))
 addInit id run = do
-    addContext $ Context mempty [d] mempty mempty
+    addContext $ Context mempty [d] mempty mempty mempty
     addProc d
     pure d
     where d = proc (id <> "_init") $ body run
@@ -43,15 +44,20 @@ addInit id run = do
 
 addTask :: MonadState Context m => Task -> m ()
 addTask t = do
-        addContext $ Context mempty mempty [t] mempty
+        addContext $ Context mempty mempty [t] mempty mempty
         addProc $ getTask t
 
 
 addSync :: MonadState Context m => String -> (forall eff. Ivory eff ()) -> m ()
 addSync id run = do
-      addContext $ Context mempty mempty mempty [d]
+      addContext $ Context mempty mempty mempty [d] mempty
       addProc d
       where d = proc (id <> "_sync") $ body run
+
+
+addBody :: MonadState Context m => String -> (forall s. Ivory (ProcEffects s ()) ()) -> m ()
+addBody id body = do
+    addContext $ Context mempty mempty mempty mempty [(id, body)]
 
 
 addProc :: MonadState Context m => Def p -> m ()
@@ -72,8 +78,9 @@ addStruct = addModule . defStruct
 
 
 instance Semigroup Context where
-  (Context m1 i1 t1 s1) <> (Context m2 i2 t2 s2) =
-    Context (m1 <> m2) (nub $ i1 <> i2) (nub $ t1 <> t2) (nub $ s1 <> s2)
+  (Context m1 i1 t1 s1 b1) <> (Context m2 i2 t2 s2 b2) =
+    Context (m1 <> m2) (nub $ i1 <> i2) (nub $ t1 <> t2) (nub $ s1 <> s2) (b1 <> b2)
+
 
 instance Monoid Context where
-  mempty = Context mempty mempty mempty mempty
+  mempty = Context mempty mempty mempty mempty mempty
