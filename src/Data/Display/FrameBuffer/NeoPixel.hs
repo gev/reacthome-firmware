@@ -7,7 +7,7 @@
 
 
 
-module Data.Display.FrameBuffer.NeoPixel.PWM where
+module Data.Display.FrameBuffer.NeoPixel where
 
 import           Control.Monad.State
 import           Core.Context
@@ -19,33 +19,33 @@ import           Ivory.Language
 import           Ivory.Language.Proxy
 
 
-data FrameBufferNeoPixelPWM t = FrameBufferNeoPixelPWM
+data FrameBufferNeoPixel t = FrameBufferNeoPixel
     { runFrame :: RunValues t
     , zeroDuty :: t
     , oneDuty  :: t
     }
 
 
-neoPixelBufferPWM :: forall m n t. (MonadState Context m, SafeCast Uint8 t, IvoryInit t, IvoryZeroVal t, Num t)
-                  => Uint8 -> String -> Int -> m (FrameBufferNeoPixelPWM t)
-neoPixelBufferPWM period id size = do
+neoPixelBuffer :: forall m n t. (MonadState Context m, SafeCast Uint8 t, IvoryInit t, IvoryZeroVal t, Num t)
+                  => Uint8 -> String -> Int -> m (FrameBufferNeoPixel t)
+neoPixelBuffer period id size = do
     let zeroDuty = safeCast $ period `iDiv` 4
     let oneDuty  = 3 * zeroDuty
     let size'    = 8 * size + 1 -- | add stop bit
     let runFrame = runValues (id <> "_frame_buffer_neo_pixel_pwm") $ replicate size' 0x0
     runFrame addArea
-    pure $ FrameBufferNeoPixelPWM { runFrame, zeroDuty, oneDuty }
+    pure $ FrameBufferNeoPixel { runFrame, zeroDuty, oneDuty }
 
 
 
-instance IvoryStore t => FrameBuffer FrameBufferNeoPixelPWM t where
+instance IvoryStore t => FrameBuffer FrameBufferNeoPixel t where
 
-  clearByte FrameBufferNeoPixelPWM{..} i = do
+  clearByte FrameBufferNeoPixel{..} i = do
     runFrame $ \frame -> for 8 $ \jx -> do
         let byte = addrOf frame ! (toIx (8 * i) + jx)
         store byte zeroDuty
 
-  writeByte FrameBufferNeoPixelPWM{..} i value = do
+  writeByte FrameBufferNeoPixel{..} i value = do
     v <- local $ ival value
     runFrame $ \frame -> for 8 $ \jx -> do
         v' <- deref v
