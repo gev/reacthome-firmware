@@ -86,7 +86,7 @@ mkUART uart rcu uartIRQ dma dmaIRQn rx' tx' = do
 instance Handler I.HandleUART UART where
     addHandler (I.HandleUART UART{..} onReceive onTransmit onDrain) = do
         addModule $ makeIRQHandler uartIRQ (handleUART uart onReceive onDrain)
-        addModule $ makeIRQHandler dmaIRQn (handleDMA dma uart onTransmit onDrain)
+        addBody (makeIRQHandlerName dmaIRQn) (handleDMA dma uart onTransmit onDrain)
 
 
 handleDMA :: DMA_CHANNEL -> USART_PERIPH -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()

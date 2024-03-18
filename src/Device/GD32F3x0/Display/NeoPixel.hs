@@ -92,7 +92,7 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn pwmPort' = do
 
 instance Handler I.Render NeoPixel where
   addHandler (I.Render npx@NeoPixel{..} frameRate render) = do
-    -- addModule $ makeIRQHandler dmaIRQn (handleDMA npx)
+    addBody (makeIRQHandlerName dmaIRQn) (handleDMA npx)
     addTask $ delay (1000 `iDiv` frameRate)
                     (show pwmPort <> "neo_pixel")
                     render
