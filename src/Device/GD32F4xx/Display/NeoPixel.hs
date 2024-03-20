@@ -46,6 +46,7 @@ data NeoPixel = NeoPixel
     , dmaPer     :: DMA_PERIPH
     , dmaChannel :: DMA_CHANNEL
     , dmaSubPer  :: DMA_SUBPERIPH
+    , dmaIRQn    :: IRQn
     , dmaParams  :: Record DMA_SINGLE_PARAM_STRUCT
     }
 
@@ -56,10 +57,11 @@ mkNeoPixelPWM :: MonadState Context m
               -> DMA_PERIPH
               -> DMA_CHANNEL
               -> DMA_SUBPERIPH
+              -> IRQn
               -> (forall eff. TIMER_PERIPH -> Ivory eff Uint32)
               -> (GPIO_PUPD -> Port)
               -> m NeoPixel
-mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer selChPWM pwmPort' = do
+mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer dmaIRQn selChPWM pwmPort' = do
     pwmTimer     <- timer' system_core_clock pwmPeriod
     let dmaInit   = dmaParam [ direction           .= ival dma_memory_to_periph
                              , memory_inc          .= ival dma_memory_increase_enable
@@ -86,16 +88,25 @@ mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer selChPWM pwmP
             configPrimaryOutput           t true
             enableTimerDMA                t timer_dma_upd
             enableTimer                   t
+            enableIrqNvic                 dmaIRQn 0 0
 
-    pure NeoPixel { pwmTimer, pwmChannel, pwmPort, dmaRcu, dmaPer, dmaChannel, dmaSubPer, dmaParams }
+    pure NeoPixel { pwmTimer, pwmChannel, pwmPort, dmaRcu, dmaPer, dmaChannel, dmaSubPer, dmaIRQn, dmaParams }
 
 
 
 instance Handler I.Render NeoPixel where
-  addHandler (I.Render NeoPixel{..} frameRate render) =
+  addHandler (I.Render npx@NeoPixel{..} frameRate render) = do
+    addModule $ makeIRQHandler dmaIRQn $ handleDMA npx
     addTask $ delay (1000 `iDiv` frameRate)
                     (show pwmPort <> "neo_pixel")
                     render
+
+
+handleDMA :: NeoPixel -> Ivory eff ()
+handleDMA NeoPixel {..} = do
+    f <- getInterruptFlagDMA  dmaPer dmaChannel dma_int_flag_ftf
+    when f $ do
+        clearInterruptFlagDMA dmaPer dmaChannel dma_int_flag_ftf
 
 
 
