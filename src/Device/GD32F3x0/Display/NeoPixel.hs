@@ -67,7 +67,6 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn pwmPort' = do
                              , priority     .= ival dma_priority_ultra_high
                              ]
     dmaParams    <- record (symbol dmaChannel <> "_dma_param") dmaInit
-    frameRequest <- value  (symbol dmaChannel <> "_frame_request" ) true
     let pwmPort   = pwmPort' gpio_pupd_none
 
     initPort pwmPort
