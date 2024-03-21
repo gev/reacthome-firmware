@@ -56,9 +56,7 @@ mkNeoPixelPWM :: MonadState Context m
               -> (GPIO_PUPD -> Port)
               -> m NeoPixel
 mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn pwmPort' = do
-
-    pwmTimer     <- timer' system_core_clock pwmPeriod
-
+    let pwmPort   = pwmPort' gpio_pupd_none
     let dmaInit   = dmaParam [ direction    .= ival dma_memory_to_peripheral
                              , memory_inc   .= ival dma_memory_increase_enable
                              , memory_width .= ival dma_memory_width_8bit
@@ -66,8 +64,8 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn pwmPort' = do
                              , periph_width .= ival dma_peripheral_width_16bit
                              , priority     .= ival dma_priority_ultra_high
                              ]
+    pwmTimer     <- timer' system_core_clock pwmPeriod
     dmaParams    <- record (symbol dmaChannel <> "_dma_param") dmaInit
-    let pwmPort   = pwmPort' gpio_pupd_none
 
     initPort pwmPort
 
@@ -90,7 +88,7 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn pwmPort' = do
 
 
 instance Handler I.Render NeoPixel where
-  addHandler (I.Render npx@NeoPixel{..} frameRate render) = do
+  addHandler (I.Render npx@NeoPixel{..} frameRate frame render) = do
     addBody (makeIRQHandlerName dmaIRQn) (handleDMA npx)
     addTask $ delay (1000 `iDiv` frameRate)
                     (show pwmPort <> "neo_pixel")
@@ -106,16 +104,16 @@ handleDMA NeoPixel {..} = do
         -- store index $ index' + 3
 
 
-instance I.Display NeoPixel FrameBufferNeoPixel Uint8 where
-    frameBuffer _ = neoPixelBuffer pwmPeriod
+-- instance I.Display NeoPixel FrameBufferNeoPixel Uint8 where
+--     frameBuffer _ = neoPixelBuffer pwmPeriod
 
-    transmitFrameBuffer NeoPixel{..} FrameBufferNeoPixel{..} =
-        runFrame $ \frame -> do
-            let frame' = addrOf frame
-            store (dmaParams ~> memory_addr) =<< castArrayUint8ToUint32 (toCArray frame')
-            store (dmaParams ~> number) $ arrayLen frame'
-            deinitDMA                     dmaChannel
-            initDMA                       dmaChannel dmaParams
-            disableCirculationDMA         dmaChannel
-            I.resetCounter                pwmTimer
-            enableChannelDMA              dmaChannel
+--     transmitFrameBuffer NeoPixel{..} FrameBufferNeoPixel{..} =
+--         runFrame $ \frame -> do
+--             let frame' = addrOf frame
+--             store (dmaParams ~> memory_addr) =<< castArrayUint8ToUint32 (toCArray frame')
+--             store (dmaParams ~> number) $ arrayLen frame'
+--             deinitDMA                     dmaChannel
+--             initDMA                       dmaChannel dmaParams
+--             disableCirculationDMA         dmaChannel
+--             I.resetCounter                pwmTimer
+--             enableChannelDMA              dmaChannel
