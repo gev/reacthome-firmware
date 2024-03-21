@@ -101,6 +101,7 @@ mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer dmaIRQn selCh
     pure NeoPixel { pwmTimer, pwmChannel, pwmPort, dmaRcu, dmaPer, dmaChannel, dmaSubPer, dmaIRQn, dmaParams, buff, offset }
 
 
+
 instance Handler I.Render NeoPixel where
   addHandler (I.Render npx@NeoPixel{..} frameRate frame render) = do
     addModule $ makeIRQHandler dmaIRQn $ handleDMA npx frame
