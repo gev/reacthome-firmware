@@ -11,7 +11,6 @@ import           Control.Monad.State               (MonadState)
 import           Core.Context
 import           Core.Handler
 import           Core.Task
-import           Core.Transport                    (Transport (transmitBuffer))
 import           Data.Buffer
 import           Data.Display.FrameBuffer.NeoPixel
 import           Data.Index
