@@ -8,35 +8,33 @@
 
 module Feature.Mix.Indicator where
 
-import           Control.Monad.Reader     (MonadReader, asks)
-import           Control.Monad.State      (MonadState)
+import           Control.Monad.Reader  (MonadReader, asks)
+import           Control.Monad.State   (MonadState)
 import           Core.Context
-import           Core.Domain              as D
+import           Core.Domain           as D
 import           Core.Handler
-import qualified Core.Transport           as T
+import qualified Core.Transport        as T
 import           Data.Buffer
 import           Data.Color
 import           Data.Display.Canvas1D
-import           Data.Display.FrameBuffer
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
 import           Endpoint.ATS
-import           Endpoint.DInputs         as DI
-import           Endpoint.Relays          as R
+import           Endpoint.DInputs      as DI
+import           Endpoint.Relays       as R
 import           GHC.TypeNats
-import           Interface.Display        (Display (transmitFrameBuffer))
-import qualified Interface.Display        as I
+import           Interface.Display     (Display, Render (Render))
 import           Interface.MCU
-import           Interface.SystemClock    (getSystemTime)
+import           Interface.SystemClock (getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
 
 
 
-data Indicator = forall d f t. (I.Display d f t, FrameBuffer f t) => Indicator
+data Indicator = forall d. (Display d) => Indicator
     { display   :: d
-    , canvas    :: Canvas1D 20 (f t)
+    , canvas    :: Canvas1D 20
     , hue       :: IFloat
     , t         :: Value Sint32
     , dt        :: Value Sint32
@@ -58,23 +56,22 @@ maxValue = 0.3 :: IFloat
 
 indicator :: ( MonadState Context m
              , MonadReader (D.Domain p t c) m
-             , FrameBuffer f w
-             , I.Display d f w
+             , Display d
              , T.Transport t
              ) => (p -> m d) -> IFloat -> ATS -> DInputs -> Relays ->  m Indicator
 indicator mkDisplay hue ats dinputs relays = do
     mcu       <- asks D.mcu
     transport <- asks D.transport
     display   <- mkDisplay $ peripherals mcu
-    canvas    <- mkCanvas1D $ I.frameBuffer display "indicator"
-    t         <- value    "indicator_t"           0
-    dt        <- value    "indicator_dt"          1
-    phi       <- value    "indicator_phi"         0
-    dphi      <- value    "indicator_dphi"        1
-    start     <- value    "indicator_start"       true
-    findMe    <- value    "indicator_find_me"     false
-    findMeMsg <- values   "indicator_find_me_msg" [0xfa, 0]
-    pixels    <- records_ "indicator_pixels"
+    canvas    <- mkCanvas1D "indicator_canvas"
+    t         <- value      "indicator_t"           0
+    dt        <- value      "indicator_dt"          1
+    phi       <- value      "indicator_phi"         0
+    dphi      <- value      "indicator_dphi"        1
+    start     <- value      "indicator_start"       true
+    findMe    <- value      "indicator_find_me"     false
+    findMeMsg <- values     "indicator_find_me_msg" [0xfa, 0]
+    pixels    <- records_   "indicator_pixels"
 
     addStruct   (Proxy :: Proxy RGB)
     addStruct   (Proxy :: Proxy HSV)
@@ -88,9 +85,8 @@ indicator mkDisplay hue ats dinputs relays = do
                               , transmit = T.transmitBuffer transport
                               }
 
-    addHandler $ I.Render display 25 $ do
-        update indicator
-        render indicator
+    addHandler $ Render display 25 (runCanvas canvas)
+                                   (update indicator >> render indicator)
 
     pure indicator
 
@@ -209,9 +205,8 @@ renderPixel pixel i ATS{..} dinputs relays = runDInputs dinputs $ \di -> runRela
 
 
 render :: Indicator -> Ivory (ProcEffects s ()) ()
-render Indicator{..} = do
+render Indicator{..} =
     writePixels canvas pixels
-    transmitFrameBuffer display $ getBuffer canvas
 
 
 

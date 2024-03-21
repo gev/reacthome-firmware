@@ -8,35 +8,34 @@
 module Feature.Smart.Top.LEDs where
 
 
-import           Control.Monad.Reader     (MonadReader, asks)
-import           Control.Monad.State      (MonadState)
+import           Control.Monad.Reader  (MonadReader, asks)
+import           Control.Monad.State   (MonadState)
 import           Core.Actions
 import           Core.Context
-import           Core.Domain              as D
+import           Core.Domain           as D
 import           Core.Handler
-import qualified Core.Transport           as T
+import qualified Core.Transport        as T
 import           Data.Buffer
 import           Data.Color
 import           Data.Display.Canvas1D
-import           Data.Display.FrameBuffer
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
-import           Endpoint.DInputs         as DI
-import           Feature.Scd40            (SCD40 (txBuff))
+import           Endpoint.DInputs      as DI
+import           Feature.Scd40         (SCD40 (txBuff))
 import           GHC.TypeNats
-import           Interface.Display        (Display (transmitFrameBuffer))
-import qualified Interface.Display        as I
+import           Interface.Display     (Display)
+import qualified Interface.Display     as I
 import           Interface.MCU
-import           Interface.SystemClock    (getSystemTime)
+import           Interface.SystemClock (getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
 
 
 
-data LEDs = forall d f t. (I.Display d f t, FrameBuffer f t) => LEDs
+data LEDs = forall d f t. (Display d) => LEDs
     { display    :: d
-    , canvas     :: Canvas1D 6 (f t)
+    , canvas     :: Canvas1D 6
     , order      :: Values   6 (Ix 6)
     , t          :: Value      Sint32
     , start      :: Value      IBool
@@ -55,8 +54,7 @@ maxValue = 0.3 :: IFloat
 
 leds :: ( MonadState Context m
         , MonadReader (D.Domain p t c) m
-        , FrameBuffer f w
-        , I.Display d f w
+        , I.Display d
         , T.Transport t
         ) => (p -> m d) -> DInputs  ->  m LEDs
 leds mkDisplay dinputs = do
@@ -64,15 +62,15 @@ leds mkDisplay dinputs = do
     mcu        <- asks D.mcu
     transport  <- asks D.transport
     display    <- mkDisplay $ peripherals mcu
-    canvas     <- mkCanvas1D $ I.frameBuffer display "leds"
-    order      <- values   "leds_order"       [0, 5, 1, 4, 2, 3]
-    t          <- value    "leds_t"           0
-    start      <- value    "leds_start"       true
-    findMe     <- value    "leds_find_me"     false
-    findMeMsg  <- values   "leds_find_me_msg" [actionFindMe, 0]
-    colorMsg   <- values   "leds_tx_msg"      [actionRGB]
-    pixels     <- records_ "leds_pixels"
-    colors     <- records  "leds_colors"      [black, black, black, black, black, black]
+    canvas     <- mkCanvas1D "leds_canvas"
+    order      <- values     "leds_order"       [0, 5, 1, 4, 2, 3]
+    t          <- value      "leds_t"           0
+    start      <- value      "leds_start"       true
+    findMe     <- value      "leds_find_me"     false
+    findMeMsg  <- values     "leds_find_me_msg" [actionFindMe, 0]
+    colorMsg   <- values     "leds_tx_msg"      [actionRGB]
+    pixels     <- records_   "leds_pixels"
+    colors     <- records    "leds_colors"      [black, black, black, black, black, black]
 
     addStruct    (Proxy :: Proxy RGB)
     addStruct    (Proxy :: Proxy HSV)
@@ -85,9 +83,8 @@ leds mkDisplay dinputs = do
                     , transmit = T.transmitBuffer transport
                     }
 
-    addHandler $ I.Render display 30 $ do
-        update leds
-        render leds
+    addHandler $ I.Render display 30 (runCanvas canvas)
+                                     (update leds >> render leds)
 
     pure leds
 
@@ -130,9 +127,8 @@ update LEDs{..} = do
 
 
 render :: LEDs -> Ivory (ProcEffects s ()) ()
-render LEDs{..} = do
+render LEDs{..} =
     writePixels canvas pixels
-    transmitFrameBuffer display $ getBuffer canvas
 
 
 
@@ -157,7 +153,7 @@ onSetColor LEDs{..} buff size =
     when (size ==? 5) $ do
         i  <- deref (buff ! 1)
         when (i >=? 1 .&& i <=? 6) $ do
-            let ix = toIx $ i - 1 
+            let ix = toIx $ i - 1
             store (colorMsg ! 1) i
             run ix 2 r
             run ix 3 g

@@ -1,10 +1,8 @@
-{-# LANGUAGE DataKinds             #-}
-{-# LANGUAGE FlexibleContexts      #-}
-{-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE NamedFieldPuns        #-}
-{-# LANGUAGE RankNTypes            #-}
-{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE RecordWildCards  #-}
 
 
 
@@ -19,22 +17,22 @@ import           Ivory.Language
 
 
 data FrameBufferNeoPixel t = FrameBufferNeoPixel
-    { runFrame :: RunValues t
-    , zeroDuty :: t
-    , oneDuty  :: t
+    { runBuffer :: RunValues t
+    , zeroDuty  :: t
+    , oneDuty   :: t
     }
 
 
 
-neoPixelBuffer :: forall m n t. (MonadState Context m, SafeCast Uint8 t, IvoryInit t, IvoryZeroVal t, Num t)
-                  => Uint8 -> Int -> m (FrameBufferNeoPixel t)
+neoPixelBuffer :: (MonadState Context m, SafeCast Uint8 t, IvoryInit t, IvoryZeroVal t, Num t)
+               => Uint8 -> Int -> m (FrameBufferNeoPixel t)
 neoPixelBuffer period size = do
     let zeroDuty = safeCast $ period `iDiv` 4
     let oneDuty  = 3 * zeroDuty
     let size'    = 8 * size + 1 -- | add stop bit
-    let runFrame = runValues "frame_buffer_neo_pixel" $ replicate size' 0x0
-    runFrame addArea
-    pure $ FrameBufferNeoPixel { runFrame, zeroDuty, oneDuty }
+    let runBuffer = runValues "neo_pixel_buffer" $ replicate size' 0x0
+    runBuffer addArea
+    pure $ FrameBufferNeoPixel { runBuffer, zeroDuty, oneDuty }
 
 
 
@@ -43,7 +41,7 @@ writeByte :: IvoryStore t
           -> Ivory ('Effects (Returns ()) b (Scope s)) ()
 writeByte FrameBufferNeoPixel{..} i value = do
     v <- local $ ival value
-    runFrame $ \frame -> for 8 $ \jx -> do
+    runBuffer $ \frame -> for 8 $ \jx -> do
         v' <- deref v
         let b = v' .& 0x80
         let byte = addrOf frame ! (toIx (8 * i) + jx)

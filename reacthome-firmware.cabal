@@ -55,7 +55,6 @@ executable reacthome-firmware
                     , Data.Matrix
                     , Data.Color
                     , Data.Display.Canvas1D
-                    , Data.Display.FrameBuffer
                     , Data.Display.FrameBuffer.NeoPixel
                     , Data.Serialize
                     , Data.Concurrent.Semaphore

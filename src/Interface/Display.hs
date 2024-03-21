@@ -1,5 +1,4 @@
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GADTs            #-}
 {-# LANGUAGE RankNTypes       #-}
 
 module Interface.Display where
@@ -8,17 +7,20 @@ import           Control.Monad.State
 import           Core.Context
 import           Core.Handler
 import           Data.Buffer
+import           Data.Value          (RunValues)
 import           GHC.TypeNats
 import           Ivory.Language
 
 
-data Render d = forall n. KnownNat n => Render
+data Render d = Render
     { display   :: d
     , frameRate :: Uint32
-    , frame     :: Buffer n Uint8
+    , runFrame  :: RunValues Uint8
     , render    :: forall s. Ivory (ProcEffects s ()) ()
     }
 
+
+class Handler Render d => Display d
 
 -- class Handler Render p => Display p f t | p -> f t where
 

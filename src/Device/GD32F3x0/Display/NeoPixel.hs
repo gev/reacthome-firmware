@@ -2,9 +2,8 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-{-# HLINT ignore "Use for_" #-}
 
 module Device.GD32F3x0.Display.NeoPixel where
 
@@ -13,11 +12,13 @@ import           Core.Context
 import           Core.Handler
 import           Core.Task
 import           Data.Display.FrameBuffer.NeoPixel
+import           Data.Index
 import           Data.Record
 import           Data.Value
 import           Device.GD32F3x0.GPIO.Port
 import           Device.GD32F3x0.Timer
-import qualified Interface.Display                 as I
+import           GHC.TypeNats
+import           Interface.Display
 import qualified Interface.Timer                   as I
 import           Ivory.Language
 import           Ivory.Stdlib
@@ -30,9 +31,6 @@ import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.System
 import           Support.Device.GD32F3x0.Timer
-import           Data.Index
-import           GHC.TypeNats                      (KnownNat)
-import Data.Buffer
 
 
 
@@ -94,42 +92,47 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn pwmPort' = do
 
 
 
-instance Handler I.Render NeoPixel where
-  addHandler (I.Render npx@NeoPixel{..} frameRate frame render) = do
-    addBody (makeIRQHandlerName dmaIRQn) (handleDMA npx frame)
+instance Handler Render NeoPixel where
+  addHandler (Render npx@NeoPixel{..} frameRate runFrame render) = do
+    addBody (makeIRQHandlerName dmaIRQn) (handleDMA npx runFrame)
     addTask $ delay (1000 `iDiv` frameRate)
-                    (show pwmPort <> "neo_pixel") $ do
+                    ("neo_pixel_" <> show pwmPort) $ do
                         render
-                        store offset 0
-                        writeByte buff 0 =<< deref (frame ! 0)
-                        transmitFrameBuffer npx
+                        runFrame $ \frame -> do
+                            writeByte buff 0 =<< deref (addrOf frame ! 0)
+                            store offset 1
+                            transmitFrameBuffer npx
 
 
 
-
-handleDMA :: KnownNat n => NeoPixel -> Buffer n Uint8 -> Ivory ('Effects (Returns ()) b (Scope s)) ()
-handleDMA npx@NeoPixel{..}  frame = do
+handleDMA :: NeoPixel -> RunValues Uint8 -> Ivory ('Effects (Returns ()) b (Scope s)) ()
+handleDMA npx@NeoPixel{..} runFrame = do
     f <- getInterruptFlagDMA dmaChannel dma_int_flag_ftf
     when f $ do
         clearInterruptFlagDMA dmaChannel dma_int_flag_g
         offset' <- deref offset
-        when (offset' <? arrayLen frame) $ do
-            writeByte buff 0 =<< deref (frame ! toIx offset')
-            transmitFrameBuffer npx
-            store offset $ offset' + 1
+        runFrame $ \frame -> do
+            let frame' = addrOf frame
+            when (offset' <? arrayLen frame') $ do
+                writeByte buff 0 =<< deref (frame' ! toIx offset')
+                transmitFrameBuffer npx
+                store offset $ offset' + 1
 
 
 
 transmitFrameBuffer :: NeoPixel -> Ivory eff ()
 transmitFrameBuffer NeoPixel{..} =
-        runFrame buff $ \frame -> do
-            let frame' = addrOf frame
-            store (dmaParams ~> memory_addr) =<< castArrayUint8ToUint32 (toCArray frame')
-            store (dmaParams ~> number) $ arrayLen frame'
+        runBuffer buff $ \b -> do
+            let b' = addrOf b
+            store (dmaParams ~> memory_addr) =<< castArrayUint8ToUint32 (toCArray b')
+            store (dmaParams ~> number) $ arrayLen b'
             deinitDMA                     dmaChannel
             initDMA                       dmaChannel dmaParams
             disableCirculationDMA         dmaChannel
             I.resetCounter                pwmTimer
+            enableInterruptDMA            dmaChannel dma_int_ftf
             enableChannelDMA              dmaChannel
 
 
+
+instance Display NeoPixel

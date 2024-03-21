@@ -18,7 +18,6 @@ import           Core.Task
 import           Core.Transport
 import qualified Core.Transport              as T
 import           Data.Buffer
-import           Data.Display.FrameBuffer
 import           Data.Matrix
 import           Data.Serialize
 import           Data.Value
