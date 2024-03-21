@@ -15,7 +15,6 @@ import           Data.Buffer
 import           Data.Display.FrameBuffer.NeoPixel
 import           Data.Index
 import           Data.Record
-import           Device.GD32F3x0.ADC               (ADC (buff))
 import           Device.GD32F4xx.GPIO
 import           Device.GD32F4xx.GPIO.Port
 import           Device.GD32F4xx.Timer
