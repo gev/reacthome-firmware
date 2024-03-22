@@ -53,15 +53,14 @@ data LEDs = forall d f t. (Display d) => LEDs
 maxValue = 0.3 :: IFloat
 
 leds :: ( MonadState Context m
-        , MonadReader (D.Domain p t c) m
+        , MonadReader (D.Domain p c) m
         , I.Display d
         , T.Transport t
-        ) => (p -> m d) -> DInputs  ->  m LEDs
-leds mkDisplay dinputs = do
+        ) => (p -> m d) -> DInputs -> t -> m LEDs
+leds display' dinputs transport = do
     shouldInit <- asks D.shouldInit
     mcu        <- asks D.mcu
-    transport  <- asks D.transport
-    display    <- mkDisplay $ peripherals mcu
+    display    <- display' $ peripherals mcu
     canvas     <- mkCanvas1D "leds_canvas"
     order      <- values     "leds_order"       [0, 5, 1, 4, 2, 3]
     t          <- value      "leds_t"           0

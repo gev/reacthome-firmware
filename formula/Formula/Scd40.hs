@@ -14,6 +14,6 @@ scd40_test = Formula { name           = "scd40"
                      , model          = deviceTypeCo2
                      , version        = (1, 0)
                      , shouldInit     = false
-                     , transport      = rbus $ rs485 uart_1 out_pa_4
-                     , implementation = dummy $ scd40 i2c_0
+                     , implementation = dummy (rbus $ rs485 uart_1 out_pa_4)
+                                              (scd40 i2c_0)
                      }

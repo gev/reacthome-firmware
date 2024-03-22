@@ -12,6 +12,5 @@ udpEcho450 = Formula { name           = "udpEcho450"
                      , model          = 0xff
                      , version        = (1, 0)
                      , shouldInit     = false
-                     , transport      = rbus uart_5
                      , implementation = udpEcho eth_0
                      }

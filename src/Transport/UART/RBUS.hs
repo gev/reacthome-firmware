@@ -31,7 +31,7 @@ import           Transport.UART.RBUS.Tx
 
 
 
-rbus :: (MonadState Context m, MonadReader (D.Domain p t c) m, UART u, Controller c)
+rbus :: (MonadState Context m, MonadReader (D.Domain p c) m, UART u, Controller c)
      => (p -> m u) -> m RBUS
 rbus uart' = do
     mcu            <- asks D.mcu
@@ -49,7 +49,7 @@ rbus uart' = do
 
 
 
-mkRbus :: (MonadState Context m, MonadReader (D.Domain p t c) m, UART u)
+mkRbus :: (MonadState Context m, MonadReader (D.Domain p c) m, UART u)
      => String -> u -> (forall s. Buffer 255 Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()) -> m RBUS
 mkRbus name uart onMessage = do
     mcu           <- asks D.mcu

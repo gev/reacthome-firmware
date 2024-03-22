@@ -45,12 +45,11 @@ data DInputs = forall i. Input i => DInputs
 
 
 
-dinputs :: (MonadState Context m, MonadReader (D.Domain p t c) m, T.Transport t, Input i, Pull p d)
-          => [p -> d -> m i] -> Bool -> m DInputs
-dinputs inputs zero' = do
+dinputs :: (MonadState Context m, MonadReader (D.Domain p c) m, T.Transport t, Input i, Pull p d)
+          => [p -> d -> m i] -> Bool -> t -> m DInputs
+dinputs inputs zero' transport = do
     mcu        <- asks D.mcu
     let clock   = systemClock mcu
-    transport  <- asks D.transport
     let peripherals' = peripherals mcu
     let pull    = if zero' then pullUp else pullDown
     is         <- mapM (($ pull peripherals') . ($ peripherals')) inputs

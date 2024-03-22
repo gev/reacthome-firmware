@@ -15,8 +15,8 @@ doppler1 = Formula { name           = "doppler1"
                    , model          = deviceTypeDoppler1Di4
                    , version        = (1, 0)
                    , shouldInit     = false
-                   , transport      = rbus $ rs485 uart_1 out_pa_4
-                   , implementation = doppler (dopplers [ adc_pa_7
+                   , implementation = doppler (rbus $ rs485 uart_1 out_pa_4)
+                                              (dopplers [ adc_pa_7
                                                         ]
                                               )
                                               (dinputs  [ in_pa_12

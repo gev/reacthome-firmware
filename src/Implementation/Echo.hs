@@ -30,12 +30,12 @@ data Echo = Echo
 
 
 echo :: ( MonadState Context m
-        , MonadReader (Domain p t Echo) m
+        , MonadReader (Domain p Echo) m
         , T.Transport t
-        ) => m Echo
-echo = do
+        ) => m t -> m Echo
+echo transport' = do
+    transport <- transport'
     buff <- values "echo_buffer" [9,8,7,6,5,4,3,2,1,0]
-    transport  <- asks D.transport
     let echo = Echo { buff, transmit = T.transmitBuffer transport }
     -- addTask $ echoTask echo
     pure echo

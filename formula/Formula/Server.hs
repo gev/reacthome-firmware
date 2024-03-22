@@ -20,8 +20,8 @@ server = Formula { name           = "server"
                  , model          = deviceTypeServer
                  , version        = (5, 0)
                  , shouldInit     = true
-                 , transport      = U.rbus uart_1
-                 , implementation = hub (F.rbus    [ rs485 uart_5 out_pb_14
+                 , implementation = hub (U.rbus uart_1)
+                                        (F.rbus    [ rs485 uart_5 out_pb_14
                                                    , rs485 uart_3 out_pc_12
                                                    , rs485 uart_2 out_pb_15
                                                    , rs485 uart_0 out_pd_1

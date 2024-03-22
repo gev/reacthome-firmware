@@ -69,19 +69,19 @@ data Mix = forall f. Flash f => Mix
 
 
 mix :: ( MonadState Context m
-       , MonadReader (Domain p t c) m
+       , MonadReader (Domain p c) m
        , Transport t
        , Flash f
-       ) => (Bool -> m DInputs) -> m Relays -> (ATS -> DI.DInputs -> R.Relays -> m Indicator) -> (p -> f) -> m Mix
-mix dinputs' relays' indicator' etc = do
-    relays       <- relays'
+       ) => m t -> (Bool -> t -> m DInputs) -> (t -> m Relays) -> (ATS -> DI.DInputs -> R.Relays -> t -> m Indicator) -> (p -> f) -> m Mix
+mix transport' dinputs' relays' indicator' etc = do
+    transport    <- transport'
+    relays       <- relays' transport
     let relaysN   = FR.n relays
-    dinputs      <- dinputs' True
+    dinputs      <- dinputs' True transport
     let dinputsN  = FDI.n dinputs
-    rules        <- mkRules dinputsN relaysN
-    ats          <- mkATS
-    indicator    <- indicator' ats (getDInputs dinputs) (getRelays relays)
-    transport    <- asks D.transport
+    rules        <- mkRules transport dinputsN relaysN
+    ats          <- mkATS transport
+    indicator    <- indicator' ats (getDInputs dinputs) (getRelays relays) transport
     mcu          <- asks D.mcu
     shouldInit   <- asks D.shouldInit
     let mix       = Mix { relays

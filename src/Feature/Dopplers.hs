@@ -51,14 +51,13 @@ data Dopplers = forall a t. (I.ADC a, T.LazyTransport t) => Dopplers
 
 
 dopplers :: ( MonadState Context m
-            , MonadReader (D.Domain p t c) m
+            , MonadReader (D.Domain p c) m
             , T.LazyTransport t
             , I.ADC a
-            ) => [p -> m a] -> m Dopplers
-dopplers analogInput = do
+            ) => [p -> m a] -> t -> m Dopplers
+dopplers analogInput transport = do
     mcu              <- asks D.mcu
-    transport        <- asks D.transport
-    doppler          <- zipWithM mkDoppler [1..] analogInput
+    doppler          <- zipWithM (mkDoppler transport) [1..] analogInput
 
     let dopplers = Dopplers { n = fromIntegral $ length analogInput
                             , doppler
@@ -73,11 +72,11 @@ dopplers analogInput = do
 
 
 mkDoppler :: ( MonadState Context m
-             , MonadReader (D.Domain p timeout c) m
-             , T.LazyTransport timeout
+             , MonadReader (D.Domain p c) m
+             , T.LazyTransport t
              , I.ADC a
-             ) => Int -> (p -> m a) -> m (Doppler a)
-mkDoppler index analogInput = do
+             ) => t -> Int -> (p -> m a) -> m (Doppler a)
+mkDoppler transport index analogInput = do
     let name          = "doppler_" <> show index <> "_"
     mcu              <- asks D.mcu
     let peripherals'  = peripherals mcu

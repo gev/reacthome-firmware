@@ -38,12 +38,11 @@ data SHT21 = forall i. I.I2C i 1 => SHT21
     , transmit              :: forall s t. Buffer 3 Uint8 -> Ivory (ProcEffects s t) ()
     }
 
-sht21 :: (MonadState Context m, MonadReader (D.Domain p t c) m, I.I2C i 1, Transport t)
-        => (p -> m (i 1)) -> m SHT21
-sht21 i2c' = do
+sht21 :: (MonadState Context m, MonadReader (D.Domain p c) m, I.I2C i 1, Transport t)
+        => (p -> m (i 1)) -> t -> m SHT21
+sht21 i2c' transport = do
     mcu                   <- asks D.mcu
     i2c                   <- i2c' $ peripherals mcu
-    transport             <- asks D.transport
     resetCmd              <- values  "reset_cmd"               [0xfe]
     measureTemperatureCmd <- values  "measure_temperature_cmd" [0xf3]
     measureHumidityCmd    <- values  "measure_humidity_cmd"    [0xf5]

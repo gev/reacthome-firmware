@@ -15,10 +15,11 @@ data Doppler = Doppler
     , dinputs  :: DInputs
     }
 
-doppler :: Monad m => m Dopplers -> (Bool -> m DInputs) -> m Doppler
-doppler dopplers' dinputs' = do
-    dopplers <- dopplers'
-    dinputs  <- dinputs' True
+doppler :: Monad m => m t -> (t -> m Dopplers) -> (Bool -> t -> m DInputs) -> m Doppler
+doppler transport' dopplers' dinputs' = do
+    transport <- transport'
+    dopplers  <- dopplers' transport
+    dinputs   <- dinputs' True transport
     pure Doppler { dopplers, dinputs }
 
 

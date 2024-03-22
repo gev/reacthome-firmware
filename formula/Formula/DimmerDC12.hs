@@ -17,8 +17,8 @@ dimmerDC12 = Formula { name           = "dimmerDC12"
                      , model          = deviceTypeDim12DcRs
                      , version        = (2, 1)
                      , shouldInit     = true
-                     , transport      = rbus $ rs485 uart_0 out_pb_2
-                     , implementation = dimmer (dimmersDC [ pwm_9
+                     , implementation = dimmer (rbus $ rs485 uart_0 out_pb_2)
+                                               (dimmersDC [ pwm_9
                                                           , pwm_10
                                                           , pwm_8
                                                           , pwm_6

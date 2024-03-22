@@ -17,8 +17,8 @@ mix6x12 = Formula { name       = "mix6x12"
                   , model      = deviceTypeMix6x12Rs
                   , version    = (3, 1)
                   , shouldInit = true
-                  , transport  = rbus $ rs485 uart_0 out_pb_2
-                  , implementation = mix (dinputs [ in_pa_4
+                  , implementation = mix (rbus $ rs485 uart_0 out_pb_2)
+                                         (dinputs [ in_pa_4
                                                   , in_pa_15
                                                   , in_pb_3
                                                   , in_pb_4
