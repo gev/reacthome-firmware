@@ -49,7 +49,7 @@ top transport' dinputs' sht21' leds' = do
     shouldInit <- asks D.shouldInit
     dinputs    <- dinputs' False transport
     leds       <- leds' (getDInputs dinputs) transport
-    sht21      <- sht21'
+    sht21      <- sht21' transport
     initBuff   <- values "top_init_buffer" [actionInitialize]
     let top     = Top { dinputs, leds, sht21
                       , initBuff, shouldInit

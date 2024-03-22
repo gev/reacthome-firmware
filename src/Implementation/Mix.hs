@@ -81,7 +81,7 @@ mix transport' dinputs' relays' indicator' etc = do
     let dinputsN  = FDI.n dinputs
     rules        <- mkRules transport dinputsN relaysN
     ats          <- mkATS transport
-    indicator    <- indicator' ats (getDInputs dinputs) (getRelays relays)
+    indicator    <- indicator' ats (getDInputs dinputs) (getRelays relays) transport
     mcu          <- asks D.mcu
     shouldInit   <- asks D.shouldInit
     let mix       = Mix { relays
