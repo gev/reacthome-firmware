@@ -15,8 +15,8 @@ di4 = Formula { name           = "di4"
               , model          = deviceTypeDi4
               , version        = (4, 3)
               , shouldInit     = false
-              , transport      = rbus $ rs485 uart_1 out_pa_4
-              , implementation = di (dinputs [ in_pa_12
+              , implementation = di (rbus $ rs485 uart_1 out_pa_4)
+                                    (dinputs [ in_pa_12
                                              , in_pa_11
                                              , in_pa_10
                                              , in_pa_9

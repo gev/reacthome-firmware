@@ -32,11 +32,11 @@ import           Support.Cast
 
 
 dimmersDC :: ( MonadState Context m
-             , MonadReader (D.Domain p t c) m
+             , MonadReader (D.Domain p c) m
              , T.Transport t, I.PWM o
-             ) => [p -> Uint32 -> Uint32 -> m o] -> m Dimmers
-dimmersDC pwms = do
-    dimmers <- mkDimmers pwms 1_000
+             ) => [p -> Uint32 -> Uint32 -> m o] -> t -> m Dimmers
+dimmersDC pwms transport = do
+    dimmers <- mkDimmers pwms 1_000 transport
 
     addTask $ delay 1 "dimmers_manage" $ manage dimmers
 

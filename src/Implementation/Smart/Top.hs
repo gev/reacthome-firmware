@@ -42,13 +42,13 @@ data Top = Top
 
 
 
-top :: (MonadState Context m , MonadReader (D.Domain p t c) m, Transport t)
-    => (Bool -> m DI.DInputs) -> m SHT21 -> (E.DInputs  ->  m LEDs) -> m Top
-top dinputs' sht21' leds' = do
+top :: (MonadState Context m , MonadReader (D.Domain p c) m, Transport t)
+    => m t -> (Bool -> t -> m DI.DInputs) -> (t -> m SHT21) -> (E.DInputs -> t -> m LEDs) -> m Top
+top transport' dinputs' sht21' leds' = do
+    transport  <- transport'
     shouldInit <- asks D.shouldInit
-    transport  <- asks D.transport
-    dinputs    <- dinputs' False
-    leds       <- leds' $ getDInputs dinputs
+    dinputs    <- dinputs' False transport
+    leds       <- leds' (getDInputs dinputs) transport
     sht21      <- sht21'
     initBuff   <- values "top_init_buffer" [actionInitialize]
     let top     = Top { dinputs, leds, sht21

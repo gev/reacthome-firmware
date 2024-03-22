@@ -46,14 +46,14 @@ data CrossZero = CrossZero
 
 
 dimmersAC :: ( MonadState Context m
-             , MonadReader (D.Domain p t c) m
+             , MonadReader (D.Domain p c) m
              , T.Transport t, I.PWM o, Handler HandleEXTI e, EXTI e
-             ) => [p -> Uint32 -> Uint32 -> m o] -> (p -> m e) -> m Dimmers
-dimmersAC pwms exti = do
+             ) => [p -> Uint32 -> Uint32 -> m o] -> (p -> m e) -> t -> m Dimmers
+dimmersAC pwms exti transport = do
     mcu            <- asks D.mcu
     e              <- exti $ peripherals mcu
 
-    dimmers        <- mkDimmers pwms 0xff_ff_ff_ff
+    dimmers        <- mkDimmers pwms 0xff_ff_ff_ff transport
 
     isCrossZero    <- value "dimmer_is_zero"    false
     isNoCrossZero  <- value "dimmer_is_no_zero" true

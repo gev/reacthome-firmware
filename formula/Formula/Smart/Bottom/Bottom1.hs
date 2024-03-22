@@ -17,8 +17,8 @@ smartBottom1 =  Formula { name           = "smart_bottom_1"
                         , model          = deviceTypeSmartBottom1
                         , version        = (1, 0)
                         , shouldInit     = false
-                        , transport      = rbus $ rs485 uart_1 out_pa_4
-                        , implementation = bottom1 (top uart_0 in_pb_4)
+                        , implementation = bottom1 (rbus $ rs485 uart_1 out_pa_4)
+                                                   (top uart_0 in_pb_4)
                                                    (dinputs [ in_pa_5
                                                             , in_pa_6
                                                             , in_pb_0

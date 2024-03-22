@@ -17,6 +17,5 @@ data Formula p where
                , model          ::  Uint8
                , version        :: (Uint8, Uint8)
                , shouldInit     ::  IBool
-               , transport      ::  StateT Context (Reader (Domain p t i)) t
-               , implementation ::  StateT Context (Reader (Domain p t i)) i
+               , implementation ::  StateT Context (Reader (Domain p i)) i
                } -> Formula p

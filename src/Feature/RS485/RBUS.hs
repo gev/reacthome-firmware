@@ -38,19 +38,18 @@ import           Protocol.RS485.RBUS.Master.Rx
 
 
 
-rbus :: (MonadState Context m, MonadReader (D.Domain p t c) m, LazyTransport t, Transport t)
-     => [m I.RS485] -> m [RBUS]
-rbus rs485 = zipWithM rbus' rs485 [1..]
+rbus :: (MonadState Context m, MonadReader (D.Domain p c) m, LazyTransport t, Transport t)
+     => [m I.RS485] -> t -> m [RBUS]
+rbus rs485 transport = zipWithM (rbus' transport) rs485 [1..]
 
 
 
-rbus' :: (MonadState Context m, MonadReader (D.Domain p t c) m, LazyTransport t, Transport t)
-     => m I.RS485 -> Int -> m RBUS
-rbus' rs485 index = do
+rbus' :: (MonadState Context m, MonadReader (D.Domain p c) m, LazyTransport t, Transport t)
+     => t -> m I.RS485 -> Int -> m RBUS
+rbus' transport rs485 index = do
     rs               <- rs485
 
     mcu              <- asks D.mcu
-    transport        <- asks D.transport
     shouldInit       <- asks D.shouldInit
 
     let name          = "feature_rs485_rbus_" <> show index

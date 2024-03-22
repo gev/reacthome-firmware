@@ -15,8 +15,8 @@ smartTopA6P =  Formula { name           = "smart_top_a6p"
                        , model          = deviceTypeSmartTopA6P
                        , version        = (1, 0)
                        , shouldInit     = true
-                       , transport      = rbus uart_0
-                       , implementation = top (dinputs [ in_pa_4
+                       , implementation = top (rbus uart_0)
+                                              (dinputs [ in_pa_4
                                                        , in_pb_2
                                                        , in_pa_5
                                                        , in_pb_1

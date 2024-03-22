@@ -16,7 +16,7 @@ import           Interface.MCU         (MCU (peripherals))
 import           Interface.Timer
 import           Ivory.Language
 
-blink :: (MonadState Context m, MonadReader (Domain p t ()) m, Output o, Pull p u)
+blink :: (MonadState Context m, MonadReader (Domain p ()) m, Output o, Pull p u)
       => (p -> u -> m o) -> m ()
 blink o = do
     let name  = "blink"

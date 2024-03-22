@@ -24,18 +24,20 @@ data Bottom = Bottom
 
 
 
-bottom1 :: Monad m => m Top  -> (Bool -> m DInputs) -> m DS18B20 -> m Bottom
-bottom1 top' dinputs' ds18b20 = do
-    ds18b20
-    dinputs <- dinputs' True
-    top     <- top'
+bottom1 :: Monad m => m t -> (t -> m Top) -> (Bool -> t -> m DInputs) -> (t -> m DS18B20) -> m Bottom
+bottom1 transport' top' dinputs' ds18b20 = do
+    transport <- transport'
+    ds18b20 transport
+    dinputs <- dinputs' True transport
+    top     <- top' transport
     pure Bottom { top, dinputs }
 
 
 
-bottom2 :: Monad m => m Top -> (Bool -> m DInputs) -> m DS18B20 -> m SCD40 -> m Bottom
-bottom2 top dinputs ds18b20 scd40 =
-    scd40 >> bottom1 top dinputs ds18b20
+bottom2 :: Monad m => m t -> (t -> m Top) -> (Bool -> t -> m DInputs) -> (t -> m DS18B20) -> (t -> m SCD40) -> m Bottom
+bottom2 transport top dinputs ds18b20 scd40 = do
+    scd40 =<< transport
+    bottom1 transport top dinputs ds18b20
 
 
 

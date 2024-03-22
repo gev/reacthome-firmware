@@ -20,8 +20,8 @@ rsHub4 = Formula { name           = "rs_hub4"
                  , model          = deviceTypeRsHub4
                  , version        = (4, 1)
                  , shouldInit     = true
-                 , transport      = U.rbus eth_0
-                 , implementation = hub (F.rbus    [ rs485 uart_5 out_pb_14
+                 , implementation = hub (U.rbus eth_0)
+                                        (F.rbus    [ rs485 uart_5 out_pb_14
                                                    , rs485 uart_3 out_pc_12
                                                    , rs485 uart_2 out_pb_15
                                                    , rs485 uart_0 out_pd_1

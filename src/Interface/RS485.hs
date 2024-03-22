@@ -45,7 +45,7 @@ data HandleRS485 r = HandleRS485
 
 
 
-rs485 :: (MonadState Context m, MonadReader (D.Domain p t c) m, UART u, Show u, Output o, Pull p d)
+rs485 :: (MonadState Context m, MonadReader (D.Domain p c) m, UART u, Show u, Output o, Pull p d)
       => (p -> m u) -> (p -> d -> m o) -> m RS485
 rs485 uart' rede' = do
     mcu' <- asks D.mcu

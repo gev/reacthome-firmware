@@ -19,10 +19,11 @@ data Dimmer = Dimmer
 
 
 
-dimmer :: Monad m => m Dimmers -> m Indicator -> m Dimmer
-dimmer dimmers' indicator' = do
-    dimmers <- dimmers'
-    indicator <- indicator'
+dimmer :: Monad m => m t -> (t -> m Dimmers) ->(t -> m Indicator) -> m Dimmer
+dimmer transport' dimmers' indicator' = do
+    transport <- transport'
+    dimmers <- dimmers' transport
+    indicator <- indicator' transport
     pure Dimmer { dimmers, indicator }
 
 

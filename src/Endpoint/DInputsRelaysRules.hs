@@ -35,11 +35,10 @@ data Rules = Rules
 
 
 
-mkRules :: (MonadState Context m, MonadReader (D.Domain p t i) m, T.Transport t)
-        => Int -> Int -> m Rules
-mkRules n m = do
+mkRules :: (MonadState Context m, MonadReader (D.Domain p i) m, T.Transport t)
+        => t -> Int -> Int -> m Rules
+mkRules transport n m = do
     mcu             <- asks D.mcu
-    transport       <- asks D.transport
     let runRulesOn   = runMatrix  "dinputs_relays_rules_matrix_on"  0xff n m
     let runRulesOff  = runMatrix  "dinputs_relays_rules_matrix_off" 0xff n m
     let runPayload   = runValues_ "dinputs_relays_rules_message"  $ 2 + 2 * m

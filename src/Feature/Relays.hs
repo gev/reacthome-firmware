@@ -51,11 +51,10 @@ data Relays = forall o. Output o => Relays
 
 
 
-relays :: (MonadState Context m, MonadReader (D.Domain p t c) m, T.Transport t, Output o, Pull p d)
-         => [p -> d -> m o] -> m Relays
-relays outs = do
+relays :: (MonadState Context m, MonadReader (D.Domain p  c) m, T.Transport t, Output o, Pull p d)
+       => [p -> d -> m o] -> t -> m Relays
+relays outs transport = do
     mcu        <- asks D.mcu
-    transport  <- asks D.transport
     shouldInit <- asks D.shouldInit
     let peripherals' = peripherals mcu
     os         <- mapM (($ pullNone peripherals') . ($ peripherals')) outs

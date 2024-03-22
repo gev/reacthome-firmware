@@ -55,13 +55,12 @@ data Indicator = forall d. (Display d) => Indicator
 maxValue = 0.3 :: IFloat
 
 indicator :: ( MonadState Context m
-             , MonadReader (D.Domain p t c) m
+             , MonadReader (D.Domain p c) m
              , Display d
              , T.Transport t
-             ) => (p -> m d) -> IFloat -> ATS -> DInputs -> Relays ->  m Indicator
-indicator mkDisplay hue ats dinputs relays = do
+             ) => (p -> m d) -> IFloat -> ATS -> DInputs -> Relays -> t -> m Indicator
+indicator mkDisplay hue ats dinputs relays transport = do
     mcu       <- asks D.mcu
-    transport <- asks D.transport
     display   <- mkDisplay $ peripherals mcu
     canvas    <- mkCanvas1D "indicator_canvas"
     t         <- value      "indicator_t"           0
