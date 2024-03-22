@@ -520,25 +520,29 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
     , npx_pwm_0 = mkNeoPixelPWM cfg_timer_2
                                 timer_ch_0 rcu_dma0
                                 dma0 dma_ch2
-                                dma_subperi5 ch0cv
+                                dma_subperi5
+                                dma0_channel2_irqn ch0cv
                                 (pb_4 af_2)
 
     , npx_pwm_1 = mkNeoPixelPWM cfg_timer_2
                                 timer_ch_1 rcu_dma0
                                 dma0 dma_ch2
-                                dma_subperi5 ch1cv
+                                dma_subperi5
+                                dma0_channel2_irqn ch1cv
                                 (pb_5 af_2)
 
     , npx_pwm_2 = mkNeoPixelPWM cfg_timer_2
                                 timer_ch_2 rcu_dma0
                                 dma0 dma_ch2
-                                dma_subperi5 ch2cv
+                                dma_subperi5
+                                dma0_channel2_irqn ch2cv
                                 (pb_0 af_2)
 
     , npx_pwm_3 = mkNeoPixelPWM cfg_timer_2
                                 timer_ch_3 rcu_dma0
                                 dma0 dma_ch2
-                                dma_subperi5 ch3cv
+                                dma_subperi5
+                                dma0_channel2_irqn ch3cv
                                 (pc_7 af_2)
 
 

@@ -41,7 +41,7 @@ cook mcu Formula{..} = do
                                                        <> transportContext'
                                                        <> implementationContext'
 
-          bodyNames = nub . fst <$> bodies
+          bodyNames = nub $ fst <$> bodies
 
           multiBodyFunctions = mkMultiBodyFunction <$> bodyNames
 
