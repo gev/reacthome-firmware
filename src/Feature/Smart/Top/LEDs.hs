@@ -50,7 +50,6 @@ data LEDs = forall d f t. (Display d) => LEDs
     }
 
 
-maxValue = 0.3 :: IFloat
 
 leds :: ( MonadState Context m
         , MonadReader (D.Domain p c) m

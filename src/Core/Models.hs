@@ -59,6 +59,7 @@ deviceTypeDoppler5Di4    = 0x2E :: Uint8
 -}
 
 deviceTypeSmartTopA6P   = 0x30 :: Uint8
+deviceTypeSmartTopG4D   = 0x31 :: Uint8
 
 deviceTypeSmartBottom1  = 0x3a :: Uint8
 deviceTypeSmartBottom2  = 0x3b :: Uint8

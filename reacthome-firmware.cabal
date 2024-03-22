@@ -99,6 +99,7 @@ executable reacthome-firmware
                     , Formula.Sht21
                     , Formula.Scd40
                     , Formula.Smart.Top.TopA6P
+                    , Formula.Smart.Top.TopG4D
                     , Formula.Smart.Bottom.Bottom1
                     , Formula.Smart.Bottom.Bottom2
                     , Formula.Doppler1

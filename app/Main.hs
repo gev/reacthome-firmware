@@ -23,6 +23,7 @@ import           Formula.Sht21
 import           Formula.Smart.Bottom.Bottom1
 import           Formula.Smart.Bottom.Bottom2
 import           Formula.Smart.Top.TopA6P
+import           Formula.Smart.Top.TopG4D
 import           Formula.UdpEcho450
 
 
@@ -37,6 +38,7 @@ main = do
                      , smartBottom1
                      , smartBottom2
                      , smartTopA6P
+                     , smartTopG4D
                      , scd40_test
                      , doppler1
                      , doppler5
