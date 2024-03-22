@@ -48,7 +48,7 @@ data NeoPixel = NeoPixel
     , dmaIRQn    :: IRQn
     , dmaParams  :: Record DMA_PARAM_STRUCT
     , buff       :: FrameBufferNeoPixel Uint8
-    , offset     :: Index Uint8
+    , offset     :: Index Uint16
     }
 
 mkNeoPixelPWM :: MonadState Context m
