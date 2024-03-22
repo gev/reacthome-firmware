@@ -16,10 +16,11 @@ newtype DI = DI { dinputs :: DInputs }
 
 
 
-di :: Monad m => (Bool -> m DInputs) -> m DS18B20 -> m DI
-di dinputs' ds18b20 = do
-    ds18b20
-    dinputs <-dinputs' True
+di :: Monad m => m t -> (Bool -> t -> m DInputs) -> (t -> m DS18B20) -> m DI
+di transport' dinputs' ds18b20 = do
+    transport <- transport'
+    ds18b20 transport
+    dinputs <-dinputs' True transport
     pure DI { dinputs }
 
 

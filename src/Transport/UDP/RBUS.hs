@@ -48,7 +48,7 @@ import           Transport.UDP.RBUS.Tx
 
 
 
-rbus :: (MonadState Context m, MonadReader (D.Domain p t c) m, Enet e, LwipPort e, Controller c)
+rbus :: (MonadState Context m, MonadReader (D.Domain p c) m, Enet e, LwipPort e, Controller c)
       => (p -> m e) -> m RBUS
 rbus enet' = do
     mcu             <- asks D.mcu

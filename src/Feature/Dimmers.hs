@@ -42,12 +42,11 @@ data Dimmers = forall p. I.PWM p => Dimmers
 
 
 mkDimmers :: ( MonadState Context m
-           , MonadReader (D.Domain p t c) m
+           , MonadReader (D.Domain p c) m
            , T.Transport t, I.PWM o
-           ) => [p -> Uint32 -> Uint32 -> m o] -> Uint32 -> m Dimmers
-mkDimmers pwms period = do
+           ) => [p -> Uint32 -> Uint32 -> m o] -> Uint32 -> t -> m Dimmers
+mkDimmers pwms period transport = do
     mcu         <- asks D.mcu
-    transport   <- asks D.transport
     shouldInit  <- asks D.shouldInit
     os          <- mapM (\pwm -> pwm (peripherals mcu) 1_000_000 period) pwms
     let n        = length os

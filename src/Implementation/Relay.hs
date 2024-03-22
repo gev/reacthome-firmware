@@ -1,3 +1,4 @@
+{-# LANGUAGE NamedFieldPuns  #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Implementation.Relay where
@@ -20,8 +21,12 @@ data Relay = Relay
 
 
 
-relay :: Monad m => m Relays -> m Indicator -> m Relay
-relay = liftA2 Relay
+relay :: Monad m => m t -> (t -> m Relays) -> (t -> m Indicator) -> m Relay
+relay transport' relays' indicator' = do
+    transport <- transport'
+    relays    <- relays' transport
+    indicator <- indicator' transport
+    pure Relay {relays, indicator}
 
 
 

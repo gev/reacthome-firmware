@@ -38,18 +38,15 @@ data Top where
 
 
 
-top :: (MonadState Context m, MonadReader (D.Domain p t c) m, I.UART u, Input i, Pull p d, LazyTransport t)
-      => (p -> m u) -> (p -> d -> m i) -> m Top
-top uart' pin' = do
+top :: (MonadState Context m, MonadReader (D.Domain p c) m, I.UART u, Input i, Pull p d, LazyTransport t)
+      => (p -> m u) -> (p -> d -> m i) -> t -> m Top
+top uart' pin' transportUp = do
     mcu             <- asks D.mcu
-    transport       <- asks D.transport
     let peripherals' = peripherals mcu
     uart            <- uart' peripherals'
     pin             <- pin' peripherals' $ pullDown peripherals'
 
     isDetected      <- value "top_is_detected" false
-
-    transportUp     <- asks D.transport
 
     let onMessage' :: KnownNat n => Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
         onMessage' buff size = do

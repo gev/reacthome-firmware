@@ -16,8 +16,8 @@ relay12 = Formula { name       = "relay12"
                   , model      = deviceTypeRelay12Rs
                   , version    = (3, 0)
                   , shouldInit = true
-                  , transport  = rbus $ rs485 uart_0 out_pb_2
-                  , implementation = relay (relays [ out_pb_1
+                  , implementation = relay (rbus $ rs485 uart_0 out_pb_2)
+                                           (relays [ out_pb_1
                                                    , out_pa_11
                                                    , out_pa_8
                                                    , out_pb_0

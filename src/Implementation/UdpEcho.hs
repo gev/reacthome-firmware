@@ -35,9 +35,7 @@ import           Support.Lwip.Udp
 
 
 
-
-
-udpEcho :: (MonadState Context m, MonadReader (Domain p t ()) m, Enet e, LwipPort e)
+udpEcho :: (MonadState Context m, MonadReader (Domain p ()) m, Enet e, LwipPort e)
       => (p -> m e) -> m ()
 udpEcho enet = do
     mcu       <- asks D.mcu

@@ -39,13 +39,15 @@ data Hub = Hub
 
 
 
-hub :: MonadReader (D.Domain p t c) m => m [RBUS] -> m Dimmers -> (Bool ->  m DInputs) -> m DS18B20 -> m Indicator -> m Hub
-hub rbus' dimmers' dinputs' ds18b20' indicator' = do
-    rbus      <- rbus'
-    dimmers   <- dimmers'
-    dinputs   <- dinputs' True
-    ds18b20   <- ds18b20'
-    indicator <- indicator'
+hub :: MonadReader (D.Domain p c) m
+    => m t -> (t -> m [RBUS]) -> (t -> m Dimmers) -> (Bool -> t -> m DInputs) -> (t -> m DS18B20) -> (t -> m Indicator) -> m Hub
+hub transport' rbus' dimmers' dinputs' ds18b20' indicator' = do
+    transport  <- transport'
+    rbus       <- rbus' transport
+    dimmers    <- dimmers' transport
+    dinputs    <- dinputs' True transport
+    ds18b20    <- ds18b20' transport
+    indicator  <- indicator' transport
     shouldInit <- asks D.shouldInit
     pure Hub { rbus, dimmers, dinputs, ds18b20, indicator, shouldInit }
 

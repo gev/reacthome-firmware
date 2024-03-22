@@ -24,15 +24,14 @@ import           Util.String
 
 
 
-data Domain p t i where
+data Domain p i where
      Domain :: { model          :: Value Uint8
                , version        :: V.Version
                , mcu            :: I.MCU p
                , mustInit       :: IBool
                , shouldInit     :: Value IBool
-               , transport      :: t
                , implementation :: i
-               } -> Domain p t i
+               } -> Domain p i
 
 
 
@@ -41,10 +40,9 @@ domain :: (MonadState Context m)
        -> (Uint8, Uint8)
        -> I.MCU p
        -> IBool
-       -> t
        -> i
-       -> m (Domain p t i)
-domain model' version' mcu mustInit transport implementation = do
+       -> m (Domain p i)
+domain model' version' mcu mustInit implementation = do
     addModule inclCast
     addModule inclString
     addModule inclSerialize
@@ -52,4 +50,4 @@ domain model' version' mcu mustInit transport implementation = do
     model      <- value "model" model'
     version    <- V.version "version" version'
     shouldInit <- value "should_init" mustInit
-    pure Domain { model, version, mcu, mustInit, shouldInit, transport, implementation}
+    pure Domain { model, version, mcu, mustInit, shouldInit, implementation}

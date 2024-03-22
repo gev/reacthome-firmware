@@ -12,6 +12,5 @@ blink450 = Formula { name           = "blink450"
                    , model          = 0xff
                    , version        = (1, 0)
                    , shouldInit     = false
-                   , transport      = rbus uart_5
                    , implementation = blink out_pd_12
                    }

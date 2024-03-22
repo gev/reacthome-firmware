@@ -48,7 +48,7 @@ data Relays = Relays
     , clock     :: SystemClock
     }
 
-relays :: (MonadState Context m, MonadReader (D.Domain p t i) m) => String -> Int -> m Relays
+relays :: (MonadState Context m, MonadReader (D.Domain p i) m) => String -> Int -> m Relays
 relays name n = do
     mcu          <- asks D.mcu
     let clock     = systemClock mcu

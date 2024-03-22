@@ -37,12 +37,11 @@ data SCD40 = forall i. I.I2C i 2 => SCD40
     , transmit                :: forall s t. Buffer 3 Uint8 -> Ivory (ProcEffects s t) ()
     }
 
-scd40 :: (MonadState Context m, MonadReader (D.Domain p t c) m, I.I2C i 2, Transport t)
-        => (p -> m (i 2)) -> m SCD40
-scd40 i2c' = do
+scd40 :: (MonadState Context m, MonadReader (D.Domain p c) m, I.I2C i 2, Transport t)
+        => (p -> m (i 2)) -> t -> m SCD40
+scd40 i2c' transport = do
     mcu                     <- asks D.mcu
     i2c                     <- i2c' $ peripherals mcu
-    transport               <- asks D.transport
     startPeriodicMeasureCmd <- values  "start_periodic_measure_cmd" [0x21, 0xb1]
     readMeasureCmd          <- values  "read_measure_cmd"           [0xec, 0x05]
     rxBuff                  <- values_ "rx_buff"

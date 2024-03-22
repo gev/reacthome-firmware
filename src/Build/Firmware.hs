@@ -31,14 +31,12 @@ cook mcu Formula{..} = do
     incl  main
 
 
-    where (domain'         , domainContext'        ) = runState (domain model version mcu' shouldInit transport' implementation') mempty
+    where (domain'         , domainContext'        ) = runState (domain model version mcu' shouldInit implementation') mempty
           (mcu'            , mcuContext'           ) = runState mcu mempty
           (implementation' , implementationContext') = runReader (runStateT implementation mempty) domain'
-          (transport'      , transportContext'     ) = runReader (runStateT transport mempty) domain'
 
           (Context inclModule inits tasks syncs bodies) = mcuContext'
                                                        <> domainContext'
-                                                       <> transportContext'
                                                        <> implementationContext'
 
           bodyNames = nub $ fst <$> bodies

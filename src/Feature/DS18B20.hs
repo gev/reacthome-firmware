@@ -47,12 +47,11 @@ data DS18B20 = DS18B20
     }
 
 
-ds18b20 :: (MonadState Context m, MonadReader (D.Domain p t c) m, T.Transport t, OpenDrain od)
-          => (p -> m od -> m OneWire) -> (p -> m od) -> m DS18B20
-ds18b20 ow od = do
+ds18b20 :: (MonadState Context m, MonadReader (D.Domain p c) m, T.Transport t, OpenDrain od)
+          => (p -> m od -> m OneWire) -> (p -> m od) -> t -> m DS18B20
+ds18b20 ow od transport = do
     let name   = "ds18b20"
     mcu       <- asks $ peripherals . D.mcu
-    transport <- asks D.transport
     rxB       <- buffer  (name <> "_rx_buffer"      )
     txB       <- values  (name <> "_tx_buffer"      ) [0xc6, 0,0,0,0,0,0,0,0, 0,0]
     dsErrB    <- values  (name <> "_ds_error_buffer") [0xc6, 0,0,0,0,0,0,0,0]
