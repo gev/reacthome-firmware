@@ -33,35 +33,37 @@ import           Ivory.Stdlib
 
 
 
-data LEDs = forall d f t. (Display d) => LEDs
-    { display    :: d
-    , canvas     :: Canvas1D 6
-    , order      :: Values   6 (Ix 6)
-    , t          :: Value      Sint32
-    , start      :: Value      IBool
-    , findMe     :: Value      IBool
-    , findMeMsg  :: Buffer   2 Uint8
-    , shouldInit :: Value      IBool
-    , pixels     :: Records  6 RGB
-    , colors     :: Records  6 RGB
-    , colorMsg   :: Buffer   5 Uint8
-    , dinputs    :: DInputs
-    , transmit   :: forall n s t. KnownNat n => Buffer n Uint8 -> Ivory (ProcEffects s t) ()
+data LEDs n = forall d f t. (Display d) => LEDs
+    { display         :: d
+    , canvas          :: Canvas1D n
+    , leds'per'button :: Ix       n
+    , order           :: Values   n (Ix n)
+    , t               :: Value      Sint32
+    , start           :: Value      IBool
+    , findMe          :: Value      IBool
+    , findMeMsg       :: Buffer   n Uint8
+    , shouldInit      :: Value      IBool
+    , pixels          :: Records  n RGB
+    , colors          :: Records  n RGB
+    , colorMsg        :: Buffer   5 Uint8
+    , dinputs         :: DInputs
+    , transmit        :: forall l s t. KnownNat l => Buffer l Uint8 -> Ivory (ProcEffects s t) ()
     }
 
 
 
-leds :: ( MonadState Context m
-        , MonadReader (D.Domain p c) m
-        , I.Display d
-        , T.Transport t
-        ) => (p -> m d) -> DInputs -> t -> m LEDs
-leds display' dinputs transport = do
+mkLeds :: ( KnownNat n
+          , MonadState Context m
+          , MonadReader (D.Domain p c) m
+          , I.Display d
+          , T.Transport t
+          ) => (p -> m d) -> DInputs -> Ix n ->[Ix n] -> t -> m (LEDs n)
+mkLeds display' dinputs leds'per'button order' transport = do
     shouldInit <- asks D.shouldInit
     mcu        <- asks D.mcu
     display    <- display' $ peripherals mcu
     canvas     <- mkCanvas1D "leds_canvas"
-    order      <- values     "leds_order"       [0, 5, 1, 4, 2, 3]
+    order      <- values     "leds_order"       order'
     t          <- value      "leds_t"           0
     start      <- value      "leds_start"       true
     findMe     <- value      "leds_find_me"     false
@@ -74,7 +76,7 @@ leds display' dinputs transport = do
     addStruct    (Proxy :: Proxy HSV)
     addConstArea sinT
 
-    let leds = LEDs { display, canvas, order
+    let leds = LEDs { display, canvas, leds'per'button, order
                     , t, start, findMe, findMeMsg, colorMsg, shouldInit
                     , pixels, colors
                     , dinputs
@@ -90,7 +92,7 @@ leds display' dinputs transport = do
 
 
 
-update :: LEDs -> Ivory (ProcEffects s ()) ()
+update :: KnownNat n => LEDs n -> Ivory (ProcEffects s ()) ()
 update LEDs{..} = do
     start'  <- deref start
     findMe' <- deref findMe
@@ -109,13 +111,14 @@ update LEDs{..} = do
     runDInputs dinputs $ \di ->
         arrayMap $ \ix -> do
             state' <- deref $ addrOf di ! ix ~> state
-            jx <- deref $ order ! toIx ix
-            ifte_ state'
-                (run (pixels ! jx) pixel'')
-                (ifte_ start'
-                    (run (pixels ! jx) pixel')
-                    (run (pixels ! jx) $ colors ! toIx ix)
-                )
+            for leds'per'button $ \ kx -> do
+                jx <- deref $ order ! (leds'per'button * toIx ix + kx)
+                ifte_ state'
+                    (run (pixels ! jx) pixel'')
+                    (ifte_ start'
+                        (run (pixels ! jx) pixel')
+                        (run (pixels ! jx) $ colors ! toIx ix)
+                    )
     where
         run dst src = do
             store (dst ~> r) =<< deref (src ~> r)
@@ -124,15 +127,15 @@ update LEDs{..} = do
 
 
 
-render :: LEDs -> Ivory (ProcEffects s ()) ()
+render :: KnownNat n => LEDs n -> Ivory (ProcEffects s ()) ()
 render LEDs{..} =
     writePixels canvas pixels
 
 
 
-onFindMe :: KnownNat n
-         => LEDs
-         -> Buffer n Uint8
+onFindMe :: (KnownNat l, KnownNat n)
+         => LEDs n
+         -> Buffer l Uint8
          -> Uint8
          -> Ivory (ProcEffects s t) ()
 onFindMe LEDs{..} buff size =
@@ -146,7 +149,7 @@ onFindMe LEDs{..} buff size =
 
 
 
-onSetColor :: KnownNat n => LEDs -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onSetColor :: (KnownNat l, KnownNat n) => LEDs n -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onSetColor LEDs{..} buff size =
     when (size ==? 5) $ do
         i  <- deref (buff ! 1)
@@ -165,7 +168,7 @@ onSetColor LEDs{..} buff size =
 
 
 
-onInitColors :: KnownNat n => LEDs -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onInitColors :: (KnownNat l, KnownNat n) => LEDs n -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onInitColors LEDs{..} buff size =
     when (size ==? 19) $ do
          arrayMap run

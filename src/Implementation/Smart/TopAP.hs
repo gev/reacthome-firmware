@@ -5,7 +5,7 @@
 {-# LANGUAGE RankNTypes         #-}
 {-# LANGUAGE RecordWildCards    #-}
 
-module Implementation.Smart.Top where
+module Implementation.Smart.TopAP where
 
 import           Control.Monad.Reader    (MonadReader, asks)
 import           Control.Monad.State     (MonadState)
@@ -22,9 +22,10 @@ import           Feature.DInputs         as DI (DInputs (getDInputs),
                                                 forceSyncDInputs)
 import           Feature.RS485.RBUS.Data (RBUS (shouldConfirm))
 import           Feature.Sht21           (SHT21)
-import           Feature.Smart.Top.LEDs  (LEDs, onFindMe, onInitColors,
+import           Feature.Smart.Top.LEDs  (LEDs, mkLeds, onFindMe, onInitColors,
                                           onSetColor)
 import           GHC.TypeNats
+import           Interface.Display       (Display)
 import           Ivory.Language
 import           Ivory.Stdlib
 
@@ -32,7 +33,7 @@ import           Ivory.Stdlib
 
 data Top = Top
     { dinputs    :: DI.DInputs
-    , leds       :: LEDs
+    , leds       :: LEDs   6
     , sht21      :: SHT21
     , shouldInit :: Value    IBool
     , initBuff   :: Values 1 Uint8
@@ -42,13 +43,13 @@ data Top = Top
 
 
 
-top :: (MonadState Context m , MonadReader (D.Domain p c) m, Transport t)
-    => m t -> (Bool -> t -> m DI.DInputs) -> (t -> m SHT21) -> (E.DInputs -> t -> m LEDs) -> m Top
-top transport' dinputs' sht21' leds' = do
+topAP :: (MonadState Context m , MonadReader (D.Domain p c) m, Transport t, Display d)
+      => m t -> (Bool -> t -> m DI.DInputs) -> (t -> m SHT21) -> (p -> m d) -> m Top
+topAP transport' dinputs' sht21' display' = do
     transport  <- transport'
     shouldInit <- asks D.shouldInit
     dinputs    <- dinputs' False transport
-    leds       <- leds' (getDInputs dinputs) transport
+    leds       <- mkLeds display' (getDInputs dinputs) 1 [0, 5, 1, 4, 2, 3] transport
     sht21      <- sht21' transport
     initBuff   <- values "top_init_buffer" [actionInitialize]
     let top     = Top { dinputs, leds, sht21

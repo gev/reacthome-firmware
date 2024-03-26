@@ -113,7 +113,8 @@ executable reacthome-firmware
                     , Implementation.Hub
                     , Implementation.Mix
                     , Implementation.Smart.Bottom
-                    , Implementation.Smart.Top
+                    , Implementation.Smart.TopAP
+                    , Implementation.Smart.TopGD
                     , Implementation.UdpEcho
                     , Implementation.Relay
                     , Implementation.Doppler
