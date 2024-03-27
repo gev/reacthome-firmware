@@ -52,9 +52,9 @@ topGD transport' dinputs' sht21' display' = do
     shouldInit         <- asks D.shouldInit
     mcu                <- asks D.mcu
     display            <- display' $ peripherals mcu
-    dinputs            <- dinputs' False transport
-    let runFrameBuffer  = runValues "top_frame_buffer" $ replicate 18 0
-    leds               <- mkLeds runFrameBuffer (getDInputs dinputs) [0, 5, 1, 4, 2, 3] transport
+    dinputs            <- dinputs' True transport
+    let runFrameBuffer  = runValues "top_frame_buffer" $ replicate 24 0
+    leds               <- mkLeds runFrameBuffer (getDInputs dinputs) [6, 7, 0, 1, 5, 4, 3, 2] transport
     sht21              <- sht21' transport
     initBuff           <- values "top_init_buffer" [actionInitialize]
     let top             = Top { dinputs, leds, sht21
