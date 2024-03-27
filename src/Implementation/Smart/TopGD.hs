@@ -13,6 +13,7 @@ import           Core.Actions
 import           Core.Context
 import           Core.Controller
 import qualified Core.Domain             as D
+import           Core.Handler            (addHandler)
 import           Core.Task
 import           Core.Transport
 import           Data.Buffer
@@ -23,9 +24,10 @@ import           Feature.DInputs         as DI (DInputs (getDInputs),
 import           Feature.RS485.RBUS.Data (RBUS (shouldConfirm))
 import           Feature.Sht21           (SHT21)
 import           Feature.Smart.Top.LEDs  (LEDs, mkLeds, onFindMe, onInitColors,
-                                          onSetColor)
+                                          onSetColor, render, update)
 import           GHC.TypeNats
-import           Interface.Display       (Display)
+import           Interface.Display       (Display, Render (Render))
+import           Interface.MCU           (peripherals)
 import           Ivory.Language
 import           Ivory.Stdlib
 
@@ -46,16 +48,24 @@ data Top = Top
 topGD :: (MonadState Context m , MonadReader (D.Domain p c) m, Transport t, Display d)
       => m t -> (Bool -> t -> m DI.DInputs) -> (t -> m SHT21) -> (p -> m d) -> m Top
 topGD transport' dinputs' sht21' display' = do
-    transport  <- transport'
-    shouldInit <- asks D.shouldInit
-    dinputs    <- dinputs' True transport
-    leds       <- mkLeds display' (getDInputs dinputs) [6, 7, 0, 1, 5, 4, 3, 2] transport
-    sht21      <- sht21' transport
-    initBuff   <- values "top_init_buffer" [actionInitialize]
-    let top     = Top { dinputs, leds, sht21
-                      , initBuff, shouldInit
-                      , transmit = transmitBuffer transport
-                      }
+    transport          <- transport'
+    shouldInit         <- asks D.shouldInit
+    mcu                <- asks D.mcu
+    display            <- display' $ peripherals mcu
+    dinputs            <- dinputs' False transport
+    let runFrameBuffer  = runValues "top_frame_buffer" $ replicate 18 0
+    leds               <- mkLeds runFrameBuffer (getDInputs dinputs) [0, 5, 1, 4, 2, 3] transport
+    sht21              <- sht21' transport
+    initBuff           <- values "top_init_buffer" [actionInitialize]
+    let top             = Top { dinputs, leds, sht21
+                              , initBuff, shouldInit
+                              , transmit = transmitBuffer transport
+                              }
+    runFrameBuffer addArea
+
+    addHandler $ Render display 30 runFrameBuffer $ do
+        update leds
+        render leds
 
     addTask $ delay 1_000 "top_init" $ initTop top
 

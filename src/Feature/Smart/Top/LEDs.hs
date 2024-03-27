@@ -38,9 +38,8 @@ import           Ivory.Stdlib
 
 
 
-data LEDs (l :: Nat) (b :: Nat) = forall d f t. (Display d) => LEDs
-    { display         :: d
-    , canvas          :: Canvas1D l
+data LEDs (l :: Nat) (b :: Nat) = forall f t. LEDs
+    { canvas          :: Canvas1D l
     , order           :: Values   l (Ix l)
     , t               :: Value      Sint32
     , start           :: Value      IBool
@@ -59,14 +58,11 @@ data LEDs (l :: Nat) (b :: Nat) = forall d f t. (Display d) => LEDs
 mkLeds :: ( KnownNat l, KnownNat b
           , MonadState Context m
           , MonadReader (D.Domain p c) m
-          , I.Display d
           , T.Transport t
-          ) => (p -> m d) -> DInputs -> [Ix l] -> t -> m (LEDs l b)
-mkLeds display' dinputs order' transport = do
+          ) => RunValues Uint8 -> DInputs -> [Ix l] -> t -> m (LEDs l b)
+mkLeds frameBuffer dinputs order' transport = do
     shouldInit <- asks D.shouldInit
-    mcu        <- asks D.mcu
-    display    <- display' $ peripherals mcu
-    canvas     <- mkCanvas1D "leds_canvas"
+    let canvas  = mkCanvas1D frameBuffer 0
     order      <- values     "leds_order"       order'
     t          <- value      "leds_t"           0
     start      <- value      "leds_start"       true
@@ -80,17 +76,12 @@ mkLeds display' dinputs order' transport = do
     addStruct    (Proxy :: Proxy HSV)
     addConstArea sinT
 
-    let leds = LEDs { display, canvas, order
-                    , t, start, findMe, findMeMsg, colorMsg, shouldInit
-                    , pixels, colors
-                    , dinputs
-                    , transmit = T.transmitBuffer transport
-                    }
-
-    addHandler $ I.Render display 30 (runCanvas canvas)
-                                     (update leds >> render leds)
-
-    pure leds
+    pure LEDs { canvas, order
+              , t, start, findMe, findMeMsg, colorMsg, shouldInit
+              , pixels, colors
+              , dinputs
+              , transmit = T.transmitBuffer transport
+              }
 
     where black = rgb 0 0 0
 

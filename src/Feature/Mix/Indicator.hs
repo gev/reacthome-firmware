@@ -60,21 +60,24 @@ indicator :: ( MonadState Context m
              , T.Transport t
              ) => (p -> m d) -> IFloat -> ATS -> DInputs -> Relays -> t -> m Indicator
 indicator mkDisplay hue ats dinputs relays transport = do
-    mcu       <- asks D.mcu
-    display   <- mkDisplay $ peripherals mcu
-    canvas    <- mkCanvas1D "indicator_canvas"
-    t         <- value      "indicator_t"           0
-    dt        <- value      "indicator_dt"          1
-    phi       <- value      "indicator_phi"         0
-    dphi      <- value      "indicator_dphi"        1
-    start     <- value      "indicator_start"       true
-    findMe    <- value      "indicator_find_me"     false
-    findMeMsg <- values     "indicator_find_me_msg" [0xfa, 0]
-    pixels    <- records_   "indicator_pixels"
+    mcu                <- asks D.mcu
+    display            <- mkDisplay $ peripherals mcu
+    let runFrameBuffer  = runValues "top_frame_buffer" $ replicate 60 0
+    let canvas          = mkCanvas1D runFrameBuffer          0
+    t                  <- value      "indicator_t"           0
+    dt                 <- value      "indicator_dt"          1
+    phi                <- value      "indicator_phi"         0
+    dphi               <- value      "indicator_dphi"        1
+    start              <- value      "indicator_start"       true
+    findMe             <- value      "indicator_find_me"     false
+    findMeMsg          <- values     "indicator_find_me_msg" [0xfa, 0]
+    pixels             <- records_   "indicator_pixels"
 
     addStruct   (Proxy :: Proxy RGB)
     addStruct   (Proxy :: Proxy HSV)
     addConstArea sinT
+
+    runFrameBuffer addArea
 
     let indicator = Indicator { display, canvas, hue
                               , t, dt, phi, dphi
@@ -84,8 +87,9 @@ indicator mkDisplay hue ats dinputs relays transport = do
                               , transmit = T.transmitBuffer transport
                               }
 
-    addHandler $ Render display 25 (runCanvas canvas)
-                                   (update indicator >> render indicator)
+    addHandler $ Render display 25 runFrameBuffer $ do
+        update indicator
+        render indicator
 
     pure indicator
 
