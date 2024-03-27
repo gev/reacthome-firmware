@@ -33,7 +33,7 @@ import           Ivory.Stdlib
 
 data Top = Top
     { dinputs    :: DI.DInputs
-    , leds       :: LEDs   6
+    , leds       :: LEDs   6 1
     , sht21      :: SHT21
     , shouldInit :: Value    IBool
     , initBuff   :: Values 1 Uint8
@@ -49,7 +49,7 @@ topAP transport' dinputs' sht21' display' = do
     transport  <- transport'
     shouldInit <- asks D.shouldInit
     dinputs    <- dinputs' False transport
-    leds       <- mkLeds display' (getDInputs dinputs) 1 [0, 5, 1, 4, 2, 3] transport
+    leds       <- mkLeds display' (getDInputs dinputs) [0, 5, 1, 4, 2, 3] transport
     sht21      <- sht21' transport
     initBuff   <- values "top_init_buffer" [actionInitialize]
     let top     = Top { dinputs, leds, sht21

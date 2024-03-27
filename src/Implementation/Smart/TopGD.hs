@@ -33,7 +33,7 @@ import           Ivory.Stdlib
 
 data Top = Top
     { dinputs    :: DI.DInputs
-    , leds       :: LEDs   8
+    , leds       :: LEDs   8 2
     , sht21      :: SHT21
     , shouldInit :: Value    IBool
     , initBuff   :: Values 1 Uint8
@@ -48,8 +48,8 @@ topGD :: (MonadState Context m , MonadReader (D.Domain p c) m, Transport t, Disp
 topGD transport' dinputs' sht21' display' = do
     transport  <- transport'
     shouldInit <- asks D.shouldInit
-    dinputs    <- dinputs' False transport
-    leds       <- mkLeds display' (getDInputs dinputs) 2 [0, 1, 2, 3, 4, 5, 6, 7] transport
+    dinputs    <- dinputs' True transport
+    leds       <- mkLeds display' (getDInputs dinputs) [6, 7, 0, 1, 5, 4, 3, 2] transport
     sht21      <- sht21' transport
     initBuff   <- values "top_init_buffer" [actionInitialize]
     let top     = Top { dinputs, leds, sht21
