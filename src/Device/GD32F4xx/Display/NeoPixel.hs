@@ -140,6 +140,7 @@ transmitFrameBuffer NeoPixel{..} =
         disableCirculationDMA         dmaPer dmaChannel
         selectChannelSubperipheralDMA dmaPer dmaChannel dmaSubPer
         I.resetCounter                pwmTimer
+        enableInterruptDMA            dmaPer dmaChannel dma_chxctl_ftfie
         enableChannelDMA              dmaPer dmaChannel
 
 
