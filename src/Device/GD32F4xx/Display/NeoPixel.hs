@@ -4,6 +4,7 @@
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE NumericUnderscores #-}
 
 module Device.GD32F4xx.Display.NeoPixel where
 
@@ -77,7 +78,7 @@ mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer dmaIRQn selCh
                              , periph_inc          .= ival dma_periph_increase_disable
                              , priority            .= ival dma_priority_ultra_high
                              ]
-    pwmTimer     <- timer' system_core_clock pwmPeriod
+    pwmTimer     <- timer' 100_000_000 pwmPeriod
     dmaParams    <- record (symbol dmaChannel <> "_dma_param") dmaInit
     buff         <- neoPixelBuffer pwmPeriod 1
     offset       <- index "neopixel"
