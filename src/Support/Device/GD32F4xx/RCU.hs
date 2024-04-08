@@ -32,8 +32,10 @@ module Support.Device.GD32F4xx.RCU
     , rcu_enetrx
     , rcu_i2c0
     , rcu_i2c1
+    , rcu_timer_psc_mul4
 
     , enablePeriphClock
+    , configRcuTimerClockPrescaler
 
     , inclRCU
     ) where
@@ -73,6 +75,10 @@ rcu_i2c0    = RCU_PERIPH $ ext "RCU_I2C0"
 rcu_i2c1    = RCU_PERIPH $ ext "RCU_I2C1"
 
 
+newtype TIMER_PSC_MUL = TIMER_PSC_MUL Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
+rcu_timer_psc_mul4 = TIMER_PSC_MUL $ ext "RCU_TIMER_PSC_MUL4"
+
 
 enablePeriphClock :: RCU_PERIPH -> Ivory eff ()
 enablePeriphClock = call_ rcu_periph_clock_enable
@@ -80,6 +86,12 @@ enablePeriphClock = call_ rcu_periph_clock_enable
 rcu_periph_clock_enable :: Def ('[RCU_PERIPH] :-> ())
 rcu_periph_clock_enable = fun "rcu_periph_clock_enable"
 
+
+configRcuTimerClockPrescaler :: TIMER_PSC_MUL -> Ivory eff ()
+configRcuTimerClockPrescaler = call_ rcu_timer_clock_prescaler_config
+
+rcu_timer_clock_prescaler_config :: Def ('[TIMER_PSC_MUL] :-> ())
+rcu_timer_clock_prescaler_config = fun "rcu_timer_clock_prescaler_config"
 
 
 inclRCU :: ModuleDef
@@ -109,5 +121,7 @@ inclRCU = do
     inclSym rcu_enetrx
     inclSym rcu_i2c0
     inclSym rcu_i2c1
+    inclSym rcu_timer_psc_mul4
 
     incl rcu_periph_clock_enable
+    incl rcu_timer_clock_prescaler_config
