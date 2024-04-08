@@ -15,8 +15,8 @@ smartTopG4D =  Formula { name           = "smart_top_g4d"
                        , model          = deviceTypeSmartTopA6P
                        , version        = (1, 0)
                        , shouldInit     = true
-                       , transport      = rbus uart_1
-                       , implementation = top (dinputs [ in_pb_7
+                       , implementation = top (rbus uart_1)
+                                              (dinputs [ in_pb_7
                                                        , in_pb_5
                                                        , in_pb_8
                                                        , in_pb_4
