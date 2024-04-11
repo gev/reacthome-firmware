@@ -23,8 +23,9 @@ import           Feature.DInputs         as DI (DInputs (getDInputs),
                                                 forceSyncDInputs)
 import           Feature.RS485.RBUS.Data (RBUS (shouldConfirm))
 import           Feature.Sht21           (SHT21)
-import           Feature.Smart.Top.LEDs  (LEDs, mkLeds, onFindMe, onInitColors,
-                                          onSetColor, render, update)
+import           Feature.Smart.Top.LEDs  (LEDs, mkLeds, onDim, onDo, onFindMe,
+                                          onInitColors, onSetColor, render,
+                                          update)
 import           GHC.TypeNats
 import           Interface.Display       (Display, Render (Render))
 import           Interface.MCU           (peripherals)
@@ -35,7 +36,7 @@ import           Ivory.Stdlib
 
 data Top = Top
     { dinputs    :: DI.DInputs
-    , leds       :: LEDs   6 1
+    , leds       :: LEDs   6
     , sht21      :: SHT21
     , shouldInit :: Value    IBool
     , initBuff   :: Values 1 Uint8
@@ -45,7 +46,7 @@ data Top = Top
 
 
 
-topAP :: (MonadState Context m , MonadReader (D.Domain p c) m, Transport t, Display d)
+topAP :: (MonadState Context m , MonadReader (D.Domain p c) m, Transport t, LazyTransport t, Display d)
       => m t -> (Bool -> t -> m DI.DInputs) -> (t -> m SHT21) -> (p -> m d) -> m Top
 topAP transport' dinputs' sht21' display' = do
     transport          <- transport'
@@ -54,7 +55,7 @@ topAP transport' dinputs' sht21' display' = do
     display            <- display' $ peripherals mcu
     dinputs            <- dinputs' False transport
     let runFrameBuffer  = runValues "top_frame_buffer" $ replicate 18 0
-    leds               <- mkLeds runFrameBuffer (getDInputs dinputs) [0, 5, 1, 4, 2, 3] transport
+    leds               <- mkLeds runFrameBuffer [0, 5, 1, 4, 2, 3] transport
     sht21              <- sht21' transport
     initBuff           <- values "top_init_buffer" [actionInitialize]
     let top             = Top { dinputs, leds, sht21
@@ -85,7 +86,9 @@ instance Controller Top where
 
     handle Top{..} buff size = do
         action <- deref $ buff ! 0
-        cond_ [ action ==? actionRGB        ==> onSetColor       leds buff size
+        cond_ [ action ==? actionDo         ==> onDo             leds buff size
+              , action ==? actionDim        ==> onDim            leds buff size
+              , action ==? actionRGB        ==> onSetColor       leds buff size
               , action ==? actionInitialize ==> onInitColors     leds buff size
               , action ==? actionFindMe     ==> onFindMe         leds buff size
               , action ==? actionGetState   ==> forceSyncDInputs dinputs
