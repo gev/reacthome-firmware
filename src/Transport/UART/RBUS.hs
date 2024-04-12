@@ -102,7 +102,7 @@ initialize RBUS{..} = do
     store (discoveryBuff ! 7) =<< deref model
     store (discoveryBuff ! 8) =<< deref (version ~> major)
     store (discoveryBuff ! 9) =<< deref (version ~> minor)
-    configUART uart 1_000_000 WL_8b SB_1b None
+    configUART uart 115_200 WL_8b SB_1b None
 
 
 
