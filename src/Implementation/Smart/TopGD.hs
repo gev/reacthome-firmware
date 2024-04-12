@@ -7,29 +7,30 @@
 
 module Implementation.Smart.TopGD where
 
-import           Control.Monad.Reader    (MonadReader, asks)
-import           Control.Monad.State     (MonadState)
+import           Control.Monad.Reader      (MonadReader, asks)
+import           Control.Monad.State       (MonadState)
 import           Core.Actions
 import           Core.Context
 import           Core.Controller
-import qualified Core.Domain             as D
-import           Core.Handler            (addHandler)
+import qualified Core.Domain               as D
+import           Core.Handler              (addHandler)
 import           Core.Task
 import           Core.Transport
 import           Data.Buffer
 import           Data.Value
-import           Device.GD32F3x0.ADC     (ADC (buff))
-import           Endpoint.DInputs        as E (DInputs)
-import           Feature.DInputs         as DI (DInputs (getDInputs),
-                                                forceSyncDInputs)
-import           Feature.RS485.RBUS.Data (RBUS (shouldConfirm))
-import           Feature.Sht21           (SHT21)
-import           Feature.Smart.Top.LEDs  (LEDs, mkLeds, onDim, onDo, onFindMe,
-                                          onImage, onInitColors, onSetColor,
-                                          render, update)
+import           Device.GD32F3x0.ADC       (ADC (buff))
+import           Endpoint.DInputs          as E (DInputs)
+import           Feature.DInputs           as DI (DInputs (getDInputs),
+                                                  forceSyncDInputs)
+import           Feature.RS485.RBUS.Data   (RBUS (shouldConfirm))
+import           Feature.Sht21             (SHT21)
+import           Feature.Smart.Top.Buttons
+import           Feature.Smart.Top.LEDs    (LEDs, mkLeds, onDim, onDo, onImage,
+                                            onInitColors, onSetColor, render,
+                                            updateLeds)
 import           GHC.TypeNats
-import           Interface.Display       (Display, Render (Render))
-import           Interface.MCU           (peripherals)
+import           Interface.Display         (Display, Render (Render))
+import           Interface.MCU             (peripherals)
 import           Ivory.Language
 import           Ivory.Stdlib
 
@@ -37,7 +38,8 @@ import           Ivory.Stdlib
 
 data Top = Top
     { dinputs    :: DI.DInputs
-    , leds       :: LEDs  64
+    , leds       :: LEDs     64
+    , buttons    :: Buttons  64
     , sht21      :: SHT21
     , shouldInit :: Value    IBool
     , initBuff   :: Values 1 Uint8
@@ -87,16 +89,18 @@ topGD transport' dinputs' sht21' display' = do
                                                 ,     14,     19,     27,     32,     40,     46,     54
                                                 ,     13,     18, 25, 26,     31, 38, 39, 44, 45, 52, 53
                                                 ] transport
+    buttons            <- mkButtons leds (getDInputs dinputs) 2 transport
     sht21              <- sht21' transport
     initBuff           <- values "top_init_buffer" [actionInitialize]
-    let top             = Top { dinputs, leds, sht21
+    let top             = Top { dinputs, leds, buttons, sht21
                               , initBuff, shouldInit
                               , transmit = transmitBuffer transport
                               }
     runFrameBuffer addArea
 
     addHandler $ Render display 30 runFrameBuffer $ do
-        update leds
+        updateLeds leds
+        updateButtons buttons
         render leds
 
     addTask $ delay 1_000 "top_init" $ initTop top
@@ -116,11 +120,11 @@ instance Controller Top where
 
     handle Top{..} buff size = do
         action <- deref $ buff ! 0
-        cond_ [ action ==? actionDo         ==> onDo             leds buff size
-              , action ==? actionDim        ==> onDim            leds buff size
-              , action ==? actionRGB        ==> onSetColor       leds buff size
-              , action ==? actionImage      ==> onImage          leds buff size
-              , action ==? actionInitialize ==> onInitColors     leds buff size
-              , action ==? actionFindMe     ==> onFindMe         leds buff size
+        cond_ [ action ==? actionDo         ==> onDo             leds    buff size
+              , action ==? actionDim        ==> onDim            leds    buff size
+              , action ==? actionRGB        ==> onSetColor       leds    buff size
+              , action ==? actionImage      ==> onImage          leds    buff size
+              , action ==? actionInitialize ==> onInitColors     leds    buff size
+              , action ==? actionFindMe     ==> onFindMe         buttons buff size
               , action ==? actionGetState   ==> forceSyncDInputs dinputs
               ]

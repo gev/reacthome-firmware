@@ -47,9 +47,6 @@ import           Ivory.Stdlib
 data LEDs (l :: Nat) = forall f t. T.LazyTransport t => LEDs
     { canvas     :: Canvas1D l
     , order      :: Values   l (Ix l)
-    , t          :: Value      Sint32
-    , start      :: Value      IBool
-    , findMe     :: Value      IBool
     , shouldInit :: Value      IBool
     , state      :: Value      IBool
     , brightness :: Value      IFloat
@@ -71,9 +68,6 @@ mkLeds frameBuffer order' transport = do
     shouldInit <- asks D.shouldInit
     let canvas  = mkCanvas1D frameBuffer 0
     order      <- values     "leds_order"       order'
-    t          <- value      "leds_t"           0
-    start      <- value      "leds_start"       true
-    findMe     <- value      "leds_find_me"     false
     state      <- value      "leds_state"       true
     brightness <- value      "leds_brightness"  1
     pixels     <- records_   "leds_pixels"
@@ -82,10 +76,9 @@ mkLeds frameBuffer order' transport = do
 
     addStruct    (Proxy :: Proxy RGB)
     addStruct    (Proxy :: Proxy HSV)
-    addConstArea sinT
 
     pure LEDs { canvas, order
-              , t, start, findMe, shouldInit
+              , shouldInit
               , state, brightness, pixels, colors, mask
               , transport
               }
@@ -94,68 +87,23 @@ mkLeds frameBuffer order' transport = do
 
 
 
-update :: forall l b s. (KnownNat l) => LEDs l -> Ivory (ProcEffects s ()) ()
-update LEDs{..} = do
-    start'  <- deref start
-    findMe' <- deref findMe
-    pixel'  <- local . istruct $ rgb 0 0 0
-    pixel'' <- local . istruct $ rgb 1 1 1
-    when start'
-        (do
-            t' <- deref t
-            v  <- deref $ addrOf sinT ! toIx t'
-            pixel <- local . istruct $ hsv v v v
-            hsv'to'rgb pixel pixel'
-            when (t' ==? 120 .&& iNot findMe')
-                 (store start false)
-            store t $ t' + 1
-        )
-
+updateLeds :: forall l b s. (KnownNat l) => LEDs l -> Ivory (ProcEffects s ()) ()
+updateLeds LEDs{..} = do
     brightness' <- deref brightness
-
     arrayMap $ \sx -> do
         dx <- deref $ order ! sx
-        ifte_ start'
-            (run brightness' (pixels ! dx) pixel')
-            (do
-                state' <- deref state
-                mask'  <- deref $ mask ! sx
-                ifte_ (state' .&& mask')
-                      (run brightness' (pixels ! dx) $ colors ! toIx sx)
-                      (forM_ [r, g, b] $ \c ->
-                            store (pixels ! dx ~> c) 0
-                     )
-                )
-
-
-
-    where
-        run l dst src =
-          forM_ [r, g, b] $ \c ->
-            store (dst ~> c) . (* l) =<< deref (src ~> c)
+        state' <- deref state
+        mask'  <- deref $ mask ! sx
+        forM_ [r, g, b] $ \c ->
+            ifte_ (state' .&& mask')
+                  (store (pixels ! dx ~> c) . (* brightness') =<< deref (colors ! toIx sx ~> c))
+                  (store (pixels ! dx ~> c) 0)
 
 
 
 render :: KnownNat l => LEDs l -> Ivory (ProcEffects s ()) ()
 render LEDs{..} =
     writePixels canvas pixels
-
-
-
-onFindMe :: (KnownNat n, KnownNat l)
-         => LEDs l
-         -> Buffer n Uint8
-         -> Uint8
-         -> Ivory (ProcEffects s t) ()
-onFindMe LEDs{..} buff size =
-    when (size ==? 2) $ do
-        v <- unpack buff 1
-        store findMe v
-        store t 0
-        store start true
-        T.lazyTransmit transport 2 $ \transmit -> do
-            transmit actionFindMe
-            transmit $ safeCast v
 
 
 
@@ -228,6 +176,7 @@ onSetColor LEDs{..} buff size = do
                     zipWithM_ setColor [r, g, b] [2, 3, 4]
 
 
+
 onImage :: forall n l s t. (KnownNat n, KnownNat l)
         => LEDs l
         -> Buffer n Uint8
@@ -269,9 +218,3 @@ onInitColors LEDs{..} buff size = do
         go  ix color offset = do
             value <- deref (buff ! toIx (fromIx ix * 3 + offset))
             store (colors ! ix ~> color) $ safeCast value / 255
-
-
-
-sinT :: ConstMemArea (Array 120 (Stored IFloat))
-sinT = constArea "sinT" $ iarray $ ival . ifloat . f . fromInteger <$> [0..119]
-    where f i = sin (pi * i / 120)
