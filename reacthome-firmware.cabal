@@ -82,6 +82,7 @@ executable reacthome-firmware
                     , Feature.Smart.Top
                     , Feature.Smart.Top.Buttons
                     , Feature.Smart.Top.LEDs
+                    , Feature.Smart.Top.Vibro
                     , Feature.Sht21
                     , Feature.Scd40
                     , Feature.Dopplers
