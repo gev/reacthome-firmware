@@ -1,19 +1,28 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GADTs            #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE DataKinds           #-}
+{-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE GADTs               #-}
+{-# LANGUAGE KindSignatures      #-}
+{-# LANGUAGE NamedFieldPuns      #-}
+{-# LANGUAGE RankNTypes          #-}
+{-# LANGUAGE RecordWildCards     #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use for_" #-}
+
+
 
 module Feature.Smart.Top.LEDs where
 
 
-import           Control.Monad.Reader  (MonadReader, asks)
+import           Control.Exception     (mask)
+import           Control.Monad.Reader  (MonadReader, asks, forM_, zipWithM_)
 import           Control.Monad.State   (MonadState)
 import           Core.Actions
 import           Core.Context
 import           Core.Domain           as D
+import           Core.FSM              (transit)
 import           Core.Handler
+import           Core.Transport        (LazyTransport (lazyTransmit))
 import qualified Core.Transport        as T
 import           Data.Buffer
 import           Data.Color
@@ -21,163 +30,191 @@ import           Data.Display.Canvas1D
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
+import           Endpoint.Dimmers      (brightness)
 import           Endpoint.DInputs      as DI
-import           Feature.Scd40         (SCD40 (txBuff))
+import           Feature.Scd40         (SCD40 (transmit, txBuff))
 import           GHC.TypeNats
 import           Interface.Display     (Display)
 import qualified Interface.Display     as I
 import           Interface.MCU
 import           Interface.SystemClock (getSystemTime)
 import           Ivory.Language
+import           Ivory.Language.Proxy
 import           Ivory.Stdlib
 
 
 
-data LEDs = forall d f t. (Display d) => LEDs
-    { display    :: d
-    , canvas     :: Canvas1D 6
-    , order      :: Values   6 (Ix 6)
-    , t          :: Value      Sint32
-    , start      :: Value      IBool
-    , findMe     :: Value      IBool
-    , findMeMsg  :: Buffer   2 Uint8
+data LEDs (l :: Nat) = forall f t. T.LazyTransport t => LEDs
+    { canvas     :: Canvas1D l
+    , order      :: Values   l (Ix l)
     , shouldInit :: Value      IBool
-    , pixels     :: Records  6 RGB
-    , colors     :: Records  6 RGB
-    , colorMsg   :: Buffer   5 Uint8
-    , dinputs    :: DInputs
-    , transmit   :: forall n s t. KnownNat n => Buffer n Uint8 -> Ivory (ProcEffects s t) ()
+    , state      :: Value      IBool
+    , brightness :: Value      IFloat
+    , pixels     :: Records  l RGB
+    , colors     :: Records  l RGB
+    , mask       :: Values   l IBool
+    , transport  :: t
     }
 
 
 
-leds :: ( MonadState Context m
-        , MonadReader (D.Domain p c) m
-        , I.Display d
-        , T.Transport t
-        ) => (p -> m d) -> DInputs -> t -> m LEDs
-leds display' dinputs transport = do
+mkLeds :: forall l p c t m. ( KnownNat l
+          , MonadState Context m
+          , MonadReader (D.Domain p c) m
+          , T.LazyTransport t
+          ) => RunValues Uint8 -> [Ix l] -> t -> m (LEDs l)
+mkLeds frameBuffer order' transport = do
+    let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
     shouldInit <- asks D.shouldInit
-    mcu        <- asks D.mcu
-    display    <- display' $ peripherals mcu
-    canvas     <- mkCanvas1D "leds_canvas"
-    order      <- values     "leds_order"       [0, 5, 1, 4, 2, 3]
-    t          <- value      "leds_t"           0
-    start      <- value      "leds_start"       true
-    findMe     <- value      "leds_find_me"     false
-    findMeMsg  <- values     "leds_find_me_msg" [actionFindMe, 0]
-    colorMsg   <- values     "leds_tx_msg"      [actionRGB]
+    let canvas  = mkCanvas1D frameBuffer 0
+    order      <- values     "leds_order"       order'
+    state      <- value      "leds_state"       true
+    brightness <- value      "leds_brightness"  1
     pixels     <- records_   "leds_pixels"
-    colors     <- records    "leds_colors"      [black, black, black, black, black, black]
+    colors     <- records    "leds_colors"      $ replicate l' black
+    mask       <- values     "leds_mask"        $ replicate l' true
 
     addStruct    (Proxy :: Proxy RGB)
     addStruct    (Proxy :: Proxy HSV)
-    addConstArea sinT
 
-    let leds = LEDs { display, canvas, order
-                    , t, start, findMe, findMeMsg, colorMsg, shouldInit
-                    , pixels, colors
-                    , dinputs
-                    , transmit = T.transmitBuffer transport
-                    }
-
-    addHandler $ I.Render display 30 (runCanvas canvas)
-                                     (update leds >> render leds)
-
-    pure leds
+    pure LEDs { canvas, order
+              , shouldInit
+              , state, brightness, pixels, colors, mask
+              , transport
+              }
 
     where black = rgb 0 0 0
 
 
 
-update :: LEDs -> Ivory (ProcEffects s ()) ()
-update LEDs{..} = do
-    start'  <- deref start
-    findMe' <- deref findMe
-    pixel'  <- local . istruct $ rgb 0 0 0
-    pixel'' <- local . istruct $ rgb 1 1 1
-    when start'
-        (do
-            t' <- deref t
-            v  <- deref $ addrOf sinT ! toIx t'
-            pixel <- local . istruct $ hsv v v v
-            hsv'to'rgb pixel pixel'
-            when (t' ==? 120 .&& iNot findMe')
-                 (store start false)
-            store t $ t' + 1
-        )
-    runDInputs dinputs $ \di ->
-        arrayMap $ \ix -> do
-            state' <- deref $ addrOf di ! ix ~> state
-            jx <- deref $ order ! toIx ix
-            ifte_ state'
-                (run (pixels ! jx) pixel'')
-                (ifte_ start'
-                    (run (pixels ! jx) pixel')
-                    (run (pixels ! jx) $ colors ! toIx ix)
-                )
-    where
-        run dst src = do
-            store (dst ~> r) =<< deref (src ~> r)
-            store (dst ~> g) =<< deref (src ~> g)
-            store (dst ~> b) =<< deref (src ~> b)
+updateLeds :: forall l b s. (KnownNat l) => LEDs l -> Ivory (ProcEffects s ()) ()
+updateLeds LEDs{..} = do
+    brightness' <- deref brightness
+    arrayMap $ \sx -> do
+        dx <- deref $ order ! sx
+        state' <- deref state
+        mask'  <- deref $ mask ! sx
+        forM_ [r, g, b] $ \c ->
+            ifte_ (state' .&& mask')
+                  (store (pixels ! dx ~> c) . (* brightness') =<< deref (colors ! toIx sx ~> c))
+                  (store (pixels ! dx ~> c) 0)
 
 
 
-render :: LEDs -> Ivory (ProcEffects s ()) ()
+render :: KnownNat l => LEDs l -> Ivory (ProcEffects s ()) ()
 render LEDs{..} =
     writePixels canvas pixels
 
 
 
-onFindMe :: KnownNat n
-         => LEDs
-         -> Buffer n Uint8
-         -> Uint8
-         -> Ivory (ProcEffects s t) ()
-onFindMe LEDs{..} buff size =
+onDo :: forall n l s t. (KnownNat n, KnownNat l)
+      => LEDs l
+      -> Buffer n Uint8
+      -> Uint8
+      -> Ivory (ProcEffects s t) ()
+onDo LEDs{..} buff size =
+    when (size ==? 2) $
+        lazyTransmit transport 2 $ \transmit -> do
+            v <- deref $ buff ! 1
+            store state $ v ==? 1
+            transmit actionDo
+            transmit v
+
+
+
+onDim :: KnownNat n
+      => LEDs l
+      -> Buffer n Uint8
+      -> Uint8
+      -> Ivory (ProcEffects s t) ()
+onDim LEDs{..} buff size =
     when (size ==? 2) $ do
-        v <- unpack buff 1
-        pack findMeMsg 1 v
-        store findMe v
-        store t 0
-        store start true
-        transmit findMeMsg
+        brightness' <- deref $ buff ! 1
+        ifte_ (brightness' ==? 0)
+              (do
+                    store state false
+                    lazyTransmit transport 2 $ \transmit -> do
+                        transmit actionDo
+                        transmit 0
+                    store brightness $ 1 / 255
+                    lazyTransmit transport 2 $ \transmit -> do
+                        transmit actionDim
+                        transmit 1
+              )
+              (do
+                    store brightness $ safeCast brightness' / 255
+                    lazyTransmit transport 2 $ \transmit -> do
+                        transmit actionDim
+                        transmit brightness'
+              )
 
 
 
-onSetColor :: KnownNat n => LEDs -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
-onSetColor LEDs{..} buff size =
-    when (size ==? 5) $ do
+onSetColor :: forall n l s t. (KnownNat n, KnownNat l)
+           => LEDs l -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onSetColor LEDs{..} buff size = do
+    let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
+    when ((size - 2) .% 3 ==? 0) $ do
         i  <- deref (buff ! 1)
-        when (i >=? 1 .&& i <=? 6) $ do
-            let ix = toIx $ i - 1
-            store (colorMsg ! 1) i
-            run ix 2 r
-            run ix 3 g
-            run ix 4 b
-            transmit colorMsg
-    where
-        run ix jx color = do
-            value <- deref $ buff ! toIx jx
-            store (colorMsg ! jx) value
-            store (colors ! ix ~> color) $ safeCast value / 255
+        when (i >=? 1 .&& i <=? l') $ do
+            let i' = i - 1
+            let r' = l' - i'
+            let s = (size - 2) `iDiv` 3
+            n <- local . ival $ s
+            when (r' <? s) $ store n r'
+            n' <- deref n
+            T.lazyTransmit transport (3 * n' + 2) $ \transmit -> do
+                transmit actionRGB
+                transmit i
+                for (toIx n') $ \ix -> do
+                    let setColor color offset = do
+                            let sx = toIx $ 3 * ix
+                            value <- deref $ buff ! (sx + offset)
+                            let dx = toIx i' + ix
+                            store (colors ! dx ~> color) $ safeCast value / 255
+                            transmit value
+                    zipWithM_ setColor [r, g, b] [2, 3, 4]
 
 
 
-onInitColors :: KnownNat n => LEDs -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
-onInitColors LEDs{..} buff size =
-    when (size ==? 19) $ do
-         arrayMap run
-         store shouldInit false
+onImage :: forall n l s t. (KnownNat n, KnownNat l)
+        => LEDs l
+        -> Buffer n Uint8
+        -> Uint8
+        -> Ivory (ProcEffects s t) ()
+onImage LEDs{..} buff size = do
+    let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
+    let s' = l' `iDiv` 8
+    n <- local $ ival s'
+    let r' = l' .% 8
+    when (r' >? 0) $ store n (s' + 1)
+    n' <- deref n
+    when ((size - 1) ==? n') $ do
+        v <- local $ ival 0
+        T.lazyTransmit transport (n' + 1) $ \transmit -> do
+            transmit actionImage
+            arrayMap $ \dx -> do
+                let d = fromIx dx
+                let sx = toIx $ d `iDiv` 8
+                when (d .% 8 ==? 0) $ do
+                    store v =<< deref (buff ! sx)
+                    transmit =<< deref v
+                v' <- deref v
+                let mask' = v' .& 1 ==? 1
+                store (mask ! dx) mask'
+                store v $ v' `iShiftR` 1
+
+
+
+onInitColors :: forall n l s t. (KnownNat n, KnownNat l)
+             => LEDs l -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onInitColors LEDs{..} buff size = do
+    let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
+    when (size ==? l' * 3 + 1) $ do
+        arrayMap run
+        store shouldInit false
     where
         run ix = go ix r 1 >> go ix g 2 >> go ix b 3
         go  ix color offset = do
             value <- deref (buff ! toIx (fromIx ix * 3 + offset))
             store (colors ! ix ~> color) $ safeCast value / 255
-
-
-
-sinT :: ConstMemArea (Array 120 (Stored IFloat))
-sinT = constArea "sinT" $ iarray $ ival . ifloat . f . fromInteger <$> [0..119]
-    where f i = sin (pi * i / 120)

@@ -80,6 +80,7 @@ executable reacthome-firmware
                     , Feature.RS485.RBUS.Rx
                     , Feature.RS485.RBUS.Tx
                     , Feature.Smart.Top
+                    , Feature.Smart.Top.Buttons
                     , Feature.Smart.Top.LEDs
                     , Feature.Sht21
                     , Feature.Scd40
@@ -113,7 +114,8 @@ executable reacthome-firmware
                     , Implementation.Hub
                     , Implementation.Mix
                     , Implementation.Smart.Bottom
-                    , Implementation.Smart.Top
+                    , Implementation.Smart.TopAP
+                    , Implementation.Smart.TopGD
                     , Implementation.UdpEcho
                     , Implementation.Relay
                     , Implementation.Doppler
