@@ -5,6 +5,7 @@ import           Core.Models
 import           Device.GD32F3x0
 import           Feature.DInputs            (dinputs)
 import           Feature.Sht21              (sht21)
+import           Feature.Smart.Top.Vibro    (vibro)
 import           Implementation.Smart.TopGD (topGD)
 import           Ivory.Language
 import           Transport.UART.RBUS        (rbus)
@@ -21,7 +22,7 @@ smartTopG4D =  Formula { name           = "smart_top_g4d"
                                                          , in_pb_4
                                                          ]
                                                 )
+                                                (vibro out_pa_1)
                                                 (sht21 i2c_0)
                                                 npx_pwm_1
                        }
-                                                -- vibro out_pa_1

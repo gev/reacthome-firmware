@@ -28,6 +28,7 @@ import           Feature.Smart.Top.Buttons
 import           Feature.Smart.Top.LEDs    (LEDs, mkLeds, onDim, onDo, onImage,
                                             onInitColors, onSetColor, render,
                                             updateLeds)
+import           Feature.Smart.Top.Vibro   (Vibro, onVibro, vibro)
 import           GHC.TypeNats
 import           Interface.Display         (Display, Render (Render))
 import           Interface.MCU             (peripherals)
@@ -40,6 +41,7 @@ data Top = Top
     { dinputs    :: DI.DInputs
     , leds       :: LEDs     64
     , buttons    :: Buttons  64
+    , vibro      :: Vibro
     , sht21      :: SHT21
     , shouldInit :: Value    IBool
     , initBuff   :: Values 1 Uint8
@@ -62,14 +64,15 @@ data Top = Top
 -}
 
 topGD :: (MonadState Context m , MonadReader (D.Domain p c) m, Transport t, LazyTransport t, Display d)
-      => m t -> (Bool -> t -> m DI.DInputs) -> (t -> m SHT21) -> (p -> m d) -> m Top
-topGD transport' dinputs' sht21' display' = do
+      => m t -> (Bool -> t -> m DI.DInputs) -> (E.DInputs -> t -> m Vibro) -> (t -> m SHT21) -> (p -> m d) -> m Top
+topGD transport' dinputs' vibro' sht21' display' = do
     transport          <- transport'
     shouldInit         <- asks D.shouldInit
     mcu                <- asks D.mcu
     display            <- display' $ peripherals mcu
     dinputs            <- dinputs' True transport
     let runFrameBuffer  = runValues "top_frame_buffer" $ replicate 204 0
+    vibro              <- vibro' (getDInputs dinputs) transport
     leds               <- mkLeds runFrameBuffer [  6,  7,      0,  1
                                                 ,  5,  4,      3,  2
 
@@ -92,7 +95,7 @@ topGD transport' dinputs' sht21' display' = do
     buttons            <- mkButtons leds (getDInputs dinputs) 2 transport
     sht21              <- sht21' transport
     initBuff           <- values "top_init_buffer" [actionInitialize]
-    let top             = Top { dinputs, leds, buttons, sht21
+    let top             = Top { dinputs, leds, vibro, buttons, sht21
                               , initBuff, shouldInit
                               , transmit = transmitBuffer transport
                               }
@@ -124,6 +127,7 @@ instance Controller Top where
               , action ==? actionDim        ==> onDim            leds    buff size
               , action ==? actionRGB        ==> onSetColor       leds    buff size
               , action ==? actionImage      ==> onImage          leds    buff size
+              , action ==? actionVibro      ==> onVibro          vibro   buff size
               , action ==? actionInitialize ==> onInitColors     leds    buff size
               , action ==? actionFindMe     ==> onFindMe         buttons buff size
               , action ==? actionGetState   ==> forceSyncDInputs dinputs

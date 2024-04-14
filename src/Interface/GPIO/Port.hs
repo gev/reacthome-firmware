@@ -1,11 +1,10 @@
-{-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FunctionalDependencies #-}
 module Interface.GPIO.Port where
 
--- data Pull = PullUp 
---           | PullDown 
+-- data Pull = PullUp
+--           | PullDown
 --           | PullNone
-          
+
 
 class Pull p d | p -> d where
   pullUp   :: p -> d
