@@ -24,3 +24,4 @@ smartTopG4D =  Formula { name           = "smart_top_g4d"
                                                 (sht21 i2c_0)
                                                 npx_pwm_1
                        }
+                                                -- vibro out_pa_1
