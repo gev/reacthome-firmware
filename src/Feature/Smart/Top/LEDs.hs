@@ -168,9 +168,9 @@ onSetColor LEDs{..} buff size = do
                 transmit i
                 for (toIx n') $ \ix -> do
                     let setColor color offset = do
-                            let sx = toIx $ 3 * ix
-                            value <- deref $ buff ! (sx + offset)
-                            let dx = toIx i' + ix
+                            let sx = toIx (3 * fromIx ix + offset)
+                            value <- deref $ buff ! sx
+                            let dx =  toIx i' + ix
                             store (colors ! dx ~> color) $ safeCast value / 255
                             transmit value
                     zipWithM_ setColor [r, g, b] [2, 3, 4]
