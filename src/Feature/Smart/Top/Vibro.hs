@@ -114,3 +114,11 @@ onVibro v@Vibro{..} buffer size =
         lazyTransmit transport 2 $ \transmit -> do
             transmit actionVibro
             transmit volume'
+
+
+
+onInitVibro :: (KnownNat n) => Vibro -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onInitVibro v@Vibro{..} buffer size = do
+    when (size >=? 2) $
+        store volume =<< deref (buffer ! 1)
+    startVibrate v
