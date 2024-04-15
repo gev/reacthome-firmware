@@ -28,7 +28,7 @@ import           Feature.Smart.Top.Buttons
 import           Feature.Smart.Top.LEDs    (LEDs, mkLeds, onDim, onDo, onImage,
                                             onInitColors, onSetColor, render,
                                             updateLeds)
-import           Feature.Smart.Top.Vibro   (Vibro, onVibro, vibro)
+import           Feature.Smart.Top.Vibro   (Vibro, onInitVibro, onVibro, vibro)
 import           GHC.TypeNats
 import           Interface.Display         (Display, Render (Render))
 import           Interface.MCU             (peripherals)
@@ -119,16 +119,23 @@ initTop Top{..} = do
 
 
 
+onInit :: KnownNat n => Top -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onInit Top{..} buff size = do
+    onInitColors leds  buff size
+    onInitVibro  vibro buff size
+
+
+
 instance Controller Top where
 
-    handle Top{..} buff size = do
+    handle t@Top{..} buff size = do
         action <- deref $ buff ! 0
         cond_ [ action ==? actionDo         ==> onDo             leds    buff size
               , action ==? actionDim        ==> onDim            leds    buff size
               , action ==? actionRGB        ==> onSetColor       leds    buff size
               , action ==? actionImage      ==> onImage          leds    buff size
               , action ==? actionVibro      ==> onVibro          vibro   buff size
-              , action ==? actionInitialize ==> onInitColors     leds    buff size
+              , action ==? actionInitialize ==> onInit           t       buff size
               , action ==? actionFindMe     ==> onFindMe         buttons buff size
               , action ==? actionGetState   ==> forceSyncDInputs dinputs
               ]
