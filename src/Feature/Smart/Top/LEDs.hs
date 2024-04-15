@@ -195,8 +195,8 @@ onImage LEDs{..} buff size = do
             transmit actionImage
             arrayMap $ \dx -> do
                 let d = fromIx dx
-                let sx = toIx $ d `iDiv` 8
                 when (d .% 8 ==? 0) $ do
+                    let sx = toIx $ 1 + d `iDiv` 8
                     store v =<< deref (buff ! sx)
                     transmit =<< deref v
                 v' <- deref v
@@ -210,11 +210,28 @@ onInitColors :: forall n l s t. (KnownNat n, KnownNat l)
              => LEDs l -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onInitColors LEDs{..} buff size = do
     let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
-    when (size ==? l' * 3 + 1) $ do
+    let s' = l' `iDiv` 8
+    n <- local $ ival s'
+    let r' = l' .% 8
+    when (r' >? 0) $ store n (s' + 1)
+    n' <- deref n
+    when (size ==? l' * 3 + n' + 4) $ do
+        store state . (==? 1) =<< deref (buff ! 2)
+        store brightness . (/ 255) . safeCast =<< deref (buff ! 3)
+        v <- local $ ival 0
+        arrayMap $ \dx -> do
+            let d = fromIx dx
+            when (d .% 8 ==? 0) $ do
+                let sx = toIx $ 4 + (d `iDiv` 8)
+                store v =<< deref (buff ! sx)
+            v' <- deref v
+            let mask' = v' .& 1 ==? 1
+            store (mask ! dx) mask'
+            store v $ v' `iShiftR` 1
         arrayMap run
         store shouldInit false
     where
-        run ix = go ix r 1 >> go ix g 2 >> go ix b 3
+        run ix = go ix r 12 >> go ix g 13 >> go ix b 14
         go  ix color offset = do
             value <- deref (buff ! toIx (fromIx ix * 3 + offset))
             store (colors ! ix ~> color) $ safeCast value / 255
