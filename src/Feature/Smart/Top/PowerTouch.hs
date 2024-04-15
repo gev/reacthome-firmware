@@ -20,12 +20,11 @@ powerTouch :: (MonadState Context m, MonadReader (D.Domain p c) m, Output o, Pul
            => (p -> d -> m o) -> m PowerTouch
 powerTouch output' = do
     mcu             <- asks D.mcu
-    let clock        = systemClock mcu
     let peripherals' = peripherals mcu
     output          <- output' peripherals' $ pullNone peripherals'
 
     addInit "power_touch_off" $ reset output
 
-    addTask $ delay 3_000 "power_touch_on" $ set output
+    addTask $ delay 5_000 "power_touch_on" $ set output
 
     pure PowerTouch
