@@ -25,8 +25,8 @@ import           Feature.DInputs              as DI (DInputs (getDInputs),
 import           Feature.RS485.RBUS.Data      (RBUS (shouldConfirm))
 import           Feature.Sht21                (SHT21)
 import           Feature.Smart.Top.Buttons
-import           Feature.Smart.Top.LEDs       (LEDs, mkLeds, onDim, onDo,
-                                               onImage, onInitColors,
+import           Feature.Smart.Top.LEDs       (LEDs, mkLeds, onBlink, onDim,
+                                               onDo, onImage, onInitColors,
                                                onSetColor, render, updateLeds)
 import           Feature.Smart.Top.PowerTouch (PowerTouch)
 import           Feature.Smart.Top.Vibro      (Vibro, onInitVibro, onVibro,
@@ -145,6 +145,7 @@ instance Controller Top where
               , action ==? actionDim        ==> onDim            leds    buff size
               , action ==? actionRGB        ==> onSetColor       leds    buff size
               , action ==? actionImage      ==> onImage          leds    buff size
+              , action ==? actionBlink      ==> onBlink          leds    buff size
               , action ==? actionVibro      ==> onVibro          vibro   buff size
               , action ==? actionInitialize ==> onInit           t       buff size
               , action ==? actionFindMe     ==> onFindMe         buttons buff size

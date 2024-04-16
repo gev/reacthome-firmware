@@ -40,6 +40,7 @@ actionDim                     = 0xD0 :: Uint8
 
 actionRGB                     = 0xE0 :: Uint8
 actionImage                   = 0xE1 :: Uint8
+actionBlink                   = 0xE2 :: Uint8
 
 actionDiscovery               = 0xF0 :: Uint8
 actionReady                   = 0xF1 :: Uint8
