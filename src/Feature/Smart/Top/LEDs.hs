@@ -278,7 +278,7 @@ onInitColors LEDs{..} buff size = do
         arrayMap run
         store shouldInit false
     where
-        run ix = go ix r 12 >> go ix g 13 >> go ix b 14
+        run ix = go ix r 20 >> go ix g 21 >> go ix b 22
         go  ix color offset = do
             value <- deref (buff ! toIx (fromIx ix * 3 + offset))
             store (colors ! ix ~> color) $ safeCast value / 255
