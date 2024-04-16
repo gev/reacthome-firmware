@@ -132,9 +132,10 @@ initTop Top{..} = do
 
 onInit :: KnownNat n => Top -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onInit Top{..} buff size = do
-    onInitColors leds  buff size
-    onInitVibro  vibro buff size
-
+    colors <- onInitColors leds  buff size
+    vibro  <- onInitVibro  vibro buff size
+    when (colors .&& vibro) $
+        store shouldInit false
 
 
 instance Controller Top where

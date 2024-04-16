@@ -48,7 +48,6 @@ import           Ivory.Stdlib
 data LEDs (l :: Nat) = forall f t. T.LazyTransport t => LEDs
     { canvas     :: Canvas1D l
     , order      :: Values   l (Ix l)
-    , shouldInit :: Value      IBool
     , state      :: Value      IBool
     , brightness :: Value      IFloat
     , pixels     :: Records  l RGB
@@ -68,7 +67,6 @@ mkLeds :: forall l p c t m. ( KnownNat l
           ) => RunValues Uint8 -> [Ix l] -> t -> m (LEDs l)
 mkLeds frameBuffer order' transport = do
     let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
-    shouldInit <- asks D.shouldInit
     let canvas  = mkCanvas1D frameBuffer 0
     order      <- values     "leds_order"       order'
     state      <- value      "leds_state"       true
@@ -86,7 +84,6 @@ mkLeds frameBuffer order' transport = do
     addTask $ delay 500 "blink" (store blinkPhase . iNot =<< deref blinkPhase)
 
     pure LEDs { canvas, order
-              , shouldInit
               , state, brightness, pixels, colors, image, blink, blinkPhase
               , transport
               }
@@ -245,7 +242,7 @@ onBlink LEDs{..} buff size = do
 
 
 onInitColors :: forall n l s t. (KnownNat n, KnownNat l)
-             => LEDs l -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+             => LEDs l -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) IBool
 onInitColors LEDs{..} buff size = do
     let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
     let s' = l' `iDiv` 8
@@ -253,32 +250,36 @@ onInitColors LEDs{..} buff size = do
     let r' = l' .% 8
     when (r' >? 0) $ store n (s' + 1)
     n' <- deref n
-    when (size ==? l' * 3 + 2 * n' + 4) $ do
-        store state . (==? 1) =<< deref (buff ! 2)
-        store brightness . (/ 255) . safeCast =<< deref (buff ! 3)
-        v <- local $ ival 0
-        arrayMap $ \dx -> do
-            let d = fromIx dx
-            when (d .% 8 ==? 0) $ do
-                let sx = toIx $ 4 + (d `iDiv` 8)
-                store v =<< deref (buff ! sx)
-            v' <- deref v
-            let image' = v' .& 1 ==? 1
-            store (image ! dx) image'
-            store v $ v' `iShiftR` 1
-        arrayMap $ \dx -> do
-            let d = fromIx dx
-            when (d .% 8 ==? 0) $ do
-                let sx = toIx $ 4 + safeCast n' + (d `iDiv` 8)
-                store v =<< deref (buff ! sx)
-            v' <- deref v
-            let blink' = v' .& 1 ==? 1
-            store (blink ! dx) blink'
-            store v $ v' `iShiftR` 1
-        arrayMap run
-        store shouldInit false
-    where
-        run ix = go ix r 20 >> go ix g 21 >> go ix b 22
-        go  ix color offset = do
-            value <- deref (buff ! toIx (fromIx ix * 3 + offset))
-            store (colors ! ix ~> color) $ safeCast value / 255
+    ifte (size ==? l' * 3 + 2 * n' + 4)
+        (do
+            store state . (==? 1) =<< deref (buff ! 2)
+            store brightness . (/ 255) . safeCast =<< deref (buff ! 3)
+            v <- local $ ival 0
+            arrayMap $ \dx -> do
+                let d = fromIx dx
+                when (d .% 8 ==? 0) $ do
+                    let sx = toIx $ 4 + (d `iDiv` 8)
+                    store v =<< deref (buff ! sx)
+                v' <- deref v
+                let image' = v' .& 1 ==? 1
+                store (image ! dx) image'
+                store v $ v' `iShiftR` 1
+            arrayMap $ \dx -> do
+                let d = fromIx dx
+                when (d .% 8 ==? 0) $ do
+                    let sx = toIx $ 4 + safeCast n' + (d `iDiv` 8)
+                    store v =<< deref (buff ! sx)
+                v' <- deref v
+                let blink' = v' .& 1 ==? 1
+                store (blink ! dx) blink'
+                store v $ v' `iShiftR` 1
+            arrayMap run
+            pure true
+        )
+        (  pure false
+        )
+        where
+            run ix = go ix r 20 >> go ix g 21 >> go ix b 22
+            go  ix color offset = do
+                value <- deref (buff ! toIx (fromIx ix * 3 + offset))
+                store (colors ! ix ~> color) $ safeCast value / 255
