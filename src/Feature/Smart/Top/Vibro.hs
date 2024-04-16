@@ -121,4 +121,3 @@ onInitVibro :: (KnownNat n) => Vibro -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEf
 onInitVibro v@Vibro{..} buffer size = do
     when (size >=? 2) $
         store volume =<< deref (buffer ! 1)
-    startVibrate v
