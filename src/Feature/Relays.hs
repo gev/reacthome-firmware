@@ -14,9 +14,7 @@ import           Control.Monad.Reader  (MonadReader, asks)
 import           Control.Monad.State   (MonadState)
 import           Core.Actions
 import           Core.Context
-import           Core.Controller
 import qualified Core.Domain           as D
-import           Core.Feature
 import           Core.Task
 import qualified Core.Transport        as T
 import           Data.Buffer
@@ -28,18 +26,19 @@ import           Data.Value
 import qualified Endpoint.Groups       as G
 import           Endpoint.Relays       (delayOn)
 import qualified Endpoint.Relays       as R
+import           Feature.RS485.RBUS    (initialize)
 import           GHC.TypeNats
 import           Interface.GPIO.Output
+import           Interface.GPIO.Port
 import           Interface.MCU         (MCU, peripherals, systemClock)
 import           Interface.SystemClock (SystemClock, getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
-import Interface.GPIO.Port
 
 
 
 data Relays = forall o. Output o => Relays
-    { n           :: Uint8
+    { n           :: Int
     , getRelays   :: R.Relays
     , getGroups   :: G.Groups
     , getOutputs  :: [o]
@@ -52,11 +51,10 @@ data Relays = forall o. Output o => Relays
 
 
 
-mkRelays :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Output o, Pull p d)
-         => [p -> d -> m o] -> m Relays
-mkRelays outs = do
+relays :: (MonadState Context m, MonadReader (D.Domain p  c) m, T.Transport t, Output o, Pull p d)
+       => [p -> d -> m o] -> t -> m Relays
+relays outs transport = do
     mcu        <- asks D.mcu
-    transport  <- asks D.transport
     shouldInit <- asks D.shouldInit
     let peripherals' = peripherals mcu
     os         <- mapM (($ pullNone peripherals') . ($ peripherals')) outs
@@ -65,29 +63,23 @@ mkRelays outs = do
     getGroups  <- G.groups "groups" n
     current    <- index "current_relay"
     let clock   = systemClock mcu
-    pure Relays { n = fromIntegral n
-                , getRelays
-                , getGroups
-                , getOutputs = os
-                , shouldInit
-                , clock
-                , current
-                , transmit = T.transmitBuffer transport
-                }
 
-
-
-relays :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Output o, Pull p d)
-       => [p -> d -> m o] -> m Feature
-relays outs = do
-    relays <- mkRelays outs
+    let relays  = Relays { n
+                         , getRelays
+                         , getGroups
+                         , getOutputs = os
+                         , shouldInit
+                         , clock
+                         , current
+                         , transmit = T.transmitBuffer transport
+                         }
 
     addTask $ yeld "relays_manage" $ manageRelays relays
     addTask $ yeld "relays_sync"   $ syncRelays   relays
 
     addSync "relays" $ forceSyncRelays relays
 
-    pure $ Feature relays
+    pure relays
 
 
 
@@ -180,7 +172,7 @@ syncRelays' Relays{..} i =
         let r = addrOf rs ! toIx i
         synced <- deref $ r ~> R.synced
         when (iNot synced) $ do
-            msg <- R.message getRelays (i .% n)
+            msg <- R.message getRelays (i .% fromIntegral n)
             transmit msg
             store (r ~> R.synced) true
 
@@ -192,25 +184,9 @@ syncGroups' Relays{..} i =
         let g = addrOf gs ! toIx i
         synced <- deref $ g ~> G.synced
         when (iNot synced) $ do
-            msg <- G.message getGroups (i .% n)
+            msg <- G.message getGroups (i .% fromIntegral n)
             transmit msg
             store (g ~> G.synced) true
-
-
-
-instance Controller Relays where
-    handle rs buff size = do
-        shouldInit' <- deref $ shouldInit rs
-        pure [ size >=? 3 ==> do
-                action <- deref $ buff ! 0
-                cond_ [ iNot       shouldInit'      ==> cond_
-                      [ action ==? actionDo         ==> onDo       rs buff size
-                      , action ==? actionGroup      ==> onGroup    rs buff size
-                      , action ==? actionGetState   ==> onGetState rs
-                      ]
-                      , action ==? actionInitialize ==> onInit     rs buff size
-                      ]
-             ]
 
 
 
@@ -219,18 +195,20 @@ onDo :: KnownNat n
      -> Buffer n Uint8
      -> Uint8
      -> Ivory (ProcEffects s t) ()
-onDo relays@Relays{..} buff size = do
-    index <- deref $ buff ! 1
-    when (size >=? 3 .&& index >=? 1 .&& index <=? n) $ do
-        action <- deref $ buff ! 2
-        cond_ [ action ==? 0 ==> R.turnOffRelay getRelays (toIx index)
-              , action ==? 1 ==> do
-                    cond_ [ size >=? 7 ==> R.turnOnRelay' getRelays getGroups (toIx index) =<< unpackLE buff 3
-                          , true       ==> R.turnOnRelay  getRelays getGroups (toIx index)
-                          ]
-              , action ==? 2 .&& size >=? 7 ==> R.setRelayDelayOff getRelays index =<< unpackLE buff 3
-              , action ==? 3 ==> R.setRelayGroup getRelays index =<< unpack buff 3
-              ]
+onDo relays@Relays{..} buff size =
+    when (size >=? 3) $ do
+        index <- deref $ buff ! 1
+        initialized <- iNot <$> deref shouldInit
+        when (initialized .&& index >=? 1 .&& index <=? fromIntegral n) $ do
+            action <- deref $ buff ! 2
+            cond_ [ action ==? 0 ==> R.turnOffRelay getRelays (toIx index)
+                  , action ==? 1 ==> do
+                        cond_ [ size >=? 7 ==> R.turnOnRelay' getRelays getGroups (toIx index) =<< unpackLE buff 3
+                              , true       ==> R.turnOnRelay  getRelays getGroups (toIx index)
+                              ]
+                  , action ==? 2 .&& size >=? 7 ==> R.setRelayDelayOff getRelays index =<< unpackLE buff 3
+                  , action ==? 3 ==> R.setRelayGroup getRelays index =<< unpack buff 3
+                  ]
 
 
 
@@ -241,8 +219,9 @@ onGroup :: KnownNat n
         -> Ivory eff ()
 onGroup Relays{..} buff size =
     when (size >=? 7) $ do
-        index <- unpack buff 1
-        when (index >=? 1 .&& index <=? n) $
+        index <- deref $ buff ! 1
+        initialized <- iNot <$> deref shouldInit
+        when (initialized .&& index >=? 1 .&& index <=? fromIntegral n) $
             G.runGroups getGroups $ \gs -> do
                 let g = addrOf gs ! toIx (index - 1)
                 store (g ~> G.enabled) =<< unpack   buff 2
@@ -260,7 +239,7 @@ onInit :: KnownNat n
         -> Uint8
         -> Ivory (ProcEffects s t) ()
 onInit rs@Relays{..} buff size =
-    when (size >=? 1 + 5 * n + 6 * n) $ do
+    when (size >=? 1 + 5 * fromIntegral n + 6 * fromIntegral n) $ do
         offset <- local $ ival 1
         initGroups rs buff offset
         initRelays rs buff offset
@@ -306,4 +285,7 @@ initRelays Relays{..} buff offset = do
 
 
 
-onGetState = forceSyncRelays
+onGetState :: Relays -> Ivory eff ()
+onGetState rs@Relays{..} = do
+    initialized <- iNot <$> deref shouldInit
+    when initialized $ forceSyncRelays rs

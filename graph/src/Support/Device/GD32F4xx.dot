@@ -15,21 +15,36 @@ color="#0000000F";
 style="filled";
 u0[label="GPIO",style="filled",fillcolor="#ffbbbb",penwidth="0"];
 u1[label="SYSCFG",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u2[label="RCU",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u3[label="EXTI",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u4[label="System",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u5[label="Misc",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u6[label="IRQ",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u7[label="DMA",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u8[label="USART",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u9[label="Timer",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u10[label="DBG",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u3[label="RCU",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u4[label="ENET",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u5[label="EXTI",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u6[label="System",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u7[label="Misc",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u8[label="IRQ",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u9[label="DMA",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u10[label="USART",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u11[label="I2C",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u12[label="Timer",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u13[label="DBG",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+subgraph cluster_3 {
+label="LwipPort";
+color="#0000000F";
+style="filled";
+subgraph cluster_4 {
+label="Basic";
+color="#0000000F";
+style="filled";
+u2[label="Ethernetif",style="filled",fillcolor="#ffbbff",penwidth="0"];
 
 }
 
 }
 
 }
-u5 -> u6;
+
+}
+
+}
+u7 -> u8;
 
 }

@@ -13,9 +13,7 @@ import           Control.Monad         (zipWithM_)
 import           Control.Monad.Reader  (MonadReader, asks)
 import           Control.Monad.State   (MonadState)
 import           Core.Context
-import           Core.Controller
 import qualified Core.Domain           as D
-import           Core.Feature
 import           Core.Task
 import qualified Core.Transport        as T
 import           Data.Buffer
@@ -26,16 +24,17 @@ import           Data.Value
 import qualified Endpoint.DInputs      as DI
 import           GHC.TypeNats
 import           Interface.GPIO.Input
+import           Interface.GPIO.Port
 import           Interface.MCU         (MCU, peripherals, systemClock)
 import           Interface.SystemClock (SystemClock, getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
-import Interface.GPIO.Port
 
 
 
 data DInputs = forall i. Input i => DInputs
-    { n          :: Uint8
+    { n          :: Int
+    , zero       :: IBool
     , getDInputs :: DI.DInputs
     , getInputs  :: [i]
     , current    :: Index Uint8
@@ -46,38 +45,33 @@ data DInputs = forall i. Input i => DInputs
 
 
 
-mkDInputs :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Input i, Pull p d)
-          => [p -> d -> m i]  -> m DInputs
-mkDInputs inputs = do
+dinputs :: (MonadState Context m, MonadReader (D.Domain p c) m, T.Transport t, Input i, Pull p d)
+          => [p -> d -> m i] -> Bool -> t -> m DInputs
+dinputs inputs zero' transport = do
     mcu        <- asks D.mcu
     let clock   = systemClock mcu
-    transport  <- asks D.transport
     let peripherals' = peripherals mcu
-    is         <- mapM (($ pullNone peripherals') . ($ peripherals')) inputs
+    let pull    = if zero' then pullUp else pullDown
+    is         <- mapM (($ pull peripherals') . ($ peripherals')) inputs
     let n       = length is
     getDInputs <- DI.dinputs "dinputs" n
     current    <- index "current_dinput"
-    pure DInputs { n = fromIntegral n
-                 , getDInputs
-                 , getInputs = is
-                 , current
-                 , clock
-                 , transmit = T.transmitBuffer transport
-                 }
 
-
-
-dinputs :: (MonadState Context m, MonadReader (D.Domain p t) m, T.Transport t, Input i, Pull p d)
-        => [p -> d -> m i] -> m Feature
-dinputs inputs = do
-    dinputs <- mkDInputs inputs
+    let dinputs = DInputs { n
+                          , zero = if zero' then true else false
+                          , getDInputs
+                          , getInputs = is
+                          , current
+                          , clock
+                          , transmit = T.transmitBuffer transport
+                          }
 
     addTask  $ delay 10 "dinputs_manage" $ manageDInputs dinputs
     addTask  $ yeld     "dinputs_sync"   $ syncDInputs   dinputs
 
     addSync "dinputs" $ forceSyncDInputs dinputs
 
-    pure $ Feature dinputs
+    pure dinputs
 
 
 
@@ -94,20 +88,21 @@ manageDInputs DInputs{..} = zipWithM_ zip getInputs [0..]
         zip input i = DI.runDInputs getDInputs $ \dis -> do
             let ix = fromIntegral i
             let di = addrOf dis ! ix
-            manageDInput di input =<< getSystemTime clock
+            manageDInput zero di input =<< getSystemTime clock
 
 
 
 manageDInput :: Input i
-             => Record DI.DInputStruct
+             => IBool
+             -> Record DI.DInputStruct
              -> i
              -> Uint32
              -> Ivory eff ()
-manageDInput di input t  = do
-    value <- iNot <$> get input
-    state <- deref $ di ~> DI.state
-    when (value /=? state) $ do
-        store (di ~> DI.state    ) value
+manageDInput zero di input t  = do
+    state0 <- deref $ di ~> DI.state
+    state1 <- (/=? zero) <$> get input
+    when (state1 /=? state0) $ do
+        store (di ~> DI.state    ) state1
         store (di ~> DI.timestamp) t
         store (di ~> DI.synced   ) false
 
@@ -127,10 +122,6 @@ syncDInput DInputs{..} i =
         let di = addrOf dis ! toIx i
         synced <- deref $ di ~> DI.synced
         when (iNot synced) $ do
-            msg <- DI.message getDInputs (i .% n)
+            msg <- DI.message getDInputs (i .% fromIntegral n)
             transmit msg
             store (di ~> DI.synced) true
-
-
-
-instance Controller DInputs

@@ -1,4 +1,5 @@
-{-# LANGUAGE GADTs #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs            #-}
 
 module Core.Formula where
 
@@ -6,22 +7,15 @@ import           Control.Monad.Reader
 import           Control.Monad.State
 import           Core.Context
 import           Core.Domain
-import           Core.Feature
-import           Core.Transport
-import           Interface.MCU
 import           Ivory.Language
 import           Ivory.Language.Module
 
 
 
-{-
-    TODO: abstract Formula to the type class
--}
 data Formula p where
-    Formula :: { name       ::  String
-               , model      ::  Uint8
-               , version    :: (Uint8,  Uint8)
-               , shouldInit ::  IBool
-               , transport  ::  StateT Context (Reader (Domain p t)) t
-               , features   :: [StateT Context (Reader (Domain p t)) Feature]
+    Formula :: { name           ::  String
+               , model          ::  Uint8
+               , version        :: (Uint8, Uint8)
+               , shouldInit     ::  IBool
+               , implementation ::  StateT Context (Reader (Domain p i)) i
                } -> Formula p

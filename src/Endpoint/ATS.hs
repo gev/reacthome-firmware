@@ -57,10 +57,9 @@ data ATS = ATS
     }
 
 
-mkATS :: (MonadState Context m, MonadReader (Domain p t) m, T.Transport t) => m ATS
-mkATS = do
+mkATS :: (MonadState Context m, MonadReader (Domain p i) m, T.Transport t) => t -> m ATS
+mkATS transport = do
     mcu             <- asks D.mcu
-    transport       <- asks D.transport
     let clock        = systemClock mcu
     mode            <- value  "ats_mode"             modeNone
     error           <- values "ats_error"            [errorNone, errorNone, errorNone, errorNone]

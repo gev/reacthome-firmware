@@ -14,9 +14,7 @@ import           Control.Monad.Reader                (MonadReader, asks)
 import           Control.Monad.State                 (MonadState)
 import           Core.Actions
 import           Core.Context
-import           Core.Controller
 import qualified Core.Domain                         as D
-import           Core.Feature
 import           Core.Handler
 import           Core.Task
 import           Core.Transport                      as T
@@ -25,7 +23,6 @@ import           Data.Buffer
 import           Data.Concurrent.Queue               as Q
 import           Data.Serialize
 import           Data.Value
-import           Feature.Dimmer.AC                   (DimmerAC (shouldInit))
 import           Feature.RS485.RBUS.Data
 import           Feature.RS485.RBUS.Rx
 import           Feature.RS485.RBUS.Tx
@@ -41,23 +38,18 @@ import           Protocol.RS485.RBUS.Master.Rx
 
 
 
-mkRBUS :: (MonadState Context m, MonadReader (D.Domain p t) m, LazyTransport t, Transport t)
-     => [m I.RS485] -> m [RBUS]
-mkRBUS rs485 = zipWithM rbus' rs485 [1..]
+rbus :: (MonadState Context m, MonadReader (D.Domain p c) m, LazyTransport t, Transport t)
+     => [m I.RS485] -> t -> m [RBUS]
+rbus rs485 transport = zipWithM (rbus' transport) rs485 [1..]
 
 
-rbus :: (MonadState Context m, MonadReader (D.Domain p t) m, LazyTransport t, Transport t)
-     => [m I.RS485] -> m Feature
-rbus rs485 = Feature <$> mkRBUS rs485
 
-
-rbus' :: (MonadState Context m, MonadReader (D.Domain p t) m, LazyTransport t, Transport t)
-     => m I.RS485 -> Int -> m RBUS
-rbus' rs485 index = do
+rbus' :: (MonadState Context m, MonadReader (D.Domain p c) m, LazyTransport t, Transport t)
+     => t -> m I.RS485 -> Int -> m RBUS
+rbus' transport rs485 index = do
     rs               <- rs485
 
     mcu              <- asks D.mcu
-    transport        <- asks D.transport
     shouldInit       <- asks D.shouldInit
 
     let name          = "feature_rs485_rbus_" <> show index
@@ -325,21 +317,6 @@ onGetState = mapM_ run
         run r@RBUS{..} = do
             shouldInit' <- deref shouldInit
             when (iNot shouldInit') $ forceSyncRBUS r
-
-
-
-
-instance Controller [RBUS] where
-    handle list buff size =
-        pure [ size >? 1 ==> do
-                action <- deref $ buff ! 0
-                cond_ [ action ==? actionRs485Mode     ==> setMode       list buff size
-                      , action ==? actionRbusTransmit  ==> transmitRBUS  list buff size
-                      , action ==? actionRs485Transmit ==> transmitRB485 list buff size
-                      , action ==? actionInitialize    ==> initialize    list buff size
-                      , action ==? actionGetState      ==> onGetState    list
-                      ]
-             ]
 
 
 {-

@@ -13,19 +13,20 @@ subgraph cluster_2 {
 label="GD32F3x0";
 color="#0000000F";
 style="filled";
-u24[label="GD32F3x0",style="filled,bold",fillcolor="#bbbbff"];
-u12[label="GPIO",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u13[label="SYSCFG",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u14[label="RCU",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u15[label="EXTI",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u16[label="System",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u17[label="Misc",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u18[label="IRQ",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u19[label="FMC",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u20[label="DMA",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u21[label="USART",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u22[label="Timer",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u23[label="DBG",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u28[label="GD32F3x0",style="filled,bold",fillcolor="#bbbbff"];
+u15[label="GPIO",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u16[label="SYSCFG",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u17[label="RCU",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u18[label="EXTI",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u19[label="System",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u20[label="Misc",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u21[label="IRQ",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u22[label="FMC",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u23[label="DMA",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u24[label="USART",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u25[label="I2C",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u26[label="Timer",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u27[label="DBG",style="filled",fillcolor="#ffbbbb",penwidth="0"];
 
 }
 subgraph cluster_3 {
@@ -35,15 +36,30 @@ style="filled";
 u0[label="GD32F4xx",style="filled,bold",fillcolor="#bbbbff"];
 u1[label="GPIO",style="filled",fillcolor="#bbffff",penwidth="0"];
 u2[label="SYSCFG",style="filled",fillcolor="#bbffff",penwidth="0"];
-u3[label="RCU",style="filled",fillcolor="#bbffff",penwidth="0"];
-u4[label="EXTI",style="filled",fillcolor="#bbffff",penwidth="0"];
-u5[label="System",style="filled",fillcolor="#bbffff",penwidth="0"];
-u6[label="Misc",style="filled",fillcolor="#bbffff",penwidth="0"];
-u7[label="IRQ",style="filled",fillcolor="#bbffff",penwidth="0"];
-u8[label="DMA",style="filled",fillcolor="#bbffff",penwidth="0"];
-u9[label="USART",style="filled",fillcolor="#bbffff",penwidth="0"];
-u10[label="Timer",style="filled",fillcolor="#bbffff",penwidth="0"];
-u11[label="DBG",style="filled",fillcolor="#bbffff",penwidth="0"];
+u4[label="RCU",style="filled",fillcolor="#bbffff",penwidth="0"];
+u5[label="ENET",style="filled",fillcolor="#bbffff",penwidth="0"];
+u6[label="EXTI",style="filled",fillcolor="#bbffff",penwidth="0"];
+u7[label="System",style="filled",fillcolor="#bbffff",penwidth="0"];
+u8[label="Misc",style="filled",fillcolor="#bbffff",penwidth="0"];
+u9[label="IRQ",style="filled",fillcolor="#bbffff",penwidth="0"];
+u10[label="DMA",style="filled",fillcolor="#bbffff",penwidth="0"];
+u11[label="USART",style="filled",fillcolor="#bbffff",penwidth="0"];
+u12[label="I2C",style="filled",fillcolor="#bbffff",penwidth="0"];
+u13[label="Timer",style="filled",fillcolor="#bbffff",penwidth="0"];
+u14[label="DBG",style="filled",fillcolor="#bbffff",penwidth="0"];
+subgraph cluster_4 {
+label="LwipPort";
+color="#0000000F";
+style="filled";
+subgraph cluster_5 {
+label="Basic";
+color="#0000000F";
+style="filled";
+u3[label="Ethernetif",style="filled",fillcolor="#77ff77",penwidth="0"];
+
+}
+
+}
 
 }
 
@@ -52,27 +68,29 @@ u11[label="DBG",style="filled",fillcolor="#bbffff",penwidth="0"];
 }
 u0 -> u1;
 u0 -> u2;
-u0 -> u3;
 u0 -> u4;
+u0 -> u5;
 u0 -> u6;
-u0 -> u7;
 u0 -> u8;
 u0 -> u9;
 u0 -> u10;
 u0 -> u11;
-u6 -> u7;
-u17 -> u18;
-u24 -> u12;
-u24 -> u13;
-u24 -> u14;
-u24 -> u15;
-u24 -> u16;
-u24 -> u17;
-u24 -> u18;
-u24 -> u19;
-u24 -> u20;
-u24 -> u21;
-u24 -> u22;
-u24 -> u23;
+u0 -> u13;
+u0 -> u14;
+u8 -> u9;
+u20 -> u21;
+u28 -> u15;
+u28 -> u16;
+u28 -> u17;
+u28 -> u18;
+u28 -> u19;
+u28 -> u20;
+u28 -> u21;
+u28 -> u22;
+u28 -> u23;
+u28 -> u24;
+u28 -> u25;
+u28 -> u26;
+u28 -> u27;
 
 }

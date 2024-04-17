@@ -24,6 +24,7 @@ module Support.Device.GD32F3x0.IRQ
     , i2c1_ev_irqn
     , i2c1_er_irqn
 
+    , makeIRQHandlerName
     , makeIRQHandler
 
     , inclIRQ
@@ -59,10 +60,14 @@ i2c1_er_irqn        = IRQn $ ext "I2C1_ER_IRQn"
 
 
 
+makeIRQHandlerName :: IRQn -> String
+makeIRQHandlerName t = (init . symbol) t <> "Handler"
+
+
 makeIRQHandler :: IRQn
                -> (forall s. Ivory (ProcEffects s ()) ())
                -> ModuleDef
-makeIRQHandler t b = incl $ proc ((init . symbol) t <> "Handler") $ body b
+makeIRQHandler t b = incl $ proc (makeIRQHandlerName t) $ body b
 
 
 
@@ -82,7 +87,7 @@ inclIRQ = do
     inclSym exti0_1_irqn
     inclSym exti2_3_irqn
     inclSym exti4_15_irqn
-    inclSym i2c0_ev_irqn 
-    inclSym i2c0_er_irqn 
-    inclSym i2c1_ev_irqn 
-    inclSym i2c1_er_irqn 
+    inclSym i2c0_ev_irqn
+    inclSym i2c0_er_irqn
+    inclSym i2c1_ev_irqn
+    inclSym i2c1_er_irqn

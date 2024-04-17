@@ -21,8 +21,11 @@ module Support.Device.GD32F3x0.RCU
     , rcu_cfgcmp
     , rcu_i2c0
     , rcu_i2c1
+    , rcu_adc
+    , rcu_adcck_apb2_div2
 
     , enablePeriphClock
+    , configClockADC
 
     , inclRCU
     ) where
@@ -48,6 +51,13 @@ rcu_usart1  = RCU_PERIPH $ ext "RCU_USART1"
 rcu_cfgcmp  = RCU_PERIPH $ ext "RCU_CFGCMP"
 rcu_i2c0    = RCU_PERIPH $ ext "RCU_I2C0"
 rcu_i2c1    = RCU_PERIPH $ ext "RCU_I2C1"
+rcu_adc     = RCU_PERIPH $ ext "RCU_ADC"
+
+
+newtype RCU_CLOCK_ADC = RCU_CLOCK_ADC Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
+
+rcu_adcck_apb2_div2 = RCU_CLOCK_ADC $ ext "RCU_ADCCK_APB2_DIV2"
 
 
 
@@ -56,6 +66,13 @@ enablePeriphClock = call_ rcu_periph_clock_enable
 
 rcu_periph_clock_enable :: Def ('[RCU_PERIPH] :-> ())
 rcu_periph_clock_enable = fun "rcu_periph_clock_enable"
+
+
+configClockADC :: RCU_CLOCK_ADC -> Ivory eff ()
+configClockADC = call_ rcu_adc_clock_config
+
+rcu_adc_clock_config :: Def ('[RCU_CLOCK_ADC] :-> ())
+rcu_adc_clock_config = fun "rcu_adc_clock_config"
 
 
 
@@ -74,5 +91,9 @@ inclRCU = do
     inclSym rcu_cfgcmp
     inclSym rcu_i2c0
     inclSym rcu_i2c1
+    inclSym rcu_adc
+
+    inclSym rcu_adcck_apb2_div2
 
     incl rcu_periph_clock_enable
+    incl rcu_adc_clock_config

@@ -3,17 +3,29 @@ packages: *.cabal
 source-repository-package
     type:     git
     location: https://github.com/gev/ivory.git
-    tag:      f589cff438427340ff8b76ee8b291028980e41ea
+    tag:      b5b9902f3ce561644cb2ab1c5082c2c2fe31040b
     subdir:   ivory
 
 source-repository-package
     type:     git
     location: https://github.com/gev/ivory.git
-    tag:      f589cff438427340ff8b76ee8b291028980e41ea
+    tag:      b5b9902f3ce561644cb2ab1c5082c2c2fe31040b
     subdir:   ivory-backend-c
 
 source-repository-package
     type:     git
     location: https://github.com/gev/ivory.git
-    tag:      f589cff438427340ff8b76ee8b291028980e41ea
+    tag:      b5b9902f3ce561644cb2ab1c5082c2c2fe31040b
     subdir:   ivory-stdlib
+
+source-repository-package
+    type:     git
+    location: https://github.com/gev/ivory.git
+    tag:      b5b9902f3ce561644cb2ab1c5082c2c2fe31040b
+    subdir:   ivory-opts
+
+source-repository-package
+    type:     git
+    location: https://github.com/gev/ivory.git
+    tag:      b5b9902f3ce561644cb2ab1c5082c2c2fe31040b
+    subdir:   ivory-artifact

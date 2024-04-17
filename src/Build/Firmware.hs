@@ -12,6 +12,7 @@ import           Core.Context
 import           Core.Domain
 import           Core.Formula
 import           Core.Scheduler
+import           Data.List
 import           Interface.MCU
 import           Ivory.Compile.C.CmdlineFrontend
 import           Ivory.Language
@@ -22,24 +23,28 @@ import           Ivory.Language.Module
 cook :: State Context (MCU p) -> Formula p -> ModuleDef
 cook mcu Formula{..} = do
 
+
     inclModule
+    mapM_ incl multiBodyFunctions
     incl  init
     incl  loop
     incl  main
 
-    where (domain'   , domainContext'   ) = runState (domain model version mcu' shouldInit transport' features') mempty
-          (mcu'      , mcuContext'      ) = runState mcu mempty
-          (features' , featuresContexts') = unzip $ run <$> features
-          (transport', transportContext') = runReader (runStateT transport featuresContext') domain'
 
-          featuresContext' = mconcat featuresContexts'
+    where (domain'         , domainContext'        ) = runState (domain model version mcu' shouldInit implementation') mempty
+          (mcu'            , mcuContext'           ) = runState mcu mempty
+          (implementation' , implementationContext') = runReader (runStateT implementation mempty) domain'
 
-          run f = runReader (runStateT f mempty) domain'
+          (Context inclModule inits tasks syncs bodies) = mcuContext'
+                                                       <> domainContext'
+                                                       <> implementationContext'
 
-          (Context inclModule inits tasks syncs) = mcuContext'
-                                                <> domainContext'
-                                                <> transportContext'
-                                                <> featuresContext'
+          bodyNames = nub $ fst <$> bodies
+
+          multiBodyFunctions = mkMultiBodyFunction <$> bodyNames
+
+          mkMultiBodyFunction :: String -> Def ('[] :-> ())
+          mkMultiBodyFunction name = proc name $ body $ mapM_ snd $ filter (\(id, _) -> id == name) bodies
 
           loop = mkLoop (systemClock mcu') tasks
 

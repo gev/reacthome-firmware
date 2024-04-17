@@ -29,7 +29,6 @@ executable reacthome-firmware
                     , Core.Context
                     , Core.Domain
                     , Core.Dispatcher
-                    , Core.Feature                    
                     , Core.Formula
                     , Core.FSM
                     , Core.Handler
@@ -56,9 +55,7 @@ executable reacthome-firmware
                     , Data.Matrix
                     , Data.Color
                     , Data.Display.Canvas1D
-                    , Data.Display.FrameBuffer
-                    , Data.Display.FrameBuffer.NeoPixel.PWM
-                    , Data.Display.FrameBuffer.NeoPixel.SPI
+                    , Data.Display.FrameBuffer.NeoPixel
                     , Data.Serialize
                     , Data.Concurrent.Semaphore
                     , Data.Concurrent.Queue
@@ -70,24 +67,26 @@ executable reacthome-firmware
                     , Endpoint.Dimmers
                     , Endpoint.Relays
 
-                    , Feature.Blink
-                    , Feature.Echo
                     , Feature.DInputs
-                    , Feature.Dimmer.AC
-                    , Feature.Dimmer.DC
+                    , Feature.Dimmers
+                    , Feature.Dimmers.AC
+                    , Feature.Dimmers.DC
                     , Feature.DS18B20
                     , Feature.Indicator
-                    , Feature.Mix
                     , Feature.Mix.Indicator
                     , Feature.Relays
                     , Feature.RS485.RBUS
                     , Feature.RS485.RBUS.Data
                     , Feature.RS485.RBUS.Rx
                     , Feature.RS485.RBUS.Tx
-                    , Feature.Server
                     , Feature.Smart.Top
-                    , Feature.UdpEcho
+                    , Feature.Smart.Top.Buttons
+                    , Feature.Smart.Top.LEDs
+                    , Feature.Smart.Top.PowerTouch
+                    , Feature.Smart.Top.Vibro
                     , Feature.Sht21
+                    , Feature.Scd40
+                    , Feature.Dopplers
 
                     , Formula.Blink330
                     , Formula.Blink450
@@ -101,8 +100,27 @@ executable reacthome-firmware
                     , Formula.UdpEcho450
                     , Formula.RsHub4
                     , Formula.Sht21
+                    , Formula.Scd40
                     , Formula.Smart.Top.TopA6P
+                    , Formula.Smart.Top.TopG4D
                     , Formula.Smart.Bottom.Bottom1
+                    , Formula.Smart.Bottom.Bottom2
+                    , Formula.Doppler1
+                    , Formula.Doppler5
+
+                    , Implementation.Blink
+                    , Implementation.DI
+                    , Implementation.Dimmer
+                    , Implementation.Dummy
+                    , Implementation.Echo
+                    , Implementation.Hub
+                    , Implementation.Mix
+                    , Implementation.Smart.Bottom
+                    , Implementation.Smart.TopAP
+                    , Implementation.Smart.TopGD
+                    , Implementation.UdpEcho
+                    , Implementation.Relay
+                    , Implementation.Doppler
 
                     , Interface.Counter
                     , Interface.GPIO.Input
@@ -123,9 +141,10 @@ executable reacthome-firmware
                     , Interface.ENET
                     , Interface.LwipPort
                     , Interface.I2C
+                    , Interface.ADC
 
                     , Protocol.OneWire.Master
-                                        , Protocol.RS485.RBUS
+                    , Protocol.RS485.RBUS
                     , Protocol.RS485.RBUS.Master
                     , Protocol.RS485.RBUS.Master.MacTable
                     , Protocol.RS485.RBUS.Master.Rx
@@ -167,6 +186,7 @@ executable reacthome-firmware
                     , Device.GD32F3x0.UART
                     , Device.GD32F3x0.Flash
                     , Device.GD32F3x0.I2C
+                    , Device.GD32F3x0.ADC
                     
                     , Device.GD32F4xx
                     , Device.GD32F4xx.Display.NeoPixel
@@ -208,6 +228,7 @@ executable reacthome-firmware
                     , Support.Device.GD32F3x0.System
                     , Support.Device.GD32F3x0.FMC
                     , Support.Device.GD32F3x0.I2C
+                    , Support.Device.GD32F3x0.ADC
 
                     , Support.Device.GD32F4xx
                     , Support.Device.GD32F4xx.DBG
@@ -242,7 +263,7 @@ executable reacthome-firmware
                     , Util.CRC16
                     , Util.String
 
-    build-depends:    base ^>=4.16.4.0
+    build-depends:    base >=4.16 && <5.0
                     , mtl  
                     , ivory
                     , ivory-backend-c

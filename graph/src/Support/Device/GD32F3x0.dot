@@ -23,8 +23,9 @@ u6[label="IRQ",style="filled",fillcolor="#ffbbbb",penwidth="0"];
 u7[label="FMC",style="filled",fillcolor="#ffbbbb",penwidth="0"];
 u8[label="DMA",style="filled",fillcolor="#ffbbbb",penwidth="0"];
 u9[label="USART",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u10[label="Timer",style="filled",fillcolor="#ffbbbb",penwidth="0"];
-u11[label="DBG",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u10[label="I2C",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u11[label="Timer",style="filled",fillcolor="#ffbbbb",penwidth="0"];
+u12[label="DBG",style="filled",fillcolor="#ffbbbb",penwidth="0"];
 
 }
 

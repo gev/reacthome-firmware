@@ -8,7 +8,6 @@ module Core.Domain where
 
 import           Control.Monad.State
 import           Core.Context
-import           Core.Feature
 import           Core.Transport
 import qualified Core.Version          as V
 import           Data.Buffer
@@ -25,15 +24,14 @@ import           Util.String
 
 
 
-data Domain p t where
-     Domain :: { model      :: Value Uint8
-               , version    :: V.Version
-               , mcu        :: I.MCU p
-               , mustInit   :: IBool
-               , shouldInit :: Value IBool
-               , transport  :: t
-               , features   :: [Feature]
-               } -> Domain p t
+data Domain p i where
+     Domain :: { model          :: Value Uint8
+               , version        :: V.Version
+               , mcu            :: I.MCU p
+               , mustInit       :: IBool
+               , shouldInit     :: Value IBool
+               , implementation :: i
+               } -> Domain p i
 
 
 
@@ -42,10 +40,9 @@ domain :: (MonadState Context m)
        -> (Uint8, Uint8)
        -> I.MCU p
        -> IBool
-       -> t
-       -> [Feature]
-       -> m (Domain p t)
-domain model' version' mcu mustInit transport features = do
+       -> i
+       -> m (Domain p i)
+domain model' version' mcu mustInit implementation = do
     addModule inclCast
     addModule inclString
     addModule inclSerialize
@@ -53,4 +50,4 @@ domain model' version' mcu mustInit transport features = do
     model      <- value "model" model'
     version    <- V.version "version" version'
     shouldInit <- value "should_init" mustInit
-    pure Domain { model, version, mcu, mustInit, shouldInit, transport, features}
+    pure Domain { model, version, mcu, mustInit, shouldInit, implementation}

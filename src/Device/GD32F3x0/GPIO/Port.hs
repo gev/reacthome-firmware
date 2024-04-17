@@ -32,6 +32,7 @@ initPort p@Port{..} = addInit (show p) $ do
         (MF mode otype) -> initMode mode otype
         (AF mode)       -> initMode gpio_mode_af gpio_otype_pp
                         >> setAF gpio mode pin
+        (AN mode)       -> initMode mode gpio_otype_pp
     where initMode mode otype = do
             setOutputOptions gpio otype gpio_ospeed_50mhz pin
             setMode gpio mode pupd pin

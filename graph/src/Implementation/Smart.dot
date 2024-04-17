@@ -1,0 +1,19 @@
+digraph G {
+size="6,4";
+ratio="fill";
+subgraph cluster_0 {
+label="Implementation";
+color="#0000000F";
+style="filled";
+subgraph cluster_1 {
+label="Smart";
+color="#0000000F";
+style="filled";
+u0[label="Top",style="filled",fillcolor="#bbbbff",penwidth="0"];
+u1[label="Bottom",style="filled",fillcolor="#bbbbff",penwidth="0"];
+
+}
+
+}
+
+}
