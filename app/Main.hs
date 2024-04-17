@@ -34,19 +34,19 @@ main = do
                      , dimmerAC12
                      , mix6x12
                      , di4
-                     , sht21_test
                      , smartBottom1
                      , smartBottom2
                      , smartTopA6P
                      , smartTopG4D
-                     , scd40_test
                      , doppler1
                      , doppler5
+                    --  , scd40_test
+                    --  , sht21_test
                     --  , blink330
                      ]
     gcc gd32f450vgt6 [ server
-                     , udpEcho450
                      , rsHub4
+                    --  , udpEcho450
                     --  , blink450
                     --  , echo
                      ]
