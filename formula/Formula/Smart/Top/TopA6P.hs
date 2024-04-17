@@ -12,7 +12,7 @@ import           Transport.UART.RBUS        (rbus)
 smartTopA6P :: Formula GD32F3x0
 smartTopA6P =  Formula { name           = "smart_top_a6p"
                        , model          = deviceTypeSmartTopA6P
-                       , version        = (1, 0)
+                       , version        = (1, 1)
                        , shouldInit     = true
                        , implementation = topAP (rbus uart_0)
                                                 (dinputs [ in_pa_4
