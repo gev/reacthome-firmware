@@ -1,5 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE ImpredicativeTypes #-}
 
 module Interface.Display where
 
@@ -7,15 +9,15 @@ import           Control.Monad.State
 import           Core.Context
 import           Core.Handler
 import           Data.Buffer
-import           Data.Value          (RunValues)
+import           Data.Value          (Values)
 import           GHC.TypeNats
 import           Ivory.Language
 
 
-data Render d = Render
+data Render d = forall n. Render
     { display   :: d
     , frameRate :: Uint32
-    , runFrame  :: RunValues Uint8
+    , frame     :: Values n Uint8
     , render    :: forall s. Ivory (ProcEffects s ()) ()
     }
 
