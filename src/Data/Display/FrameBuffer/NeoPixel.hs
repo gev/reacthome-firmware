@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE NoStarIsType     #-}
 {-# LANGUAGE RankNTypes       #-}
 {-# LANGUAGE RecordWildCards  #-}
 {-# LANGUAGE TypeOperators    #-}
@@ -17,7 +18,7 @@ import           Ivory.Language.Proc
 
 
 
-type BufferSize n = n + n + n + n + n + n + n + n + n + 1
+type BufferSize n = 9 * n + 1
 
 
 

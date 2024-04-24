@@ -2,9 +2,11 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE KindSignatures   #-}
 {-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE NoStarIsType     #-}
 {-# LANGUAGE RankNTypes       #-}
 {-# LANGUAGE RecordWildCards  #-}
 {-# LANGUAGE TypeOperators    #-}
+
 
 module Endpoint.DInputsRelaysRules where
 
@@ -27,7 +29,7 @@ import           Ivory.Stdlib
 
 
 
-type PayloadSize n = n + n + 2
+type PayloadSize n = 2 * n + 2
 
 
 data Rules ni no = Rules

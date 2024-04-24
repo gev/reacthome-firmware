@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NoStarIsType     #-}
 {-# LANGUAGE RecordWildCards  #-}
 {-# LANGUAGE TypeOperators    #-}
 
@@ -9,16 +10,13 @@ import           Control.Monad.State
 import           Core.Context
 import           Data.Color
 import           Data.Value
-import           GHC.Arr              (array)
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Language.Proxy
 import           Support.Cast
 
 
-
-
-type Canvas1DSize n = n + n + n
+type Canvas1DSize n = 3 * n
 
 
 newtype Canvas1D n = Canvas1D
