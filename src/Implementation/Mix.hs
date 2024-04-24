@@ -23,7 +23,7 @@ import           Data.Serialize
 import           Data.Value
 import           Endpoint.ATS                as A
 import qualified Endpoint.DInputs            as DI
-import           Endpoint.DInputsRelaysRules
+import           Endpoint.DInputsRelaysRules as Ru
 import qualified Endpoint.Groups             as G
 import qualified Endpoint.Relays             as R
 import           Feature.DInputs             as FDI (DInputs (DInputs, getDInputs, getInputs),
@@ -57,7 +57,7 @@ data Mix = forall f. Flash f => Mix
     , relays     :: Relays
     , dinputs    :: DInputs
     , dinputsN   :: Int
-    , rules      :: Rules
+    , rules      :: Rules 12 6 14
     , ats        :: ATS
     , indicator  :: Indicator
     , etc        :: f
@@ -79,7 +79,7 @@ mix transport' dinputs' relays' indicator' etc = do
     let relaysN   = FR.n relays
     dinputs      <- dinputs' True transport
     let dinputsN  = FDI.n dinputs
-    rules        <- mkRules transport dinputsN relaysN
+    rules        <- mkRules transport
     ats          <- mkATS transport
     indicator    <- indicator' ats (getDInputs dinputs) (getRelays relays) transport
     mcu          <- asks D.mcu
@@ -151,15 +151,14 @@ onRule mix@Mix{..} buff size = do
     i <- subtract 1 <$> deref (buff ! 1)
     when (size ==? 2 + 2 * relaysN' .&& i <? dinputsN') $ do
         kx <- local $ ival 2
-        let run :: (Rules -> RunMatrix Uint8) -> Ivory eff ()
-            run runRules = runRules rules $ \rs -> arrayMap $ \jx -> do
+        let run rules = arrayMap $ \jx -> do
                 kx' <- deref kx
-                store (addrOf rs ! toIx i ! jx) =<< unpack buff kx'
+                store (rules ! toIx i ! jx) =<< unpack buff kx'
                 store kx $ kx' + 1
-        run runRulesOff
-        run runRulesOn
+        run $ rulesOff rules
+        run $ rulesOn rules
         fillPayload rules i
-        runPayload rules $ \p -> transmit . addrOf $ p
+        transmit $ Ru.payload rules
         save mix
 
 
@@ -192,15 +191,14 @@ save Mix{..} = do
     updateCRC16 crc mode'
     F.write etc 0 $ safeCast mode'
     kx <- local $ ival 4
-    let run :: (Rules -> RunMatrix Uint8) -> Ivory eff ()
-        run runRules = runRules rules $ \rs -> arrayMap $ \ix -> arrayMap $ \jx -> do
+    let run rules = arrayMap $ \ix -> arrayMap $ \jx -> do
             kx' <- deref kx
-            v   <- deref (addrOf rs ! ix ! jx)
+            v   <- deref (rules ! ix ! jx)
             updateCRC16 crc v
             F.write etc kx' $ safeCast v
             store kx $ kx' + 4
-    run runRulesOff
-    run runRulesOn
+    run $ rulesOff rules
+    run $ rulesOn rules
     kx' <- deref kx
     F.write etc kx' . safeCast =<< deref (crc ~> msb)
     F.write etc (kx' + 4) . safeCast =<< deref (crc ~> lsb)
@@ -214,13 +212,12 @@ load mix@Mix{..} = do
         store (mode ats) . castDefault =<< F.read etc 0
         manageLock mix
         kx <- local $ ival 4
-        let run :: (Rules -> RunMatrix Uint8) -> Ivory eff ()
-            run runRules = runRules rules $ \rs -> arrayMap $ \ix -> arrayMap $ \jx -> do
+        let run rules = arrayMap $ \ix -> arrayMap $ \jx -> do
                 kx' <- deref kx
-                store (addrOf rs ! ix ! jx) . castDefault =<< F.read etc kx'
+                store (rules ! ix ! jx) . castDefault =<< F.read etc kx'
                 store kx $ kx' + 4
-        run runRulesOff
-        run runRulesOn
+        run $ rulesOff rules
+        run $ rulesOn rules
 
 
 checkCRC :: Mix -> Ivory (ProcEffects s ()) IBool
