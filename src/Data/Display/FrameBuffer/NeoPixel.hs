@@ -18,7 +18,7 @@ import           Ivory.Language.Proc
 
 
 
-type BufferSize n = 9 * n + 1
+type BufferSize n = 8 * n + 1
 
 
 
@@ -48,7 +48,7 @@ writeByte FrameBufferNeoPixel{..} i value = do
     for 8 $ \jx -> do
         v' <- deref v
         let b = v' .& 0x80
-        let byte = buffer ! (toIx (9 * i) + jx)
+        let byte = buffer ! (toIx (8 * i) + jx)
         ifte_ (b ==? 0x80)
             (store byte oneDuty )
             (store byte zeroDuty)
