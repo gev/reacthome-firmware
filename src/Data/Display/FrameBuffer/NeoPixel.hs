@@ -30,7 +30,10 @@ data FrameBufferNeoPixel n t = FrameBufferNeoPixel
 
 
 
-neoPixelBuffer :: (MonadState Context m, SafeCast Uint8 t, IvoryInit t, IvoryZeroVal t, Num t, KnownNat (BufferSize n))
+neoPixelBuffer :: ( MonadState Context m
+                  , SafeCast Uint8 t, IvoryInit t, IvoryZeroVal t, Num t
+                  , KnownNat (BufferSize n)
+                  )
                => Uint8 -> m (FrameBufferNeoPixel n t)
 neoPixelBuffer period = do
     let zeroDuty = safeCast $ period `iDiv` 4
