@@ -1,7 +1,6 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs            #-}
 {-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE ImpredicativeTypes #-}
 
 module Interface.Display where
 
@@ -14,7 +13,7 @@ import           GHC.TypeNats
 import           Ivory.Language
 
 
-data Render d = forall n. Render
+data Render n d = Render
     { display   :: d
     , frameRate :: Uint32
     , frame     :: Values n Uint8
@@ -22,11 +21,4 @@ data Render d = forall n. Render
     }
 
 
-class Handler Render d => Display d
-
--- class Handler Render p => Display p f t | p -> f t where
-
---     frameBuffer         :: MonadState Context m
---                         => p -> String -> Int -> m (f t)
-
---     transmitFrameBuffer :: p -> f t -> Ivory eff ()
+class Display d

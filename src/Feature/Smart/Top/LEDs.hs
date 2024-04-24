@@ -8,6 +8,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
+{-# LANGUAGE TypeOperators       #-}
 
 
 
@@ -45,8 +46,12 @@ import           Ivory.Stdlib
 
 
 
-data LEDs (l :: Nat) b = forall f t. T.LazyTransport t => LEDs
-    { canvas     :: Canvas1D b  -- b should be equal to l * 3
+type CanvasSize n = n + n + n
+
+
+
+data LEDs (l :: Nat) = forall f t. T.LazyTransport t => LEDs
+    { canvas     :: Canvas1D (CanvasSize l)
     , order      :: Values   l (Ix l)
     , state      :: Value      IBool
     , brightness :: Value      IFloat
@@ -60,13 +65,13 @@ data LEDs (l :: Nat) b = forall f t. T.LazyTransport t => LEDs
 
 
 
-mkLeds :: forall l b m p c t.
-          ( KnownNat l, KnownNat b
+mkLeds :: forall l m p c t.
+          ( KnownNat l, KnownNat (CanvasSize l)
           , MonadState Context m
           , MonadReader (D.Domain p c) m
           , T.LazyTransport t
-          ) 
-       => Values b Uint8 -> [Ix l] -> t -> m (LEDs l b)
+          )
+       => Values (CanvasSize l) Uint8 -> [Ix l] -> t -> m (LEDs l)
 mkLeds frameBuffer order' transport = do
     let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
     let canvas  = mkCanvas1D frameBuffer 0
@@ -94,7 +99,7 @@ mkLeds frameBuffer order' transport = do
 
 
 
-updateLeds :: (KnownNat l) => LEDs l b -> Ivory (ProcEffects s ()) ()
+updateLeds :: KnownNat l => LEDs l -> Ivory (ProcEffects s ()) ()
 updateLeds LEDs{..} = do
     brightness' <- deref brightness
     arrayMap $ \sx -> do
@@ -110,14 +115,14 @@ updateLeds LEDs{..} = do
 
 
 
-render :: (KnownNat l, KnownNat b) => LEDs l b -> Ivory (ProcEffects s ()) ()
+render :: (KnownNat l, KnownNat (CanvasSize l) ) => LEDs l -> Ivory (ProcEffects s ()) ()
 render LEDs{..} =
     writePixels canvas pixels
 
 
 
 onDo :: (KnownNat n, KnownNat l)
-      => LEDs l b
+      => LEDs l
       -> Buffer n Uint8
       -> Uint8
       -> Ivory (ProcEffects s t) ()
@@ -132,7 +137,7 @@ onDo LEDs{..} buff size =
 
 
 onDim :: KnownNat n
-      => LEDs l b
+      => LEDs l
       -> Buffer n Uint8
       -> Uint8
       -> Ivory (ProcEffects s t) ()
@@ -159,8 +164,8 @@ onDim LEDs{..} buff size =
 
 
 
-onSetColor :: forall n l b s t. (KnownNat n, KnownNat l)
-           => LEDs l b -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onSetColor :: forall n l s t. (KnownNat n, KnownNat l)
+           => LEDs l -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onSetColor LEDs{..} buff size = do
     let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
     when ((size - 2) .% 3 ==? 0) $ do
@@ -186,8 +191,8 @@ onSetColor LEDs{..} buff size = do
 
 
 
-onImage :: forall n l s t b. (KnownNat n, KnownNat l)
-        => LEDs l b
+onImage :: forall n l s t. (KnownNat n, KnownNat l)
+        => LEDs l
         -> Buffer n Uint8
         -> Uint8
         -> Ivory (ProcEffects s t) ()
@@ -215,8 +220,8 @@ onImage LEDs{..} buff size = do
 
 
 
-onBlink :: forall n l b s t. (KnownNat n, KnownNat l)
-        => LEDs l b
+onBlink :: forall n l s t. (KnownNat n, KnownNat l)
+        => LEDs l
         -> Buffer n Uint8
         -> Uint8
         -> Ivory (ProcEffects s t) ()
@@ -243,8 +248,8 @@ onBlink LEDs{..} buff size = do
                 store v $ v' `iShiftR` 1
 
 
-onInitColors :: forall n l b s t. (KnownNat n, KnownNat l)
-             => LEDs l b -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) IBool
+onInitColors :: forall n l s t. (KnownNat n, KnownNat l)
+             => LEDs l -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) IBool
 onInitColors LEDs{..} buff size = do
     let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
     let s' = l' `iDiv` 8

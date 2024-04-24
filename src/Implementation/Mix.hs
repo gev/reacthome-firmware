@@ -57,7 +57,7 @@ data Mix = forall f. Flash f => Mix
     , relays     :: Relays
     , dinputs    :: DInputs
     , dinputsN   :: Int
-    , rules      :: Rules 12 6 14
+    , rules      :: Rules 12 6
     , ats        :: ATS
     , indicator  :: Indicator
     , etc        :: f

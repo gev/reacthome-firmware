@@ -48,27 +48,29 @@ data Top = Top
 
 
 
-topAP :: (MonadState Context m , MonadReader (D.Domain p c) m, Transport t, LazyTransport t, Display d)
+topAP :: ( MonadState Context m
+         , MonadReader (D.Domain p c) m
+         , Transport t, LazyTransport t
+         , Display d, Handler (Render 18) d
+         )
       => m t -> (Bool -> t -> m DI.DInputs) -> (t -> m SHT21) -> (p -> m d) -> m Top
 topAP transport' dinputs' sht21' display' = do
-    transport          <- transport'
-    shouldInit         <- asks D.shouldInit
-    mcu                <- asks D.mcu
-    display            <- display' $ peripherals mcu
-    dinputs            <- dinputs' False transport
-    let runFrameBuffer  = runValues "top_frame_buffer" $ replicate 18 0
-    leds               <- mkLeds runFrameBuffer [0, 5, 1, 4, 2, 3] transport
-    buttons            <- mkButtons leds (getDInputs dinputs) 1 transport
-    sht21              <- sht21' transport
-    initBuff           <- values "top_init_buffer" [actionInitialize]
-    let top             = Top { dinputs, leds, buttons, sht21
-                              , initBuff, shouldInit
-                              , transmit = transmitBuffer transport
-                              }
+    transport   <- transport'
+    shouldInit  <- asks D.shouldInit
+    mcu         <- asks D.mcu
+    display     <- display' $ peripherals mcu
+    dinputs     <- dinputs' False transport
+    frameBuffer <- values' "top_frame_buffer" 0
+    leds        <- mkLeds frameBuffer [0, 5, 1, 4, 2, 3] transport
+    buttons     <- mkButtons leds (getDInputs dinputs) 1 transport
+    sht21       <- sht21' transport
+    initBuff    <- values "top_init_buffer" [actionInitialize]
+    let top      = Top { dinputs, leds, buttons, sht21
+                       , initBuff, shouldInit
+                       , transmit = transmitBuffer transport
+                       }
 
-    runFrameBuffer addArea
-
-    addHandler $ Render display 30 runFrameBuffer $ do
+    addHandler $ Render display 30 frameBuffer $ do
         updateLeds leds
         updateButtons buttons
         render leds

@@ -2,7 +2,6 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
-{-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
 
 module Device.GD32F3x0.Display.NeoPixel where
@@ -40,24 +39,24 @@ pwmPeriod = 101
 
 
 
-data NeoPixel n = NeoPixel
+data NeoPixel = NeoPixel
     { pwmTimer   :: Timer
     , pwmChannel :: TIMER_CHANNEL
     , pwmPort    :: Port
     , dmaChannel :: DMA_CHANNEL
     , dmaIRQn    :: IRQn
     , dmaParams  :: Record DMA_PARAM_STRUCT
-    , buff       :: FrameBufferNeoPixel n Uint8
+    , buff       :: FrameBufferNeoPixel 1 Uint8
     , offset     :: Index Uint16
     }
 
-mkNeoPixelPWM :: (MonadState Context m, KnownNat n)
+mkNeoPixelPWM :: (MonadState Context m)
               => (Uint32 -> Uint32 -> m Timer)
               -> TIMER_CHANNEL
               -> DMA_CHANNEL
               -> IRQn
               -> (GPIO_PUPD -> Port)
-              -> m (NeoPixel n)
+              -> m NeoPixel
 mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn pwmPort' = do
     let pwmPort   = pwmPort' gpio_pupd_none
     let dmaInit   = dmaParam [ direction    .= ival dma_memory_to_peripheral
@@ -69,7 +68,7 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn pwmPort' = do
                              ]
     pwmTimer     <- timer' system_core_clock pwmPeriod
     dmaParams    <- record (symbol dmaChannel <> "_dma_param") dmaInit
-    buff         <- neoPixelBuffer pwmPeriod 1
+    buff         <- neoPixelBuffer pwmPeriod
     offset       <- index "neopixel"
 
     initPort pwmPort
@@ -92,7 +91,7 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn pwmPort' = do
 
 
 
-instance KnownNat n => Handler Render (NeoPixel n) where
+instance KnownNat n => Handler (Render n) NeoPixel where
   addHandler (Render npx@NeoPixel{..} frameRate frame render) = do
     addBody (makeIRQHandlerName dmaIRQn) (handleDMA npx frame)
     addTask $ delay (1000 `iDiv` frameRate)
@@ -104,7 +103,7 @@ instance KnownNat n => Handler Render (NeoPixel n) where
 
 
 
-handleDMA :: KnownNat n => NeoPixel n -> Values n Uint8 -> Ivory ('Effects (Returns ()) b (Scope s)) ()
+handleDMA :: KnownNat n => NeoPixel -> Values n Uint8 -> Ivory ('Effects (Returns ()) b (Scope s)) ()
 handleDMA npx@NeoPixel{..} frame = do
     f <- getInterruptFlagDMA dmaChannel dma_int_flag_ftf
     when f $ do
@@ -117,7 +116,7 @@ handleDMA npx@NeoPixel{..} frame = do
 
 
 
-transmitFrameBuffer :: KnownNat n => NeoPixel n -> Ivory eff ()
+transmitFrameBuffer :: NeoPixel -> Ivory eff ()
 transmitFrameBuffer NeoPixel{..} = do
     let b = buffer buff
     store (dmaParams ~> memory_addr) =<< castArrayUint8ToUint32 (toCArray b)
@@ -131,4 +130,4 @@ transmitFrameBuffer NeoPixel{..} = do
 
 
 
-instance KnownNat n => Display (NeoPixel n)
+instance Display NeoPixel

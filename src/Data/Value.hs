@@ -2,15 +2,16 @@
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE FlexibleInstances   #-}
 {-# LANGUAGE ImpredicativeTypes  #-}
+{-# LANGUAGE KindSignatures      #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Data.Value
     ( Value
     , Values
-    , Values'
     , value_
     , value
     , values_
+    , values'
     , values
     ) where
 
@@ -19,12 +20,12 @@ import           Core.Context
 import           Data.Area
 import           GHC.TypeNats
 import           Ivory.Language
+import           Ivory.Language.Proxy (NatType, aNat)
 
 
 
-type Value     t = Ref Global (Stored t)
-type Values  n t = Ref Global (Array  n (Stored t))
-type Values' n t = MemArea    (Array  n (Stored t))
+type Value              t = Ref Global (Stored t)
+type Values  (n :: Nat) t = Ref Global (Array n (Stored t))
 
 
 
@@ -41,6 +42,12 @@ value id v = mkArea id . Just $ ival v
 values_ :: (MonadState Context m, KnownNat n, IvoryZeroVal t)
         => String -> m (Values n t)
 values_ id = mkArea id Nothing
+
+values' :: forall n t m. (MonadState Context m, KnownNat n, IvoryZeroVal t, IvoryInit t)
+        => String -> t -> m (Values n t)
+values' id v = do
+    let n = fromIntegral $ natVal (aNat :: NatType n)
+    values id $ replicate n v
 
 values :: (MonadState Context m, KnownNat n, IvoryZeroVal t, IvoryInit t)
        => String -> [t] -> m (Values n t)

@@ -13,7 +13,7 @@ import           Core.Actions
 import           Core.Context
 import           Core.Controller
 import qualified Core.Domain                  as D
-import           Core.Handler                 (addHandler)
+import           Core.Handler                 (Handler, addHandler)
 import           Core.Task
 import           Core.Transport
 import           Data.Buffer
@@ -65,54 +65,58 @@ data Top = Top
       5 4                                        3 2
 -}
 
-topGD :: (MonadState Context m , MonadReader (D.Domain p c) m, Transport t, LazyTransport t, Display d)
+topGD :: ( MonadState Context m
+         , MonadReader (D.Domain p c) m
+         , Transport t, LazyTransport t
+         , Display d
+         , Handler (Render 192) d
+         )
       => m t -> (Bool -> t -> m DI.DInputs) -> (E.DInputs -> t -> m Vibro) -> m PowerTouch -> (t -> m SHT21) -> (p -> m d) -> m Top
 topGD transport' dinputs' vibro' touch' sht21' display' = do
-    transport          <- transport'
-    shouldInit         <- asks D.shouldInit
-    mcu                <- asks D.mcu
-    display            <- display' $ peripherals mcu
-    dinputs            <- dinputs' True transport
+    transport    <- transport'
+    shouldInit   <- asks D.shouldInit
+    mcu          <- asks D.mcu
+    display      <- display' $ peripherals mcu
+    dinputs      <- dinputs' True transport
 
-    let runFrameBuffer  = runValues "top_frame_buffer" $ replicate 204 0
+    frameBuffer  <- values' "top_frame_buffer" 0
 
-    vibro              <- vibro' (getDInputs dinputs) transport
+    vibro        <- vibro' (getDInputs dinputs) transport
 
     touch'
 
-    leds               <- mkLeds runFrameBuffer [  6,  7,      0,  1
-                                                ,  5,  4,      3,  2
+    leds         <- mkLeds frameBuffer [  6,  7,      0,  1
+                                       ,  5,  4,      3,  2
 
-                                                ,  8
-                                                ,  9
-                                                , 10
+                                       ,  8
+                                       ,  9
+                                       , 10
 
-                                                , 11
+                                       , 11
 
-                                                , 58, 63
-                                                , 59, 62
-                                                , 60, 61
+                                       , 58, 63
+                                       , 59, 62
+                                       , 60, 61
 
-                                                ,     17,     22, 23, 30,     35, 36, 43,     49, 50, 57
-                                                ,     16,     21,     29,     34,     42,     48,     56
-                                                , 12, 15,     20, 24, 28,     33, 37, 41,     47, 51, 55
-                                                ,     14,     19,     27,     32,     40,     46,     54
-                                                ,     13,     18, 25, 26,     31, 38, 39, 44, 45, 52, 53
-                                                ] transport
+                                       ,     17,     22, 23, 30,     35, 36, 43,     49, 50, 57
+                                       ,     16,     21,     29,     34,     42,     48,     56
+                                       , 12, 15,     20, 24, 28,     33, 37, 41,     47, 51, 55
+                                       ,     14,     19,     27,     32,     40,     46,     54
+                                       ,     13,     18, 25, 26,     31, 38, 39, 44, 45, 52, 53
+                                       ] transport
 
-    buttons            <- mkButtons leds (getDInputs dinputs) 2 transport
+    buttons      <- mkButtons leds (getDInputs dinputs) 2 transport
 
-    sht21              <- sht21' transport
+    sht21        <- sht21' transport
 
-    initBuff           <- values "top_init_buffer" [actionInitialize]
+    initBuff     <- values "top_init_buffer" [actionInitialize]
 
-    let top             = Top { dinputs, leds, vibro, buttons, sht21
-                              , initBuff, shouldInit
-                              , transmit = transmitBuffer transport
-                              }
-    runFrameBuffer addArea
+    let top       = Top { dinputs, leds, vibro, buttons, sht21
+                        , initBuff, shouldInit
+                        , transmit = transmitBuffer transport
+                        }
 
-    addHandler $ Render display 30 runFrameBuffer $ do
+    addHandler $ Render display 30 frameBuffer $ do
         updateLeds leds
         updateButtons buttons
         render leds
