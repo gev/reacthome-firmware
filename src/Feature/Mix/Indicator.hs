@@ -56,14 +56,14 @@ maxValue = 0.3 :: IFloat
 
 indicator :: ( MonadState Context m
              , MonadReader (D.Domain p c) m
-             , Display d
+             , Display d, Handler (Render 60) d
              , T.Transport t
              ) => (p -> m d) -> IFloat -> ATS -> DInputs -> Relays -> t -> m Indicator
 indicator mkDisplay hue ats dinputs relays transport = do
     mcu          <- asks D.mcu
     display      <- mkDisplay $ peripherals mcu
     frameBuffer  <- values' "top_frame_buffer"         0
-    let canvas    = mkCanvas1D frameBuffer             0
+    let canvas    = mkCanvas1D frameBuffer
     t            <- value      "indicator_t"           0
     dt           <- value      "indicator_dt"          1
     phi          <- value      "indicator_phi"         0

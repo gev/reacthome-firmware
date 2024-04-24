@@ -8,7 +8,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
-{-# LANGUAGE TypeOperators       #-}
 
 
 
@@ -46,12 +45,8 @@ import           Ivory.Stdlib
 
 
 
-type CanvasSize n = n + n + n
-
-
-
 data LEDs (l :: Nat) = forall f t. T.LazyTransport t => LEDs
-    { canvas     :: Canvas1D (CanvasSize l)
+    { canvas     :: Canvas1D l
     , order      :: Values   l (Ix l)
     , state      :: Value      IBool
     , brightness :: Value      IFloat
@@ -66,15 +61,15 @@ data LEDs (l :: Nat) = forall f t. T.LazyTransport t => LEDs
 
 
 mkLeds :: forall l m p c t.
-          ( KnownNat l, KnownNat (CanvasSize l)
+          ( KnownNat l
           , MonadState Context m
           , MonadReader (D.Domain p c) m
           , T.LazyTransport t
           )
-       => Values (CanvasSize l) Uint8 -> [Ix l] -> t -> m (LEDs l)
+       => Values (Canvas1DSize l)  Uint8 -> [Ix l] -> t -> m (LEDs l)
 mkLeds frameBuffer order' transport = do
     let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
-    let canvas  = mkCanvas1D frameBuffer 0
+    let canvas  = mkCanvas1D frameBuffer
     order      <- values     "leds_order"       order'
     state      <- value      "leds_state"       true
     brightness <- value      "leds_brightness"  1
@@ -115,7 +110,7 @@ updateLeds LEDs{..} = do
 
 
 
-render :: (KnownNat l, KnownNat (CanvasSize l) ) => LEDs l -> Ivory (ProcEffects s ()) ()
+render :: (KnownNat l, KnownNat (Canvas1DSize l) ) => LEDs l -> Ivory (ProcEffects s ()) ()
 render LEDs{..} =
     writePixels canvas pixels
 
