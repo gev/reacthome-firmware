@@ -28,7 +28,7 @@ matrix_ :: (MonadState Context w, IvoryZeroVal t, KnownNat n, KnownNat m)
 matrix_ id = mkArea id Nothing
 
 
-matrix' :: forall n m t w. (KnownNat n, KnownNat m, MonadState Context w, IvoryZeroVal t, IvoryInit t)
+matrix' :: forall m n t w. (KnownNat n, KnownNat m, MonadState Context w, IvoryZeroVal t, IvoryInit t)
         => String -> t -> w (Matrix n m t)
 matrix' id v = do
     let n' = fromTypeNat (aNat :: NatType n)
