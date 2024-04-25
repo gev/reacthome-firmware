@@ -90,7 +90,7 @@ initTop Top{..} = do
 
 onInit :: KnownNat n => Top -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onInit Top{..} buff size = do
-    colors <- onInitColors leds  buff size
+    colors <- onInitColors leds buff size
     when colors $
         store shouldInit false
 
