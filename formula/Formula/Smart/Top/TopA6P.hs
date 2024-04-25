@@ -1,3 +1,4 @@
+{-# LANGUAGE NumericUnderscores #-}
 module Formula.Smart.Top.TopA6P where
 
 import           Core.Formula
@@ -14,7 +15,7 @@ smartTopA6P =  Formula { name           = "smart_top_a6p"
                        , model          = deviceTypeSmartTopA6P
                        , version        = (1, 1)
                        , shouldInit     = true
-                       , implementation = topAP (rbus uart_0)
+                       , implementation = topAP (rbus uart_0 115_200)
                                                 (dinputs [ in_pa_4
                                                          , in_pb_2
                                                          , in_pa_5

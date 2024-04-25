@@ -1,3 +1,4 @@
+{-# LANGUAGE NumericUnderscores #-}
 module Formula.Smart.Top.TopG4D where
 
 import           Core.Formula
@@ -16,7 +17,7 @@ smartTopG4D =  Formula { name           = "smart_top_g4d"
                        , model          = deviceTypeSmartTopG4D
                        , version        = (1, 1)
                        , shouldInit     = true
-                       , implementation = topGD (rbus uart_1)
+                       , implementation = topGD (rbus uart_1 115_200)
                                                 (dinputs [ in_pb_7
                                                          , in_pb_5
                                                          , in_pb_8

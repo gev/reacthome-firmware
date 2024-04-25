@@ -32,8 +32,8 @@ import           Transport.UART.RBUS.Tx
 
 
 rbus :: (MonadState Context m, MonadReader (D.Domain p c) m, UART u, Controller c)
-     => (p -> m u) -> m RBUS
-rbus uart' = do
+     => (p -> m u) -> Uint32 -> m RBUS
+rbus uart' speed = do
     mcu            <- asks D.mcu
     implementation <- asks D.implementation
     uart           <- uart' $ I.peripherals mcu
@@ -41,7 +41,7 @@ rbus uart' = do
     {--
         TODO: move dispatcher outside
     --}
-    rbus <- mkRbus name uart $ makeDispatcher implementation
+    rbus <- mkRbus name uart speed $ makeDispatcher implementation
 
     addTask $ delay 1_000 (name <> "_discovery") $ discoveryTask rbus
 
@@ -50,8 +50,8 @@ rbus uart' = do
 
 
 mkRbus :: (MonadState Context m, MonadReader (D.Domain p c) m, UART u)
-     => String -> u -> (forall s. Buffer 255 Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()) -> m RBUS
-mkRbus name uart onMessage = do
+     => String -> u -> Uint32 -> (forall s. Buffer 255 Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()) -> m RBUS
+mkRbus name uart speed onMessage = do
     mcu           <- asks D.mcu
     model         <- asks D.model
     version       <- asks D.version
@@ -71,7 +71,7 @@ mkRbus name uart onMessage = do
 
     protocol <- U.rbus name onMessage
 
-    let rbus = RBUS { name
+    let rbus = RBUS { name, speed
                     , model, version, mac
                     , clock, uart, protocol
                     , rxBuff, rxQueue
@@ -102,7 +102,7 @@ initialize RBUS{..} = do
     store (discoveryBuff ! 7) =<< deref model
     store (discoveryBuff ! 8) =<< deref (version ~> major)
     store (discoveryBuff ! 9) =<< deref (version ~> minor)
-    configUART uart 115_200 WL_8b SB_1b None
+    configUART uart speed WL_8b SB_1b None
 
 
 

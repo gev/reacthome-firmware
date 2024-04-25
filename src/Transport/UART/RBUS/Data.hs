@@ -18,6 +18,7 @@ import qualified Protocol.UART.RBUS    as U
 data RBUS where
      RBUS :: UART u
           => { name          :: String
+             , speed         :: Uint32
              , model         :: Value       Uint8
              , version       :: Version
              , mac           :: Mac
