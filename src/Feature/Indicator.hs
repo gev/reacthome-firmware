@@ -34,20 +34,20 @@ import           Support.Cast
 
 
 
-data Indicator = forall d. Display d => Indicator
+data Indicator n = forall d. Display d => Indicator
     { display   :: d
-    , canvas    :: Canvas1D 20
     , hue       :: IFloat
-    , t         :: Value        Sint32
-    , dt        :: Value        Sint32
-    , phi       :: Value        Sint32
-    , dphi      :: Value        Sint32
-    , start     :: Value        IBool
-    , findMe    :: Value        IBool
-    , findMeMsg :: Buffer   2   Uint8
-    , pixels    :: Records 20   RGB
-    , transmit  :: forall   n. KnownNat n
-                => Buffer   n  Uint8 -> forall s t. Ivory (ProcEffects s t) ()
+    , t         :: Value       Sint32
+    , dt        :: Value       Sint32
+    , phi       :: Value       Sint32
+    , dphi      :: Value       Sint32
+    , start     :: Value       IBool
+    , findMe    :: Value       IBool
+    , findMeMsg :: Buffer   2  Uint8
+    , canvas    :: Canvas1D n
+    , pixels    :: Records  n  RGB
+    , transmit  :: forall   l. KnownNat l
+                => Buffer   l  Uint8 -> forall s t. Ivory (ProcEffects s t) ()
     }
 
 
@@ -55,9 +55,10 @@ maxValue = 0.3 :: IFloat
 
 indicator :: ( MonadState Context m
              , MonadReader (D.Domain p c) m
-             , Display d, Handler (Render 60) d
+             , Display d, Handler (Render (Canvas1DSize n)) d
+             , KnownNat n, KnownNat (Canvas1DSize n)
              , T.Transport t
-             ) => (p -> m d) -> IFloat -> t -> m Indicator
+             ) => (p -> m d) -> IFloat -> t -> m (Indicator n)
 indicator mkDisplay hue transport = do
     mcu         <- asks D.mcu
     display     <- mkDisplay $ peripherals mcu
@@ -91,7 +92,7 @@ indicator mkDisplay hue transport = do
 
 
 
-update :: Indicator -> Ivory (ProcEffects s ()) ()
+update :: KnownNat n => Indicator n -> Ivory (ProcEffects s ()) ()
 update Indicator{..} = do
     phi'   <- deref phi
     pixel  <- local . istruct $ hsv hue 1 maxValue
@@ -132,12 +133,12 @@ update Indicator{..} = do
 
 
 
-render :: Indicator -> Ivory (ProcEffects s ()) ()
+render :: (KnownNat n, KnownNat (Canvas1DSize n)) => Indicator n -> Ivory (ProcEffects s ()) ()
 render Indicator{..} =
     writePixels canvas pixels
 
 
-onFindMe :: KnownNat n => Indicator -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onFindMe :: KnownNat l => Indicator n -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onFindMe Indicator{..} buff size =
     when (size >=? 2) $ do
         v <- unpack buff 1

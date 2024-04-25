@@ -34,21 +34,21 @@ import           Ivory.Stdlib
 
 data Indicator = forall d. (Display d) => Indicator
     { display   :: d
-    , canvas    :: Canvas1D 20
     , hue       :: IFloat
-    , t         :: Value Sint32
-    , dt        :: Value Sint32
-    , phi       :: Value Sint32
-    , dphi      :: Value Sint32
-    , start     :: Value IBool
-    , findMe    :: Value IBool
-    , findMeMsg :: Buffer   2 Uint8
-    , pixels    :: Records 20 RGB
     , ats       :: ATS
     , dinputs   :: DInputs
     , relays    :: Relays
-    , transmit  :: forall n. KnownNat n
-                => Buffer n Uint8 -> forall s t. Ivory (ProcEffects s t) ()
+    , t         :: Value        Sint32
+    , dt        :: Value        Sint32
+    , phi       :: Value        Sint32
+    , dphi      :: Value        Sint32
+    , start     :: Value        IBool
+    , findMe    :: Value        IBool
+    , findMeMsg :: Buffer    2  Uint8
+    , canvas    :: Canvas1D 20
+    , pixels    :: Records  20  RGB
+    , transmit  :: forall    l. KnownNat l
+                => Buffer    l  Uint8 -> forall s t. Ivory (ProcEffects s t) ()
     }
 
 
@@ -211,11 +211,7 @@ render Indicator{..} =
 
 
 
-onFindMe :: KnownNat n
-         => Indicator
-         -> Buffer n Uint8
-         -> Uint8
-         -> Ivory (ProcEffects s t) ()
+onFindMe :: KnownNat l => Indicator -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onFindMe Indicator{..} buff size =
     when (size >=? 2) $ do
         v <- unpack buff 1

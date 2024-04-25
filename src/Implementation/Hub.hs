@@ -1,3 +1,4 @@
+{-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RecordWildCards  #-}
@@ -33,14 +34,14 @@ data Hub = Hub
     , dimmers    :: Dimmers
     , dinputs    :: DInputs
     , ds18b20    :: DS18B20
-    , indicator  :: Indicator
+    , indicator  :: Indicator 20
     , shouldInit :: Value IBool
     }
 
 
 
 hub :: MonadReader (D.Domain p c) m
-    => m t -> (t -> m [RBUS]) -> (t -> m Dimmers) -> (Bool -> t -> m DInputs) -> (t -> m DS18B20) -> (t -> m Indicator) -> m Hub
+    => m t -> (t -> m [RBUS]) -> (t -> m Dimmers) -> (Bool -> t -> m DInputs) -> (t -> m DS18B20) -> (t -> m (Indicator 20)) -> m Hub
 hub transport' rbus' dimmers' dinputs' ds18b20' indicator' = do
     transport  <- transport'
     rbus       <- rbus' transport
