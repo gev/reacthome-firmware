@@ -20,7 +20,7 @@ import           Ivory.Language
 import           Ivory.Language.Proxy (NatType, aNat)
 
 
-type Matrix  (n:: Nat) (m :: Nat) t = Ref Global (Array n (Array m (Stored t)))
+type Matrix (n:: Nat) (m :: Nat) t = Ref Global (Array n (Array m (Stored t)))
 
 
 matrix_ :: (MonadState Context w, IvoryZeroVal t, KnownNat n, KnownNat m)

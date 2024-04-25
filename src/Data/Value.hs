@@ -24,8 +24,8 @@ import           Ivory.Language.Proxy (NatType, aNat)
 
 
 
-type Value              t = Ref Global (Stored t)
-type Values  (n :: Nat) t = Ref Global (Array n (Stored t))
+type Value             t = Ref Global (Stored t)
+type Values (n :: Nat) t = Ref Global (Array n (Stored t))
 
 
 
