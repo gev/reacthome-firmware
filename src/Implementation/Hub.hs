@@ -34,7 +34,7 @@ data Hub = Hub
     , dimmers    :: Dimmers
     , dinputs    :: DInputs
     , ds18b20    :: DS18B20
-    , indicator  :: Indicator 20
+    -- , indicator  :: Indicator 20
     , shouldInit :: Value IBool
     }
 
@@ -48,9 +48,9 @@ hub transport' rbus' dimmers' dinputs' ds18b20' indicator' = do
     dimmers    <- dimmers' transport
     dinputs    <- dinputs' True transport
     ds18b20    <- ds18b20' transport
-    indicator  <- indicator' transport
+    -- indicator  <- indicator' transport
     shouldInit <- asks D.shouldInit
-    pure Hub { rbus, dimmers, dinputs, ds18b20, indicator, shouldInit }
+    pure Hub { rbus, dimmers, dinputs, ds18b20, shouldInit }
 
 
 
@@ -62,7 +62,7 @@ instance Controller Hub where
               , action ==? actionRs485Mode     ==> setMode       rbus      buff size
               , action ==? actionRbusTransmit  ==> transmitRBUS  rbus      buff size
               , action ==? actionRs485Transmit ==> transmitRB485 rbus      buff size
-              , action ==? actionFindMe        ==> onFindMe      indicator buff size
+            --   , action ==? actionFindMe        ==> onFindMe      indicator buff size
               , action ==? actionInitialize    ==> onInit        s         buff size
               , action ==? actionGetState      ==> onGetState    s
               ]
