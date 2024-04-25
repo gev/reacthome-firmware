@@ -34,20 +34,20 @@ import           Support.Cast
 
 
 
-data Indicator = forall d. Display d => Indicator
+data Indicator n = forall d. Display d => Indicator
     { display   :: d
-    , canvas    :: Canvas1D 20
     , hue       :: IFloat
-    , t         :: Value        Sint32
-    , dt        :: Value        Sint32
-    , phi       :: Value        Sint32
-    , dphi      :: Value        Sint32
-    , start     :: Value        IBool
-    , findMe    :: Value        IBool
-    , findMeMsg :: Buffer   2   Uint8
-    , pixels    :: Records 20   RGB
-    , transmit  :: forall   n. KnownNat n
-                => Buffer   n  Uint8 -> forall s t. Ivory (ProcEffects s t) ()
+    , t         :: Value       Sint32
+    , dt        :: Value       Sint32
+    , phi       :: Value       Sint32
+    , dphi      :: Value       Sint32
+    , start     :: Value       IBool
+    , findMe    :: Value       IBool
+    , findMeMsg :: Buffer   2  Uint8
+    , canvas    :: Canvas1D n
+    , pixels    :: Records  n  RGB
+    , transmit  :: forall   l. KnownNat l
+                => Buffer   l  Uint8 -> forall s t. Ivory (ProcEffects s t) ()
     }
 
 
@@ -55,24 +55,23 @@ maxValue = 0.3 :: IFloat
 
 indicator :: ( MonadState Context m
              , MonadReader (D.Domain p c) m
-             , Display d
+             , Display d, Handler (Render (Canvas1DSize n)) d
+             , KnownNat n, KnownNat (Canvas1DSize n)
              , T.Transport t
-             ) => (p -> m d) -> IFloat -> t -> m Indicator
+             ) => (p -> m d) -> IFloat -> t -> m (Indicator n)
 indicator mkDisplay hue transport = do
-    mcu                <- asks D.mcu
-    display            <- mkDisplay $ peripherals mcu
-    let runFrameBuffer  = runValues "top_frame_buffer" $ replicate 60 0
-    let canvas          = mkCanvas1D runFrameBuffer          0
-    t                  <- value      "indicator_t"           0
-    dt                 <- value      "indicator_dt"          1
-    phi                <- value      "indicator_phi"         0
-    dphi               <- value      "indicator_dphi"        1
-    start              <- value      "indicator_start"       true
-    findMe             <- value      "indicator_find_me"     false
-    findMeMsg          <- values     "indicator_find_me_msg" [0xfa, 0]
-    pixels             <- records_   "indicator_pixels"
-
-    runFrameBuffer addArea
+    mcu         <- asks D.mcu
+    display     <- mkDisplay $ peripherals mcu
+    frameBuffer <- values' "top_frame_buffer" 0
+    let canvas   = mkCanvas1D frameBuffer
+    t           <- value      "indicator_t"           0
+    dt          <- value      "indicator_dt"          1
+    phi         <- value      "indicator_phi"         0
+    dphi        <- value      "indicator_dphi"        1
+    start       <- value      "indicator_start"       true
+    findMe      <- value      "indicator_find_me"     false
+    findMeMsg   <- values     "indicator_find_me_msg" [0xfa, 0]
+    pixels      <- records_   "indicator_pixels"
 
     addStruct   (Proxy :: Proxy RGB)
     addStruct   (Proxy :: Proxy HSV)
@@ -85,7 +84,7 @@ indicator mkDisplay hue transport = do
                               , transmit = T.transmitBuffer transport
                               }
 
-    addHandler $ Render display 25 runFrameBuffer $ do
+    addHandler $ Render display 25 frameBuffer $ do
         update indicator
         render indicator
 
@@ -93,7 +92,7 @@ indicator mkDisplay hue transport = do
 
 
 
-update :: Indicator -> Ivory (ProcEffects s ()) ()
+update :: KnownNat n => Indicator n -> Ivory (ProcEffects s ()) ()
 update Indicator{..} = do
     phi'   <- deref phi
     pixel  <- local . istruct $ hsv hue 1 maxValue
@@ -134,12 +133,12 @@ update Indicator{..} = do
 
 
 
-render :: Indicator -> Ivory (ProcEffects s ()) ()
+render :: (KnownNat n, KnownNat (Canvas1DSize n)) => Indicator n -> Ivory (ProcEffects s ()) ()
 render Indicator{..} =
     writePixels canvas pixels
 
 
-onFindMe :: KnownNat n => Indicator -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onFindMe :: KnownNat l => Indicator n -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onFindMe Indicator{..} buff size =
     when (size >=? 2) $ do
         v <- unpack buff 1

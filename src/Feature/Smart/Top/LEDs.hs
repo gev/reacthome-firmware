@@ -60,14 +60,16 @@ data LEDs (l :: Nat) = forall f t. T.LazyTransport t => LEDs
 
 
 
-mkLeds :: forall l p c t m. ( KnownNat l
+mkLeds :: forall l m p c t.
+          ( KnownNat l
           , MonadState Context m
           , MonadReader (D.Domain p c) m
           , T.LazyTransport t
-          ) => RunValues Uint8 -> [Ix l] -> t -> m (LEDs l)
+          )
+       => Values (Canvas1DSize l)  Uint8 -> [Ix l] -> t -> m (LEDs l)
 mkLeds frameBuffer order' transport = do
     let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
-    let canvas  = mkCanvas1D frameBuffer 0
+    let canvas  = mkCanvas1D frameBuffer
     order      <- values     "leds_order"       order'
     state      <- value      "leds_state"       true
     brightness <- value      "leds_brightness"  1
@@ -92,7 +94,7 @@ mkLeds frameBuffer order' transport = do
 
 
 
-updateLeds :: forall l b s. (KnownNat l) => LEDs l -> Ivory (ProcEffects s ()) ()
+updateLeds :: KnownNat l => LEDs l -> Ivory (ProcEffects s ()) ()
 updateLeds LEDs{..} = do
     brightness' <- deref brightness
     arrayMap $ \sx -> do
@@ -108,13 +110,13 @@ updateLeds LEDs{..} = do
 
 
 
-render :: KnownNat l => LEDs l -> Ivory (ProcEffects s ()) ()
+render :: (KnownNat l, KnownNat (Canvas1DSize l) ) => LEDs l -> Ivory (ProcEffects s ()) ()
 render LEDs{..} =
     writePixels canvas pixels
 
 
 
-onDo :: forall n l s t. (KnownNat n, KnownNat l)
+onDo :: (KnownNat n, KnownNat l)
       => LEDs l
       -> Buffer n Uint8
       -> Uint8
@@ -254,6 +256,7 @@ onInitColors LEDs{..} buff size = do
         (do
             store state . (==? 1) =<< deref (buff ! 2)
             store brightness . (/ 255) . safeCast =<< deref (buff ! 3)
+
             v <- local $ ival 0
             arrayMap $ \dx -> do
                 let d = fromIx dx
@@ -264,6 +267,7 @@ onInitColors LEDs{..} buff size = do
                 let image' = v' .& 1 ==? 1
                 store (image ! dx) image'
                 store v $ v' `iShiftR` 1
+
             arrayMap $ \dx -> do
                 let d = fromIx dx
                 when (d .% 8 ==? 0) $ do
@@ -273,13 +277,16 @@ onInitColors LEDs{..} buff size = do
                 let blink' = v' .& 1 ==? 1
                 store (blink ! dx) blink'
                 store v $ v' `iShiftR` 1
-            arrayMap run
+
+            let setColor ix color offset = do
+                   value <- deref (buff ! toIx (fromIx ix * 3 + 2 * safeCast n' + 4 + offset))
+                   store (colors ! ix ~> color) $ safeCast value / 255
+            arrayMap $ \ix -> do
+                setColor ix r 0
+                setColor ix g 1
+                setColor ix b 2
+
             pure true
         )
         (  pure false
         )
-        where
-            run ix = go ix r 20 >> go ix g 21 >> go ix b 22
-            go  ix color offset = do
-                value <- deref (buff ! toIx (fromIx ix * 3 + offset))
-                store (colors ! ix ~> color) $ safeCast value / 255

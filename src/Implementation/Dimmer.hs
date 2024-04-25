@@ -1,3 +1,4 @@
+{-# LANGUAGE DataKinds       #-}
 {-# LANGUAGE NamedFieldPuns  #-}
 {-# LANGUAGE RecordWildCards #-}
 
@@ -14,12 +15,12 @@ import           Ivory.Stdlib
 
 data Dimmer = Dimmer
     { dimmers   :: Dimmers
-    , indicator :: Indicator
+    , indicator :: Indicator 20
     }
 
 
 
-dimmer :: Monad m => m t -> (t -> m Dimmers) ->(t -> m Indicator) -> m Dimmer
+dimmer :: Monad m => m t -> (t -> m Dimmers) ->(t -> m (Indicator 20)) -> m Dimmer
 dimmer transport' dimmers' indicator' = do
     transport <- transport'
     dimmers <- dimmers' transport

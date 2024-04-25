@@ -2,7 +2,6 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
-{-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
 
 module Device.GD32F3x0.Display.NeoPixel where
@@ -47,11 +46,11 @@ data NeoPixel = NeoPixel
     , dmaChannel :: DMA_CHANNEL
     , dmaIRQn    :: IRQn
     , dmaParams  :: Record DMA_PARAM_STRUCT
-    , buff       :: FrameBufferNeoPixel Uint8
+    , buff       :: FrameBufferNeoPixel 1 Uint8
     , offset     :: Index Uint16
     }
 
-mkNeoPixelPWM :: MonadState Context m
+mkNeoPixelPWM :: (MonadState Context m)
               => (Uint32 -> Uint32 -> m Timer)
               -> TIMER_CHANNEL
               -> DMA_CHANNEL
@@ -69,7 +68,7 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn pwmPort' = do
                              ]
     pwmTimer     <- timer' system_core_clock pwmPeriod
     dmaParams    <- record (symbol dmaChannel <> "_dma_param") dmaInit
-    buff         <- neoPixelBuffer pwmPeriod 1
+    buff         <- neoPixelBuffer pwmPeriod
     offset       <- index "neopixel"
 
     initPort pwmPort
@@ -92,46 +91,42 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn pwmPort' = do
 
 
 
-instance Handler Render NeoPixel where
-  addHandler (Render npx@NeoPixel{..} frameRate runFrame render) = do
-    addBody (makeIRQHandlerName dmaIRQn) (handleDMA npx runFrame)
+instance KnownNat n => Handler (Render n) NeoPixel where
+  addHandler (Render npx@NeoPixel{..} frameRate frame render) = do
+    addBody (makeIRQHandlerName dmaIRQn) (handleDMA npx frame)
     addTask $ delay (1000 `iDiv` frameRate)
                     ("neo_pixel_" <> show pwmPort) $ do
                         render
-                        runFrame $ \frame -> do
-                            writeByte buff 0 =<< deref (addrOf frame ! 0)
-                            store offset 1
-                            transmitFrameBuffer npx
+                        writeByte buff 0 =<< deref (frame ! 0)
+                        store offset 1
+                        transmitFrameBuffer npx
 
 
 
-handleDMA :: NeoPixel -> RunValues Uint8 -> Ivory ('Effects (Returns ()) b (Scope s)) ()
-handleDMA npx@NeoPixel{..} runFrame = do
+handleDMA :: KnownNat n => NeoPixel -> Values n Uint8 -> Ivory ('Effects (Returns ()) b (Scope s)) ()
+handleDMA npx@NeoPixel{..} frame = do
     f <- getInterruptFlagDMA dmaChannel dma_int_flag_ftf
     when f $ do
         clearInterruptFlagDMA dmaChannel dma_int_flag_g
         offset' <- deref offset
-        runFrame $ \frame -> do
-            let frame' = addrOf frame
-            when (offset' <? arrayLen frame') $ do
-                writeByte buff 0 =<< deref (frame' ! toIx offset')
-                transmitFrameBuffer npx
-                store offset $ offset' + 1
+        when (offset' <? arrayLen frame) $ do
+            writeByte buff 0 =<< deref (frame ! toIx offset')
+            transmitFrameBuffer npx
+            store offset $ offset' + 1
 
 
 
 transmitFrameBuffer :: NeoPixel -> Ivory eff ()
-transmitFrameBuffer NeoPixel{..} =
-        runBuffer buff $ \b -> do
-            let b' = addrOf b
-            store (dmaParams ~> memory_addr) =<< castArrayUint8ToUint32 (toCArray b')
-            store (dmaParams ~> number) $ arrayLen b'
-            deinitDMA                     dmaChannel
-            initDMA                       dmaChannel dmaParams
-            disableCirculationDMA         dmaChannel
-            I.resetCounter                pwmTimer
-            enableInterruptDMA            dmaChannel dma_int_ftf
-            enableChannelDMA              dmaChannel
+transmitFrameBuffer NeoPixel{..} = do
+    let b = buffer buff
+    store (dmaParams ~> memory_addr) =<< castArrayUint8ToUint32 (toCArray b)
+    store (dmaParams ~> number) $ arrayLen b
+    deinitDMA                     dmaChannel
+    initDMA                       dmaChannel dmaParams
+    disableCirculationDMA         dmaChannel
+    I.resetCounter                pwmTimer
+    enableInterruptDMA            dmaChannel dma_int_ftf
+    enableChannelDMA              dmaChannel
 
 
 

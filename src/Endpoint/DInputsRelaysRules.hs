@@ -3,8 +3,11 @@
 {-# LANGUAGE GADTs            #-}
 {-# LANGUAGE KindSignatures   #-}
 {-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE NoStarIsType     #-}
 {-# LANGUAGE RankNTypes       #-}
 {-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE TypeOperators    #-}
+
 
 module Endpoint.DInputsRelaysRules where
 
@@ -27,11 +30,14 @@ import           Ivory.Stdlib
 
 
 
-data Rules ni no np = Rules
-    { rulesOn  :: Matrix ni no Uint8
-    , rulesOff :: Matrix ni no Uint8
-    , payload  :: Values    np Uint8 -- np should be equal to: 2 + 2 * no
-    , synced   :: Value        IBool
+type PayloadSize n = 2 * n + 2
+
+
+data Rules ni no = Rules
+    { rulesOn  :: Matrix           ni no  Uint8
+    , rulesOff :: Matrix           ni no  Uint8
+    , payload  :: Values (PayloadSize no) Uint8
+    , synced   :: Value                   IBool
     , transmit :: forall l. KnownNat l
                => Buffer l Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
@@ -40,12 +46,12 @@ data Rules ni no np = Rules
 
 mkRules :: ( KnownNat ni
            , KnownNat no
-           , KnownNat np
+           , KnownNat (PayloadSize no)
            , MonadState Context m
            , MonadReader (D.Domain p i) m
            , T.Transport t
            )
-        => t -> m (Rules ni no np)
+        => t -> m (Rules ni no)
 mkRules transport = do
     mcu       <- asks D.mcu
     rulesOn   <- matrix'  "dinputs_relays_rules_matrix_on"  0xff
@@ -61,8 +67,8 @@ mkRules transport = do
 
 
 
-fillPayload :: (KnownNat ni, KnownNat no, KnownNat np) 
-            => Rules ni no np -> Uint8 -> Ivory (ProcEffects s t) ()
+fillPayload :: (KnownNat ni, KnownNat no, KnownNat (PayloadSize no))
+            => Rules ni no -> Uint8 -> Ivory (ProcEffects s t) ()
 fillPayload Rules{..} i = do
     store (payload ! 0) 0x03
     store (payload ! 1) $ i + 1
@@ -76,16 +82,16 @@ fillPayload Rules{..} i = do
 
 
 
-forceSyncRules :: Rules ni no np -> Ivory eff ()
+forceSyncRules :: Rules ni no -> Ivory eff ()
 forceSyncRules Rules{..} = store synced false
 
 
 manageRules :: (KnownNat ni, KnownNat no)
-            => Rules ni no np -> DInputs -> Relays -> Groups -> Ivory ('Effects (Returns ()) r (Scope s)) ()
+            => Rules ni no -> DInputs -> Relays -> Groups -> Ivory ('Effects (Returns ()) r (Scope s)) ()
 manageRules Rules{..} DInputs{..} relays groups =
     runDInputs  $ \dis -> arrayMap $ \ix' -> do
         let n = arrayLen $ addrOf dis
-        let ix = fromIntegral n - ix' - 1 -- Need for prriority di rule
+        let ix = fromIntegral n - ix' - 1 -- Need for priority di rule
         let di = addrOf dis ! ix
         let run rules = arrayMap $ \jx -> do
                 r <- deref (rules ! toIx (fromIx ix) ! jx)
@@ -101,7 +107,7 @@ manageRules Rules{..} DInputs{..} relays groups =
 
 
 
-syncRules :: (KnownNat ni, KnownNat no, KnownNat np) => Rules ni no np -> Ivory (ProcEffects s ()) ()
+syncRules :: (KnownNat ni, KnownNat no, KnownNat (PayloadSize no)) => Rules ni no -> Ivory (ProcEffects s ()) ()
 syncRules r@Rules{..} = do
     synced' <- deref synced
     let n = arrayLen  rulesOn
