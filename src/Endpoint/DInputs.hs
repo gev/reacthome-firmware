@@ -31,18 +31,17 @@ type DInputStruct = "dinput_struct"
 
 
 
-data DInputs = DInputs
-    { runDInputs :: RunRecords DInputStruct
+data DInputs n = DInputs
+    { dInputs    :: Records n DInputStruct
     , payload    :: Buffer 3 Uint8
     }
 
-dinputs :: MonadState Context m => String -> Int -> m DInputs
+dinputs :: (MonadState Context m, KnownNat n) => String -> Int -> m ( DInputs n )
 dinputs name n = do
     addStruct (Proxy :: Proxy DInputStruct)
-    let runDInputs = runRecords name $ replicate n go
+    dInputs       <-  records name $ replicate n go
     payload       <- buffer "dinput_message"
-    let dinputs    = DInputs {runDInputs, payload}
-    runDInputs addArea
+    let dinputs    = DInputs {dInputs, payload}
     pure dinputs
     where go = [ state     .= ival false
                , timestamp .= ival 0
@@ -51,11 +50,10 @@ dinputs name n = do
 
 
 
-message :: DInputs -> Uint8 -> Ivory eff (Buffer 3 Uint8)
+message :: KnownNat n => DInputs n -> Uint8 -> Ivory eff (Buffer 3 Uint8)
 message DInputs{..} i = do
-    runDInputs $ \di -> do
-        let dinput = addrOf di ! toIx i
-        pack   payload 0 actionDi
-        pack   payload 1 $ i + 1
-        pack   payload 2 =<< deref (dinput ~> state)
+    let dinput = dInputs ! toIx i
+    pack   payload 0 actionDi
+    pack   payload 1 $ i + 1
+    pack   payload 2 =<< deref (dinput ~> state)
     pure payload

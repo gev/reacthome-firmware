@@ -8,14 +8,10 @@ module Data.Record
     ( Record
     , Records
     , Records'
-    , RunRecords
     , record_
     , record
     , records_
     , records
-    , runRecords_
-    , runRecords
-    , runRecordsFromList
     ) where
 
 import           Control.Monad.State
@@ -29,8 +25,6 @@ import           Ivory.Language
 type Record     t = Ref Global (Struct t)
 type Records  n t = Ref Global (Array n (Struct t))
 type Records' n t = MemArea    (Array n (Struct t))
-type RunRecords t = forall a.  (forall n. KnownNat n => Records' n t -> a) -> a
-
 
 
 record_ :: (MonadState Context m, IvoryStruct t)
@@ -50,23 +44,3 @@ records_ id = mkArea id Nothing
 records :: (MonadState Context m, KnownNat n, IvoryStruct t)
         => String -> [[InitStruct t]] -> m (Records n t)
 records id r = mkArea id . Just . iarray $ istruct <$> r
-
-
-
-runRecords_ :: IvoryStruct t
-            => String -> Int -> RunRecords t
-runRecords_ id = run (area id Nothing)
-
-runRecords :: IvoryStruct t
-           => String -> [[InitStruct t]] -> RunRecords t
-runRecords id xs = run (area id . Just . iarray $ istruct <$> xs) $ length xs
-
-runRecordsFromList :: IvoryStruct t
-                   => String -> (c -> [InitStruct t]) -> [c] -> RunRecords t
-runRecordsFromList id h xs = run (area id . Just . iarray $ istruct . h <$> xs) $ length xs
-
-
-
-run :: forall t. (forall n. KnownNat n => Records' n t) -> Int -> RunRecords t
-run r n f = go . someNatVal . fromIntegral $ n
-    where go (SomeNat (p :: Proxy p)) = f (r :: Records' p t)

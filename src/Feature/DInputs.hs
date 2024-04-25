@@ -32,10 +32,10 @@ import           Ivory.Stdlib
 
 
 
-data DInputs = forall i. Input i => DInputs
+data DInputs n = forall i. Input i => DInputs
     { n          :: Int
     , zero       :: IBool
-    , getDInputs :: DI.DInputs
+    , getDInputs :: DI.DInputs n
     , getInputs  :: [i]
     , current    :: Index Uint8
     , clock      :: SystemClock
@@ -46,7 +46,7 @@ data DInputs = forall i. Input i => DInputs
 
 
 dinputs :: (MonadState Context m, MonadReader (D.Domain p c) m, T.Transport t, Input i, Pull p d)
-          => [p -> d -> m i] -> Bool -> t -> m DInputs
+          => [p -> d -> m i] -> Bool -> t -> m (DInputs n)
 dinputs inputs zero' transport = do
     mcu        <- asks D.mcu
     let clock   = systemClock mcu
@@ -75,17 +75,17 @@ dinputs inputs zero' transport = do
 
 
 
-forceSyncDInputs :: DInputs -> Ivory eff ()
-forceSyncDInputs dinputs = DI.runDInputs (getDInputs dinputs) $
+forceSyncDInputs :: DInputs n -> Ivory eff ()
+forceSyncDInputs dinputs = (getDInputs dinputs) $
     \dis -> arrayMap $ \ix -> store (addrOf dis ! ix ~> DI.synced) false
 
 
 
-manageDInputs :: DInputs -> Ivory eff ()
+manageDInputs :: DInputs n -> Ivory eff ()
 manageDInputs DInputs{..} = zipWithM_ zip getInputs [0..]
     where
         zip :: Input i => i -> Int -> Ivory eff ()
-        zip input i = DI.runDInputs getDInputs $ \dis -> do
+        zip input i = getDInputs $ \dis -> do
             let ix = fromIntegral i
             let di = addrOf dis ! ix
             manageDInput zero di input =<< getSystemTime clock
@@ -108,7 +108,7 @@ manageDInput zero di input t  = do
 
 
 
-syncDInputs :: DInputs -> Ivory (ProcEffects s ()) ()
+syncDInputs :: DInputs n -> Ivory (ProcEffects s ()) ()
 syncDInputs dis@DInputs{..} = do
     i <- deref current
     syncDInput dis i
@@ -116,12 +116,11 @@ syncDInputs dis@DInputs{..} = do
 
 
 
-syncDInput :: DInputs -> Uint8 -> Ivory (ProcEffects s ()) ()
+syncDInput :: DInputs n -> Uint8 -> Ivory (ProcEffects s ()) ()
 syncDInput DInputs{..} i =
-    DI.runDInputs getDInputs $ \dis -> do
-        let di = addrOf dis ! toIx i
-        synced <- deref $ di ~> DI.synced
-        when (iNot synced) $ do
-            msg <- DI.message getDInputs (i .% fromIntegral n)
-            transmit msg
-            store (di ~> DI.synced) true
+    let di = dis ! toIx i
+    synced <- deref $ di ~> DI.synced
+    when (iNot synced) $ do
+        msg <- DI.message getDInputs (i .% fromIntegral n)
+        transmit msg
+        store (di ~> DI.synced) true
