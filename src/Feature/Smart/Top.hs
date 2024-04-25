@@ -1,8 +1,9 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GADTs            #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE FlexibleContexts   #-}
+{-# LANGUAGE GADTs              #-}
+{-# LANGUAGE NamedFieldPuns     #-}
+{-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE RankNTypes         #-}
+{-# LANGUAGE RecordWildCards    #-}
 
 module Feature.Smart.Top where
 
@@ -63,7 +64,7 @@ top uart' pin' transportUp = do
                             transmit =<< deref (buff ! ix)
                   )
 
-    transportDown <- mkRbus "transport_uart_rbus" uart onMessage'
+    transportDown <- mkRbus "transport_uart_rbus" uart 115_200 onMessage'
 
     let top = Top { pin, isDetected, transportUp, transportDown }
 
