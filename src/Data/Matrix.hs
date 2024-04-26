@@ -1,7 +1,6 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE FlexibleInstances   #-}
-{-# LANGUAGE ImpredicativeTypes  #-}
 {-# LANGUAGE KindSignatures      #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
@@ -17,7 +16,7 @@ import           Core.Context
 import           Data.Area
 import           GHC.TypeNats
 import           Ivory.Language
-import           Ivory.Language.Proxy (NatType, aNat)
+import           Ivory.Language.Proxy 
 
 
 type Matrix (n:: Nat) (m :: Nat) t = Ref Global (Array n (Array m (Stored t)))

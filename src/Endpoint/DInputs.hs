@@ -32,9 +32,11 @@ type DInputStruct = "dinput_struct"
 
 
 data DInputs n = DInputs
-    { dInputs    :: Records n DInputStruct
-    , payload    :: Buffer 3 Uint8
+    { dInputs :: Records n DInputStruct
+    , payload :: Buffer 3 Uint8
     }
+
+
 
 dinputs :: (MonadState Context m, KnownNat n) => String -> Int -> m ( DInputs n )
 dinputs name n = do

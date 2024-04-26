@@ -6,6 +6,8 @@
 {-# LANGUAGE RecordWildCards  #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
+{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Feature.DInputs where
 
@@ -22,40 +24,47 @@ import           Data.Record
 import           Data.Serialize
 import           Data.Value
 import qualified Endpoint.DInputs      as DI
-import           GHC.TypeNats
+import           GHC.TypeNats 
 import           Interface.GPIO.Input
 import           Interface.GPIO.Port
 import           Interface.MCU         (MCU, peripherals, systemClock)
 import           Interface.SystemClock (SystemClock, getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
+import Ivory.Language.Proxy 
 
 
 
-data DInputs n = forall i. Input i => DInputs
+data DInputs (n :: Nat) = forall i. Input i => DInputs
     { n          :: Int
     , zero       :: IBool
     , getDInputs :: DI.DInputs n
     , getInputs  :: [i]
     , current    :: Index Uint8
     , clock      :: SystemClock
-    , transmit   :: forall n. KnownNat n
-                 => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
+    , transmit   :: forall l. KnownNat l
+                 => Buffer l Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
 
 
 
-dinputs :: (MonadState Context m, MonadReader (D.Domain p c) m, T.Transport t, Input i, Pull p d)
-          => [p -> d -> m i] -> Bool -> t -> m (DInputs n)
+dinputs :: forall m n p c i d t.
+           ( MonadState Context m
+           , MonadReader (D.Domain p c) m
+           , T.Transport t
+           , Input i, Pull p d
+           , KnownNat n
+           )
+        => [p -> d -> m i] -> Bool -> t -> m (DInputs n)
 dinputs inputs zero' transport = do
-    mcu        <- asks D.mcu
-    let clock   = systemClock mcu
+    let n            = fromIntegral $ natVal (aNat :: NatType n)
+    mcu             <- asks D.mcu
+    let clock        = systemClock mcu
     let peripherals' = peripherals mcu
-    let pull    = if zero' then pullUp else pullDown
-    is         <- mapM (($ pull peripherals') . ($ peripherals')) inputs
-    let n       = length is
-    getDInputs <- DI.dinputs "dinputs" n
-    current    <- index "current_dinput"
+    let pull         = if zero' then pullUp else pullDown
+    is              <- mapM (($ pull peripherals') . ($ peripherals')) inputs
+    getDInputs      <- DI.dinputs "dinputs" n
+    current         <- index "current_dinput"
 
     let dinputs = DInputs { n
                           , zero = if zero' then true else false
@@ -75,19 +84,19 @@ dinputs inputs zero' transport = do
 
 
 
-forceSyncDInputs :: DInputs n -> Ivory eff ()
-forceSyncDInputs dinputs = (getDInputs dinputs) $
-    \dis -> arrayMap $ \ix -> store (addrOf dis ! ix ~> DI.synced) false
+forceSyncDInputs :: KnownNat n => DInputs n -> Ivory eff ()
+forceSyncDInputs DInputs{..} = do
+    arrayMap $ \ix -> store (( DI.dInputs getDInputs ! ix) ~> DI.synced) false
 
 
 
-manageDInputs :: DInputs n -> Ivory eff ()
+manageDInputs :: KnownNat n => DInputs n -> Ivory eff ()
 manageDInputs DInputs{..} = zipWithM_ zip getInputs [0..]
     where
         zip :: Input i => i -> Int -> Ivory eff ()
-        zip input i = getDInputs $ \dis -> do
+        zip input i = do
             let ix = fromIntegral i
-            let di = addrOf dis ! ix
+            let di = DI.dInputs getDInputs ! ix
             manageDInput zero di input =<< getSystemTime clock
 
 
@@ -108,7 +117,7 @@ manageDInput zero di input t  = do
 
 
 
-syncDInputs :: DInputs n -> Ivory (ProcEffects s ()) ()
+syncDInputs :: KnownNat n => DInputs n -> Ivory (ProcEffects s ()) ()
 syncDInputs dis@DInputs{..} = do
     i <- deref current
     syncDInput dis i
@@ -116,9 +125,9 @@ syncDInputs dis@DInputs{..} = do
 
 
 
-syncDInput :: DInputs n -> Uint8 -> Ivory (ProcEffects s ()) ()
-syncDInput DInputs{..} i =
-    let di = dis ! toIx i
+syncDInput :: KnownNat n => DInputs n -> Uint8 -> Ivory (ProcEffects s ()) ()
+syncDInput DInputs{..} i = do
+    let di = DI.dInputs getDInputs ! toIx i
     synced <- deref $ di ~> DI.synced
     when (iNot synced) $ do
         msg <- DI.message getDInputs (i .% fromIntegral n)
