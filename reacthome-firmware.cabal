@@ -272,6 +272,7 @@ executable reacthome-firmware
                     , shake
                     , pureMD5
                     , bytestring
+                    , template-haskell
 
     hs-source-dirs:   app
                     , formula
