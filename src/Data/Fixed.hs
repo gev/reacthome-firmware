@@ -13,15 +13,14 @@ module Data.Fixed where
 import           Data.Proxy
 import           GHC.TypeNats
 import           Language.Haskell.TH
-import           Prelude             hiding (zipWith)
 
 infixr 5 :>
 data List n t where
   Nil  :: List 0 t
-  (:>) :: t -> List (n - 1) t -> List n t
+  (:>) :: t -> List n t -> List (n + 1) t
 
-deriving instance Functor (List n)
-deriving instance Foldable (List n)
+deriving instance Functor     (List n)
+deriving instance Foldable    (List n)
 deriving instance Traversable (List n)
 
 toList :: List n t -> [t]
@@ -34,10 +33,6 @@ head (x :> _) = x
 tail :: List n t -> List (n - 1) t
 tail (_ :> xs) = xs
 
-zipWith :: (t -> u -> v) -> List n t -> List n u -> List n v
-zipWith _   Nil  _            = Nil
-zipWith _    _  Nil           = Nil
-zipWith f (x :> xs) (y :> ys) = f x y :> zipWith f xs ys
 
 class MakeFrom n f t | f -> n, f -> t where
   from :: f -> List n t
