@@ -27,7 +27,6 @@ toList :: List n t -> [t]
 toList Nil       = []
 toList (x :> xs) = x : toList xs
 
-
 class MakeFrom n f t | f -> n, f -> t where
   from :: f -> List n t
 
