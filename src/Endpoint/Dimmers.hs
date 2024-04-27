@@ -44,22 +44,21 @@ data Dimmers n = Dimmers
 
 
 
-mkDimmers :: MonadState Context m => String -> Int -> m (Dimmers n)
+mkDimmers :: (MonadState Context m,  KnownNat n)  => String -> Int -> m (Dimmers n)
 mkDimmers name n = do
     addStruct (Proxy :: Proxy DimmerStruct)
-    let runDimmers = runRecords name $ go . fromIntegral <$> [1..n]
-    payload       <- buffer "dimmer_message"
-    let dimmers    = Dimmers {dimmers, payload}
-    runDimmers addArea
+    dimmers      <- records name $ go . fromIntegral <$> [1..n]
+    payload      <- buffer "dimmer_message"
+    let dimmers  = Dimmers {dimmers, payload}
     pure dimmers
-    where go i = [ mode       .= ival 0
-                 , brightness .= ival 0
-                 , velocity   .= ival 0
-                 , group      .= ival i
-                 , value      .= ival 0
-                 , delta      .= ival 0
-                 , synced     .= ival false
-                 ]
+    where go = [ mode       .= ival 0
+                , brightness .= ival 0
+                , velocity   .= ival 0
+                , group      .= ival n
+                , value      .= ival 0
+                , delta      .= ival 0
+                , synced     .= ival false
+                ]
 
 
 
