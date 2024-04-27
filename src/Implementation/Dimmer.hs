@@ -14,7 +14,7 @@ import           Ivory.Stdlib
 
 
 data Dimmer = Dimmer
-    { dimmers   :: Dimmers
+    { dimmers   :: Dimmers   12
     , indicator :: Indicator 20
     }
 

@@ -34,7 +34,8 @@ import           Support.Cast
 dimmersDC :: ( MonadState Context m
              , MonadReader (D.Domain p c) m
              , T.Transport t, I.PWM o
-             ) => [p -> Uint32 -> Uint32 -> m o] -> t -> m Dimmers
+             , KnownNat n
+             ) => [p -> Uint32 -> Uint32 -> m o] -> t -> m (Dimmers n)
 dimmersDC pwms transport = do
     dimmers <- mkDimmers pwms 1_000 transport
 
@@ -44,13 +45,13 @@ dimmersDC pwms transport = do
 
 
 
-manage :: Dimmers -> Ivory eff ()
+manage :: KnownNat n => Dimmers n -> Ivory eff ()
 manage Dimmers{..} = zipWithM_ zip getPWMs [0..]
     where
         zip :: I.PWM p => p -> Int -> Ivory eff ()
-        zip pwm i = Dim.runDimmers getDimmers $ \ds -> do
+        zip pwm i = do
             let ix = fromIntegral i
-            let d = addrOf ds ! ix
+            let d = Dim.dimmers getDimmers ! ix
             manageDimmer pwm d
 
 
