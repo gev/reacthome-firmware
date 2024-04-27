@@ -19,12 +19,11 @@ import           Ivory.Language
 blink :: (MonadState Context m, MonadReader (Domain p ()) m, Output o, Pull p u)
       => (p -> u -> m o) -> m ()
 blink o = do
-    let name  = "blink"
-
-    mcu      <- asks mcu
-    let peripherals' = peripherals mcu
-    out      <- o peripherals' $ pullNone peripherals'
-    state    <- value (name <> "_state") false
+    let name          = "blink"
+    mcu              <- asks mcu
+    let peripherals'  = peripherals mcu
+    out              <- o peripherals' $ pullNone peripherals'
+    state            <- value (name <> "_state") false
 
     addTask $ delay 1_000 name $ do
         v <- deref state
