@@ -19,12 +19,12 @@ import           Ivory.Stdlib
 
 data Bottom = Bottom
     { top     :: Top
-    , dinputs :: DInputs
+    , dinputs :: DInputs 4
     }
 
 
 
-bottom1 :: Monad m => m t -> (t -> m Top) -> (Bool -> t -> m DInputs) -> (t -> m DS18B20) -> m Bottom
+bottom1 :: Monad m => m t -> (t -> m Top) -> (Bool -> t -> m (DInputs 4)) -> (t -> m DS18B20) -> m Bottom
 bottom1 transport' top' dinputs' ds18b20 = do
     transport <- transport'
     ds18b20 transport
@@ -34,7 +34,7 @@ bottom1 transport' top' dinputs' ds18b20 = do
 
 
 
-bottom2 :: Monad m => m t -> (t -> m Top) -> (Bool -> t -> m DInputs) -> (t -> m DS18B20) -> (t -> m SCD40) -> m Bottom
+bottom2 :: Monad m => m t -> (t -> m Top) -> (Bool -> t -> m (DInputs 4)) -> (t -> m DS18B20) -> (t -> m SCD40) -> m Bottom
 bottom2 transport top dinputs ds18b20 scd40 = do
     scd40 =<< transport
     bottom1 transport top dinputs ds18b20

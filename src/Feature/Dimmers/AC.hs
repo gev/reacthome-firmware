@@ -47,8 +47,10 @@ data CrossZero = CrossZero
 
 dimmersAC :: ( MonadState Context m
              , MonadReader (D.Domain p c) m
-             , T.Transport t, I.PWM o, Handler HandleEXTI e, EXTI e
-             ) => [p -> Uint32 -> Uint32 -> m o] -> (p -> m e) -> t -> m Dimmers
+             , Handler HandleEXTI e, EXTI e
+             , T.Transport t, I.PWM o
+             , KnownNat n
+             ) => [p -> Uint32 -> Uint32 -> m o] -> (p -> m e) -> t -> m (Dimmers n)
 dimmersAC pwms exti transport = do
     mcu            <- asks D.mcu
     e              <- exti $ peripherals mcu
@@ -79,7 +81,7 @@ dimmersAC pwms exti transport = do
 
 
 
-detectCrossZero :: Dimmers -> CrossZero ->  Ivory eff ()
+detectCrossZero :: Dimmers n -> CrossZero ->  Ivory eff ()
 detectCrossZero Dimmers{..} CrossZero{..} = do
     period1' <- deref period1
     store period1 =<< getCounter (head getPWMs)
@@ -95,7 +97,7 @@ detectCrossZero Dimmers{..} CrossZero{..} = do
     TODO: Send a cross Zero error to the server
 -}
 
-detectCrossZeroError :: Dimmers -> CrossZero -> Ivory eff ()
+detectCrossZeroError :: Dimmers n -> CrossZero -> Ivory eff ()
 detectCrossZeroError Dimmers{..} CrossZero{..} = do
     countCrossZero' <- deref countCrossZero
     store isNoCrossZero $ countCrossZero' <? 75
@@ -103,13 +105,13 @@ detectCrossZeroError Dimmers{..} CrossZero{..} = do
 
 
 
-calculate :: Dimmers -> Ivory eff ()
+calculate :: KnownNat n => Dimmers n -> Ivory eff ()
 calculate Dimmers{..} = zipWithM_ zip getPWMs [0..]
     where
         zip :: I.PWM p => p -> Int -> Ivory eff ()
-        zip pwm i = Dim.runDimmers getDimmers $ \ds -> do
+        zip pwm i = do
             let ix = fromIntegral i
-            let d = addrOf ds ! ix
+            let d = Dim.dimmers getDimmers ! ix
             calculateDimmer d
 
 
@@ -119,7 +121,7 @@ calculateDimmer = Dim.calculateValue
 
 
 
-manage :: Dimmers -> CrossZero -> Ivory eff ()
+manage :: KnownNat n => Dimmers n -> CrossZero -> Ivory eff ()
 manage Dimmers{..} CrossZero{..} = do
     isCrossZero'   <- deref isCrossZero
     isNoCrossZero' <- deref isNoCrossZero
@@ -128,9 +130,9 @@ manage Dimmers{..} CrossZero{..} = do
         store isCrossZero false
     where
         zip :: I.PWM p => p -> Int -> Ivory eff ()
-        zip pwm i = Dim.runDimmers getDimmers $ \ds -> do
+        zip pwm i = do
             let ix = fromIntegral i
-            let d = addrOf ds ! ix
+            let d = Dim.dimmers getDimmers ! ix
             manageDimmer pwm d =<< deref period0
 
 
@@ -146,16 +148,16 @@ manageDimmer pwm dimmer period = do
 
 
 
-manageNoCrossZero :: Dimmers -> CrossZero -> Ivory eff ()
+manageNoCrossZero :: KnownNat n => Dimmers n -> CrossZero -> Ivory eff ()
 manageNoCrossZero Dimmers{..} CrossZero{..} = do
     isNoCrossZero' <- deref isNoCrossZero
     when isNoCrossZero' $
         zipWithM_ zip getPWMs [0..]
     where
         zip :: I.PWM p => p -> Int -> Ivory eff ()
-        zip pwm i =Dim.runDimmers getDimmers $ \ds -> do
+        zip pwm i = do
             let ix = fromIntegral i
-            let d = addrOf ds ! ix
+            let d = Dim.dimmers getDimmers ! ix
             manageDimmerNoCrossZero pwm d
 
 

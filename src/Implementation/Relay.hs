@@ -16,13 +16,13 @@ import           Ivory.Stdlib
 
 
 data Relay = Relay
-    { relays    :: Relays
+    { relays    :: Relays    12
     , indicator :: Indicator 20
     }
 
 
 
-relay :: Monad m => m t -> (t -> m Relays) -> (t -> m (Indicator 20)) -> m Relay
+relay :: Monad m => m t -> (t -> m (Relays 12)) -> (t -> m (Indicator 20)) -> m Relay
 relay transport' relays' indicator' = do
     transport <- transport'
     relays    <- relays' transport

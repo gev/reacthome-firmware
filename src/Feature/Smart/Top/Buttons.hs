@@ -14,7 +14,7 @@ import           Data.Buffer
 import           Data.Color
 import           Data.Serialize
 import           Data.Value
-import           Endpoint.DInputs       (DInputs (runDInputs), state)
+import           Endpoint.DInputs       (DInputs (dinputs), state)
 import           Feature.Smart.Top.LEDs (LEDs (order, pixels))
 import           GHC.TypeNats
 import           Ivory.Language
@@ -22,34 +22,36 @@ import           Ivory.Stdlib
 
 
 
-data Buttons l = forall t. (LazyTransport t, KnownNat l) => Buttons
-    { leds            :: LEDs l
-    , dinputs         :: DInputs
-    , leds'per'button :: Ix   l
-    , start           :: Value      IBool
-    , findMe          :: Value      IBool
-    , t               :: Value      Sint32
+data Buttons n l = forall t. (LazyTransport t, KnownNat l) => Buttons
+    { leds            :: LEDs    l
+    , getDInputs      :: DInputs n
+    , leds'per'button :: Ix      l
+    , start           :: Value   IBool
+    , findMe          :: Value   IBool
+    , t               :: Value   Sint32
     , transport       :: t
     }
 
 
 
 mkButtons :: (MonadState Context m, LazyTransport t, KnownNat l)
-          => LEDs l -> DInputs -> Ix l -> t -> m (Buttons l)
-mkButtons leds dinputs leds'per'button transport = do
+          => LEDs l -> DInputs n -> Ix l -> t -> m (Buttons n l)
+mkButtons leds getDInputs leds'per'button transport = do
     start      <- value "buttons_start"   true
     findMe     <- value "buttons_find_me" false
     t          <- value "buttons_t"       0
 
     addConstArea sinT
 
-    pure Buttons { leds, dinputs, leds'per'button
+    pure Buttons { leds, getDInputs, leds'per'button
                  , start, findMe, t
                  , transport
                  }
 
 
-updateButtons :: KnownNat l => Buttons l -> Ivory (ProcEffects s ()) ()
+updateButtons :: (KnownNat l, KnownNat n)
+              => Buttons n l
+              -> Ivory (ProcEffects s ()) ()
 updateButtons Buttons{..} = do
     pixel'  <- local . istruct $ rgb 0 0 0
     pixel'' <- local . istruct $ rgb 1 1 1
@@ -66,17 +68,16 @@ updateButtons Buttons{..} = do
             store t $ t' + 1
         )
 
-    runDInputs dinputs $ \di ->
-        arrayMap $ \ix -> do
-            state' <- deref $ addrOf di ! ix ~> state
-            for leds'per'button $ \ kx -> do
-                let sx = toIx $ fromIx leds'per'button * fromIx ix + fromIx kx
-                dx <- deref $ order leds ! sx
-                ifte_ state'
-                    (run (pixels leds ! dx) pixel'')
-                    (when start'
-                        (run (pixels leds ! dx) pixel')
-                    )
+    arrayMap $ \ix -> do
+        state' <- deref $ dinputs getDInputs ! ix ~> state
+        for leds'per'button $ \ kx -> do
+            let sx = toIx $ fromIx leds'per'button * fromIx ix + fromIx kx
+            dx <- deref $ order leds ! sx
+            ifte_ state'
+                (run (pixels leds ! dx) pixel'')
+                (when start'
+                    (run (pixels leds ! dx) pixel')
+                )
     where
         run dst src = do
             store (dst ~> r) =<< deref (src ~> r)
@@ -84,9 +85,9 @@ updateButtons Buttons{..} = do
             store (dst ~> b) =<< deref (src ~> b)
 
 
-onFindMe :: KnownNat n
-         => Buttons l
-         -> Buffer n Uint8
+onFindMe :: KnownNat b
+         => Buttons n l
+         -> Buffer b Uint8
          -> Uint8
          -> Ivory (ProcEffects s t) ()
 onFindMe Buttons{..} buff size =

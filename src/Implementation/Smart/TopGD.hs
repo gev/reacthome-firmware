@@ -40,10 +40,10 @@ import           Ivory.Stdlib
 
 
 data Top = Top
-    { dinputs    :: DI.DInputs
-    , leds       :: LEDs     64
-    , buttons    :: Buttons  64
-    , vibro      :: Vibro
+    { dinputs    :: DI.DInputs 4
+    , leds       :: LEDs      64
+    , buttons    :: Buttons    4 64
+    , vibro      :: Vibro      4
     , sht21      :: SHT21
     , shouldInit :: Value    IBool
     , initBuff   :: Values 1 Uint8
@@ -71,7 +71,13 @@ topGD :: ( MonadState Context m
          , Display d
          , Handler (Render 192) d
          )
-      => m t -> (Bool -> t -> m DI.DInputs) -> (E.DInputs -> t -> m Vibro) -> m PowerTouch -> (t -> m SHT21) -> (p -> m d) -> m Top
+      => m t
+      -> (Bool -> t -> m (DI.DInputs 4))
+      -> (E.DInputs 4 -> t -> m (Vibro 4))
+      -> m PowerTouch
+      -> (t -> m SHT21)
+      -> (p -> m d)
+      -> m Top
 topGD transport' dinputs' vibro' touch' sht21' display' = do
     transport    <- transport'
     shouldInit   <- asks D.shouldInit
@@ -81,7 +87,7 @@ topGD transport' dinputs' vibro' touch' sht21' display' = do
 
     frameBuffer  <- values' "top_frame_buffer" 0
 
-    vibro        <- vibro' (getDInputs dinputs) transport
+    vibro        <- vibro' (DI.getDInputs dinputs) transport
 
     touch'
 
@@ -105,7 +111,7 @@ topGD transport' dinputs' vibro' touch' sht21' display' = do
                                        ,     13,     18, 25, 26,     31, 38, 39, 44, 45, 52, 53
                                        ] transport
 
-    buttons      <- mkButtons leds (getDInputs dinputs) 2 transport
+    buttons      <- mkButtons leds (DI.getDInputs dinputs) 2 transport
 
     sht21        <- sht21' transport
 

@@ -1,7 +1,6 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE FlexibleInstances   #-}
-{-# LANGUAGE ImpredicativeTypes  #-}
 {-# LANGUAGE KindSignatures      #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
@@ -20,7 +19,7 @@ import           Core.Context
 import           Data.Area
 import           GHC.TypeNats
 import           Ivory.Language
-import           Ivory.Language.Proxy (NatType, aNat)
+import           Ivory.Language.Proxy 
 
 
 
@@ -43,7 +42,7 @@ values_ :: (MonadState Context m, KnownNat n, IvoryZeroVal t)
         => String -> m (Values n t)
 values_ id = mkArea id Nothing
 
-values' :: forall n t m. (MonadState Context m, KnownNat n, IvoryZeroVal t, IvoryInit t)
+values' :: forall m n t. (MonadState Context m, KnownNat n, IvoryZeroVal t, IvoryInit t)
         => String -> t -> m (Values n t)
 values' id v = do
     let n = fromIntegral $ natVal (aNat :: NatType n)

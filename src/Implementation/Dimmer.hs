@@ -14,16 +14,16 @@ import           Ivory.Stdlib
 
 
 data Dimmer = Dimmer
-    { dimmers   :: Dimmers
+    { dimmers   :: Dimmers   12
     , indicator :: Indicator 20
     }
 
 
 
-dimmer :: Monad m => m t -> (t -> m Dimmers) ->(t -> m (Indicator 20)) -> m Dimmer
+dimmer :: Monad m => m t -> (t -> m (Dimmers 12)) ->(t -> m (Indicator 20)) -> m Dimmer
 dimmer transport' dimmers' indicator' = do
     transport <- transport'
-    dimmers <- dimmers' transport
+    dimmers   <- dimmers' transport
     indicator <- indicator' transport
     pure Dimmer { dimmers, indicator }
 

@@ -1,3 +1,4 @@
+{-# LANGUAGE DataKinds       #-}
 {-# LANGUAGE NamedFieldPuns  #-}
 {-# LANGUAGE RecordWildCards #-}
 module Implementation.DI where
@@ -12,11 +13,11 @@ import           Ivory.Stdlib
 
 
 
-newtype DI = DI { dinputs :: DInputs }
+newtype DI = DI { dinputs :: DInputs 4}
 
 
 
-di :: Monad m => m t -> (Bool -> t -> m DInputs) -> (t -> m DS18B20) -> m DI
+di :: Monad m => m t -> (Bool -> t -> m (DInputs 4)) -> (t -> m DS18B20) -> m DI
 di transport' dinputs' ds18b20 = do
     transport <- transport'
     ds18b20 transport

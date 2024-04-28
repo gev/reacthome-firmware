@@ -17,7 +17,7 @@ import           Core.Transport
 import           Data.Buffer
 import           Data.Serialize        (unpack)
 import           Data.Value
-import           Endpoint.DInputs      (DInputs (runDInputs), state)
+import           Endpoint.DInputs      (DInputs (dinputs), state)
 import           Feature.Relays        (Relays (shouldInit))
 import           GHC.TypeNats
 import           Interface.GPIO.Output (Output, reset, set)
@@ -29,22 +29,28 @@ import           Ivory.Stdlib
 
 
 
-data Vibro = forall o t. (Output o, LazyTransport t) => Vibro
-    { dinputs     :: DInputs
+data Vibro n = forall o t. (Output o, LazyTransport t) => Vibro
+    { getDInputs  :: DInputs n
     , output      :: o
     , clock       :: SystemClock
     , volume      :: Value Uint8
     , isVibrating :: Value IBool
-    , prevState   :: Values 12 IBool
+    , prevState   :: Values n IBool
     , t           :: Value Uint32
     , transport   :: t
     }
 
 
 
-vibro :: (MonadState Context m, MonadReader (D.Domain p c) m, Output o, LazyTransport t, Pull p d)
-      => (p -> d -> m o) -> DInputs -> t -> m Vibro
-vibro output' dinputs transport = do
+vibro :: ( MonadState Context m
+         , MonadReader (D.Domain p c) m
+         , Output o
+         , Pull p d
+         , LazyTransport t
+         , KnownNat n
+         )
+      => (p -> d -> m o) -> DInputs n -> t -> m (Vibro n)
+vibro output' getDInputs transport = do
     mcu             <- asks D.mcu
     let clock        = systemClock mcu
     let peripherals' = peripherals mcu
@@ -54,7 +60,7 @@ vibro output' dinputs transport = do
     prevState       <- values "prev_state" $ replicate 12 false
     t               <- value "t" 0
 
-    let vibro = Vibro { dinputs, output, clock
+    let vibro = Vibro { getDInputs, output, clock
                       , volume, t, isVibrating, prevState
                       , transport
                       }
@@ -65,7 +71,7 @@ vibro output' dinputs transport = do
 
 
 
-vibroTask :: Vibro -> Ivory (ProcEffects s t) ()
+vibroTask :: KnownNat n => Vibro n -> Ivory (ProcEffects s t) ()
 vibroTask v@Vibro{..} = do
     isVibrating' <- deref isVibrating
     ifte_ isVibrating'
@@ -76,11 +82,11 @@ vibroTask v@Vibro{..} = do
             when (t1 - t0 >? safeCast volume') $ stopVibrate v
 
         )
-        (runDInputs dinputs $ \di -> do
+        (do
             shouldVibrate <- local $ ival false
             arrayMap $ \ix -> do
                 shouldVibrate' <- deref shouldVibrate
-                state' <- deref $ addrOf di ! ix ~> state
+                state' <- deref $ dinputs getDInputs ! ix ~> state
                 prevState' <- deref $ prevState ! toIx ix
                 store shouldVibrate $ shouldVibrate' .|| (state' .&& iNot prevState')
                 store (prevState ! toIx ix) state'
@@ -90,7 +96,7 @@ vibroTask v@Vibro{..} = do
 
 
 
-startVibrate :: Vibro -> Ivory eff ()
+startVibrate :: Vibro n -> Ivory eff ()
 startVibrate Vibro{..} = do
     store isVibrating true
     store t =<< getSystemTime clock
@@ -98,14 +104,16 @@ startVibrate Vibro{..} = do
 
 
 
-stopVibrate :: Vibro -> Ivory eff ()
+stopVibrate :: Vibro n -> Ivory eff ()
 stopVibrate Vibro{..} = do
     store isVibrating false
     reset output
 
 
 
-onVibro :: (KnownNat n) => Vibro -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onVibro :: (KnownNat n, KnownNat l)
+        => Vibro n -> Buffer l Uint8 -> Uint8
+        -> Ivory (ProcEffects s t) ()
 onVibro v@Vibro{..} buffer size =
     when (size ==? 2) $ do
         volume' <- unpack buffer 1
@@ -117,7 +125,9 @@ onVibro v@Vibro{..} buffer size =
 
 
 
-onInitVibro :: (KnownNat n) => Vibro -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) IBool
+onInitVibro :: (KnownNat n, KnownNat l)
+            => Vibro n -> Buffer l Uint8 -> Uint8
+            -> Ivory (ProcEffects s t) IBool
 onInitVibro v@Vibro{..} buffer size = do
     ifte (size >=? 2)
          (do

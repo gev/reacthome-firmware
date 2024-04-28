@@ -1,7 +1,6 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE FlexibleInstances   #-}
-{-# LANGUAGE ImpredicativeTypes  #-}
 {-# LANGUAGE KindSignatures      #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
@@ -17,7 +16,7 @@ import           Core.Context
 import           Data.Area
 import           GHC.TypeNats
 import           Ivory.Language
-import           Ivory.Language.Proxy (NatType, aNat)
+import           Ivory.Language.Proxy 
 
 
 type Matrix (n:: Nat) (m :: Nat) t = Ref Global (Array n (Array m (Stored t)))
@@ -28,7 +27,7 @@ matrix_ :: (MonadState Context w, IvoryZeroVal t, KnownNat n, KnownNat m)
 matrix_ id = mkArea id Nothing
 
 
-matrix' :: forall n m t w. (KnownNat n, KnownNat m, MonadState Context w, IvoryZeroVal t, IvoryInit t)
+matrix' :: forall m n t w. (KnownNat n, KnownNat m, MonadState Context w, IvoryZeroVal t, IvoryInit t)
         => String -> t -> w (Matrix n m t)
 matrix' id v = do
     let n' = fromTypeNat (aNat :: NatType n)
