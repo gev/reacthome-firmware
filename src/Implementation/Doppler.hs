@@ -1,22 +1,24 @@
+{-# LANGUAGE GADTs           #-}
 {-# LANGUAGE NamedFieldPuns  #-}
+{-# LANGUAGE RankNTypes      #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Implementation.Doppler where
 
 import           Core.Actions
 import           Core.Controller
-import           Feature.DInputs 
+import           Feature.DInputs
 import           Feature.Dopplers
+import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
-import GHC.TypeNats
 
 data Doppler n = Doppler
     { dopplers :: Dopplers
     , dinputs  :: DInputs n
     }
 
-doppler :: Monad m => m t -> (t -> m Dopplers) -> (Bool -> t -> m (DInputs n)) -> m (Doppler n)
+doppler :: (KnownNat n, Monad m) => m t -> (t -> m Dopplers) -> (Bool -> t -> m (DInputs n)) -> m (Doppler n)
 doppler transport' dopplers' dinputs' = do
     transport <- transport'
     dopplers  <- dopplers' transport
