@@ -9,7 +9,6 @@
 
 module Feature.Relays where
 
-import           Control.Monad         (zipWithM_)
 import           Control.Monad.Reader  (MonadReader, asks)
 import           Control.Monad.State   (MonadState)
 import           Core.Actions
@@ -18,6 +17,7 @@ import qualified Core.Domain           as D
 import           Core.Task
 import qualified Core.Transport        as T
 import           Data.Buffer
+import           Data.Fixed
 import           Data.Foldable
 import           Data.Index
 import           Data.Record
@@ -42,7 +42,7 @@ data Relays n = forall o. Output o => Relays
     { n           :: Int
     , getRelays   :: R.Relays n
     , getGroups   :: G.Groups n
-    , getOutputs  :: [o]
+    , getOutputs  :: List n o
     , shouldInit  :: Value IBool
     , clock       :: SystemClock
     , current     :: Index Uint8
@@ -58,7 +58,7 @@ relays :: ( MonadState Context m
           , T.Transport t
           , KnownNat n
           )
-       => [p -> d -> m o] -> t -> m (Relays n)
+       => List n (p -> d -> m o) -> t -> m (Relays n)
 relays outs transport = do
     mcu        <- asks D.mcu
     shouldInit <- asks D.shouldInit
@@ -123,8 +123,8 @@ manageRelays Relays{..} = do
                          )
               ]
 
-    zipWithM_ off getOutputs [0..]
-    zipWithM_ on  getOutputs [0..]
+    zipWithM_ off getOutputs ints
+    zipWithM_ on  getOutputs ints
 
     where
 

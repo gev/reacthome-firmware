@@ -15,6 +15,7 @@ import qualified Core.Domain          as D
 import           Core.Task
 import qualified Core.Transport       as T
 import           Data.Buffer
+import           Data.Fixed
 import           Data.Index
 import           Data.Record
 import           Data.Serialize
@@ -32,7 +33,7 @@ import           Support.Cast
 data Dimmers n = forall p. I.PWM p => Dimmers
     { n              :: Uint8
     , getDimmers     :: D.Dimmers n
-    , getPWMs        :: [p]
+    , getPWMs        :: List n p
     , shouldInit     :: Value IBool
     , current        :: Index Uint8
     , transmit       :: forall l. KnownNat l
@@ -46,7 +47,8 @@ mkDimmers :: ( MonadState Context m
              , T.Transport t, I.PWM o
              , KnownNat n
              )
-          => [p -> Uint32 -> Uint32 -> m o] -> Uint32 -> t -> m (Dimmers n)
+          => List n (p -> Uint32 -> Uint32 -> m o)
+          -> Uint32 -> t -> m (Dimmers n)
 mkDimmers pwms period transport = do
     mcu         <- asks D.mcu
     shouldInit  <- asks D.shouldInit

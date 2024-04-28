@@ -1,9 +1,10 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GADTs            #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE DataKinds            #-}
+{-# LANGUAGE FlexibleContexts     #-}
+{-# LANGUAGE GADTs                #-}
+{-# LANGUAGE NamedFieldPuns       #-}
+{-# LANGUAGE RankNTypes           #-}
+{-# LANGUAGE RecordWildCards      #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Implementation.Mix where
 
@@ -52,14 +53,14 @@ import           Util.CRC16
 
 
 
-data Mix = forall f. Flash f => Mix
+data Mix ni no = forall f. Flash f => Mix
     { relaysN    :: Int
-    , relays     :: Relays       6
-    , dinputs    :: DInputs     12
+    , relays     :: Relays      no
+    , dinputs    :: DInputs     ni
     , dinputsN   :: Int
-    , rules      :: Rules     12 6
+    , rules      :: Rules     ni no
     , ats        :: ATS
-    , indicator  :: Indicator 12 6
+    , indicator  :: Indicator ni no
     , etc        :: f
     , shouldInit :: Value IBool
     , transmit   :: forall n. KnownNat n
@@ -70,18 +71,19 @@ data Mix = forall f. Flash f => Mix
 
 mix :: ( MonadState Context m
        , MonadReader (Domain p c) m
-       , Transport t
        , Flash f
+       , Transport t
+       , KnownNat ni, KnownNat no, KnownNat (PayloadSize no)
        )
     => m t
-    -> (Bool -> t -> m (DInputs 12))
-    -> (t -> m (Relays 6))
-    -> (ATS -> DI.DInputs 12
-    -> R.Relays 6
+    -> (Bool -> t -> m (DInputs ni))
+    -> (t -> m (Relays no))
+    -> (ATS -> DI.DInputs ni
+    -> R.Relays no
     -> t
-    -> m (Indicator 12 6))
+    -> m (Indicator ni no))
     -> (p -> f)
-    -> m Mix
+    -> m (Mix ni no)
 mix transport' dinputs' relays' indicator' etc = do
     transport    <- transport'
     relays       <- relays' transport
@@ -119,7 +121,8 @@ mix transport' dinputs' relays' indicator' etc = do
 
 
 
-manage :: Mix -> Ivory ('Effects (Returns ()) r (Scope s)) ()
+manage :: (KnownNat ni, KnownNat no)
+       => Mix ni no -> Ivory ('Effects (Returns ()) r (Scope s)) ()
 manage Mix{..} = do
     manageDInputs  dinputs
     manageRules    rules (getDInputs dinputs) (getRelays relays) (getGroups relays)
@@ -128,7 +131,8 @@ manage Mix{..} = do
 
 
 
-sync :: Mix -> Ivory (ProcEffects s ()) ()
+sync :: (KnownNat ni, KnownNat no, KnownNat (PayloadSize no))
+     => Mix ni no -> Ivory (ProcEffects s ()) ()
 sync Mix{..} = do
     syncDInputs dinputs
     syncRelays  relays
@@ -137,7 +141,7 @@ sync Mix{..} = do
 
 
 
-instance Controller Mix where
+instance (KnownNat ni, KnownNat no, KnownNat (PayloadSize no)) => Controller (Mix ni no) where
     handle  mix@Mix{..} buff size = do
         shouldInit' <- deref shouldInit
         action <- deref $ buff ! 0
@@ -153,7 +157,8 @@ instance Controller Mix where
 
 
 
-onRule :: KnownNat n => Mix -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onRule :: (KnownNat l, KnownNat ni, KnownNat no, KnownNat (PayloadSize no))
+       => Mix ni no -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onRule mix@Mix{..} buff size = do
     let relaysN'  = fromIntegral relaysN
     let dinputsN' = fromIntegral dinputsN
@@ -171,7 +176,8 @@ onRule mix@Mix{..} buff size = do
         save mix
 
 
-onMode :: KnownNat n => Mix -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onMode :: (KnownNat l, KnownNat ni, KnownNat no)
+       => Mix ni no -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onMode mix@Mix{..} buff size = do
     when (size ==? 2 ) $ do
         store (mode ats) =<< unpack buff 1
@@ -181,7 +187,7 @@ onMode mix@Mix{..} buff size = do
 
 
 
-onGetState :: Mix -> Ivory eff ()
+onGetState :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory eff ()
 onGetState Mix{..} = do
     forceSyncDInputs dinputs
     forceSyncRules rules
@@ -192,7 +198,7 @@ onGetState Mix{..} = do
 
 
 
-save :: Mix -> Ivory (ProcEffects s t) ()
+save :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s t) ()
 save Mix{..} = do
     erasePage etc
     crc   <- local $ istruct initCRC16
@@ -214,7 +220,7 @@ save Mix{..} = do
 
 
 
-load :: Mix -> Ivory (ProcEffects s ()) ()
+load :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s ()) ()
 load mix@Mix{..} = do
     valid <- checkCRC mix
     when valid $ do
@@ -229,7 +235,7 @@ load mix@Mix{..} = do
         run $ rulesOn rules
 
 
-checkCRC :: Mix -> Ivory (ProcEffects s ()) IBool
+checkCRC :: Mix ni no -> Ivory (ProcEffects s ()) IBool
 checkCRC Mix{..} = do
     crc   <- local $ istruct initCRC16
     updateCRC16 crc . castDefault =<< F.read etc 0

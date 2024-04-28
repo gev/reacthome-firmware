@@ -2,6 +2,7 @@ module Formula.Relay12 where
 
 import           Core.Formula
 import           Core.Models
+import           Data.Fixed
 import           Device.GD32F3x0
 import           Feature.Indicator    (indicator)
 import           Feature.Relays       (relays)
@@ -17,19 +18,19 @@ relay12 = Formula { name       = "relay12"
                   , version    = (3, 0)
                   , shouldInit = true
                   , implementation = relay (rbus $ rs485 uart_0 out_pb_2)
-                                           (relays [ out_pb_1
-                                                   , out_pa_11
-                                                   , out_pa_8
-                                                   , out_pb_0
-                                                   , out_pa_9
-                                                   , out_pa_10
-                                                   , out_pa_0
-                                                   , out_pa_1
-                                                   , out_pa_2
-                                                   , out_pa_3
-                                                   , out_pa_6
-                                                   , out_pa_7
-                                                   ]
+                                           (relays $  out_pb_1
+                                                   :> out_pa_11
+                                                   :> out_pa_8
+                                                   :> out_pb_0
+                                                   :> out_pa_9
+                                                   :> out_pa_10
+                                                   :> out_pa_0
+                                                   :> out_pa_1
+                                                   :> out_pa_2
+                                                   :> out_pa_3
+                                                   :> out_pa_6
+                                                   :> out_pa_7
+                                                   :> Nil
                                            )
                                            (indicator npx_pwm_0 300)
                   }

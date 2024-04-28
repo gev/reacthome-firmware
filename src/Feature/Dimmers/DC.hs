@@ -7,7 +7,6 @@
 
 module Feature.Dimmers.DC where
 
-import           Control.Monad        (zipWithM_)
 import           Control.Monad.Reader (MonadReader, asks)
 import           Control.Monad.State  (MonadState)
 import           Core.Actions
@@ -16,6 +15,7 @@ import qualified Core.Domain          as D
 import           Core.Task
 import           Core.Transport       as T
 import           Data.Buffer
+import           Data.Fixed
 import           Data.Index
 import           Data.Record
 import           Data.Serialize
@@ -35,7 +35,7 @@ dimmersDC :: ( MonadState Context m
              , MonadReader (D.Domain p c) m
              , T.Transport t, I.PWM o
              , KnownNat n
-             ) => [p -> Uint32 -> Uint32 -> m o] -> t -> m (Dimmers n)
+             ) => List n (p -> Uint32 -> Uint32 -> m o) -> t -> m (Dimmers n)
 dimmersDC pwms transport = do
     dimmers <- mkDimmers pwms 1_000 transport
 
@@ -46,7 +46,7 @@ dimmersDC pwms transport = do
 
 
 manage :: KnownNat n => Dimmers n -> Ivory eff ()
-manage Dimmers{..} = zipWithM_ zip getPWMs [0..]
+manage Dimmers{..} = zipWithM_ zip getPWMs nats
     where
         zip :: I.PWM p => p -> Int -> Ivory eff ()
         zip pwm i = do

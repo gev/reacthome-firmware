@@ -13,12 +13,16 @@ import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
 
-data Doppler n = Doppler
-    { dopplers :: Dopplers
-    , dinputs  :: DInputs n
+data Doppler nd ni = Doppler
+    { dopplers :: Dopplers nd
+    , dinputs  :: DInputs  ni
     }
 
-doppler :: (KnownNat n, Monad m) => m t -> (t -> m Dopplers) -> (Bool -> t -> m (DInputs n)) -> m (Doppler n)
+doppler :: Monad m
+        => m t
+        -> (t -> m (Dopplers nd))
+        -> (Bool -> t -> m (DInputs ni))
+        -> m (Doppler nd ni)
 doppler transport' dopplers' dinputs' = do
     transport <- transport'
     dopplers  <- dopplers' transport
@@ -26,7 +30,7 @@ doppler transport' dopplers' dinputs' = do
     pure Doppler { dopplers, dinputs }
 
 
-instance KnownNat n => Controller (Doppler n) where
+instance KnownNat ni => Controller (Doppler nd ni) where
 
     handle Doppler{..} buff _ = do
         action <- deref $ buff ! 0

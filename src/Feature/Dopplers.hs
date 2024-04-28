@@ -12,7 +12,6 @@ module Feature.Dopplers
 
 
 
-import           Control.Monad        (zipWithM)
 import           Control.Monad.Reader (MonadReader, asks)
 import           Control.Monad.State  (MonadState)
 import           Core.Actions
@@ -21,6 +20,7 @@ import qualified Core.Domain          as D
 import           Core.Task
 import qualified Core.Transport       as T
 import           Data.Buffer
+import           Data.Fixed
 import           Data.Value
 import qualified Interface.ADC        as I
 import           Interface.MCU
@@ -42,9 +42,9 @@ data Doppler a = Doppler
 
 
 
-data Dopplers = forall a t. (I.ADC a, T.LazyTransport t) => Dopplers
+data Dopplers n = forall a t. (I.ADC a, T.LazyTransport t) => Dopplers
     { n         :: Uint8
-    , doppler   :: [Doppler a]
+    , doppler   :: List n (Doppler a)
     , transport :: t
     }
 
@@ -54,10 +54,10 @@ dopplers :: ( MonadState Context m
             , MonadReader (D.Domain p c) m
             , T.LazyTransport t
             , I.ADC a
-            ) => [p -> m a] -> t -> m Dopplers
+            ) => List n (p -> m a) -> t -> m (Dopplers n)
 dopplers analogInput transport = do
     mcu              <- asks D.mcu
-    doppler          <- zipWithM (mkDoppler transport) [1..] analogInput
+    doppler          <- zipWithM (mkDoppler transport) analogInput nats
 
     let dopplers = Dopplers { n = fromIntegral $ length analogInput
                             , doppler
@@ -75,8 +75,8 @@ mkDoppler :: ( MonadState Context m
              , MonadReader (D.Domain p c) m
              , T.LazyTransport t
              , I.ADC a
-             ) => t -> Int -> (p -> m a) -> m (Doppler a)
-mkDoppler transport index analogInput = do
+             ) => t -> (p -> m a) -> Int-> m (Doppler a)
+mkDoppler transport analogInput index = do
     let name          = "doppler_" <> show index <> "_"
     mcu              <- asks D.mcu
     let peripherals'  = peripherals mcu
@@ -127,7 +127,7 @@ measure Doppler {..} = do
 
 
 
-sync :: Dopplers -> Ivory (ProcEffects s t) ()
+sync :: Dopplers n -> Ivory (ProcEffects s t) ()
 sync Dopplers {..} = do
     shouldSync <- mapM syncDoppler doppler
     let shouldTransmit = foldr (.||) false shouldSync

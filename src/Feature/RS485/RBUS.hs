@@ -9,7 +9,6 @@
 
 module Feature.RS485.RBUS where
 
-import           Control.Monad                       (zipWithM, zipWithM_)
 import           Control.Monad.Reader                (MonadReader, asks)
 import           Control.Monad.State                 (MonadState)
 import           Core.Actions
@@ -21,6 +20,7 @@ import           Core.Transport                      as T
 import           Core.Version
 import           Data.Buffer
 import           Data.Concurrent.Queue               as Q
+import           Data.Fixed
 import           Data.Serialize
 import           Data.Value
 import           Feature.RS485.RBUS.Data
@@ -39,8 +39,8 @@ import           Protocol.RS485.RBUS.Master.Rx
 
 
 rbus :: (MonadState Context m, MonadReader (D.Domain p c) m, LazyTransport t, Transport t)
-     => [m I.RS485] -> t -> m [RBUS]
-rbus rs485 transport = zipWithM (rbus' transport) rs485 [1..]
+     => List n (m I.RS485) -> t -> m (List n RBUS)
+rbus rs485 transport = zipWithM (rbus' transport) rs485 nats
 
 
 
@@ -157,7 +157,7 @@ forceSyncRBUS :: RBUS -> Ivory eff ()
 forceSyncRBUS RBUS{..} = store synced false
 
 
-forceSyncRBUS' :: [RBUS] -> Ivory eff ()
+forceSyncRBUS' :: List n RBUS -> Ivory eff ()
 forceSyncRBUS' = mapM_ forceSyncRBUS
 
 
@@ -182,9 +182,9 @@ message RBUS{..} = do
 
 
 
-setMode :: KnownNat n
-        => [RBUS]
-        -> Buffer n Uint8
+setMode :: (KnownNat n, KnownNat l)
+        => List n RBUS
+        -> Buffer l Uint8
         -> Uint8
         -> Ivory eff ()
 setMode list buff size = do
@@ -198,13 +198,13 @@ setMode list buff size = do
                     store lineControl =<< unpack   buff 7
                     configureMode r
                     store synced false
-        zipWithM_ run list $ fromIntegral <$> [1..]
+        zipWithM_ run list $ fromIntegral <$> nats
 
 
 
-transmitRBUS :: KnownNat n
-             => [RBUS]
-             -> Buffer n Uint8
+transmitRBUS :: (KnownNat n, KnownNat l)
+             => List n RBUS
+             -> Buffer l Uint8
              -> Uint8
              -> Ivory (ProcEffects s t) ()
 transmitRBUS list buff size = do
@@ -228,13 +228,13 @@ transmitRBUS list buff size = do
                         found' <- deref found
                         when found' $
                             toQueue r address buff 9 (size - 9)
-        zipWithM_ run list $ fromIntegral <$> [1..]
+        zipWithM_ run list $ fromIntegral <$> nats
 
 
 
-transmitRB485 :: KnownNat n
-              => [RBUS]
-              -> Buffer n Uint8
+transmitRB485 :: (KnownNat n, KnownNat l)
+              => List n RBUS
+              -> Buffer l Uint8
               -> Uint8
               -> Ivory (ProcEffects s t) ()
 transmitRB485 list buff size = do
@@ -248,13 +248,13 @@ transmitRB485 list buff size = do
                     for (toIx size') $ \ix ->
                         store (txBuff ! toIx (fromIx ix)) . safeCast =<< deref (buff ! (ix + 2))
                     rsTransmit r $ safeCast size'
-        zipWithM_ run list $ fromIntegral <$> [1..]
+        zipWithM_ run list $ fromIntegral <$> nats
 
 
 
-initialize :: KnownNat n
-           => [RBUS]
-           -> Buffer n Uint8
+initialize :: (KnownNat n, KnownNat l)
+           => List n RBUS
+           -> Buffer l Uint8
            -> Uint8
            -> Ivory (ProcEffects s t) ()
 initialize list buff size =
@@ -265,7 +265,7 @@ initialize list buff size =
                 store lineControl =<< unpack   buff (offset + 5)
                 configureMode r
                 store shouldInit false
-        zipWithM_ run list $ fromIntegral <$> [1, 7..]
+        zipWithM_ run list $ fromIntegral <$> fromList [1, 7..]
 
 
 

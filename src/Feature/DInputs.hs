@@ -11,7 +11,6 @@
 
 module Feature.DInputs where
 
-import           Control.Monad         (zipWithM_)
 import           Control.Monad.Reader  (MonadReader, asks)
 import           Control.Monad.State   (MonadState)
 import           Core.Context
@@ -19,6 +18,8 @@ import qualified Core.Domain           as D
 import           Core.Task
 import qualified Core.Transport        as T
 import           Data.Buffer
+import           Data.Fixed
+import           Data.Fixed            (List, toList)
 import           Data.Index
 import           Data.Record
 import           Data.Serialize
@@ -39,7 +40,7 @@ data DInputs (n :: Nat) = forall i. Input i => DInputs
     { n          :: Int
     , zero       :: IBool
     , getDInputs :: DI.DInputs n
-    , getInputs  :: [i]
+    , getInputs  :: List n i
     , current    :: Index Uint8
     , clock      :: SystemClock
     , transmit   :: forall l. KnownNat l
@@ -55,7 +56,7 @@ dinputs :: forall m n p c i d t.
            , Input i, Pull p d
            , KnownNat n
            )
-        => [p -> d -> m i] -> Bool -> t -> m (DInputs n)
+        => List n (p -> d -> m i) -> Bool -> t -> m (DInputs n)
 dinputs inputs zero' transport = do
     let n            = fromIntegral $ natVal (aNat :: NatType n)
     mcu             <- asks D.mcu
@@ -91,7 +92,7 @@ forceSyncDInputs DInputs{..} = do
 
 
 manageDInputs :: KnownNat n => DInputs n -> Ivory eff ()
-manageDInputs DInputs{..} = zipWithM_ zip getInputs [0..]
+manageDInputs DInputs{..} = zipWithM_ zip getInputs nats
     where
         zip :: Input i => i -> Int -> Ivory eff ()
         zip input i = do

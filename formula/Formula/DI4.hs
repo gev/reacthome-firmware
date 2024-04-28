@@ -2,6 +2,7 @@ module Formula.DI4 where
 
 import           Core.Formula
 import           Core.Models
+import           Data.Fixed
 import           Device.GD32F3x0
 import           Feature.DInputs
 import           Feature.DS18B20
@@ -16,11 +17,11 @@ di4 = Formula { name           = "di4"
               , version        = (4, 3)
               , shouldInit     = false
               , implementation = di (rbus $ rs485 uart_1 out_pa_4)
-                                    (dinputs [ in_pa_12
-                                             , in_pa_11
-                                             , in_pa_10
-                                             , in_pa_9
-                                             ]
+                                    (dinputs $  in_pa_12
+                                             :> in_pa_11
+                                             :> in_pa_10
+                                             :> in_pa_9
+                                             :> Nil
                                     )
                                     (ds18b20 ow_0 od_pa_8)
               }

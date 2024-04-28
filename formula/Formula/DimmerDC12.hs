@@ -2,6 +2,7 @@ module Formula.DimmerDC12 where
 
 import           Core.Formula
 import           Core.Models
+import           Data.Fixed
 import           Device.GD32F3x0
 import           Feature.Dimmers.DC
 import           Feature.Indicator
@@ -18,19 +19,19 @@ dimmerDC12 = Formula { name           = "dimmerDC12"
                      , version        = (2, 1)
                      , shouldInit     = true
                      , implementation = dimmer (rbus $ rs485 uart_0 out_pb_2)
-                                               (dimmersDC [ pwm_9
-                                                          , pwm_10
-                                                          , pwm_8
-                                                          , pwm_6
-                                                          , pwm_7
-                                                          , pwm_11
-                                                          , pwm_5
-                                                          , pwm_4
-                                                          , pwm_3
-                                                          , pwm_2
-                                                          , pwm_1
-                                                          , pwm_0
-                                                          ]
+                                               (dimmersDC $  pwm_9
+                                                          :> pwm_10
+                                                          :> pwm_8
+                                                          :> pwm_6
+                                                          :> pwm_7
+                                                          :> pwm_11
+                                                          :> pwm_5
+                                                          :> pwm_4
+                                                          :> pwm_3
+                                                          :> pwm_2
+                                                          :> pwm_1
+                                                          :> pwm_0
+                                                          :> Nil
                                                 )
                                                 (indicator npx_pwm_0 240)
                      }

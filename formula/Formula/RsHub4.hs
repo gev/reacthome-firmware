@@ -3,6 +3,7 @@ module Formula.RsHub4 where
 import           Core.Formula
 import           Core.Models
 import           Data.Color
+import           Data.Fixed
 import           Device.GD32F4xx
 import           Feature.Dimmers.DC
 import           Feature.DInputs
@@ -21,22 +22,22 @@ rsHub4 = Formula { name           = "rs_hub4"
                  , version        = (4, 1)
                  , shouldInit     = true
                  , implementation = hub (U.rbus eth_0)
-                                        (F.rbus    [ rs485 uart_5 out_pb_14
-                                                   , rs485 uart_3 out_pc_12
-                                                   , rs485 uart_2 out_pb_15
-                                                   , rs485 uart_0 out_pd_1
-                                                   ]
+                                        (F.rbus    $  rs485 uart_5 out_pb_14
+                                                   :> rs485 uart_3 out_pc_12
+                                                   :> rs485 uart_2 out_pb_15
+                                                   :> rs485 uart_0 out_pd_1
+                                                   :> Nil
                                         )
-                                        (dimmersDC [ pwm_0
-                                                   , pwm_1
-                                                   , pwm_2
-                                                   ]
+                                        (dimmersDC $  pwm_0
+                                                   :> pwm_1
+                                                   :> pwm_2
+                                                   :> Nil
                                         )
-                                        (dinputs   [ in_pa_8
-                                                   , in_pb_4
-                                                   , in_pb_10
-                                                   , in_pa_15
-                                                   ]
+                                        (dinputs   $  in_pa_8
+                                                   :> in_pb_4
+                                                   :> in_pb_10
+                                                   :> in_pa_15
+                                                   :> Nil
                                         )
                                         (ds18b20 ow_0 od_pb_3)
                                         (indicator npx_pwm_2 50)

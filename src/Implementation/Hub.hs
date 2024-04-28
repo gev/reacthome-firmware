@@ -5,12 +5,12 @@
 
 module Implementation.Hub where
 
-import           Control.Monad           (zipWithM_)
 import           Control.Monad.Reader    (MonadReader, asks)
 import           Core.Actions
 import           Core.Controller         (Controller, handle)
 import qualified Core.Domain             as D
 import           Data.Buffer
+import           Data.Fixed
 import           Data.Serialize
 import           Data.Value
 import           Endpoint.Dimmers        as Dim (dimmers, initialize,
@@ -29,10 +29,10 @@ import           Ivory.Stdlib
 
 
 
-data Hub = Hub
-    { rbus       :: [RBUS]
-    , dimmers    :: Dimmers    3
-    , dinputs    :: DInputs    4
+data Hub ni nd nr = Hub
+    { rbus       :: List nr RBUS
+    , dimmers    :: Dimmers    nd
+    , dinputs    :: DInputs    ni
     , ds18b20    :: DS18B20
     , indicator  :: Indicator 20
     , shouldInit :: Value IBool
@@ -42,12 +42,12 @@ data Hub = Hub
 
 hub :: MonadReader (D.Domain p c) m
     => m t
-    -> (t -> m [RBUS])
-    -> (t -> m (Dimmers 3))
-    -> (Bool -> t -> m (DInputs 4))
+    -> (t -> m (List nr RBUS))
+    -> (t -> m (Dimmers nd))
+    -> (Bool -> t -> m (DInputs ni))
     -> (t -> m DS18B20)
     -> (t -> m (Indicator 20))
-    -> m Hub
+    -> m (Hub ni nd nr)
 hub transport' rbus' dimmers' dinputs' ds18b20' indicator' = do
     transport  <- transport'
     rbus       <- rbus' transport
@@ -60,7 +60,7 @@ hub transport' rbus' dimmers' dinputs' ds18b20' indicator' = do
 
 
 
-instance Controller Hub where
+instance (KnownNat ni, KnownNat nd, KnownNat nr) => Controller (Hub ni nd nr) where
     handle s@Hub{..} buff size = do
         action <- deref $ buff ! 0
         cond_ [ action ==? actionDo            ==> onDo          dimmers   buff size
@@ -74,7 +74,9 @@ instance Controller Hub where
               ]
 
 
-onInit :: KnownNat n => Hub -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onInit :: (KnownNat l, KnownNat nd)
+       => Hub ni nd nr -> Buffer l Uint8 -> Uint8
+       -> Ivory (ProcEffects s t) ()
 onInit Hub{..} buff size =
     when (size ==? 25 + n dimmers * 3) $ do
 
@@ -83,7 +85,7 @@ onInit Hub{..} buff size =
                 store baudrate    =<< unpackLE buff (offset + 1)
                 store lineControl =<< unpack   buff (offset + 5)
                 configureMode r
-        zipWithM_ run rbus $ fromIntegral <$> [1, 7..]
+        zipWithM_ run rbus $ fromIntegral <$> fromList [1, 7..]
 
         offset <- local $ ival 25
         let ds  = Dim.dimmers $ getDimmers dimmers
