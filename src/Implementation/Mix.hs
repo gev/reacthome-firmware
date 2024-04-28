@@ -54,12 +54,12 @@ import           Util.CRC16
 
 data Mix = forall f. Flash f => Mix
     { relaysN    :: Int
-    , relays     :: Relays
-    , dinputs    :: DInputs
+    , relays     :: Relays       6
+    , dinputs    :: DInputs     12
     , dinputsN   :: Int
-    , rules      :: Rules 12 6
+    , rules      :: Rules     12 6
     , ats        :: ATS
-    , indicator  :: Indicator
+    , indicator  :: Indicator 12 6
     , etc        :: f
     , shouldInit :: Value IBool
     , transmit   :: forall n. KnownNat n
@@ -72,7 +72,16 @@ mix :: ( MonadState Context m
        , MonadReader (Domain p c) m
        , Transport t
        , Flash f
-       ) => m t -> (Bool -> t -> m DInputs) -> (t -> m Relays) -> (ATS -> DI.DInputs -> R.Relays -> t -> m Indicator) -> (p -> f) -> m Mix
+       )
+    => m t
+    -> (Bool -> t -> m (DInputs 12))
+    -> (t -> m (Relays 6))
+    -> (ATS -> DI.DInputs 12
+    -> R.Relays 6
+    -> t
+    -> m (Indicator 12 6))
+    -> (p -> f)
+    -> m Mix
 mix transport' dinputs' relays' indicator' etc = do
     transport    <- transport'
     relays       <- relays' transport
@@ -238,8 +247,8 @@ checkCRC Mix{..} = do
 
 
 
-manageLock Mix{..} = R.runRelays (getRelays relays) $ \r -> do
-    let r' = addrOf r
+manageLock Mix{..} = do
+    let r' = R.relays $ getRelays relays
     mode' <- deref $ mode ats
     arrayMap $ \ix -> store (r' ! ix ~> R.lock) false
     cond_ [ mode' ==? mode_N1_G ==> do

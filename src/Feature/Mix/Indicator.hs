@@ -32,12 +32,12 @@ import           Ivory.Stdlib
 
 
 
-data Indicator = forall d. (Display d) => Indicator
+data Indicator ni no = forall d. (Display d) => Indicator
     { display   :: d
     , hue       :: IFloat
     , ats       :: ATS
-    , dinputs   :: DInputs
-    , relays    :: Relays
+    , dinputs   :: DInputs      ni
+    , relays    :: Relays       no
     , t         :: Value        Sint32
     , dt        :: Value        Sint32
     , phi       :: Value        Sint32
@@ -58,7 +58,10 @@ indicator :: ( MonadState Context m
              , MonadReader (D.Domain p c) m
              , Display d, Handler (Render 60) d
              , T.Transport t
-             ) => (p -> m d) -> IFloat -> ATS -> DInputs -> Relays -> t -> m Indicator
+             , KnownNat ni, KnownNat no
+             )
+          => (p -> m d) -> IFloat -> ATS -> DInputs ni -> Relays no -> t
+          -> m (Indicator ni no)
 indicator mkDisplay hue ats dinputs relays transport = do
     mcu          <- asks D.mcu
     display      <- mkDisplay $ peripherals mcu
@@ -92,7 +95,9 @@ indicator mkDisplay hue ats dinputs relays transport = do
     pure indicator
 
 
-update :: Indicator -> Ivory (ProcEffects s ()) ()
+update :: (KnownNat ni, KnownNat no)
+       => Indicator ni no
+       -> Ivory (ProcEffects s ()) ()
 update Indicator{..} = do
     phi'   <- deref phi
     pixel  <- local . istruct $ hsv hue 1 maxValue
@@ -135,25 +140,25 @@ update Indicator{..} = do
 
 
 
-renderPixel :: Ref s (Struct HSV) -> Sint32 -> ATS -> DInputs -> Relays -> Ivory eff ()
-renderPixel pixel i ATS{..} dinputs relays = runDInputs dinputs $ \di -> runRelays relays $ \ r -> do
-    let di'  = addrOf di
-    let r'   = addrOf r
+renderPixel :: (KnownNat ni, KnownNat no)
+            => Ref s (Struct HSV) -> Sint32 -> ATS -> DInputs ni -> Relays no
+            -> Ivory eff ()
+renderPixel pixel i ATS{..} DInputs{dinputs} Relays{relays} = do
     mode'   <- deref mode
     cond_ [ mode' ==? mode_N1_G
-                  ==> cond_ [ i >=? 13 .&& i <=? 16 ==> renderLine      1 (di' !  1) (r' !  0)
-                            , i >=?  3 .&& i <=?  6 ==> renderGenerator 2 (di' ! 10) (r' !  4) (r' !  5)
+                  ==> cond_ [ i >=? 13 .&& i <=? 16 ==> renderLine      1 (dinputs !  1) (relays !  0)
+                            , i >=?  3 .&& i <=?  6 ==> renderGenerator 2 (dinputs ! 10) (relays !  4) (relays !  5)
                             , true ==> store (pixel ~> v) 0
                             ]
           , mode' ==? mode_N2
-                  ==> cond_ [ i >=? 13 .&& i <=? 16 ==> renderLine      1 (di' !  1) (r' !  0)
-                            , i >=?  3 .&& i <=?  6 ==> renderLine      2 (di' !  3) (r' !  1)
+                  ==> cond_ [ i >=? 13 .&& i <=? 16 ==> renderLine      1 (dinputs !  1) (relays !  0)
+                            , i >=?  3 .&& i <=?  6 ==> renderLine      2 (dinputs !  3) (relays !  1)
                             , true ==> store (pixel ~> v) 0
                             ]
           , mode' ==? mode_N2_G
-                  ==> cond_ [ i >=? 15 .&& i <=? 18 ==> renderLine      1 (di' !  1) (r' !  0)
-                            , i >=?  8 .&& i <=? 11 ==> renderLine      2 (di' !  3) (r' !  1)
-                            , i >=?  1 .&& i <=?  4 ==> renderGenerator 3 (di' ! 10) (r' !  4) (r' !  5)
+                  ==> cond_ [ i >=? 15 .&& i <=? 18 ==> renderLine      1 (dinputs !  1) (relays !  0)
+                            , i >=?  8 .&& i <=? 11 ==> renderLine      2 (dinputs !  3) (relays !  1)
+                            , i >=?  1 .&& i <=?  4 ==> renderGenerator 3 (dinputs ! 10) (relays !  4) (relays !  5)
                             , true ==> store (pixel ~> v) 0
                             ]
           ]
@@ -205,13 +210,13 @@ renderPixel pixel i ATS{..} dinputs relays = runDInputs dinputs $ \di -> runRela
 
 
 
-render :: Indicator -> Ivory (ProcEffects s ()) ()
+render :: Indicator ni no -> Ivory (ProcEffects s ()) ()
 render Indicator{..} =
     writePixels canvas pixels
 
 
 
-onFindMe :: KnownNat l => Indicator -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onFindMe :: KnownNat l => Indicator ni no -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onFindMe Indicator{..} buff size =
     when (size >=? 2) $ do
         v <- unpack buff 1

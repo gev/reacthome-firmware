@@ -36,9 +36,9 @@ import           Ivory.Stdlib
 
 
 data Top = Top
-    { dinputs    :: DI.DInputs
-    , leds       :: LEDs    6
-    , buttons    :: Buttons 6
+    { dinputs    :: DI.DInputs 6
+    , leds       :: LEDs       6
+    , buttons    :: Buttons    6 6
     , sht21      :: SHT21
     , shouldInit :: Value    IBool
     , initBuff   :: Values 1 Uint8
@@ -53,7 +53,7 @@ topAP :: ( MonadState Context m
          , Transport t, LazyTransport t
          , Display d, Handler (Render 18) d
          )
-      => m t -> (Bool -> t -> m DI.DInputs) -> (t -> m SHT21) -> (p -> m d) -> m Top
+      => m t -> (Bool -> t -> m (DI.DInputs 6)) -> (t -> m SHT21) -> (p -> m d) -> m Top
 topAP transport' dinputs' sht21' display' = do
     transport   <- transport'
     shouldInit  <- asks D.shouldInit
@@ -62,7 +62,7 @@ topAP transport' dinputs' sht21' display' = do
     dinputs     <- dinputs' False transport
     frameBuffer <- values' "top_frame_buffer" 0
     leds        <- mkLeds frameBuffer [0, 5, 1, 4, 2, 3] transport
-    buttons     <- mkButtons leds (getDInputs dinputs) 1 transport
+    buttons     <- mkButtons leds (DI.getDInputs dinputs) 2 transport
     sht21       <- sht21' transport
     initBuff    <- values "top_init_buffer" [actionInitialize]
     let top      = Top { dinputs, leds, buttons, sht21

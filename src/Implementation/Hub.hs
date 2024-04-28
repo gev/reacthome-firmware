@@ -13,8 +13,8 @@ import qualified Core.Domain             as D
 import           Data.Buffer
 import           Data.Serialize
 import           Data.Value
-import           Endpoint.Dimmers        (initialize, runDimmers,
-                                          syncDimmerGroup)
+import           Endpoint.Dimmers        as Dim (dimmers, initialize,
+                                                 syncDimmerGroup)
 import           Feature.Dimmers         (Dimmers (getDimmers), forceSync, n,
                                           onDim, onDo)
 import           Feature.DInputs         (DInputs, forceSyncDInputs)
@@ -31,8 +31,8 @@ import           Ivory.Stdlib
 
 data Hub = Hub
     { rbus       :: [RBUS]
-    , dimmers    :: Dimmers
-    , dinputs    :: DInputs
+    , dimmers    :: Dimmers    3
+    , dinputs    :: DInputs    4
     , ds18b20    :: DS18B20
     , indicator  :: Indicator 20
     , shouldInit :: Value IBool
@@ -41,7 +41,13 @@ data Hub = Hub
 
 
 hub :: MonadReader (D.Domain p c) m
-    => m t -> (t -> m [RBUS]) -> (t -> m Dimmers) -> (Bool -> t -> m DInputs) -> (t -> m DS18B20) -> (t -> m (Indicator 20)) -> m Hub
+    => m t
+    -> (t -> m [RBUS])
+    -> (t -> m (Dimmers 3))
+    -> (Bool -> t -> m (DInputs 4))
+    -> (t -> m DS18B20)
+    -> (t -> m (Indicator 20))
+    -> m Hub
 hub transport' rbus' dimmers' dinputs' ds18b20' indicator' = do
     transport  <- transport'
     rbus       <- rbus' transport
@@ -80,16 +86,16 @@ onInit Hub{..} buff size =
         zipWithM_ run rbus $ fromIntegral <$> [1, 7..]
 
         offset <- local $ ival 25
-        runDimmers (getDimmers dimmers) $ \ds -> do
-            arrayMap $ \ix -> do
-                offset' <- deref offset
-                let d = addrOf ds ! ix
-                group    <- unpack buff  offset'
-                mode     <- unpack buff (offset' + 1)
-                value    <- unpack buff (offset' + 2) :: Ivory eff Uint8
-                initialize d group mode (safeCast value / 255) 0
-                syncDimmerGroup ds d ix
-                store offset $ offset' + 3
+        let ds  = Dim.dimmers $ getDimmers dimmers
+        arrayMap $ \ix -> do
+            offset' <- deref offset
+            let d    = ds ! ix
+            group   <- unpack buff  offset'
+            mode    <- unpack buff (offset' + 1)
+            value   <- unpack buff (offset' + 2) :: Ivory eff Uint8
+            initialize d group mode (safeCast value / 255) 0
+            syncDimmerGroup ds d ix
+            store offset $ offset' + 3
 
         store shouldInit false
 

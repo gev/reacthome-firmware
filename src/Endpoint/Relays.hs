@@ -1,10 +1,11 @@
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE FlexibleContexts  #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE NamedFieldPuns    #-}
-{-# LANGUAGE QuasiQuotes       #-}
-{-# LANGUAGE RankNTypes        #-}
-{-# LANGUAGE RecordWildCards   #-}
+{-# LANGUAGE DataKinds           #-}
+{-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE FlexibleInstances   #-}
+{-# LANGUAGE KindSignatures      #-}
+{-# LANGUAGE NamedFieldPuns      #-}
+{-# LANGUAGE QuasiQuotes         #-}
+{-# LANGUAGE RecordWildCards     #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Endpoint.Relays where
 
@@ -16,11 +17,13 @@ import qualified Core.Domain           as D
 import           Data.Buffer
 import           Data.Record
 import           Data.Serialize
+import           Endpoint.Groups       (Groups (groups))
 import qualified Endpoint.Groups       as G
 import           GHC.TypeNats
 import           Interface.MCU
 import           Interface.SystemClock (SystemClock, getSystemTime)
 import           Ivory.Language
+import           Ivory.Language.Proxy
 import           Ivory.Stdlib
 
 
@@ -42,22 +45,27 @@ type RelayStruct = "relay_struct"
 
 
 
-data Relays = Relays
-    { runRelays :: RunRecords RelayStruct
-    , payload   :: Buffer 8 Uint8
-    , clock     :: SystemClock
+data Relays (n :: Nat) = Relays
+    { relays  :: Records n RelayStruct
+    , payload :: Buffer 8 Uint8
+    , clock   :: SystemClock
     }
 
-relays :: (MonadState Context m, MonadReader (D.Domain p i) m) => String -> Int -> m Relays
-relays name n = do
-    mcu          <- asks D.mcu
-    let clock     = systemClock mcu
+mkRelays :: forall n p i m.
+          ( MonadState Context m
+          , MonadReader (D.Domain p i) m
+          , KnownNat n
+          )
+         => String -> m (Relays n)
+mkRelays name= do
     addStruct (Proxy :: Proxy RelayStruct)
-    let runRelays = runRecords name $ go . fromIntegral <$> [1..n]
-    payload      <- buffer "relay_message"
-    let relays    = Relays {runRelays, payload, clock}
-    runRelays addArea
-    pure relays
+    mcu       <- asks D.mcu
+    let clock  = systemClock mcu
+    relays    <- records name $ go . fromIntegral
+                                <$> [1..natVal (aNat :: NatType n)]
+    payload   <- buffer "relay_message"
+    pure Relays {relays, payload, clock}
+
     where go i = [ state           .= ival false
                  , defaultDelayOff .= ival 0
                  , delayOn         .= ival 0
@@ -70,23 +78,26 @@ relays name n = do
 
 
 
-message :: Relays -> Uint8 -> Ivory eff (Buffer 8 Uint8)
+message :: KnownNat n
+        => Relays n -> Uint8
+        -> Ivory eff (Buffer 8 Uint8)
 message Relays{..} i = do
-    runRelays $ \r -> do
-        let relay = addrOf r ! toIx i
-        pack   payload 0 actionDo
-        pack   payload 1 $ i + 1
-        pack   payload 2 =<< deref (relay ~> state)
-        pack   payload 3 =<< deref (relay ~> group)
-        packLE payload 4 =<< deref (relay ~> defaultDelayOff)
+    let relay = relays ! toIx i
+    pack   payload 0 actionDo
+    pack   payload 1 $ i + 1
+    pack   payload 2 =<< deref (relay ~> state)
+    pack   payload 3 =<< deref (relay ~> group)
+    packLE payload 4 =<< deref (relay ~> defaultDelayOff)
     pure payload
 
 
 
-turnOffRelay :: Relays -> (forall n. KnownNat n => Ix n) -> Ivory eff ()
-turnOffRelay Relays{..} index = runRelays $ \rs -> do
+turnOffRelay :: KnownNat n
+             => Relays n -> Ix n
+             -> Ivory eff ()
+turnOffRelay Relays{..} index = do
     let ix     = index - 1
-    let r      = addrOf rs ! ix
+    let r      = relays ! ix
     isLocked  <- deref $ r ~> lock
     shouldOff <- deref $ r ~> state
     when (iNot isLocked .&& shouldOff) $ do
@@ -96,83 +107,83 @@ turnOffRelay Relays{..} index = runRelays $ \rs -> do
         store (r ~> timestamp) =<< getSystemTime clock
 
 
-turnOnRelay :: Relays -> G.Groups -> (forall n. KnownNat n => Ix n) -> Ivory ('Effects (Returns t) b (Scope s)) ()
-turnOnRelay Relays{..} groups index = runRelays $ \rs -> do
+turnOnRelay :: KnownNat n
+            => Relays n -> G.Groups n -> Ix n
+            -> Ivory ('Effects (Returns t) b (Scope s)) ()
+turnOnRelay Relays{..} groups index = do
     let ix    = index - 1
-    let rs'   = addrOf rs
-    let r     = rs' ! ix
+    let r     = relays ! ix
     isLocked <- deref $ r ~> lock
     delayOn' <- deref $ r ~> delayOn
     isOn     <- deref $ r ~> state
     when (iNot isLocked .&& iNot isOn .&& delayOn' ==? 0) $ do
         timestamp' <- getSystemTime clock
         group'     <- deref $ r ~> group
-        turnOffGroup rs' ix group' timestamp'
-        delay' <- getGroupDelay rs' groups group' timestamp'
+        turnOffGroup relays ix group' timestamp'
+        delay' <- getGroupDelay relays groups group' timestamp'
         store (r ~> delayOn) delay'
         store (r ~> timestamp) timestamp'
         when  (delay' ==? 0) $ store (r ~> state) true
     store (r ~> delayOff) =<< deref (r ~> defaultDelayOff)
 
 
-turnOnRelay' :: Relays -> G.Groups -> (forall n. KnownNat n => Ix n) -> Uint32 -> Ivory ('Effects (Returns t) b (Scope s)) ()
-turnOnRelay' Relays{..} groups index delayOff' = runRelays $ \rs -> do
+turnOnRelay' :: KnownNat n
+             => Relays n -> G.Groups n -> Ix n -> Uint32
+             -> Ivory ('Effects (Returns t) b (Scope s)) ()
+turnOnRelay' Relays{..} groups index delayOff' = do
     let ix    = index - 1
-    let rs'   = addrOf rs
-    let r     = rs' ! ix
+    let r     = relays ! ix
     isLocked <- deref $ r ~> lock
     delayOn' <- deref $ r ~> delayOn
     isOn     <- deref $ r ~> state
     when (iNot isLocked .&& iNot isOn .&& delayOn' ==? 0) $ do
         timestamp' <- getSystemTime clock
         group'     <- deref $ r ~> group
-        turnOffGroup rs' ix group' timestamp'
-        delay' <- getGroupDelay rs' groups group' timestamp'
+        turnOffGroup relays ix group' timestamp'
+        delay' <- getGroupDelay relays groups group' timestamp'
         store (r ~> delayOn) delay'
         store (r ~> timestamp) timestamp'
         when  (delay' ==? 0) $ store (r ~> state) true
     store (r ~> delayOff) delayOff'
 
 
-toggleRelay :: Relays -> G.Groups -> (forall n. KnownNat n => Ix n) -> Ivory ('Effects (Returns t) b (Scope s)) ()
-toggleRelay relays@Relays{..} groups index = runRelays $ \rs -> do
+toggleRelay :: KnownNat n
+            => Relays n -> G.Groups n -> Ix n
+            -> Ivory ('Effects (Returns t) b (Scope s)) ()
+toggleRelay rs@Relays{..} groups index =  do
     let ix = index - 1
-    let r  = addrOf rs ! ix
+    let r  = relays ! ix
     state' <- deref $ r ~> state
     ifte_ state'
-          (turnOffRelay relays index)
-          (turnOnRelay  relays groups index)
+          (turnOffRelay rs index)
+          (turnOnRelay  rs groups index)
 
 
-setRelayDelayOff :: Relays -> Uint8 -> Uint32 -> Ivory eff ()
-setRelayDelayOff Relays{..} index delay = runRelays $ \rs -> do
+setRelayDelayOff :: KnownNat n => Relays n -> Uint8 -> Uint32 -> Ivory eff ()
+setRelayDelayOff Relays{..} index delay = do
     let ix = toIx (index - 1)
-    let r  = addrOf rs ! ix
+    let r  = relays ! ix
     store (r ~> defaultDelayOff) delay
     store (r ~> synced         ) false
 
 
-setRelayGroup :: Relays -> Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
-setRelayGroup Relays{..} index group' = runRelays $ \rs -> do
+setRelayGroup :: KnownNat n
+              => Relays n -> Uint8 -> Uint8
+              -> Ivory (ProcEffects s t) ()
+setRelayGroup Relays{..} index group' = do
     let ix  = toIx (index - 1)
-    let rs' = addrOf rs
-    let r   = rs' ! ix
-    turnOffGroup rs' ix group' =<< getSystemTime clock
+    let r   = relays ! ix
+    turnOffGroup relays ix group' =<< getSystemTime clock
     store (r ~> group ) group'
     store (r ~> synced) false
 
 
 
 getGroupDelay :: KnownNat n
-              => Records n RelayStruct
-              -> G.Groups
-              -> Uint8
-              -> Uint32
+              => Records n RelayStruct -> G.Groups n -> Uint8 -> Uint32
               -> Ivory ('Effects (Returns t) b (Scope s)) Uint32
-getGroupDelay rs groups i ts = do
-    delay' <- G.runGroups groups $ \gs -> do
-        let g = addrOf gs ! toIx (i - 1)
-        deref (g ~> G.delay)
+getGroupDelay rs G.Groups{..} i ts = do
+    delay' <- deref $ groups ! toIx (i - 1) ~> G.delay
     min <- local $ ival delay'
     arrayMap $ \jx -> do
         let r     = rs ! jx
@@ -192,10 +203,7 @@ getGroupDelay rs groups i ts = do
 
 
 turnOffGroup :: KnownNat n
-             => Records n RelayStruct
-             -> Ix n
-             -> Uint8
-             -> Uint32
+             => Records n RelayStruct -> Ix n -> Uint8 -> Uint32
              -> Ivory ('Effects (Returns t) b (Scope s)) ()
 turnOffGroup rs ix g t =
     arrayMap $ \jx -> do

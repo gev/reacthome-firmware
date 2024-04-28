@@ -101,25 +101,24 @@ forceSyncATS :: ATS -> Ivory eff ()
 forceSyncATS ATS{..} = store synced false
 
 
-manageATS :: ATS -> DI.DInputs -> R.Relays -> Ivory ('Effects (Returns ()) r (Scope s)) ()
-manageATS a@ATS{..} DI.DInputs{runDInputs} R.Relays{runRelays} =
-    runDInputs $ \di -> runRelays $ \r -> do
-        let di'  = addrOf di
-        let r'   = addrOf r
-        mode'   <- deref mode
-        cond_ [ mode' ==? mode_N1_G ==> do manageLine      1 a (di' !  1) (di' !  2) (r' !  0)
-                                           manageGenerator 2 a (di' ! 10) (di' ! 11) (r' !  4) (r' !  5)
-                                           manageError       a (di' !  0)
+manageATS :: (KnownNat ni, KnownNat no)
+          => ATS -> DI.DInputs ni -> R.Relays no
+          -> Ivory ('Effects (Returns ()) r (Scope s)) ()
+manageATS a@ATS{..} DI.DInputs{dinputs} R.Relays{relays} = do
+    mode'   <- deref mode
+    cond_ [ mode' ==? mode_N1_G ==> do manageLine      1 a (dinputs !  1) (dinputs !  2) (relays ! 0)
+                                       manageGenerator 2 a (dinputs ! 10) (dinputs ! 11) (relays ! 4) (relays !  5)
+                                       manageError       a (dinputs !  0)
 
-              , mode' ==? mode_N2   ==> do manageLine      1 a (di' !  1) (di' !  2) (r' !  0)
-                                           manageLine      2 a (di' !  3) (di' !  4) (r' !  1)
-                                           manageError       a (di' !  0)
+          , mode' ==? mode_N2   ==> do manageLine      1 a (dinputs !  1) (dinputs !  2) (relays ! 0)
+                                       manageLine      2 a (dinputs !  3) (dinputs !  4) (relays ! 1)
+                                       manageError       a (dinputs !  0)
 
-              , mode' ==? mode_N2_G ==> do manageLine      1 a (di' !  1) (di' !  2) (r' !  0)
-                                           manageLine      2 a (di' !  3) (di' !  4) (r' !  1)
-                                           manageGenerator 3 a (di' ! 10) (di' ! 11) (r' !  4) (r' !  5)
-                                           manageError       a (di' !  0)
-              ]
+          , mode' ==? mode_N2_G ==> do manageLine      1 a (dinputs !  1) (dinputs !  2) (relays ! 0)
+                                       manageLine      2 a (dinputs !  3) (dinputs !  4) (relays ! 1)
+                                       manageGenerator 3 a (dinputs ! 10) (dinputs ! 11) (relays ! 4) (relays !  5)
+                                       manageError       a (dinputs !  0)
+            ]
 
 
 

@@ -35,8 +35,8 @@ data Dimmers n = forall p. I.PWM p => Dimmers
     , getPWMs        :: [p]
     , shouldInit     :: Value IBool
     , current        :: Index Uint8
-    , transmit       :: forall n. KnownNat n
-                     => Buffer n Uint8 -> forall s t. Ivory (ProcEffects s t) ()
+    , transmit       :: forall l. KnownNat l
+                     => Buffer l Uint8 -> forall s t. Ivory (ProcEffects s t) ()
     }
 
 
@@ -91,7 +91,9 @@ sync Dimmers{..} = do
 
 
 
-onDo :: KnownNat n => Dimmers n -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
+onDo :: (KnownNat n, KnownNat l)
+     => Dimmers n -> Buffer l Uint8 -> Uint8
+     -> Ivory eff ()
 onDo Dimmers{..} buff size = do
     when (size >=? 3) $ do
         shouldInit' <- deref shouldInit
@@ -106,7 +108,9 @@ onDo Dimmers{..} buff size = do
 
 
 
-onDim :: KnownNat n => Dimmers n -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
+onDim :: (KnownNat n, KnownNat l)
+      => Dimmers n -> Buffer l Uint8 -> Uint8
+      -> Ivory eff ()
 onDim Dimmers{..} buff size = do
     when (size >=? 3) $ do
         shouldInit' <- deref shouldInit
@@ -125,7 +129,9 @@ onDim Dimmers{..} buff size = do
 
 
 
-onInit :: KnownNat n => Dimmers n -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onInit :: (KnownNat n, KnownNat l)
+       => Dimmers n -> Buffer l Uint8 -> Uint8
+       -> Ivory (ProcEffects s t) ()
 onInit Dimmers{..} buff size =
     when (size >=? 1 + n * 3) $ do
         offset <- local $ ival 1
@@ -151,14 +157,18 @@ onOff :: KnownNat n => D.Dimmers n -> Uint8 -> Ivory eff ()
 onOff = D.off
 
 
-onSet :: KnownNat n => D.Dimmers n -> Uint8 -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
+onSet :: (KnownNat n, KnownNat l)
+      => D.Dimmers n -> Uint8 -> Buffer l Uint8 -> Uint8
+      -> Ivory eff ()
 onSet dimmers index buff size =
     when (size >=? 4) $ do
         brightness <- unpack buff 3  :: Ivory eff Uint8
         D.setBrightness (safeCast brightness / 255) dimmers index
 
 
-onFade :: KnownNat n => D.Dimmers n -> Uint8 -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
+onFade :: (KnownNat n, KnownNat l)
+       => D.Dimmers n -> Uint8 -> Buffer l Uint8 -> Uint8
+       -> Ivory eff ()
 onFade dimmers index buff size =
     when (size >=? 5) $ do
         value    <- unpack buff 3 :: Ivory eff Uint8
@@ -166,14 +176,18 @@ onFade dimmers index buff size =
         D.fade (safeCast value / 255) (safeCast velocity / 255) dimmers index
 
 
-onMode :: KnownNat n => D.Dimmers n -> Uint8 -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
+onMode :: (KnownNat n, KnownNat l)
+       => D.Dimmers n -> Uint8 -> Buffer l Uint8 -> Uint8
+       -> Ivory eff ()
 onMode dimmers index buff size =
     when (size >=? 4) $ do
         mode <- unpack buff 3
         D.setMode mode dimmers index
 
 
-onGroup :: KnownNat n => D.Dimmers n -> Uint8 -> Buffer n Uint8 -> Uint8 -> Ivory eff ()
+onGroup :: (KnownNat n, KnownNat l)
+        => D.Dimmers n -> Uint8 -> Buffer l Uint8 -> Uint8
+        -> Ivory eff ()
 onGroup dimmers index buff size =
     when (size >=? 4) $ do
         group <- unpack buff 3

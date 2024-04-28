@@ -1,12 +1,12 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GADTs            #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE DataKinds           #-}
+{-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE GADTs               #-}
+{-# LANGUAGE NamedFieldPuns      #-}
+{-# LANGUAGE RankNTypes          #-}
+{-# LANGUAGE RecordWildCards     #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
-{-# LANGUAGE KindSignatures #-}
+{-# LANGUAGE KindSignatures      #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Feature.DInputs where
@@ -24,14 +24,14 @@ import           Data.Record
 import           Data.Serialize
 import           Data.Value
 import qualified Endpoint.DInputs      as DI
-import           GHC.TypeNats 
+import           GHC.TypeNats
 import           Interface.GPIO.Input
 import           Interface.GPIO.Port
 import           Interface.MCU         (MCU, peripherals, systemClock)
 import           Interface.SystemClock (SystemClock, getSystemTime)
 import           Ivory.Language
+import           Ivory.Language.Proxy
 import           Ivory.Stdlib
-import Ivory.Language.Proxy 
 
 
 
@@ -63,7 +63,7 @@ dinputs inputs zero' transport = do
     let peripherals' = peripherals mcu
     let pull         = if zero' then pullUp else pullDown
     is              <- mapM (($ pull peripherals') . ($ peripherals')) inputs
-    getDInputs      <- DI.dinputs "dinputs" n
+    getDInputs      <- DI.mkDinputs "dinputs"
     current         <- index "current_dinput"
 
     let dinputs = DInputs { n
@@ -86,7 +86,7 @@ dinputs inputs zero' transport = do
 
 forceSyncDInputs :: KnownNat n => DInputs n -> Ivory eff ()
 forceSyncDInputs DInputs{..} = do
-    arrayMap $ \ix -> store (( DI.dInputs getDInputs ! ix) ~> DI.synced) false
+    arrayMap $ \ix -> store (( DI.dinputs getDInputs ! ix) ~> DI.synced) false
 
 
 
@@ -96,7 +96,7 @@ manageDInputs DInputs{..} = zipWithM_ zip getInputs [0..]
         zip :: Input i => i -> Int -> Ivory eff ()
         zip input i = do
             let ix = fromIntegral i
-            let di = DI.dInputs getDInputs ! ix
+            let di = DI.dinputs getDInputs ! ix
             manageDInput zero di input =<< getSystemTime clock
 
 
@@ -127,7 +127,7 @@ syncDInputs dis@DInputs{..} = do
 
 syncDInput :: KnownNat n => DInputs n -> Uint8 -> Ivory (ProcEffects s ()) ()
 syncDInput DInputs{..} i = do
-    let di = DI.dInputs getDInputs ! toIx i
+    let di = DI.dinputs getDInputs ! toIx i
     synced <- deref $ di ~> DI.synced
     when (iNot synced) $ do
         msg <- DI.message getDInputs (i .% fromIntegral n)

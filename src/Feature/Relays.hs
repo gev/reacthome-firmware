@@ -23,6 +23,7 @@ import           Data.Index
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
+import           Endpoint.Groups       (Groups (groups))
 import qualified Endpoint.Groups       as G
 import           Endpoint.Relays       (delayOn)
 import qualified Endpoint.Relays       as R
@@ -37,30 +38,35 @@ import           Ivory.Stdlib
 
 
 
-data Relays = forall o. Output o => Relays
+data Relays n = forall o. Output o => Relays
     { n           :: Int
-    , getRelays   :: R.Relays
-    , getGroups   :: G.Groups
+    , getRelays   :: R.Relays n
+    , getGroups   :: G.Groups n
     , getOutputs  :: [o]
     , shouldInit  :: Value IBool
     , clock       :: SystemClock
     , current     :: Index Uint8
-    , transmit    :: forall n. KnownNat n
-                  => Buffer n Uint8 -> forall s t. Ivory (ProcEffects s t) ()
+    , transmit    :: forall l. KnownNat l
+                  => Buffer l Uint8 -> forall s t. Ivory (ProcEffects s t) ()
     }
 
 
 
-relays :: (MonadState Context m, MonadReader (D.Domain p  c) m, T.Transport t, Output o, Pull p d)
-       => [p -> d -> m o] -> t -> m Relays
+relays :: ( MonadState Context m
+          , MonadReader (D.Domain p  c) m
+          , Output o, Pull p d
+          , T.Transport t
+          , KnownNat n
+          )
+       => [p -> d -> m o] -> t -> m (Relays n)
 relays outs transport = do
     mcu        <- asks D.mcu
     shouldInit <- asks D.shouldInit
     let peripherals' = peripherals mcu
     os         <- mapM (($ pullNone peripherals') . ($ peripherals')) outs
     let n       = length os
-    getRelays  <- R.relays "relays" n
-    getGroups  <- G.groups "groups" n
+    getRelays  <- R.mkRelays "relays"
+    getGroups  <- G.mkGroups "groups"
     current    <- index "current_relay"
     let clock   = systemClock mcu
 
@@ -83,20 +89,17 @@ relays outs transport = do
 
 
 
-forceSyncRelays :: Relays -> Ivory eff ()
-forceSyncRelays relays = do
-    R.runRelays (getRelays relays) $ \rs ->
-        arrayMap $ \ix -> store (addrOf rs ! ix ~> R.synced) false
-    G.runGroups (getGroups relays) $ \gs ->
-        arrayMap $ \ix -> store (addrOf gs ! ix ~> G.synced) false
+forceSyncRelays :: KnownNat n => Relays n -> Ivory eff ()
+forceSyncRelays Relays{..} = do
+    arrayMap $ \ix -> store (R.relays getRelays ! ix ~> R.synced) false
+    arrayMap $ \ix -> store (G.groups getGroups ! ix ~> G.synced) false
 
 
 
-manageRelays :: Relays -> Ivory eff ()
+manageRelays :: KnownNat n => Relays n -> Ivory eff ()
 manageRelays Relays{..} = do
-
-    R.runRelays getRelays $ \rs -> arrayMap $ \ix -> do
-        let r     = addrOf rs ! ix
+    arrayMap $ \ix -> do
+        let r     = R.relays getRelays ! ix
         isOn     <- deref $ r ~> R.state
         delayOn  <- deref $ r ~> R.delayOn
         delayOff <- deref $ r ~> R.delayOff
@@ -126,16 +129,16 @@ manageRelays Relays{..} = do
     where
 
         off :: Output o => o -> Int -> Ivory eff ()
-        off output i = R.runRelays getRelays $ \rs -> do
+        off output i = do
             let ix   = fromIntegral i
-            let r    = addrOf rs ! ix
+            let r    = R.relays getRelays ! ix
             isOff   <- iNot <$> deref (r ~> R.state)
             when isOff $ manageState r output reset false
 
         on  :: Output o => o -> Int -> Ivory eff ()
-        on  output i = R.runRelays getRelays $ \rs -> do
+        on  output i = do
             let ix   = fromIntegral i
-            let r    = addrOf rs ! ix
+            let r    = R.relays getRelays ! ix
             isOn    <- deref $ r ~> R.state
             when isOn $ manageState r output set true
 
@@ -143,8 +146,7 @@ manageRelays Relays{..} = do
 
 manageState :: Output o
             => Record R.RelayStruct
-            -> o
-            -> (o -> Ivory eff ())
+            -> o -> (o -> Ivory eff ())
             -> IBool
             -> Ivory eff ()
 manageState r o setOut state = do
@@ -155,7 +157,9 @@ manageState r o setOut state = do
 
 
 
-syncRelays :: Relays -> Ivory (ProcEffects s ()) ()
+syncRelays :: KnownNat n
+           => Relays n
+           -> Ivory (ProcEffects s ()) ()
 syncRelays rs@Relays{..} = do
     shouldInit' <- deref shouldInit
     when (iNot shouldInit') $ do
@@ -166,34 +170,34 @@ syncRelays rs@Relays{..} = do
 
 
 
-syncRelays' :: Relays -> Uint8 -> Ivory (ProcEffects s ()) ()
-syncRelays' Relays{..} i =
-    R.runRelays getRelays $ \rs -> do
-        let r = addrOf rs ! toIx i
-        synced <- deref $ r ~> R.synced
-        when (iNot synced) $ do
-            msg <- R.message getRelays (i .% fromIntegral n)
-            transmit msg
-            store (r ~> R.synced) true
+syncRelays' :: KnownNat n
+            => Relays n -> Uint8
+            -> Ivory (ProcEffects s ()) ()
+syncRelays' Relays{..} i = do
+    let r = R.relays getRelays ! toIx i
+    synced <- deref $ r ~> R.synced
+    when (iNot synced) $ do
+        msg <- R.message getRelays (i .% fromIntegral n)
+        transmit msg
+        store (r ~> R.synced) true
 
 
 
-syncGroups' :: Relays -> Uint8 -> Ivory (ProcEffects s ()) ()
-syncGroups' Relays{..} i =
-    G.runGroups getGroups $ \gs -> do
-        let g = addrOf gs ! toIx i
-        synced <- deref $ g ~> G.synced
-        when (iNot synced) $ do
-            msg <- G.message getGroups (i .% fromIntegral n)
-            transmit msg
-            store (g ~> G.synced) true
+syncGroups' :: KnownNat n
+            => Relays n -> Uint8
+            -> Ivory (ProcEffects s ()) ()
+syncGroups' Relays{..} i = do
+    let g = G.groups getGroups ! toIx i
+    synced <- deref $ g ~> G.synced
+    when (iNot synced) $ do
+        msg <- G.message getGroups (i .% fromIntegral n)
+        transmit msg
+        store (g ~> G.synced) true
 
 
 
-onDo :: KnownNat n
-     => Relays
-     -> Buffer n Uint8
-     -> Uint8
+onDo :: (KnownNat l, KnownNat n)
+     => Relays n -> Buffer l Uint8 -> Uint8
      -> Ivory (ProcEffects s t) ()
 onDo relays@Relays{..} buff size =
     when (size >=? 3) $ do
@@ -212,31 +216,26 @@ onDo relays@Relays{..} buff size =
 
 
 
-onGroup :: KnownNat n
-        => Relays
-        -> Buffer n Uint8
-        -> Uint8
+onGroup :: (KnownNat l, KnownNat n)
+        => Relays n -> Buffer l Uint8 -> Uint8
         -> Ivory eff ()
 onGroup Relays{..} buff size =
     when (size >=? 7) $ do
         index <- deref $ buff ! 1
         initialized <- iNot <$> deref shouldInit
-        when (initialized .&& index >=? 1 .&& index <=? fromIntegral n) $
-            G.runGroups getGroups $ \gs -> do
-                let g = addrOf gs ! toIx (index - 1)
-                store (g ~> G.enabled) =<< unpack   buff 2
-                store (g ~> G.delay  ) =<< unpackLE buff 3
-                store (g ~> G.synced ) false
+        when (initialized .&& index >=? 1 .&& index <=? fromIntegral n) $ do
+            let g = G.groups getGroups ! toIx (index - 1)
+            store (g ~> G.enabled) =<< unpack   buff 2
+            store (g ~> G.delay  ) =<< unpackLE buff 3
+            store (g ~> G.synced ) false
 
 
 
 {-
     TODO: Generalize initialization
 -}
-onInit :: KnownNat n
-        => Relays
-        -> Buffer n Uint8
-        -> Uint8
+onInit :: (KnownNat l, KnownNat n)
+        => Relays n -> Buffer l Uint8 -> Uint8
         -> Ivory (ProcEffects s t) ()
 onInit rs@Relays{..} buff size =
     when (size >=? 1 + 5 * fromIntegral n + 6 * fromIntegral n) $ do
@@ -247,45 +246,39 @@ onInit rs@Relays{..} buff size =
 
 
 
-initGroups :: KnownNat n
-           => Relays
-           -> Buffer n Uint8
-           -> Ref s (Stored (Ix n))
+initGroups :: (KnownNat l, KnownNat n)
+           => Relays n -> Buffer l Uint8 -> Ref s (Stored (Ix l))
            -> Ivory eff ()
 initGroups Relays{..} buff offset =
-    G.runGroups getGroups $ \gs ->
-        arrayMap $ \ix -> do
-            offset' <- deref offset
-            let g = addrOf gs ! ix
-            store (g ~> G.enabled) =<< unpack   buff  offset'
-            store (g ~> G.delay  ) =<< unpackLE buff (offset' + 1)
-            store offset $ offset' + 5
+    arrayMap $ \ix -> do
+        offset' <- deref offset
+        let g = G.groups getGroups ! ix
+        store (g ~> G.enabled) =<< unpack   buff  offset'
+        store (g ~> G.delay  ) =<< unpackLE buff (offset' + 1)
+        store offset $ offset' + 5
 
 
 
-initRelays :: KnownNat n
-           => Relays
-           -> Buffer n Uint8
-           -> Ref s (Stored (Ix n))
+initRelays :: (KnownNat l, KnownNat n)
+           => Relays n -> Buffer l Uint8 -> Ref s (Stored (Ix l))
            -> Ivory eff ()
 initRelays Relays{..} buff offset = do
     timestamp' <- getSystemTime clock
-    R.runRelays getRelays $ \rs ->
-        arrayMap $ \ix -> do
-            offset' <- deref offset
-            let r = addrOf rs ! ix
-            isLocked <- deref $ r ~> R.lock
-            when (iNot isLocked) $ do
-                store (r ~> R.state      ) =<< unpack   buff  offset'
-                store (r ~> R.delayOff   ) =<< unpackLE buff (offset' + 2)
-            store (r ~> R.group          ) =<< unpack   buff (offset' + 1)
-            store (r ~> R.defaultDelayOff) =<< unpackLE buff (offset' + 2)
-            store (r ~> R.timestamp      ) timestamp'
-            store offset $ offset' + 6
+    arrayMap $ \ix -> do
+        offset' <- deref offset
+        let r = R.relays getRelays ! ix
+        isLocked <- deref $ r ~> R.lock
+        when (iNot isLocked) $ do
+            store (r ~> R.state      ) =<< unpack   buff  offset'
+            store (r ~> R.delayOff   ) =<< unpackLE buff (offset' + 2)
+        store (r ~> R.group          ) =<< unpack   buff (offset' + 1)
+        store (r ~> R.defaultDelayOff) =<< unpackLE buff (offset' + 2)
+        store (r ~> R.timestamp      ) timestamp'
+        store offset $ offset' + 6
 
 
 
-onGetState :: Relays -> Ivory eff ()
+onGetState :: KnownNat n => Relays n -> Ivory eff ()
 onGetState rs@Relays{..} = do
     initialized <- iNot <$> deref shouldInit
     when initialized $ forceSyncRelays rs
