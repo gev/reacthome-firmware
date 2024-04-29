@@ -76,6 +76,8 @@ ints = fromEnum 0
 nats :: Integral i => List n i
 nats = fromEnum 1
 
+
+
 class MakeFrom n f t | f -> n, f -> t where
   from :: f -> List n t
 
