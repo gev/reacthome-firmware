@@ -10,7 +10,7 @@
 
 module Data.Fixed where
 
-import           Control.Monad       (liftM2, void, zipWithM_)
+import           Control.Monad       (liftM2, void)
 import           Data.Proxy
 import           GHC.TypeNats
 import           Language.Haskell.TH
@@ -63,7 +63,7 @@ zipWithM _    _  Nil           = pure Nil
 zipWithM f (x :> xs) (y :> ys) = liftM2 (:>) (f x y) (zipWithM f xs ys)
 
 zipWithM_ :: Monad m => (t -> u -> m v) -> List n t -> List n u -> m ()
-zipWithM_ f xs ys = void $ zipWithM f xs ys
+zipWithM_ f xs = void . zipWithM f xs
 
 
 
