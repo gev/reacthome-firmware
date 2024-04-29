@@ -1,7 +1,6 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE FlexibleInstances   #-}
-{-# LANGUAGE KindSignatures      #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Data.Matrix
@@ -16,10 +15,10 @@ import           Core.Context
 import           Data.Area
 import           GHC.TypeNats
 import           Ivory.Language
-import           Ivory.Language.Proxy 
+import           Ivory.Language.Proxy
 
 
-type Matrix (n:: Nat) (m :: Nat) t = Ref Global (Array n (Array m (Stored t)))
+type Matrix n m t = Ref Global (Array n (Array m (Stored t)))
 
 
 matrix_ :: (MonadState Context w, IvoryZeroVal t, KnownNat n, KnownNat m)

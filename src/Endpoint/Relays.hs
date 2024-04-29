@@ -1,7 +1,6 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE FlexibleInstances   #-}
-{-# LANGUAGE KindSignatures      #-}
 {-# LANGUAGE NamedFieldPuns      #-}
 {-# LANGUAGE QuasiQuotes         #-}
 {-# LANGUAGE RecordWildCards     #-}
@@ -45,7 +44,7 @@ type RelayStruct = "relay_struct"
 
 
 
-data Relays (n :: Nat) = Relays
+data Relays n = Relays
     { relays  :: Records n RelayStruct
     , payload :: Buffer 8 Uint8
     , clock   :: SystemClock

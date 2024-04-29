@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE FlexibleContexts    #-}
-{-# LANGUAGE KindSignatures      #-}
 {-# LANGUAGE RankNTypes          #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
@@ -24,8 +23,8 @@ import           Ivory.Language.Proxy
 
 
 
-type Record              t = Ref Global (Struct t)
-type Records  (n :: Nat) t = Ref Global (Array n (Struct t))
+type Record    t = Ref Global (Struct t)
+type Records n t = Ref Global (Array n (Struct t))
 
 
 record_ :: (MonadState Context m, IvoryStruct t)

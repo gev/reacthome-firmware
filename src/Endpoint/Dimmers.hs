@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE FlexibleContexts    #-}
-{-# LANGUAGE KindSignatures      #-}
 {-# LANGUAGE NamedFieldPuns      #-}
 {-# LANGUAGE QuasiQuotes         #-}
 {-# LANGUAGE RecordWildCards     #-}
@@ -38,7 +37,7 @@ type DimmerStruct = "dimmer_struct"
 
 
 
-data Dimmers (n :: Nat) = Dimmers
+data Dimmers n = Dimmers
     { dimmers :: Records n DimmerStruct
     , payload :: Buffer 6 Uint8
     }

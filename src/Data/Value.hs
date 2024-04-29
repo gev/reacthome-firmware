@@ -1,7 +1,6 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE FlexibleInstances   #-}
-{-# LANGUAGE KindSignatures      #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Data.Value
@@ -19,12 +18,12 @@ import           Core.Context
 import           Data.Area
 import           GHC.TypeNats
 import           Ivory.Language
-import           Ivory.Language.Proxy 
+import           Ivory.Language.Proxy
 
 
 
-type Value             t = Ref Global (Stored t)
-type Values (n :: Nat) t = Ref Global (Array n (Stored t))
+type Value    t = Ref Global (Stored t)
+type Values n t = Ref Global (Array n (Stored t))
 
 
 

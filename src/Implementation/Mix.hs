@@ -1,7 +1,6 @@
 {-# LANGUAGE DataKinds            #-}
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE GADTs                #-}
-{-# LANGUAGE KindSignatures       #-}
 {-# LANGUAGE NamedFieldPuns       #-}
 {-# LANGUAGE RankNTypes           #-}
 {-# LANGUAGE RecordWildCards      #-}
@@ -56,7 +55,7 @@ import           Util.CRC16
 
 
 
-data Mix (ni :: Nat) (no :: Nat) = forall f. Flash f => Mix
+data Mix ni no = forall f. Flash f => Mix
     { relays     :: Relays       no
     , dinputs    :: DInputs      ni
     , rules      :: Rules     ni no
