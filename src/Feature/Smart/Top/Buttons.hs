@@ -103,5 +103,5 @@ onFindMe Buttons{..} buff size =
 
 
 sinT :: ConstMemArea (Array 120 (Stored IFloat))
-sinT = constArea "sinT" $ iarray $ ival . ifloat . f . fromInteger <$> [0..119]
+sinT = constArea "sinT" $ iarray $ ival . ifloat . f . fromIntegral <$> [0..119]
     where f i = sin (pi * i / 120)

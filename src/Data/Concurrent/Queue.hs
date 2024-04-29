@@ -37,7 +37,7 @@ queue id = do
     let consumerId  = name  <>  "_consumer"
     producerIx     <- index     producerId
     consumerIx     <- index     consumerId
-    producerS      <- semaphore producerId $ fromInteger $ fromTypeNat (aNat :: NatType n)
+    producerS      <- semaphore producerId $ fromIntegral $ fromTypeNat (aNat :: NatType n)
     consumerS      <- semaphore consumerId 0
     pure Queue { producerIx, consumerIx, producerS, consumerS }
 
@@ -79,7 +79,7 @@ clear :: forall n eff. KnownNat n => Queue n -> Ivory eff ()
 clear Queue{..} = do
     store consumerIx 0
     store producerIx 0
-    store (getSemaphore producerS) $ fromInteger $ fromTypeNat (aNat :: NatType n)
+    store (getSemaphore producerS) $ fromIntegral $ fromTypeNat (aNat :: NatType n)
     store (getSemaphore consumerS) 0
 
 

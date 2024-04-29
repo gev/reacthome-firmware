@@ -36,9 +36,8 @@ import           Ivory.Stdlib
 
 
 
-data DInputs (n :: Nat) = forall i. Input i => DInputs
-    { n          :: Int
-    , zero       :: IBool
+data DInputs n = forall i. Input i => DInputs
+    { zero       :: IBool
     , getDInputs :: DI.DInputs n
     , getInputs  :: List n i
     , current    :: Index Uint8
@@ -58,7 +57,6 @@ dinputs :: forall m n p c i d t.
            )
         => List n (p -> d -> m i) -> Bool -> t -> m (DInputs n)
 dinputs inputs zero' transport = do
-    let n            = fromIntegral $ natVal (aNat :: NatType n)
     mcu             <- asks D.mcu
     let clock        = systemClock mcu
     let peripherals' = peripherals mcu
@@ -67,8 +65,7 @@ dinputs inputs zero' transport = do
     getDInputs      <- DI.mkDinputs "dinputs"
     current         <- index "current_dinput"
 
-    let dinputs = DInputs { n
-                          , zero = if zero' then true else false
+    let dinputs = DInputs { zero = if zero' then true else false
                           , getDInputs
                           , getInputs = is
                           , current
@@ -128,9 +125,10 @@ syncDInputs dis@DInputs{..} = do
 
 syncDInput :: KnownNat n => DInputs n -> Uint8 -> Ivory (ProcEffects s ()) ()
 syncDInput DInputs{..} i = do
+    let n = fromIntegral $ length getInputs
     let di = DI.dinputs getDInputs ! toIx i
     synced <- deref $ di ~> DI.synced
     when (iNot synced) $ do
-        msg <- DI.message getDInputs (i .% fromIntegral n)
+        msg <- DI.message getDInputs (i .% n)
         transmit msg
         store (di ~> DI.synced) true

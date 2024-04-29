@@ -1,10 +1,13 @@
 {-# LANGUAGE DataKinds            #-}
 {-# LANGUAGE FlexibleContexts     #-}
 {-# LANGUAGE GADTs                #-}
+{-# LANGUAGE KindSignatures       #-}
 {-# LANGUAGE NamedFieldPuns       #-}
 {-# LANGUAGE RankNTypes           #-}
 {-# LANGUAGE RecordWildCards      #-}
+{-# LANGUAGE ScopedTypeVariables  #-}
 {-# LANGUAGE UndecidableInstances #-}
+
 
 module Implementation.Mix where
 
@@ -29,8 +32,7 @@ import qualified Endpoint.Groups             as G
 import qualified Endpoint.Relays             as R
 import           Feature.DInputs             as FDI (DInputs (DInputs, getDInputs, getInputs),
                                                      dinputs, forceSyncDInputs,
-                                                     manageDInputs, n,
-                                                     syncDInputs)
+                                                     manageDInputs, syncDInputs)
 import           Feature.Mix.Indicator       as FI (Indicator, indicator,
                                                     onFindMe)
 import           Feature.Relays              as FR (Relays (Relays, getGroups, getRelays),
@@ -47,17 +49,16 @@ import           Interface.GPIO.Output
 import           Interface.GPIO.Port
 import           Interface.MCU               as I
 import           Ivory.Language
+import           Ivory.Language.Proxy
 import           Ivory.Stdlib
 import           Prelude                     hiding (error)
 import           Util.CRC16
 
 
 
-data Mix ni no = forall f. Flash f => Mix
-    { relaysN    :: Int
-    , relays     :: Relays      no
-    , dinputs    :: DInputs     ni
-    , dinputsN   :: Int
+data Mix (ni :: Nat) (no :: Nat) = forall f. Flash f => Mix
+    { relays     :: Relays       no
+    , dinputs    :: DInputs      ni
     , rules      :: Rules     ni no
     , ats        :: ATS
     , indicator  :: Indicator ni no
@@ -87,18 +88,14 @@ mix :: ( MonadState Context m
 mix transport' dinputs' relays' indicator' etc = do
     transport    <- transport'
     relays       <- relays' transport
-    let relaysN   = FR.n relays
     dinputs      <- dinputs' True transport
-    let dinputsN  = FDI.n dinputs
     rules        <- mkRules transport
     ats          <- mkATS transport
     indicator    <- indicator' ats (getDInputs dinputs) (getRelays relays) transport
     mcu          <- asks D.mcu
     shouldInit   <- asks D.shouldInit
     let mix       = Mix { relays
-                        , relaysN
                         , dinputs
-                        , dinputsN
                         , rules
                         , ats
                         , indicator
@@ -157,13 +154,13 @@ instance (KnownNat ni, KnownNat no, KnownNat (PayloadSize no)) => Controller (Mi
 
 
 
-onRule :: (KnownNat l, KnownNat ni, KnownNat no, KnownNat (PayloadSize no))
+onRule :: forall l ni no s t. (KnownNat l, KnownNat ni, KnownNat no, KnownNat (PayloadSize no))
        => Mix ni no -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onRule mix@Mix{..} buff size = do
-    let relaysN'  = fromIntegral relaysN
-    let dinputsN' = fromIntegral dinputsN
+    let relaysN  = fromIntegral $ natVal (aNat :: NatType no)
+    let dinputsN = fromIntegral $ natVal (aNat :: NatType ni)
     i <- subtract 1 <$> deref (buff ! 1)
-    when (size ==? 2 + 2 * relaysN' .&& i <? dinputsN') $ do
+    when (size ==? 2 + 2 * relaysN .&& i <? dinputsN) $ do
         kx <- local $ ival 2
         let run rules = arrayMap $ \jx -> do
                 kx' <- deref kx
@@ -235,12 +232,14 @@ load mix@Mix{..} = do
         run $ rulesOn rules
 
 
-checkCRC :: Mix ni no -> Ivory (ProcEffects s ()) IBool
+checkCRC :: forall ni no s. (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s ()) IBool
 checkCRC Mix{..} = do
+    let relaysN  = fromIntegral $ natVal (aNat :: NatType no)
+    let dinputsN = fromIntegral $ natVal (aNat :: NatType ni)
     crc   <- local $ istruct initCRC16
     updateCRC16 crc . castDefault =<< F.read etc 0
     kx <- local $ ival 4
-    times (fromIntegral $ 2 * dinputsN * relaysN :: Ix 256) $ \_ -> do
+    times (2 * dinputsN * relaysN :: Ix 256) $ \_ -> do
         kx' <- deref kx
         updateCRC16 crc . castDefault =<< F.read etc kx'
         store kx $ kx' + 4

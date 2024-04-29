@@ -68,7 +68,7 @@ mkLeds :: forall l m p c t.
           )
        => Values (Canvas1DSize l)  Uint8 -> [Ix l] -> t -> m (LEDs l)
 mkLeds frameBuffer order' transport = do
-    let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
+    let l' = fromIntegral $ fromTypeNat (aNat :: NatType l)
     let canvas  = mkCanvas1D frameBuffer
     order      <- values     "leds_order"       order'
     state      <- value      "leds_state"       true
@@ -162,7 +162,7 @@ onDim LEDs{..} buff size =
 onSetColor :: forall n l s t. (KnownNat n, KnownNat l)
            => LEDs l -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onSetColor LEDs{..} buff size = do
-    let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
+    let l' = fromIntegral $ fromTypeNat (aNat :: NatType l)
     when ((size - 2) .% 3 ==? 0) $ do
         i  <- deref (buff ! 1)
         when (i >=? 1 .&& i <=? l') $ do
@@ -192,7 +192,7 @@ onImage :: forall n l s t. (KnownNat n, KnownNat l)
         -> Uint8
         -> Ivory (ProcEffects s t) ()
 onImage LEDs{..} buff size = do
-    let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
+    let l' = fromIntegral $ fromTypeNat (aNat :: NatType l)
     let s' = l' `iDiv` 8
     n <- local $ ival s'
     let r' = l' .% 8
@@ -221,7 +221,7 @@ onBlink :: forall n l s t. (KnownNat n, KnownNat l)
         -> Uint8
         -> Ivory (ProcEffects s t) ()
 onBlink LEDs{..} buff size = do
-    let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
+    let l' = fromIntegral $ fromTypeNat (aNat :: NatType l)
     let s' = l' `iDiv` 8
     n <- local $ ival s'
     let r' = l' .% 8
@@ -246,7 +246,7 @@ onBlink LEDs{..} buff size = do
 onInitColors :: forall n l s t. (KnownNat n, KnownNat l)
              => LEDs l -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) IBool
 onInitColors LEDs{..} buff size = do
-    let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
+    let l' = fromIntegral $ fromTypeNat (aNat :: NatType l)
     let s' = l' `iDiv` 8
     n <- local $ ival s'
     let r' = l' .% 8
