@@ -19,8 +19,8 @@ import qualified Core.Transport       as T
 import           Data.Buffer
 import           Data.Matrix
 import           Data.Value
-import           Endpoint.DInputs     as DI (DInputs (DInputs), runDInputs,
-                                             state, synced)
+import           Endpoint.DInputs     as DI (DInputs (DInputs), dinputs, state,
+                                             synced)
 import           Endpoint.Groups      (Groups)
 import           Endpoint.Relays      (Relays, toggleRelay, turnOffRelay,
                                        turnOnRelay')
@@ -68,7 +68,8 @@ mkRules transport = do
 
 
 fillPayload :: (KnownNat ni, KnownNat no, KnownNat (PayloadSize no))
-            => Rules ni no -> Uint8 -> Ivory (ProcEffects s t) ()
+            => Rules ni no -> Uint8
+            -> Ivory (ProcEffects s t) ()
 fillPayload Rules{..} i = do
     store (payload ! 0) 0x03
     store (payload ! 1) $ i + 1
@@ -87,14 +88,15 @@ forceSyncRules Rules{..} = store synced false
 
 
 manageRules :: (KnownNat ni, KnownNat no)
-            => Rules ni no -> DInputs -> Relays -> Groups -> Ivory ('Effects (Returns ()) r (Scope s)) ()
+            => Rules ni no -> DInputs ni -> Relays no -> Groups no
+            -> Ivory ('Effects (Returns ()) r (Scope s)) ()
 manageRules Rules{..} DInputs{..} relays groups =
-    runDInputs  $ \dis -> arrayMap $ \ix' -> do
-        let n = arrayLen $ addrOf dis
+    arrayMap $ \ix' -> do
+        let n = arrayLen dinputs
         let ix = fromIntegral n - ix' - 1 -- Need for priority di rule
-        let di = addrOf dis ! ix
+        let di = dinputs ! ix
         let run rules = arrayMap $ \jx -> do
-                r <- deref (rules ! toIx (fromIx ix) ! jx)
+                r <- deref (rules ! ix ! jx)
                 cond_ [ r ==? 0 ==> turnOffRelay relays (toIx $ 1 + fromIx jx)
                       , r ==? 1 ==> turnOnRelay' relays groups (toIx $ 1 + fromIx jx) 0
                       , r ==? 2 ==> do changed <- iNot <$> deref (di ~> DI.synced)
@@ -107,7 +109,9 @@ manageRules Rules{..} DInputs{..} relays groups =
 
 
 
-syncRules :: (KnownNat ni, KnownNat no, KnownNat (PayloadSize no)) => Rules ni no -> Ivory (ProcEffects s ()) ()
+syncRules :: (KnownNat ni, KnownNat no, KnownNat (PayloadSize no))
+          => Rules ni no
+          -> Ivory (ProcEffects s ()) ()
 syncRules r@Rules{..} = do
     synced' <- deref synced
     let n = arrayLen  rulesOn

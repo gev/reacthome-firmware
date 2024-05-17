@@ -1,9 +1,7 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE GADTs               #-}
-{-# LANGUAGE KindSignatures      #-}
 {-# LANGUAGE NamedFieldPuns      #-}
-{-# LANGUAGE RankNTypes          #-}
 {-# LANGUAGE RecordWildCards     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
@@ -34,7 +32,6 @@ import           Endpoint.Dimmers      (brightness)
 import           Endpoint.DInputs      as DI
 import           Feature.Scd40         (SCD40 (transmit, txBuff))
 import           GHC.TypeNats
-import           Implementation.Blink  (blink)
 import           Interface.Display     (Display)
 import qualified Interface.Display     as I
 import           Interface.MCU
@@ -45,7 +42,7 @@ import           Ivory.Stdlib
 
 
 
-data LEDs (l :: Nat) = forall f t. T.LazyTransport t => LEDs
+data LEDs l = forall f t. T.LazyTransport t => LEDs
     { canvas     :: Canvas1D l
     , order      :: Values   l (Ix l)
     , state      :: Value      IBool
@@ -60,23 +57,21 @@ data LEDs (l :: Nat) = forall f t. T.LazyTransport t => LEDs
 
 
 
-mkLeds :: forall l m p c t.
-          ( KnownNat l
+mkLeds :: ( KnownNat l
           , MonadState Context m
           , MonadReader (D.Domain p c) m
           , T.LazyTransport t
           )
        => Values (Canvas1DSize l)  Uint8 -> [Ix l] -> t -> m (LEDs l)
 mkLeds frameBuffer order' transport = do
-    let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
     let canvas  = mkCanvas1D frameBuffer
     order      <- values     "leds_order"       order'
     state      <- value      "leds_state"       true
     brightness <- value      "leds_brightness"  1
     pixels     <- records_   "leds_pixels"
-    colors     <- records    "leds_colors"      $ replicate l' black
-    image      <- values     "leds_image"       $ replicate l' true
-    blink      <- values     "leds_blink"       $ replicate l' false
+    colors     <- records'   "leds_colors"      black
+    image      <- values'    "leds_image"       true
+    blink      <- values'    "leds_blink"       false
     blinkPhase <- value      "leds_blink_phase" false
 
     addStruct    (Proxy :: Proxy RGB)
@@ -162,7 +157,7 @@ onDim LEDs{..} buff size =
 onSetColor :: forall n l s t. (KnownNat n, KnownNat l)
            => LEDs l -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onSetColor LEDs{..} buff size = do
-    let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
+    let l' = fromIntegral $ fromTypeNat (aNat :: NatType l)
     when ((size - 2) .% 3 ==? 0) $ do
         i  <- deref (buff ! 1)
         when (i >=? 1 .&& i <=? l') $ do
@@ -192,7 +187,7 @@ onImage :: forall n l s t. (KnownNat n, KnownNat l)
         -> Uint8
         -> Ivory (ProcEffects s t) ()
 onImage LEDs{..} buff size = do
-    let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
+    let l' = fromIntegral $ fromTypeNat (aNat :: NatType l)
     let s' = l' `iDiv` 8
     n <- local $ ival s'
     let r' = l' .% 8
@@ -221,7 +216,7 @@ onBlink :: forall n l s t. (KnownNat n, KnownNat l)
         -> Uint8
         -> Ivory (ProcEffects s t) ()
 onBlink LEDs{..} buff size = do
-    let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
+    let l' = fromIntegral $ fromTypeNat (aNat :: NatType l)
     let s' = l' `iDiv` 8
     n <- local $ ival s'
     let r' = l' .% 8
@@ -246,7 +241,7 @@ onBlink LEDs{..} buff size = do
 onInitColors :: forall n l s t. (KnownNat n, KnownNat l)
              => LEDs l -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) IBool
 onInitColors LEDs{..} buff size = do
-    let l' = fromInteger $ fromTypeNat (aNat :: NatType l)
+    let l' = fromIntegral $ fromTypeNat (aNat :: NatType l)
     let s' = l' `iDiv` 8
     n <- local $ ival s'
     let r' = l' .% 8

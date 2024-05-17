@@ -17,6 +17,7 @@ import           Core.Handler
 import           Core.Task
 import           Core.Transport
 import           Data.Buffer
+import           Data.Display.Canvas1D     (Canvas1DSize)
 import           Data.Value
 import           Endpoint.DInputs          as E (DInputs)
 import           Feature.DInputs           as DI (DInputs (getDInputs),
@@ -35,10 +36,10 @@ import           Ivory.Stdlib
 
 
 
-data Top = Top
-    { dinputs    :: DI.DInputs
-    , leds       :: LEDs    6
-    , buttons    :: Buttons 6
+data Top n = Top
+    { dinputs    :: DI.DInputs n
+    , leds       :: LEDs       n
+    , buttons    :: Buttons    n n
     , sht21      :: SHT21
     , shouldInit :: Value    IBool
     , initBuff   :: Values 1 Uint8
@@ -50,10 +51,11 @@ data Top = Top
 
 topAP :: ( MonadState Context m
          , MonadReader (D.Domain p c) m
+         , Display d, Handler (Render (Canvas1DSize n)) d
          , Transport t, LazyTransport t
-         , Display d, Handler (Render 18) d
+         , KnownNat n, KnownNat (Canvas1DSize n)
          )
-      => m t -> (Bool -> t -> m DI.DInputs) -> (t -> m SHT21) -> (p -> m d) -> m Top
+      => m t -> (Bool -> t -> m (DI.DInputs n)) -> (t -> m SHT21) -> (p -> m d) -> m (Top n)
 topAP transport' dinputs' sht21' display' = do
     transport   <- transport'
     shouldInit  <- asks D.shouldInit
@@ -62,7 +64,7 @@ topAP transport' dinputs' sht21' display' = do
     dinputs     <- dinputs' False transport
     frameBuffer <- values' "top_frame_buffer" 0
     leds        <- mkLeds frameBuffer [0, 5, 1, 4, 2, 3] transport
-    buttons     <- mkButtons leds (getDInputs dinputs) 1 transport
+    buttons     <- mkButtons leds (DI.getDInputs dinputs) 1 transport
     sht21       <- sht21' transport
     initBuff    <- values "top_init_buffer" [actionInitialize]
     let top      = Top { dinputs, leds, buttons, sht21
@@ -81,21 +83,23 @@ topAP transport' dinputs' sht21' display' = do
 
 
 
-initTop :: Top -> Ivory (ProcEffects s t) ()
+initTop :: Top n -> Ivory (ProcEffects s t) ()
 initTop Top{..} = do
     shouldInit' <- deref shouldInit
     when shouldInit' $ transmit initBuff
 
 
 
-onInit :: KnownNat n => Top -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onInit :: (KnownNat l, KnownNat n)
+       => Top n -> Buffer l Uint8 -> Uint8
+       -> Ivory (ProcEffects s t) ()
 onInit Top{..} buff size = do
     colors <- onInitColors leds buff size
     when colors $
         store shouldInit false
 
 
-instance Controller Top where
+instance KnownNat n => Controller (Top n) where
 
     handle t@Top{..} buff size = do
         action <- deref $ buff ! 0

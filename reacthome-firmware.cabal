@@ -47,6 +47,7 @@ executable reacthome-firmware
                     , Build.Firmware
                     , Build.Shake
 
+                    , Data.Fixed
                     , Data.Area
                     , Data.Value
                     , Data.Record
@@ -271,6 +272,7 @@ executable reacthome-firmware
                     , shake
                     , pureMD5
                     , bytestring
+                    , template-haskell
 
     hs-source-dirs:   app
                     , formula

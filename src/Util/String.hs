@@ -46,7 +46,7 @@ memCmp :: forall n s1 s2 eff. KnownNat n
        -> Ivory eff IxRep
 memCmp a1 a2 = call memcmp (toCArray a1)
                            (toCArray a2)
-                           (fromInteger $ fromTypeNat (aNat :: NatType n))
+                           (fromIntegral $ fromTypeNat (aNat :: NatType n))
 
 
 memCpy :: forall n s1 s2 eff. KnownNat n
@@ -55,4 +55,4 @@ memCpy :: forall n s1 s2 eff. KnownNat n
        -> Ivory eff ()
 memCpy a1 a2 = call_ memcpy (toCArray a1)
                             (toCArray a2)
-                            (fromInteger $ fromTypeNat (aNat :: NatType n))
+                            (fromIntegral $ fromTypeNat (aNat :: NatType n))
