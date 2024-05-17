@@ -64,7 +64,7 @@ topAP transport' dinputs' sht21' display' = do
     dinputs     <- dinputs' False transport
     frameBuffer <- values' "top_frame_buffer" 0
     leds        <- mkLeds frameBuffer [0, 5, 1, 4, 2, 3] transport
-    buttons     <- mkButtons leds (DI.getDInputs dinputs) 2 transport
+    buttons     <- mkButtons leds (DI.getDInputs dinputs) 1 transport
     sht21       <- sht21' transport
     initBuff    <- values "top_init_buffer" [actionInitialize]
     let top      = Top { dinputs, leds, buttons, sht21
