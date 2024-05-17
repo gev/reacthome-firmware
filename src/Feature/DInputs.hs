@@ -89,7 +89,7 @@ forceSyncDInputs DInputs{..} = do
 
 
 manageDInputs :: KnownNat n => DInputs n -> Ivory eff ()
-manageDInputs DInputs{..} = zipWithM_ zip getInputs nats
+manageDInputs DInputs{..} = zipWithM_ zip getInputs ints
     where
         zip :: Input i => i -> Int -> Ivory eff ()
         zip input i = do
