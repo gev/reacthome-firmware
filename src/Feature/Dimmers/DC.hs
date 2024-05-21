@@ -46,7 +46,7 @@ dimmersDC pwms transport = do
 
 
 manage :: KnownNat n => Dimmers n -> Ivory eff ()
-manage Dimmers{..} = zipWithM_ zip getPWMs nats
+manage Dimmers{..} = zipWithM_ zip getPWMs ints
     where
         zip :: I.PWM p => p -> Int -> Ivory eff ()
         zip pwm i = do

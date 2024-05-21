@@ -130,7 +130,7 @@ manage Dimmers{..} CrossZero{..} = do
     isCrossZero'   <- deref isCrossZero
     isNoCrossZero' <- deref isNoCrossZero
     when (iNot isNoCrossZero' .&& isCrossZero') $ do
-        zipWithM_ zip getPWMs nats
+        zipWithM_ zip getPWMs ints
         store isCrossZero false
     where
         zip :: I.PWM p => p -> Int -> Ivory eff ()
