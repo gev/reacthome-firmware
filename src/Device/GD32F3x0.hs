@@ -344,7 +344,7 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
 
     , ow_0  = mkOneWire cfg_timer_15
 
-    , etc = mkPage 0x800_fc00
+    , etc = mkPage 0x800_bc00
 
     , i2c_0 = mkI2C i2c0
                     rcu_i2c0
