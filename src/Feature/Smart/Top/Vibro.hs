@@ -1,9 +1,10 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GADTs            #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE DataKinds          #-}
+{-# LANGUAGE FlexibleContexts   #-}
+{-# LANGUAGE GADTs              #-}
+{-# LANGUAGE NamedFieldPuns     #-}
+{-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE RankNTypes         #-}
+{-# LANGUAGE RecordWildCards    #-}
 
 module Feature.Smart.Top.Vibro where
 
@@ -12,7 +13,7 @@ import           Control.Monad.State   (MonadState)
 import           Core.Actions
 import           Core.Context
 import qualified Core.Domain           as D
-import           Core.Task             (yeld)
+import           Core.Task             (delay, yeld)
 import           Core.Transport
 import           Data.Buffer
 import           Data.Serialize        (unpack)
@@ -20,16 +21,18 @@ import           Data.Value
 import           Endpoint.DInputs      (DInputs (dinputs), state)
 import           Feature.Relays        (Relays (shouldInit))
 import           GHC.TypeNats
+import           Interface.Flash       as F
 import           Interface.GPIO.Output (Output, reset, set)
 import           Interface.GPIO.Port   (Pull, pullNone)
 import           Interface.MCU         (MCU (peripherals, systemClock))
 import           Interface.SystemClock (SystemClock, getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
+import           Util.CRC16
 
 
 
-data Vibro n = forall o t. (Output o, LazyTransport t) => Vibro
+data Vibro n = forall o t f. (Output o, LazyTransport t, Flash f) => Vibro
     { getDInputs  :: DInputs n
     , output      :: o
     , clock       :: SystemClock
@@ -38,6 +41,8 @@ data Vibro n = forall o t. (Output o, LazyTransport t) => Vibro
     , prevState   :: Values n IBool
     , t           :: Value Uint32
     , transport   :: t
+    , etc         :: f
+    , synced      :: Value IBool
     }
 
 
@@ -46,11 +51,12 @@ vibro :: ( MonadState Context m
          , MonadReader (D.Domain p c) m
          , Output o
          , Pull p d
+         , Flash f
          , LazyTransport t
          , KnownNat n
          )
-      => (p -> d -> m o) -> DInputs n -> t -> m (Vibro n)
-vibro output' getDInputs transport = do
+      => (p -> d -> m o) -> DInputs n -> t -> f -> m (Vibro n)
+vibro output' getDInputs transport etc = do
     mcu             <- asks D.mcu
     let clock        = systemClock mcu
     let peripherals' = peripherals mcu
@@ -59,16 +65,49 @@ vibro output' getDInputs transport = do
     isVibrating     <- value "is_vibrating" false
     prevState       <- values "prev_state" $ replicate 12 false
     t               <- value "t" 0
+    synced          <- value "synced" true
 
     let vibro = Vibro { getDInputs, output, clock
                       , volume, t, isVibrating, prevState
-                      , transport
+                      , transport, etc
+                      , synced
                       }
 
-    addTask $ yeld "vibro" $ vibroTask vibro
+    addTask $ yeld        "vibro"      $ vibroTask vibro
+    addTask $ delay 1_000 "sync_vibro" $ syncVibro vibro
+
+    addInit "load_vibro" $ loadVibro vibro
 
     pure vibro
 
+
+
+syncVibro :: Vibro n -> Ivory (ProcEffects s t) ()
+syncVibro Vibro{..} = do
+    synced' <- deref synced
+    when (iNot synced') $ do
+        erasePage etc 0
+        crc     <- local $ istruct initCRC16
+        volume' <- deref volume
+        updateCRC16 crc volume'
+        F.write etc 0 $ safeCast volume'
+        F.write etc 4 . safeCast =<< deref (crc ~> msb)
+        F.write etc 8 . safeCast =<< deref (crc ~> lsb)
+        store synced true
+
+
+
+loadVibro :: Vibro n -> Ivory (ProcEffects s t) ()
+loadVibro Vibro{..} = do
+    volume' <- castDefault <$> F.read etc 0
+    msb'    <- F.read etc 4
+    lsb'    <- F.read etc 8
+    crc     <- local $ istruct initCRC16
+    updateCRC16 crc volume'
+    msb     <- safeCast <$> deref (crc ~> msb)
+    lsb     <- safeCast <$> deref (crc ~> lsb)
+    when (msb ==? msb' .&& lsb ==? lsb') $
+        store volume volume'
 
 
 vibroTask :: KnownNat n => Vibro n -> Ivory (ProcEffects s t) ()
@@ -118,6 +157,7 @@ onVibro v@Vibro{..} buffer size =
     when (size ==? 2) $ do
         volume' <- unpack buffer 1
         store volume volume'
+        store synced false
         startVibrate v
         lazyTransmit transport 2 $ \transmit -> do
             transmit actionVibro
@@ -136,3 +176,9 @@ onInitVibro v@Vibro{..} buffer size = do
          )
          (  pure false
          )
+
+
+sendVibro Vibro{..} = do
+    lazyTransmit transport 2 $ \transmit -> do
+        transmit actionVibro
+        transmit =<< deref volume

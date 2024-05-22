@@ -1,9 +1,8 @@
-{-# LANGUAGE DataKinds          #-}
-{-# LANGUAGE FlexibleContexts   #-}
-{-# LANGUAGE NamedFieldPuns     #-}
-{-# LANGUAGE NumericUnderscores #-}
-{-# LANGUAGE RankNTypes         #-}
-{-# LANGUAGE RecordWildCards    #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE RecordWildCards  #-}
 
 module Implementation.Smart.TopAP where
 
@@ -26,10 +25,11 @@ import           Feature.RS485.RBUS.Data   (RBUS (shouldConfirm))
 import           Feature.Sht21             (SHT21)
 import           Feature.Smart.Top.Buttons
 import           Feature.Smart.Top.LEDs    (LEDs, mkLeds, onBlink, onDim, onDo,
-                                            onImage, onInitColors, onSetColor,
-                                            render, updateLeds)
+                                            onImage, onPalette, onSetColor,
+                                            render, sendLEDs, updateLeds)
 import           GHC.TypeNats
 import           Interface.Display         (Display, Render (Render))
+import           Interface.Flash
 import           Interface.MCU             (peripherals)
 import           Ivory.Language
 import           Ivory.Stdlib
@@ -37,14 +37,10 @@ import           Ivory.Stdlib
 
 
 data Top n = Top
-    { dinputs    :: DI.DInputs n
-    , leds       :: LEDs       n
-    , buttons    :: Buttons    n n
-    , sht21      :: SHT21
-    , shouldInit :: Value    IBool
-    , initBuff   :: Values 1 Uint8
-    , transmit   :: forall n. KnownNat n
-                 => Buffer n Uint8 -> forall s t. Ivory (ProcEffects s t) ()
+    { dinputs :: DI.DInputs n
+    , leds    :: LEDs       1 n
+    , buttons :: Buttons    n 1 n
+    , sht21   :: SHT21
     }
 
 
@@ -52,51 +48,38 @@ data Top n = Top
 topAP :: ( MonadState Context m
          , MonadReader (D.Domain p c) m
          , Display d, Handler (Render (Canvas1DSize n)) d
-         , Transport t, LazyTransport t
+         , LazyTransport t
+         , Flash f
          , KnownNat n, KnownNat (Canvas1DSize n)
          )
-      => m t -> (Bool -> t -> m (DI.DInputs n)) -> (t -> m SHT21) -> (p -> m d) -> m (Top n)
-topAP transport' dinputs' sht21' display' = do
+      => m t -> (Bool -> t -> m (DI.DInputs n)) -> (t -> m SHT21) -> (p -> m d) -> (p -> f) -> m (Top n)
+topAP transport' dinputs' sht21' display' etc' = do
     transport   <- transport'
     shouldInit  <- asks D.shouldInit
     mcu         <- asks D.mcu
     display     <- display' $ peripherals mcu
+    let etc      = etc' $ peripherals mcu
     dinputs     <- dinputs' False transport
     frameBuffer <- values' "top_frame_buffer" 0
-    leds        <- mkLeds frameBuffer [0, 5, 1, 4, 2, 3] transport
+    leds        <- mkLeds frameBuffer [0, 5, 1, 4, 2, 3] transport etc
     buttons     <- mkButtons leds (DI.getDInputs dinputs) 1 transport
     sht21       <- sht21' transport
-    initBuff    <- values "top_init_buffer" [actionInitialize]
-    let top      = Top { dinputs, leds, buttons, sht21
-                       , initBuff, shouldInit
-                       , transmit = transmitBuffer transport
-                       }
+    let top      = Top { dinputs, leds, buttons, sht21 }
 
     addHandler $ Render display 30 frameBuffer $ do
         updateLeds leds
         updateButtons buttons
         render leds
 
-    addTask $ delay 1_000 "top_init" $ initTop top
-
     pure top
 
 
 
-initTop :: Top n -> Ivory (ProcEffects s t) ()
-initTop Top{..} = do
-    shouldInit' <- deref shouldInit
-    when shouldInit' $ transmit initBuff
+onGetState :: KnownNat n => Top n -> Ivory (ProcEffects s t) ()
+onGetState Top{..} = do
+    forceSyncDInputs dinputs
+    sendLEDs leds
 
-
-
-onInit :: (KnownNat l, KnownNat n)
-       => Top n -> Buffer l Uint8 -> Uint8
-       -> Ivory (ProcEffects s t) ()
-onInit Top{..} buff size = do
-    colors <- onInitColors leds buff size
-    when colors $
-        store shouldInit false
 
 
 instance KnownNat n => Controller (Top n) where
@@ -108,7 +91,7 @@ instance KnownNat n => Controller (Top n) where
               , action ==? actionRGB        ==> onSetColor       leds    buff size
               , action ==? actionImage      ==> onImage          leds    buff size
               , action ==? actionBlink      ==> onBlink          leds    buff size
-              , action ==? actionInitialize ==> onInit           t       buff size
+              , action ==? actionPalette    ==> onPalette        leds    buff size
               , action ==? actionFindMe     ==> onFindMe         buttons buff size
-              , action ==? actionGetState   ==> forceSyncDInputs dinputs
+              , action ==? actionGetState   ==> onGetState       t
               ]

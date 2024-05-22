@@ -196,7 +196,7 @@ onGetState Mix{..} = do
 
 save :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s t) ()
 save Mix{..} = do
-    erasePage etc
+    erasePage etc 0
     crc   <- local $ istruct initCRC16
     mode' <- deref (mode ats)
     updateCRC16 crc mode'

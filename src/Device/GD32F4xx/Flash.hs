@@ -30,7 +30,7 @@ instance Flash PageAddr where
         -- clearFlagFMC fmc_flag_pgerr
         -- lockFMC
 
-    erasePage (PageAddr page) = pure ()
+    erasePage (PageAddr page) offset = pure ()
         -- unlockFMC
         -- clearFlagFMC fmc_flag_end
         -- clearFlagFMC fmc_flag_wperr

@@ -22,10 +22,10 @@ import           Ivory.Stdlib
 
 
 
-data Buttons n l = forall t. (LazyTransport t, KnownNat l) => Buttons
-    { leds            :: LEDs    l
+data Buttons n pn ln = forall t. (LazyTransport t, KnownNat ln) => Buttons
+    { leds            :: LEDs    pn ln
     , getDInputs      :: DInputs n
-    , leds'per'button :: Ix      l
+    , leds'per'button :: Ix      ln
     , start           :: Value   IBool
     , findMe          :: Value   IBool
     , t               :: Value   Sint32
@@ -34,8 +34,8 @@ data Buttons n l = forall t. (LazyTransport t, KnownNat l) => Buttons
 
 
 
-mkButtons :: (MonadState Context m, LazyTransport t, KnownNat l)
-          => LEDs l -> DInputs n -> Ix l -> t -> m (Buttons n l)
+mkButtons :: (MonadState Context m, LazyTransport t, KnownNat ln)
+          => LEDs pn ln -> DInputs n -> Ix ln -> t -> m (Buttons n pn ln)
 mkButtons leds getDInputs leds'per'button transport = do
     start      <- value "buttons_start"   true
     findMe     <- value "buttons_find_me" false
@@ -49,8 +49,8 @@ mkButtons leds getDInputs leds'per'button transport = do
                  }
 
 
-updateButtons :: (KnownNat l, KnownNat n)
-              => Buttons n l
+updateButtons :: (KnownNat n, KnownNat ln)
+              => Buttons n pn ln
               -> Ivory (ProcEffects s ()) ()
 updateButtons Buttons{..} = do
     pixel'  <- local . istruct $ rgb 0 0 0
@@ -86,7 +86,7 @@ updateButtons Buttons{..} = do
 
 
 onFindMe :: KnownNat b
-         => Buttons n l
+         => Buttons n pn ln
          -> Buffer b Uint8
          -> Uint8
          -> Ivory (ProcEffects s t) ()

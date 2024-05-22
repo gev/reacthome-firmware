@@ -1,9 +1,8 @@
-{-# LANGUAGE DataKinds          #-}
-{-# LANGUAGE FlexibleContexts   #-}
-{-# LANGUAGE NamedFieldPuns     #-}
-{-# LANGUAGE NumericUnderscores #-}
-{-# LANGUAGE RankNTypes         #-}
-{-# LANGUAGE RecordWildCards    #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE RecordWildCards  #-}
 
 module Implementation.Smart.TopGD where
 
@@ -17,6 +16,7 @@ import           Core.Handler                 (Handler, addHandler)
 import           Core.Task
 import           Core.Transport
 import           Data.Buffer
+import           Data.Serialize
 import           Data.Value
 import           Device.GD32F3x0.ADC          (ADC (buff))
 import           Endpoint.DInputs             as E (DInputs)
@@ -26,29 +26,31 @@ import           Feature.RS485.RBUS.Data      (RBUS (shouldConfirm))
 import           Feature.Sht21                (SHT21)
 import           Feature.Smart.Top.Buttons
 import           Feature.Smart.Top.LEDs       (LEDs, mkLeds, onBlink, onDim,
-                                               onDo, onImage, onInitColors,
-                                               onSetColor, render, updateLeds)
+                                               onDo, onImage, onPalette,
+                                               onSetColor, render, sendLEDs,
+                                               updateLeds)
 import           Feature.Smart.Top.PowerTouch (PowerTouch)
 import           Feature.Smart.Top.Vibro      (Vibro, onInitVibro, onVibro,
-                                               vibro)
+                                               sendVibro, vibro)
 import           GHC.TypeNats
 import           Interface.Display            (Display, Render (Render))
+import           Interface.Flash
 import           Interface.MCU                (peripherals)
 import           Ivory.Language
 import           Ivory.Stdlib
 
 
 
+palettes = 8 :: Uint8
+
+
+
 data Top n = Top
-    { dinputs    :: DI.DInputs n
-    , leds       :: LEDs      64
-    , buttons    :: Buttons    n 64
-    , vibro      :: Vibro      n
-    , sht21      :: SHT21
-    , shouldInit :: Value    IBool
-    , initBuff   :: Values 1 Uint8
-    , transmit   :: forall l. KnownNat l
-                 => Buffer l Uint8 -> forall s t. Ivory (ProcEffects s t) ()
+    { dinputs :: DI.DInputs n
+    , leds    :: LEDs       8 64
+    , buttons :: Buttons    n 8 64
+    , vibro   :: Vibro      n
+    , sht21   :: SHT21
     }
 
 
@@ -68,26 +70,29 @@ data Top n = Top
 topGD :: ( MonadState Context m
          , MonadReader (D.Domain p c) m
          , Handler (Render 192) d, Display d
-         , Transport t, LazyTransport t
+         , LazyTransport t
          , KnownNat n
+         , Flash f
          )
       => m t
       -> (Bool -> t -> m (DI.DInputs n))
-      -> (E.DInputs n -> t -> m (Vibro n))
+      -> (E.DInputs n -> t -> f-> m (Vibro n))
       -> m PowerTouch
       -> (t -> m SHT21)
       -> (p -> m d)
+      -> (p -> f)
       -> m (Top n)
-topGD transport' dinputs' vibro' touch' sht21' display' = do
+topGD transport' dinputs' vibro' touch' sht21' display' etc' = do
     transport    <- transport'
-    shouldInit   <- asks D.shouldInit
     mcu          <- asks D.mcu
     display      <- display' $ peripherals mcu
     dinputs      <- dinputs' True transport
 
     frameBuffer  <- values' "top_frame_buffer" 0
 
-    vibro        <- vibro' (DI.getDInputs dinputs) transport
+    let etc       = etc' $ peripherals mcu
+
+    vibro        <- vibro' (DI.getDInputs dinputs) transport etc
 
     touch'
 
@@ -109,46 +114,28 @@ topGD transport' dinputs' vibro' touch' sht21' display' = do
                                        , 12, 15,     20, 24, 28,     33, 37, 41,     47, 51, 55
                                        ,     14,     19,     27,     32,     40,     46,     54
                                        ,     13,     18, 25, 26,     31, 38, 39, 44, 45, 52, 53
-                                       ] transport
+                                       ] transport etc
 
     buttons      <- mkButtons leds (DI.getDInputs dinputs) 2 transport
 
     sht21        <- sht21' transport
 
-    initBuff     <- values "top_init_buffer" [actionInitialize]
-
-    let top       = Top { dinputs, leds, vibro, buttons, sht21
-                        , initBuff, shouldInit
-                        , transmit = transmitBuffer transport
-                        }
+    let top       = Top { dinputs, leds, vibro, buttons, sht21 }
 
     addHandler $ Render display 30 frameBuffer $ do
         updateLeds leds
         updateButtons buttons
         render leds
 
-    addTask $ delay 1_000 "top_init" $ initTop top
-
     pure top
 
 
 
-initTop :: Top n -> Ivory (ProcEffects s t) ()
-initTop Top{..} = do
-    shouldInit' <- deref shouldInit
-    when shouldInit' $ transmit initBuff
-
-
-
-onInit :: (KnownNat l, KnownNat n)
-       => Top n -> Buffer l Uint8 -> Uint8
-       -> Ivory (ProcEffects s t) ()
-onInit Top{..} buff size = do
-    colors <- onInitColors leds  buff size
-    vibro  <- onInitVibro  vibro buff size
-    when (colors .&& vibro) $
-        store shouldInit false
-
+onGetState :: KnownNat n => Top n -> Ivory (ProcEffects s t) ()
+onGetState Top{..} = do
+    forceSyncDInputs dinputs
+    sendVibro vibro
+    sendLEDs leds
 
 instance KnownNat n => Controller (Top n) where
 
@@ -159,8 +146,8 @@ instance KnownNat n => Controller (Top n) where
               , action ==? actionRGB        ==> onSetColor       leds    buff size
               , action ==? actionImage      ==> onImage          leds    buff size
               , action ==? actionBlink      ==> onBlink          leds    buff size
+              , action ==? actionPalette    ==> onPalette        leds    buff size
               , action ==? actionVibro      ==> onVibro          vibro   buff size
-              , action ==? actionInitialize ==> onInit           t       buff size
               , action ==? actionFindMe     ==> onFindMe         buttons buff size
-              , action ==? actionGetState   ==> forceSyncDInputs dinputs
+              , action ==? actionGetState   ==> onGetState       t
               ]

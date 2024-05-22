@@ -1,3 +1,4 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Device.GD32F3x0.Flash where
 
@@ -9,6 +10,7 @@ import           Support.Device.GD32F3x0.FMC
 
 
 newtype PageAddr = PageAddr {getAddr :: Uint32}
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar, Num)
 
 
 mkPage :: Uint32 -> PageAddr
@@ -30,12 +32,12 @@ instance Flash PageAddr where
         clearFlagFMC fmc_flag_pgerr
         lockFMC
 
-    erasePage (PageAddr page) = do
+    erasePage page offset = do
         unlockFMC
         clearFlagFMC fmc_flag_end
         clearFlagFMC fmc_flag_wperr
         clearFlagFMC fmc_flag_pgerr
-        erasePageFMC page
+        erasePageFMC (address page offset)
         clearFlagFMC fmc_flag_end
         clearFlagFMC fmc_flag_wperr
         clearFlagFMC fmc_flag_pgerr
