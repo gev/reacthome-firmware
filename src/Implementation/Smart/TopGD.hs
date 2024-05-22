@@ -47,8 +47,8 @@ palettes = 8 :: Uint8
 
 data Top n = Top
     { dinputs :: DI.DInputs n
-    , leds    :: LEDs       8 64
-    , buttons :: Buttons    n 8 64
+    , leds    :: LEDs      12 64
+    , buttons :: Buttons    n 12 64
     , vibro   :: Vibro      n
     , sht21   :: SHT21
     }

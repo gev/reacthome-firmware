@@ -67,6 +67,7 @@ data LEDs pn ln = forall f t. (T.LazyTransport t, Flash f) => LEDs
     , transport  :: t
     , etc        :: f
     , synced     :: Values   pn IBool
+    , synced_    :: Value       IBool
     }
 
 
@@ -87,8 +88,9 @@ mkLeds frameBuffer order' transport etc = do
     image      <- values'    "leds_image"       false
     blink      <- values'    "leds_blink"       false
     blinkPhase <- value      "leds_blink_phase" false
-    colors    <- matrix'    "leds_palette"     0
+    colors     <- matrix'    "leds_colors"     0
     synced     <- values'    "leds_synced"      true
+    synced_    <- value      "leds_synced_"     true
     ix         <- value      "leds_index"       0
     palette    <- value      "leds_palette"     0
     shouldSend <- value      "leds_should_send" true
@@ -98,7 +100,7 @@ mkLeds frameBuffer order' transport etc = do
 
     let leds = LEDs { canvas, colors, palette, ix, shouldSend, order
                     , state, brightness, pixels, image, blink, blinkPhase
-                    , transport, etc, synced
+                    , transport, etc, synced, synced_
                     }
 
     addTask $ delay   500 "blink" (store blinkPhase . iNot =<< deref blinkPhase)
@@ -117,12 +119,11 @@ syncLEDs LEDs{..} = do
     pageOffset <- local $ ival 1024
     arrayMap $ \px -> do
         synced' <- deref $ synced ! px
+        pageOffset' <- deref pageOffset
         when (iNot synced') $ do
-            pageOffset' <- deref pageOffset
             erasePage etc pageOffset'
             crc <- local $ istruct initCRC16
             colorOffset <- local $ ival 0
-            colorOffset' <- deref colorOffset
             arrayMap $ \cx -> do
                 value <- deref $ colors ! px ! cx
                 let r' = castDefault $ (value `iShiftR` 16) .& 0xff
@@ -138,19 +139,23 @@ syncLEDs LEDs{..} = do
             let offset = pageOffset' + colorOffset'
             F.write etc offset . safeCast =<< deref (crc ~> msb)
             F.write etc (offset + 4) . safeCast =<< deref (crc ~> lsb)
-            store pageOffset $ pageOffset' + 1024
             store (synced ! px) true
-    pageOffset' <- deref pageOffset
-    erasePage etc pageOffset'
-    crc <- local $ istruct initCRC16
-    brightness' <-  castDefault . (* 255) <$> deref brightness
-    state' <-  safeCast <$> deref state
-    updateCRC16 crc brightness'
-    updateCRC16 crc state'
-    F.write etc pageOffset' $ safeCast brightness'
-    F.write etc (pageOffset' + 4) $ safeCast state'
-    F.write etc (pageOffset' + 8) . safeCast =<< deref (crc ~> msb)
-    F.write etc (pageOffset' + 12) . safeCast =<< deref (crc ~> lsb)
+        store pageOffset $ pageOffset' + 1024
+
+    synced_' <- deref synced_
+    when (iNot synced_') $ do
+        pageOffset' <- deref pageOffset
+        erasePage etc pageOffset'
+        crc <- local $ istruct initCRC16
+        brightness' <-  castDefault . (* 255) <$> deref brightness
+        state' <-  safeCast <$> deref state
+        updateCRC16 crc brightness'
+        updateCRC16 crc state'
+        F.write etc pageOffset' $ safeCast brightness'
+        F.write etc (pageOffset' + 4) $ safeCast state'
+        F.write etc (pageOffset' + 8) . safeCast =<< deref (crc ~> msb)
+        F.write etc (pageOffset' + 12) . safeCast =<< deref (crc ~> lsb)
+        store synced_ true
 
 
 
@@ -181,8 +186,8 @@ loadLeds LEDs{..} = do
         lsb'' <- safeCast <$> deref (crc ~> lsb)
         when (msb' /=? msb'' .|| lsb' /=? lsb'') $ do
             arrayMap $ \cx -> store (colors ! px ! cx) 0x77_77_77
-
         store pageOffset $ pageOffset' + 1024
+
     pageOffset' <- deref pageOffset
     crc         <- local $ istruct initCRC16
     brightness' <- castDefault <$> F.read etc pageOffset'
@@ -238,13 +243,13 @@ onDo :: (KnownNat n, KnownNat ln)
       => LEDs pn ln -> Buffer n Uint8 -> Uint8
       -> Ivory (ProcEffects s t) ()
 onDo LEDs{..} buff size =
-    when (size ==? 2) $
+    when (size ==? 2) $ do
         lazyTransmit transport 2 $ \transmit -> do
             v <- deref $ buff ! 1
             store state $ v ==? 1
             transmit actionDo
             transmit v
-
+        store synced_ false
 
 
 onDim :: KnownNat n
@@ -270,6 +275,7 @@ onDim LEDs{..} buff size =
                         transmit actionDim
                         transmit brightness'
               )
+        store synced_ false
 
 
 
@@ -299,8 +305,8 @@ onSetColor LEDs{..} buff size = do
                     r' <- deref $ buff ! toIx (3 * fromIx ix + 3)
                     g' <- deref $ buff ! toIx (3 * fromIx ix + 4)
                     b' <- deref $ buff ! toIx (3 * fromIx ix + 5)
-                    let value = (r' `iShiftL` 16) .| (g' `iShiftL` 8) .| b'
-                    store (colors ! p' ! dx) $ safeCast value
+                    let value = (safeCast r' `iShiftL` 16) .| (safeCast g' `iShiftL` 8) .| safeCast b'
+                    store (colors ! p' ! dx) value
                     transmit r'
                     transmit g'
                     transmit b'
