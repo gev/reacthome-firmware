@@ -102,7 +102,7 @@ doPing :: RBUS -> Ivory (ProcEffects s ()) ()
 doPing r@RBUS{..} = do
     t0 <- deref txTimestamp
     t1 <- getSystemTime clock
-    when (t1 - t0 >? 1000) $ do
+    when (t1 - t0 >? 5000) $ do
         address' <- deref pingAddress
         toRS (transmitPing address') r 0
         store txTimestamp t1
