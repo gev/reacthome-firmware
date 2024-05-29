@@ -23,8 +23,8 @@ powerTouch output' = do
     let peripherals' = peripherals mcu
     output          <- output' peripherals' $ pullNone peripherals'
 
-    addInit "power_touch_off" $ reset output
+    addInit "power_touch_off" $ set output
 
-    addTask $ delay 5_000 "power_touch_on" $ set output
+    addTask $ delay 5_000 "power_touch_on" $ reset output
 
     pure PowerTouch
