@@ -67,6 +67,7 @@ executable reacthome-firmware
                     , Endpoint.Groups
                     , Endpoint.Dimmers
                     , Endpoint.Relays
+                    , Endpoint.AOutputs 
 
                     , Feature.DInputs
                     , Feature.Dimmers
