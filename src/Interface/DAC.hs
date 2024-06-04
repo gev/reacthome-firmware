@@ -9,7 +9,7 @@ class DAC a where
 
     setAnalog      :: a -> Uint16 -> Ivory eff ()
 
-    setVoltage     :: a -> IFloat -> Ivory eff ()
-    setVoltage  a v = setAnalog a . castDefault $ (v / (getRefVoltage a / (2 ** safeCast (getResolution a))))
+    setReduced     :: a -> IFloat -> Ivory eff ()
+    setReduced  a v = setAnalog a . castDefault $ v * (2 ** safeCast (getResolution a))
 
 
