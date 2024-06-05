@@ -31,7 +31,6 @@ type AOutputStruct = "aoutput_struct"
 |]
 
 
-
 data AOutputs n = AOutputs
     { aoutputs :: Records n AOutputStruct
     , payload  :: Buffer 3 Uint8
@@ -82,3 +81,9 @@ off :: KnownNat n => AOutputs n -> Uint8 -> Ivory eff ()
 off AOutputs{..} i = do 
     let aoutput' = aoutputs ! toIx i
     store (aoutput' ~> value) 0
+
+
+set :: KnownNat n => AOutputs n -> Uint8 -> IFloat -> Ivory eff ()
+set AOutputs{..} i v = do 
+    let aoutput' = aoutputs ! toIx i
+    store (aoutput' ~> value) v
