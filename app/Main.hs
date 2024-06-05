@@ -9,6 +9,7 @@ import           Device.GD32F4xx
 import           Formula.Blink330
 import           Formula.Blink450
 import           Formula.DI4
+import           Formula.DI4RSM
 import           Formula.DimmerAC12
 import           Formula.DimmerDC12
 import           Formula.Doppler1
@@ -34,6 +35,7 @@ main = do
                      , dimmerAC12
                      , mix6x12
                      , di4
+                     , di4rsm
                      , smartBottom1
                      , smartBottom2
                      , smartTopA6P
