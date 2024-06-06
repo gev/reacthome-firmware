@@ -9,6 +9,7 @@ import           Device.GD32F4xx
 import           Formula.Blink330
 import           Formula.Blink450
 import           Formula.DI4
+import           Formula.DI4RSM
 import           Formula.DimmerAC12
 import           Formula.DimmerDC12
 import           Formula.Doppler1
@@ -29,6 +30,9 @@ import           Formula.UdpEcho450
 
 main :: IO ()
 main = do
+    gcc gd32f350k8u6 [ di4rsm
+                     ]
+
     gcc gd32f330k8u6 [ relay12
                      , dimmerDC12
                      , dimmerAC12

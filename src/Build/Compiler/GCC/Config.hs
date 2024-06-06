@@ -2,7 +2,8 @@ module Build.Compiler.GCC.Config where
 
 
 data GCC = GCC
-    { defs    :: [String]
+    { path    :: String
+    , defs    :: [String]
     , incs    :: [String]
     , libs    :: [String]
     , cflags  :: [String]
