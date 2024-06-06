@@ -52,7 +52,7 @@ aoutputs dacs transport = do
     as               <- traverse ($ peripherals mcu) dacs
     let n             = length as
     getAOtputs       <- E.mkAOutputs "aotputs"
-    current          <- index "current_analog10v"
+    current          <- index "current_analog"
 
     let aoutputs = AOutputs { n = fromIntegral n
                                 , getAOtputs
@@ -62,9 +62,9 @@ aoutputs dacs transport = do
                                 , transmit = T.transmitBuffer transport
                                 }
 
-    addSync "aoutputs" $ forceSync aoutputs
-    addTask $ yeld "analog10vs_sync" $ sync aoutputs
-    addTask $ yeld "analog10vs_manage" $ manage aoutputs
+    addSync "analog_aoutputs" $ forceSync aoutputs
+    addTask $ yeld "analog_aoutputs_sync" $ sync aoutputs
+    addTask $ yeld "analog_aoutputs_manage" $ manage aoutputs
 
     pure aoutputs
 
@@ -81,11 +81,9 @@ manage AOutputs{..} = zipWithM_ zip getDACs ints
             I.setReduced dac v
 
 
-
 forceSync :: KnownNat n => AOutputs n -> Ivory eff ()
 forceSync AOutputs{..} =
     arrayMap $ \ix -> store (E.aoutputs getAOtputs ! ix ~> E.synced) false
-
 
 
 sync :: KnownNat n => AOutputs n -> Ivory (ProcEffects s ()) ()
