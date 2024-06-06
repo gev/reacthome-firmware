@@ -30,7 +30,7 @@ import           Support.Cast
 
 data AOutputs n = forall a. I.DAC a => AOutputs
     { n              :: Uint8
-    , getAOtputs     :: E.AOutputs n
+    , getAOutputs    :: E.AOutputs n
     , getDACs        :: List n a
     , shouldInit     :: Value IBool
     , current        :: Index Uint8
@@ -51,11 +51,11 @@ aoutputs dacs transport = do
     shouldInit       <- asks D.shouldInit
     as               <- traverse ($ peripherals mcu) dacs
     let n             = length as
-    getAOtputs       <- E.mkAOutputs "aotputs"
+    getAOutputs       <- E.mkAOutputs "aoutputs"
     current          <- index "current_analog"
 
     let aoutputs = AOutputs { n = fromIntegral n
-                                , getAOtputs
+                                , getAOutputs
                                 , getDACs = as
                                 , shouldInit
                                 , current
@@ -76,14 +76,14 @@ manage AOutputs{..} = zipWithM_ zip getDACs ints
         zip :: I.DAC a => a -> Int -> Ivory eff ()
         zip dac i = do
             let ix = fromIntegral i
-            let ao = E.aoutputs getAOtputs ! ix
+            let ao = E.aoutputs getAOutputs ! ix
             v  <- deref $ ao ~> E.value
             I.setReduced dac v
 
 
 forceSync :: KnownNat n => AOutputs n -> Ivory eff ()
 forceSync AOutputs{..} =
-    arrayMap $ \ix -> store (E.aoutputs getAOtputs ! ix ~> E.synced) false
+    arrayMap $ \ix -> store (E.aoutputs getAOutputs ! ix ~> E.synced) false
 
 
 sync :: KnownNat n => AOutputs n -> Ivory (ProcEffects s ()) ()
@@ -91,10 +91,10 @@ sync AOutputs{..} = do
     shouldInit' <- deref shouldInit
     when (iNot shouldInit') $ do
         i <- deref current
-        let d = E.aoutputs getAOtputs ! toIx i
+        let d = E.aoutputs getAOutputs ! toIx i
         synced' <- deref $ d ~> E.synced
         when (iNot synced') $ do
-            msg <- E.message getAOtputs (i .% n)
+            msg <- E.message getAOutputs (i .% n)
             transmit msg
             store (d ~> E.synced) true
         store current $ i + 1
@@ -106,12 +106,12 @@ onInit :: (KnownNat l, KnownNat n)
 onInit AOutputs{..} buff size = 
         when (size >=? 1 + n) $ do
             offset <- local $ ival 1
-            let aos = E.aoutputs getAOtputs
+            let aos = E.aoutputs getAOutputs
             arrayMap $ \ix -> do
                 offset' <- deref offset
                 let ao = aos ! ix
                 v <- unpack buff offset' :: Ivory eff Uint8
-                store (E.aoutputs getAOtputs ! ix ~> E.value) (safeCast v / 255)
+                store (E.aoutputs getAOutputs ! ix ~> E.value) (safeCast v / 255)
                 store offset $ offset' + 1
             store shouldInit false
 
@@ -127,9 +127,9 @@ onDim AOutputs{..} buff size = do
             when (index >=? 1 .&& index <=? n) $ do
                 let index' = index - 1
                 action <- deref $ buff ! 2
-                cond_ [ action ==? 0 ==> onOff   getAOtputs index'
-                      , action ==? 1 ==> onOn    getAOtputs index'
-                      , action ==? 2 ==> onSet   getAOtputs index' buff size
+                cond_ [ action ==? 0 ==> onOff   getAOutputs index'
+                      , action ==? 1 ==> onOn    getAOutputs index'
+                      , action ==? 2 ==> onSet   getAOutputs index' buff size
                       ]
 
 
@@ -145,8 +145,8 @@ onDo AOutputs{..} buff size = do
                 let index' = index - 1
                 value' <- deref $ buff ! 2
                 ifte_ (value' ==? 0)
-                    (onOn  getAOtputs index')
-                    (onOff getAOtputs index')
+                    (onOn  getAOutputs index')
+                    (onOff getAOutputs index')
 
 
 onOn :: KnownNat n => E.AOutputs n -> Uint8 -> Ivory eff ()
