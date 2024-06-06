@@ -14,7 +14,9 @@ instance Compiler GCC GD32F3x0 where
 
   mkCompiler MCUmod{..} =
 
-    GCC { defs    = [ "-D" <> (toUpper <$> model)
+    GCC { path    = model
+
+        , defs    = [ "-D" <> (toUpper <$> model)
                     , "-DUSE_STDPERIPH_DRIVER"
                     ]
 
@@ -25,7 +27,7 @@ instance Compiler GCC GD32F3x0 where
                     ]
 
         , libs    = [ "support/device/gd32f3x0" ]
-                     
+
         , cflags  = [ "-mthumb"
                     , "-mcpu=cortex-m4"
                     , "-mfpu=fpv4-sp-d16"

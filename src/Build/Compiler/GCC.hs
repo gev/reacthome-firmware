@@ -37,11 +37,11 @@ oc = "arm-none-eabi-objcopy"
 
 
 
-target :: Foldable t => [FilePath] -> t String -> [FilePath]
-target ns = concatMap $ \x -> ["build/firmware" </> n <.> x | n <- ns]
+target :: Foldable t => FilePath -> [FilePath] -> t String -> [FilePath]
+target build ns = concatMap $ \x -> [build <> "/firmware" </> n <.> x | n <- ns]
 
 source :: FilePath -> FilePath
-source = dropDirectory1 . dropExtension
+source = dropDirectory1 . dropDirectory1 . dropExtension
 
 
 
@@ -49,39 +49,43 @@ instance Shake GCC where
 
     key GCC{..} = mconcat cflags
 
-    shake GCC{..} ns = shakeArgs shakeOptions{shakeFiles="build"} $ do
+    shake GCC{..} ns = do
 
-        want $ target ns ["hex", "bin"]
+        let build = "build/" <> path
 
-        phony "clean" $ do
-            putInfo "Cleaning files in build"
-            removeFilesAfter "build" ["//*"]
+        shakeArgs shakeOptions{shakeFiles=build} $ do
 
-        "build//*.bin" %> \out -> do
-            let elf = out -<.> "elf"
-            need [elf]
-            cmd_ oc "-O binary" elf out
+            want $ target build ns ["hex", "bin"]
 
-        "build//*.hex" %> \out -> do
-            let elf = out -<.> "elf"
-            need [elf]
-            cmd_ oc "-O ihex" elf out
+            phony "clean" $ do
+                putInfo $ "Cleaning files in " <> build
+                removeFilesAfter build ["//*"]
 
-        "build//*.elf" %> \out -> do
-            let go lib = do
-                    ss <- getDirectoryFiles lib ["//*.c", "//*.s"]
-                    pure ["build" </> lib </> s <.> "o" | s <- ss]
-            os' <- concat <$> mapM go libs
-            let os = out -<.> "c" <.> "o" : os'
-            need os
-            cmd_ cc ldflags ld os "-lc" "-o" out
+            build <> "//*.bin" %> \out -> do
+                let elf = out -<.> "elf"
+                need [elf]
+                cmd_ oc "-O binary" elf out
 
-        "build//*.c.o" %> \out -> do
-            let m = out -<.> "m"
-            let a = out -<.> "asm"
-            cmd_ cc cflags defs incs "-c" (source out) "-S" "-o" a
-            cmd_ cc cflags defs incs "-c" (source out) "-o" out "-MMD -MF" m
-            neededMakefileDependencies m
+            build <> "//*.hex" %> \out -> do
+                let elf = out -<.> "elf"
+                need [elf]
+                cmd_ oc "-O ihex" elf out
 
-        "build//*.s.o" %> \out ->
-            cmd_ cc cflags defs incs "-c" (source out) "-o" out
+            build <> "//*.elf" %> \out -> do
+                let go lib = do
+                        ss <- getDirectoryFiles lib ["//*.c", "//*.s"]
+                        pure [build </> lib </> s <.> "o" | s <- ss]
+                os' <- concat <$> mapM go libs
+                let os = out -<.> "c" <.> "o" : os'
+                need os
+                cmd_ cc ldflags ld os "-lc" "-o" out
+
+            build <> "//*.c.o" %> \out -> do
+                let m = out -<.> "m"
+                let a = out -<.> "asm"
+                cmd_ cc cflags defs incs "-c" (source out) "-S" "-o" a
+                cmd_ cc cflags defs incs "-c" (source out) "-o" out "-MMD -MF" m
+                neededMakefileDependencies m
+
+            build <> "//*.s.o" %> \out ->
+                cmd_ cc cflags defs incs "-c" (source out) "-o" out
