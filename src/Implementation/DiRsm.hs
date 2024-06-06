@@ -2,7 +2,7 @@
 {-# LANGUAGE NamedFieldPuns  #-}
 {-# LANGUAGE RecordWildCards #-}
 
-module Implementation.DiRsm where
+module Implementation.DIRSM where
 
 import           Control.Monad     hiding (when)
 import           Core.Actions

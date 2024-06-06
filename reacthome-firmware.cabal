@@ -125,7 +125,7 @@ executable reacthome-firmware
                     , Implementation.UdpEcho
                     , Implementation.Relay
                     , Implementation.Doppler
-                    , Implementation.DiRsm 
+                    , Implementation.DIRSM 
 
                     , Interface.Counter
                     , Interface.GPIO.Input

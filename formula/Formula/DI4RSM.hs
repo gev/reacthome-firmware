@@ -4,7 +4,7 @@ import           Core.Formula
 import           Core.Models
 import           Data.Fixed
 import           Device.GD32F3x0
-import           Implementation.DiRsm    (diRsm)
+import           Implementation.DIRSM    (diRsm)
 import           Feature.DInputs
 import           Feature.DS18B20
 import           Feature.AOutputs       (aoutputs)
