@@ -89,7 +89,7 @@ executable reacthome-firmware
                     , Feature.Sht21
                     , Feature.Scd40
                     , Feature.Dopplers
-                    , Feature.AOutput
+                    , Feature.AOutputs
 
                     , Formula.Blink330
                     , Formula.Blink450

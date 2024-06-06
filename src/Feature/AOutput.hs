@@ -4,7 +4,7 @@
 {-# LANGUAGE RankNTypes       #-}
 {-# LANGUAGE RecordWildCards  #-}
 
-module Feature.AOutput where
+module Feature.AOutputs where
 
 import           Control.Monad.Reader (MonadReader, asks)
 import           Control.Monad.State  (MonadState)

@@ -8,7 +8,7 @@ import           Control.Monad     hiding (when)
 import           Core.Actions
 import           Core.Controller
 import           Data.Value
-import           Feature.AOutput
+import           Feature.AOutputs
 import           Feature.DInputs   (DInputs, forceSyncDInputs)
 import           Feature.DS18B20
 import           GHC.TypeNats

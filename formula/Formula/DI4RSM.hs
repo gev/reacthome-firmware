@@ -7,7 +7,7 @@ import           Device.GD32F3x0
 import           Implementation.DiRsm    (diRsm)
 import           Feature.DInputs
 import           Feature.DS18B20
-import           Feature.AOutput       (aoutputs)
+import           Feature.AOutputs       (aoutputs)
 import           Interface.RS485
 import           Ivory.Language
 import           Transport.RS485.RBUS
