@@ -75,15 +75,18 @@ on :: KnownNat n => AOutputs n -> Uint8 -> Ivory eff ()
 on AOutputs{..} i = do 
     let aoutput' = aoutputs ! toIx i
     store (aoutput' ~> value) 1
+    store (aoutput' ~> synced) false
 
 
 off :: KnownNat n => AOutputs n -> Uint8 -> Ivory eff ()
 off AOutputs{..} i = do 
     let aoutput' = aoutputs ! toIx i
     store (aoutput' ~> value) 0
+    store (aoutput' ~> synced) false
 
 
 set :: KnownNat n => AOutputs n -> Uint8 -> IFloat -> Ivory eff ()
 set AOutputs{..} i v = do 
     let aoutput' = aoutputs ! toIx i
     store (aoutput' ~> value) v
+    store (aoutput' ~> synced) false
