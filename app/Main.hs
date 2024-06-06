@@ -30,12 +30,14 @@ import           Formula.UdpEcho450
 
 main :: IO ()
 main = do
+    gcc gd32f350k8u6 [ di4rsm
+                     ]
+
     gcc gd32f330k8u6 [ relay12
                      , dimmerDC12
                      , dimmerAC12
                      , mix6x12
                      , di4
-                     , di4rsm
                      , smartBottom1
                      , smartBottom2
                      , smartTopA6P

@@ -372,6 +372,9 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
 gd32f330k8u6 :: MCUmod GD32F3x0
 gd32f330k8u6 = gd32f3x0 "gd32f330" "k8u6"
 
+gd32f350k8u6 :: MCUmod GD32F3x0
+gd32f350k8u6 = gd32f3x0 "gd32f350" "k8u6"
+
 
 instance Pull GD32F3x0 GPIO_PUPD where
     pullNone _ = gpio_pupd_none
