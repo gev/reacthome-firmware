@@ -8,7 +8,7 @@ import           Control.Monad     hiding (when)
 import           Core.Actions
 import           Core.Controller
 import           Data.Value
-import           Feature.Analog10v
+import           Feature.AOutput
 import           Feature.DInputs   (DInputs, forceSyncDInputs)
 import           Feature.DS18B20
 import           GHC.TypeNats
@@ -18,12 +18,12 @@ import           Ivory.Stdlib
 
 
 data DIRSM ni no = DIRSM { dinputs    :: DInputs ni
-                         , aoutputs   :: Analog10vs no
+                         , aoutputs   :: AOutputs no
                          }
 
 
 
-diRsm :: Monad m => m t -> (Bool -> t -> m (DInputs ni)) -> (t -> m (Analog10vs no)) -> (t -> m DS18B20) -> m (DIRSM ni no)
+diRsm :: Monad m => m t -> (Bool -> t -> m (DInputs ni)) -> (t -> m (AOutputs no)) -> (t -> m DS18B20) -> m (DIRSM ni no)
 diRsm transport' dinputs' aoutputs' ds18b20 = do
       transport <- transport'
       ds18b20 transport
@@ -38,7 +38,7 @@ instance (KnownNat ni, KnownNat no) => Controller (DIRSM ni no) where
         action <- deref $ buff ! 0
         cond_ [ action ==? actionDo         ==> onDo   aoutputs buff size
               , action ==? actionDim        ==> onDim  aoutputs buff size
-            --   , action ==? actionInitialize ==> onInit aoutputs buff size
+              , action ==? actionInitialize ==> onInit aoutputs buff size
               , action ==? actionGetState   ==> onGetState s
               ]
 

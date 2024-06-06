@@ -7,7 +7,7 @@ import           Device.GD32F3x0
 import           Implementation.DiRsm    (diRsm)
 import           Feature.DInputs
 import           Feature.DS18B20
-import           Feature.Analog10v       (analog10vs)
+import           Feature.AOutput       (aoutputs)
 import           Interface.RS485
 import           Ivory.Language
 import           Transport.RS485.RBUS
@@ -24,8 +24,8 @@ di4rsm  = Formula { name           = "di4rsm"
                                                     :> in_pa_9
                                                     :> Nil
                                            )
-                                           (analog10vs $  dac_pa_4 
-                                                       :> Nil
+                                           (aoutputs $  dac_pa_4 
+                                                     :> Nil
                                            )
                                            (ds18b20 ow_0 od_pa_15)
                   }
