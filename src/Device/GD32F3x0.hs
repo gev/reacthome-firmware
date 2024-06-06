@@ -9,6 +9,7 @@ module Device.GD32F3x0 where
 import           Control.Monad.State
 import           Core.Context
 import           Device.GD32F3x0.ADC
+import           Device.GD32F3x0.DAC
 import           Device.GD32F3x0.Display.NeoPixel
 import           Device.GD32F3x0.EXTI
 import           Device.GD32F3x0.Flash
@@ -53,6 +54,7 @@ type Input'       = forall m.   MonadState Context m => GPIO_PUPD -> m Input
 type Output'      = forall m.   MonadState Context m => GPIO_PUPD -> m Output
 type OpenDrain'   = forall m.   MonadState Context m => m OpenDrain
 type ADC'         = forall m.   MonadState Context m => m ADC
+type DAC'         = forall m.   MonadState Context m => m DAC
 type Timer'       = forall m.   MonadState Context m => Uint32 -> Uint32 -> m Timer
 type PWM'         = forall m.   MonadState Context m => Uint32 -> Uint32 -> m PWM
 type NeoPixel'    = forall m.   MonadState Context m => m NeoPixel
@@ -171,7 +173,9 @@ data GD32F3x0 = GD32F3x0
     , adc_pa_5  :: ADC'
     , adc_pa_6  :: ADC'
     , adc_pa_7  :: ADC'
-    
+
+    , dac_pa_4  :: DAC'
+
     }
 
 
@@ -359,12 +363,17 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
     , adc_pa_6 = mkADC (pa_6 analog) 6
     , adc_pa_7 = mkADC (pa_7 analog) 7
 
+    , dac_pa_4 = mkDAC (pa_4 analog)
+
     }
 
 
 
 gd32f330k8u6 :: MCUmod GD32F3x0
 gd32f330k8u6 = gd32f3x0 "gd32f330" "k8u6"
+
+gd32f350k8u6 :: MCUmod GD32F3x0
+gd32f350k8u6 = gd32f3x0 "gd32f350" "k8u6"
 
 
 instance Pull GD32F3x0 GPIO_PUPD where

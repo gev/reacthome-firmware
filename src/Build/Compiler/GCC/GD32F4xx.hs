@@ -14,7 +14,9 @@ instance Compiler GCC GD32F4xx where
 
   mkCompiler MCUmod{..} =
 
-    GCC { defs    = [ "-D" <> (toUpper <$> model)
+    GCC { path    = model
+
+        , defs    = [ "-D" <> (toUpper <$> model)
                     , "-DUSE_STDPERIPH_DRIVER"
                     ]
 

@@ -67,6 +67,7 @@ executable reacthome-firmware
                     , Endpoint.Groups
                     , Endpoint.Dimmers
                     , Endpoint.Relays
+                    , Endpoint.AOutputs 
 
                     , Feature.DInputs
                     , Feature.Dimmers
@@ -88,6 +89,7 @@ executable reacthome-firmware
                     , Feature.Sht21
                     , Feature.Scd40
                     , Feature.Dopplers
+                    , Feature.AOutputs
 
                     , Formula.Blink330
                     , Formula.Blink450
@@ -108,6 +110,7 @@ executable reacthome-firmware
                     , Formula.Smart.Bottom.Bottom2
                     , Formula.Doppler1
                     , Formula.Doppler5
+                    , Formula.DI4RSM
 
                     , Implementation.Blink
                     , Implementation.DI
@@ -122,6 +125,7 @@ executable reacthome-firmware
                     , Implementation.UdpEcho
                     , Implementation.Relay
                     , Implementation.Doppler
+                    , Implementation.DIRSM 
 
                     , Interface.Counter
                     , Interface.GPIO.Input
@@ -143,6 +147,7 @@ executable reacthome-firmware
                     , Interface.LwipPort
                     , Interface.I2C
                     , Interface.ADC
+                    , Interface.DAC
 
                     , Protocol.OneWire.Master
                     , Protocol.RS485.RBUS
@@ -188,6 +193,7 @@ executable reacthome-firmware
                     , Device.GD32F3x0.Flash
                     , Device.GD32F3x0.I2C
                     , Device.GD32F3x0.ADC
+                    , Device.GD32F3x0.DAC
                     
                     , Device.GD32F4xx
                     , Device.GD32F4xx.Display.NeoPixel

@@ -8,4 +8,4 @@ class ADC a where
     getAnalog      :: a -> Ivory eff Uint16
 
     getReduced     :: a -> Ivory eff IFloat
-    getReduced a = (/ (2 ** safeCast (getResolution a))) . safeCast <$> getAnalog a
+    getReduced a = (/ ((2 ** safeCast (getResolution a)) - 1)) . safeCast <$> getAnalog a
