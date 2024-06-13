@@ -15,7 +15,7 @@ import           Transport.RS485.RBUS
 di4rsm :: Formula GD32F3x0
 di4rsm  = Formula { name           = "di4rsm"
                   , model          = deviceTypeDi4Rsm
-                  , version        = (1, 0)
+                  , version        = (1, 1)
                   , shouldInit     = true
                   , implementation = diRsm (rbus $ rs485 uart_1 out_pa_5)
                                            (dinputs $  in_pa_12
