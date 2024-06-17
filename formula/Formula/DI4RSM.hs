@@ -8,6 +8,7 @@ import           Implementation.DIRSM    (diRsm)
 import           Feature.DInputs
 import           Feature.DS18B20
 import           Feature.AOutputs       (aoutputs)
+import           Feature.RS485.RSM      (rsm)
 import           Interface.RS485
 import           Ivory.Language
 import           Transport.RS485.RBUS
@@ -24,6 +25,8 @@ di4rsm  = Formula { name           = "di4rsm"
                                                     :> in_pa_9
                                                     :> Nil
                                            )
+                                           (rsm $ rs485 uart_0 out_pb_5
+                                                :> Nil)
                                            (aoutputs $  dac_pa_4 
                                                      :> Nil
                                            )

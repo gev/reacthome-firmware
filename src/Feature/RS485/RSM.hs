@@ -24,49 +24,18 @@ import           Data.Concurrent.Queue               as Q
 import           Data.Fixed
 import           Data.Serialize
 import           Data.Value
-import           Feature.RS485.RBUS.Rx
-import           Feature.RS485.RBUS.Tx
+import           Feature.RS485.RSM.Data
+import           Feature.RS485.RSM.Rx
+import           Feature.RS485.RSM.Tx
 import           GHC.TypeNats
 import           Interface.MCU                       (MCU (peripherals, systemClock))
 import qualified Interface.RS485                     as I
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Protocol.RS485.RBUS                 hiding (message)
-import           Protocol.RS485.RBUS.Master          as P
-import           Protocol.RS485.RBUS.Master.MacTable as T
-import           Protocol.RS485.RBUS.Master.Rx
 import           Interface.SystemClock               (SystemClock)
 import           Interface.RS485                     (RS485)
 
 
-
-data RSM = forall t. (LazyTransport t, Transport t) => RSM
-     { index            :: Int
-     , clock            :: SystemClock
-     , rs               :: RS485
-     , baudrate         :: Value      Uint32
-     , lineControl      :: Value      Uint8
-     , rxBuff           :: Buffer  64 Uint16
-     , rxQueue          :: Queue   64
-     , msgOffset        :: Buffer  32 Uint16
-     , msgSize          :: Buffer  32 Uint16
-     , msgTTL           :: Buffer  32 Uint8
-     , msgQueue         :: Queue   32
-     , msgConfirm       :: Values 255 IBool
-     , msgBuff          :: Buffer 512 Uint16
-     , msgIndex         :: Value      Uint16
-     , txBuff           :: Buffer 255 Uint16
-     , rsBuff           :: Buffer 253 Uint8
-     , rsSize           :: Value      Uint8
-     , rxLock           :: Value      IBool
-     , txLock           :: Value      IBool
-     , rxTimestamp      :: Value      Uint32
-     , txTimestamp      :: Value      Uint32
-     , shouldInit       :: Value      IBool
-     , synced           :: Value      IBool
-     , payload          :: Buffer   8 Uint8
-     , transport        :: t
-     }
 
 
 
@@ -91,13 +60,6 @@ rsm' transport rs485 index = do
     lineControl      <- value  (name <> "_line_control"     ) 0
     rxBuff           <- buffer (name <> "_rx"               )
     rxQueue          <- queue  (name <> "_rx"               )
-    msgOffset        <- buffer (name <> "_msg_offset"       )
-    msgSize          <- buffer (name <> "_msg_size"         )
-    msgConfirm       <- values (name <> "_msg_confirm"      ) (replicate 255 false)
-    msgTTL           <- buffer (name <> "_msg_ttl"          )
-    msgQueue         <- queue  (name <> "_msg"              )
-    msgBuff          <- buffer (name <> "_msg"              )
-    msgIndex         <- value  (name <> "_msg_index"        ) 0
     txBuff           <- buffer (name <> "_tx"               )
     rsBuff           <- buffer (name <> "_rs"               )
     rsSize           <- value  (name <> "_rs_size"          ) 0
@@ -114,7 +76,6 @@ rsm' transport rs485 index = do
 
     let rsm = RSM { index, clock, rs, baudrate, lineControl
                     , rxBuff, rxQueue
-                    , msgOffset, msgSize, msgConfirm, msgTTL, msgQueue, msgBuff, msgIndex
                     , txBuff
                     , rsBuff, rsSize
                     , rxLock, txLock
@@ -125,12 +86,10 @@ rsm' transport rs485 index = do
                     , transport
                     }
 
-    -- addHandler $ I.HandleRS485 rs (rxHandle rsm) (txHandle rsm)
+    addHandler $ I.HandleRS485 rs (rxHandle rsm) (txHandle rsm)
 
-    -- addTask $ yeld (name <> "_rx"   ) $ rxTask    rsm
-    -- addTask $ yeld (name <> "_tx"   ) $ txTask    rsm
-    -- addTask $ yeld (name <> "_reset") $ resetTask rsm
-    -- addTask $ yeld (name <> "_sync" ) $ syncTask  rsm
+    addTask $ yeld (name <> "_rx"   ) $ rxTask    rsm
+    addTask $ yeld (name <> "_sync" ) $ syncTask  rsm
 
     addSync (name <> "_sync") $ forceSyncRSM rsm
 
@@ -184,6 +143,7 @@ setMode list buff size = do
         zipWithM_ run list $ fromIntegral <$> nats
 
 
+
 transmitRS485 :: (KnownNat n, KnownNat l)
               => List n RSM
               -> Buffer l Uint8
@@ -200,6 +160,7 @@ transmitRS485 list buff size = do
                         store (txBuff ! toIx (fromIx ix)) . safeCast =<< deref (buff ! (ix + 2))
                     rsTransmit r $ safeCast size'
         zipWithM_ run list $ fromIntegral <$> nats
+
 
 
 initialize :: (KnownNat n, KnownNat l)
@@ -243,6 +204,7 @@ configureRS485 RSM{..} = do
               , config 7 I.WL_9b I.SB_2b I.None
               ]
     store rsSize 0
+
 
 onGetState :: [RSM] -> Ivory eff ()
 onGetState = mapM_ run
