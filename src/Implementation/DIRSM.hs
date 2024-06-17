@@ -36,10 +36,12 @@ diRsm transport' dinputs' aoutputs' ds18b20 = do
 instance (KnownNat ni, KnownNat no) => Controller (DIRSM ni no) where
     handle s@DIRSM{..} buff size = do
         action <- deref $ buff ! 0
-        cond_ [ action ==? actionDo         ==> onDo   aoutputs buff size
-              , action ==? actionDim        ==> onDim  aoutputs buff size
-              , action ==? actionInitialize ==> onInit aoutputs buff size
-              , action ==? actionGetState   ==> onGetState s
+        cond_ [ action ==? actionDo             ==> onDo          aoutputs buff size
+              , action ==? actionDim            ==> onDim         aoutputs buff size
+              , action ==? actionInitialize     ==> onInit        aoutputs buff size
+            --   , action ==? actionRs485Mode      ==> setMode       rbus     buff size
+            --   , action ==? actionRs485Transmit  ==> transmitRB485 rbus     buff size
+              , action ==? actionGetState       ==> onGetState s
               ]
 
 
