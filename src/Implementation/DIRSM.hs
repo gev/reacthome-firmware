@@ -7,18 +7,18 @@ module Implementation.DIRSM where
 import           Control.Monad          hiding (when)
 import           Core.Actions
 import           Core.Controller
+import           Data.Buffer
 import           Data.Fixed             (List)
+import           Data.Serialize
 import           Data.Value
 import qualified Feature.AOutputs       as FA
 import           Feature.DInputs        (DInputs, forceSyncDInputs)
 import           Feature.DS18B20
+import           Feature.RS485.RSM      (forceSyncRSM', setMode, transmitRS485)
 import           Feature.RS485.RSM.Data
-import           Feature.RS485.RSM      (transmitRS485, forceSyncRSM', setMode)
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Data.Buffer
-import Data.Serialize
 
 
 
@@ -29,7 +29,9 @@ data DIRSM ni no nr = DIRSM { dinputs  :: DInputs ni
 
 
 
-diRsm :: Monad m => m t -> (Bool -> t -> m (DInputs ni)) -> (t -> m (List nr RSM)) -> (t -> m (FA.AOutputs no)) -> (t -> m DS18B20) -> m (DIRSM ni no nr)
+diRsm :: Monad m => m t
+      -> (Bool -> t -> m (DInputs ni)) -> (t -> m (List nr RSM)) -> (t -> m (FA.AOutputs no)) -> (t -> m DS18B20)
+      -> m (DIRSM ni no nr)
 diRsm transport' dinputs' rsm' aoutputs' ds18b20 = do
       transport <- transport'
       ds18b20 transport
@@ -48,7 +50,7 @@ instance (KnownNat ni, KnownNat no, KnownNat nr) => Controller (DIRSM ni no nr) 
               , action ==? actionInitialize     ==> onInit        s        buff size
               , action ==? actionRs485Mode      ==> setMode       rsm      buff size
               , action ==? actionRs485Transmit  ==> transmitRS485 rsm      buff size
-              , action ==? actionGetState       ==> onGetState s
+              , action ==? actionGetState       ==> onGetState    s
               ]
 
 
@@ -60,5 +62,5 @@ onInit DIRSM{..} buff size = undefined
 
 onGetState DIRSM{..} = do
     forceSyncDInputs dinputs
-    FA.forceSync        aoutputs
+    FA.forceSync     aoutputs
     forceSyncRSM'    rsm
