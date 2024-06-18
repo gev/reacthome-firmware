@@ -1,20 +1,25 @@
-{-# LANGUAGE DataKinds       #-}
-{-# LANGUAGE NamedFieldPuns  #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RecordWildCards  #-}
 
 module Implementation.DIRSM where
 
-import           Control.Monad          hiding (when)
+import           Control.Monad.Reader   (MonadReader, asks)
 import           Core.Actions
 import           Core.Controller
+import qualified Core.Domain            as D
 import           Data.Buffer
-import           Data.Fixed             (List)
+import           Data.Fixed             (List, fromList, zipWithM_)
 import           Data.Serialize
 import           Data.Value
-import qualified Feature.AOutputs       as FA
+import qualified Endpoint.AOutputs      as A
+import           Feature.AOutputs       (AOutputs (getAOutputs), forceSync, n,
+                                         onDim, onDo)
 import           Feature.DInputs        (DInputs, forceSyncDInputs)
 import           Feature.DS18B20
-import           Feature.RS485.RSM      (forceSyncRSM', setMode, transmitRS485)
+import           Feature.RS485.RSM      (configureMode, forceSyncRSM', setMode,
+                                         transmitRS485)
 import           Feature.RS485.RSM.Data
 import           GHC.TypeNats
 import           Ivory.Language
@@ -22,31 +27,35 @@ import           Ivory.Stdlib
 
 
 
-data DIRSM ni no nr = DIRSM { dinputs  :: DInputs ni
-                            , rsm      :: List nr RSM
-                            , aoutputs :: FA.AOutputs no
-                            }
+data DIRSM ni no nr = DIRSM
+    { rsm        :: List nr RSM
+    , dinputs    :: DInputs ni
+    , aoutputs   :: AOutputs no
+    , shouldInit :: Value IBool
+    }
 
 
 
-diRsm :: Monad m => m t
-      -> (Bool -> t -> m (DInputs ni)) -> (t -> m (List nr RSM)) -> (t -> m (FA.AOutputs no)) -> (t -> m DS18B20)
+diRsm :: MonadReader (D.Domain p c) m
+      => m t
+      -> (Bool -> t -> m (DInputs ni)) -> (t -> m (List nr RSM)) -> (t -> m (AOutputs no)) -> (t -> m DS18B20)
       -> m (DIRSM ni no nr)
 diRsm transport' dinputs' rsm' aoutputs' ds18b20 = do
-      transport <- transport'
-      ds18b20 transport
-      dinputs  <- dinputs' True transport
-      aoutputs <- aoutputs' transport
-      rsm      <- rsm' transport
-      pure DIRSM { dinputs, aoutputs, rsm}
+    shouldInit <- asks D.shouldInit
+    transport <- transport'
+    ds18b20 transport
+    rsm      <- rsm' transport
+    dinputs  <- dinputs' True transport
+    aoutputs <- aoutputs' transport
+    pure DIRSM { rsm, dinputs, aoutputs, shouldInit }
 
 
 
 instance (KnownNat ni, KnownNat no, KnownNat nr) => Controller (DIRSM ni no nr) where
     handle s@DIRSM{..} buff size = do
         action <- deref $ buff ! 0
-        cond_ [ action ==? actionDo             ==> FA.onDo       aoutputs buff size
-              , action ==? actionDim            ==> FA.onDim      aoutputs buff size
+        cond_ [ action ==? actionDo             ==> onDo          aoutputs buff size
+              , action ==? actionDim            ==> onDim         aoutputs buff size
               , action ==? actionInitialize     ==> onInit        s        buff size
               , action ==? actionRs485Mode      ==> setMode       rsm      buff size
               , action ==? actionRs485Transmit  ==> transmitRS485 rsm      buff size
@@ -57,10 +66,29 @@ instance (KnownNat ni, KnownNat no, KnownNat nr) => Controller (DIRSM ni no nr) 
 onInit :: (KnownNat l, KnownNat ni, KnownNat no, KnownNat nr)
        => DIRSM ni no nr -> Buffer l Uint8 -> Uint8
        -> Ivory (ProcEffects s t) ()
-onInit DIRSM{..} buff size = undefined
+onInit DIRSM{..} buff size = do
+    let s = 1 + (5 * fromIntegral (length rsm))
+    when (size ==? s + n aoutputs) $ do
 
+        let run r@RSM{..} offset = do
+                store baudrate    =<< unpackLE buff  offset
+                store lineControl =<< unpack   buff (offset + 4)
+                configureMode r
+        zipWithM_ run rsm $ fromIntegral <$> fromList [1, 6..]
+
+        offset <- local $ ival $ toIx s
+        let aos = A.aoutputs $ getAOutputs aoutputs
+        arrayMap $ \ix -> do
+            offset' <- deref offset
+            let ao   = aos ! ix
+            value   <- deref $ buff ! offset'
+            store (ao ~> A.value) $ safeCast value / 255
+            store (ao ~> A.synced) false
+            store offset $ offset' + 1
+
+        store shouldInit false
 
 onGetState DIRSM{..} = do
     forceSyncDInputs dinputs
-    FA.forceSync     aoutputs
+    forceSync        aoutputs
     forceSyncRSM'    rsm
