@@ -19,7 +19,7 @@ import           Data.Index
 import           Data.Record
 import           Data.Serialize
 import           Data.Value           hiding (value)
-import qualified Endpoint.AOutputs   as E
+import qualified Endpoint.AOutputs    as E
 import           GHC.TypeNats
 import qualified Interface.DAC        as I
 import           Interface.MCU
@@ -103,7 +103,7 @@ sync AOutputs{..} = do
 onInit :: (KnownNat l, KnownNat n)
         => AOutputs n -> Buffer l Uint8 -> Uint8
         -> Ivory (ProcEffects s t) ()
-onInit AOutputs{..} buff size = 
+onInit AOutputs{..} buff size =
         when (size >=? 1 + n) $ do
             offset <- local $ ival 1
             let aos = E.aoutputs getAOutputs
@@ -130,6 +130,7 @@ onDim AOutputs{..} buff size = do
                 cond_ [ action ==? 0 ==> onOff   getAOutputs index'
                       , action ==? 1 ==> onOn    getAOutputs index'
                       , action ==? 2 ==> onSet   getAOutputs index' buff size
+                      , action ==? 3 ==> onSet   getAOutputs index' buff size
                       ]
 
 
@@ -145,8 +146,8 @@ onDo AOutputs{..} buff size = do
                 let index' = index - 1
                 value' <- deref $ buff ! 2
                 ifte_ (value' ==? 0)
-                    (onOn  getAOutputs index')
                     (onOff getAOutputs index')
+                    (onOn  getAOutputs index')
 
 
 onOn :: KnownNat n => E.AOutputs n -> Uint8 -> Ivory eff ()

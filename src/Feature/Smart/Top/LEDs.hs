@@ -409,7 +409,7 @@ sendPalette LEDs{..} = do
         lazyTransmit transport n $ \transmit -> do
             transmit actionRGB
             transmit . castDefault $ i' + 1
-            transmit 0
+            transmit 1
             arrayMap $ \cx -> do
                 value <- deref (colors ! ix' ! cx)
                 let r' = castDefault $ (value `iShiftR` 16) .& 0xff
