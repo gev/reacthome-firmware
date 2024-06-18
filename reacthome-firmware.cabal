@@ -81,6 +81,10 @@ executable reacthome-firmware
                     , Feature.RS485.RBUS.Data
                     , Feature.RS485.RBUS.Rx
                     , Feature.RS485.RBUS.Tx
+                    , Feature.RS485.RSM
+                    , Feature.RS485.RSM.Data
+                    , Feature.RS485.RSM.Rx
+                    , Feature.RS485.RSM.Tx
                     , Feature.Smart.Top
                     , Feature.Smart.Top.Buttons
                     , Feature.Smart.Top.LEDs

@@ -30,9 +30,9 @@ import           Ivory.Stdlib
 
 
 data Hub ni nd nr = Hub
-    { rbus       :: List nr RBUS
-    , dimmers    :: Dimmers    nd
-    , dinputs    :: DInputs    ni
+    { rbus       :: List      nr RBUS
+    , dimmers    :: Dimmers   nd
+    , dinputs    :: DInputs   ni
     , ds18b20    :: DS18B20
     , indicator  :: Indicator 20
     , shouldInit :: Value IBool
@@ -77,8 +77,9 @@ instance (KnownNat ni, KnownNat nd, KnownNat nr) => Controller (Hub ni nd nr) wh
 onInit :: (KnownNat l, KnownNat nd)
        => Hub ni nd nr -> Buffer l Uint8 -> Uint8
        -> Ivory (ProcEffects s t) ()
-onInit Hub{..} buff size =
-    when (size ==? 25 + n dimmers * 3) $ do
+onInit Hub{..} buff size = do
+    let s = 1 + (6 * fromIntegral (length rbus))
+    when (size ==? s + n dimmers * 3) $ do
 
         let run r@RBUS{..} offset = do
                 store mode        =<< unpack   buff  offset
@@ -87,7 +88,7 @@ onInit Hub{..} buff size =
                 configureMode r
         zipWithM_ run rbus $ fromIntegral <$> fromList [1, 7..]
 
-        offset <- local $ ival 25
+        offset <- local $ ival $ toIx s
         let ds  = Dim.dimmers $ getDimmers dimmers
         arrayMap $ \ix -> do
             offset' <- deref offset
