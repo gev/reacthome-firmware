@@ -3,6 +3,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Device.GD32F3x0.Display.NeoPixel where
 
@@ -55,9 +56,10 @@ mkNeoPixelPWM :: (MonadState Context m)
               -> TIMER_CHANNEL
               -> DMA_CHANNEL
               -> IRQn
+              -> (forall eff. TIMER_PERIPH -> Ivory eff Uint32)
               -> (GPIO_PUPD -> Port)
               -> m NeoPixel
-mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn pwmPort' = do
+mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn chxcv pwmPort' = do
     let pwmPort   = pwmPort' gpio_pupd_none
     let dmaInit   = dmaParam [ direction    .= ival dma_memory_to_peripheral
                              , memory_inc   .= ival dma_memory_increase_enable
@@ -76,7 +78,7 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn pwmPort' = do
     addInit (show pwmPort <> "_pwm") $ do
             enablePeriphClock             rcu_dma
             let t = timer pwmTimer
-            store (dmaParams ~> periph_addr) =<< ch0cv t
+            store (dmaParams ~> periph_addr) =<< chxcv t
             initChannelOcTimer            t pwmChannel =<< local (istruct timerOcDefaultParam)
             configChannelOutputPulseValue t pwmChannel 0
             configTimerOutputMode         t pwmChannel timer_oc_mode_pwm0
