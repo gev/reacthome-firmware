@@ -107,6 +107,9 @@ module Support.Device.GD32F3x0.Timer
     , initChannelOcTimer
     , enableTimerDMA
     , ch0cv
+    , ch1cv
+    , ch2cv
+    , ch3cv
 
     , inclTimer
     ) where
@@ -416,6 +419,27 @@ timer_ch0cv :: Def ('[TIMER_PERIPH] :-> Uint32)
 timer_ch0cv = fun "(uint32_t) &TIMER_CH0CV"
 
 
+ch1cv :: TIMER_PERIPH -> Ivory eff Uint32
+ch1cv = call timer_ch1cv
+
+timer_ch1cv :: Def ('[TIMER_PERIPH] :-> Uint32)
+timer_ch1cv = fun "(uint32_t) &TIMER_CH1CV"
+
+
+ch2cv :: TIMER_PERIPH -> Ivory eff Uint32
+ch2cv = call timer_ch2cv
+
+timer_ch2cv :: Def ('[TIMER_PERIPH] :-> Uint32)
+timer_ch2cv = fun "(uint32_t) &TIMER_CH2CV"
+
+
+ch3cv :: TIMER_PERIPH -> Ivory eff Uint32
+ch3cv = call timer_ch3cv
+
+timer_ch3cv :: Def ('[TIMER_PERIPH] :-> Uint32)
+timer_ch3cv = fun "(uint32_t) &TIMER_CH3CV"
+
+
 inclTimer :: ModuleDef
 inclTimer = do
     inclSym timer0
@@ -480,3 +504,6 @@ inclTimer = do
     incl timer_channel_output_config
     incl timer_dma_enable
     incl timer_ch0cv
+    incl timer_ch1cv
+    incl timer_ch2cv
+    incl timer_ch3cv
