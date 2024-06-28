@@ -11,6 +11,7 @@ typedef struct {
 
 
 
+void pin_init_input(pin x);
 void pin_init_out(pin x);
 void pin_init_out_OD(pin x);
 void pin_toggle(pin x);

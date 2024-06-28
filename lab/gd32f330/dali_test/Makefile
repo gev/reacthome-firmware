@@ -63,6 +63,7 @@ C_SOURCES =  \
 src/main.c \
 src/delay_us.c \
 src/gpio.c \
+src/dali.c \
 
 
 # ASM sources

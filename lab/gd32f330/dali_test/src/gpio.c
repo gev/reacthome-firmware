@@ -1,6 +1,11 @@
 #include "gpio.h"
 
 
+void pin_init_input(pin x) {
+  gpio_mode_set(x.port, GPIO_MODE_INPUT, GPIO_PUPD_NONE, x.num);
+  gpio_output_options_set(x.port, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, x.num);
+}
+
 void pin_init_out(pin x) {
   gpio_mode_set(x.port, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, x.num);
   gpio_output_options_set(x.port, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, x.num);
