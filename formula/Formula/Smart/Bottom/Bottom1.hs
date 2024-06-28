@@ -8,6 +8,7 @@ import           Feature.DInputs
 import           Feature.DS18B20
 import           Feature.Sht21
 import           Feature.Smart.Top
+import           Feature.Indicator    (indicator)
 import           Implementation.Smart.Bottom (bottom1)
 import           Interface.RS485
 import           Ivory.Language
@@ -27,4 +28,5 @@ smartBottom1 =  Formula { name           = "smart_bottom_1"
                                                             :> Nil
                                                    )
                                                    (ds18b20 ow_0 od_pa_15)
+                                                   (indicator npx_pwm_3 300)
                         }
