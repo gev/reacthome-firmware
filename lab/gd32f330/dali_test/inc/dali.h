@@ -40,7 +40,7 @@ uint8_t find_ballasts(uint32_t*);
 #define DALI_GO_TO_SCENE13 29 //29  - Adjusts the lighting control level for Scene XXXX according to the fade time.
 #define DALI_GO_TO_SCENE14 30 //30  - Adjusts the lighting control level for Scene XXXX according to the fade time.
 #define DALI_GO_TO_SCENE15 31 //31  - Adjusts the lighting control level for Scene XXXX according to the fade time.
-#define DALI_RESET 544 //32 REPEAT - Makes a slave an RESET state.
+#define DALI_RESET 32 //32 REPEAT - Makes a slave an RESET state.
 #define DALI_STORE_ACTUAL_LEVEL_IN_THE_DTR0 545 //33 REPEAT - Saves the current lighting control level to the DTR (DTR0). (In the parenthesis is a name in IEC62386-102ed2.0)
 #define DALI_SAVE_PERSISTENT_VARIABLES 546 //34 REPEAT DALI-2 - Saves a variable in nonvolatile memory (NVM). (Command that exist only in IEC62386-102ed2.0)
 #define DALI_SET_OPERATING_MODE 547 //35 REPEAT DALI-2 - Sets data of DTR0 as an operating mode. (Command that exist only in IEC62386-102ed2.0)

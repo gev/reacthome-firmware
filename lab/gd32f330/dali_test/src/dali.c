@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#include "delay_us.h"
+#include "delay.h"
 #include "gd32f3x0.h"
 #include "gd32f3x0_gpio.h"
 #include "gd32f3x0_rcu.h"
@@ -42,66 +42,67 @@ void set_search_addr(uint32_t addr) {
     uint8_t low = addr & 0xff;
 
     dali_send_special_command(DALI_SEARCHADDRH, high);
+		delay_ms(20);
     dali_send_special_command(DALI_SEARCHADDRM, middle);
+		delay_ms(20);
     dali_send_special_command(DALI_SEARCHADDRL, low);
+		delay_ms(20);
 
 }
 
-uint32_t find_next(uint32_t* i, uint32_t low, uint32_t high) {
 
-    if (low == high) {
-        set_search_addr(low);
-        dali_send_frame(DALI_COMPARE, 0);
-        bool value = !read_byte().isEmpty;
 
-        if (value) {
-            dali_send_frame(DALI_WITHDRAW, 0);
-            return low;
+uint32_t find_next(uint32_t low, uint32_t high) {
+    while (low <= high) {
+        uint32_t mid = (low + high) / 2;
+
+        set_search_addr(mid);
+        dali_send_special_command(DALI_COMPARE, 0);
+        bool response = !read_byte().isEmpty;
+
+        if (response) {
+            if (low == high) {
+							  dali_send_special_command(DALI_WITHDRAW, 0);
+								delay_ms(20);
+                return mid;
+            }
+
+            high = mid;
+        } else {
+            low = mid + 1;
         }
-        return -1;
-    }
-
-    set_search_addr(high);
-    dali_send_special_command(DALI_COMPARE, 0);
-    bool response = !read_byte().isEmpty;
-
-    if (response) {
-        uint32_t midpoint = (low + high) / 2;
-        // uint32_t addr_blst = find_next(i, low, midpoint);
-        // if (addr_blst != -1) {
-        //     return addr_blst;
-        // }
-        // addr_blst = find_next(i, midpoint + 1, high);
-        // if (addr_blst != -1) {
-        //     return addr_blst;
-        // }
-        return find_next(i, low, midpoint) != -1 || find_next(i, midpoint + 1, high) != -1;
     }
 
     return -1;
 }
 
-uint8_t find_ballasts(uint32_t* i) {
+
+
+uint8_t find_ballasts(uint32_t* buf) {
 
     uint32_t num_ballasts = 0;
-    dali_send_special_command(DALI_TERMINATE, 0);
-
+    dali_send_special_command(DALI_RESET, 0);
+		delay_ms(20);
+    dali_send_special_command(DALI_RESET, 0);
+		delay_ms(120);
     dali_send_special_command(DALI_INITIALISE, 0); //repeat
-    delay_us(100);
+    delay_ms(20);
     dali_send_special_command(DALI_INITIALISE, 0);
-    delay_us(100);
+    delay_ms(20);
+    dali_send_special_command(DALI_INITIALISE, 0);
+    delay_ms(120);
     dali_send_special_command(DALI_RANDOMISE, 0); //repeat
-    delay_us(100);
+    delay_ms(20);
     dali_send_special_command(DALI_RANDOMISE, 0); 
-    delay_us(1000); // Randomise may take up to 100ms
+    delay_ms(120); // Randomise may take up to 100ms
 
     uint32_t low = 0;
     uint32_t high = 0xffffff;
 
     while (low != -1) {
-        low = find_next(i, low, high);
+        low = find_next(low, high);
         if (low != -1) {
-            i[num_ballasts] = low;
+            buf[num_ballasts] = low;
             num_ballasts++;
             low++;
         }
@@ -155,8 +156,7 @@ void dali_send_frame(uint8_t byte1, uint8_t byte2) {
 }
 
 void dali_send_special_command(uint8_t command, uint8_t value) {
-    uint8_t cmd = (command + 16) << 1; // convert command number
-    dali_send_frame(cmd, value);
+    dali_send_frame(command, value);
 }
 
 
@@ -167,7 +167,7 @@ dali_recieve read_byte() {
   while (dali_pin_get(dali_rx) == 0) {
     delay_us(1);
     count++;
-    if (count > (DALI_TIME_BIT_US * 15)) {
+    if (count > (DALI_TIME_BIT_US * 22)) {
       return result;
     }
   };
@@ -179,6 +179,8 @@ dali_recieve read_byte() {
     }
     delay_us(DALI_TIME_BIT_US);
   }
+	delay_us(DALI_TIME_BIT_US);
+	delay_us(DALI_TIME_BIT_US);
   result.isEmpty = false;
   return result;
 }

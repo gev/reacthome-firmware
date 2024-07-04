@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#include "delay_us.h"
+#include "delay.h"
 #include "gd32f3x0.h"
 #include "gd32f3x0_gpio.h"
 #include "gd32f3x0_rcu.h"
