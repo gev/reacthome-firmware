@@ -22,7 +22,7 @@ TARGET = gd32_blink
 # debug build?
 DEBUG = 1
 # optimization
-OPT = -Og
+OPT = -O3
 
 
 #######################################
@@ -61,9 +61,9 @@ C_SOURCES =  \
 ../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_usart.c \
 ../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_wwdgt.c \
 src/main.c \
-src/delay_us.c \
+src/delay.c \
 src/gpio.c \
-src/dali.c \
+# src/dali.c \
 
 
 # ASM sources
