@@ -39,10 +39,10 @@ mkGroups :: (MonadState Context m, KnownNat n) =>  String -> m (Groups n)
 mkGroups name = do
     addStruct (Proxy :: Proxy GroupStruct)
     groups    <- records' name [ enabled .= ival false
-                                  , delay   .= ival 0
-                                  , synced  .= ival false
-                                  ]
-    payload      <- buffer "group_message"
+                               , delay   .= ival 0
+                               , synced  .= ival false
+                               ]
+    payload   <- buffer "group_message"
     pure Groups { groups, payload }
 
 

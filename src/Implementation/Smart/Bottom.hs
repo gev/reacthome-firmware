@@ -7,22 +7,22 @@ module Implementation.Smart.Bottom where
 
 import           Core.Actions
 import           Core.Controller
+import           Feature.ALED
 import           Feature.DInputs
 import           Feature.DS18B20
 import           Feature.Scd40
 import           Feature.Sht21
-import           Feature.Smart.Top
+import           Feature.Smart.Top (Top, forceSyncTop, onMessage)
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
-import qualified Feature.Indicator as I
 
 
 
 data Bottom n = Bottom
     { top     :: Top
     , dinputs :: DInputs n
-    , indicator :: I.Indicator 16
+    , aled    :: ALED 10 100 3000
     }
 
 
@@ -32,15 +32,15 @@ bottom1 :: (KnownNat n, Monad m)
         -> (t -> m Top)
         -> (Bool -> t -> m (DInputs n))
         -> (t -> m DS18B20)
-        -> (t -> m (I.Indicator 16)) 
+        -> (t -> m (ALED 10 100 3000))
         -> m (Bottom n)
-bottom1 transport' top' dinputs' ds18b20 indicator' = do
+bottom1 transport' top' dinputs' ds18b20 aled' = do
     transport <- transport'
     ds18b20 transport
     dinputs <- dinputs' True transport
     top     <- top' transport
-    indicator <- indicator' transport
-    pure Bottom { top, dinputs, indicator }
+    aled    <- aled' transport
+    pure Bottom { top, dinputs, aled }
 
 
 
@@ -51,11 +51,11 @@ bottom2 :: (KnownNat n, Monad m)
         -> m (DInputs n))
         -> (t -> m DS18B20)
         -> (t -> m SCD40)
-        -> (t -> m (I.Indicator 16))
+        -> (t -> m (ALED 10 100 3000))
         -> m (Bottom n)
-bottom2 transport top dinputs ds18b20 scd40 indicator'= do
+bottom2 transport top dinputs ds18b20 scd40 aled'= do
     scd40 =<< transport
-    bottom1 transport top dinputs ds18b20 indicator'
+    bottom1 transport top dinputs ds18b20 aled'
 
 
 
@@ -68,7 +68,6 @@ onGetState Bottom{..} buff size = do
 instance KnownNat n => Controller (Bottom n) where
     handle b@Bottom{..} buff size = do
         action <- deref $ buff ! 0
-        cond_ [ action ==? actionSmartTop ==> onMessage  top       buff size
-              , action ==? actionFindMe   ==> I.onFindMe indicator buff size
-              , action ==? actionGetState ==> onGetState b         buff size
+        cond_ [ action ==? actionSmartTop ==> onMessage  top buff size
+              , action ==? actionGetState ==> onGetState b   buff size
               ]

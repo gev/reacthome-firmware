@@ -44,13 +44,11 @@ mkAOutputs :: forall n m.
           => String -> m (AOutputs n)
 mkAOutputs name = do
     addStruct (Proxy :: Proxy AOutputStruct)
-    aoutputs    <- records name $ go . fromIntegral
-                               <$> [1..natVal (aNat :: NatType n)]
+    aoutputs    <- records' name [ value  .= ival 0
+                                 , synced .= ival false
+                                 ]
     payload     <- buffer "aoutput_message"
     pure AOutputs {aoutputs, payload}
-    where go i = [ value      .= ival 0
-                 , synced     .= ival false
-                 ]
 
 
 message :: KnownNat n
@@ -72,21 +70,21 @@ initialize aoutput value' = do
 
 
 on :: KnownNat n => AOutputs n -> Uint8 -> Ivory eff ()
-on AOutputs{..} i = do 
+on AOutputs{..} i = do
     let aoutput' = aoutputs ! toIx i
     store (aoutput' ~> value) 1
     store (aoutput' ~> synced) false
 
 
 off :: KnownNat n => AOutputs n -> Uint8 -> Ivory eff ()
-off AOutputs{..} i = do 
+off AOutputs{..} i = do
     let aoutput' = aoutputs ! toIx i
     store (aoutput' ~> value) 0
     store (aoutput' ~> synced) false
 
 
 set :: KnownNat n => AOutputs n -> Uint8 -> IFloat -> Ivory eff ()
-set AOutputs{..} i v = do 
+set AOutputs{..} i v = do
     let aoutput' = aoutputs ! toIx i
     store (aoutput' ~> value) v
     store (aoutput' ~> synced) false

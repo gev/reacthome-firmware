@@ -21,7 +21,7 @@ data RBUS = RBUS
     , msgSize       :: Buffer   32 Uint8
     , msgTTL        :: Buffer   32 Uint8
     , msgQueue      :: Queue    32
-    , msgBuff       :: Buffer  600 Uint8
+    , msgBuff       :: Buffer  300 Uint8
     , msgIndex      :: Value       Uint16
     , txBuff        :: Buffer  300 Uint16
     , initBuff      :: Buffer    1 Uint8

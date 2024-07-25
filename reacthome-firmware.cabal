@@ -61,6 +61,7 @@ executable reacthome-firmware
                     , Data.Concurrent.Semaphore
                     , Data.Concurrent.Queue
 
+                    , Endpoint.ALED
                     , Endpoint.ATS
                     , Endpoint.DInputs
                     , Endpoint.DInputsRelaysRules
@@ -69,10 +70,13 @@ executable reacthome-firmware
                     , Endpoint.Relays
                     , Endpoint.AOutputs 
 
+                    , Feature.ALED
+                    , Feature.AOutputs
                     , Feature.DInputs
                     , Feature.Dimmers
                     , Feature.Dimmers.AC
                     , Feature.Dimmers.DC
+                    , Feature.Dopplers
                     , Feature.DS18B20
                     , Feature.Indicator
                     , Feature.Mix.Indicator
@@ -85,15 +89,13 @@ executable reacthome-firmware
                     , Feature.RS485.RSM.Data
                     , Feature.RS485.RSM.Rx
                     , Feature.RS485.RSM.Tx
+                    , Feature.Scd40
+                    , Feature.Sht21
                     , Feature.Smart.Top
                     , Feature.Smart.Top.Buttons
                     , Feature.Smart.Top.LEDs
                     , Feature.Smart.Top.PowerTouch
                     , Feature.Smart.Top.Vibro
-                    , Feature.Sht21
-                    , Feature.Scd40
-                    , Feature.Dopplers
-                    , Feature.AOutputs
 
                     , Formula.Blink330
                     , Formula.Blink450
@@ -273,6 +275,7 @@ executable reacthome-firmware
                     , Test
 
                     , Util.CRC16
+                    , Util.Random
                     , Util.String
 
     build-depends:    base >=4.16 && <5.0
