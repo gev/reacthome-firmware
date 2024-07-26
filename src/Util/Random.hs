@@ -49,7 +49,7 @@ class (IvoryBits t, IvoryStore t) => Randomize t where
         store x y'
         store y z'
         store z a'
-        let r' = z' .^ t' .^ (z' `iShiftR` 1) .^ (t' `iShiftL` 1)
+        let r' = a' .^ t' .^ (a' `iShiftR` 1) .^ (t' `iShiftL` 1)
         store a r'
         pure r'
 
@@ -58,12 +58,8 @@ class (IvoryBits t, IvoryStore t) => Randomize t where
 instance Randomize Uint8 where
     shift = 4
 
-
-
 instance Randomize Uint16 where
     shift = 8
-
-
 
 instance Randomize Uint32 where
     shift = 16

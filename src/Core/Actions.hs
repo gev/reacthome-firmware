@@ -19,6 +19,9 @@ actionRtp                     = 0x21 :: Uint8
 actionSmartTop                = 0x30 :: Uint8
 actionSmartTopDetect          = 0x31 :: Uint8
 
+actionALedConfig               = 0x40 :: Uint8
+actionALedANimate              = 0x41 :: Uint8
+
 actionRs485Mode               = 0xA0 :: Uint8
 actionRbusTransmit            = 0xA1 :: Uint8
 actionRs485Transmit           = 0xA2 :: Uint8
@@ -42,7 +45,6 @@ actionRGB                     = 0xE0 :: Uint8
 actionImage                   = 0xE1 :: Uint8
 actionBlink                   = 0xE2 :: Uint8
 actionPalette                 = 0xE3 :: Uint8
-
 
 actionDiscovery               = 0xF0 :: Uint8
 actionReady                   = 0xF1 :: Uint8

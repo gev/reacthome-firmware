@@ -9,9 +9,9 @@ import           Control.Monad.State (MonadState)
 import           Core.Context
 import           Data.Buffer
 import           Data.Record
+import           Data.Value
 import           GHC.TypeNats
 import           Ivory.Language
-import           Prelude             hiding (length)
 
 
 
@@ -31,19 +31,31 @@ type GroupStruct = "group_struct"
 [ivory|
     struct group_struct
     { groupType     :: Uint8
-    ; groupIndex    :: Uint8
     ; pixelSize     :: Uint8
     ; segmentNumber :: Uint8
-    ; animation     :: Uint8
-    ; params        :: Array 8 (Stored Uint8)
+    ; brightness    :: IFloat
     }
 |]
 
 
+
+type AnimationStruct = "animation_struct"
+
+[ivory|
+    struct animation_struct
+    { animation     :: Uint8
+    ; params        :: Array 8 (Stored Uint8)
+    ; time          :: Uint32
+    }
+|]
+
+
+
 data ALED ng ns np = ALED
-    { groups    :: Records ng GroupStruct
-    , segments  :: Records ns SegmentStruct
-    , subPixels :: Buffer  np Uint8
+    { groups     :: Records ng GroupStruct
+    , segments   :: Records ns SegmentStruct
+    , animations :: Records ng AnimationStruct
+    , subPixels  :: Buffer  np Uint8
     }
 
 
@@ -56,19 +68,25 @@ mkALED :: ( MonadState Context m
 mkALED = do
     addStruct (Proxy :: Proxy SegmentStruct)
     addStruct (Proxy :: Proxy GroupStruct)
+    addStruct (Proxy :: Proxy AnimationStruct)
 
-    groups   <- records' "aled_groups"
-                         [ groupType     .= ival 0
-                         , groupIndex    .= ival 0
-                         , pixelSize     .= ival 0
-                         , segmentNumber .= ival 0
-                         , animation     .= ival 0
-                         , params        .= iarray (ival <$> [0, 0, 0, 0, 0, 0, 0, 0])
-                         ]
-    segments <- records' "aled_segments"
-                         [ size      .= ival 0
-                         , direction .= ival false
-                         ]
-    subPixels <- buffer "aled_sub_pixels"
+    groups    <- records' "aled_groups"
+                          [ groupType     .= ival 0
+                          , pixelSize     .= ival 0
+                          , segmentNumber .= ival 0
+                          , brightness    .= ival 0.1
+                          ]
 
-    pure ALED {groups, segments, subPixels}
+    segments  <- records' "aled_segments"
+                          [ size      .= ival 0
+                          , direction .= ival false
+                          ]
+
+    animations <- records' "aled_animations"
+                          [ animation .= ival 0
+                          , params    .= iarray (ival <$> [0, 0, 0, 0, 0, 0, 0, 0])
+                          , time      .= ival 0
+                          ]
+    subPixels  <- values' "aled_sub_pixels" 0
+
+    pure ALED {groups, segments, animations, subPixels}
