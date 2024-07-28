@@ -12,7 +12,7 @@ import           Feature.DInputs
 import           Feature.DS18B20
 import           Feature.Scd40
 import           Feature.Sht21
-import           Feature.Smart.Top (Top, forceSyncTop, onMessage)
+import           Feature.Smart.Top
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
@@ -69,5 +69,6 @@ instance KnownNat n => Controller (Bottom n) where
     handle b@Bottom{..} buff size = do
         action <- deref $ buff ! 0
         cond_ [ action ==? actionSmartTop ==> onMessage  top buff size
+              , action ==? actionFindMe   ==> onFindMe   top buff size
               , action ==? actionGetState ==> onGetState b   buff size
               ]
