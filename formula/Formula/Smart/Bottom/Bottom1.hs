@@ -17,7 +17,7 @@ import           Transport.RS485.RBUS
 smartBottom1 :: Formula GD32F3x0
 smartBottom1 =  Formula { name           = "smart_bottom_1"
                         , model          = deviceTypeSmartBottom1
-                        , version        = (1, 0)
+                        , version        = (2, 0)
                         , shouldInit     = false
                         , implementation = bottom1 (rbus $ rs485 uart_1 out_pa_4)
                                                    (top uart_0 in_pb_4)
