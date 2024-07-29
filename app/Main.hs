@@ -23,8 +23,11 @@ import           Formula.Server
 import           Formula.Sht21
 import           Formula.Smart.Bottom.Bottom1
 import           Formula.Smart.Bottom.Bottom2
-import           Formula.Smart.Top.TopA6P
 import           Formula.Smart.Top.TopG4D
+import           Formula.Smart.Top.TopA4T
+import           Formula.Smart.Top.TopA6P
+import           Formula.Smart.Top.TopA6T
+import           Formula.Smart.Top.TopG6
 import           Formula.UdpEcho450
 
 
@@ -40,8 +43,11 @@ main = do
                      , di4
                      , smartBottom1
                      , smartBottom2
-                     , smartTopA6P
                      , smartTopG4D
+                     , smartTopA4T
+                     , smartTopA6P
+                     , smartTopA6T
+                     , smartTopG6
                      , doppler1
                      , doppler5
                     --  , scd40_test
