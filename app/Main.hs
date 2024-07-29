@@ -38,8 +38,8 @@ main = do
                     --  , dimmerAC12
                     --  , mix6x12
                     --  , di4
-                    --  , smartBottom1
-                      smartBottom2
+                       smartBottom1
+                     , smartBottom2
                     --  , smartTopA6P
                     --  , smartTopG4D
                     --  , doppler1
