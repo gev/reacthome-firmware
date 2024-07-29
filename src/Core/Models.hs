@@ -61,6 +61,9 @@ deviceTypeDi4Rsm         = 0x2F :: Uint8
 
 deviceTypeSmartTopA6P   = 0x30 :: Uint8
 deviceTypeSmartTopG4D   = 0x31 :: Uint8
+deviceTypeSmartTopA4T   = 0x32 :: Uint8
+deviceTypeSmartTopA6T   = 0x33 :: Uint8
+deviceTypeSmartTopG6    = 0x34 :: Uint8
 
 deviceTypeSmartBottom1  = 0x3a :: Uint8
 deviceTypeSmartBottom2  = 0x3b :: Uint8
