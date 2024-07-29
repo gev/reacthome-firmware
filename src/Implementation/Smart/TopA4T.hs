@@ -43,8 +43,8 @@ import Data.Matrix
 
 data Top n = Top
     { dinputs :: DI.DInputs n
-    , leds    :: LEDs     1 5
-    , buttons :: Buttons    n 1 5
+    , leds    :: LEDs       4 5
+    , buttons :: Buttons    n 4 5
     , vibro   :: Vibro      n
     , sht21   :: SHT21
     }
