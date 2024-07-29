@@ -15,8 +15,8 @@ import           Transport.UART.RBUS           (rbus)
 
 smartTopG6 :: Formula GD32F3x0
 smartTopG6 =  Formula { name           = "smart_top_g6"
-                       , model          = deviceTypeSmartTopA6P
-                       , version        = (2, 0)
+                       , model          = deviceTypeSmartTopG6
+                       , version        = (4, 0)
                        , shouldInit     = false
                        , implementation = topG6 (rbus uart_1 115_200)
                                                  (dinputs $  in_pb_8
