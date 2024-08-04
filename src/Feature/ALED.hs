@@ -24,7 +24,7 @@ import           Data.Display.Canvas1D
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
-import           Endpoint.ALED               (brightness)
+import           Endpoint.ALED               (groupBrightness)
 import qualified Endpoint.ALED               as E
 import           GHC.TypeNats
 import           Interface.Counter
@@ -98,11 +98,13 @@ update ALED{..} random = do
         let g = E.groups getALED ! gx
         pixelSize' <- deref $ g ~> E.pixelSize
         segmentNumber' <- deref $ g ~> E.segmentNumber
-        brightness' <- deref (g ~> brightness)
+        groupBrightness' <- deref (g ~> groupBrightness)
         for (toIx segmentNumber' :: Ix ns) $ \_ -> do
             sx' <- deref sx
             let s = E.segments getALED ! sx'
             segmentSize' <- deref $ s ~> E.size
+            segmentBrightness' <- deref $ s ~> E.segmentBrightness
+            let brightness' = groupBrightness' * segmentBrightness'
             for (toIx segmentSize' :: Ix np) $ \_ -> do
                 for (toIx pixelSize' :: Ix np) $ \_ -> do
                     px' <- deref px
