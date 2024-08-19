@@ -19,9 +19,8 @@ type SegmentStruct = "segment_struct"
 
 [ivory|
     struct segment_struct
-    { size              :: Uint16
-    ; direction         :: IBool
-    ; segmentBrightness :: IFloat
+    { size          :: Uint16
+    ; direction     :: IBool
     }
 |]
 
@@ -31,10 +30,10 @@ type GroupStruct = "group_struct"
 
 [ivory|
     struct group_struct
-    { colors          :: Uint8
-    ; pixelSize       :: Uint8
-    ; segmentNumber   :: Uint8
-    ; groupBrightness :: IFloat
+    { colors        :: Uint8
+    ; pixelSize     :: Uint8
+    ; segmentNumber :: Uint8
+    ; brightness    :: IFloat
     }
 |]
 
@@ -72,16 +71,15 @@ mkALED = do
     addStruct (Proxy :: Proxy AnimationStruct)
 
     groups    <- records' "aled_groups"
-                          [ colors          .= ival 0
-                          , pixelSize       .= ival 0
-                          , segmentNumber   .= ival 0
-                          , groupBrightness .= ival 0.5
+                          [ colors        .= ival 0
+                          , pixelSize     .= ival 0
+                          , segmentNumber .= ival 0
+                          , brightness    .= ival 0.5
                           ]
 
     segments  <- records' "aled_segments"
                           [ size      .= ival 0
                           , direction .= ival false
-                          , segmentBrightness .= ival 1
                           ]
 
     animations <- records' "aled_animations"
