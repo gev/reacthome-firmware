@@ -19,7 +19,7 @@ smartBottom2 :: Formula GD32F3x0
 smartBottom2 =  Formula { name           = "smart_bottom_2"
                         , model          = deviceTypeSmartBottom2
                         , version        = (4, 0)
-                        , shouldInit     = false
+                        , shouldInit     = true
                         , implementation = bottom2 (rbus $ rs485 uart_1 out_pa_4)
                                                    (top uart_0 in_pb_4)
                                                    (dinputs $  in_pa_5
@@ -30,5 +30,5 @@ smartBottom2 =  Formula { name           = "smart_bottom_2"
                                                    )
                                                    (ds18b20 ow_0 od_pa_15)
                                                    (scd40 i2c_0)
-                                                   (aled npx_pwm_3)
+                                                   (aled npx_pwm_3 etc)
                         }

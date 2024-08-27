@@ -19,8 +19,8 @@ type SegmentStruct = "segment_struct"
 
 [ivory|
     struct segment_struct
-    { size          :: Uint16
-    ; direction     :: IBool
+    { segmentSize    :: Uint8
+    ; direction      :: IBool
     }
 |]
 
@@ -30,10 +30,11 @@ type GroupStruct = "group_struct"
 
 [ivory|
     struct group_struct
-    { colors        :: Uint8
-    ; pixelSize     :: Uint8
-    ; segmentNumber :: Uint8
-    ; brightness    :: IFloat
+    { colors         :: Uint8
+    ; pixelSize      :: Uint8
+    ; segmentNumber  :: Uint8
+    ; brightness     :: IFloat
+    ; groupState     :: IBool
     }
 |]
 
@@ -43,9 +44,11 @@ type AnimationStruct = "animation_struct"
 
 [ivory|
     struct animation_struct
-    { animation :: Uint8
-    ; params    :: Array 8 (Stored Uint8)
-    ; time      :: Uint32
+    { animation      :: Uint8
+    ; params         :: Array 8 (Stored Uint8)
+    ; time           :: Uint32
+    ; animationState :: IBool
+    ; animationLoop  :: IBool
     }
 |]
 
@@ -57,6 +60,7 @@ data ALED ng ns np = ALED
     , animations :: Records ng AnimationStruct
     , subPixels  :: Buffer  np Uint8
     }
+
 
 
 mkALED :: ( MonadState Context m
@@ -71,21 +75,23 @@ mkALED = do
     addStruct (Proxy :: Proxy AnimationStruct)
 
     groups    <- records' "aled_groups"
-                          [ colors        .= ival 0
-                          , pixelSize     .= ival 0
-                          , segmentNumber .= ival 0
-                          , brightness    .= ival 0.5
+                          [ colors         .= ival 0
+                          , pixelSize      .= ival 0
+                          , segmentNumber  .= ival 0
+                          , brightness     .= ival 0.5
+                          , groupState     .= ival false
                           ]
 
     segments  <- records' "aled_segments"
-                          [ size      .= ival 0
-                          , direction .= ival false
+                          [ segmentSize    .= ival 0
+                          , direction      .= ival false
                           ]
 
     animations <- records' "aled_animations"
-                          [ animation .= ival 0
-                          , params    .= iarray (ival <$> [0, 0, 0, 0, 0, 0, 0, 0])
-                          , time      .= ival 0
+                          [ animation      .= ival 0
+                          , params         .= iarray (ival <$> [0, 0, 0, 0, 0, 0, 0, 0])
+                          , time           .= ival 0
+                          , animationState .= ival false
                           ]
 
     subPixels  <- values' "aled_sub_pixels" 0

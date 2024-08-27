@@ -19,10 +19,12 @@ actionRtp                     = 0x21 :: Uint8
 actionSmartTop                = 0x30 :: Uint8
 actionSmartTopDetect          = 0x31 :: Uint8
 
-actionALedStop                = 0x40 :: Uint8
-actionALedPlay                = 0x41 :: Uint8
-actionAledBrightness          = 0x42 :: Uint8
-actionALedConfig              = 0x43 :: Uint8
+actionALedOff                 = 0x40 :: Uint8
+actionALedOn                  = 0x41 :: Uint8
+actionALedPlay                = 0x42 :: Uint8
+actionALedStop                = 0x43 :: Uint8
+actionALedBrightness          = 0x44 :: Uint8
+actionALedConfigGroup         = 0x45 :: Uint8
 
 actionRs485Mode               = 0xA0 :: Uint8
 actionRbusTransmit            = 0xA1 :: Uint8

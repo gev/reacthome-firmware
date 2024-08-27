@@ -22,7 +22,7 @@ import           Ivory.Stdlib
 data Bottom n = Bottom
     { top     :: Top
     , dinputs :: DInputs n
-    , aled    :: ALED 10 100 3000
+    , aled    :: ALED 10 100 2400
     }
 
 
@@ -32,7 +32,7 @@ bottom1 :: (KnownNat n, Monad m)
         -> (t -> m Top)
         -> (Bool -> t -> m (DInputs n))
         -> (t -> m DS18B20)
-        -> (t -> m (ALED 10 100 3000))
+        -> (t -> m (ALED 10 100 2400))
         -> m (Bottom n)
 bottom1 transport' top' dinputs' ds18b20 aled' = do
     transport <- transport'
@@ -51,7 +51,7 @@ bottom2 :: (KnownNat n, Monad m)
         -> m (DInputs n))
         -> (t -> m DS18B20)
         -> (t -> m SCD40)
-        -> (t -> m (ALED 10 100 3000))
+        -> (t -> m (ALED 10 100 2400))
         -> m (Bottom n)
 bottom2 transport top dinputs ds18b20 scd40 aled'= do
     scd40 =<< transport
@@ -62,13 +62,21 @@ bottom2 transport top dinputs ds18b20 scd40 aled'= do
 onGetState Bottom{..} buff size = do
     forceSyncDInputs dinputs
     forceSyncTop top
+    forceSyncAled aled
 
 
 
 instance KnownNat n => Controller (Bottom n) where
     handle b@Bottom{..} buff size = do
         action <- deref $ buff ! 0
-        cond_ [ action ==? actionSmartTop ==> onMessage  top buff size
-              , action ==? actionFindMe   ==> onFindMe   top buff size
-              , action ==? actionGetState ==> onGetState b   buff size
+        cond_ [ action ==? actionSmartTop        ==> onMessage          top  buff size
+              , action ==? actionFindMe          ==> onFindMe           top  buff size
+              , action ==? actionGetState        ==> onGetState         b    buff size
+              , action ==? actionInitialize      ==> onInitialize       aled buff size
+              , action ==? actionALedOn          ==> onALedOn           aled buff size
+              , action ==? actionALedOff         ==> onALedOff          aled buff size
+              , action ==? actionALedPlay        ==> onALedPlay         aled buff size
+              , action ==? actionALedStop        ==> onALedStop         aled buff size
+              , action ==? actionALedBrightness  ==> onALedBrightness   aled buff size
+              , action ==? actionALedConfigGroup ==> onALedConfigGroup  aled buff size
               ]
