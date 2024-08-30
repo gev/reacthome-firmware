@@ -62,6 +62,12 @@ executable reacthome-firmware
                     , Data.Concurrent.Queue
 
                     , Endpoint.ALED
+                    , Endpoint.ALED.Animation
+                    , Endpoint.ALED.Animation.Data
+                    , Endpoint.ALED.Animation.SinT
+                    , Endpoint.ALED.Animation.Fade
+                    , Endpoint.ALED.Animation.SpectrumT
+                    , Endpoint.ALED.Animation.SpectrumX
                     , Endpoint.ATS
                     , Endpoint.DInputs
                     , Endpoint.DInputsRelaysRules

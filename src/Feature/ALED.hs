@@ -11,26 +11,29 @@
 
 module Feature.ALED where
 
-import           Control.Monad.Reader  (MonadReader, asks)
-import           Control.Monad.State   (MonadState)
+import           Control.Monad.Reader         (MonadReader, asks)
+import           Control.Monad.State          (MonadState)
 import           Core.Actions
 import           Core.Context
-import           Core.Domain           as D
-import           Core.FSM              (transit)
+import           Core.Domain                  as D
+import           Core.FSM                     (transit)
 import           Core.Handler
 import           Core.Task
-import           Core.Transport        (LazyTransport (lazyTransmit))
-import qualified Core.Transport        as T
+import           Core.Transport               (LazyTransport (lazyTransmit))
+import qualified Core.Transport               as T
 import           Data.Buffer
 import           Data.Display.Canvas1D
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
-import qualified Endpoint.ALED         as E
+import           Endpoint.ALED                (brightness)
+import qualified Endpoint.ALED                as E
+import qualified Endpoint.ALED.Animation      as E
+import           Endpoint.ALED.Animation.Data (animationState)
+import qualified Endpoint.ALED.Animation.Data as E
 import           GHC.TypeNats
-import           Interface.Counter
-import           Interface.Display     (Display, Render (Render))
-import           Interface.Flash       as F
+import           Interface.Display            (Display, Render (Render))
+import           Interface.Flash              as F
 import           Interface.Mac
 import           Interface.MCU
 import           Ivory.Language
@@ -39,6 +42,11 @@ import           Ivory.Stdlib
 import           Util.CRC16
 import           Util.Random
 
+
+
+fps = 24 :: Uint32
+
+dt = 1 / safeCast fps :: IFloat
 
 
 data ALED ng ns np = forall d f t. (Display d, Flash f, T.LazyTransport t) => ALED
@@ -51,6 +59,7 @@ data ALED ng ns np = forall d f t. (Display d, Flash f, T.LazyTransport t) => AL
     , groupIndex       :: Value Uint8
     , segmentIndex     :: Value (Ix ns)
     }
+
 
 
 maxValue = 0.3 :: IFloat
@@ -83,13 +92,33 @@ aled mkDisplay etc transport = do
 
     random <- mkRandom "aled" 1
 
-    addInit "aed_load_config" $ loadConfig aled
+    addInit "aed_load_config" $ do
+        store (E.animations getALED ! 0 ~> E.kind) 1
+        store (E.animations getALED ! 0 ~> E.dt) $ dt / 5
+        store (E.animations getALED ! 0 ~> E.animationState) true
+        store (E.animations getALED ! 0 ~> E.animationLoop) true
+        store (E.animations getALED ! 0 ~> E.params ! 0) 0
+        store (E.animations getALED ! 0 ~> E.params ! 1) 64
+        store (E.animations getALED ! 0 ~> E.params ! 2) 128
+        store (E.animations getALED ! 0 ~> E.params ! 3) 192
+        loadConfig aled
 
-    addHandler $ Render display 2 (E.subPixels getALED) $ do
+    addHandler $ Render display fps (E.subPixels getALED) $ do
         update aled random
 
     addTask $ delay 100 "save_config" $ saveConfig aled
     addTask $ delay  20 "sync_groups" $ syncGroups aled
+
+    -- addTask $ delay 4000 "player" $ do
+    --     store (E.animations getALED ! 0 ~> E.time) 0
+    --     store (E.animations getALED ! 0 ~> E.dt) $ dt / 2
+    --     store (E.animations getALED ! 0 ~> E.animationState) true
+    --     store (E.animations getALED ! 0 ~> E.animationLoop) false
+    --     store (E.animations getALED ! 0 ~> E.params ! 0) =<< next random
+    --     store (E.animations getALED ! 0 ~> E.params ! 1) =<< next random
+    --     store (E.animations getALED ! 0 ~> E.params ! 2) =<< next random
+    --     store (E.animations getALED ! 0 ~> E.params ! 3) =<< next random
+
 
     pure aled
 
@@ -102,24 +131,64 @@ update ALED{..} random = do
     sx <- local (ival 0)
     px <- local (ival 0)
     arrayMap $ \gx -> do
-        let g = E.groups getALED ! gx
-        pixelSize' <- deref $ g ~> E.pixelSize
-        segmentNumber' <- deref $ g ~> E.segmentNumber
-        brightness' <- deref (g ~> E.brightness)
-        state' <- deref $ g ~> E.groupState
-        for (toIx segmentNumber' :: Ix ns) $ \_ -> do
+        let animation   = E.animations getALED ! gx
+        let group       = E.groups getALED ! gx
+
+        pixelSize'     <- deref $ group ~> E.pixelSize
+        segmentNumber' <- deref $ group ~> E.segmentNumber
+        brightness'    <- deref $ group ~> E.brightness
+        state'         <- deref $ group ~> E.groupState
+
+        for (toIx segmentNumber' :: Ix ns) $ \segmentX -> do
             sx' <- deref sx
-            let s = E.segments getALED ! sx'
-            segmentSize' <- deref $ s ~> E.segmentSize
-            for (toIx segmentSize' :: Ix np) $ \_ -> do
-                for (toIx pixelSize' :: Ix np) $ \_ -> do
+            let segment   = E.segments getALED ! sx'
+            segmentSize' <- deref $ segment ~> E.segmentSize
+            direction'   <- deref $ segment ~> E.direction
+
+            for (toIx segmentSize' :: Ix np) $ \pixelX -> do
+                for (toIx pixelSize' :: Ix np) $ \subpixelX -> do
                     px' <- deref px
                     let p = E.subPixels getALED ! px'
-                    ifte_ state'
-                        (store p . castDefault . (* brightness') . safeCast =<< next random)
+                    ifte_ (state' .&& brightness' >? 0)
+                        (do
+                            let pixelX' = fromIx pixelX
+                            x <- local $ ival pixelX'
+                            when direction' $ store x (safeCast segmentSize' - pixelX')
+                            x' <- deref x
+                            p' <- deref p
+                            b  <- (* brightness') <$>
+                                  E.renderAnimation random
+                                                    animation
+                                                    (fromIx segmentX)
+                                                    segmentSize'
+                                                    (fromIx pixelX)
+                                                    pixelSize'
+                                                    (fromIx subpixelX)
+                                                    (safeCast p' / brightness')
+                            cond_ [ b <? 0   ==> store p 0
+                                  , b >? 255 ==> store p 255
+                                  , true     ==> store p (castDefault b)
+                                  ]
+                        )
                         (store p 0)
                     store px $ px' + 1
+
             store sx $ sx' + 1
+
+        animationState' <- deref $ animation ~> E.animationState
+        when animationState' $ do
+                time' <- deref $ animation ~> E.time
+                dt'   <- deref $ animation ~> E.dt
+                let time'' = time' + dt'
+                ifte_ (time'' >=? 1)
+                    (do
+                        loop' <- deref $ animation ~> E.animationLoop
+                        ifte_ loop'
+                            (store (animation ~> E.time) 0)
+                            (store (animation ~> E.time) 1)
+                    )
+                    (store (animation ~> E.time) time'')
+
     px' <- deref px
     upTo px' (np' - 1) $ \ix ->
         store (E.subPixels getALED ! ix) 0
@@ -153,6 +222,7 @@ onALedOff ALED{..} buff size = do
             T.lazyTransmit transport size $ \transmit -> do
                 transmit actionALedOff
                 transmit i
+
 
 
 onALedPlay :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
@@ -257,7 +327,6 @@ onALedConfigGroup a@ALED{..} buff size = do
                     let from = E.segments getALED ! (ix + toIx shift)
                     store (to ~> E.direction) =<< deref (from ~> E.direction)
                     store (to ~> E.segmentSize) =<< deref (from ~> E.segmentSize)
-
 
             when (segmentNumber >? segmentNumber') $ do
                 shift  <- local . ival $ segmentNumber - segmentNumber'
