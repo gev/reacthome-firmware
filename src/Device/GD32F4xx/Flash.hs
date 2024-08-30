@@ -19,7 +19,7 @@ mkPage =  PageAddr
 instance Flash PageAddr where
     address (PageAddr page) (Addr offset) = page + offset
 
-    write page offset value = pure ()
+    write page offset value = do
         unlockFMC
         clearFlagFMC fmc_flag_end
         clearFlagFMC fmc_flag_operr
@@ -29,7 +29,7 @@ instance Flash PageAddr where
         programWordFMC (address page offset) value
         lockFMC
 
-    erasePage (PageAddr page) offset = pure ()
+    erasePage (PageAddr page) offset = do
         unlockFMC
         clearFlagFMC fmc_flag_end
         clearFlagFMC fmc_flag_operr

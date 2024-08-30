@@ -51,9 +51,9 @@ main = do
                     --  , sht21_test
                     --  , blink330
                      ]
-    -- gcc gd32f450vgt6 [ server
+    gcc gd32f450vgt6 [ server
     --                  , rsHub4
     --                 --  , udpEcho450
     --                 --  , blink450
     --                 --  , echo
-    --                  ]
+                     ]
