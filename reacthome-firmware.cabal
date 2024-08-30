@@ -123,6 +123,9 @@ executable reacthome-firmware
                     , Formula.Doppler1
                     , Formula.Doppler5
                     , Formula.DI4RSM
+                    , Formula.Smart.Top.TopA4T
+                    , Formula.Smart.Top.TopA6T
+                    , Formula.Smart.Top.TopG6
 
                     , Implementation.Blink
                     , Implementation.DI
@@ -138,6 +141,9 @@ executable reacthome-firmware
                     , Implementation.Relay
                     , Implementation.Doppler
                     , Implementation.DIRSM 
+                    , Implementation.Smart.TopA4T
+                    , Implementation.Smart.TopA6T
+                    , Implementation.Smart.TopG6
 
                     , Interface.Counter
                     , Interface.GPIO.Input
@@ -263,6 +269,7 @@ executable reacthome-firmware
                     , Support.Device.GD32F4xx.SYSCFG
                     , Support.Device.GD32F4xx.System
                     , Support.Device.GD32F4xx.ENET
+                    , Support.Device.GD32F4xx.FMC
                     , Support.Device.GD32F4xx.I2C
                     , Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif
                     , Support.Lwip.Ethernet 

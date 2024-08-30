@@ -33,13 +33,14 @@ import           Interface.Flash
 import           Interface.MCU             (peripherals)
 import           Ivory.Language
 import           Ivory.Stdlib
+import Data.Matrix
 
 
 
 data Top n = Top
     { dinputs :: DI.DInputs n
-    , leds    :: LEDs       1 n
-    , buttons :: Buttons    n 1 n
+    , leds    :: LEDs       4 n
+    , buttons :: Buttons    n 4 n
     , sht21   :: SHT21
     }
 
@@ -52,7 +53,12 @@ topAP :: ( MonadState Context m
          , Flash f
          , KnownNat n, KnownNat (Canvas1DSize n)
          )
-      => m t -> (Bool -> t -> m (DI.DInputs n)) -> (t -> m SHT21) -> (p -> m d) -> (p -> f) -> m (Top n)
+      => m t 
+      -> (Bool -> t -> m (DI.DInputs n)) 
+      -> (t -> m SHT21) 
+      -> (p -> m d) 
+      -> (p -> f) 
+      -> m (Top n)
 topAP transport' dinputs' sht21' display' etc' = do
     transport   <- transport'
     shouldInit  <- asks D.shouldInit
@@ -62,7 +68,9 @@ topAP transport' dinputs' sht21' display' etc' = do
     dinputs     <- dinputs' False transport
     frameBuffer <- values' "top_frame_buffer" 0
     leds        <- mkLeds frameBuffer [0, 5, 1, 4, 2, 3] transport etc
-    buttons     <- mkButtons leds (DI.getDInputs dinputs) 1 transport
+    ledsPerButton  <- values "leds_per_button" [1, 1, 1, 1, 1, 1]
+    ledsOfButton   <- matrix "leds_of_button"  [[0,0,0,0], [1,0,0,0], [2,0,0,0], [3,0,0,0], [4,0,0,0], [5,0,0,0]]
+    buttons        <- mkButtons leds (DI.getDInputs dinputs) ledsPerButton ledsOfButton transport
     sht21       <- sht21' transport
     let top      = Top { dinputs, leds, buttons, sht21 }
 

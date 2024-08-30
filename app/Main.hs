@@ -23,8 +23,11 @@ import           Formula.Server
 import           Formula.Sht21
 import           Formula.Smart.Bottom.Bottom1
 import           Formula.Smart.Bottom.Bottom2
-import           Formula.Smart.Top.TopA6P
 import           Formula.Smart.Top.TopG4D
+import           Formula.Smart.Top.TopA4T
+import           Formula.Smart.Top.TopA6P
+import           Formula.Smart.Top.TopA6T
+import           Formula.Smart.Top.TopG6
 import           Formula.UdpEcho450
 
 
