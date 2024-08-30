@@ -24,7 +24,7 @@ module Support.Device.GD32F4xx.FMC
 
 import           Ivory.Language
 import           Ivory.Support
-import           Ivory.Support.Device.GD32F3x0
+import           Ivory.Support.Device.GD32F4xx
 
 
 
