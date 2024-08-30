@@ -51,10 +51,6 @@ type OneWire'      = forall m. MonadState Context m => m OpenDrain -> m OneWire
 type Enet'         = forall m. MonadState Context m => m ENET
 
 
-
-etcPage = mkPage 0x800_fc00
-
-
 data GD32F4xx = GD32F4xx
     { uart_0    :: UART'
     , uart_1    :: UART'
@@ -254,6 +250,8 @@ data GD32F4xx = GD32F4xx
     , ow_0      :: OneWire'
 
     , eth_0     :: Enet'
+
+    , etc       :: PageAddr
     }
 
 
@@ -558,6 +556,9 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
                       (pb_12 af_11)
                       (pb_13 af_11)
                       enet_irqn
+
+    , etc = mkPage 0x808_C000
+    
     }
 
 

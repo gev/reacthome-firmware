@@ -10,6 +10,7 @@ import           Feature.Dimmers.DC
 import           Feature.DInputs
 import           Feature.DS18B20
 import           Feature.Indicator
+import           Feature.ALED                (aled)
 import           Feature.RS485.RBUS  as F
 import           Implementation.Hub  (hub)
 import           Interface.RS485
@@ -42,4 +43,5 @@ server = Formula { name           = "server"
                                         )
                                         (ds18b20 ow_0 od_pb_3)
                                         (indicator npx_pwm_2 120)
+                                        (aled npx_pwm_1 etc)
                  }

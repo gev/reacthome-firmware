@@ -9,6 +9,7 @@ import           Feature.Dimmers.DC
 import           Feature.DInputs
 import           Feature.DS18B20
 import           Feature.Indicator
+import           Feature.ALED                (aled)
 import           Feature.RS485.RBUS as F
 import           Implementation.Hub (hub)
 import           Interface.RS485
@@ -41,4 +42,5 @@ rsHub4 = Formula { name           = "rs_hub4"
                                         )
                                         (ds18b20 ow_0 od_pb_3)
                                         (indicator npx_pwm_2 50)
+                                        (aled npx_pwm_1 etc)
                  }
