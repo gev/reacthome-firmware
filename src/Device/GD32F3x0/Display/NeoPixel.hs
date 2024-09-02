@@ -71,7 +71,7 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn chxcv pwmPort' = do
     pwmTimer     <- timer' system_core_clock pwmPeriod
     dmaParams    <- record (symbol dmaChannel <> "_dma_param") dmaInit
     buff         <- neoPixelBuffer (symbol dmaChannel) pwmPeriod
-    offset       <- index "neopixel"
+    offset       <- index $ symbol dmaChannel <> "offset"
 
     initPort pwmPort
 
