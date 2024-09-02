@@ -77,9 +77,9 @@ mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer dmaIRQn selCh
                              , priority            .= ival dma_priority_ultra_high
                              ]
     pwmTimer     <- timer' 100_000_000 pwmPeriod
-    dmaParams    <- record (symbol dmaPer <> symbol dmaChannel <> "_dma_param") dmaInit
+    dmaParams    <- record ("dma_param" <> symbol dmaPer <> symbol dmaChannel) dmaInit
     buff         <- neoPixelBuffer (symbol dmaPer <> symbol dmaChannel) pwmPeriod
-    offset       <- index $ symbol dmaPer <> symbol dmaChannel <> "offset"
+    offset       <- index $ "neopixel_offset" <> symbol dmaPer <> symbol dmaChannel
 
     initPort pwmPort
 
