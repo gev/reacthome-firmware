@@ -2,8 +2,8 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE RankNTypes #-}
 
 module Device.GD32F3x0.Display.NeoPixel where
 
@@ -70,7 +70,7 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn chxcv pwmPort' = do
                              ]
     pwmTimer     <- timer' system_core_clock pwmPeriod
     dmaParams    <- record (symbol dmaChannel <> "_dma_param") dmaInit
-    buff         <- neoPixelBuffer pwmPeriod
+    buff         <- neoPixelBuffer (symbol dmaChannel) pwmPeriod
     offset       <- index "neopixel"
 
     initPort pwmPort
