@@ -83,6 +83,8 @@ mkALED = do
                           , time           .= ival 0
                           , dt             .= ival 0
                           , animationState .= ival false
+                          , animationLoop  .= ival false
+                          , split          .= ival false
                           ]
 
     subPixels  <- values' "aled_sub_pixels" 0

@@ -9,6 +9,8 @@ import           Data.Record
 import           Data.Value
 import           Endpoint.ALED.Animation.Data
 import           Endpoint.ALED.Animation.Fade
+import           Endpoint.ALED.Animation.RandomT
+import           Endpoint.ALED.Animation.RandomX
 import           Endpoint.ALED.Animation.SpectrumT
 import           Endpoint.ALED.Animation.SpectrumX
 import           GHC.TypeNats
@@ -34,7 +36,9 @@ renderAnimation random animation segment segmentSize pixel pixelSize subpixel va
             kind' <- deref $ animation ~> kind
             let (-->) p r = kind' ==? p ==> r animation
             cond [ 0 --> renderFade      subpixel value
-                 , 1 --> renderSpectrumT subpixel
-                 , 2 --> renderSpectrumX
+                 , 1 --> renderRandomT   subpixel value random
+                 , 2 --> renderRandomX   value random
+                 , 3 --> renderSpectrumT subpixel
+                 , 4 --> renderSpectrumX segmentSize pixel subpixel
                  ]
          ) $ pure value
