@@ -66,6 +66,8 @@ executable reacthome-firmware
                     , Endpoint.ALED.Animation.Data
                     , Endpoint.ALED.Animation.SinT
                     , Endpoint.ALED.Animation.Fade
+                    , Endpoint.ALED.Animation.RandomT
+                    , Endpoint.ALED.Animation.RandomX
                     , Endpoint.ALED.Animation.SpectrumT
                     , Endpoint.ALED.Animation.SpectrumX
                     , Endpoint.ATS

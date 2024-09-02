@@ -93,14 +93,25 @@ aled mkDisplay etc transport = do
     random <- mkRandom "aled" 1
 
     addInit "aed_load_config" $ do
-        store (E.animations getALED ! 0 ~> E.kind) 1
+        store (E.animations getALED ! 0 ~> E.kind) 2
         store (E.animations getALED ! 0 ~> E.dt) $ dt / 5
         store (E.animations getALED ! 0 ~> E.animationState) true
         store (E.animations getALED ! 0 ~> E.animationLoop) true
-        store (E.animations getALED ! 0 ~> E.params ! 0) 0
-        store (E.animations getALED ! 0 ~> E.params ! 1) 64
-        store (E.animations getALED ! 0 ~> E.params ! 2) 128
-        store (E.animations getALED ! 0 ~> E.params ! 3) 192
+        store (E.animations getALED ! 0 ~> E.params ! 0) 64
+        -- store (E.animations getALED ! 0 ~> E.params ! 0) 0
+        -- store (E.animations getALED ! 0 ~> E.params ! 1) 64
+        -- store (E.animations getALED ! 0 ~> E.params ! 2) 128
+        -- store (E.animations getALED ! 0 ~> E.params ! 3) 192
+
+        store (E.animations getALED ! 1 ~> E.kind) 2
+        store (E.animations getALED ! 1 ~> E.dt) $ dt / 5
+        store (E.animations getALED ! 1 ~> E.animationState) true
+        store (E.animations getALED ! 1 ~> E.animationLoop) true
+        store (E.animations getALED ! 1 ~> E.params ! 0) 128
+        -- store (E.animations getALED ! 1 ~> E.params ! 0) 0
+        -- store (E.animations getALED ! 1 ~> E.params ! 1) 85
+        -- store (E.animations getALED ! 1 ~> E.params ! 2) 170
+
         loadConfig aled
 
     addHandler $ Render display fps (E.subPixels getALED) $ do
