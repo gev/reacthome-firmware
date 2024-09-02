@@ -7,6 +7,8 @@ import           Data.ByteString (split)
 import           Ivory.Language
 
 
+fps = 24 :: Uint32
+
 type AnimationStruct = "animation_struct"
 
 [ivory|

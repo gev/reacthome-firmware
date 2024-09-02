@@ -12,8 +12,8 @@ renderRandomX :: IFloat
               -> Record AnimationStruct
               -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 renderRandomX value random animation = do
-    s <- deref $ animation ~> params ! 0
-    i <- next random
-    ifte (i <=? s)
+    dt' <- deref $ animation ~> dt
+    i   <- next random
+    ifte (safeCast i / 255  <=? dt' * safeCast fps)
          (safeCast <$> next random)
          (pure value)
