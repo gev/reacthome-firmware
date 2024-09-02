@@ -102,6 +102,7 @@ executable reacthome-firmware
                     , Feature.Smart.Top
                     , Feature.Smart.Top.Buttons
                     , Feature.Smart.Top.LEDs
+                    , Feature.Smart.Top.Palette
                     , Feature.Smart.Top.PowerTouch
                     , Feature.Smart.Top.Vibro
 

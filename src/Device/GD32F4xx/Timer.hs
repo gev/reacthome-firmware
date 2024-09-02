@@ -79,7 +79,7 @@ mkTimer :: MonadState Context m
         -> Init (Struct TIMER_PARAM_STRUCT)
         -> m Timer
 mkTimer timer rcu irq param = do
-    addInit "rcu_timers_mulltiplicate" configRcuTimersMulltiplicate
+    addInit "rcu_timers_multiplicate" configRcuTimersMultiplicate
     addInit (symbol timer) $ do
             enablePeriphClock rcu
             deinitTimer       timer
@@ -88,8 +88,8 @@ mkTimer timer rcu irq param = do
     pure Timer { timer, rcu, irq }
 
 
-configRcuTimersMulltiplicate :: Ivory eff ()
-configRcuTimersMulltiplicate = do
+configRcuTimersMultiplicate :: Ivory eff ()
+configRcuTimersMultiplicate = do
     configRcuTimerClockPrescaler rcu_timer_psc_mul4
 
 
