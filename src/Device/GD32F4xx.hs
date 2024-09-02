@@ -21,7 +21,7 @@ import           Device.GD32F4xx.SystemClock      as G
 import           Device.GD32F4xx.SysTick
 import           Device.GD32F4xx.Timer            (Timer, cfg_timer_1,
                                                    cfg_timer_2, cfg_timer_3,
-                                                   cfg_timer_6)
+                                                   cfg_timer_6, cfg_timer_7)
 import           Device.GD32F4xx.UART
 import           Interface.GPIO.Port
 import           Interface.Mac                    (Mac)
@@ -236,6 +236,7 @@ data GD32F4xx = GD32F4xx
     , timer_2   :: Timer'
     , timer_3   :: Timer'
     , timer_6   :: Timer'
+    , timer_7   :: Timer'
 
     , pwm_0     :: PWM'
     , pwm_1     :: PWM'
@@ -244,8 +245,6 @@ data GD32F4xx = GD32F4xx
 
     , npx_pwm_0 :: NeoPixel'
     , npx_pwm_1 :: NeoPixel'
-    , npx_pwm_2 :: NeoPixel'
-    , npx_pwm_3 :: NeoPixel'
 
     , ow_0      :: OneWire'
 
@@ -500,6 +499,7 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
     , timer_2   =  cfg_timer_2
     , timer_3   =  cfg_timer_3
     , timer_6   =  cfg_timer_6
+    , timer_7   =  cfg_timer_7
 
     , pwm_0     = mkPWM cfg_timer_3
                         timer_ch_0
@@ -516,32 +516,18 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
 
 
     , npx_pwm_0 = mkNeoPixelPWM cfg_timer_2
-                                timer_ch_0 rcu_dma0
-                                dma0 dma_ch2
-                                dma_subperi5
-                                dma0_channel2_irqn ch0cv
-                                (pb_4 af_2)
-
-    , npx_pwm_1 = mkNeoPixelPWM cfg_timer_2
-                                timer_ch_1 rcu_dma0
-                                dma0 dma_ch2
-                                dma_subperi5
-                                dma0_channel2_irqn ch1cv
-                                (pb_5 af_2)
-
-    , npx_pwm_2 = mkNeoPixelPWM cfg_timer_2
                                 timer_ch_2 rcu_dma0
                                 dma0 dma_ch2
                                 dma_subperi5
                                 dma0_channel2_irqn ch2cv
                                 (pb_0 af_2)
 
-    , npx_pwm_3 = mkNeoPixelPWM cfg_timer_2
-                                timer_ch_3 rcu_dma0
-                                dma0 dma_ch2
-                                dma_subperi5
-                                dma0_channel2_irqn ch3cv
-                                (pc_7 af_2)
+    , npx_pwm_1 = mkNeoPixelPWM cfg_timer_7
+                                timer_ch_3 rcu_dma1
+                                dma1 dma_ch1
+                                dma_subperi7
+                                dma1_channel1_irqn ch3cv
+                                (pc_9 af_3)
 
 
     , ow_0  = mkOneWire cfg_timer_6

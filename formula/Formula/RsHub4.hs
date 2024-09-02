@@ -41,6 +41,6 @@ rsHub4 = Formula { name           = "rs_hub4"
                                                    :> Nil
                                         )
                                         (ds18b20 ow_0 od_pb_3)
-                                        (indicator npx_pwm_2 50)
+                                        (indicator npx_pwm_0 50)
                                         (aled npx_pwm_1 etc)
                  }
