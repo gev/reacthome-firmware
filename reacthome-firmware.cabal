@@ -71,18 +71,14 @@ executable reacthome-firmware
                     , Endpoint.ALED.Animation.Color.SpectrumT
                     , Endpoint.ALED.Animation.Color.SpectrumX
                     , Endpoint.ALED.Animation.Mask.Const
-                    , Endpoint.ALED.Animation.Mask.Eiffel
-                    , Endpoint.ALED.Animation.Mask.Random
                     , Endpoint.ALED.Animation.Mask.RandomOff
                     , Endpoint.ALED.Animation.Mask.RandomOn
                     , Endpoint.ALED.Animation.Mask.Slide
                     , Endpoint.ALED.Animation.Mask.Slide'
-                    , Endpoint.ALED.Animation.Mask.Slide''
-                    , Endpoint.ALED.Animation.Mask.SlideOff
+                    , Endpoint.ALED.Animation.Mask.SlideOn
                     , Endpoint.ALED.Animation.Mask.SlideOff'
                     , Endpoint.ALED.Animation.Mask.SlideOffIn
                     , Endpoint.ALED.Animation.Mask.SlideOffOut
-                    , Endpoint.ALED.Animation.Mask.SlideOn
                     , Endpoint.ALED.Animation.Mask.SlideOn'
                     , Endpoint.ALED.Animation.Mask.SlideOnIn
                     , Endpoint.ALED.Animation.Mask.SlideOnOut

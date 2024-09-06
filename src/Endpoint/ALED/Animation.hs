@@ -14,13 +14,10 @@ import           Endpoint.ALED.Animation.Color.SpectrumT
 import           Endpoint.ALED.Animation.Color.SpectrumX
 import           Endpoint.ALED.Animation.Data
 import           Endpoint.ALED.Animation.Mask.Const
-import           Endpoint.ALED.Animation.Mask.Eiffel
-import           Endpoint.ALED.Animation.Mask.Random
 import           Endpoint.ALED.Animation.Mask.RandomOff
 import           Endpoint.ALED.Animation.Mask.RandomOn
 import           Endpoint.ALED.Animation.Mask.Slide
 import           Endpoint.ALED.Animation.Mask.Slide'
-import           Endpoint.ALED.Animation.Mask.Slide''
 import           Endpoint.ALED.Animation.Mask.SlideOff
 import           Endpoint.ALED.Animation.Mask.SlideOff'
 import           Endpoint.ALED.Animation.Mask.SlideOffIn
@@ -38,24 +35,25 @@ import           Util.Random
 
 renderColor :: Random Uint8
             -> Record AnimationStruct
+            -> Uint32
             -> Sint32
-            -> Uint16
+            -> Uint8
             -> Sint32
             -> Uint8
             -> Sint32
             -> IFloat
             -> Ivory (AllowBreak (ProcEffects s ())) IFloat
-renderColor random animation segment segmentSize pixel pixelSize subpixel value = do
+renderColor random animation frame segment segmentSize pixel pixelSize subpixel value = do
     animationState' <- deref $ animation ~> animationState
     ifte animationState'
          (do
             kind' <- deref $ animation ~> kind
             let (-->) p r = kind' ==? p ==> r animation
-            cond [ 0x00 --> renderFade      subpixel value
-                 , 0x10 --> renderSpectrumT subpixel
-                 , 0x11 --> renderSpectrumX segmentSize pixel subpixel
-                 , 0x30 --> renderRandomT   subpixel value random
-                 , 0x31 --> renderRandomX   value random
+            cond [ 0 --> renderFade      subpixel value
+                 , 1 --> renderRandomT   subpixel value random
+                 , 2 --> renderRandomX   value random
+                 , 3 --> renderSpectrumT subpixel
+                 , 4 --> renderSpectrumX segmentSize pixel subpixel
                  , true ==> pure value
                  ]
          ) $ pure value
@@ -63,51 +61,23 @@ renderColor random animation segment segmentSize pixel pixelSize subpixel value 
 
 renderMask :: Random Uint8
             -> Record AnimationStruct
+            -> Uint32
             -> Sint32
-            -> Uint16
+            -> Uint8
             -> Sint32
             -> Ivory (AllowBreak (ProcEffects s ())) IFloat
-renderMask random animation segment segmentSize pixel = do
-    t <- local $ ival 0
-    time' <- deref $ animation ~> time
-    phase' <- deref $ animation ~> phase
-    let phase = safeCast segment * phase'
-    ifte_ (time' <? 0)
-          (store t $ time' - phase)
-          (do
-               let t' = time' - phase
-               ifte_ (t' <? 0)
-                     (store t $ t' - floorF t')
-                     (store t t')
-          )
-    t' <- deref t
-    kind' <- deref $ animation ~> kind
+renderMask random animation frame segment segmentSize pixel = do
     animationState' <- deref $ animation ~> animationState
-    ifte (animationState' .&& t' >=? 0)
+    ifte animationState'
          (do
-            let (-->) p r = kind' ==? p ==> r animation
-            cond [ 0x01 --> renderRandomOff   pixel random
-                 , 0x02 --> renderSlideOff    segmentSize pixel
-                 , 0x03 --> renderSlideOff'   segmentSize pixel
-                 , 0x04 --> renderSlideOffIn  segmentSize pixel
-                 , 0x05 --> renderSlideOffOut segmentSize pixel
-
-                 , 0x11 --> renderRandomOn    pixel random
-                 , 0x12 --> renderSlideOn     segmentSize pixel t'
-                 , 0x13 --> renderSlideOn'    segmentSize pixel
-                 , 0x14 --> renderSlideOnIn   segmentSize pixel
-                 , 0x15 --> renderSlideOnOut  segmentSize pixel
-
-                 , 0x21 --> renderRandom      random
-                 , 0x22 --> renderEiffel      random
-                 , 0x23 --> renderSlide       segmentSize pixel
-                 , 0x24 --> renderSlide'      segmentSize pixel
-                 , 0x25 --> renderSlide''     segmentSize pixel
-
-                 , 0xff --> renderConst
-
-                 , true ==> pure 1
-                 ]
-         ) $ ifte (kind' .& 0xf0 ==? 0x00)
-                  (pure 0)
-                  (pure 1)
+            renderSlide segmentSize pixel animation
+          --   kind' <- deref $ animation ~> kind
+          --   let (-->) p r = kind' ==? p ==> r animation
+          --   cond [ 3 --> renderConst
+          --        , 4 --> renderRandomOn  frame pixel random
+          --        , 2 --> renderRandomOff frame pixel random
+          --        , 0 --> renderSlideOn  segmentSize pixel
+          --        , 1 --> renderSlideOffOut segmentSize pixel
+          --        , true ==> pure 1
+          --        ]
+         ) $ pure 1

@@ -60,7 +60,6 @@ data ALED ng ns np = ALED
     , segments        :: Records ns SegmentStruct
     , colorAnimations :: Records ng AnimationStruct
     , maskAnimations  :: Records ng AnimationStruct
-    , clips           :: Records ng ClipStruct
     , subPixels       :: Buffer  np Uint8
     }
 
@@ -83,11 +82,9 @@ mkALED = do
     groups          <- records' "aled_groups"
                                 [ colors         .= ival 0
                                 , pixelSize      .= ival 0
-                                , groupSize      .= ival 0
                                 , segmentNumber  .= ival 0
                                 , brightness     .= ival 0.5
                                 , groupState     .= ival false
-                                , stateChanged   .= ival true
                                 ]
 
     segments        <- records' "aled_segments"
@@ -97,32 +94,26 @@ mkALED = do
 
     colorAnimations <- records' "aled_color_animations"
                                 [ kind           .= ival 0
-                                , params         .= iarray (ival <$> replicate 8 0)
+                                , params         .= iarray (ival <$> [0, 0, 0, 0, 0, 0, 0, 0])
                                 , time           .= ival 0
                                 , dt             .= ival 0
-                                , phase          .= ival 0
-                                , split          .= ival false
+                                , inverse        .= ival false
                                 , animationState .= ival false
                                 , animationLoop  .= ival false
+                                , frame          .= ival 0
                                 ]
 
     maskAnimations  <- records' "aled_mask_animations"
                                 [ kind           .= ival 0
-                                , params         .= iarray (ival <$> replicate 8 0)
+                                , params         .= iarray (ival <$> [0, 0, 0, 0, 0, 0, 0, 0])
                                 , time           .= ival 0
                                 , dt             .= ival 0
-                                , phase          .= ival 0
-                                , split          .= ival false
+                                , inverse        .= ival false
                                 , animationState .= ival false
                                 , animationLoop  .= ival false
-                                ]
-
-    clips           <- records' "aled_clips"
-                                [ start   .= ival 0
-                                , end     .= ival 1
-                                , inverse .= ival false
+                                , frame          .= ival 0
                                 ]
 
     subPixels  <- values' "aled_sub_pixels" 0
 
-    pure ALED {groups, segments, colorAnimations, maskAnimations, clips, subPixels}
+    pure ALED {groups, segments, colorAnimations, maskAnimations, subPixels}
