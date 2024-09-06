@@ -1,4 +1,4 @@
-module Endpoint.ALED.Animation.SpectrumX where
+module Endpoint.ALED.Animation.Color.SpectrumX where
 
 import           Data.Record
 import           Endpoint.ALED.Animation.Data

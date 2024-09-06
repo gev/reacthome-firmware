@@ -65,11 +65,23 @@ executable reacthome-firmware
                     , Endpoint.ALED.Animation
                     , Endpoint.ALED.Animation.Data
                     , Endpoint.ALED.Animation.SinT
-                    , Endpoint.ALED.Animation.Fade
-                    , Endpoint.ALED.Animation.RandomT
-                    , Endpoint.ALED.Animation.RandomX
-                    , Endpoint.ALED.Animation.SpectrumT
-                    , Endpoint.ALED.Animation.SpectrumX
+                    , Endpoint.ALED.Animation.Color.Fade
+                    , Endpoint.ALED.Animation.Color.RandomT
+                    , Endpoint.ALED.Animation.Color.RandomX
+                    , Endpoint.ALED.Animation.Color.SpectrumT
+                    , Endpoint.ALED.Animation.Color.SpectrumX
+                    , Endpoint.ALED.Animation.Mask.Const
+                    , Endpoint.ALED.Animation.Mask.RandomOff
+                    , Endpoint.ALED.Animation.Mask.RandomOn
+                    , Endpoint.ALED.Animation.Mask.Slide
+                    , Endpoint.ALED.Animation.Mask.Slide'
+                    , Endpoint.ALED.Animation.Mask.SlideOn
+                    , Endpoint.ALED.Animation.Mask.SlideOff'
+                    , Endpoint.ALED.Animation.Mask.SlideOffIn
+                    , Endpoint.ALED.Animation.Mask.SlideOffOut
+                    , Endpoint.ALED.Animation.Mask.SlideOn'
+                    , Endpoint.ALED.Animation.Mask.SlideOnIn
+                    , Endpoint.ALED.Animation.Mask.SlideOnOut
                     , Endpoint.ATS
                     , Endpoint.DInputs
                     , Endpoint.DInputsRelaysRules

@@ -43,10 +43,11 @@ type GroupStruct = "group_struct"
 
 
 data ALED ng ns np = ALED
-    { groups     :: Records ng GroupStruct
-    , segments   :: Records ns SegmentStruct
-    , animations :: Records ng AnimationStruct
-    , subPixels  :: Buffer  np Uint8
+    { groups          :: Records ng GroupStruct
+    , segments        :: Records ns SegmentStruct
+    , colorAnimations :: Records ng AnimationStruct
+    , maskAnimations  :: Records ng AnimationStruct
+    , subPixels       :: Buffer  np Uint8
     }
 
 
@@ -64,29 +65,41 @@ mkALED = do
 
     addConstArea sinT
 
-    groups    <- records' "aled_groups"
-                          [ colors         .= ival 0
-                          , pixelSize      .= ival 0
-                          , segmentNumber  .= ival 0
-                          , brightness     .= ival 0.5
-                          , groupState     .= ival false
-                          ]
+    groups          <- records' "aled_groups"
+                                [ colors         .= ival 0
+                                , pixelSize      .= ival 0
+                                , segmentNumber  .= ival 0
+                                , brightness     .= ival 0.5
+                                , groupState     .= ival false
+                                ]
 
-    segments  <- records' "aled_segments"
-                          [ segmentSize    .= ival 0
-                          , direction      .= ival false
-                          ]
+    segments        <- records' "aled_segments"
+                                [ segmentSize    .= ival 0
+                                , direction      .= ival false
+                                ]
 
-    animations <- records' "aled_animations"
-                          [ kind           .= ival 0
-                          , params         .= iarray (ival <$> [0, 0, 0, 0, 0, 0, 0, 0])
-                          , time           .= ival 0
-                          , dt             .= ival 0
-                          , animationState .= ival false
-                          , animationLoop  .= ival false
-                          , split          .= ival false
-                          ]
+    colorAnimations <- records' "aled_color_animations"
+                                [ kind           .= ival 0
+                                , params         .= iarray (ival <$> [0, 0, 0, 0, 0, 0, 0, 0])
+                                , time           .= ival 0
+                                , dt             .= ival 0
+                                , inverse        .= ival false
+                                , animationState .= ival false
+                                , animationLoop  .= ival false
+                                , frame          .= ival 0
+                                ]
+
+    maskAnimations  <- records' "aled_mask_animations"
+                                [ kind           .= ival 0
+                                , params         .= iarray (ival <$> [0, 0, 0, 0, 0, 0, 0, 0])
+                                , time           .= ival 0
+                                , dt             .= ival 0
+                                , inverse        .= ival false
+                                , animationState .= ival false
+                                , animationLoop  .= ival false
+                                , frame          .= ival 0
+                                ]
 
     subPixels  <- values' "aled_sub_pixels" 0
 
-    pure ALED {groups, segments, animations, subPixels}
+    pure ALED {groups, segments, colorAnimations, maskAnimations, subPixels}
