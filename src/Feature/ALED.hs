@@ -56,7 +56,6 @@ data ALED ng ns np = forall d f t. (Display d, Flash f, LazyTransport t) => ALED
     , groupIndex       :: Value Uint8
     , stateIndex       :: Value (Ix ng)
     , segmentIndex     :: Value (Ix ns)
-    , frame            :: Value Uint32
     }
 
 
@@ -78,7 +77,6 @@ aled mkDisplay etc transport = do
     shouldSyncGroups <- value "should_sync_groups" false
     groupIndex       <- value "group_index" 0
     segmentIndex     <- value "segment_index" 0
-    frame            <- value "frame" 0
 
     let aled = ALED { display
                     , getALED
@@ -89,7 +87,6 @@ aled mkDisplay etc transport = do
                     , groupIndex
                     , stateIndex
                     , segmentIndex
-                    , frame
                     }
 
     random <- mkRandom "aled" 1
@@ -99,6 +96,7 @@ aled mkDisplay etc transport = do
         store (E.maskAnimations  getALED ! 0 ~> E.animationState) true
         store (E.maskAnimations  getALED ! 0 ~> E.animationLoop) true
         store (E.maskAnimations  getALED ! 0 ~> E.dt) $ dt / 2
+
         store (E.colorAnimations getALED ! 0 ~> E.kind) 4
         store (E.colorAnimations getALED ! 0 ~> E.dt) $ dt / 5
         store (E.colorAnimations getALED ! 0 ~> E.animationState) true
@@ -108,10 +106,13 @@ aled mkDisplay etc transport = do
         store (E.colorAnimations getALED ! 0 ~> E.params ! 2) 128
         store (E.colorAnimations getALED ! 0 ~> E.params ! 3) 192
 
+
+
         store (E.maskAnimations  getALED ! 1 ~> E.kind) 0
         store (E.maskAnimations  getALED ! 1 ~> E.animationState) true
         store (E.maskAnimations  getALED ! 1 ~> E.animationLoop) true
         store (E.maskAnimations  getALED ! 1 ~> E.dt) $ dt / 2
+
         store (E.colorAnimations getALED ! 1 ~> E.kind) 3
         store (E.colorAnimations getALED ! 1 ~> E.dt) $ dt / 5
         store (E.colorAnimations getALED ! 1 ~> E.animationState) true
@@ -161,7 +162,6 @@ update :: forall s ng ns np. (KnownNat ng, KnownNat ns, KnownNat np)
        => ALED ng ns np -> Random Uint8 -> Ivory (ProcEffects s ()) ()
 update ALED{..} random = do
     let np'  = fromIntegral $ fromTypeNat (aNat :: NatType np)
-    frame'  <- deref frame
     sx      <- local (ival 0)
     px      <- local (ival 0)
     arrayMap $ \gx -> do
@@ -186,7 +186,6 @@ update ALED{..} random = do
                 x' <- deref x
                 m' <- E.renderMask random
                                    maskAnimation
-                                   frame'
                                    (fromIx segmentX)
                                    segmentSize'
                                    x'
@@ -198,7 +197,6 @@ update ALED{..} random = do
                             p' <- (/ brightness') . safeCast <$> deref p
                             c' <- E.renderColor random
                                                 colorAnimation
-                                                frame'
                                                 (fromIx segmentX)
                                                 segmentSize'
                                                 x'
@@ -219,7 +217,6 @@ update ALED{..} random = do
     px' <- deref px
     upTo px' (np' - 1) $ \ix ->
         store (E.subPixels getALED ! ix) 0
-    store frame $ frame' + 1
 
 
 
