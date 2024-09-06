@@ -1,8 +1,4 @@
-{-# LANGUAGE FlexibleInstances    #-}
-{-# LANGUAGE GADTs                #-}
-{-# LANGUAGE UndecidableInstances #-}
-
-module Endpoint.ALED.Animation.Fade where
+module Endpoint.ALED.Animation.Color.Fade where
 
 import           Data.Record
 import           Endpoint.ALED                (ALED (ALED), brightness)

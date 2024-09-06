@@ -7,7 +7,7 @@ import           Data.ByteString (split)
 import           Ivory.Language
 
 
-fps = 24 :: Uint32
+fps = 25 :: Uint32
 
 type AnimationStruct = "animation_struct"
 
@@ -17,8 +17,9 @@ type AnimationStruct = "animation_struct"
     ; params         :: Array 8 (Stored Uint8)
     ; time           :: IFloat
     ; dt             :: IFloat
+    ; inverse        :: IBool
     ; animationState :: IBool
     ; animationLoop  :: IBool
-    ; split          :: IBool
+    ; frame          :: Uint32
     }
 |]

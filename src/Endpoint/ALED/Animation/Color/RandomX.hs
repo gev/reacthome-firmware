@@ -1,4 +1,4 @@
-module Endpoint.ALED.Animation.RandomX where
+module Endpoint.ALED.Animation.Color.RandomX where
 
 import           Data.Record
 import           Endpoint.ALED.Animation.Data
