@@ -8,12 +8,11 @@ import           Ivory.Stdlib
 import           Util.Random
 
 
-renderRandomOff :: Uint32
-                -> Sint32
+renderRandomOff :: Sint32
                 -> Random Uint8
                 -> Record AnimationStruct
                 -> Ivory (AllowBreak (ProcEffects s ())) IFloat
-renderRandomOff currentFrame pixel random animation = do
+renderRandomOff pixel random animation = do
     let x   = pixel .% 64
     let px  = toIx $ x `iDiv` 8
     let b   = castDefault $ pixel .% 8
@@ -23,17 +22,12 @@ renderRandomOff currentFrame pixel random animation = do
     ifte (isOff ==? 0)
          (do
             dt' <- deref $ animation ~> dt
-            t'  <- next random
-            ifte (safeCast t' / 255 <=? dt' * safeCast fps)
+            t'  <- deref $ animation ~> time
+            t   <- next random
+            ifte (safeCast t / 255 <? t'+ dt')
                  (do
-                    frame' <- deref $ animation ~> frame
-                    ifte (frame' /=? currentFrame)
-                         (do
-                            store (animation ~> frame) currentFrame
-                            store p $ p' .| (1 `iShiftL` b)
-                            pure 255
-                         )
-                         (pure 1)
+                    store p $ p' .| (1 `iShiftL` b)
+                    pure 255
                  )
                  (pure 1)
          )

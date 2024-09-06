@@ -86,7 +86,6 @@ mkALED = do
                                 , inverse        .= ival false
                                 , animationState .= ival false
                                 , animationLoop  .= ival false
-                                , frame          .= ival 0
                                 ]
 
     maskAnimations  <- records' "aled_mask_animations"
@@ -97,7 +96,6 @@ mkALED = do
                                 , inverse        .= ival false
                                 , animationState .= ival false
                                 , animationLoop  .= ival false
-                                , frame          .= ival 0
                                 ]
 
     subPixels  <- values' "aled_sub_pixels" 0
