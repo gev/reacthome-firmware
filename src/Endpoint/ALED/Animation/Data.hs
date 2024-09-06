@@ -20,6 +20,5 @@ type AnimationStruct = "animation_struct"
     ; inverse        :: IBool
     ; animationState :: IBool
     ; animationLoop  :: IBool
-    ; frame          :: Uint32
     }
 |]
