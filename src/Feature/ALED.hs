@@ -201,7 +201,7 @@ update ALED{..} random = do
                         )
                         (E.renderMask random
                                       maskAnimation
-                                      (fromIx segmentX)
+                                      0
                                       groupSize'
                                       (tx' + x')
                         )
@@ -223,7 +223,7 @@ update ALED{..} random = do
                                     )
                                     (E.renderColor random
                                                    colorAnimation
-                                                   (fromIx segmentX)
+                                                   0
                                                    groupSize'
                                                    tx'
                                                    pixelSize'
