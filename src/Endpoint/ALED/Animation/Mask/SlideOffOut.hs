@@ -7,7 +7,7 @@ import           Ivory.Language
 import           Ivory.Stdlib
 
 
-renderSlideOffOut :: Uint8
+renderSlideOffOut :: Uint16
                   -> Sint32
                   -> Record AnimationStruct
                   -> Ivory (AllowBreak (ProcEffects s ())) IFloat

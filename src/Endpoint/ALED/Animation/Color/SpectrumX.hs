@@ -6,7 +6,7 @@ import           Endpoint.ALED.Animation.SinT
 import           Ivory.Language
 
 
-renderSpectrumX :: Uint8
+renderSpectrumX :: Uint16
                 -> Sint32
                 -> Sint32
                 -> Record AnimationStruct
