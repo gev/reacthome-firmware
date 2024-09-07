@@ -38,7 +38,7 @@ import           Util.Random
 renderColor :: Random Uint8
             -> Record AnimationStruct
             -> Sint32
-            -> Uint8
+            -> Uint16
             -> Sint32
             -> Uint8
             -> Sint32
@@ -63,14 +63,14 @@ renderColor random animation segment segmentSize pixel pixelSize subpixel value 
 renderMask :: Random Uint8
             -> Record AnimationStruct
             -> Sint32
-            -> Uint8
+            -> Uint16
             -> Sint32
             -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 renderMask random animation segment segmentSize pixel = do
     animationState' <- deref $ animation ~> animationState
     ifte animationState'
          (do
-            renderEiffel random animation
+            renderSlideOn segmentSize pixel animation
           --   kind' <- deref $ animation ~> kind
           --   let (-->) p r = kind' ==? p ==> r animation
           --   cond [ 3 --> renderConst

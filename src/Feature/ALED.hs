@@ -165,44 +165,71 @@ update ALED{..} random = do
     sx      <- local (ival 0)
     px      <- local (ival 0)
     arrayMap $ \gx -> do
-        let colorAnimation = E.colorAnimations getALED ! gx
-        let maskAnimation  = E.maskAnimations getALED ! gx
-        let group          = E.groups getALED ! gx
+        tx <- local (ival 0)
 
-        pixelSize'        <- deref $ group ~> E.pixelSize
-        segmentNumber'    <- deref $ group ~> E.segmentNumber
-        brightness'       <- deref $ group ~> E.brightness
-        state'            <- deref $ group ~> E.groupState
+        let colorAnimation   = E.colorAnimations getALED ! gx
+        let maskAnimation    = E.maskAnimations getALED ! gx
+        let group            = E.groups getALED ! gx
+
+        pixelSize'          <- deref $ group ~> E.pixelSize
+        groupSize'          <- deref $ group ~> E.groupSize
+        segmentNumber'      <- deref $ group ~> E.segmentNumber
+        brightness'         <- deref $ group ~> E.brightness
+        state'              <- deref $ group ~> E.groupState
+
+        colorAnimationSplit <- deref $ colorAnimation ~> E.split
+        maskAnimationSplit  <- deref $ maskAnimation  ~> E.split
 
         for (toIx segmentNumber' :: Ix ns) $ \segmentX -> do
             sx' <- deref sx
             let segment   = E.segments getALED ! sx'
             segmentSize' <- deref $ segment ~> E.segmentSize
             direction'   <- deref $ segment ~> E.direction
+            tx'          <- deref tx
+            store tx $ tx' + safeCast segmentSize'
             for (toIx segmentSize' :: Ix np) $ \pixelX -> do
                 let pixelX' = fromIx pixelX
                 x <- local $ ival pixelX'
                 when direction' $ store x (safeCast segmentSize' - pixelX' - 1)
                 x' <- deref x
-                m' <- E.renderMask random
-                                   maskAnimation
-                                   (fromIx segmentX)
-                                   segmentSize'
-                                   x'
+                m' <- ifte maskAnimationSplit
+                        (E.renderMask random
+                                      maskAnimation
+                                      (fromIx segmentX)
+                                      (safeCast segmentSize')
+                                      x'
+                        )
+                        (E.renderMask random
+                                      maskAnimation
+                                      (fromIx segmentX)
+                                      groupSize'
+                                      (tx' + x')
+                        )
                 for (toIx pixelSize' :: Ix np) $ \subpixelX -> do
                     px' <- deref px
                     let p = E.subPixels getALED ! px'
                     ifte_ (state' .&& brightness' >? 0)
                         (do
                             p' <- (/ brightness') . safeCast <$> deref p
-                            c' <- E.renderColor random
-                                                colorAnimation
-                                                (fromIx segmentX)
-                                                segmentSize'
-                                                x'
-                                                pixelSize'
-                                                (fromIx subpixelX)
-                                                p'
+                            c' <- ifte colorAnimationSplit
+                                    (E.renderColor random
+                                                   colorAnimation
+                                                   (fromIx segmentX)
+                                                   (safeCast segmentSize')
+                                                   x'
+                                                   pixelSize'
+                                                   (fromIx subpixelX)
+                                                   p'
+                                    )
+                                    (E.renderColor random
+                                                   colorAnimation
+                                                   (fromIx segmentX)
+                                                   groupSize'
+                                                   tx'
+                                                   pixelSize'
+                                                   (fromIx subpixelX)
+                                                   p'
+                                    )
                             let v' = c' * m' * brightness'
                             cond_ [ v' <? 0   ==> store p 0
                                   , v' >? 255 ==> store p 255

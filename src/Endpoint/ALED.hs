@@ -82,6 +82,7 @@ mkALED = do
     groups          <- records' "aled_groups"
                                 [ colors         .= ival 0
                                 , pixelSize      .= ival 0
+                                , groupSize      .= ival 0
                                 , segmentNumber  .= ival 0
                                 , brightness     .= ival 0.5
                                 , groupState     .= ival false
@@ -97,7 +98,7 @@ mkALED = do
                                 , params         .= iarray (ival <$> [0, 0, 0, 0, 0, 0, 0, 0])
                                 , time           .= ival 0
                                 , dt             .= ival 0
-                                , inverse        .= ival false
+                                , split          .= ival false
                                 , animationState .= ival false
                                 , animationLoop  .= ival false
                                 ]
@@ -107,7 +108,7 @@ mkALED = do
                                 , params         .= iarray (ival <$> [0, 0, 0, 0, 0, 0, 0, 0])
                                 , time           .= ival 0
                                 , dt             .= ival 0
-                                , inverse        .= ival false
+                                , split          .= ival false
                                 , animationState .= ival false
                                 , animationLoop  .= ival false
                                 ]
