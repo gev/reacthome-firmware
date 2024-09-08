@@ -98,12 +98,13 @@ renderMask random animation segment segmentSize pixel = do
                  , 0x14 --> renderSlideOnIn   segmentSize pixel
                  , 0x15 --> renderSlideOnOut  segmentSize pixel
 
-                 , 0x20 --> renderConst
                  , 0x21 --> renderRandom      random
                  , 0x22 --> renderEiffel      random
                  , 0x23 --> renderSlide       segmentSize pixel
                  , 0x24 --> renderSlide'      segmentSize pixel
                  , 0x25 --> renderSlide''     segmentSize pixel
+
+                 , 0xff --> renderConst
 
                  , true ==> pure 1
                  ]
