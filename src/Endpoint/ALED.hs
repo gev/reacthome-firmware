@@ -38,18 +38,7 @@ type GroupStruct = "group_struct"
     ; segmentNumber  :: Uint8
     ; brightness     :: IFloat
     ; groupState     :: IBool
-    ; stateChanged   :: IBool
-    }
-|]
-
-
-type ClipStruct = "clip_struct"
-
-[ivory|
-    struct clip_struct
-    { start   :: IFloat
-    ; end     :: IFloat
-    ; inverse :: IBool
+    ; groupChanged   :: IBool
     }
 |]
 
