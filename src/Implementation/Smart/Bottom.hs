@@ -79,4 +79,5 @@ instance KnownNat n => Controller (Bottom n) where
               , action ==? actionALedStop        ==> onALedStop         aled buff size
               , action ==? actionALedBrightness  ==> onALedBrightness   aled buff size
               , action ==? actionALedConfigGroup ==> onALedConfigGroup  aled buff size
+              , action ==? actionALedClip        ==> onALedClip         aled buff size
               ]

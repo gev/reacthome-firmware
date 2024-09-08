@@ -82,6 +82,7 @@ instance (KnownNat ni, KnownNat nd, KnownNat nr) => Controller (Hub ni nd nr) wh
               , action ==? actionALedStop        ==> onALedStop         aled buff size
               , action ==? actionALedBrightness  ==> onALedBrightness   aled buff size
               , action ==? actionALedConfigGroup ==> onALedConfigGroup  aled buff size
+              , action ==? actionALedClip        ==> onALedClip         aled buff size
               ]
 
 
