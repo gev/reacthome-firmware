@@ -21,11 +21,13 @@ actionSmartTopDetect          = 0x31 :: Uint8
 
 actionALedOff                 = 0x40 :: Uint8
 actionALedOn                  = 0x41 :: Uint8
-actionALedPlay                = 0x42 :: Uint8
-actionALedStop                = 0x43 :: Uint8
-actionALedBrightness          = 0x44 :: Uint8
-actionALedConfigGroup         = 0x45 :: Uint8
+actionALedColorAnimationPlay  = 0x42 :: Uint8
+actionALedColorAnimationStop  = 0x43 :: Uint8
+actionALedMaskAnimationPlay   = 0x44 :: Uint8
+actionALedMaskAnimationStop   = 0x45 :: Uint8
 actionALedClip                = 0x46 :: Uint8
+actionALedBrightness          = 0x47 :: Uint8
+actionALedConfigGroup         = 0x48 :: Uint8
 
 actionRs485Mode               = 0xA0 :: Uint8
 actionRbusTransmit            = 0xA1 :: Uint8
