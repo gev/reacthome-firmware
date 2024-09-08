@@ -226,7 +226,10 @@ incrementTime animation = do
                         loop' <- deref $ animation ~> E.animationLoop
                         ifte_ loop'
                             (store (animation ~> E.time) 0)
-                            (store (animation ~> E.time) 1)
+                            (do
+                                store (animation ~> E.time) 1
+                                store (animation ~> E.animationState) false
+                            )
                     )
                     (store (animation ~> E.time) time'')
 
