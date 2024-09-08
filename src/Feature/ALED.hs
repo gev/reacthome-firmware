@@ -91,6 +91,10 @@ aled mkDisplay etc transport = do
     random <- mkRandom "aled" 1
 
     addInit "aed_load_config" $ do
+        store (E.clips getALED ! 0 ~> E.start) 0.25
+        store (E.clips getALED ! 0 ~> E.end) 0.75
+        store (E.clips getALED ! 0 ~> E.inverse) false
+
         store (E.maskAnimations  getALED ! 0 ~> E.kind) 0
         store (E.maskAnimations  getALED ! 0 ~> E.animationState) true
         store (E.maskAnimations  getALED ! 0 ~> E.animationLoop) true
@@ -106,6 +110,10 @@ aled mkDisplay etc transport = do
         store (E.colorAnimations getALED ! 0 ~> E.params ! 3) 192
 
 
+
+        store (E.clips getALED ! 1 ~> E.start) 0.25
+        store (E.clips getALED ! 1 ~> E.end) 0.75
+        store (E.clips getALED ! 1 ~> E.inverse) true
 
         store (E.maskAnimations  getALED ! 1 ~> E.kind) 0
         store (E.maskAnimations  getALED ! 1 ~> E.animationState) true

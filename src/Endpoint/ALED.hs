@@ -75,6 +75,7 @@ mkALED = do
     addStruct (Proxy :: Proxy SegmentStruct)
     addStruct (Proxy :: Proxy GroupStruct)
     addStruct (Proxy :: Proxy AnimationStruct)
+    addStruct (Proxy :: Proxy ClipStruct)
 
     addConstArea sinT
 
