@@ -17,6 +17,7 @@ type AnimationStruct = "animation_struct"
     ; params         :: Array 8 (Stored Uint8)
     ; time           :: IFloat
     ; dt             :: IFloat
+    ; phase          :: IFloat
     ; split          :: IBool
     ; animationState :: IBool
     ; animationLoop  :: IBool

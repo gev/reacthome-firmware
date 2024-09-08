@@ -69,17 +69,15 @@ onGetState Bottom{..} buff size = do
 instance KnownNat n => Controller (Bottom n) where
     handle b@Bottom{..} buff size = do
         action <- deref $ buff ! 0
-        cond_ [ action ==? actionSmartTop               ==> onMessage                top  buff size
-              , action ==? actionFindMe                 ==> onFindMe                 top  buff size
-              , action ==? actionGetState               ==> onGetState               b    buff size
-              , action ==? actionInitialize             ==> onInitialize             aled buff size
-              , action ==? actionALedOn                 ==> onALedOn                 aled buff size
-              , action ==? actionALedOff                ==> onALedOff                aled buff size
-              , action ==? actionALedColorAnimationPlay ==> onALedColorAnimationPlay aled buff size
-              , action ==? actionALedColorAnimationStop ==> onALedColorAnimationStop aled buff size
-              , action ==? actionALedMaskAnimationPlay  ==> onALedMaskAnimationPlay  aled buff size
-              , action ==? actionALedMaskAnimationStop  ==> onALedMaskAnimationStop  aled buff size
-              , action ==? actionALedClip               ==> onALedClip               aled buff size
-              , action ==? actionALedBrightness         ==> onALedBrightness         aled buff size
-              , action ==? actionALedConfigGroup        ==> onALedConfigGroup        aled buff size
+        cond_ [ action ==? actionSmartTop        ==> onMessage          top  buff size
+              , action ==? actionFindMe          ==> onFindMe           top  buff size
+              , action ==? actionGetState        ==> onGetState         b    buff size
+              , action ==? actionInitialize      ==> onInitialize       aled buff size
+              , action ==? actionALedOn          ==> onALedOn           aled buff size
+              , action ==? actionALedOff         ==> onALedOff          aled buff size
+              , action ==? actionALedPlay        ==> onALedPlay         aled buff size
+              , action ==? actionALedStop        ==> onALedStop         aled buff size
+              , action ==? actionALedBrightness  ==> onALedBrightness   aled buff size
+              , action ==? actionALedConfigGroup ==> onALedConfigGroup  aled buff size
+              , action ==? actionALedClip        ==> onALedClip         aled buff size
               ]

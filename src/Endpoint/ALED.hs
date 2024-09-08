@@ -54,12 +54,24 @@ type ClipStruct = "clip_struct"
 |]
 
 
+type ClipStruct = "clip_struct"
+
+[ivory|
+    struct clip_struct
+    { start   :: IFloat
+    ; end     :: IFloat
+    ; inverse :: IBool
+    }
+|]
+
+
 
 data ALED ng ns np = ALED
     { groups          :: Records ng GroupStruct
     , segments        :: Records ns SegmentStruct
     , colorAnimations :: Records ng AnimationStruct
     , maskAnimations  :: Records ng AnimationStruct
+    , clips           :: Records ng ClipStruct
     , subPixels       :: Buffer  np Uint8
     }
 
@@ -98,6 +110,7 @@ mkALED = do
                                 , params         .= iarray (ival <$> [0, 0, 0, 0, 0, 0, 0, 0])
                                 , time           .= ival 0
                                 , dt             .= ival 0
+                                , phase          .= ival 0
                                 , split          .= ival false
                                 , animationState .= ival false
                                 , animationLoop  .= ival false
@@ -108,11 +121,18 @@ mkALED = do
                                 , params         .= iarray (ival <$> [0, 0, 0, 0, 0, 0, 0, 0])
                                 , time           .= ival 0
                                 , dt             .= ival 0
+                                , phase          .= ival 0
                                 , split          .= ival false
                                 , animationState .= ival false
                                 , animationLoop  .= ival false
                                 ]
 
+    clips           <- records' "aled_clips"
+                                [ start   .= ival 0
+                                , end     .= ival 1
+                                , inverse .= ival false
+                                ]
+
     subPixels  <- values' "aled_sub_pixels" 0
 
-    pure ALED {groups, segments, colorAnimations, maskAnimations, subPixels}
+    pure ALED {groups, segments, colorAnimations, maskAnimations, clips, subPixels}

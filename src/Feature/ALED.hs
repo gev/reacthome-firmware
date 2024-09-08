@@ -112,6 +112,7 @@ aled mkDisplay etc transport = do
         store (E.maskAnimations  getALED ! 1 ~> E.animationState) true
         store (E.maskAnimations  getALED ! 1 ~> E.animationLoop) true
         store (E.maskAnimations  getALED ! 1 ~> E.dt) $ dt / 2
+        store (E.maskAnimations  getALED ! 1 ~> E.split) true
 
         store (E.colorAnimations getALED ! 1 ~> E.kind) 3
         store (E.colorAnimations getALED ! 1 ~> E.dt) $ dt / 5
@@ -130,29 +131,6 @@ aled mkDisplay etc transport = do
     addTask $ delay  50 "sync_state"  $ syncState  aled
     addTask $ delay  20 "sync_groups" $ syncGroups aled
 
-    -- addTask $ delay 5_000 "player" $ do
-    --     kind' <- deref $ E.maskAnimations getALED ! 0 ~> E.kind
-    --     store (E.maskAnimations getALED ! 0 ~> E.time) 0
-    --     store (E.maskAnimations getALED ! 0 ~> E.kind) $ 1 - kind'
-    --     store (E.maskAnimations getALED ! 0 ~> E.params ! 0) 0
-    --     store (E.maskAnimations getALED ! 0 ~> E.params ! 1) 0
-    --     store (E.maskAnimations getALED ! 0 ~> E.params ! 2) 0
-    --     store (E.maskAnimations getALED ! 0 ~> E.params ! 3) 0
-    --     store (E.maskAnimations getALED ! 0 ~> E.params ! 4) 0
-    --     store (E.maskAnimations getALED ! 0 ~> E.params ! 5) 0
-    --     store (E.maskAnimations getALED ! 0 ~> E.params ! 6) 0
-    --     store (E.maskAnimations getALED ! 0 ~> E.params ! 7) 0
-    --     store (E.maskAnimations getALED ! 1 ~> E.time) 0
-    --     store (E.maskAnimations getALED ! 1 ~> E.kind) $ 1 - kind'
-    --     store (E.maskAnimations getALED ! 1 ~> E.params ! 0) 0
-    --     store (E.maskAnimations getALED ! 1 ~> E.params ! 1) 0
-    --     store (E.maskAnimations getALED ! 1 ~> E.params ! 2) 0
-    --     store (E.maskAnimations getALED ! 1 ~> E.params ! 3) 0
-    --     store (E.maskAnimations getALED ! 1 ~> E.params ! 4) 0
-    --     store (E.maskAnimations getALED ! 1 ~> E.params ! 5) 0
-    --     store (E.maskAnimations getALED ! 1 ~> E.params ! 6) 0
-    --     store (E.maskAnimations getALED ! 1 ~> E.params ! 7) 0
-
 
     pure aled
 
@@ -167,18 +145,23 @@ update ALED{..} random = do
     arrayMap $ \gx -> do
         tx <- local (ival 0)
 
-        let colorAnimation   = E.colorAnimations getALED ! gx
-        let maskAnimation    = E.maskAnimations getALED ! gx
-        let group            = E.groups getALED ! gx
+        let colorAnimation    = E.colorAnimations getALED ! gx
+        let maskAnimation     = E.maskAnimations getALED ! gx
+        let group             = E.groups getALED ! gx
+        let clip              = E.clips getALED ! gx
 
-        pixelSize'          <- deref $ group ~> E.pixelSize
-        groupSize'          <- deref $ group ~> E.groupSize
-        segmentNumber'      <- deref $ group ~> E.segmentNumber
-        brightness'         <- deref $ group ~> E.brightness
-        state'              <- deref $ group ~> E.groupState
+        pixelSize'           <- deref $ group ~> E.pixelSize
+        groupSize'           <- deref $ group ~> E.groupSize
+        segmentNumber'       <- deref $ group ~> E.segmentNumber
+        brightness'          <- deref $ group ~> E.brightness
+        state'               <- deref $ group ~> E.groupState
 
-        colorAnimationSplit <- deref $ colorAnimation ~> E.split
-        maskAnimationSplit  <- deref $ maskAnimation  ~> E.split
+        start'               <- deref $ clip ~> E.start
+        end'                 <- deref $ clip ~> E.end
+        inverse'             <- deref $ clip ~> E.inverse
+
+        colorAnimationSplit' <- deref $ colorAnimation ~> E.split
+        maskAnimationSplit'  <- deref $ maskAnimation  ~> E.split
 
         for (toIx segmentNumber' :: Ix ns) $ \segmentX -> do
             sx' <- deref sx
@@ -187,57 +170,67 @@ update ALED{..} random = do
             direction'   <- deref $ segment ~> E.direction
             tx'          <- deref tx
             store tx $ tx' + safeCast segmentSize'
+            let start'' = start' * safeCast segmentSize'
+            let end'' = end' * safeCast segmentSize'
             for (toIx segmentSize' :: Ix np) $ \pixelX -> do
                 let pixelX' = fromIx pixelX
                 x <- local $ ival pixelX'
                 when direction' $ store x (safeCast segmentSize' - pixelX' - 1)
                 x' <- deref x
-                m' <- ifte maskAnimationSplit
-                        (E.renderMask random
-                                      maskAnimation
-                                      (fromIx segmentX)
-                                      (safeCast segmentSize')
-                                      x'
-                        )
-                        (E.renderMask random
-                                      maskAnimation
-                                      0
-                                      groupSize'
-                                      (tx' + x')
-                        )
-                for (toIx pixelSize' :: Ix np) $ \subpixelX -> do
-                    px' <- deref px
-                    let p = E.subPixels getALED ! px'
-                    ifte_ (state' .&& brightness' >? 0)
-                        (do
-                            p' <- (/ brightness') . safeCast <$> deref p
-                            c' <- ifte colorAnimationSplit
-                                    (E.renderColor random
-                                                   colorAnimation
-                                                   (fromIx segmentX)
-                                                   (safeCast segmentSize')
-                                                   x'
-                                                   pixelSize'
-                                                   (fromIx subpixelX)
-                                                   p'
-                                    )
-                                    (E.renderColor random
-                                                   colorAnimation
-                                                   0
-                                                   groupSize'
-                                                   tx'
-                                                   pixelSize'
-                                                   (fromIx subpixelX)
-                                                   p'
-                                    )
-                            let v' = c' * m' * brightness'
-                            cond_ [ v' <? 0   ==> store p 0
-                                  , v' >? 255 ==> store p 255
-                                  , true      ==> store p (castDefault v')
-                                  ]
-                        )
-                        (store p 0)
-                    store px $ px' + 1
+                ifte_ ((safeCast x' >=? start'' .&& safeCast x' <? end'') /=? inverse')
+                      (do
+                          m' <- ifte maskAnimationSplit'
+                                  (E.renderMask random
+                                              maskAnimation
+                                              (fromIx segmentX)
+                                              (safeCast segmentSize')
+                                              x'
+                                  )
+                                  (E.renderMask random
+                                              maskAnimation
+                                              0
+                                              groupSize'
+                                              (tx' + x')
+                                  )
+                          for (toIx pixelSize' :: Ix np) $ \subpixelX -> do
+                              px' <- deref px
+                              let p = E.subPixels getALED ! px'
+                              ifte_ (state' .&& brightness' >? 0)
+                                  (do
+                                      p' <- (/ brightness') . safeCast <$> deref p
+                                      c' <- ifte colorAnimationSplit'
+                                              (E.renderColor random
+                                                          colorAnimation
+                                                          (fromIx segmentX)
+                                                          (safeCast segmentSize')
+                                                          x'
+                                                          pixelSize'
+                                                          (fromIx subpixelX)
+                                                          p'
+                                              )
+                                              (E.renderColor random
+                                                          colorAnimation
+                                                          0
+                                                          groupSize'
+                                                          tx'
+                                                          pixelSize'
+                                                          (fromIx subpixelX)
+                                                          p'
+                                              )
+                                      let v' = c' * m' * brightness'
+                                      cond_ [ v' <? 0   ==> store p 0
+                                          , v' >? 255 ==> store p 255
+                                          , true      ==> store p (castDefault v')
+                                          ]
+                                  )
+                                  (store p 0)
+                              store px $ px' + 1
+                      )
+                      (for (toIx pixelSize' :: Ix np) . const $ do
+                            px' <- deref px
+                            store (E.subPixels getALED ! px') 0
+                            store px $ px' + 1
+                      )
             store sx $ sx' + 1
         incrementTime colorAnimation
         incrementTime maskAnimation
@@ -422,7 +415,7 @@ onALedClip ALED{..} buff size = do
             ifte_ (inverse ==? 0)
                   (store (clip ~> E.inverse) false)
                   (store (clip ~> E.inverse) true)
-            lazyTransmit transport 5 $ \transmit -> do
+            T.lazyTransmit transport 5 $ \transmit -> do
                 transmit actionALedClip
                 transmit i
                 transmit start
