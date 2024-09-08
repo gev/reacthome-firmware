@@ -15,7 +15,7 @@ import           Endpoint.ALED.Animation.Color.SpectrumX
 import           Endpoint.ALED.Animation.Data
 import           Endpoint.ALED.Animation.Mask.Const
 import           Endpoint.ALED.Animation.Mask.Eiffel
-import           Endpoint.ALED.Animation.Mask.Random      (renderRandom)
+import           Endpoint.ALED.Animation.Mask.Random
 import           Endpoint.ALED.Animation.Mask.RandomOff
 import           Endpoint.ALED.Animation.Mask.RandomOn
 import           Endpoint.ALED.Animation.Mask.Slide
