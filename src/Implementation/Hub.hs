@@ -76,6 +76,8 @@ instance (KnownNat ni, KnownNat nd, KnownNat nr) => Controller (Hub ni nd nr) wh
               , action ==? actionFindMe                 ==> onFindMe                 indicator buff size
               , action ==? actionInitialize             ==> onInit                   s         buff size
               , action ==? actionGetState               ==> onGetState               s
+              , action ==? actionALedOn                 ==> onALedOn                 aled      buff size
+              , action ==? actionALedOff                ==> onALedOff                aled      buff size
               , action ==? actionALedColorAnimationPlay ==> onALedColorAnimationPlay aled      buff size
               , action ==? actionALedColorAnimationStop ==> onALedColorAnimationStop aled      buff size
               , action ==? actionALedMaskAnimationPlay  ==> onALedMaskAnimationPlay  aled      buff size
