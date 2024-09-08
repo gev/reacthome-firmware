@@ -67,10 +67,23 @@ renderMask :: Random Uint8
             -> Sint32
             -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 renderMask random animation segment segmentSize pixel = do
+    t <- local $ ival 0
+    time' <- deref $ animation ~> time
+    phase' <- deref $ animation ~> phase
+    let phase = safeCast segment * phase'
+    ifte_ (time' <? 0)
+          (store t $ time' - phase)
+          (do
+               let t' = time' - phase
+               ifte_ (t' <? 0)
+                     (store t $ t' - floorF t')
+                     (store t t')
+          )
+    t' <- deref t
     animationState' <- deref $ animation ~> animationState
-    ifte animationState'
+    ifte (animationState' .&& t' >=? 0)
          (do
-            renderSlideOn segmentSize pixel animation
+            renderSlideOn segmentSize pixel t' animation
           --   kind' <- deref $ animation ~> kind
           --   let (-->) p r = kind' ==? p ==> r animation
           --   cond [ 3 --> renderConst

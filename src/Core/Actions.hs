@@ -25,6 +25,7 @@ actionALedPlay                = 0x42 :: Uint8
 actionALedStop                = 0x43 :: Uint8
 actionALedBrightness          = 0x44 :: Uint8
 actionALedConfigGroup         = 0x45 :: Uint8
+actionALedClip                = 0x46 :: Uint8
 
 actionRs485Mode               = 0xA0 :: Uint8
 actionRbusTransmit            = 0xA1 :: Uint8
