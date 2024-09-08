@@ -38,7 +38,7 @@ type GroupStruct = "group_struct"
     ; segmentNumber  :: Uint8
     ; brightness     :: IFloat
     ; groupState     :: IBool
-    ; groupChanged   :: IBool
+    ; stateChanged   :: IBool
     }
 |]
 
@@ -87,6 +87,7 @@ mkALED = do
                                 , segmentNumber  .= ival 0
                                 , brightness     .= ival 0.5
                                 , groupState     .= ival false
+                                , stateChanged   .= ival true
                                 ]
 
     segments        <- records' "aled_segments"
@@ -96,7 +97,7 @@ mkALED = do
 
     colorAnimations <- records' "aled_color_animations"
                                 [ kind           .= ival 0
-                                , params         .= iarray (ival <$> [0, 0, 0, 0, 0, 0, 0, 0])
+                                , params         .= iarray (ival <$> replicate 8 0)
                                 , time           .= ival 0
                                 , dt             .= ival 0
                                 , phase          .= ival 0
@@ -107,7 +108,7 @@ mkALED = do
 
     maskAnimations  <- records' "aled_mask_animations"
                                 [ kind           .= ival 0
-                                , params         .= iarray (ival <$> [0, 0, 0, 0, 0, 0, 0, 0])
+                                , params         .= iarray (ival <$> replicate 8 0)
                                 , time           .= ival 0
                                 , dt             .= ival 0
                                 , phase          .= ival 0

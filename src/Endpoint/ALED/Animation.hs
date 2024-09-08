@@ -108,6 +108,6 @@ renderMask random animation segment segmentSize pixel = do
 
                  , true ==> pure 1
                  ]
-         ) $ ifte (kind' .& 0x10 ==? 0x00)
+         ) $ ifte (kind' .& 0xf0 ==? 0x00)
                   (pure 0)
                   (pure 1)
