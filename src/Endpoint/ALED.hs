@@ -38,6 +38,7 @@ type GroupStruct = "group_struct"
     ; segmentNumber  :: Uint8
     ; brightness     :: IFloat
     ; groupState     :: IBool
+    ; groupChanged   :: IBool
     }
 |]
 

@@ -53,6 +53,7 @@ data ALED ng ns np = forall d f t. (Display d, Flash f, LazyTransport t) => ALED
     , shouldSaveConfig :: Value IBool
     , shouldSyncGroups :: Value IBool
     , groupIndex       :: Value Uint8
+    , stateIndex       :: Value (Ix ng)
     , segmentIndex     :: Value (Ix ns)
     }
 
@@ -71,10 +72,11 @@ aled mkDisplay etc transport = do
     mcu              <- asks D.mcu
     display          <- mkDisplay $ peripherals mcu
     getALED          <- E.mkALED
-    shouldSaveConfig <- value "should_save_config" false
-    shouldSyncGroups <- value "should_sync_groups" false
-    groupIndex       <- value "group_index" 0
-    segmentIndex     <- value "segment_index" 0
+    shouldSaveConfig <- value "aled_should_save_config" false
+    shouldSyncGroups <- value "aled_should_sync_groups" false
+    groupIndex       <- value "aled_group_index" 0
+    stateIndex       <- value "aled_state_index" 0
+    segmentIndex     <- value "aled_segment_index" 0
 
     let aled = ALED { display
                     , getALED
@@ -83,6 +85,7 @@ aled mkDisplay etc transport = do
                     , shouldSaveConfig
                     , shouldSyncGroups
                     , groupIndex
+                    , stateIndex
                     , segmentIndex
                     }
 
@@ -93,6 +96,7 @@ aled mkDisplay etc transport = do
     addHandler $ Render display E.fps (E.subPixels getALED) $ update aled random
 
     addTask $ delay 100 "save_config" $ saveConfig aled
+    addTask $ delay  50 "sync_state"  $ syncState  aled
     addTask $ delay  20 "sync_groups" $ syncGroups aled
 
     pure aled
@@ -126,6 +130,8 @@ update ALED{..} random = do
         colorAnimationSplit' <- deref $ colorAnimation ~> E.split
         maskAnimationSplit'  <- deref $ maskAnimation  ~> E.split
 
+        store (group ~> E.groupState) false
+
         for (toIx segmentNumber' :: Ix ns) $ \segmentX -> do
             sx' <- deref sx
             let segment   = E.segments getALED ! sx'
@@ -158,7 +164,7 @@ update ALED{..} random = do
                           for (toIx pixelSize' :: Ix np) $ \subpixelX -> do
                               px' <- deref px
                               let p = E.subPixels getALED ! px'
-                              ifte_ (state' .&& brightness' >? 0)
+                              ifte_ (brightness' >? 0)
                                 (do
                                     p' <- (/ brightness') . safeCast <$> deref p
                                     c' <- ifte colorAnimationSplit'
@@ -185,6 +191,7 @@ update ALED{..} random = do
                                           , v' >? 255 ==> store p 255
                                           , true      ==> store p (castDefault v')
                                           ]
+                                    store (group ~> E.groupState) (v' >? 1)
                                 )
                                 (store p 0)
                               store px $ px' + 1
@@ -195,11 +202,15 @@ update ALED{..} random = do
                             store px $ px' + 1
                       )
             store sx $ sx' + 1
+        state'' <- deref $ group ~> E.groupState
+        store (group ~> E.groupChanged) (state' /=? state'')
         incrementTime colorAnimation
         incrementTime maskAnimation
     px' <- deref px
     upTo px' (np' - 1) $ \ix ->
         store (E.subPixels getALED ! ix) 0
+
+
 
 
 
@@ -221,61 +232,35 @@ incrementTime animation = do
 
 
 
-onALedOn :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
-         => ALED ng ns np -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
-onALedOn ALED{..} buff size = do
-    let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
-    when (size ==? 2) $ do
-        i <- deref $ buff ! 1
-        when (i >=? 1 .&& i <=? ng') $ do
-            let ix = toIx $ i - 1
-            store (E.groups getALED ! ix ~> E.groupState) true
-            lazyTransmit transport size $ \transmit -> do
-                transmit actionALedOn
-                transmit i
-
-
-
-onALedOff :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
-          => ALED ng ns np -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
-onALedOff ALED{..} buff size = do
-    let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
-    when (size ==? 2) $ do
-        i <- deref $ buff ! 1
-        when (i >=? 1 .&& i <=? ng') $ do
-            let ix = toIx $ i - 1
-            store (E.groups getALED ! ix ~> E.groupState) false
-            lazyTransmit transport size $ \transmit -> do
-                transmit actionALedOff
-                transmit i
-
-
-
 onALedColorAnimationPlay :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
                          => ALED ng ns np -> Buffer n Uint8 -> Uint8
                          -> Ivory (ProcEffects s t) ()
-onALedColorAnimationPlay ALED{..} = onALedAnimationPlay (E.colorAnimations getALED) transport
+onALedColorAnimationPlay ALED{..} =
+    onALedAnimationPlay (E.colorAnimations getALED) transport
 
 
 
 onALedColorAnimationStop :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
                          => ALED ng ns np -> Buffer n Uint8 -> Uint8
                          -> Ivory (ProcEffects s t) ()
-onALedColorAnimationStop ALED{..} = onALedAnimationStop (E.colorAnimations getALED) transport
+onALedColorAnimationStop ALED{..} =
+    onALedAnimationStop (E.colorAnimations getALED) transport
 
 
 
 onALedMaskAnimationPlay :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
                         => ALED ng ns np -> Buffer n Uint8 -> Uint8
                         -> Ivory (ProcEffects s t) ()
-onALedMaskAnimationPlay ALED{..} = onALedAnimationPlay (E.maskAnimations getALED) transport
+onALedMaskAnimationPlay ALED{..} =
+    onALedAnimationPlay (E.maskAnimations getALED) transport
 
 
 
 onALedMaskAnimationStop :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
                         => ALED ng ns np -> Buffer n Uint8 -> Uint8
                         -> Ivory (ProcEffects s t) ()
-onALedMaskAnimationStop ALED{..} = onALedAnimationStop (E.maskAnimations getALED) transport
+onALedMaskAnimationStop ALED{..} =
+    onALedAnimationStop (E.maskAnimations getALED) transport
 
 
 
@@ -300,6 +285,7 @@ onALedAnimationPlay animations transport buff size = do
             store (animation ~> E.time) 0
             store (animation ~> E.phase) $ dt * (safeCast phase - 128)
             store (animation ~> E.dt) $ 4 * dt / (safeCast time + 1)
+            store (animation ~> E.animationState) true
             ifte_ (split ==? 0)
                   (store (animation ~> E.split) false)
                   (store (animation ~> E.split) true)
@@ -490,6 +476,24 @@ transmitNextGroup ALED{..} = do
 
 
 
+syncState :: forall n ng ns np s t. KnownNat ng
+           => ALED ng ns np -> Ivory (ProcEffects s t) ()
+syncState a@ALED{..} = do
+    ix <- deref stateIndex
+    let group = E.groups getALED ! ix
+    groupChanged' <- deref $ group ~> E.groupChanged
+    when groupChanged' $ do
+        lazyTransmit transport 2 $ \transmit -> do
+            state' <- deref $ group ~> E.groupState
+            ifte_ state'
+                (transmit actionALedOn)
+                (transmit actionALedOff)
+            transmit $ castDefault $ fromIx ix
+    store stateIndex $ ix + 1
+
+
+
+
 syncGroups :: forall n ng ns np s t. (KnownNat ng, KnownNat ns)
            => ALED ng ns np -> Ivory (ProcEffects s t) ()
 syncGroups a@ALED{..} = do
@@ -517,18 +521,11 @@ onInitialize :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
              -> Ivory (ProcEffects s t) ()
 onInitialize ALED{..} buff size = do
     let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
-    when (size ==? 1 + 2 * ng') $ do
-        jx <- local $ ival 1
+    when (size ==? 1 + ng') $ do
         arrayMap $ \ix -> do
-            jx' <- toIx <$> deref jx
             let group = E.groups getALED ! ix
-            brightness <- deref (buff ! jx')
-            state <- deref $ buff ! (jx' + 1)
+            brightness <- deref $ buff ! toIx (fromIx ix + 1)
             store (group ~> E.brightness) $ safeCast brightness / 255
-            ifte_ (state ==? 0)
-                  (store (group ~> E.groupState) false)
-                  (store (group ~> E.groupState) true)
-            store jx $ jx' + 2
 
 
 
