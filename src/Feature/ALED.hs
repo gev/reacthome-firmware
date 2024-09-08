@@ -178,50 +178,50 @@ update ALED{..} random = do
                 ifte_ ((safeCast x' >=? start'' .&& safeCast x' <? end'') /=? inverse')
                       (do
                           m' <- ifte maskAnimationSplit'
-                                  (E.renderMask random
+                                (E.renderMask random
                                               maskAnimation
                                               (fromIx segmentX)
                                               (safeCast segmentSize')
                                               x'
-                                  )
-                                  (E.renderMask random
+                                )
+                                (E.renderMask random
                                               maskAnimation
                                               0
                                               groupSize'
                                               (tx' + x')
-                                  )
+                                )
                           for (toIx pixelSize' :: Ix np) $ \subpixelX -> do
                               px' <- deref px
                               let p = E.subPixels getALED ! px'
                               ifte_ (state' .&& brightness' >? 0)
-                                  (do
-                                      p' <- (/ brightness') . safeCast <$> deref p
-                                      c' <- ifte colorAnimationSplit'
-                                              (E.renderColor random
-                                                          colorAnimation
-                                                          (fromIx segmentX)
-                                                          (safeCast segmentSize')
-                                                          x'
-                                                          pixelSize'
-                                                          (fromIx subpixelX)
-                                                          p'
-                                              )
-                                              (E.renderColor random
-                                                          colorAnimation
-                                                          0
-                                                          groupSize'
-                                                          tx'
-                                                          pixelSize'
-                                                          (fromIx subpixelX)
-                                                          p'
-                                              )
-                                      let v' = c' * m' * brightness'
-                                      cond_ [ v' <? 0   ==> store p 0
+                                (do
+                                    p' <- (/ brightness') . safeCast <$> deref p
+                                    c' <- ifte colorAnimationSplit'
+                                            (E.renderColor random
+                                                           colorAnimation
+                                                           (fromIx segmentX)
+                                                           (safeCast segmentSize')
+                                                           x'
+                                                           pixelSize'
+                                                           (fromIx subpixelX)
+                                                           p'
+                                            )
+                                            (E.renderColor random
+                                                           colorAnimation
+                                                           0
+                                                           groupSize'
+                                                           tx'
+                                                           pixelSize'
+                                                           (fromIx subpixelX)
+                                                           p'
+                                            )
+                                    let v' = c' * m' * brightness'
+                                    cond_ [ v' <? 0   ==> store p 0
                                           , v' >? 255 ==> store p 255
                                           , true      ==> store p (castDefault v')
                                           ]
-                                  )
-                                  (store p 0)
+                                )
+                                (store p 0)
                               store px $ px' + 1
                       )
                       (for (toIx pixelSize' :: Ix np) . const $ do
