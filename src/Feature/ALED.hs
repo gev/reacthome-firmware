@@ -236,22 +236,22 @@ incrementTime animation = do
 onALedOn :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
          => ALED ng ns np -> Buffer n Uint8 -> Uint8
          -> Ivory (ProcEffects s t) ()
-onALedOn = testAnimation 0x12
+onALedOn = testAnimation 0x12 true
 
 
 
 onALedOff :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
           => ALED ng ns np -> Buffer n Uint8 -> Uint8
           -> Ivory (ProcEffects s t) ()
-onALedOff = testAnimation 0x03
+onALedOff = testAnimation 0x03 false
 
 
 
 
 testAnimation :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
-              => Uint8 -> ALED ng ns np -> Buffer n Uint8 -> Uint8
+              => Uint8 -> IBool -> ALED ng ns np -> Buffer n Uint8 -> Uint8
               -> Ivory (ProcEffects s t) ()
-testAnimation animation ALED{..} buff size = do
+testAnimation animation loop ALED{..} buff size = do
     let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
     when (size ==? 2) $ do
         i <- deref $ buff ! 1
@@ -265,7 +265,8 @@ testAnimation animation ALED{..} buff size = do
             store (colorAnimation ~> E.kind) 0x30
             store (maskAnimation  ~> E.phase) 0
             store (colorAnimation ~> E.time) 0
-            store (colorAnimation ~> E.dt) dt
+            store (colorAnimation ~> E.dt) $ dt / 5
+            store (colorAnimation ~> E.split) true
             store (colorAnimation ~> E.animationLoop) true
             store (colorAnimation ~> E.animationState) true
 
@@ -273,7 +274,8 @@ testAnimation animation ALED{..} buff size = do
             store (maskAnimation  ~> E.phase) 0
             store (maskAnimation  ~> E.time) 0
             store (maskAnimation  ~> E.dt) dt
-            store (maskAnimation  ~> E.animationLoop) true
+            store (maskAnimation  ~> E.split) true
+            store (maskAnimation  ~> E.animationLoop) loop
             store (maskAnimation  ~> E.animationState) true
 
             store (clip ~> E.start) 0
