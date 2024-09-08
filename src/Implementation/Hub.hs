@@ -68,21 +68,21 @@ hub transport' rbus' dimmers' dinputs' ds18b20' indicator' aled' = do
 instance (KnownNat ni, KnownNat nd, KnownNat nr) => Controller (Hub ni nd nr) where
     handle s@Hub{..} buff size = do
         action <- deref $ buff ! 0
-        cond_ [ action ==? actionDo              ==> onDo          dimmers   buff size
-              , action ==? actionDim             ==> onDim         dimmers   buff size
-              , action ==? actionRs485Mode       ==> setMode       rbus      buff size
-              , action ==? actionRbusTransmit    ==> transmitRBUS  rbus      buff size
-              , action ==? actionRs485Transmit   ==> transmitRB485 rbus      buff size
-              , action ==? actionFindMe          ==> onFindMe      indicator buff size
-              , action ==? actionInitialize      ==> onInit        s         buff size
-              , action ==? actionGetState        ==> onGetState    s
-              , action ==? actionALedOn          ==> onALedOn           aled buff size
-              , action ==? actionALedOff         ==> onALedOff          aled buff size
-              , action ==? actionALedPlay        ==> onALedPlay         aled buff size
-              , action ==? actionALedStop        ==> onALedStop         aled buff size
-              , action ==? actionALedBrightness  ==> onALedBrightness   aled buff size
-              , action ==? actionALedConfigGroup ==> onALedConfigGroup  aled buff size
-              , action ==? actionALedClip        ==> onALedClip         aled buff size
+        cond_ [ action ==? actionDo                     ==> onDo                     dimmers   buff size
+              , action ==? actionDim                    ==> onDim                    dimmers   buff size
+              , action ==? actionRs485Mode              ==> setMode                  rbus      buff size
+              , action ==? actionRbusTransmit           ==> transmitRBUS             rbus      buff size
+              , action ==? actionRs485Transmit          ==> transmitRB485            rbus      buff size
+              , action ==? actionFindMe                 ==> onFindMe                 indicator buff size
+              , action ==? actionInitialize             ==> onInit                   s         buff size
+              , action ==? actionGetState               ==> onGetState               s
+              , action ==? actionALedColorAnimationPlay ==> onALedColorAnimationPlay aled      buff size
+              , action ==? actionALedColorAnimationStop ==> onALedColorAnimationStop aled      buff size
+              , action ==? actionALedMaskAnimationPlay  ==> onALedMaskAnimationPlay  aled      buff size
+              , action ==? actionALedMaskAnimationStop  ==> onALedMaskAnimationStop  aled      buff size
+              , action ==? actionALedClip               ==> onALedClip               aled      buff size
+              , action ==? actionALedBrightness         ==> onALedBrightness         aled      buff size
+              , action ==? actionALedConfigGroup        ==> onALedConfigGroup        aled      buff size
               ]
 
 
