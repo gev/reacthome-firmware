@@ -20,7 +20,6 @@ import           Core.FSM                     (transit)
 import           Core.Handler
 import           Core.Task
 import           Core.Transport               (LazyTransport (lazyTransmit))
-import qualified Core.Transport               as T
 import           Data.Buffer
 import           Data.Display.Canvas1D
 import           Data.Record
@@ -29,7 +28,6 @@ import           Data.Value
 import           Endpoint.ALED                (brightness)
 import qualified Endpoint.ALED                as E
 import qualified Endpoint.ALED.Animation      as E
-import           Endpoint.ALED.Animation.Data (animationState)
 import qualified Endpoint.ALED.Animation.Data as E
 import           GHC.TypeNats
 import           Interface.Display            (Display, Render (Render))
@@ -47,7 +45,7 @@ import           Util.Random
 dt = 1 / safeCast E.fps :: IFloat
 
 
-data ALED ng ns np = forall d f t. (Display d, Flash f, T.LazyTransport t) => ALED
+data ALED ng ns np = forall d f t. (Display d, Flash f, LazyTransport t) => ALED
     { display          :: d
     , getALED          :: E.ALED ng ns np
     , etc              :: f
@@ -66,7 +64,7 @@ aled :: ( MonadState Context m
         , MonadReader (D.Domain p c) m
         , Display d, Handler (Render np) d
         , KnownNat ng, KnownNat ns, KnownNat np
-        , T.LazyTransport t
+        , LazyTransport t
         , Flash f
         ) => (p -> m d) -> ( p-> f) -> t -> m (ALED ng ns np)
 aled mkDisplay etc transport = do
@@ -90,53 +88,12 @@ aled mkDisplay etc transport = do
 
     random <- mkRandom "aled" 1
 
-    addInit "aed_load_config" $ do
-        store (E.clips getALED ! 0 ~> E.start) 0.25
-        store (E.clips getALED ! 0 ~> E.end) 0.75
-        store (E.clips getALED ! 0 ~> E.inverse) false
+    addInit "aed_load_config" $ loadConfig aled
 
-        store (E.maskAnimations  getALED ! 0 ~> E.kind) 0
-        store (E.maskAnimations  getALED ! 0 ~> E.animationState) true
-        store (E.maskAnimations  getALED ! 0 ~> E.animationLoop) true
-        store (E.maskAnimations  getALED ! 0 ~> E.dt) $ dt / 2
-
-        store (E.colorAnimations getALED ! 0 ~> E.kind) 4
-        store (E.colorAnimations getALED ! 0 ~> E.dt) $ dt / 5
-        store (E.colorAnimations getALED ! 0 ~> E.animationState) true
-        store (E.colorAnimations getALED ! 0 ~> E.animationLoop) true
-        store (E.colorAnimations getALED ! 0 ~> E.params ! 0) 0
-        store (E.colorAnimations getALED ! 0 ~> E.params ! 1) 64
-        store (E.colorAnimations getALED ! 0 ~> E.params ! 2) 128
-        store (E.colorAnimations getALED ! 0 ~> E.params ! 3) 192
-
-
-
-        store (E.clips getALED ! 1 ~> E.start) 0.25
-        store (E.clips getALED ! 1 ~> E.end) 0.75
-        store (E.clips getALED ! 1 ~> E.inverse) true
-
-        store (E.maskAnimations  getALED ! 1 ~> E.kind) 0
-        store (E.maskAnimations  getALED ! 1 ~> E.animationState) true
-        store (E.maskAnimations  getALED ! 1 ~> E.animationLoop) true
-        store (E.maskAnimations  getALED ! 1 ~> E.dt) $ dt / 2
-        store (E.maskAnimations  getALED ! 1 ~> E.split) true
-
-        store (E.colorAnimations getALED ! 1 ~> E.kind) 3
-        store (E.colorAnimations getALED ! 1 ~> E.dt) $ dt / 5
-        store (E.colorAnimations getALED ! 1 ~> E.animationState) true
-        store (E.colorAnimations getALED ! 1 ~> E.animationLoop) true
-        store (E.colorAnimations getALED ! 1 ~> E.params ! 0) 0
-        store (E.colorAnimations getALED ! 1 ~> E.params ! 1) 85
-        store (E.colorAnimations getALED ! 1 ~> E.params ! 2) 170
-
-        loadConfig aled
-
-    addHandler $ Render display E.fps (E.subPixels getALED) $ do
-        update aled random
+    addHandler $ Render display E.fps (E.subPixels getALED) $ update aled random
 
     addTask $ delay 100 "save_config" $ saveConfig aled
     addTask $ delay  20 "sync_groups" $ syncGroups aled
-
 
     pure aled
 
@@ -273,7 +230,7 @@ onALedOn ALED{..} buff size = do
         when (i >=? 1 .&& i <=? ng') $ do
             let ix = toIx $ i - 1
             store (E.groups getALED ! ix ~> E.groupState) true
-            T.lazyTransmit transport size $ \transmit -> do
+            lazyTransmit transport size $ \transmit -> do
                 transmit actionALedOn
                 transmit i
 
@@ -288,46 +245,84 @@ onALedOff ALED{..} buff size = do
         when (i >=? 1 .&& i <=? ng') $ do
             let ix = toIx $ i - 1
             store (E.groups getALED ! ix ~> E.groupState) false
-            T.lazyTransmit transport size $ \transmit -> do
+            lazyTransmit transport size $ \transmit -> do
                 transmit actionALedOff
                 transmit i
 
 
 
-onALedPlay :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
-           => ALED ng ns np -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
-onALedPlay ALED{..} buff size = do
+onALedColorAnimationPlay :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
+                         => ALED ng ns np -> Buffer n Uint8 -> Uint8
+                         -> Ivory (ProcEffects s t) ()
+onALedColorAnimationPlay ALED{..} = onALedAnimationPlay (E.colorAnimations getALED) transport
+
+
+
+onALedColorAnimationStop :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
+                         => ALED ng ns np -> Buffer n Uint8 -> Uint8
+                         -> Ivory (ProcEffects s t) ()
+onALedColorAnimationStop ALED{..} = onALedAnimationStop (E.colorAnimations getALED) transport
+
+
+
+onALedMaskAnimationPlay :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
+                        => ALED ng ns np -> Buffer n Uint8 -> Uint8
+                        -> Ivory (ProcEffects s t) ()
+onALedMaskAnimationPlay ALED{..} = onALedAnimationPlay (E.maskAnimations getALED) transport
+
+
+
+onALedMaskAnimationStop :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
+                        => ALED ng ns np -> Buffer n Uint8 -> Uint8
+                        -> Ivory (ProcEffects s t) ()
+onALedMaskAnimationStop ALED{..} = onALedAnimationStop (E.maskAnimations getALED) transport
+
+
+
+onALedAnimationPlay :: forall n ng s r t. (KnownNat n, KnownNat ng, LazyTransport t)
+                    => Records ng E.AnimationStruct -> t -> Buffer n Uint8 -> Uint8
+                    -> Ivory (ProcEffects s r) ()
+onALedAnimationPlay animations transport buff size = do
     let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
-    when (size ==? 3) $ do
+    when (size >=? 6 .&& size <=? 14) $ do
         i <- deref $ buff ! 1
         when (i >=? 1 .&& i <=? ng') $ do
             let ix = toIx $ i - 1
-            loop  <- deref $ buff ! 2
-            let colorAnimation = E.colorAnimations getALED ! ix
-            store (colorAnimation ~> E.animationState) true
+            let animation = animations ! ix
+            time  <- deref $ buff ! 2
+            phase <- deref $ buff ! 3
+            split <- deref $ buff ! 4
+            loop  <- deref $ buff ! 5
+            let n  = size - 6
+            let params = animation ~> E.params
+            arrayMap $ \ix -> store (params! ix) 0
+            for (toIx n) $ \ix -> store (params ! ix) =<< deref (buff ! toIx (fromIx ix + 6))
+            store (animation ~> E.time) 0
+            store (animation ~> E.phase) $ dt * (safeCast phase - 128)
+            store (animation ~> E.dt) $ 4 * dt / (safeCast time + 1)
+            ifte_ (split ==? 0)
+                  (store (animation ~> E.split) false)
+                  (store (animation ~> E.split) true)
             ifte_ (loop ==? 0)
-                (store (colorAnimation ~> E.animationLoop) false)
-                (store (colorAnimation ~> E.animationLoop) true)
-            T.lazyTransmit transport size $ \transmit -> do
-                transmit actionALedPlay
-                transmit i
-                transmit loop
+                  (store (animation ~> E.animationLoop) false)
+                  (store (animation ~> E.animationLoop) true)
+            lazyTransmit transport size $ \transmit -> do
+                for (toIx size) $ \ix -> transmit =<< deref (buff ! ix)
 
 
 
-onALedStop :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
-           => ALED ng ns np -> Buffer n Uint8 -> Uint8
-           -> Ivory (ProcEffects s t) ()
-onALedStop ALED{..} buff size = do
+onALedAnimationStop :: forall n ng s r t. (KnownNat n, KnownNat ng, LazyTransport t)
+                    => Records ng E.AnimationStruct -> t -> Buffer n Uint8 -> Uint8
+                    -> Ivory (ProcEffects s r) ()
+onALedAnimationStop animations transport buff size = do
     let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
     when (size ==? 2) $ do
         i <- deref $ buff ! 1
         when (i >=? 1 .&& i <=? ng') $ do
             let ix = toIx $ i - 1
-            store (E.colorAnimations getALED ! ix ~> E.animationState) false
-            T.lazyTransmit transport 2 $ \transmit -> do
-                transmit actionALedStop
-                transmit i
+            store (animations ! ix ~> E.animationState) false
+            lazyTransmit transport size $ \transmit -> do
+                for (toIx size) $ \ix -> transmit =<< deref (buff ! ix)
 
 
 
@@ -341,7 +336,7 @@ onALedBrightness ALED{..} buff size = do
             let ix = toIx $ i - 1
             brightness <- deref $ buff ! 2
             store (E.groups getALED ! ix ~> E.brightness) $ safeCast brightness / 255
-            T.lazyTransmit transport size $ \transmit -> do
+            lazyTransmit transport size $ \transmit -> do
                 transmit actionALedBrightness
                 transmit i
                 transmit brightness
@@ -366,7 +361,7 @@ onALedClip ALED{..} buff size = do
             ifte_ (inverse ==? 0)
                   (store (clip ~> E.inverse) false)
                   (store (clip ~> E.inverse) true)
-            T.lazyTransmit transport 5 $ \transmit -> do
+            lazyTransmit transport 5 $ \transmit -> do
                 transmit actionALedClip
                 transmit i
                 transmit start
@@ -476,7 +471,7 @@ transmitNextGroup ALED{..} = do
     let group = E.groups getALED ! gx
     segmentNumber' <- deref $ group ~> E.segmentNumber
     let size = 4 + 2 * segmentNumber'
-    T.lazyTransmit transport size $ \transmit -> do
+    lazyTransmit transport size $ \transmit -> do
         transmit actionALedConfigGroup
         transmit $ 1 + groupIndex'
         transmit =<< deref (group ~> E.colors)
