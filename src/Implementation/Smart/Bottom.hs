@@ -73,6 +73,8 @@ instance KnownNat n => Controller (Bottom n) where
               , action ==? actionFindMe                 ==> onFindMe                 top  buff size
               , action ==? actionGetState               ==> onGetState               b    buff size
               , action ==? actionInitialize             ==> onInitialize             aled buff size
+              , action ==? actionALedOn                 ==> onALedOn                 aled buff size
+              , action ==? actionALedOff                ==> onALedOff                aled buff size
               , action ==? actionALedColorAnimationPlay ==> onALedColorAnimationPlay aled buff size
               , action ==? actionALedColorAnimationStop ==> onALedColorAnimationStop aled buff size
               , action ==? actionALedMaskAnimationPlay  ==> onALedMaskAnimationPlay  aled buff size
