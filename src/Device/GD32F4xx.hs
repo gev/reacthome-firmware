@@ -543,7 +543,7 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
                       (pb_13 af_11)
                       enet_irqn
 
-    , etc = mkPage 0x808_C000
+    , etc = mkPage 0x802_0000
     
     }
 

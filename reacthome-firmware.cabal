@@ -276,6 +276,7 @@ executable reacthome-firmware
                     , Support.Device.GD32F4xx.I2C
                     , Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif
                     , Support.Lwip.Ethernet 
+                    , Support.Device.GD32F4xx.FmcOperation.FmcOperation
 
                     , Support.Lwip.Mem
                     , Support.Lwip.Memp
