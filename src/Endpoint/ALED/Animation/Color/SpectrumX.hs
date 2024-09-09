@@ -1,8 +1,8 @@
 module Endpoint.ALED.Animation.Color.SpectrumX where
 
 import           Data.Record
+import           Endpoint.ALED.Animation.CosT
 import           Endpoint.ALED.Animation.Data
-import           Endpoint.ALED.Animation.SinT
 import           Ivory.Language
 
 
@@ -16,5 +16,5 @@ renderSpectrumX segmentSize pixel subpixel animation = do
     phase' <- deref $ animation ~> params ! toIx subpixel
     let x = time' + safeCast pixel / safeCast segmentSize :: IFloat
     let i = castDefault $ 255 * x + safeCast phase' :: Sint32
-    sin'  <- deref $ addrOf sinT ! toIx i
-    pure $ 255 * sin'
+    cos'  <- deref $ addrOf cosT ! toIx i
+    pure $ 255 * cos'

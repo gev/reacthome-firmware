@@ -11,7 +11,7 @@ import           Data.Buffer
 import           Data.Record
 import           Data.Value
 import           Endpoint.ALED.Animation.Data
-import           Endpoint.ALED.Animation.SinT
+import           Endpoint.ALED.Animation.CosT
 import           GHC.TypeNats
 import           Ivory.Language
 
@@ -78,7 +78,7 @@ mkALED = do
     addStruct (Proxy :: Proxy AnimationStruct)
     addStruct (Proxy :: Proxy ClipStruct)
 
-    addConstArea sinT
+    addConstArea cosT
 
     groups          <- records' "aled_groups"
                                 [ colors         .= ival 0
