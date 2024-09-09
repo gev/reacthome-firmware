@@ -68,21 +68,22 @@ renderMask :: Random Uint8
             -> Sint32
             -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 renderMask random animation segment segmentSize pixel = do
-     t <- local $ ival 0
-     time' <- deref $ animation ~> time
-     phase' <- deref $ animation ~> phase
-     let phase = safeCast segment * phase'
-     store t $ time' - phase
-     t' <- deref t
+     -- t <- local $ ival 0
+     -- time' <- deref $ animation ~> time
+     -- phase' <- deref $ animation ~> phase
+     -- let phase = safeCast segment * phase'
+     -- store t $ time' - phase
+     -- t' <- deref t
      kind' <- deref $ animation ~> kind
      animationState' <- deref $ animation ~> animationState
      ifte animationState'
-          (ifte (t' <? 0)
-                (ifte (kind' .& 0xf0 ==? 0x10)
-                      (pure 0)
-                      (pure 1)
-                )
-                (do
+          (do
+          -- (ifte (t' <? 0)
+          --       (ifte (kind' .& 0xf0 ==? 0x10)
+          --             (pure 0)
+          --             (pure 1)
+          --       )
+          --       (do
                    let (-->) p r = kind' ==? p ==> r animation
                    cond [ 0x01 --> renderRandomOff   pixel random
                         , 0x02 --> renderSlideOff    segmentSize pixel
@@ -91,7 +92,7 @@ renderMask random animation segment segmentSize pixel = do
                         , 0x05 --> renderSlideOffOut segmentSize pixel
 
                         , 0x11 --> renderRandomOn    pixel random
-                        , 0x12 --> renderSlideOn     segmentSize pixel t'
+                        , 0x12 --> renderSlideOn     segmentSize pixel
                         , 0x13 --> renderSlideOn'    segmentSize pixel
                         , 0x14 --> renderSlideOnIn   segmentSize pixel
                         , 0x15 --> renderSlideOnOut  segmentSize pixel
@@ -104,7 +105,7 @@ renderMask random animation segment segmentSize pixel = do
                         , 0xff --> renderConst
                         , true ==> pure 1
                         ]
-                )
+               --  )
           )
           (ifte (kind' .& 0xf0 ==? 0x00)
                 (pure 0)
