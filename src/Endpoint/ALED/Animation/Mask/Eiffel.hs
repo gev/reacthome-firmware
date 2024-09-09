@@ -15,8 +15,9 @@ renderEiffel :: Random Uint8
 renderEiffel random animation = do
     t'    <- deref $ animation ~> time
     let i  = castDefault $ t' * 255 :: Sint32
-    p     <- (/ 4) <$> deref (addrOf sinT ! toIx i)
-    p'    <- (/ 255) . safeCast <$> next random
-    ifte (p' <? p)
-         (pure 255)
-         (pure 1)
+    p     <- safeCast <$> deref (animation ~> params ! 2)
+    p'    <- (* p)    <$> deref (addrOf sinT ! toIx i)
+    v'    <- safeCast <$> next random
+    safeCast <$> ifte (v' <? p)
+                      (deref $ animation ~> params ! 1)
+                      (deref $ animation ~> params ! 0)

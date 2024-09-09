@@ -16,12 +16,14 @@ renderFade subpixel value animation = do
     b  <- deref $ animation ~> params ! toIx subpixel
     dt <- deref $ animation ~> dt
     when (castDefault value /=? b) $ do
-        time' <- deref $ animation ~> time
-        let rest = 1 - time'
-        ifte_ (rest >=? dt)
-              (do
-                let delta = (safeCast b - value) * dt / rest
-                store v $ value + delta
-              )
-              (store v $ safeCast b)
+        inLoop' <- deref $ animation ~> inLoop
+        ifte_ inLoop' (store v $ safeCast b) $ do
+          time' <- deref $ animation ~> time
+          let rest = 1 - time'
+          ifte_ (rest >=? dt)
+                (do
+                  let delta = (safeCast b - value) * dt / rest
+                  store v $ value + delta
+                )
+                (store v $ safeCast b)
     deref v

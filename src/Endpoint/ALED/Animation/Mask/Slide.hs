@@ -14,6 +14,6 @@ renderSlide :: Uint16
 renderSlide segmentSize pixel animation = do
     t' <- deref $ animation ~> time
     let x = castDefault $ t' * safeCast segmentSize
-    ifte (pixel ==? x)
-         (pure 255)
-         (pure 1)
+    safeCast <$> ifte (pixel ==? x)
+                      (deref $ animation ~> params ! 1)
+                      (deref $ animation ~> params ! 0)

@@ -221,7 +221,10 @@ incrementTime animation = do
                     (do
                         loop' <- deref $ animation ~> E.animationLoop
                         ifte_ loop'
-                            (store (animation ~> E.time) 0)
+                            (do
+                                store (animation ~> E.time) 0
+                                store (animation ~> E.inLoop) true
+                            )
                             (do
                                 store (animation ~> E.time) 1
                                 store (animation ~> E.animationState) false
@@ -267,6 +270,7 @@ testAnimation animation ALED{..} buff size = do
             store (colorAnimation ~> E.time) 0
             store (colorAnimation ~> E.dt) dt
             store (colorAnimation ~> E.split) true
+            store (colorAnimation ~> E.inLoop) false
             store (colorAnimation ~> E.animationLoop) true
             store (colorAnimation ~> E.animationState) true
 
@@ -276,6 +280,7 @@ testAnimation animation ALED{..} buff size = do
             store (maskAnimation ~> E.time) 0
             store (maskAnimation ~> E.dt) dt
             store (maskAnimation ~> E.split) true
+            store (maskAnimation ~> E.inLoop) false
             store (maskAnimation ~> E.animationLoop) false
             store (maskAnimation ~> E.animationState) true
 
@@ -342,6 +347,7 @@ onALedAnimationPlay animations transport buff size = do
             ifte_ (loop ==? 0)
                   (store (animation ~> E.animationLoop) false)
                   (store (animation ~> E.animationLoop) true)
+            store (animation ~> E.inLoop) false
             lazyTransmit transport size $ \transmit -> do
                 for (toIx size) $ \ix -> transmit =<< deref (buff ! ix)
 

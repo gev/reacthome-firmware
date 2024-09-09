@@ -21,5 +21,6 @@ type AnimationStruct = "animation_struct"
     ; split          :: IBool
     ; animationState :: IBool
     ; animationLoop  :: IBool
+    ; inLoop         :: IBool
     }
 |]
