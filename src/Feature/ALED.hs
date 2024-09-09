@@ -317,19 +317,21 @@ onALedAnimationPlay :: forall n ng s r t. (KnownNat n, KnownNat ng, LazyTranspor
                     -> Ivory (ProcEffects s r) ()
 onALedAnimationPlay animations transport buff size = do
     let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
-    when (size >=? 6 .&& size <=? 14) $ do
+    when (size >=? 7 .&& size <=? 15) $ do
         i <- deref $ buff ! 1
         when (i >=? 1 .&& i <=? ng') $ do
             let ix = toIx $ i - 1
             let animation = animations ! ix
-            duration <- deref $ buff ! 2
-            phase    <- deref $ buff ! 3
-            split    <- deref $ buff ! 4
-            loop     <- deref $ buff ! 5
-            let n  = size - 6
+            kind     <- deref $ buff ! 2
+            duration <- deref $ buff ! 3
+            phase    <- deref $ buff ! 4
+            split    <- deref $ buff ! 5
+            loop     <- deref $ buff ! 6
+            let n  = size - 7
             let params = animation ~> E.params
             arrayMap $ \ix -> store (params! ix) 0
-            for (toIx n) $ \ix -> store (params ! ix) =<< deref (buff ! toIx (fromIx ix + 6))
+            for (toIx n) $ \ix -> store (params ! ix) =<< deref (buff ! toIx (fromIx ix + 7))
+            store (animation ~> E.kind) kind
             store (animation ~> E.time) 0
             store (animation ~> E.phase) $ dt * (safeCast phase - 128)
             store (animation ~> E.dt) $ 4 * dt / (safeCast duration + 1)
