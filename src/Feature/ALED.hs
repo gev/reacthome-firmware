@@ -331,7 +331,7 @@ onALedAnimationPlay animations transport buff size = do
             arrayMap $ \ix -> store (params! ix) 0
             for (toIx n) $ \ix -> store (params ! ix) =<< deref (buff ! toIx (fromIx ix + 6))
             store (animation ~> E.time) 0
-            store (animation ~> E.phase) $ dt * (safeCast phase - 127.5)
+            store (animation ~> E.phase) $ dt * (safeCast phase - 128)
             store (animation ~> E.dt) $ 4 * dt / (safeCast duration + 1)
             store (animation ~> E.animationState) true
             ifte_ (split ==? 0)
