@@ -262,10 +262,10 @@ testAnimation animation ALED{..} buff size = do
             store (clip ~> E.inverse) false
 
             let colorAnimation = E.colorAnimations getALED ! ix
-            store (colorAnimation ~> E.kind) 0x30
+            store (colorAnimation ~> E.kind) 0x20
             store (colorAnimation ~> E.phase) 0
             store (colorAnimation ~> E.time) 0
-            store (colorAnimation ~> E.dt) $ dt / 5
+            store (colorAnimation ~> E.dt) dt
             store (colorAnimation ~> E.split) true
             store (colorAnimation ~> E.animationLoop) true
             store (colorAnimation ~> E.animationState) true
