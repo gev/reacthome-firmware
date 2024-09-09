@@ -322,17 +322,17 @@ onALedAnimationPlay animations transport buff size = do
         when (i >=? 1 .&& i <=? ng') $ do
             let ix = toIx $ i - 1
             let animation = animations ! ix
-            time  <- deref $ buff ! 2
-            phase <- deref $ buff ! 3
-            split <- deref $ buff ! 4
-            loop  <- deref $ buff ! 5
+            duration <- deref $ buff ! 2
+            phase    <- deref $ buff ! 3
+            split    <- deref $ buff ! 4
+            loop     <- deref $ buff ! 5
             let n  = size - 6
             let params = animation ~> E.params
             arrayMap $ \ix -> store (params! ix) 0
             for (toIx n) $ \ix -> store (params ! ix) =<< deref (buff ! toIx (fromIx ix + 6))
             store (animation ~> E.time) 0
-            store (animation ~> E.phase) $ dt * (safeCast phase - 128)
-            store (animation ~> E.dt) $ 4 * dt / (safeCast time + 1)
+            store (animation ~> E.phase) $ dt * (safeCast phase - 127.5)
+            store (animation ~> E.dt) $ 4 * dt / (safeCast duration + 1)
             store (animation ~> E.animationState) true
             ifte_ (split ==? 0)
                   (store (animation ~> E.split) false)
