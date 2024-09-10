@@ -76,12 +76,12 @@ renderMask :: Random Uint8
             -> Sint32
             -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 renderMask random animation segment segmentSize pixel = do
-     kind' <- deref $ animation ~> kind
-     def   <- ifte (kind' .& 0xf0 ==? 0x00)
-                   (pure 0)
+     kind'  <- deref $ animation ~> kind
+     def    <- ifte (kind' .& 0xf0 ==? 0x00)
+                     (pure 0)
                    (pure 1)
-     animationState' <- deref $ animation ~> animationState
-     ifte animationState'
+     state' <- deref $ animation ~> animationState
+     ifte state'
           (do
               time' <- getTime animation segment
               cond [ time' <? 0 ==> pure (1 - def)
