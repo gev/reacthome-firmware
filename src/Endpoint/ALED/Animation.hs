@@ -70,18 +70,18 @@ renderColor random animation segment segmentSize pixel pixelSize subpixel value 
 
 
 renderMask :: Random Uint8
-            -> Record AnimationStruct
-            -> Sint32
-            -> Uint16
-            -> Sint32
-            -> Ivory (AllowBreak (ProcEffects s ())) IFloat
+           -> Record AnimationStruct
+           -> Sint32
+           -> Uint16
+           -> Sint32
+           -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 renderMask random animation segment segmentSize pixel = do
-     kind'  <- deref $ animation ~> kind
-     def    <- ifte (kind' .& 0xf0 ==? 0x00)
-                    (pure 0)
-                    (pure 1)
-     state' <- deref $ animation ~> animationState
-     ifte state'
+     kind' <- deref $ animation ~> kind
+     def   <- ifte (kind' .& 0xf0 ==? 0x00)
+                   (pure 0)
+                   (pure 1)
+     state <- deref $ animation ~> animationState
+     ifte state
           (do
               time' <- getTime animation segment
               cond [ time' <? 0 ==> pure (1 - def)
