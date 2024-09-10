@@ -78,8 +78,8 @@ renderMask :: Random Uint8
 renderMask random animation segment segmentSize pixel = do
      kind'  <- deref $ animation ~> kind
      def    <- ifte (kind' .& 0xf0 ==? 0x00)
-                     (pure 0)
-                   (pure 1)
+                    (pure 0)
+                    (pure 1)
      state' <- deref $ animation ~> animationState
      ifte state'
           (do
