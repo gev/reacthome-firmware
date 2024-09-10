@@ -27,6 +27,7 @@ import           Feature.RS485.RBUS.Data (RBUS (..))
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
+import qualified Endpoint.ALED                as E
 
 
 
@@ -93,7 +94,9 @@ onInit :: (KnownNat l, KnownNat nd)
        -> Ivory (ProcEffects s t) ()
 onInit Hub{..} buff size = do
     let s = 1 + (6 * fromIntegral (length rbus))
-    when (size ==? s + n dimmers * 3) $ do
+    let dim' = n dimmers * 3
+    let ng' = 10
+    when (size ==? s + dim' + ng') $ do
 
         let run r@RBUS{..} offset = do
                 store mode        =<< unpack   buff  offset
@@ -103,6 +106,7 @@ onInit Hub{..} buff size = do
         zipWithM_ run rbus $ fromIntegral <$> fromList [1, 7..]
 
         offset <- local $ ival $ toIx s
+        
         let ds  = Dim.dimmers $ getDimmers dimmers
         arrayMap $ \ix -> do
             offset' <- deref offset
@@ -113,6 +117,13 @@ onInit Hub{..} buff size = do
             initialize d group mode (safeCast value / 255) 0
             syncDimmerGroup ds d ix
             store offset $ offset' + 3
+
+        arrayMap $ \ix -> do
+            offset' <- deref offset
+            let group = E.groups (getALED aled) ! ix
+            brightness <- deref $ buff ! (toIx (fromIx ix) + offset')
+            store (group ~> E.brightness) $ safeCast brightness / 255
+            store offset $ offset' + 1
 
         store shouldInit false
 
