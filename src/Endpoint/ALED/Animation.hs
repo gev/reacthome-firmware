@@ -77,12 +77,15 @@ renderMask :: Random Uint8
             -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 renderMask random animation segment segmentSize pixel = do
      kind' <- deref $ animation ~> kind
+     def   <- ifte (kind' .& 0xf0 ==? 0x00)
+                   (pure 0)
+                   (pure 1)
      animationState' <- deref $ animation ~> animationState
      ifte animationState'
           (do
               time' <- getTime animation segment
-              cond [ time' <? 0 ==> before kind'
-                   , time' >? 1 ==> after  kind'
+              cond [ time' <? 0 ==> pure (1 - def)
+                   , time' >? 1 ==> pure def
                    , true ==> do
                         let (-->) p r = kind' ==? p ==> r animation
                         cond [ 0x00 --> renderOff
@@ -110,19 +113,9 @@ renderMask random animation segment segmentSize pixel = do
                              , true ==> pure 1
                              ]
                    ]
-          ) $ after kind'
+          ) $ pure def
 
-before :: Uint8 -> Ivory (AllowBreak (ProcEffects s ())) IFloat
-before kind =
-      ifte (kind .& 0xf0 ==? 0x00)
-           (pure 1)
-           (pure 0)
 
-after :: Uint8 -> Ivory (AllowBreak (ProcEffects s ())) IFloat
-after kind =
-      ifte (kind .& 0xf0 ==? 0x00)
-           (pure 0)
-           (pure 1)
 
 getTime :: Record AnimationStruct
         -> Sint32
