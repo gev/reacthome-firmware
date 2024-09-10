@@ -7,13 +7,13 @@ import           Ivory.Language
 import           Ivory.Stdlib
 
 
-renderSlideOn :: Uint16
+renderSlideOn :: IFloat
+              -> Uint16
               -> Sint32
               -> Record AnimationStruct
               -> Ivory (AllowBreak (ProcEffects s ())) IFloat
-renderSlideOn segmentSize pixel animation = do
-    t' <- deref $ animation ~> time
-    let x = castDefault $ t' * safeCast segmentSize
+renderSlideOn time segmentSize pixel animation = do
+    let x = castDefault $ time * safeCast segmentSize
     ifte (pixel <=? x)
          (pure 1)
          (pure 0)

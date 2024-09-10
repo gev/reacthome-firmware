@@ -28,6 +28,7 @@ import           Data.Value
 import           Endpoint.ALED                (brightness)
 import qualified Endpoint.ALED                as E
 import qualified Endpoint.ALED.Animation      as E
+import           Endpoint.ALED.Animation.Data (timeEnd)
 import qualified Endpoint.ALED.Animation.Data as E
 import           GHC.TypeNats
 import           Interface.Display            (Display, Render (Render))
@@ -159,7 +160,7 @@ update ALED{..} random = do
                                                   maskAnimation
                                                   0
                                                   groupSize'
-                                                  (tx' + x')
+                                                  (x' + tx')
                                     )
                           for (toIx pixelSize' :: Ix np) $ \subpixelX -> do
                               px' <- deref px
@@ -179,7 +180,7 @@ update ALED{..} random = do
                                                      colorAnimation
                                                      0
                                                      groupSize'
-                                                     tx'
+                                                     (x' + tx')
                                                      pixelSize'
                                                      (fromIx subpixelX)
                                                      p'
@@ -214,23 +215,26 @@ incrementTime :: Record E.AnimationStruct -> Ivory eff ()
 incrementTime animation = do
         animationState' <- deref $ animation ~> E.animationState
         when animationState' $ do
-                time' <- deref $ animation ~> E.time
-                dt'   <- deref $ animation ~> E.dt
+                loop'    <- deref $ animation ~> E.animationLoop
+                time'    <- deref $ animation ~> E.time
+                timeEnd' <- deref $ animation ~> E.timeEnd
+                dt'      <- deref $ animation ~> E.dt
                 let time'' = time' + dt'
-                ifte_ (time'' >=? 1)
-                    (do
-                        loop' <- deref $ animation ~> E.animationLoop
-                        ifte_ loop'
-                            (do
-                                store (animation ~> E.time) 0
-                                store (animation ~> E.inLoop) true
-                            )
-                            (do
-                                store (animation ~> E.time) 1
-                                store (animation ~> E.animationState) false
-                            )
+                when  (time'' >=? 0 .&& loop') $ store (animation ~> E.inLoop) true
+                ifte_ (time'' >=? timeEnd')
+                    (ifte_ loop'
+                        (do
+                            store (animation ~> E.time) 0
+                            store (animation ~> E.timeEnd) 1
+                            store (animation ~> E.inLoop) true
+                            store (animation ~> E.startLoop) true
+                        )
+                        (store (animation ~> E.animationState) false)
                     )
-                    (store (animation ~> E.time) time'')
+                    (do
+                        store (animation ~> E.time) time''
+                        store (animation ~> E.startLoop) false
+                    )
 
 
 
@@ -268,6 +272,7 @@ testAnimation animation ALED{..} buff size = do
             store (colorAnimation ~> E.kind) 0x20
             store (colorAnimation ~> E.phase) 0
             store (colorAnimation ~> E.time) 0
+            store (colorAnimation ~> E.timeEnd) 1
             store (colorAnimation ~> E.dt) dt
             store (colorAnimation ~> E.split) true
             store (colorAnimation ~> E.inLoop) false
@@ -278,6 +283,7 @@ testAnimation animation ALED{..} buff size = do
             store (maskAnimation ~> E.kind) animation
             store (maskAnimation ~> E.phase) 0
             store (maskAnimation ~> E.time) 0
+            store (maskAnimation ~> E.timeEnd) 1
             store (maskAnimation ~> E.dt) dt
             store (maskAnimation ~> E.split) true
             store (maskAnimation ~> E.inLoop) false
@@ -289,7 +295,7 @@ onALedColorAnimationPlay :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
                          => ALED ng ns np -> Buffer n Uint8 -> Uint8
                          -> Ivory (ProcEffects s t) ()
 onALedColorAnimationPlay ALED{..} =
-    onALedAnimationPlay (E.colorAnimations getALED) transport
+    onALedAnimationPlay (E.colorAnimations getALED) (E.groups getALED) transport
 
 
 
@@ -305,7 +311,7 @@ onALedMaskAnimationPlay :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
                         => ALED ng ns np -> Buffer n Uint8 -> Uint8
                         -> Ivory (ProcEffects s t) ()
 onALedMaskAnimationPlay ALED{..} =
-    onALedAnimationPlay (E.maskAnimations getALED) transport
+    onALedAnimationPlay (E.maskAnimations getALED) (E.groups getALED) transport
 
 
 
@@ -313,41 +319,75 @@ onALedMaskAnimationStop :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
                         => ALED ng ns np -> Buffer n Uint8 -> Uint8
                         -> Ivory (ProcEffects s t) ()
 onALedMaskAnimationStop ALED{..} =
-    onALedAnimationStop (E.maskAnimations getALED) transport
+    onALedAnimationStop (E.maskAnimations getALED)  transport
 
 
 
 onALedAnimationPlay :: forall n ng s r t. (KnownNat n, KnownNat ng, LazyTransport t)
-                    => Records ng E.AnimationStruct -> t -> Buffer n Uint8 -> Uint8
+                    => Records ng E.AnimationStruct
+                    -> Records ng E.GroupStruct
+                    -> t
+                    -> Buffer n Uint8
+                    -> Uint8
                     -> Ivory (ProcEffects s r) ()
-onALedAnimationPlay animations transport buff size = do
+onALedAnimationPlay animations groups transport buff size = do
     let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
     when (size >=? 7 .&& size <=? 15) $ do
         i <- deref $ buff ! 1
         when (i >=? 1 .&& i <=? ng') $ do
             let ix = toIx $ i - 1
+
             let animation = animations ! ix
+
             kind     <- deref $ buff ! 2
             duration <- deref $ buff ! 3
             phase    <- deref $ buff ! 4
             split    <- deref $ buff ! 5
             loop     <- deref $ buff ! 6
+
             let n  = size - 7
             let params = animation ~> E.params
+
             arrayMap $ \ix -> store (params! ix) 0
+
             for (toIx n) $ \ix -> store (params ! ix) =<< deref (buff ! toIx (fromIx ix + 7))
+
+            kind' <- deref $ animation ~> E.kind
             store (animation ~> E.kind) kind
-            store (animation ~> E.time) 0
-            store (animation ~> E.phase) $ dt * (safeCast phase - 128)
-            store (animation ~> E.dt) $ 4 * dt / (safeCast duration + 1)
+
+            let dt' = 4 * dt / (safeCast duration + 1)
+            let phase' = dt' * (safeCast phase - 128)
+
+            store (animation ~> E.dt) dt'
+            store (animation ~> E.phase) phase'
+
             store (animation ~> E.animationState) true
+
             ifte_ (split ==? 0)
                   (store (animation ~> E.split) false)
                   (store (animation ~> E.split) true)
             ifte_ (loop ==? 0)
+
                   (store (animation ~> E.animationLoop) false)
                   (store (animation ~> E.animationLoop) true)
+
             store (animation ~> E.inLoop) false
+            store (animation ~> E.startLoop) true
+
+            when  (kind' /=? kind) $ do
+                segmentNumber' <- deref $ (groups ! ix) ~> E.segmentNumber
+                let additionalTime = phase' * (safeCast segmentNumber' - 1)
+                cond_ [ additionalTime >? 0 ==> do
+                            store (animation ~> E.time) 0
+                            store (animation ~> E.timeEnd) $ 1 + additionalTime
+                      , additionalTime <? 0 ==> do
+                            store (animation ~> E.time) additionalTime
+                            store (animation ~> E.timeEnd) 1
+                      , true ==> do
+                            store (animation ~> E.time) 0
+                            store (animation ~> E.timeEnd) 1
+                      ]
+
             lazyTransmit transport size $ \transmit -> do
                 for (toIx size) $ \ix -> transmit =<< deref (buff ! ix)
 

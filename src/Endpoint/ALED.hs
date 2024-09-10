@@ -10,8 +10,8 @@ import           Core.Context
 import           Data.Buffer
 import           Data.Record
 import           Data.Value
-import           Endpoint.ALED.Animation.Data
 import           Endpoint.ALED.Animation.CosT
+import           Endpoint.ALED.Animation.Data
 import           GHC.TypeNats
 import           Ivory.Language
 
@@ -99,6 +99,7 @@ mkALED = do
                                 [ kind           .= ival 0
                                 , params         .= iarray (ival <$> replicate 8 0)
                                 , time           .= ival 0
+                                , timeEnd        .= ival 0
                                 , dt             .= ival 0
                                 , phase          .= ival 0
                                 , split          .= ival false
@@ -111,6 +112,7 @@ mkALED = do
                                 [ kind           .= ival 0
                                 , params         .= iarray (ival <$> replicate 8 0)
                                 , time           .= ival 0
+                                , timeEnd        .= ival 0
                                 , dt             .= ival 0
                                 , phase          .= ival 0
                                 , split          .= ival false

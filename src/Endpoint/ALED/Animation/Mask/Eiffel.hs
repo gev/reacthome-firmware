@@ -9,12 +9,12 @@ import           Ivory.Stdlib
 import           Util.Random
 
 
-renderEiffel :: Random Uint8
+renderEiffel :: IFloat
+             -> Random Uint8
              -> Record AnimationStruct
              -> Ivory (AllowBreak (ProcEffects s ())) IFloat
-renderEiffel random animation = do
-    t'    <- deref $ animation ~> time
-    let i  = castDefault $ t' * 256 :: Sint32
+renderEiffel time random animation = do
+    let i  = castDefault $ time * 256 :: Sint32
     p     <- safeCast <$> deref (animation ~> params ! 2)
     p'    <- (* p)    <$> deref (addrOf cosT ! toIx i)
     v'    <- safeCast <$> next random
