@@ -70,8 +70,12 @@ executable reacthome-firmware
                     , Endpoint.ALED.Animation.Color.RandomX
                     , Endpoint.ALED.Animation.Color.SpectrumT
                     , Endpoint.ALED.Animation.Color.SpectrumX
-                    , Endpoint.ALED.Animation.Mask.Const
+                    , Endpoint.ALED.Animation.Mask.Blink
                     , Endpoint.ALED.Animation.Mask.Eiffel
+                    , Endpoint.ALED.Animation.Mask.FadeOff
+                    , Endpoint.ALED.Animation.Mask.FadeOn
+                    , Endpoint.ALED.Animation.Mask.Off
+                    , Endpoint.ALED.Animation.Mask.On
                     , Endpoint.ALED.Animation.Mask.Random
                     , Endpoint.ALED.Animation.Mask.RandomOff
                     , Endpoint.ALED.Animation.Mask.RandomOn
@@ -86,6 +90,7 @@ executable reacthome-firmware
                     , Endpoint.ALED.Animation.Mask.SlideOn'
                     , Endpoint.ALED.Animation.Mask.SlideOnIn
                     , Endpoint.ALED.Animation.Mask.SlideOnOut
+                    
                     , Endpoint.ATS
                     , Endpoint.DInputs
                     , Endpoint.DInputsRelaysRules

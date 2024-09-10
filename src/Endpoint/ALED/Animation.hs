@@ -13,8 +13,12 @@ import           Endpoint.ALED.Animation.Color.RandomX
 import           Endpoint.ALED.Animation.Color.SpectrumT
 import           Endpoint.ALED.Animation.Color.SpectrumX
 import           Endpoint.ALED.Animation.Data
-import           Endpoint.ALED.Animation.Mask.Const
+import           Endpoint.ALED.Animation.Mask.Blink
 import           Endpoint.ALED.Animation.Mask.Eiffel
+import           Endpoint.ALED.Animation.Mask.FadeOff
+import           Endpoint.ALED.Animation.Mask.FadeOn
+import           Endpoint.ALED.Animation.Mask.Off
+import           Endpoint.ALED.Animation.Mask.On
 import           Endpoint.ALED.Animation.Mask.Random
 import           Endpoint.ALED.Animation.Mask.RandomOff
 import           Endpoint.ALED.Animation.Mask.RandomOn
@@ -81,39 +85,48 @@ renderMask random animation segment segmentSize pixel = do
                    , time' >? 1 ==> after  kind'
                    , true ==> do
                         let (-->) p r = kind' ==? p ==> r animation
-                        cond [ 0x01 --> renderRandomOff   time' pixel random
-                             , 0x02 --> renderSlideOff    time' segmentSize pixel
-                             , 0x03 --> renderSlideOff'   time' segmentSize pixel
-                             , 0x04 --> renderSlideOffIn  time' segmentSize pixel
-                             , 0x05 --> renderSlideOffOut time' segmentSize pixel
+                        cond [ 0x00 --> renderOff
+                             , 0x01 --> renderFadeOff     time'
+                             , 0x02 --> renderRandomOff   time' pixel random
+                             , 0x03 --> renderSlideOff    time' segmentSize pixel
+                             , 0x04 --> renderSlideOff'   time' segmentSize pixel
+                             , 0x05 --> renderSlideOffIn  time' segmentSize pixel
+                             , 0x06 --> renderSlideOffOut time' segmentSize pixel
 
-                             , 0x11 --> renderRandomOn    time' pixel random
-                             , 0x12 --> renderSlideOn     time' segmentSize pixel
-                             , 0x13 --> renderSlideOn'    time' segmentSize pixel
-                             , 0x14 --> renderSlideOnIn   time' segmentSize pixel
-                             , 0x15 --> renderSlideOnOut  time' segmentSize pixel
+                             , 0x10 --> renderOn
+                             , 0x11 --> renderFadeOn      time'
+                             , 0x12 --> renderRandomOn    time' pixel random
+                             , 0x13 --> renderSlideOn     time' segmentSize pixel
+                             , 0x14 --> renderSlideOn'    time' segmentSize pixel
+                             , 0x15 --> renderSlideOnIn   time' segmentSize pixel
+                             , 0x16 --> renderSlideOnOut  time' segmentSize pixel
 
+                             , 0x20 --> renderBlink       time'
                              , 0x21 --> renderRandom      random
                              , 0x22 --> renderEiffel      time' random
                              , 0x23 --> renderSlide       time' segmentSize pixel
                              , 0x24 --> renderSlide'      time' segmentSize pixel
                              , 0x25 --> renderSlide''     time' segmentSize pixel
-                             , 0xff --> renderConst
                              , true ==> pure 1
                              ]
                    ]
           ) $ after kind'
 
+before :: Uint8 -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 before kind =
       ifte (kind .& 0xf0 ==? 0x00)
            (pure 1)
            (pure 0)
 
+after :: Uint8 -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 after kind =
       ifte (kind .& 0xf0 ==? 0x00)
            (pure 0)
            (pure 1)
 
+getTime :: Record AnimationStruct
+        -> Sint32
+        -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 getTime animation segment = do
       inLoop'  <- deref $ animation ~> inLoop
       phase'   <- deref $ animation ~> phase
