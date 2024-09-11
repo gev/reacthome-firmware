@@ -241,14 +241,14 @@ incrementTime animation = do
 onALedOn :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
          => ALED ng ns np -> Buffer n Uint8 -> Uint8
          -> Ivory (ProcEffects s t) ()
-onALedOn = testAnimation 0x12
+onALedOn = testAnimation 0x13
 
 
 
 onALedOff :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
           => ALED ng ns np -> Buffer n Uint8 -> Uint8
           -> Ivory (ProcEffects s t) ()
-onALedOff = testAnimation 0x03
+onALedOff = testAnimation 0x04
 
 
 
