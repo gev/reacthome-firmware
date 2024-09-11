@@ -106,7 +106,7 @@ onInit Hub{..} buff size = do
         zipWithM_ run rbus $ fromIntegral <$> fromList [1, 7..]
 
         offset <- local $ ival $ toIx s
-        
+
         let ds  = Dim.dimmers $ getDimmers dimmers
         arrayMap $ \ix -> do
             offset' <- deref offset
@@ -121,7 +121,7 @@ onInit Hub{..} buff size = do
         arrayMap $ \ix -> do
             offset' <- deref offset
             let group = E.groups (getALED aled) ! ix
-            brightness <- deref $ buff ! (toIx (fromIx ix) + offset')
+            brightness <- deref $ buff ! offset'
             store (group ~> E.brightness) $ safeCast brightness / 255
             store offset $ offset' + 1
 
