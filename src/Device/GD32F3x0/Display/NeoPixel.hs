@@ -66,7 +66,7 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn chxcv pwmPort' = do
                              , memory_width .= ival dma_memory_width_8bit
                              , periph_inc   .= ival dma_periph_increase_disable
                              , periph_width .= ival dma_peripheral_width_16bit
-                             , priority     .= ival dma_priority_ultra_high
+                             , priority     .= ival dma_priority_low
                              ]
     pwmTimer     <- timer' system_core_clock pwmPeriod
     dmaParams    <- record ("dma_param" <> symbol dmaChannel) dmaInit
@@ -86,7 +86,7 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn chxcv pwmPort' = do
             configPrimaryOutput           t true
             enableTimerDMA                t timer_dma_upd
             enableTimer                   t
-            enableIrqNvic       dmaIRQn 1 0
+            enableIrqNvic       dmaIRQn 1 1
 
 
     pure NeoPixel { pwmTimer, pwmChannel, dmaIRQn, pwmPort, dmaChannel, dmaParams, buff, offset }

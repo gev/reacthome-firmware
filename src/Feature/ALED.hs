@@ -96,9 +96,9 @@ aled mkDisplay etc transport = do
 
     addHandler $ Render display E.fps (E.subPixels getALED) $ update aled random
 
-    addTask $ delay 100 "save_config" $ saveConfig aled
-    addTask $ delay  50 "sync_state"  $ syncState  aled
-    addTask $ delay  20 "sync_groups" $ syncGroups aled
+    addTask $ delay      100    "save_config" $ saveConfig aled
+    addTask $ delayPhase  40 25 "sync_state"  $ syncState  aled
+    addTask $ delayPhase  40 26 "sync_groups" $ syncGroups aled
 
     pure aled
 
