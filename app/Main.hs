@@ -42,8 +42,8 @@ main = do
                      , smartBottom2
                     --  , smartTopA6P
                     --  , smartTopG4D
-                    --  , doppler1
-                    --  , doppler5
+                     , doppler1
+                     , doppler5
                     --  , scd40_test
                     --  , sht21_test
                     --  , blink330
