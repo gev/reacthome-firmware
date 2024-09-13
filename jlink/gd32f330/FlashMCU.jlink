@@ -1,7 +1,7 @@
 r
 h
-loadbin build/gd32f330/firmware/smart_top_g6.bin, 0x8000000
+loadbin build/gd32f330/firmware/smart_top_a4p.bin, 0x8000000
 g
-verifybin build/gd32f330/firmware/smart_top_g6.bin, 0x8000000
+verifybin build/gd32f330/firmware/smart_top_a4p.bin, 0x8000000
 r
 q

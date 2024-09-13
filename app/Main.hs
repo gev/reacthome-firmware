@@ -26,6 +26,7 @@ import           Formula.Smart.Bottom.Bottom2
 import           Formula.Smart.Top.TopG4D
 import           Formula.Smart.Top.TopA4T
 import           Formula.Smart.Top.TopA6P
+import           Formula.Smart.Top.TopA4P
 import           Formula.Smart.Top.TopA6T
 import           Formula.Smart.Top.TopG6
 import           Formula.UdpEcho450
@@ -43,6 +44,7 @@ main = do
                     --  , di4
                        smartBottom1
                      , smartBottom2
+                     , smartTopA4P
                     --  , smartTopA6P
                     --  , smartTopG4D
                      , doppler1

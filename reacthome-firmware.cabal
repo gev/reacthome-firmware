@@ -141,6 +141,7 @@ executable reacthome-firmware
                     , Formula.Sht21
                     , Formula.Scd40
                     , Formula.Smart.Top.TopA6P
+                    , Formula.Smart.Top.TopA4P
                     , Formula.Smart.Top.TopG4D
                     , Formula.Smart.Bottom.Bottom1
                     , Formula.Smart.Bottom.Bottom2
@@ -160,6 +161,7 @@ executable reacthome-firmware
                     , Implementation.Mix
                     , Implementation.Smart.Bottom
                     , Implementation.Smart.TopAP
+                    , Implementation.Smart.TopA4P
                     , Implementation.Smart.TopGD
                     , Implementation.UdpEcho
                     , Implementation.Relay
