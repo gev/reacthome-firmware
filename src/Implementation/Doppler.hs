@@ -1,16 +1,16 @@
+{-# LANGUAGE DataKinds       #-}
 {-# LANGUAGE GADTs           #-}
 {-# LANGUAGE NamedFieldPuns  #-}
 {-# LANGUAGE RankNTypes      #-}
 {-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE DataKinds #-}
 
 module Implementation.Doppler where
 
 import           Core.Actions
 import           Core.Controller
+import           Feature.ALED
 import           Feature.DInputs
 import           Feature.Dopplers
-import           Feature.ALED
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
@@ -18,14 +18,14 @@ import           Ivory.Stdlib
 data Doppler nd ni = Doppler
     { dopplers :: Dopplers nd
     , dinputs  :: DInputs  ni
-    , aled     :: ALED     10 100 1000
+    , aled     :: ALED     10 100 2000
     }
 
 doppler :: Monad m
         => m t
         -> (t -> m (Dopplers nd))
         -> (Bool -> t -> m (DInputs ni))
-        -> (t -> m (ALED 10 100 1000))
+        -> (t -> m (ALED 10 100 2000))
         -> m (Doppler nd ni)
 doppler transport' dopplers' dinputs' aled' = do
     transport <- transport'
