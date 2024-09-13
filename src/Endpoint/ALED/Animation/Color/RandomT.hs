@@ -7,25 +7,25 @@ import           Ivory.Stdlib
 import           Util.Random
 
 
-renderRandomT :: Sint32
+renderRandomT :: IFloat
+              -> Sint32
               -> IFloat
               -> Random Uint8
               -> Record AnimationStruct
               -> Ivory (AllowBreak (ProcEffects s ())) IFloat
-renderRandomT subpixel value random animation = do
-    v     <- local $ ival value
-    b     <- deref $ animation ~> params ! toIx subpixel
-    dt    <- deref $ animation ~> dt
-    time' <- deref $ animation ~> time
+renderRandomT time subpixel value random animation = do
+    v  <- local $ ival value
+    b  <- deref $ animation ~> params ! toIx subpixel
+    dt <- deref $ animation ~> dt
     when (castDefault value /=? b) $ do
-        time' <- deref $ animation ~> time
-        let rest = 1 - time'
+        let rest = 1 - time
         ifte_ (rest >=? dt)
               (do
                 let delta = (safeCast b - value) * dt / rest
                 store v $ value + delta
               )
               (store v $ safeCast b)
-    when (time' ==? 0) $ do
+    startLoop' <- deref $ animation ~> startLoop
+    when startLoop' $ do
         store (animation ~> params ! toIx subpixel) =<< next random
     deref v

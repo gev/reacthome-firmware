@@ -10,8 +10,8 @@ import           Core.Context
 import           Data.Buffer
 import           Data.Record
 import           Data.Value
+import           Endpoint.ALED.Animation.CosT
 import           Endpoint.ALED.Animation.Data
-import           Endpoint.ALED.Animation.SinT
 import           GHC.TypeNats
 import           Ivory.Language
 
@@ -43,10 +43,10 @@ type GroupStruct = "aled_group_struct"
 |]
 
 
-type ClipStruct = "aled_clip_struct"
+type ClipStruct = "clip_struct"
 
 [ivory|
-    struct aled_clip_struct
+    struct clip_struct
     { start   :: IFloat
     ; end     :: IFloat
     ; inverse :: IBool
@@ -78,7 +78,7 @@ mkALED = do
     addStruct (Proxy :: Proxy AnimationStruct)
     addStruct (Proxy :: Proxy ClipStruct)
 
-    addConstArea sinT
+    addConstArea cosT
 
     groups          <- records' "aled_groups"
                                 [ colors         .= ival 0
@@ -99,22 +99,26 @@ mkALED = do
                                 [ kind           .= ival 0
                                 , params         .= iarray (ival <$> replicate 8 0)
                                 , time           .= ival 0
+                                , timeEnd        .= ival 0
                                 , dt             .= ival 0
                                 , phase          .= ival 0
                                 , split          .= ival false
                                 , animationState .= ival false
                                 , animationLoop  .= ival false
+                                , inLoop         .= ival false
                                 ]
 
     maskAnimations  <- records' "aled_mask_animations"
                                 [ kind           .= ival 0
                                 , params         .= iarray (ival <$> replicate 8 0)
                                 , time           .= ival 0
+                                , timeEnd        .= ival 0
                                 , dt             .= ival 0
                                 , phase          .= ival 0
                                 , split          .= ival false
                                 , animationState .= ival false
                                 , animationLoop  .= ival false
+                                , inLoop         .= ival false
                                 ]
 
     clips           <- records' "aled_clips"

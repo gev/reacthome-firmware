@@ -14,6 +14,6 @@ renderRandom :: Random Uint8
 renderRandom random animation = do
     t' <- deref $ animation ~> dt
     t  <- next random
-    ifte (safeCast t / 255 <? t')
-         (pure 255)
-         (pure 1)
+    safeCast <$> ifte (safeCast t / 255 <? t')
+                      (deref $ animation ~> params ! 1)
+                      (deref $ animation ~> params ! 0)
