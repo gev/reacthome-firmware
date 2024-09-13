@@ -42,6 +42,6 @@ server = Formula { name           = "server"
                                                    :> Nil
                                         )
                                         (ds18b20 ow_0 od_pb_3)
-                                        (indicator npx_pwm_2 120)
+                                        (indicator npx_pwm_0 120)
                                         (aled npx_pwm_1 etc)
                  }

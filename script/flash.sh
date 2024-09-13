@@ -1,1 +1,1 @@
-JLinkExe ip tunnel:801031640::jlink-europe.segger.com -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink
+JLinkExe -Device GD32F330K8 -If SWD -Speed 1000 jlink/gd32f330/FlashMCU.jlink

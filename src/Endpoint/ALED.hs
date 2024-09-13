@@ -17,10 +17,10 @@ import           Ivory.Language
 
 
 
-type SegmentStruct = "segment_struct"
+type SegmentStruct = "aled_segment_struct"
 
 [ivory|
-    struct segment_struct
+    struct aled_segment_struct
     { segmentSize    :: Uint8
     ; direction      :: IBool
     }
@@ -28,10 +28,10 @@ type SegmentStruct = "segment_struct"
 
 
 
-type GroupStruct = "group_struct"
+type GroupStruct = "aled_group_struct"
 
 [ivory|
-    struct group_struct
+    struct aled_group_struct
     { colors         :: Uint8
     ; pixelSize      :: Uint8
     ; groupSize      :: Uint16

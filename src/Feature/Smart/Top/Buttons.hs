@@ -19,31 +19,38 @@ import           Feature.Smart.Top.LEDs (LEDs (order, pixels))
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
+import Data.Matrix
 
+
+type LEDsOnButtonStruct = "led_on_buttons_struct"
 
 
 data Buttons n pn ln = forall t. (LazyTransport t, KnownNat ln) => Buttons
-    { leds            :: LEDs    pn ln
-    , getDInputs      :: DInputs n
-    , leds'per'button :: Ix      ln
-    , start           :: Value   IBool
-    , findMe          :: Value   IBool
-    , t               :: Value   Sint32
-    , transport       :: t
+    { leds             :: LEDs    pn ln
+    , getDInputs       :: DInputs n
+    , leds'per'button  :: Values  n (Ix 4)
+    , leds'of'button   :: Matrix  n 4 (Ix ln)
+    , start            :: Value   IBool
+    , findMe           :: Value   IBool
+    , t                :: Value   Sint32
+    , transport        :: t
     }
 
 
 
 mkButtons :: (MonadState Context m, LazyTransport t, KnownNat ln)
-          => LEDs pn ln -> DInputs n -> Ix ln -> t -> m (Buttons n pn ln)
-mkButtons leds getDInputs leds'per'button transport = do
+          => LEDs pn ln -> DInputs n 
+          -> Values n (Ix 4) -> Matrix n 4 (Ix ln) -> t 
+          -> m (Buttons n pn ln)
+mkButtons leds getDInputs leds'per'button leds'of'button transport = do
     start      <- value "buttons_start"   true
     findMe     <- value "buttons_find_me" false
     t          <- value "buttons_t"       0
 
     addConstArea sinT
 
-    pure Buttons { leds, getDInputs, leds'per'button
+    pure Buttons { leds, getDInputs
+                 , leds'per'button, leds'of'button
                  , start, findMe, t
                  , transport
                  }
@@ -70,8 +77,9 @@ updateButtons Buttons{..} = do
 
     arrayMap $ \ix -> do
         state' <- deref $ dinputs getDInputs ! ix ~> state
-        for leds'per'button $ \ kx -> do
-            let sx = toIx $ fromIx leds'per'button * fromIx ix + fromIx kx
+        leds'  <- deref $ leds'per'button ! ix
+        for leds' $ \kx -> do
+            sx <- deref $ leds'of'button ! ix ! kx
             dx <- deref $ order leds ! sx
             ifte_ state'
                 (run (pixels leds ! dx) pixel'')
@@ -83,6 +91,7 @@ updateButtons Buttons{..} = do
             store (dst ~> r) =<< deref (src ~> r)
             store (dst ~> g) =<< deref (src ~> g)
             store (dst ~> b) =<< deref (src ~> b)
+            
 
 
 onFindMe :: KnownNat b

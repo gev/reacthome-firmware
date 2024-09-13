@@ -29,6 +29,7 @@ instance Compiler GCC GD32F4xx where
                     , "-Isupport/device/gd32f4xx/lwip_port/Basic"
                     , "-Isupport/device/ksz8091"
                     , "-Isupport/lwip-2.1.2/src/include"
+                    , "-Isupport/fmc_operation"
                     ]
 
 
