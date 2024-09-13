@@ -13,6 +13,8 @@ import           Support.Device.GD32F4xx.SYSCFG
 import           Support.Device.GD32F4xx.Timer
 import           Support.Device.GD32F4xx.USART
 import           Support.Device.GD32F4xx.ENET
+import           Support.Device.GD32F4xx.FMC
+import           Support.Device.GD32F4xx.FmcOperation.FmcOperation
 
 
 inclGD32F4xx :: ModuleDef
@@ -28,4 +30,6 @@ inclGD32F4xx = do
     inclTimer
     inclUSART
     inclENET
+    inclFmcOperation
+    inclFMC
     inclCoreCM4

@@ -98,8 +98,8 @@ data OneWireMaster = OneWireMaster
     , payload               :: Value        Uint8
     , index                 :: Value        Uint8
     , time                  :: Value        Uint8
-    , actionB               :: Records 256  OneWireAction
-    , actionQ               :: Queue   256
+    , actionB               :: Records  24  OneWireAction
+    , actionQ               :: Queue    24
     , tmp                   :: Value        Uint8
     , width                 :: Value        Uint8
     , count                 :: Value        Uint8

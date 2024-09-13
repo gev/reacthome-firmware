@@ -15,6 +15,7 @@ import           Data.Serialize
 import           Data.Value
 import           Endpoint.Dimmers        as Dim (dimmers, initialize,
                                                  syncDimmerGroup)
+import           Feature.ALED
 import           Feature.Dimmers         (Dimmers (getDimmers), forceSync, n,
                                           onDim, onDo)
 import           Feature.DInputs         (DInputs, forceSyncDInputs)
@@ -26,6 +27,8 @@ import           Feature.RS485.RBUS.Data (RBUS (..))
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
+import qualified Endpoint.ALED                as E
+
 
 
 
@@ -35,6 +38,7 @@ data Hub ni nd nr = Hub
     , dinputs    :: DInputs   ni
     , ds18b20    :: DS18B20
     , indicator  :: Indicator 20
+    , aled       :: ALED      10 100 2400
     , shouldInit :: Value IBool
     }
 
@@ -47,30 +51,41 @@ hub :: MonadReader (D.Domain p c) m
     -> (Bool -> t -> m (DInputs ni))
     -> (t -> m DS18B20)
     -> (t -> m (Indicator 20))
+    -> (t -> m (ALED 10 100 2400))
     -> m (Hub ni nd nr)
-hub transport' rbus' dimmers' dinputs' ds18b20' indicator' = do
+hub transport' rbus' dimmers' dinputs' ds18b20' indicator' aled' = do
     transport  <- transport'
     rbus       <- rbus' transport
     dimmers    <- dimmers' transport
     dinputs    <- dinputs' True transport
     ds18b20    <- ds18b20' transport
     indicator  <- indicator' transport
+    aled       <- aled' transport
     shouldInit <- asks D.shouldInit
-    pure Hub { rbus, dimmers, dinputs, ds18b20, indicator, shouldInit }
+    pure Hub { rbus, dimmers, dinputs, ds18b20, indicator, shouldInit, aled }
 
 
 
 instance (KnownNat ni, KnownNat nd, KnownNat nr) => Controller (Hub ni nd nr) where
     handle s@Hub{..} buff size = do
         action <- deref $ buff ! 0
-        cond_ [ action ==? actionDo            ==> onDo          dimmers   buff size
-              , action ==? actionDim           ==> onDim         dimmers   buff size
-              , action ==? actionRs485Mode     ==> setMode       rbus      buff size
-              , action ==? actionRbusTransmit  ==> transmitRBUS  rbus      buff size
-              , action ==? actionRs485Transmit ==> transmitRB485 rbus      buff size
-              , action ==? actionFindMe        ==> onFindMe      indicator buff size
-              , action ==? actionInitialize    ==> onInit        s         buff size
-              , action ==? actionGetState      ==> onGetState    s
+        cond_ [ action ==? actionDo                     ==> onDo                     dimmers   buff size
+              , action ==? actionDim                    ==> onDim                    dimmers   buff size
+              , action ==? actionRs485Mode              ==> setMode                  rbus      buff size
+              , action ==? actionRbusTransmit           ==> transmitRBUS             rbus      buff size
+              , action ==? actionRs485Transmit          ==> transmitRB485            rbus      buff size
+              , action ==? actionFindMe                 ==> onFindMe                 indicator buff size
+              , action ==? actionInitialize             ==> onInit                   s         buff size
+              , action ==? actionGetState               ==> onGetState               s
+              , action ==? actionALedOn                 ==> onALedOn                 aled      buff size
+              , action ==? actionALedOff                ==> onALedOff                aled      buff size
+              , action ==? actionALedColorAnimationPlay ==> onALedColorAnimationPlay aled      buff size
+              , action ==? actionALedColorAnimationStop ==> onALedColorAnimationStop aled      buff size
+              , action ==? actionALedMaskAnimationPlay  ==> onALedMaskAnimationPlay  aled      buff size
+              , action ==? actionALedMaskAnimationStop  ==> onALedMaskAnimationStop  aled      buff size
+              , action ==? actionALedClip               ==> onALedClip               aled      buff size
+              , action ==? actionALedBrightness         ==> onALedBrightness         aled      buff size
+              , action ==? actionALedConfigGroup        ==> onALedConfigGroup        aled      buff size
               ]
 
 
@@ -79,7 +94,9 @@ onInit :: (KnownNat l, KnownNat nd)
        -> Ivory (ProcEffects s t) ()
 onInit Hub{..} buff size = do
     let s = 1 + (6 * fromIntegral (length rbus))
-    when (size ==? s + n dimmers * 3) $ do
+    let dim' = n dimmers * 3
+    let ng' = 10
+    when (size ==? s + dim' + ng') $ do
 
         let run r@RBUS{..} offset = do
                 store mode        =<< unpack   buff  offset
@@ -89,6 +106,7 @@ onInit Hub{..} buff size = do
         zipWithM_ run rbus $ fromIntegral <$> fromList [1, 7..]
 
         offset <- local $ ival $ toIx s
+
         let ds  = Dim.dimmers $ getDimmers dimmers
         arrayMap $ \ix -> do
             offset' <- deref offset
@@ -99,6 +117,13 @@ onInit Hub{..} buff size = do
             initialize d group mode (safeCast value / 255) 0
             syncDimmerGroup ds d ix
             store offset $ offset' + 3
+
+        arrayMap $ \ix -> do
+            offset' <- deref offset
+            let group = E.groups (getALED aled) ! ix
+            brightness <- deref $ buff ! offset'
+            store (group ~> E.brightness) $ safeCast brightness / 255
+            store offset $ offset' + 1
 
         store shouldInit false
 

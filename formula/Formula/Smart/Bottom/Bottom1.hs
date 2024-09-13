@@ -4,6 +4,7 @@ import           Core.Formula
 import           Core.Models
 import           Data.Fixed
 import           Device.GD32F3x0
+import           Feature.ALED                (ALED, aled)
 import           Feature.DInputs
 import           Feature.DS18B20
 import           Feature.Sht21
@@ -16,8 +17,8 @@ import           Transport.RS485.RBUS
 smartBottom1 :: Formula GD32F3x0
 smartBottom1 =  Formula { name           = "smart_bottom_1"
                         , model          = deviceTypeSmartBottom1
-                        , version        = (1, 0)
-                        , shouldInit     = false
+                        , version        = (4, 0)
+                        , shouldInit     = true
                         , implementation = bottom1 (rbus $ rs485 uart_1 out_pa_4)
                                                    (top uart_0 in_pb_4)
                                                    (dinputs $  in_pa_5
@@ -27,4 +28,6 @@ smartBottom1 =  Formula { name           = "smart_bottom_1"
                                                             :> Nil
                                                    )
                                                    (ds18b20 ow_0 od_pa_15)
+                                                   (aled npx_pwm_3 etc)
+
                         }

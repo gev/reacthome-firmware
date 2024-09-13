@@ -61,6 +61,36 @@ executable reacthome-firmware
                     , Data.Concurrent.Semaphore
                     , Data.Concurrent.Queue
 
+                    , Endpoint.ALED
+                    , Endpoint.ALED.Animation
+                    , Endpoint.ALED.Animation.CosT
+                    , Endpoint.ALED.Animation.Data
+                    , Endpoint.ALED.Animation.Color.Fade
+                    , Endpoint.ALED.Animation.Color.RandomT
+                    , Endpoint.ALED.Animation.Color.RandomX
+                    , Endpoint.ALED.Animation.Color.SpectrumT
+                    , Endpoint.ALED.Animation.Color.SpectrumX
+                    , Endpoint.ALED.Animation.Mask.Blink
+                    , Endpoint.ALED.Animation.Mask.Eiffel
+                    , Endpoint.ALED.Animation.Mask.FadeOff
+                    , Endpoint.ALED.Animation.Mask.FadeOn
+                    , Endpoint.ALED.Animation.Mask.Off
+                    , Endpoint.ALED.Animation.Mask.On
+                    , Endpoint.ALED.Animation.Mask.Random
+                    , Endpoint.ALED.Animation.Mask.RandomOff
+                    , Endpoint.ALED.Animation.Mask.RandomOn
+                    , Endpoint.ALED.Animation.Mask.Slide
+                    , Endpoint.ALED.Animation.Mask.Slide'
+                    , Endpoint.ALED.Animation.Mask.Slide''
+                    , Endpoint.ALED.Animation.Mask.SlideOff
+                    , Endpoint.ALED.Animation.Mask.SlideOff'
+                    , Endpoint.ALED.Animation.Mask.SlideOffIn
+                    , Endpoint.ALED.Animation.Mask.SlideOffOut
+                    , Endpoint.ALED.Animation.Mask.SlideOn
+                    , Endpoint.ALED.Animation.Mask.SlideOn'
+                    , Endpoint.ALED.Animation.Mask.SlideOnIn
+                    , Endpoint.ALED.Animation.Mask.SlideOnOut
+                    
                     , Endpoint.ATS
                     , Endpoint.DInputs
                     , Endpoint.DInputsRelaysRules
@@ -69,10 +99,13 @@ executable reacthome-firmware
                     , Endpoint.Relays
                     , Endpoint.AOutputs 
 
+                    , Feature.ALED
+                    , Feature.AOutputs
                     , Feature.DInputs
                     , Feature.Dimmers
                     , Feature.Dimmers.AC
                     , Feature.Dimmers.DC
+                    , Feature.Dopplers
                     , Feature.DS18B20
                     , Feature.Indicator
                     , Feature.Mix.Indicator
@@ -84,16 +117,15 @@ executable reacthome-firmware
                     , Feature.RS485.RSM
                     , Feature.RS485.RSM.Data
                     , Feature.RS485.RSM.Rx
-                    , Feature.RS485.RSM.Tx  
+                    , Feature.RS485.RSM.Tx
+                    , Feature.Scd40
+                    , Feature.Sht21
                     , Feature.Smart.Top
                     , Feature.Smart.Top.Buttons
                     , Feature.Smart.Top.LEDs
+                    , Feature.Smart.Top.Palette
                     , Feature.Smart.Top.PowerTouch
                     , Feature.Smart.Top.Vibro
-                    , Feature.Sht21
-                    , Feature.Scd40
-                    , Feature.Dopplers
-                    , Feature.AOutputs
 
                     , Formula.Blink330
                     , Formula.Blink450
@@ -261,9 +293,11 @@ executable reacthome-firmware
                     , Support.Device.GD32F4xx.SYSCFG
                     , Support.Device.GD32F4xx.System
                     , Support.Device.GD32F4xx.ENET
+                    , Support.Device.GD32F4xx.FMC
                     , Support.Device.GD32F4xx.I2C
                     , Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif
                     , Support.Lwip.Ethernet 
+                    , Support.Device.GD32F4xx.FmcOperation.FmcOperation
 
                     , Support.Lwip.Mem
                     , Support.Lwip.Memp
@@ -279,6 +313,7 @@ executable reacthome-firmware
                     , Test
 
                     , Util.CRC16
+                    , Util.Random
                     , Util.String
 
     build-depends:    base >=4.16 && <5.0

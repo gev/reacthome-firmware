@@ -45,6 +45,9 @@ timer_3 = mkTimer timer3 rcu_timer3 timer3_irqn
 timer_6 :: MonadState Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
 timer_6 = mkTimer timer6 rcu_timer6 timer6_irqn
 
+timer_7 :: MonadState Context m => Init (Struct TIMER_PARAM_STRUCT) -> m Timer
+timer_7 = mkTimer timer7 rcu_timer7 timer7_irqn
+
 
 timerConfig :: Uint32 -> Uint32 -> Init (Struct TIMER_PARAM_STRUCT)
 timerConfig frequency' period' =
@@ -65,6 +68,9 @@ cfg_timer_3 frequency' period' = timer_3 $ timerConfig frequency' period'
 cfg_timer_6 :: MonadState Context m => Uint32 -> Uint32 -> m Timer
 cfg_timer_6 frequency' period' = timer_6 $ timerConfig frequency' period'
 
+cfg_timer_7 :: MonadState Context m => Uint32 -> Uint32 -> m Timer
+cfg_timer_7 frequency' period' = timer_7 $ timerConfig frequency' period'
+
 
 mkTimer :: MonadState Context m
         => TIMER_PERIPH
@@ -73,7 +79,7 @@ mkTimer :: MonadState Context m
         -> Init (Struct TIMER_PARAM_STRUCT)
         -> m Timer
 mkTimer timer rcu irq param = do
-    addInit "rcu_timers_mulltiplicate" configRcuTimersMulltiplicate
+    addInit "rcu_timers_multiplicate" configRcuTimersMultiplicate
     addInit (symbol timer) $ do
             enablePeriphClock rcu
             deinitTimer       timer
@@ -82,8 +88,8 @@ mkTimer timer rcu irq param = do
     pure Timer { timer, rcu, irq }
 
 
-configRcuTimersMulltiplicate :: Ivory eff ()
-configRcuTimersMulltiplicate = do
+configRcuTimersMultiplicate :: Ivory eff ()
+configRcuTimersMultiplicate = do
     configRcuTimerClockPrescaler rcu_timer_psc_mul4
 
 
