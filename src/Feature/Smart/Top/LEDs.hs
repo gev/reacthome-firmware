@@ -85,10 +85,10 @@ mkLeds frameBuffer order' transport etc = do
     state      <- value      "leds_state"       true
     brightness <- value      "leds_brightness"  0.25
     pixels     <- records_   "leds_pixels"
-    image      <- values'    "leds_image"       false
+    image      <- values'    "leds_image"       true
     blink      <- values'    "leds_blink"       false
     blinkPhase <- value      "leds_blink_phase" false
-    colors     <- matrix'    "leds_colors"     0
+    colors     <- matrix'    "leds_colors"      0
     synced     <- values'    "leds_synced"      true
     synced_    <- value      "leds_synced_"     true
     ix         <- value      "leds_index"       0
