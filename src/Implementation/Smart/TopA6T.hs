@@ -76,7 +76,7 @@ topA6T transport' dinputs' vibro' touch' sht21' display' etc' = do
     vibro          <- vibro' (DI.getDInputs dinputs) transport etc
     touch'
     frameBuffer    <- values' "top_frame_buffer" 0
-    leds           <- mkLeds frameBuffer [1, 6, 2, 0, 5, 3, 4] transport etc
+    leds           <- mkLeds frameBuffer [1, 6, 2, 0, 5, 3, 4] transport etc (replicate 7 true)
     ledsPerButton  <- values "leds_per_button" [2, 2, 3, 3, 2, 2]
     ledsOfButton   <- matrix "leds_of_button"  [[0,1,0,0], [0,2,0,0], [1,3,4,0], [2,3,5,0], [4,6,0,0], [5,6,0,0]]
     buttons        <- mkButtons leds (DI.getDInputs dinputs) ledsPerButton ledsOfButton transport

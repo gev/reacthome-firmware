@@ -111,7 +111,7 @@ topGD transport' dinputs' vibro' touch' sht21' display' etc' = do
                                        , 12, 15,     20, 24, 28,     33, 37, 41,     47, 51, 55
                                        ,     14,     19,     27,     32,     40,     46,     54
                                        ,     13,     18, 25, 26,     31, 38, 39, 44, 45, 52, 53
-                                       ] transport etc
+                                       ] transport etc (replicate 64 true)
 
     ledsPerButton <- values "leds_per_button" [2, 2, 2, 2, 2, 2]
     ledsOfButton  <- matrix "leds_of_button"  [[0,1,0,0], [2,3,0,0], [4,5,0,0], [6,7,0,0], [8,9,0,0], [10,11,0,0]]

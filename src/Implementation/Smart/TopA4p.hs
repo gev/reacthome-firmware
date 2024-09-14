@@ -67,7 +67,7 @@ topA4P transport' dinputs' sht21' display' etc' = do
     let etc      = etc' $ peripherals mcu
     dinputs     <- dinputs' False transport
     frameBuffer <- values' "top_frame_buffer" 0
-    leds        <- mkLeds frameBuffer [0, 3, 1, 2] transport etc
+    leds        <- mkLeds frameBuffer [0, 3, 1, 2] transport etc (replicate 4 true)
     ledsPerButton  <- values "leds_per_button" [1, 1, 1, 1]
     ledsOfButton   <- matrix "leds_of_button"  [[0,0,0,0], [1,0,0,0], [2,0,0,0], [3,0,0,0]]
     buttons        <- mkButtons leds (DI.getDInputs dinputs) ledsPerButton ledsOfButton transport

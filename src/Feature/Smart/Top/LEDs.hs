@@ -78,14 +78,14 @@ mkLeds :: ( KnownNat pn, KnownNat ln
           , T.LazyTransport t
           , Flash f
           )
-       => Values (Canvas1DSize ln)  Uint8 -> [Ix ln] -> t -> f -> m (LEDs pn ln)
-mkLeds frameBuffer order' transport etc = do
+       => Values (Canvas1DSize ln)  Uint8 -> [Ix ln] -> t -> f -> [IBool] -> m (LEDs pn ln)
+mkLeds frameBuffer order' transport etc image' = do
     let canvas  = mkCanvas1D frameBuffer
     order      <- values     "leds_order"       order'
     state      <- value      "leds_state"       true
     brightness <- value      "leds_brightness"  0.25
     pixels     <- records_   "leds_pixels"
-    image      <- values'    "leds_image"       true
+    image      <- values     "leds_image"       image'
     blink      <- values'    "leds_blink"       false
     blinkPhase <- value      "leds_blink_phase" false
     colors     <- matrix'    "leds_colors"      0
