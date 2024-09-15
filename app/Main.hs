@@ -51,6 +51,8 @@ main = do
                      , smartTopG4
                      , smartTopG2
                      , smartTopA6P
+                     , smartTopA4T
+                     , smartTopA6T
                     --  , smartTopG4D
                      , doppler1
                      , doppler5
