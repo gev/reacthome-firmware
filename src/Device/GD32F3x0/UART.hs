@@ -1,52 +1,53 @@
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE GADTs                 #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE GADTs #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
 
 
 module Device.GD32F3x0.UART where
 
-import qualified Control.Monad                  as M
-import           Control.Monad.State            (MonadState)
+import qualified Control.Monad                 as M
+import           Control.Monad.State           (MonadState)
 import           Core.Context
 import           Core.Handler
 import           Data.Buffer
 import           Data.Maybe
 import           Data.Record
+import           Data.Value
 import           Device.GD32F3x0.GPIO.Port
+import           GHC.Base                      (coerce)
 import           GHC.TypeNats
-import           Interface.UART                 (HandleUART (onDrain))
-import qualified Interface.UART                 as I
-import           Ivory.Language.Pointer
+import           Interface.UART                (HandleUART (onDrain))
+import qualified Interface.UART                as I
 import           Ivory.Language
+import           Ivory.Language.Pointer
+import           Ivory.Language.Ptr
 import           Ivory.Stdlib
 import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
 import           Support.Cast
 import           Support.Device.GD32F3x0
-import           Support.Device.GD32F3x0.DMA
 import           Support.Device.GD32F3x0.GPIO
 import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
-import           Support.Device.GD32F3x0.SYSCFG
-import           Support.Device.GD32F3x0.USART  as S
-import           Data.Value
+import           Support.Device.GD32F3x0.USART as S
+import           Unsafe.Coerce
 
 
 
-data UART = forall n. KnownNat n => UART
+data UART = UART
     { uart      :: USART_PERIPH
     , rcu       :: RCU_PERIPH
     , uartIRQ   :: IRQn
     , rx        :: Port
     , tx        :: Port
-    , refTxBuff :: Value (Buffer n Uint16)
+    , refTxBuff :: Value (Ptr Global (Stored Uint16))
     , index     :: Value Uint16
     , size      :: Value Uint16
     }
@@ -61,10 +62,9 @@ mkUART :: MonadState Context m
        -> m UART
 mkUART uart rcu uartIRQ rx' tx' = do
 
-    txBuff    <- buffer $ symbol uart <> "_tx_buff"
-    index     <- value_ $ symbol uart <> "_tx_index"
-    size      <- value_ $ symbol uart <> "_tx_size"
-    refTxBuff <- value_ $ symbol uart <> "_tx_buff" 
+    index     <- value_ (symbol uart <> "_tx_index")
+    size      <- value_ (symbol uart <> "_tx_size")
+    refTxBuff <- value  (symbol uart <> "_ref_tx_buff") nullPtr
 
     let rx = rx' gpio_pupd_none
     let tx = tx' gpio_pupd_none
@@ -108,14 +108,11 @@ handleTransmit UART{..} onTransmit = do
     size'  <- deref size
     ifte_ (safeCast index' <? size')
         (do
-            txBuff <- deref refTxBuff
-            transmitData uart =<< deref (txBuff ! toIx index)
+            txBuff <- ptrToRef. unsafeCoerce <$> deref refTxBuff
+            transmitData uart =<< deref (txBuff ! (toIx index':: Ix 65536))
             store index $ index' + 1
         )
-        (do
-
-            pure ()
-        )
+        onTransmit
 
 
 handleReceive :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
@@ -160,8 +157,7 @@ instance I.UART UART where
 
 
     transmit UART{..} buff n = do
-        txBuff <- deref refTxBuff
-        for (toIx n) $ \ix -> store (txBuff ! toIx (fromIx ix)) =<< deref (buff ! ix)
+        store refTxBuff (unsafeCoerce buff)
         store size n
         store index 0
         enableInterrupt uart usart_int_tbe
