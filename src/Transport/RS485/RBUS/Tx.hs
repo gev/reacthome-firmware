@@ -144,8 +144,7 @@ toQueue' RBUS{..} size' transmit = do
 
 rsTransmit :: RBUS -> Uint16 -> Ivory (ProcEffects s ()) ()
 rsTransmit RBUS{..} size = do
-    let array = toCArray txBuff
-    RS.transmit rs array size
+    RS.transmit rs txBuff size
     store txTimestamp =<< getSystemTime clock
     store txLock true
 

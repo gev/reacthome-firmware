@@ -6,6 +6,7 @@
 {-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
 
+
 module Device.GD32F3x0.UART where
 
 import qualified Control.Monad                  as M
@@ -30,6 +31,8 @@ import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.SYSCFG
 import           Support.Device.GD32F3x0.USART  as S
+import Data.Buffer
+import GHC.TypeNats
 
 
 data UART = UART
@@ -144,9 +147,10 @@ instance I.UART UART where
         configParity        uart $ coerceParity     parity
         enableUSART         uart
 
-
+    
     transmit UART{..} buff n = do
-        store (dmaParams ~> memory_addr) =<< castArrayUint16ToUint32 buff
+        let array = toCArray buff
+        store (dmaParams ~> memory_addr) =<< castArrayUint16ToUint32 array
         store (dmaParams ~> number) $ safeCast n
         deinitDMA dma
         initDMA dma dmaParams

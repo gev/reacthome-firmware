@@ -47,8 +47,7 @@ txTask r@RBUS{..} = do
 
 transmit :: RBUS -> Uint16 -> Ivory (ProcEffects s ()) ()
 transmit RBUS{..} size = do
-    let array = toCArray txBuff
-    U.transmit uart array $ safeCast size
+    U.transmit uart txBuff $ safeCast size
     store txLock true
 
 

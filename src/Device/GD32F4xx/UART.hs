@@ -152,7 +152,8 @@ instance I.UART UART where
 
 
     transmit UART{..} buff n = do
-        store (dmaParams ~> memory0_addr) =<< castArrayUint16ToUint32 buff
+        let array = toCArray buff
+        store (dmaParams ~> memory0_addr) =<< castArrayUint16ToUint32 array
         store (dmaParams ~> number) $ safeCast n
         deinitDMA dmaPer dmaCh
         initSingleDMA dmaPer dmaCh dmaParams
