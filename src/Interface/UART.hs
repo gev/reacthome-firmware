@@ -38,15 +38,18 @@ data StopBit
 
 class Handler HandleUART u => UART u where
 
-    configUART    :: u -> Uint32
-                       -> WordLength
-                       -> StopBit
-                       -> Parity
-                       -> Ivory eff ()
+    configUART :: u
+               -> Uint32
+               -> WordLength
+               -> StopBit
+               -> Parity
+               -> Ivory eff ()
 
-    transmit      ::   (KnownNat n) => u
-                       -> Buffer n Uint16
-                       -> Uint16
-                       -> Ivory eff ()
+    transmit   :: (KnownNat n)
+               => u
+               -> Buffer n Uint16
+               -> Uint16
+               -> Ivory eff ()
 
-    enable        :: u -> Ivory eff ()
+    enable     :: u
+               -> Ivory eff ()
