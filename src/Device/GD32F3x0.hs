@@ -185,16 +185,12 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
     { uart_0    = mkUART usart0
                          rcu_usart0
                          usart0_irqn
-                         dma_ch1
-                         dma_channel1_2_irqn
                          (pb_6 af_0)
                          (pb_7 af_0)
 
     , uart_1    = mkUART usart1
                          rcu_usart1
                          usart1_irqn
-                         dma_ch3
-                         dma_channel3_4_irqn
                          (pa_3 af_1)
                          (pa_2 af_1)
 
