@@ -20,7 +20,6 @@ import           Data.Maybe
 import           Data.Record
 import           Data.Value
 import           Device.GD32F3x0.GPIO.Port
-import           GHC.Base                      (coerce)
 import           GHC.TypeNats
 import qualified Interface.UART                as I
 import           Ivory.Language
