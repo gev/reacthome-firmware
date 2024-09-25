@@ -141,8 +141,7 @@ toQueue RBUS{..} address buff offset size = push msgQueue $ \i -> do
 
 rsTransmit :: RBUS -> Uint16 -> Ivory (ProcEffects s t) ()
 rsTransmit RBUS{..} size = do
-    let array = toCArray txBuff
-    RS.transmit rs array size
+    RS.transmit rs txBuff size
     store txLock true
 
 

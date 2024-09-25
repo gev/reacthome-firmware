@@ -29,7 +29,6 @@ txHandle RSM{..} = do
 
 rsTransmit :: RSM -> Uint16 -> Ivory (ProcEffects s t) ()
 rsTransmit RSM{..} size = do
-    let array = toCArray txBuff
-    RS.transmit rs array size
+    RS.transmit rs txBuff size
     store txLock true
 

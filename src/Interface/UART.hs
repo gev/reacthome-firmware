@@ -6,6 +6,8 @@ module Interface.UART where
 
 import           Core.Context
 import           Core.Handler
+import           Data.Buffer
+import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Language.Module
 
@@ -42,8 +44,9 @@ class Handler HandleUART u => UART u where
                        -> Parity
                        -> Ivory eff ()
 
-    transmit      :: u -> Ref s1 (CArray (Stored Uint16))
+    transmit      ::   (KnownNat n) => u
+                       -> Buffer n Uint16
                        -> Uint16
-                       -> Ivory (ProcEffects s2 t) ()
+                       -> Ivory eff ()
 
     enable        :: u -> Ivory eff ()

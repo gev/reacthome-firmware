@@ -19,6 +19,8 @@ import           Control.Monad.State
 import           Core.Context
 import           Core.Domain           as D
 import           Core.Handler
+import           Data.Buffer
+import           GHC.TypeNats
 import           Interface.GPIO.Output
 import           Interface.GPIO.Port
 import           Interface.MCU
@@ -58,8 +60,9 @@ rs485 uart' rede' = do
     pure RS485 { uart, rede }
 
 
-transmit :: RS485
-         -> Ref s1 (CArray (Stored Uint16))
+transmit :: (KnownNat n)
+         => RS485
+         -> Buffer n Uint16
          -> Uint16
          -> Ivory (ProcEffects s2 t) ()
 transmit RS485{..} buffer length =
