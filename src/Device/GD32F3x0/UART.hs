@@ -159,8 +159,10 @@ instance I.UART UART where
     transmit UART{..} buff n = do
         store refTxBuff (unsafeCoerce buff)
         store size n
-        store index 0
+        store index 1
         enableInterrupt uart usart_int_tbe
+        transmitData uart =<< deref (buff ! 0)
+
 
 
     enable u = enableUSART (uart u)
