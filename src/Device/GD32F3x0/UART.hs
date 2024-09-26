@@ -102,7 +102,7 @@ handleTransmit UART{..} onTransmit onDrain = do
         )
         (do
             M.when (isJust onDrain) $ do
-                disableInterrupt    uart usart_int_tbe
+                disableInterrupt    uart usart_int_rbne
                 enableInterrupt     uart usart_int_tc
             onTransmit
         )
