@@ -70,7 +70,6 @@ mkUART uart rcu uartIRQ rx' tx' = do
     initPort tx
 
     addInit (symbol uart) $ do
-            enablePeriphClock   rcu_dma
             enableIrqNvic       uartIRQ 0 0
             enablePeriphClock   rcu
 
