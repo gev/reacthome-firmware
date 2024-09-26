@@ -93,19 +93,23 @@ handleUART u@UART{..} onReceive onTransmit onDrain = do
 
 handleTransmit :: KnownNat n => UART n -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
 handleTransmit UART{..} onTransmit onDrain = do
-    index' <- deref index
-    size'  <- deref size
-    ifte_ (safeCast index' <? size')
-        (do
-            transmitData uart =<< deref (txBuff ! toIx index')
-            store index $ index' + 1
-        )
-        (do
-            M.when (isJust onDrain) $ do
-                disableInterrupt    uart usart_int_rbne
-                enableInterrupt     uart usart_int_tc
-            onTransmit
-        )
+    tbe <- getInterruptFlag    uart usart_int_flag_tbe
+    when tbe $ do
+        clearInterruptFlag     uart usart_int_flag_tbe
+        index' <- deref index
+        size'  <- deref size
+        ifte_ (safeCast index' <? size')
+            (do
+                transmitData uart =<< deref (txBuff ! toIx index')
+                store index $ index' + 1
+            )
+            (do
+                disableInterrupt        uart usart_int_tbe
+                M.when (isJust onDrain) $ do
+                    disableInterrupt    uart usart_int_rbne
+                    enableInterrupt     uart usart_int_tc
+                onTransmit
+            )
 
 
 handleReceive :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
