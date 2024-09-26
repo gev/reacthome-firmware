@@ -1,26 +1,26 @@
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE FlexibleContexts  #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE NamedFieldPuns    #-}
-{-# LANGUAGE RankNTypes        #-}
-{-# LANGUAGE RecordWildCards   #-}
+{-# LANGUAGE DataKinds                 #-}
+{-# LANGUAGE FlexibleContexts          #-}
+{-# LANGUAGE FlexibleInstances         #-}
+{-# LANGUAGE NamedFieldPuns            #-}
+{-# LANGUAGE RankNTypes                #-}
+{-# LANGUAGE RecordWildCards           #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
 {-# LANGUAGE ExistentialQuantification #-}
 
 module Feature.RS485.RSM where
 
-import           Control.Monad.Reader                (MonadReader, asks)
-import           Control.Monad.State                 (MonadState)
+import           Control.Monad.Reader   (MonadReader, asks)
+import           Control.Monad.State    (MonadState)
 import           Core.Actions
 import           Core.Context
-import qualified Core.Domain                         as D
+import qualified Core.Domain            as D
 import           Core.Handler
 import           Core.Task
-import           Core.Transport                      as T
+import           Core.Transport         as T
 import           Core.Version
 import           Data.Buffer
-import           Data.Concurrent.Queue               as Q
+import           Data.Concurrent.Queue  as Q
 import           Data.Fixed
 import           Data.Serialize
 import           Data.Value
@@ -28,24 +28,23 @@ import           Feature.RS485.RSM.Data
 import           Feature.RS485.RSM.Rx
 import           Feature.RS485.RSM.Tx
 import           GHC.TypeNats
-import           Interface.MCU                       (MCU (peripherals, systemClock))
-import qualified Interface.RS485                     as I
+import           Interface.MCU          (MCU (peripherals, systemClock))
+import           Interface.RS485        (RS485)
+import qualified Interface.RS485        as I
+import qualified Interface.RS485        as RS
+import           Interface.SystemClock  (SystemClock)
 import           Ivory.Language
 import           Ivory.Stdlib
-import           Interface.SystemClock               (SystemClock)
-import           Interface.RS485                     (RS485)
-
-
 
 
 
 rsm :: (MonadState Context m, MonadReader (D.Domain p c) m, LazyTransport t, Transport t)
-     => List n (m I.RS485) -> t -> m (List n RSM)
+     => List n (m (I.RS485 300)) -> t -> m (List n RSM)
 rsm rs485 transport = zipWithM (rsm' transport) rs485 nats
 
 
 rsm' :: (MonadState Context m, MonadReader (D.Domain p c) m, LazyTransport t, Transport t)
-     => t -> m I.RS485 -> Int -> m RSM
+     => t -> m (I.RS485 300) -> Int -> m RSM
 rsm' transport rs485 index = do
     rs               <- rs485
 
@@ -60,7 +59,6 @@ rsm' transport rs485 index = do
     lineControl      <- value  (name <> "_line_control"     ) 0
     rxBuff           <- buffer (name <> "_rx"               )
     rxQueue          <- queue  (name <> "_rx"               )
-    txBuff           <- buffer (name <> "_tx"               )
     rsBuff           <- buffer (name <> "_rs"               )
     rsSize           <- value  (name <> "_rs_size"          ) 0
     rxLock           <- value  (name <> "_rx_lock"          ) false
@@ -76,7 +74,6 @@ rsm' transport rs485 index = do
 
     let rsm = RSM { index, clock, rs, baudrate, lineControl
                     , rxBuff, rxQueue
-                    , txBuff
                     , rsBuff, rsSize
                     , rxLock, txLock
                     , rxTimestamp, txTimestamp
@@ -156,9 +153,10 @@ transmitRS485 list buff size = do
                 shouldInit' <- deref shouldInit
                 when (iNot shouldInit' .&& p ==? port) $ do
                     let size' = size - 2
-                    for (toIx size') $ \ix ->
-                        store (txBuff ! toIx (fromIx ix)) . safeCast =<< deref (buff ! (ix + 2))
-                    rsTransmit r $ safeCast size'
+                    RS.transmit rs $ \write ->
+                        for (toIx size') $ \ix ->
+                            write . safeCast =<< deref (buff ! (ix + 2))
+                    store txLock true
         zipWithM_ run list $ fromIntegral <$> nats
 
 
@@ -181,7 +179,7 @@ initialize list buff size =
 
 configureMode :: RSM -> Ivory eff ()
 configureMode r = do
-    configureRS485 r      
+    configureRS485 r
     store (rxLock r) false
     Q.clear $ rxQueue r
 

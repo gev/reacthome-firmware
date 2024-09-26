@@ -26,7 +26,7 @@ modeRS485 = 0 :: Uint8
 data RBUS = forall t. (LazyTransport t, Transport t) => RBUS
      { index            :: Int
      , clock            :: SystemClock
-     , rs               :: RS485
+     , rs               :: RS485  300
      , mode             :: Value      Uint8
      , baudrate         :: Value      Uint32
      , lineControl      :: Value      Uint8
@@ -40,7 +40,6 @@ data RBUS = forall t. (LazyTransport t, Transport t) => RBUS
      , msgConfirm       :: Values 255 IBool
      , msgBuff          :: Buffer 512 Uint16
      , msgIndex         :: Value      Uint16
-     , txBuff           :: Buffer 255 Uint16
      , rsBuff           :: Buffer 253 Uint8
      , rsSize           :: Value      Uint8
      , rxLock           :: Value      IBool

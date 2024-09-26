@@ -37,18 +37,11 @@ txTask r@RBUS{..} = do
             let ix = toIx i
             offset <- deref $ msgOffset ! ix
             size   <- deref $ msgSize ! ix
-            sx     <- local $ ival offset
-            for (toIx size) $ \dx -> do
-                sx' <- deref sx
-                v <- deref $ msgBuff ! toIx sx'
-                store sx $ sx' + 1
-                store (txBuff ! dx) $ safeCast v
-            transmit r $ safeCast size
-
-transmit :: RBUS -> Uint16 -> Ivory (ProcEffects s ()) ()
-transmit RBUS{..} size = do
-    U.transmit uart txBuff $ safeCast size
-    store txLock true
+            U.transmit uart $ \write ->
+                for (toIx size) $ \dx -> do
+                    let sx = dx + toIx offset
+                    write . safeCast =<< deref (msgBuff ! sx)
+            store txLock true
 
 
 

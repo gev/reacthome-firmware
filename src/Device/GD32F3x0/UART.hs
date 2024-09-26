@@ -9,6 +9,7 @@
 {-# HLINT ignore "Use for_" #-}
 
 
+
 module Device.GD32F3x0.UART where
 
 import qualified Control.Monad                 as M
@@ -39,30 +40,42 @@ import           Unsafe.Coerce
 
 
 
-data UART = UART
-    { uart      :: USART_PERIPH
-    , rcu       :: RCU_PERIPH
-    , uartIRQ   :: IRQn
-    , rx        :: Port
-    , tx        :: Port
-    , refTxBuff :: Value (Ptr Global (Stored Uint16))
-    , index     :: Value Uint16
-    , size      :: Value Uint16
+data UART n = UART
+    { uart    :: USART_PERIPH
+    , rcu     :: RCU_PERIPH
+    , uartIRQ :: IRQn
+    , rx      :: Port
+    , tx      :: Port
+    , txBuff  :: Buffer n Uint16
+    , index   :: Value Uint16
+    , size    :: Value Uint16
     }
 
 
-mkUART :: MonadState Context m
+mkUART :: (MonadState Context m, KnownNat n)
        => USART_PERIPH
        -> RCU_PERIPH
        -> IRQn
        -> (GPIO_PUPD -> Port)
        -> (GPIO_PUPD -> Port)
-       -> m UART
-mkUART uart rcu uartIRQ rx' tx' = do
+       -> m (UART n)
+mkUART uart rcu uartIRQ dma dmaIRQn rx' tx' = do
 
+    let dmaInit = dmaParam [ direction    .= ival dma_memory_to_peripheral
+                           , memory_inc   .= ival dma_memory_increase_enable
+                           , memory_width .= ival dma_memory_width_16bit
+                           , periph_inc   .= ival dma_periph_increase_disable
+                           , periph_width .= ival dma_peripheral_width_16bit
+                           , priority     .= ival dma_priority_ultra_high
+                           ]
+    dmaParams <- record (symbol uart <> "_dma_param") dmaInit
+    txBuff    <- buffer (symbol uart <> "_tx_buff")
     index     <- value_ (symbol uart <> "_tx_index")
     size      <- value_ (symbol uart <> "_tx_size")
-    refTxBuff <- value  (symbol uart <> "_ref_tx_buff") nullPtr
+
+{-
+    TODO: Generalize  remap dma
+-}
 
     let rx = rx' gpio_pupd_none
     let tx = tx' gpio_pupd_none
@@ -75,11 +88,12 @@ mkUART uart rcu uartIRQ rx' tx' = do
             enableIrqNvic       uartIRQ 0 0
             enablePeriphClock   rcu
 
-    pure UART { uart, rcu, uartIRQ, rx, tx, refTxBuff, index, size}
+    pure UART { uart, rcu, uartIRQ, dma, dmaIRQn, dmaParams, rx, tx, txBuff, size }
 
-instance Handler I.HandleUART UART where
-    addHandler (I.HandleUART u@UART{..} onReceive onTransmit onDrain) = do
-        addModule $ makeIRQHandler uartIRQ (handleUART u onReceive onTransmit onDrain)
+instance Handler I.HandleUART (UART n) where
+    addHandler (I.HandleUART UART{..} onReceive onTransmit onDrain) = do
+        addModule $ makeIRQHandler uartIRQ (handleUART uart onReceive onDrain)
+        addBody (makeIRQHandlerName dmaIRQn) (handleDMA dma uart onTransmit onDrain)
 
 
 
@@ -135,7 +149,7 @@ handleDrain uart onDrain = do
 
 
 
-instance I.UART UART where
+instance KnownNat n => I.UART (UART n) where
     configUART (UART {..}) baudrate length stop parity = do
         deinitUSART         uart
         configReceive       uart usart_receive_enable
@@ -148,14 +162,22 @@ instance I.UART UART where
         enableUSART         uart
 
 
-    transmit UART{..} buff n = do
-        store refTxBuff (unsafeCoerce buff)
-        store size n
-        store index 0
-        enableInterrupt uart usart_int_tbe
-        transmitData uart =<< deref (buff ! 0)
-
-
+    transmit UART{..} write = do
+        store size 0
+        write $ \value -> do
+            size' <- deref size
+            store (txBuff ! toIx size') value
+            store size $ size' + 1
+        let array = toCArray txBuff
+        store (dmaParams ~> memory_addr) =<< castArrayUint16ToUint32 array
+        store (dmaParams ~> number) . safeCast =<< deref size
+        deinitDMA dma
+        initDMA dma dmaParams
+        disableCirculationDMA dma
+        disableMemoryToMemoryDMA dma
+        transmitDMA uart usart_dent_enable
+        enableInterruptDMA dma dma_int_ftf
+        enableChannelDMA dma
 
     enable u = enableUSART (uart u)
 
@@ -177,5 +199,5 @@ coerceParity I.Odd  = usart_pm_odd
 
 
 
-instance Show UART where
+instance Show (UART n) where
     show UART{..} = symbol uart

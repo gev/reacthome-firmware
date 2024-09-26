@@ -45,11 +45,9 @@ class Handler HandleUART u => UART u where
                -> Parity
                -> Ivory eff ()
 
-    transmit   :: (KnownNat n)
-               => u
-               -> Buffer n Uint16
-               -> Uint16
-               -> Ivory eff ()
+    transmit   :: u
+               -> ((Uint16 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ())
+               -> Ivory (ProcEffects s t) ()
 
     enable     :: u
                -> Ivory eff ()
