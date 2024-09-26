@@ -60,11 +60,13 @@ rs485 uart' rede' = do
     pure RS485 { uart, rede }
 
 
+
 transmit :: RS485 n
          -> ((Uint16 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ())
          -> Ivory (ProcEffects s t) ()
 transmit RS485{..} write =
     set rede >> U.transmit uart write
+
 
 
 configureRS485 :: RS485 n -> Uint32 -> WordLength -> StopBit -> Parity -> Ivory eff ()

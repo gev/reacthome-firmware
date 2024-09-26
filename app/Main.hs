@@ -43,8 +43,8 @@ main = do
                     --  , dimmerDC12
                     --  , dimmerAC12
                     --  , mix6x12
-                    --  , di4
                        smartBottom1
+                     , di4
                      , smartBottom2
                      , smartTopA4P
                      , smartTopG6
