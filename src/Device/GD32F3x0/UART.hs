@@ -23,9 +23,8 @@ import           Data.Value
 import           Device.GD32F3x0.GPIO.Port
 import           GHC.TypeNats
 import qualified Interface.UART                as I
+
 import           Ivory.Language
-import           Ivory.Language.Pointer
-import           Ivory.Language.Ptr
 import           Ivory.Stdlib
 import           Ivory.Support
 import           Ivory.Support.Device.GD32F3x0
@@ -36,7 +35,6 @@ import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.USART as S
-import           Unsafe.Coerce
 
 
 
@@ -59,23 +57,11 @@ mkUART :: (MonadState Context m, KnownNat n)
        -> (GPIO_PUPD -> Port)
        -> (GPIO_PUPD -> Port)
        -> m (UART n)
-mkUART uart rcu uartIRQ dma dmaIRQn rx' tx' = do
+mkUART uart rcu uartIRQ rx' tx' = do
 
-    let dmaInit = dmaParam [ direction    .= ival dma_memory_to_peripheral
-                           , memory_inc   .= ival dma_memory_increase_enable
-                           , memory_width .= ival dma_memory_width_16bit
-                           , periph_inc   .= ival dma_periph_increase_disable
-                           , periph_width .= ival dma_peripheral_width_16bit
-                           , priority     .= ival dma_priority_ultra_high
-                           ]
-    dmaParams <- record (symbol uart <> "_dma_param") dmaInit
     txBuff    <- buffer (symbol uart <> "_tx_buff")
     index     <- value_ (symbol uart <> "_tx_index")
     size      <- value_ (symbol uart <> "_tx_size")
-
-{-
-    TODO: Generalize  remap dma
--}
 
     let rx = rx' gpio_pupd_none
     let tx = tx' gpio_pupd_none
@@ -88,30 +74,30 @@ mkUART uart rcu uartIRQ dma dmaIRQn rx' tx' = do
             enableIrqNvic       uartIRQ 0 0
             enablePeriphClock   rcu
 
-    pure UART { uart, rcu, uartIRQ, dma, dmaIRQn, dmaParams, rx, tx, txBuff, size }
-
-instance Handler I.HandleUART (UART n) where
-    addHandler (I.HandleUART UART{..} onReceive onTransmit onDrain) = do
-        addModule $ makeIRQHandler uartIRQ (handleUART uart onReceive onDrain)
-        addBody (makeIRQHandlerName dmaIRQn) (handleDMA dma uart onTransmit onDrain)
+    pure UART { uart, rcu, uartIRQ, rx, tx, txBuff, index, size }
 
 
 
-handleUART :: UART -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
+instance KnownNat n => Handler I.HandleUART (UART n) where
+    addHandler (I.HandleUART u@UART{..} onReceive onTransmit onDrain) = do
+        addModule $ makeIRQHandler uartIRQ (handleUART u onReceive onTransmit onDrain)
+
+
+
+handleUART :: KnownNat n => UART n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
 handleUART u@UART{..} onReceive onTransmit onDrain = do
     handleReceive uart onReceive
     handleTransmit u onTransmit
     mapM_ (handleDrain uart) onDrain
 
 
-handleTransmit :: UART -> Ivory eff () -> Ivory eff ()
+handleTransmit :: KnownNat n => UART n -> Ivory eff () -> Ivory eff ()
 handleTransmit UART{..} onTransmit = do
     index' <- deref index
     size'  <- deref size
     ifte_ (safeCast index' <? size')
         (do
-            txBuff <- ptrToRef. unsafeCoerce <$> deref refTxBuff
-            transmitData uart =<< deref (txBuff ! (toIx index':: Ix 65536))
+            transmitData uart =<< deref (txBuff ! toIx index')
             store index $ index' + 1
         )
         (do
@@ -164,21 +150,13 @@ instance KnownNat n => I.UART (UART n) where
 
     transmit UART{..} write = do
         store size 0
+        store index 1
         write $ \value -> do
             size' <- deref size
             store (txBuff ! toIx size') value
             store size $ size' + 1
-        let array = toCArray txBuff
-        store (dmaParams ~> memory_addr) =<< castArrayUint16ToUint32 array
-        store (dmaParams ~> number) . safeCast =<< deref size
-        deinitDMA dma
-        initDMA dma dmaParams
-        disableCirculationDMA dma
-        disableMemoryToMemoryDMA dma
-        transmitDMA uart usart_dent_enable
-        enableInterruptDMA dma dma_int_ftf
-        enableChannelDMA dma
-
+        enableInterrupt uart usart_int_tbe
+        transmitData uart =<< deref (txBuff ! 0)
     enable u = enableUSART (uart u)
 
 
