@@ -30,12 +30,12 @@ import           Ivory.Support
 
 
 
-data RS485 where
-    RS485 :: (UART u, Output o)
-          => { uart  :: u
+data RS485 n where
+    RS485 :: (UART (u n), Output o, KnownNat n)
+          => { uart  :: u n
              , rede  :: o
              }
-            -> RS485
+            -> RS485 n
 
 
 
@@ -47,8 +47,8 @@ data HandleRS485 r = HandleRS485
 
 
 
-rs485 :: (MonadState Context m, MonadReader (D.Domain p c) m, UART u, Show u, Output o, Pull p d)
-      => (p -> m u) -> (p -> d -> m o) -> m RS485
+rs485 :: (MonadState Context m, MonadReader (D.Domain p c) m, UART (u n), Show (u n), Output o, Pull p d, KnownNat n)
+      => (p -> m (u n)) -> (p -> d -> m o) -> m (RS485 n)
 rs485 uart' rede' = do
     mcu' <- asks D.mcu
     let peripherals' = peripherals mcu'
@@ -60,28 +60,26 @@ rs485 uart' rede' = do
     pure RS485 { uart, rede }
 
 
-transmit :: (KnownNat n)
-         => RS485
-         -> Buffer n Uint16
-         -> Uint16
-         -> Ivory (ProcEffects s2 t) ()
-transmit RS485{..} buffer length =
-    set rede >> U.transmit uart buffer length
+transmit :: RS485 n
+         -> ((Uint16 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ())
+         -> Ivory (ProcEffects s t) ()
+transmit RS485{..} write =
+    set rede >> U.transmit uart write
 
 
-configureRS485 :: RS485 -> Uint32 -> WordLength -> StopBit -> Parity -> Ivory eff ()
+configureRS485 :: RS485 n -> Uint32 -> WordLength -> StopBit -> Parity -> Ivory eff ()
 configureRS485 RS485{..} = configUART uart
 
 
 
-instance Handler HandleRS485 RS485 where
+instance Handler HandleRS485 (RS485 n) where
     addHandler (HandleRS485 RS485{..} onReceive onTransmit) = do
         addHandler $ HandleUART uart onReceive onTransmit (Just $ reset rede)
 
 
 
-setREDE :: RS485 -> Ivory eff ()
+setREDE :: RS485 n -> Ivory eff ()
 setREDE RS485{..} = set rede
 
-resetREDE :: RS485 -> Ivory eff ()
+resetREDE :: RS485 n -> Ivory eff ()
 resetREDE RS485{..} = reset rede

@@ -1,3 +1,4 @@
+{-# LANGUAGE DataKinds          #-}
 {-# LANGUAGE FlexibleContexts   #-}
 {-# LANGUAGE GADTs              #-}
 {-# LANGUAGE NamedFieldPuns     #-}
@@ -39,8 +40,8 @@ data Top where
 
 
 
-top :: (MonadState Context m, MonadReader (D.Domain p c) m, I.UART u, Input i, Pull p d, LazyTransport t)
-      => (p -> m u) -> (p -> d -> m i) -> t -> m Top
+top :: (MonadState Context m, MonadReader (D.Domain p c) m, I.UART (u 300) , Input i, Pull p d, LazyTransport t)
+      => (p -> m (u 300)) -> (p -> d -> m i) -> t -> m Top
 top uart' pin' transportUp = do
     mcu             <- asks D.mcu
     let peripherals' = peripherals mcu

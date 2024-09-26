@@ -35,17 +35,18 @@ import           Protocol.RS485.RBUS                 hiding (message)
 import           Protocol.RS485.RBUS.Master          as P
 import           Protocol.RS485.RBUS.Master.MacTable as T
 import           Protocol.RS485.RBUS.Master.Rx
+import qualified Interface.RS485 as RS
 
 
 
 rbus :: (MonadState Context m, MonadReader (D.Domain p c) m, LazyTransport t, Transport t)
-     => List n (m I.RS485) -> t -> m (List n RBUS)
+     => List n (m (I.RS485 300)) -> t -> m (List n RBUS)
 rbus rs485 transport = zipWithM (rbus' transport) rs485 nats
 
 
 
 rbus' :: (MonadState Context m, MonadReader (D.Domain p c) m, LazyTransport t, Transport t)
-     => t -> m I.RS485 -> Int -> m RBUS
+     => t -> m (I.RS485 300) -> Int -> m RBUS
 rbus' transport rs485 index = do
     rs               <- rs485
 
@@ -68,7 +69,6 @@ rbus' transport rs485 index = do
     msgQueue         <- queue  (name <> "_msg"              )
     msgBuff          <- buffer (name <> "_msg"              )
     msgIndex         <- value  (name <> "_msg_index"        ) 0
-    txBuff           <- buffer (name <> "_tx"               )
     rsBuff           <- buffer (name <> "_rs"               )
     rsSize           <- value  (name <> "_rs_size"          ) 0
     rxLock           <- value  (name <> "_rx_lock"          ) false
@@ -128,7 +128,6 @@ rbus' transport rs485 index = do
     let rbus = RBUS { index, clock, rs, mode, baudrate, lineControl, protocol
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgConfirm, msgTTL, msgQueue, msgBuff, msgIndex
-                    , txBuff
                     , rsBuff, rsSize
                     , rxLock, txLock
                     , rxTimestamp, txTimestamp
@@ -245,9 +244,10 @@ transmitRB485 list buff size = do
                 mode'       <- deref mode
                 when (iNot shouldInit' .&& mode' ==? modeRS485 .&& p ==? port) $ do
                     let size' = size - 2
-                    for (toIx size') $ \ix ->
-                        store (txBuff ! toIx (fromIx ix)) . safeCast =<< deref (buff ! (ix + 2))
-                    rsTransmit r $ safeCast size'
+                    RS.transmit rs $ \write -> 
+                        for (toIx size') $ \ix ->
+                            write . safeCast =<< deref (buff ! (ix + 2))
+                    store txLock true
         zipWithM_ run list $ fromIntegral <$> nats
 
 

@@ -23,6 +23,7 @@ import           Device.GD32F4xx.Timer            (Timer, cfg_timer_1,
                                                    cfg_timer_2, cfg_timer_3,
                                                    cfg_timer_6, cfg_timer_7)
 import           Device.GD32F4xx.UART
+import           GHC.TypeNats
 import           Interface.GPIO.Port
 import           Interface.Mac                    (Mac)
 import           Interface.MCU
@@ -40,15 +41,15 @@ import           Support.Device.GD32F4xx.USART
 
 
 
-type UART'         = forall m. MonadState Context m => m UART
-type Input'        = forall m. MonadState Context m => GPIO_PUPD -> m Input
-type Output'       = forall m. MonadState Context m => GPIO_PUPD -> m Output
-type OpenDrain'    = forall m. MonadState Context m => m OpenDrain
-type Timer'        = forall m. MonadState Context m => Uint32 -> Uint32 -> m Timer
-type PWM'          = forall m. MonadState Context m => Uint32 -> Uint32 -> m PWM
-type NeoPixel'     = forall m. MonadState Context m => m NeoPixel
-type OneWire'      = forall m. MonadState Context m => m OpenDrain -> m OneWire
-type Enet'         = forall m. MonadState Context m => m ENET
+type UART'         = forall m n. MonadState Context m => KnownNat n => m (UART n)
+type Input'        = forall m.   MonadState Context m => GPIO_PUPD -> m Input
+type Output'       = forall m.   MonadState Context m => GPIO_PUPD -> m Output
+type OpenDrain'    = forall m.   MonadState Context m => m OpenDrain
+type Timer'        = forall m.   MonadState Context m => Uint32 -> Uint32 -> m Timer
+type PWM'          = forall m.   MonadState Context m => Uint32 -> Uint32 -> m PWM
+type NeoPixel'     = forall m.   MonadState Context m => m NeoPixel
+type OneWire'      = forall m.   MonadState Context m => m OpenDrain -> m OneWire
+type Enet'         = forall m.   MonadState Context m => m ENET
 
 
 data GD32F4xx = GD32F4xx
@@ -544,7 +545,7 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
                       enet_irqn
 
     , etc = mkPage 0x802_0000
-    
+
     }
 
 

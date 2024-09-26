@@ -11,11 +11,15 @@ module Device.GD32F3x0.UART where
 
 import qualified Control.Monad                  as M
 import           Control.Monad.State            (MonadState)
+import           Control.Monad.Writer           (runWriter)
 import           Core.Context
 import           Core.Handler
+import           Data.Buffer
 import           Data.Maybe
 import           Data.Record
+import           Data.Value
 import           Device.GD32F3x0.GPIO.Port
+import           GHC.TypeNats
 import           Interface.UART                 (HandleUART (onDrain))
 import qualified Interface.UART                 as I
 import           Ivory.Language
@@ -31,11 +35,9 @@ import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.SYSCFG
 import           Support.Device.GD32F3x0.USART  as S
-import Data.Buffer
-import GHC.TypeNats
 
 
-data UART = UART
+data UART n = UART
     { uart      :: USART_PERIPH
     , rcu       :: RCU_PERIPH
     , uartIRQ   :: IRQn
@@ -44,10 +46,12 @@ data UART = UART
     , dmaParams :: Record DMA_PARAM_STRUCT
     , rx        :: Port
     , tx        :: Port
+    , txBuff    :: Buffer n Uint16
+    , size      :: Value Uint16
     }
 
 
-mkUART :: MonadState Context m
+mkUART :: (MonadState Context m, KnownNat n)
        => USART_PERIPH
        -> RCU_PERIPH
        -> IRQn
@@ -55,7 +59,7 @@ mkUART :: MonadState Context m
        -> IRQn
        -> (GPIO_PUPD -> Port)
        -> (GPIO_PUPD -> Port)
-       -> m UART
+       -> m (UART n)
 mkUART uart rcu uartIRQ dma dmaIRQn rx' tx' = do
 
     let dmaInit = dmaParam [ direction    .= ival dma_memory_to_peripheral
@@ -65,7 +69,9 @@ mkUART uart rcu uartIRQ dma dmaIRQn rx' tx' = do
                            , periph_width .= ival dma_peripheral_width_16bit
                            , priority     .= ival dma_priority_ultra_high
                            ]
-    dmaParams <- record (symbol dma <> "_dma_param") dmaInit
+    dmaParams <- record (symbol uart <> "_dma_param") dmaInit
+    txBuff    <- buffer (symbol uart <> "_tx_buff")
+    size      <- value_ (symbol uart <> "_size")
 
 {-
     TODO: Generalize  remap dma
@@ -84,9 +90,9 @@ mkUART uart rcu uartIRQ dma dmaIRQn rx' tx' = do
             enableIrqNvic       dmaIRQn 0 1
             enablePeriphClock   rcu
 
-    pure UART { uart, rcu, uartIRQ, dma, dmaIRQn, dmaParams, rx, tx }
+    pure UART { uart, rcu, uartIRQ, dma, dmaIRQn, dmaParams, rx, tx, txBuff, size }
 
-instance Handler I.HandleUART UART where
+instance Handler I.HandleUART (UART n) where
     addHandler (I.HandleUART UART{..} onReceive onTransmit onDrain) = do
         addModule $ makeIRQHandler uartIRQ (handleUART uart onReceive onDrain)
         addBody (makeIRQHandlerName dmaIRQn) (handleDMA dma uart onTransmit onDrain)
@@ -135,7 +141,7 @@ handleDrain uart onDrain = do
 
 
 
-instance I.UART UART where
+instance KnownNat n => I.UART (UART n) where
     configUART (UART {..}) baudrate length stop parity = do
         deinitUSART         uart
         configReceive       uart usart_receive_enable
@@ -147,11 +153,16 @@ instance I.UART UART where
         configParity        uart $ coerceParity     parity
         enableUSART         uart
 
-    
-    transmit UART{..} buff n = do
-        let array = toCArray buff
+
+    transmit UART{..} write = do
+        store size 0
+        write $ \value -> do
+            size' <- deref size
+            store (txBuff ! toIx size') value
+            store size $ size' + 1
+        let array = toCArray txBuff
         store (dmaParams ~> memory_addr) =<< castArrayUint16ToUint32 array
-        store (dmaParams ~> number) $ safeCast n
+        store (dmaParams ~> number) . safeCast =<< deref size
         deinitDMA dma
         initDMA dma dmaParams
         disableCirculationDMA dma
@@ -180,5 +191,5 @@ coerceParity I.Odd  = usart_pm_odd
 
 
 
-instance Show UART where
+instance Show (UART n) where
     show UART{..} = symbol uart

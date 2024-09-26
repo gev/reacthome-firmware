@@ -5,7 +5,6 @@
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE TypeOperators         #-}
 
 module Device.GD32F4xx.UART where
 
@@ -13,10 +12,13 @@ import qualified Control.Monad                 as M
 import           Control.Monad.State           (MonadState)
 import           Core.Context
 import           Core.Handler
+import           Data.Buffer
 import           Data.Foldable
 import           Data.Maybe
 import           Data.Record
+import           Data.Value
 import qualified Device.GD32F4xx.GPIO.Port     as G
+import           GHC.TypeNats
 import           Interface.UART                (HandleUART (onDrain))
 import qualified Interface.UART                as I
 import           Ivory.Language
@@ -32,7 +34,7 @@ import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.USART as S
 
 
-data UART = UART
+data UART n = UART
     { uart      :: USART_PERIPH
     , rcu       :: RCU_PERIPH
     , uartIRQ   :: IRQn
@@ -44,11 +46,13 @@ data UART = UART
     , dmaParams :: Record DMA_SINGLE_PARAM_STRUCT
     , rx        :: G.Port
     , tx        :: G.Port
+    , txBuff    :: Buffer n Uint16
+    , size      :: Value Uint16
     }
 
 
 
-mkUART :: MonadState Context m
+mkUART :: (MonadState Context m, KnownNat n)
        => USART_PERIPH
        -> RCU_PERIPH
        -> IRQn
@@ -59,7 +63,7 @@ mkUART :: MonadState Context m
        -> IRQn
        -> (GPIO_PUPD -> G.Port)
        -> (GPIO_PUPD -> G.Port)
-       -> m UART
+       -> m (UART n)
 mkUART uart rcu uartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn rx' tx' = do
 
     let dmaInit = dmaParam [ periph_inc          .= ival dma_periph_increase_disable
@@ -69,7 +73,9 @@ mkUART uart rcu uartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn rx' tx' = do
                            , direction           .= ival dma_memory_to_periph
                            , priority            .= ival dma_priority_ultra_high
                            ]
-    dmaParams  <- record (symbol uart <> "_dma_param") dmaInit
+    dmaParams <- record (symbol uart <> "_dma_param") dmaInit
+    txBuff    <- buffer (symbol uart <> "_tx_buff")
+    size      <- value_ (symbol uart <> "_size")
 
     let rx = rx' gpio_pupd_none
     let tx = tx' gpio_pupd_none
@@ -84,11 +90,11 @@ mkUART uart rcu uartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn rx' tx' = do
             enableIrqNvic       dmaIRQn 1 0
             enablePeriphClock   rcu
 
-    pure UART { uart, rcu, uartIRQ, dmaRcu, dmaPer, dmaCh, dmaSubPer, dmaIRQn, dmaParams, rx, tx }
+    pure UART { uart, rcu, uartIRQ, dmaRcu, dmaPer, dmaCh, dmaSubPer, dmaIRQn, dmaParams, rx, tx, txBuff, size }
 
 
 
-instance Handler I.HandleUART UART where
+instance Handler I.HandleUART (UART n) where
     addHandler (I.HandleUART UART{..} onReceive onTransmit onDrain) = do
         addModule $ makeIRQHandler uartIRQ (handleUART uart onReceive onDrain)
         addModule $ makeIRQHandler dmaIRQn (handleDMA dmaPer dmaCh uart onTransmit onDrain)
@@ -137,7 +143,7 @@ handleDrain uart onDrain = do
 
 
 
-instance I.UART UART where
+instance KnownNat n => I.UART (UART n) where
     configUART (UART {..}) baudrate length stop parity = do
         deinitUSART         uart
         configReceive       uart usart_receive_enable
@@ -151,10 +157,15 @@ instance I.UART UART where
 
 
 
-    transmit UART{..} buff n = do
-        let array = toCArray buff
+    transmit UART{..} write = do
+        store size 0
+        write $ \value -> do
+            size' <- deref size
+            store (txBuff ! toIx size') value
+            store size $ size' + 1
+        let array = toCArray txBuff
         store (dmaParams ~> memory0_addr) =<< castArrayUint16ToUint32 array
-        store (dmaParams ~> number) $ safeCast n
+        store (dmaParams ~> number) . safeCast =<< deref size
         deinitDMA dmaPer dmaCh
         initSingleDMA dmaPer dmaCh dmaParams
         disableCirculationDMA dmaPer dmaCh
@@ -184,5 +195,5 @@ coerceParity I.Odd  = usart_pm_odd
 
 
 
-instance Show UART where
+instance Show (UART n) where
     show UART{..} = symbol uart

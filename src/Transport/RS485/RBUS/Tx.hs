@@ -61,14 +61,13 @@ doTransmitMessage r@RBUS{..} = do
         ifte_ (ttl >? 0)
             (do offset <- deref $ msgOffset ! ix
                 size   <- deref $ msgSize ! ix
-                sx     <- local $ ival offset
-                for (toIx size) $ \dx -> do
-                    sx' <- deref sx
-                    v <- deref $ msgBuff ! toIx sx'
-                    store sx $ sx' + 1
-                    store (txBuff ! dx) $ safeCast v
+                RS.transmit rs $ \write ->
+                    for (toIx size) $ \dx -> do
+                        let sx = dx + toIx offset
+                        write . safeCast =<< deref (msgBuff ! sx)
                 store (msgTTL ! ix) $ ttl - 1
-                rsTransmit r $ safeCast size
+                store txTimestamp =<< getSystemTime clock
+                store txLock true
             )
             (remove msgQueue)
 
@@ -102,8 +101,10 @@ doPing r@RBUS{..} = do
 toRS :: (Slave 255 -> (Uint8 -> Ivory eff ()) -> Ivory (ProcEffects s ()) ())
      -> RBUS
      -> Ivory (ProcEffects s ()) ()
-toRS transmit r@RBUS{..} =
-    rsTransmit r . safeCast =<< run protocol transmit txBuff 0
+toRS transmit r@RBUS{..} = do
+    RS.transmit rs $ \write -> transmit protocol (write . safeCast)
+    store txTimestamp =<< getSystemTime clock
+    store txLock true
 
 
 {--
@@ -140,13 +141,6 @@ toQueue' RBUS{..} size' transmit = do
             store (msgSize   ! ix) size
             store (msgTTL    ! ix) messageTTL
 
-
-
-rsTransmit :: RBUS -> Uint16 -> Ivory (ProcEffects s ()) ()
-rsTransmit RBUS{..} size = do
-    RS.transmit rs txBuff size
-    store txTimestamp =<< getSystemTime clock
-    store txLock true
 
 
 run :: (KnownNat l, SafeCast Uint8 v, IvoryStore v)
