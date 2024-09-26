@@ -150,13 +150,14 @@ instance KnownNat n => I.UART (UART n) where
 
     transmit UART{..} write = do
         store size 0
-        store index 1
+        store index 0
         write $ \value -> do
             size' <- deref size
             store (txBuff ! toIx size') value
             store size $ size' + 1
         enableInterrupt uart usart_int_tbe
-        transmitData uart =<< deref (txBuff ! 0)
+
+
     enable u = enableUSART (uart u)
 
 
