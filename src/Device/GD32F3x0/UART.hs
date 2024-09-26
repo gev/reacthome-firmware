@@ -87,12 +87,12 @@ instance KnownNat n => Handler I.HandleUART (UART n) where
 handleUART :: KnownNat n => UART n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
 handleUART u@UART{..} onReceive onTransmit onDrain = do
     handleReceive uart onReceive
-    handleTransmit u onTransmit
+    handleTransmit u onTransmit onDrain
     mapM_ (handleDrain uart) onDrain
 
 
-handleTransmit :: KnownNat n => UART n -> Ivory eff () -> Ivory eff ()
-handleTransmit UART{..} onTransmit = do
+handleTransmit :: KnownNat n => UART n -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
+handleTransmit UART{..} onTransmit onDrain = do
     index' <- deref index
     size'  <- deref size
     ifte_ (safeCast index' <? size')
@@ -101,8 +101,9 @@ handleTransmit UART{..} onTransmit = do
             store index $ index' + 1
         )
         (do
-            disableInterrupt    uart usart_int_tbe
-            enableInterrupt     uart usart_int_tc
+            M.when (isJust onDrain) $ do
+                disableInterrupt    uart usart_int_tbe
+                enableInterrupt     uart usart_int_tc
             onTransmit
         )
 
