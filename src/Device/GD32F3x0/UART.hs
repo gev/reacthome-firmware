@@ -82,16 +82,6 @@ instance Handler I.HandleUART UART where
         addModule $ makeIRQHandler uartIRQ (handleUART u onReceive onTransmit onDrain)
 
 
--- handleDMA :: DMA_CHANNEL -> USART_PERIPH -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
--- handleDMA dma uart onTransmit onDrain = do
---     f <- getInterruptFlagDMA    dma   dma_int_flag_ftf
---     when f $ do
---         clearInterruptFlagDMA   dma   dma_int_flag_g
---         M.when (isJust onDrain) $ do
---             disableInterrupt    uart usart_int_rbne
---             enableInterrupt     uart usart_int_tc
---         onTransmit
-
 
 handleUART :: UART -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
 handleUART u@UART{..} onReceive onTransmit onDrain = do
@@ -110,7 +100,11 @@ handleTransmit UART{..} onTransmit = do
             transmitData uart =<< deref (txBuff ! (toIx index':: Ix 65536))
             store index $ index' + 1
         )
-        onTransmit
+        (do
+            disableInterrupt    uart usart_int_tbe
+            enableInterrupt     uart usart_int_tc
+            onTransmit
+        )
 
 
 handleReceive :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
@@ -157,7 +151,7 @@ instance I.UART UART where
     transmit UART{..} buff n = do
         store refTxBuff (unsafeCoerce buff)
         store size n
-        store index 1
+        store index 0
         enableInterrupt uart usart_int_tbe
         transmitData uart =<< deref (buff ! 0)
 
