@@ -25,9 +25,7 @@ import           Support.Device.GD32F3x0.GPIO hiding (mode, rcu)
 import           Support.Device.GD32F3x0.RCU
 
 
-data ADC = ADC {
-    channel :: Uint8
-}
+newtype ADC = ADC { channel :: Uint8 }
 
 
 
@@ -42,29 +40,27 @@ mkADC mkPin channel = do
 
 initADC :: ADC -> Ivory eff ()
 initADC ADC{..} = do
-    enablePeriphClock   rcu_adc
-    -- configClockADC      rcu_adcck_apb2_div2
-    configDataAlignmentADC adc_dataalign_right
-    configChannelLengthADC adc_regular_channel 1
+    enablePeriphClock              rcu_adc
+    configClockADC                 rcu_adcck_apb2_div2
+    configDataAlignmentADC         adc_dataalign_right
+    configChannelLengthADC         adc_regular_channel 1
     configExternalTriggerSourceADC adc_regular_channel adc_exttrig_regular_none
-    configExternalTriggerADC adc_regular_channel true
+    configExternalTriggerADC       adc_regular_channel true
     enableADC
     enableCalibrationADC
     enableDmaModeADC
-    enableSoftwareTriggerADC        adc_regular_channel
+    enableSoftwareTriggerADC       adc_regular_channel
 
 
 instance I.ADC ADC where
+
     getResolution = const 12
-    getAnalog a@ADC{} = readAnalog a
 
-
-readAnalog :: ADC -> Ivory (ProcEffects s t) Uint16
-readAnalog ADC{..} = do
-    configRegularChannelADC 0 channel adc_sampletime_55point5
-    enableSoftwareTriggerADC adc_regular_channel
-    forever $ do
-        flag <- getFlagADC adc_flag_eoc
-        when (iNot flag) breakOut
-    clearFlagADC adc_flag_eoc
-    readRegularDataADC
+    getAnalog ADC{..} = do
+        configRegularChannelADC 0 channel adc_sampletime_55point5
+        enableSoftwareTriggerADC adc_regular_channel
+        forever $ do
+            flag <- getFlagADC adc_flag_eoc
+            when flag breakOut
+        clearFlagADC adc_flag_eoc
+        readRegularDataADC
