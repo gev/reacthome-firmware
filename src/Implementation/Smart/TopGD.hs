@@ -18,7 +18,6 @@ import           Core.Transport
 import           Data.Buffer
 import           Data.Serialize
 import           Data.Value
-import           Device.GD32F3x0.ADC          (ADC (buff))
 import           Endpoint.DInputs             as E (DInputs)
 import           Feature.DInputs              as DI (DInputs (getDInputs),
                                                      forceSyncDInputs)
