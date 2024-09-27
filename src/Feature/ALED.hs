@@ -30,6 +30,7 @@ import qualified Endpoint.ALED                as E
 import qualified Endpoint.ALED.Animation      as E
 import           Endpoint.ALED.Animation.Data (timeEnd)
 import qualified Endpoint.ALED.Animation.Data as E
+import           GHC.Arr                      (array)
 import           GHC.TypeNats
 import           Interface.Display            (Display, Render (Render))
 import           Interface.Flash              as F
@@ -278,6 +279,10 @@ testAnimation animation ALED{..} buff size = do
             store (colorAnimation ~> E.inLoop) false
             store (colorAnimation ~> E.animationLoop) true
             store (colorAnimation ~> E.animationState) true
+            store (colorAnimation ~> E.params ! 0) 255
+            store (colorAnimation ~> E.params ! 1) 255
+            store (colorAnimation ~> E.params ! 2) 255
+            store (colorAnimation ~> E.params ! 3) 255
 
             let maskAnimation = E.maskAnimations getALED ! ix
             store (maskAnimation ~> E.kind) animation
@@ -356,7 +361,7 @@ onALedAnimationPlay animations groups transport buff size = do
             store (animation ~> E.kind) kind
 
             let dt' = 4 * dt / (safeCast duration + 1)
-            let phase' = dt' * (safeCast phase - 128)
+            let phase' = dt * (safeCast phase - 128)
 
             store (animation ~> E.dt) dt'
             store (animation ~> E.phase) phase'

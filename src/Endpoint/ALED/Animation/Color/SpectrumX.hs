@@ -13,8 +13,9 @@ renderSpectrumX :: IFloat
                 -> Record AnimationStruct
                 -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 renderSpectrumX time segmentSize pixel subpixel animation = do
-    phase' <- deref $ animation ~> params ! toIx subpixel
+    phase' <- deref $ animation ~> params ! toIx (2 * subpixel)
+    k'     <- deref $ animation ~> params ! toIx (2 * subpixel + 1)
     let x   = time + safeCast pixel / safeCast segmentSize :: IFloat
     let i   = castDefault $ 255 * x + safeCast phase' :: Sint32
     cos'   <- deref $ addrOf cosT ! toIx i
-    pure $ 255 * cos'
+    pure $ safeCast k' * cos'
