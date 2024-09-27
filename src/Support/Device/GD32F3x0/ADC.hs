@@ -21,6 +21,9 @@ module Support.Device.GD32F3x0.ADC
     , EXTERNAL_TRIGGER_ADC
     , adc_exttrig_regular_none
 
+    , FLAG_ADC
+    , adc_flag_eoc
+
     , adc_rdata
 
     , configSpecialFunctionADC
@@ -33,6 +36,9 @@ module Support.Device.GD32F3x0.ADC
     , enableCalibrationADC
     , enableDmaModeADC
     , enableSoftwareTriggerADC
+    , readRegularDataADC
+    , getFlagADC
+    , clearFlagADC
 
     , inclADC
     ) where
@@ -80,6 +86,12 @@ newtype EXTERNAL_TRIGGER_ADC = EXTERNAL_TRIGGER_ADC Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 adc_exttrig_regular_none  = EXTERNAL_TRIGGER_ADC $ ext "ADC_EXTTRIG_REGULAR_NONE"
+
+
+newtype FLAG_ADC = FLAG_ADC Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
+
+adc_flag_eoc  = FLAG_ADC $ ext "ADC_FLAG_EOC"
 
 
 adc_rdata  = ext "(uint32_t) &ADC_RDATA" :: Uint32
@@ -155,6 +167,28 @@ adc_software_trigger_enable :: Def ('[CHANNEL_GROUP_ADC] :-> ())
 adc_software_trigger_enable = fun "adc_software_trigger_enable"
 
 
+readRegularDataADC :: Ivory eff Uint16
+readRegularDataADC = call adc_regular_data_read
+
+adc_regular_data_read :: Def ('[] :-> Uint16)
+adc_regular_data_read = fun "adc_regular_data_read"
+
+
+getFlagADC :: FLAG_ADC -> Ivory eff IBool
+getFlagADC = call adc_flag_get
+
+adc_flag_get :: Def ('[FLAG_ADC] :-> IBool)
+adc_flag_get = fun "adc_flag_get"
+
+
+clearFlagADC :: FLAG_ADC -> Ivory eff ()
+clearFlagADC = call_ adc_flag_clear
+
+adc_flag_clear :: Def ('[FLAG_ADC] :-> ())
+adc_flag_clear = fun "adc_flag_clear"
+
+
+
 
 inclADC :: ModuleDef
 inclADC = do
@@ -170,6 +204,8 @@ inclADC = do
 
     inclSym adc_exttrig_regular_none
 
+    inclSym adc_flag_eoc
+
     inclSym adc_rdata
 
     incl adc_special_function_config
@@ -182,3 +218,6 @@ inclADC = do
     incl adc_calibration_enable
     incl adc_dma_mode_enable
     incl adc_software_trigger_enable
+    incl adc_regular_data_read
+    incl adc_flag_get
+    incl adc_flag_clear
