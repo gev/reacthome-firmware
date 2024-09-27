@@ -48,8 +48,8 @@ import           Support.Device.GD32F3x0.USART
 
 
 
-type UART'        = forall m.   MonadState Context m => m UART
-type I2C'         = forall m n. KnownNat n => MonadState Context m => m (I2C n)
+type UART'        = forall m n. MonadState Context m => KnownNat n => m (UART n)
+type I2C'         = forall m n. MonadState Context m => KnownNat n => m (I2C n)
 type Input'       = forall m.   MonadState Context m => GPIO_PUPD -> m Input
 type Output'      = forall m.   MonadState Context m => GPIO_PUPD -> m Output
 type OpenDrain'   = forall m.   MonadState Context m => m OpenDrain
@@ -185,16 +185,12 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
     { uart_0    = mkUART usart0
                          rcu_usart0
                          usart0_irqn
-                         dma_ch1
-                         dma_channel1_2_irqn
                          (pb_6 af_0)
                          (pb_7 af_0)
 
     , uart_1    = mkUART usart1
                          rcu_usart1
                          usart1_irqn
-                         dma_ch3
-                         dma_channel3_4_irqn
                          (pa_3 af_1)
                          (pa_2 af_1)
 

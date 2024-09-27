@@ -31,8 +31,8 @@ import           Transport.UART.RBUS.Tx
 
 
 
-rbus :: (MonadState Context m, MonadReader (D.Domain p c) m, UART u, Controller c)
-     => (p -> m u) -> Uint32 -> m RBUS
+rbus :: (MonadState Context m, MonadReader (D.Domain p c) m, UART (u 300), Controller c)
+     => (p -> m (u 300)) -> Uint32 -> m RBUS
 rbus uart' speed = do
     mcu            <- asks D.mcu
     implementation <- asks D.implementation
@@ -49,8 +49,8 @@ rbus uart' speed = do
 
 
 
-mkRbus :: (MonadState Context m, MonadReader (D.Domain p c) m, UART u)
-     => String -> u -> Uint32 -> (forall s. Buffer 255 Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()) -> m RBUS
+mkRbus :: (MonadState Context m, MonadReader (D.Domain p c) m, UART (u 300))
+     => String -> u 300 -> Uint32 -> (forall s. Buffer 255 Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()) -> m RBUS
 mkRbus name uart speed onMessage = do
     mcu           <- asks D.mcu
     model         <- asks D.model
@@ -64,7 +64,6 @@ mkRbus name uart speed onMessage = do
     msgQueue      <- queue  (name <> "_msg"         )
     msgBuff       <- buffer (name <> "_msg"         )
     msgIndex      <- value  (name <> "_msg_index"   ) 0
-    txBuff        <- buffer (name <> "_tx"          )
     discoveryBuff <- buffer (name <> "_discovery"   )
     txLock        <- value  (name <> "_tx_lock"     ) false
     rxTimestamp   <- value  (name <> "_timestamp_rx") 0
@@ -76,7 +75,6 @@ mkRbus name uart speed onMessage = do
                     , clock, uart, protocol
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgQueue, msgBuff, msgIndex
-                    , txBuff
                     , txLock
                     , discoveryBuff
                     , rxTimestamp

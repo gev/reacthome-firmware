@@ -23,6 +23,7 @@ import           Device.GD32F4xx.Timer            (Timer, cfg_timer_1,
                                                    cfg_timer_2, cfg_timer_3,
                                                    cfg_timer_6, cfg_timer_7)
 import           Device.GD32F4xx.UART
+import           GHC.TypeNats
 import           Interface.GPIO.Port
 import           Interface.Mac                    (Mac)
 import           Interface.MCU
@@ -40,15 +41,15 @@ import           Support.Device.GD32F4xx.USART
 
 
 
-type UART'         = forall m. MonadState Context m => m UART
-type Input'        = forall m. MonadState Context m => GPIO_PUPD -> m Input
-type Output'       = forall m. MonadState Context m => GPIO_PUPD -> m Output
-type OpenDrain'    = forall m. MonadState Context m => m OpenDrain
-type Timer'        = forall m. MonadState Context m => Uint32 -> Uint32 -> m Timer
-type PWM'          = forall m. MonadState Context m => Uint32 -> Uint32 -> m PWM
-type NeoPixel'     = forall m. MonadState Context m => m NeoPixel
-type OneWire'      = forall m. MonadState Context m => m OpenDrain -> m OneWire
-type Enet'         = forall m. MonadState Context m => m ENET
+type UART'         = forall m n. MonadState Context m => KnownNat n => m (UART n)
+type Input'        = forall m.   MonadState Context m => GPIO_PUPD -> m Input
+type Output'       = forall m.   MonadState Context m => GPIO_PUPD -> m Output
+type OpenDrain'    = forall m.   MonadState Context m => m OpenDrain
+type Timer'        = forall m.   MonadState Context m => Uint32 -> Uint32 -> m Timer
+type PWM'          = forall m.   MonadState Context m => Uint32 -> Uint32 -> m PWM
+type NeoPixel'     = forall m.   MonadState Context m => m NeoPixel
+type OneWire'      = forall m.   MonadState Context m => m OpenDrain -> m OneWire
+type Enet'         = forall m.   MonadState Context m => m ENET
 
 
 data GD32F4xx = GD32F4xx
@@ -259,66 +260,36 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
     { uart_0    = mkUART usart0
                          rcu_usart0
                          usart0_irqn
-                         rcu_dma1
-                         dma1
-                         dma_ch7
-                         dma_subperi4
-                         dma1_channel7_irqn
                          (pb_7 af_7)
                          (pb_6 af_7)
 
     , uart_1    = mkUART usart1
                          rcu_usart1
                          usart1_irqn
-                         rcu_dma0
-                         dma0
-                         dma_ch6
-                         dma_subperi4
-                         dma0_channel6_irqn
                          (pd_6 af_7)
                          (pd_5 af_7)
 
     , uart_2    = mkUART usart2
                          rcu_usart2
                          usart2_irqn
-                         rcu_dma0
-                         dma0
-                         dma_ch3
-                         dma_subperi4
-                         dma0_channel3_irqn
                          (pd_9 af_7)
                          (pd_8 af_7)
 
     , uart_3    = mkUART uart3
                          rcu_uart3
                          uart3_irqn
-                         rcu_dma0
-                         dma0
-                         dma_ch4
-                         dma_subperi4
-                         dma0_channel4_irqn
                          (pc_11 af_8)
                          (pc_10 af_8)
 
     , uart_5    = mkUART usart5
                          rcu_usart5
                          usart5_irqn
-                         rcu_dma1
-                         dma1
-                         dma_ch6
-                         dma_subperi5
-                         dma1_channel6_irqn
                          (pc_7 af_8)
                          (pc_6 af_8)
 
     , uart_7    = mkUART uart7
                          rcu_uart7
                          uart7_irqn
-                         rcu_dma0
-                         dma0
-                         dma_ch0
-                         dma_subperi5
-                         dma0_channel0_irqn
                          (pe_0 af_8)
                          (pe_1 af_8)
 
@@ -544,7 +515,7 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
                       enet_irqn
 
     , etc = mkPage 0x802_0000
-    
+
     }
 
 

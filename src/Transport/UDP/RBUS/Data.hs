@@ -5,13 +5,12 @@ module Transport.UDP.RBUS.Data where
 import           Data.Buffer
 import           Data.Record
 import           Data.Value
-import           Feature.RS485.RBUS.Data  (RBUS (shouldDiscovery))
+import           Feature.RS485.RBUS.Data (RBUS (shouldDiscovery))
 import           Interface.Mac
 import           Ivory.Language
 import           Support.Lwip.IP_addr
 import           Support.Lwip.Netif
 import           Support.Lwip.Udp
-import           Transport.UART.RBUS.Data (RBUS (txBuff))
 
 data RBUS = RBUS
     { mac             :: Mac

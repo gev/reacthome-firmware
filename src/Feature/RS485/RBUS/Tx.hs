@@ -66,15 +66,13 @@ doTransmitMessage r@RBUS{..} = do
                         remove msgQueue
                     )
                     (do
-                        sx    <- local $ ival offset
                         size  <- deref $ msgSize ! ix
-                        for (toIx size) $ \dx -> do
-                            sx' <- deref sx
-                            v <- deref $ msgBuff ! toIx sx'
-                            store sx $ sx' + 1
-                            store (txBuff ! dx) v
+                        RS.transmit rs $ \write ->
+                            for (toIx size) $ \dx -> do
+                                let sx = dx + toIx offset
+                                write . safeCast =<< deref (msgBuff ! sx)
                         store (msgTTL ! ix) $ ttl - 1
-                        rsTransmit r size
+                        store txLock true
                     )
             )
             (remove msgQueue)
@@ -86,7 +84,7 @@ doDiscovery :: RBUS -> Ivory (ProcEffects s ()) ()
 doDiscovery r@RBUS{..} = do
     store shouldDiscovery false
     address' <- deref discoveryAddress
-    toRS (transmitDiscovery address') r 0
+    toRS (transmitDiscovery address') r
 
 
 
@@ -94,7 +92,7 @@ doConfirm :: RBUS -> Ivory (ProcEffects s ()) ()
 doConfirm r@RBUS{..} = do
     store shouldConfirm false
     address' <- deref confirmAddress
-    toRS (transmitConfirm address') r 0
+    toRS (transmitConfirm address') r
 
 
 
@@ -104,17 +102,17 @@ doPing r@RBUS{..} = do
     t1 <- getSystemTime clock
     when (t1 - t0 >? 5000) $ do
         address' <- deref pingAddress
-        toRS (transmitPing address') r 0
+        toRS (transmitPing address') r
         store txTimestamp t1
 
 
 
 toRS :: (Master 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) ())
      -> RBUS
-     -> Uint16
      -> Ivory (ProcEffects s ()) ()
-toRS transmit r@RBUS{..} offset =
-    rsTransmit r =<< run protocol transmit txBuff offset
+toRS transmit r@RBUS{..} = do
+    RS.transmit rs $ \write -> transmit protocol (write . safeCast)
+    store txLock true
 
 
 
@@ -136,14 +134,6 @@ toQueue RBUS{..} address buff offset size = push msgQueue $ \i -> do
     store (msgOffset ! ix) index
     store (msgSize   ! ix) size
     store (msgTTL    ! ix) messageTTL
-
-
-
-rsTransmit :: RBUS -> Uint16 -> Ivory (ProcEffects s t) ()
-rsTransmit RBUS{..} size = do
-    let array = toCArray txBuff
-    RS.transmit rs array size
-    store txLock true
 
 
 

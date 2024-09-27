@@ -30,7 +30,7 @@ import           Transport.RS485.RBUS.Tx
 
 
 rbus :: (MonadState Context m, MonadReader (D.Domain p c) m, Controller c)
-     => m RS485 -> m RBUS
+     => m (RS485 300) -> m RBUS
 rbus rs485 = do
 
     model          <- asks D.model
@@ -52,7 +52,6 @@ rbus rs485 = do
     msgQueue       <- queue  (name <> "_msg"           )
     msgBuff        <- buffer (name <> "_msg"           )
     msgIndex       <- value  (name <> "_msg_index"     ) 0
-    txBuff         <- buffer (name <> "_tx"            )
     initBuff       <- values (name <> "_init_request"  ) [0xf2]
     rxLock         <- value  (name <> "_rx_lock"       ) false
     txLock         <- value  (name <> "_tx_lock"       ) false
@@ -89,7 +88,7 @@ rbus rs485 = do
     let rbus = RBUS { clock, rs, protocol
                     , rxBuff, rxQueue
                     , msgOffset, msgSize, msgTTL, msgQueue, msgBuff, msgIndex
-                    , txBuff, initBuff
+                    , initBuff
                     , rxLock, txLock
                     , rxTimestamp, txTimestamp, initTimestamp
                     , shouldConfirm, shouldInit
