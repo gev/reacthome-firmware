@@ -62,7 +62,7 @@ renderColor random animation segment segmentSize pixel pixelSize subpixel value 
                        , 0x10 --> renderSpectrumT time' subpixel
                        , 0x11 --> renderSpectrumX time' segmentSize pixel subpixel
                        , 0x20 --> renderRandomT   time' subpixel value random
-                       , 0x21 --> renderRandomX   value random
+                       , 0x21 --> renderRandomX   subpixel value random
                        , true ==> pure value
                        ]
                  )
