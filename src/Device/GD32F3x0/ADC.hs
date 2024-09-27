@@ -60,8 +60,8 @@ instance I.ADC ADC where
 
 
 readAnalog :: ADC -> Ivory (ProcEffects s t) Uint16
-readAnalog a@ADC{} = do
-    configRegularChannelADC 0 (channel a) adc_sampletime_55point5
+readAnalog ADC{..} = do
+    configRegularChannelADC 0 channel adc_sampletime_55point5
     enableSoftwareTriggerADC adc_regular_channel
     forever $ do
         flag <- getFlagADC adc_flag_eoc
