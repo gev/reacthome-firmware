@@ -17,12 +17,12 @@ import           Data.Record
 import           Device.GD32F3x0.GPIO.Port
 import qualified Interface.ADC                as I
 import           Ivory.Language
+import           Ivory.Stdlib
 import           Support.Cast
 import           Support.Device.GD32F3x0.ADC
 import           Support.Device.GD32F3x0.DMA
 import           Support.Device.GD32F3x0.GPIO hiding (mode, rcu)
 import           Support.Device.GD32F3x0.RCU
-import           Ivory.Stdlib
 
 
 data ADC = ADC {
@@ -59,7 +59,7 @@ instance I.ADC ADC where
     getAnalog a@ADC{} = readAnalog a
 
 
-readAnalog :: ADC -> Ivory eff Uint16
+readAnalog :: ADC -> Ivory (ProcEffects s t) Uint16
 readAnalog a@ADC{} = do
     configRegularChannelADC 0 (channel a) adc_sampletime_55point5
     enableSoftwareTriggerADC adc_regular_channel
