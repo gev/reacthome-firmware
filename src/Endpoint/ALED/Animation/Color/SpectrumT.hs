@@ -9,10 +9,12 @@ import           Ivory.Language
 renderSpectrumT :: IFloat
                 -> Sint32
                 -> Record AnimationStruct
+                -> IFloat
                 -> Ivory (AllowBreak (ProcEffects s ())) IFloat
-renderSpectrumT time subpixel animation = do
-    phase' <- deref $ animation ~> params ! toIx (2 * subpixel)
-    k'     <- deref $ animation ~> params ! toIx (2 * subpixel + 1)
+renderSpectrumT time subpixel animation brightness = do
+    phase' <- deref $ animation ~> params ! toIx (3 * subpixel)
+    min    <- safeCast <$> deref (animation ~> params ! toIx (3 * subpixel + 1))
+    max    <- safeCast <$> deref (animation ~> params ! toIx (3 * subpixel + 2))
     let i   = castDefault $ (time + safeCast phase' / 255) * 255 :: Sint32
     cos'   <- deref $ addrOf cosT ! toIx i
-    pure $ safeCast k' * cos'
+    pure $ brightness * (cos' * (max - min) + min)

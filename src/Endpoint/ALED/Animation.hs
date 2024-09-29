@@ -40,7 +40,8 @@ import           Util.Random
 
 
 
-renderColor :: Random Uint8
+renderColor :: IFloat
+            -> Random Uint8
             -> Record AnimationStruct
             -> Sint32
             -> Uint16
@@ -49,13 +50,13 @@ renderColor :: Random Uint8
             -> Sint32
             -> IFloat
             -> Ivory (AllowBreak (ProcEffects s ())) IFloat
-renderColor random animation segment segmentSize pixel pixelSize subpixel value = do
+renderColor brightness random animation segment segmentSize pixel pixelSize subpixel value = do
     animationState' <- deref $ animation ~> animationState
     ifte animationState'
          (do
             time' <- getTime animation segment
             kind' <- deref $ animation ~> kind
-            let (-->) p r = kind' ==? p ==> r animation
+            let (-->) p r = kind' ==? p ==> r animation brightness
             ifte (time' <? 0 .|| time' >? 1)
                  (pure value)
                  (cond [ 0x00 --> renderFade      time' subpixel value
@@ -121,9 +122,10 @@ getTime :: Record AnimationStruct
         -> Sint32
         -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 getTime animation segment = do
-      inLoop'  <- deref $ animation ~> inLoop
-      phase'   <- deref $ animation ~> phase
-      time'    <- deref $ animation ~> time
+      inverseTime' <- deref $ animation ~> inverseTime
+      inLoop'      <- deref $ animation ~> inLoop
+      phase'       <- deref $ animation ~> phase
+      time'        <- deref $ animation ~> time
       let phase = safeCast segment * phase'
       t <- local . ival $ time' - phase
       when inLoop' $ do
@@ -131,4 +133,6 @@ getTime animation segment = do
             cond_ [ t' <? 0 ==> store t (t' - floorF t')
                   , t' >? 1 ==> store t (ceilF t' - t')
                   ]
+      t' <- deref t
+      when inverseTime' $ store t (1 - t')
       deref t

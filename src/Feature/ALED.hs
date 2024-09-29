@@ -16,25 +16,18 @@ import           Control.Monad.State          (MonadState)
 import           Core.Actions
 import           Core.Context
 import           Core.Domain                  as D
-import           Core.FSM                     (transit)
 import           Core.Handler
 import           Core.Task
 import           Core.Transport               (LazyTransport (lazyTransmit))
 import           Data.Buffer
-import           Data.Display.Canvas1D
 import           Data.Record
-import           Data.Serialize
 import           Data.Value
-import           Endpoint.ALED                (brightness)
 import qualified Endpoint.ALED                as E
 import qualified Endpoint.ALED.Animation      as E
-import           Endpoint.ALED.Animation.Data (timeEnd)
 import qualified Endpoint.ALED.Animation.Data as E
-import           GHC.Arr                      (array)
 import           GHC.TypeNats
 import           Interface.Display            (Display, Render (Render))
 import           Interface.Flash              as F
-import           Interface.Mac
 import           Interface.MCU
 import           Ivory.Language
 import           Ivory.Language.Proxy
@@ -166,9 +159,10 @@ update ALED{..} random = do
                           for (toIx pixelSize' :: Ix np) $ \subpixelX -> do
                               px' <- deref px
                               let p = E.subPixels getALED ! px'
-                              p' <- (/ brightness') . safeCast <$> deref p
+                              p' <- safeCast <$> deref p
                               c' <- ifte colorAnimationSplit'
-                                      (E.renderColor random
+                                      (E.renderColor brightness'
+                                                     random
                                                      colorAnimation
                                                      (fromIx segmentX)
                                                      (safeCast segmentSize')
@@ -177,7 +171,8 @@ update ALED{..} random = do
                                                      (fromIx subpixelX)
                                                      p'
                                       )
-                                      (E.renderColor random
+                                      (E.renderColor brightness'
+                                                     random
                                                      colorAnimation
                                                      0
                                                      groupSize'
@@ -186,7 +181,7 @@ update ALED{..} random = do
                                                      (fromIx subpixelX)
                                                      p'
                                       )
-                              let v' = c' * m' * brightness'
+                              let v' = c' * m'
                               cond_ [ v' >? 255 ==> store p 255 >> store state true
                                     , v' >? 0 ==> store p (castDefault v') >> store state true
                                     , true ==> store p 0
@@ -279,10 +274,15 @@ testAnimation animation ALED{..} buff size = do
             store (colorAnimation ~> E.inLoop) false
             store (colorAnimation ~> E.animationLoop) true
             store (colorAnimation ~> E.animationState) true
-            store (colorAnimation ~> E.params ! 0) 255
+            store (colorAnimation ~> E.inverseTime) false
+            store (colorAnimation ~> E.params ! 0) 0
             store (colorAnimation ~> E.params ! 1) 255
-            store (colorAnimation ~> E.params ! 2) 255
+            store (colorAnimation ~> E.params ! 2) 0
             store (colorAnimation ~> E.params ! 3) 255
+            store (colorAnimation ~> E.params ! 4) 0
+            store (colorAnimation ~> E.params ! 5) 255
+            store (colorAnimation ~> E.params ! 6) 0
+            store (colorAnimation ~> E.params ! 7) 255
 
             let maskAnimation = E.maskAnimations getALED ! ix
             store (maskAnimation ~> E.kind) animation
@@ -294,6 +294,7 @@ testAnimation animation ALED{..} buff size = do
             store (maskAnimation ~> E.inLoop) false
             store (maskAnimation ~> E.animationLoop) false
             store (maskAnimation ~> E.animationState) true
+            store (maskAnimation ~> E.inverseTime) false
 
 
 onALedColorAnimationPlay :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
@@ -337,25 +338,29 @@ onALedAnimationPlay :: forall n ng s r t. (KnownNat n, KnownNat ng, LazyTranspor
                     -> Ivory (ProcEffects s r) ()
 onALedAnimationPlay animations groups transport buff size = do
     let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
-    when (size >=? 7 .&& size <=? 15) $ do
+    when (size >=? 8 .&& size <=? 20) $ do
         i <- deref $ buff ! 1
         when (i >=? 1 .&& i <=? ng') $ do
             let ix = toIx $ i - 1
 
             let animation = animations ! ix
 
-            kind     <- deref $ buff ! 2
-            duration <- deref $ buff ! 3
-            phase    <- deref $ buff ! 4
-            split    <- deref $ buff ! 5
-            loop     <- deref $ buff ! 6
+            kind        <- deref $ buff ! 2
+            duration    <- deref $ buff ! 3
+            phase       <- deref $ buff ! 4
+            split       <- deref $ buff ! 5
+            loop        <- deref $ buff ! 6
+            inverseTime <- deref $ buff ! 7
 
-            let n  = size - 7
+            let n  = size - 8
             let params = animation ~> E.params
 
             arrayMap $ \ix -> store (params! ix) 0
 
-            for (toIx n) $ \ix -> store (params ! ix) =<< deref (buff ! toIx (fromIx ix + 7))
+            arrayMap $ \ix ->
+                ifte_ (fromIx ix <? safeCast n)
+                      (store (params ! ix) =<< deref (buff ! toIx (fromIx ix + 8)))
+                      (store (params ! ix) 0)
 
             kind' <- deref $ animation ~> E.kind
             store (animation ~> E.kind) kind
@@ -372,9 +377,11 @@ onALedAnimationPlay animations groups transport buff size = do
                   (store (animation ~> E.split) false)
                   (store (animation ~> E.split) true)
             ifte_ (loop ==? 0)
-
                   (store (animation ~> E.animationLoop) false)
                   (store (animation ~> E.animationLoop) true)
+            ifte_ (inverseTime ==? 0)
+                  (store (animation ~> E.inverseTime) false)
+                  (store (animation ~> E.inverseTime) true)
 
             store (animation ~> E.inLoop) false
             store (animation ~> E.startLoop) true
@@ -393,8 +400,16 @@ onALedAnimationPlay animations groups transport buff size = do
                             store (animation ~> E.timeEnd) 1
                       ]
 
-            lazyTransmit transport size $ \transmit -> do
-                for (toIx size) $ \ix -> transmit =<< deref (buff ! ix)
+            lazyTransmit transport 20 $ \transmit -> do
+                transmit =<< deref (buff ! 0)
+                transmit i
+                transmit kind
+                transmit duration
+                transmit phase
+                transmit split
+                transmit loop
+                transmit inverseTime
+                arrayMap $ \ix -> transmit =<< deref (params ! ix)
 
 
 

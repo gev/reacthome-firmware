@@ -106,6 +106,7 @@ mkALED = do
                                 , animationState .= ival false
                                 , animationLoop  .= ival false
                                 , inLoop         .= ival false
+                                , inverseTime    .= ival false
                                 ]
 
     maskAnimations  <- records' "aled_mask_animations"
@@ -119,6 +120,7 @@ mkALED = do
                                 , animationState .= ival false
                                 , animationLoop  .= ival false
                                 , inLoop         .= ival false
+                                , inverseTime    .= ival false
                                 ]
 
     clips           <- records' "aled_clips"
