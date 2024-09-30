@@ -16,7 +16,7 @@ import           Transport.RS485.RBUS
 dimmerAC12 :: Formula GD32F3x0
 dimmerAC12 = Formula { name           = "dimmerAC12"
                      , model          = deviceTypeDim12AcRs
-                     , version        = (2, 1)
+                     , version        = (2, 2)
                      , shouldInit     = true
                      , implementation = dimmer (rbus $ rs485 uart_0 out_pb_2)
                                                (dimmersAC (  pwm_11
