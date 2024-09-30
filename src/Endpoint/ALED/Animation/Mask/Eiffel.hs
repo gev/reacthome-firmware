@@ -15,9 +15,11 @@ renderEiffel :: IFloat
              -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 renderEiffel time random animation = do
     let i  = castDefault $ time * 256 :: Sint32
-    p     <- safeCast <$> deref (animation ~> params ! 2)
-    p'    <- (* p)    <$> deref (addrOf cosT ! toIx i)
+    d     <- deref $ animation ~> params ! 2
+    p     <- deref $ animation ~> params ! 3
+    p'    <- (* safeCast p) <$> deref (addrOf cosT ! toIx i)
     v'    <- safeCast <$> next random
-    safeCast <$> ifte (v' <? p')
-                      (deref $ animation ~> params ! 1)
-                      (deref $ animation ~> params ! 0)
+    (/ (safeCast d + 1)) . safeCast
+        <$> ifte (v' <? p')
+                 (deref $ animation ~> params ! 1)
+                 (deref $ animation ~> params ! 0)
