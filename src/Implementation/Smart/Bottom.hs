@@ -22,7 +22,7 @@ import           Ivory.Stdlib
 data Bottom n = Bottom
     { top     :: Top
     , dinputs :: DInputs n
-    , aled    :: ALED 10 100 2100
+    , aled    :: ALED 10 100 2040
     }
 
 
@@ -32,7 +32,7 @@ bottom1 :: (KnownNat n, Monad m)
         -> (t -> m Top)
         -> (Bool -> t -> m (DInputs n))
         -> (t -> m DS18B20)
-        -> (t -> m (ALED 10 100 2100))
+        -> (t -> m (ALED 10 100 2040))
         -> m (Bottom n)
 bottom1 transport' top' dinputs' ds18b20 aled' = do
     transport <- transport'
@@ -51,7 +51,7 @@ bottom2 :: (KnownNat n, Monad m)
         -> m (DInputs n))
         -> (t -> m DS18B20)
         -> (t -> m SCD40)
-        -> (t -> m (ALED 10 100 2100))
+        -> (t -> m (ALED 10 100 2040))
         -> m (Bottom n)
 bottom2 transport top dinputs ds18b20 scd40 aled'= do
     scd40 =<< transport

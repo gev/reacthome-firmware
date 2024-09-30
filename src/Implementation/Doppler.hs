@@ -18,14 +18,14 @@ import           Ivory.Stdlib
 data Doppler nd ni = Doppler
     { dopplers :: Dopplers nd
     , dinputs  :: DInputs  ni
-    , aled     :: ALED     10 100 2000
+    , aled     :: ALED     10 100 2400
     }
 
 doppler :: Monad m
         => m t
         -> (t -> m (Dopplers nd))
         -> (Bool -> t -> m (DInputs ni))
-        -> (t -> m (ALED 10 100 2000))
+        -> (t -> m (ALED 10 100 2400))
         -> m (Doppler nd ni)
 doppler transport' dopplers' dinputs' aled' = do
     transport <- transport'
