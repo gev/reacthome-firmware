@@ -386,7 +386,7 @@ onALedAnimationPlay animations groups transport buff size = do
             store (animation ~> E.inLoop) false
             store (animation ~> E.startLoop) true
 
-            when  (kind' /=? kind) $ do
+            when (loop ==? 0 .|| kind' /=? kind) $ do
                 segmentNumber' <- deref $ (groups ! ix) ~> E.segmentNumber
                 let additionalTime = phase' * (safeCast segmentNumber' - 1)
                 cond_ [ additionalTime >? 0 ==> do
