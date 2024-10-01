@@ -122,7 +122,5 @@ getTime animation segment = do
       t <- local . ival $ time' - phase
       when inLoop' $ do
             t' <- deref t
-            cond_ [ t' <? 0 ==> store t (t' - floorF t')
-                  , t' >? 1 ==> store t (ceilF t' - t')
-                  ]
+            store t $ t' - floorF t'
       deref t
