@@ -80,16 +80,12 @@ executable reacthome-firmware
                     , Endpoint.ALED.Animation.Mask.RandomOff
                     , Endpoint.ALED.Animation.Mask.RandomOn
                     , Endpoint.ALED.Animation.Mask.Slide
-                    , Endpoint.ALED.Animation.Mask.Slide'
-                    , Endpoint.ALED.Animation.Mask.Slide''
+                    , Endpoint.ALED.Animation.Mask.SlideInOut
+                    , Endpoint.ALED.Animation.Mask.SlideInOut'
                     , Endpoint.ALED.Animation.Mask.SlideOff
-                    , Endpoint.ALED.Animation.Mask.SlideOff'
-                    , Endpoint.ALED.Animation.Mask.SlideOffIn
-                    , Endpoint.ALED.Animation.Mask.SlideOffOut
+                    , Endpoint.ALED.Animation.Mask.SlideOffInOut
                     , Endpoint.ALED.Animation.Mask.SlideOn
-                    , Endpoint.ALED.Animation.Mask.SlideOn'
-                    , Endpoint.ALED.Animation.Mask.SlideOnIn
-                    , Endpoint.ALED.Animation.Mask.SlideOnOut
+                    , Endpoint.ALED.Animation.Mask.SlideOnInOut
                     
                     , Endpoint.ATS
                     , Endpoint.DInputs

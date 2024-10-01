@@ -23,16 +23,12 @@ import           Endpoint.ALED.Animation.Mask.Random
 import           Endpoint.ALED.Animation.Mask.RandomOff
 import           Endpoint.ALED.Animation.Mask.RandomOn
 import           Endpoint.ALED.Animation.Mask.Slide
-import           Endpoint.ALED.Animation.Mask.Slide'
-import           Endpoint.ALED.Animation.Mask.Slide''
+import           Endpoint.ALED.Animation.Mask.SlideInOut
+import           Endpoint.ALED.Animation.Mask.SlideInOut'
 import           Endpoint.ALED.Animation.Mask.SlideOff
-import           Endpoint.ALED.Animation.Mask.SlideOff'
-import           Endpoint.ALED.Animation.Mask.SlideOffIn
-import           Endpoint.ALED.Animation.Mask.SlideOffOut
+import           Endpoint.ALED.Animation.Mask.SlideOffInOut
 import           Endpoint.ALED.Animation.Mask.SlideOn
-import           Endpoint.ALED.Animation.Mask.SlideOn'
-import           Endpoint.ALED.Animation.Mask.SlideOnIn
-import           Endpoint.ALED.Animation.Mask.SlideOnOut
+import           Endpoint.ALED.Animation.Mask.SlideOnInOut
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
@@ -90,27 +86,23 @@ renderMask random animation segment segmentSize pixel = do
                    , true ==> do
                         let (-->) p r = kind' ==? p ==> r animation
                         cond [ 0x00 --> renderOff
-                             , 0x01 --> renderFadeOff     time'
-                             , 0x02 --> renderRandomOff   time' pixel random
-                             , 0x03 --> renderSlideOff    time' segmentSize pixel
-                             , 0x04 --> renderSlideOff'   time' segmentSize pixel
-                             , 0x05 --> renderSlideOffIn  time' segmentSize pixel
-                             , 0x06 --> renderSlideOffOut time' segmentSize pixel
+                             , 0x01 --> renderFadeOff       time'
+                             , 0x02 --> renderRandomOff     time' pixel random
+                             , 0x03 --> renderSlideOff      time' segmentSize pixel
+                             , 0x04 --> renderSlideOffInOut time' segmentSize pixel
 
                              , 0x10 --> renderOn
-                             , 0x11 --> renderFadeOn      time'
-                             , 0x12 --> renderRandomOn    time' pixel random
-                             , 0x13 --> renderSlideOn     time' segmentSize pixel
-                             , 0x14 --> renderSlideOn'    time' segmentSize pixel
-                             , 0x15 --> renderSlideOnIn   time' segmentSize pixel
-                             , 0x16 --> renderSlideOnOut  time' segmentSize pixel
+                             , 0x11 --> renderFadeOn        time'
+                             , 0x12 --> renderRandomOn      time' pixel random
+                             , 0x13 --> renderSlideOn       time' segmentSize pixel
+                             , 0x14 --> renderSlideOnInOut  time' segmentSize pixel
 
-                             , 0x20 --> renderBlink       time'
-                             , 0x21 --> renderRandom      random
-                             , 0x22 --> renderEiffel      time' random
-                             , 0x23 --> renderSlide       time' segmentSize pixel
-                             , 0x24 --> renderSlide'      time' segmentSize pixel
-                             , 0x25 --> renderSlide''     time' segmentSize pixel
+                             , 0x20 --> renderBlink         time'
+                             , 0x21 --> renderRandom        random
+                             , 0x22 --> renderEiffel        time' random
+                             , 0x23 --> renderSlide         time' segmentSize pixel
+                             , 0x24 --> renderSlideInOut    time' segmentSize pixel
+                             , 0x25 --> renderSlideInOut'   time' segmentSize pixel
                              , true ==> pure 1
                              ]
                    ]
