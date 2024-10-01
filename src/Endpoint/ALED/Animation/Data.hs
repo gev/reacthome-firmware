@@ -24,6 +24,6 @@ type AnimationStruct = "animation_struct"
     ; animationLoop  :: IBool
     ; inLoop         :: IBool
     ; startLoop      :: IBool
-    ; inverseTime    :: IBool
+    ; inverseDirection    :: IBool
     }
 |]

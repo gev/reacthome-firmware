@@ -122,7 +122,7 @@ getTime :: Record AnimationStruct
         -> Sint32
         -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 getTime animation segment = do
-      inverseTime' <- deref $ animation ~> inverseTime
+      inverseDirection' <- deref $ animation ~> inverseDirection
       inLoop'      <- deref $ animation ~> inLoop
       phase'       <- deref $ animation ~> phase
       time'        <- deref $ animation ~> time
@@ -133,6 +133,4 @@ getTime animation segment = do
             cond_ [ t' <? 0 ==> store t (t' - floorF t')
                   , t' >? 1 ==> store t (ceilF t' - t')
                   ]
-      t' <- deref t
-      when inverseTime' $ store t (1 - t')
       deref t

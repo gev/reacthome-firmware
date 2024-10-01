@@ -14,7 +14,11 @@ renderSlide :: IFloat
             -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 renderSlide time segmentSize pixel animation = do
     d <- deref $ animation ~> params ! 2
-    let x = castDefault $ time * safeCast segmentSize
+    t <- local $ ival time
+    inverseDirection' <- deref $ animation ~> inverseDirection
+    when inverseDirection' $ store t (1 - time)
+    t' <- deref t
+    let x = castDefault $ t' * safeCast segmentSize
     (/ (safeCast d + 1)) . safeCast
         <$> ifte (pixel ==? x)
                  (deref $ animation ~> params ! 1)

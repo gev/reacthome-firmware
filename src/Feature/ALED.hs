@@ -274,7 +274,7 @@ testAnimation animation ALED{..} buff size = do
             store (colorAnimation ~> E.inLoop) false
             store (colorAnimation ~> E.animationLoop) true
             store (colorAnimation ~> E.animationState) true
-            store (colorAnimation ~> E.inverseTime) false
+            store (colorAnimation ~> E.inverseDirection) false
             store (colorAnimation ~> E.params ! 0) 0
             store (colorAnimation ~> E.params ! 1) 255
             store (colorAnimation ~> E.params ! 2) 0
@@ -294,7 +294,7 @@ testAnimation animation ALED{..} buff size = do
             store (maskAnimation ~> E.inLoop) false
             store (maskAnimation ~> E.animationLoop) false
             store (maskAnimation ~> E.animationState) true
-            store (maskAnimation ~> E.inverseTime) false
+            store (maskAnimation ~> E.inverseDirection) false
 
 
 onALedColorAnimationPlay :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
@@ -350,7 +350,7 @@ onALedAnimationPlay animations groups transport buff size = do
             phase       <- deref $ buff ! 4
             split       <- deref $ buff ! 5
             loop        <- deref $ buff ! 6
-            inverseTime <- deref $ buff ! 7
+            inverseDirection <- deref $ buff ! 7
 
             let n  = size - 8
             let params = animation ~> E.params
@@ -366,7 +366,7 @@ onALedAnimationPlay animations groups transport buff size = do
             store (animation ~> E.kind) kind
 
             let dt' = 4 * dt / (safeCast duration + 1)
-            let phase' = dt * (safeCast phase - 128)
+            let phase' = dt' * (safeCast phase - 128)
 
             store (animation ~> E.dt) dt'
             store (animation ~> E.phase) phase'
@@ -379,9 +379,9 @@ onALedAnimationPlay animations groups transport buff size = do
             ifte_ (loop ==? 0)
                   (store (animation ~> E.animationLoop) false)
                   (store (animation ~> E.animationLoop) true)
-            ifte_ (inverseTime ==? 0)
-                  (store (animation ~> E.inverseTime) false)
-                  (store (animation ~> E.inverseTime) true)
+            ifte_ (inverseDirection ==? 0)
+                  (store (animation ~> E.inverseDirection) false)
+                  (store (animation ~> E.inverseDirection) true)
 
             store (animation ~> E.inLoop) false
             store (animation ~> E.startLoop) true
@@ -408,7 +408,7 @@ onALedAnimationPlay animations groups transport buff size = do
                 transmit phase
                 transmit split
                 transmit loop
-                transmit inverseTime
+                transmit inverseDirection
                 arrayMap $ \ix -> transmit =<< deref (params ! ix)
 
 
