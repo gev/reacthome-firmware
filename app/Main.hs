@@ -36,8 +36,8 @@ import           Formula.UdpEcho450
 
 main :: IO ()
 main = do
-    -- gcc gd32f350k8u6 [ di4rsm
-    --                  ]
+    gcc gd32f350k8u6 [ di4rsm
+                     ]
 
     gcc gd32f330k8u6 [ relay12
                      , dimmerDC12
@@ -56,13 +56,13 @@ main = do
                      , smartTopG4D
                      , doppler1
                      , doppler5
-                     , scd40_test
-                     , sht21_test
-                     , blink330
+    --                  , scd40_test
+    --                  , sht21_test
+    --                  , blink330
                      ]
     gcc gd32f450vgt6 [ server
                      , rsHub4
-                    --  , udpEcho450
-                    --  , blink450
-                    --  , echo
+    --                 --  , udpEcho450
+    --                 --  , blink450
+    --                 --  , echo
                      ]
