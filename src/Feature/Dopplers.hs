@@ -25,8 +25,6 @@ import           Data.Value
 import qualified Interface.ADC        as I
 import           Interface.MCU
 import           Ivory.Language
-import           Ivory.Language.Float (IFloat (IFloat))
-import           Ivory.Language.Uint  (Uint8 (Uint8))
 import           Ivory.Stdlib
 
 
@@ -38,6 +36,7 @@ data Doppler a = Doppler
     , threshold   :: Value IFloat
     , current     :: Value Uint8
     , previous    :: Value Uint8
+    , count       :: Value Uint32
     }
 
 
@@ -64,8 +63,9 @@ dopplers analogInput transport = do
                             , transport
                             }
 
-    addTask $ delay   1 "doppler_measure" $ mapM_ measure doppler
-    addTask $ delay 200 "doppler_sync"    $ sync dopplers
+    addTask $ delay     1 "doppler_measure" $ mapM_ measure doppler
+    addTask $ delay   200 "doppler_sync"    $ sync  dopplers
+    addTask $ delay 15000 "doppler_reset"   $ reset dopplers
 
     pure dopplers
 
@@ -81,18 +81,20 @@ mkDoppler transport analogInput index = do
     mcu              <- asks D.mcu
     let peripherals'  = peripherals mcu
     adc              <- analogInput peripherals'
-    measurement      <- value (name <> "measurement")   0
     expectation      <- value (name <> "expectation") 0.5
-    threshold        <- value (name <> "threshold"  )   1
+    measurement      <- value (name <> "measurement")   0
+    threshold        <- value (name <> "threshold"  )   level
     current          <- value (name <> "current"    )   0
     previous         <- value (name <> "previous"   )   0
+    count            <- value (name <> "count"      )   0
 
     let doppler = Doppler { adc
-                          , measurement
                           , expectation
+                          , measurement
                           , threshold
                           , current
                           , previous
+                          , count
                           }
 
     pure doppler
@@ -101,28 +103,38 @@ mkDoppler transport analogInput index = do
 
 measure :: I.ADC a => Doppler a -> Ivory (ProcEffects s ()) ()
 measure Doppler {..} = do
-    a <- I.getReduced adc
+    a' <- I.getReduced adc
 
     expectation' <- deref expectation
-    store expectation $ average long expectation' a
-
-    let diff = abs $ a - expectation'
 
     measurement' <- deref measurement
-    let measurement'' = average short measurement' diff
-    store measurement measurement''
+    store measurement a'
 
+    let derivative = a' - measurement'
+
+    let diff  = abs $ a' - expectation'
     threshold' <- deref threshold
-    when (measurement'' <? low * threshold')
-         (store threshold $ average long threshold' measurement'')
+    when (diff <? level)  $
+        store expectation $ average alpha expectation' a'
+    when (diff <? level') $
+        store threshold   $ average alpha threshold' diff
 
     let range = iMax expectation' $ 1 - expectation'
-
     let threshold'' = high * threshold'
-    let current'' = (measurement'' >? threshold'')
-          ? (castDefault $ 255 * sqrt (measurement'' - threshold'') / (range - threshold''), 0)
+    value <- local $ ival 0
+    ifte_ (diff >? threshold'')
+          (store value $ (diff - threshold'') / (range - threshold''))
+          (
+            when (derivative >? threshold' / 2 .|| diff >? threshold' * low) $ do
+              count' <- deref count
+              store count $ count' + 1
+          )
 
+    value' <- deref value
+    count' <- deref count
+    when (count' >? maxCount) $ store count 0
     current' <- deref current
+    let current'' = castDefault $ count' .| castDefault (255 * value')
     store current $ iMax current' current''
 
 
@@ -136,6 +148,12 @@ sync Dopplers {..} = do
             mapM_ transmit =<< mapM deref (current <$> doppler)
         )
     mapM_ ((`store` 0) . current) doppler
+
+
+
+reset :: Dopplers n -> Ivory (ProcEffects s t) ()
+reset Dopplers {..} = do
+    mapM_ ((`store` 0) . count) doppler
 
 
 
@@ -159,7 +177,9 @@ iMax a b = (a >? b) ? (a, b)
 
 
 
-short = 0.02
-long  = 0.0002
-low   = 2.2
-high  = 2.8
+alpha    = 0.0001
+level    = 0.3
+level'   = 0.05
+low      = 3.6
+high     = 3.8
+maxCount = 16

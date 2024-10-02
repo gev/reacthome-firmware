@@ -15,7 +15,7 @@ renderFade :: IFloat
 renderFade time subpixel value animation brightness = do
     v  <- local $ ival value
     b  <- deref $ animation ~> params ! toIx subpixel
-    dt <- deref $ animation ~> dt
+    dt' <- deref $ animation ~> dt
     let b' = safeCast b * brightness
     let b'' = castDefault b' :: Uint8
     when (castDefault value /=? b'') $ do
@@ -24,9 +24,9 @@ renderFade time subpixel value animation brightness = do
               (store v b')
               (do
                 let rest = 1 - time
-                ifte_ (rest >=? dt)
+                ifte_ (rest >=? dt')
                       (do
-                        let delta = (b' - value) * dt / rest
+                        let delta = (b' - value) * dt' / rest
                         store v $ value + delta
                       )
                       (store v b')
