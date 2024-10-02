@@ -164,6 +164,7 @@ data GD32F3x0 = GD32F3x0
     , exti_pa_5 :: EXTI'
 
     , ow_0      :: OneWire'
+    , ow_1      :: OneWire'
 
     , etc       :: PageAddr
 
@@ -349,6 +350,7 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
 
 
     , ow_0  = mkOneWire cfg_timer_15
+    , ow_1  = mkOneWire cfg_timer_2
 
     , etc = mkPage 0x800_bc00
 
