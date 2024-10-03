@@ -39,7 +39,7 @@ main = do
     -- gcc gd32f350k8u6 [ di4rsm
     --                  ]
 
-    gcc gd32f330k8u6 [ doppler5 ]
+    gcc gd32f330k8u6 [ smartBottom1, smartBottom2 ]
 
     -- gcc gd32f330k8u6 [ relay12
     --                  , dimmerDC12

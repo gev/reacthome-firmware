@@ -66,8 +66,8 @@ mkI2C i2c rcu eventIrq errorIrq sda' scl' = do
         configModeAddrI2C i2c i2c_i2cmode_enable i2c_addformat_7bits 0
         enableI2C i2c
         -- configAckI2C i2c i2c_ack_enable
-        enableIrqNvic       eventIrq 2 0
-        enableIrqNvic       errorIrq 2 1
+        enableIrqNvic       eventIrq 0 0
+        enableIrqNvic       errorIrq 0 1
 
     pure I2C { i2c, eventIrq, errorIrq, mode, address, txBuff, index, size }
 
