@@ -19,7 +19,6 @@ import           Core.Task
 import qualified Core.Transport        as T
 import           Data.Buffer
 import           Data.Fixed
-import           Data.Fixed            (List, toList)
 import           Data.Index
 import           Data.Record
 import           Data.Serialize
