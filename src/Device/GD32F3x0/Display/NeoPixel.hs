@@ -4,6 +4,7 @@
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE ScopedTypeVariables   #-}
 
 module Device.GD32F3x0.Display.NeoPixel where
 
@@ -47,7 +48,7 @@ data NeoPixel = NeoPixel
     , dmaChannel :: DMA_CHANNEL
     , dmaIRQn    :: IRQn
     , dmaParams  :: Record DMA_PARAM_STRUCT
-    , buff       :: FrameBufferNeoPixel 1 Uint8
+    , buff       :: FrameBufferNeoPixel 10 Uint8
     , offset     :: Index Uint16
     }
 
@@ -99,8 +100,10 @@ instance KnownNat n => Handler (Render n) NeoPixel where
     addTask $ delay (1000 `iDiv` frameRate)
                     ("neo_pixel_" <> show pwmPort) $ do
                         render
-                        writeByte buff 0 =<< deref (frame ! 0)
-                        store offset 1
+                        arrayMap $ \(ix :: Ix 10) ->
+                            writeByte buff (fromIx ix) =<< deref (frame ! toIx ix)
+                        -- writeByte buff 0 =<< deref (frame ! 0)
+                        store offset 10
                         transmitFrameBuffer npx
 
 
@@ -112,9 +115,11 @@ handleDMA npx@NeoPixel{..} frame = do
         clearInterruptFlagDMA dmaChannel dma_int_flag_g
         offset' <- deref offset
         when (offset' <? arrayLen frame) $ do
-            writeByte buff 0 =<< deref (frame ! toIx offset')
+            arrayMap $ \(ix :: Ix 10) ->
+                writeByte buff (fromIx ix) =<< deref (frame ! toIx (safeCast offset' + fromIx ix))
+            -- writeByte buff 0 =<< deref (frame ! toIx offset')
             transmitFrameBuffer npx
-            store offset $ offset' + 1
+            store offset $ offset' + 10
 
 
 
