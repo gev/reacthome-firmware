@@ -34,8 +34,8 @@ import           Support.Cast
 
 
 
-data Indicator n = forall d. Display d => Indicator
-    { display   :: d
+data Indicator n = forall d. Display (d 10) => Indicator
+    { display   :: d 10
     , hue       :: IFloat
     , t         :: Value       Sint32
     , dt        :: Value       Sint32
@@ -55,10 +55,10 @@ maxValue = 0.3 :: IFloat
 
 indicator :: ( MonadState Context m
              , MonadReader (D.Domain p c) m
-             , Display d, Handler (Render (Canvas1DSize n)) d
+             , Display (d 10), Handler (Render (Canvas1DSize n)) (d 10)
              , KnownNat n, KnownNat (Canvas1DSize n)
              , T.Transport t
-             ) => (p -> m d) -> IFloat -> t -> m (Indicator n)
+             ) => (p -> m (d 10)) -> IFloat -> t -> m (Indicator n)
 indicator mkDisplay hue transport = do
     mcu         <- asks D.mcu
     display     <- mkDisplay $ peripherals mcu

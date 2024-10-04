@@ -40,8 +40,8 @@ import           Util.Random
 dt = 1 / safeCast E.fps :: IFloat
 
 
-data ALED ng ns np = forall d f t. (Display d, Flash f, LazyTransport t) => ALED
-    { display          :: d
+data ALED ng ns np = forall d f t. (Display (d 40), Flash f, LazyTransport t) => ALED
+    { display          :: d 40
     , getALED          :: E.ALED ng ns np
     , etc              :: f
     , transport        :: t
@@ -58,11 +58,11 @@ maxValue = 0.3 :: IFloat
 
 aled :: ( MonadState Context m
         , MonadReader (D.Domain p c) m
-        , Display d, Handler (Render np) d
+        , Display (d 40), Handler (Render np) (d 40)
         , KnownNat ng, KnownNat ns, KnownNat np
         , LazyTransport t
         , Flash f
-        ) => (p -> m d) -> ( p-> f) -> t -> m (ALED ng ns np)
+        ) => (p -> m (d 40)) -> (p-> f) -> t -> m (ALED ng ns np)
 aled mkDisplay etc transport = do
     mcu              <- asks D.mcu
     display          <- mkDisplay $ peripherals mcu

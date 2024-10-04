@@ -17,6 +17,7 @@ import           Core.Task
 import           Core.Transport
 import           Data.Buffer
 import           Data.Display.Canvas1D     (Canvas1DSize)
+import           Data.Matrix
 import           Data.Value
 import           Endpoint.DInputs          as E (DInputs)
 import           Feature.DInputs           as DI (DInputs (getDInputs),
@@ -33,7 +34,6 @@ import           Interface.Flash
 import           Interface.MCU             (peripherals)
 import           Ivory.Language
 import           Ivory.Stdlib
-import Data.Matrix
 
 
 
@@ -48,16 +48,16 @@ data Top n = Top
 
 topA4P :: ( MonadState Context m
          , MonadReader (D.Domain p c) m
-         , Display d, Handler (Render (Canvas1DSize n)) d
+         , Display (d 3), Handler (Render (Canvas1DSize n)) (d 3)
          , LazyTransport t
          , Flash f
          , KnownNat n, KnownNat (Canvas1DSize n)
          )
-      => m t 
-      -> (Bool -> t -> m (DI.DInputs n)) 
-      -> (t -> m SHT21) 
-      -> (p -> m d) 
-      -> (p -> f) 
+      => m t
+      -> (Bool -> t -> m (DI.DInputs n))
+      -> (t -> m SHT21)
+      -> (p -> m (d 3))
+      -> (p -> f)
       -> m (Top n)
 topA4P transport' dinputs' sht21' display' etc' = do
     transport   <- transport'

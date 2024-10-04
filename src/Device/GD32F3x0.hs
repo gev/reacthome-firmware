@@ -1,4 +1,6 @@
+{-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE KindSignatures        #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NumericUnderscores    #-}
 {-# LANGUAGE RankNTypes            #-}
@@ -8,6 +10,7 @@ module Device.GD32F3x0 where
 
 import           Control.Monad.State
 import           Core.Context
+import           Data.Display.FrameBuffer.NeoPixel
 import           Device.GD32F3x0.ADC
 import           Device.GD32F3x0.DAC
 import           Device.GD32F3x0.Display.NeoPixel
@@ -19,20 +22,20 @@ import           Device.GD32F3x0.GPIO.Mode
 import           Device.GD32F3x0.GPIO.OpenDrain
 import           Device.GD32F3x0.GPIO.Output
 import           Device.GD32F3x0.I2C
-import           Device.GD32F3x0.Mac              (makeMac)
+import           Device.GD32F3x0.Mac               (makeMac)
 import           Device.GD32F3x0.PWM
-import           Device.GD32F3x0.SystemClock      as G
+import           Device.GD32F3x0.SystemClock       as G
 import           Device.GD32F3x0.SysTick
-import           Device.GD32F3x0.Timer            (Timer, cfg_timer_0,
-                                                   cfg_timer_1, cfg_timer_14,
-                                                   cfg_timer_15, cfg_timer_2)
+import           Device.GD32F3x0.Timer             (Timer, cfg_timer_0,
+                                                    cfg_timer_1, cfg_timer_14,
+                                                    cfg_timer_15, cfg_timer_2)
 import           Device.GD32F3x0.UART
 import           GHC.TypeNats
 import           Interface.GPIO.Port
-import           Interface.Mac                    (Mac)
+import           Interface.Mac                     (Mac)
 import           Interface.MCU
 import           Interface.OneWire
-import           Interface.SystemClock            (SystemClock, systemClock)
+import           Interface.SystemClock             (SystemClock, systemClock)
 import           Ivory.Language
 import           Support.Device.GD32F3x0
 import           Support.Device.GD32F3x0.ADC
@@ -41,25 +44,25 @@ import           Support.Device.GD32F3x0.EXTI
 import           Support.Device.GD32F3x0.GPIO
 import           Support.Device.GD32F3x0.I2C
 import           Support.Device.GD32F3x0.IRQ
-import           Support.Device.GD32F3x0.RCU      as R
+import           Support.Device.GD32F3x0.RCU       as R
 import           Support.Device.GD32F3x0.SYSCFG
 import           Support.Device.GD32F3x0.Timer
 import           Support.Device.GD32F3x0.USART
 
 
 
-type UART'        = forall m n. MonadState Context m => KnownNat n => m (UART n)
-type I2C'         = forall m n. MonadState Context m => KnownNat n => m (I2C n)
-type Input'       = forall m.   MonadState Context m => GPIO_PUPD -> m Input
-type Output'      = forall m.   MonadState Context m => GPIO_PUPD -> m Output
-type OpenDrain'   = forall m.   MonadState Context m => m OpenDrain
-type ADC'         = forall m.   MonadState Context m => m ADC
-type DAC'         = forall m.   MonadState Context m => m DAC
-type Timer'       = forall m.   MonadState Context m => Uint32 -> Uint32 -> m Timer
-type PWM'         = forall m.   MonadState Context m => Uint32 -> Uint32 -> m PWM
-type NeoPixel'    = forall m.   MonadState Context m => m NeoPixel
-type EXTI'        = forall m.   MonadState Context m => m EXTI
-type OneWire'     = forall m.   MonadState Context m => m OpenDrain -> m OneWire
+type UART'      = forall m n. MonadState Context m => KnownNat n => m (UART n)
+type I2C'       = forall m n. MonadState Context m => KnownNat n => m (I2C n)
+type Input'     = forall m.   MonadState Context m => GPIO_PUPD -> m Input
+type Output'    = forall m.   MonadState Context m => GPIO_PUPD -> m Output
+type OpenDrain' = forall m.   MonadState Context m => m OpenDrain
+type ADC'       = forall m.   MonadState Context m => m ADC
+type DAC'       = forall m.   MonadState Context m => m DAC
+type Timer'     = forall m.   MonadState Context m => Uint32 -> Uint32 -> m Timer
+type PWM'       = forall m.   MonadState Context m => Uint32 -> Uint32 -> m PWM
+type NeoPixel'  = forall m n. MonadState Context m => KnownNat (BufferSize n) => m (NeoPixel n)
+type EXTI'      = forall m.   MonadState Context m => m EXTI
+type OneWire'   = forall m.   MonadState Context m => m OpenDrain -> m OneWire
 
 
 data GD32F3x0 = GD32F3x0

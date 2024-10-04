@@ -1,13 +1,16 @@
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+
 module Formula.DI4 where
 
 import           Core.Formula
 import           Core.Models
 import           Data.Fixed
 import           Device.GD32F3x0
+import           Feature.ALED         (ALED, aled)
 import           Feature.DInputs
 import           Feature.DS18B20
 import           Implementation.DI    (di)
-import           Feature.ALED         (ALED, aled)
 import           Interface.RS485
 import           Ivory.Language
 import           Transport.RS485.RBUS

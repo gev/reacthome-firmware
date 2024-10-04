@@ -65,7 +65,7 @@ data Top n = Top
 
 topGD :: ( MonadState Context m
          , MonadReader (D.Domain p c) m
-         , Handler (Render 192) d, Display d
+         , Handler (Render 192) (d 3), Display (d 3)
          , LazyTransport t
          , KnownNat n
          , Flash f
@@ -75,7 +75,7 @@ topGD :: ( MonadState Context m
       -> (E.DInputs n -> t -> f-> m (Vibro n))
       -> m PowerTouch
       -> (t -> m SHT21)
-      -> (p -> m d)
+      -> (p -> m (d 3))
       -> (p -> f)
       -> m (Top n)
 topGD transport' dinputs' vibro' touch' sht21' display' etc' = do

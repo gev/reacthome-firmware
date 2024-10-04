@@ -1,4 +1,6 @@
+{-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE FlexibleContexts      #-}
+{-# LANGUAGE KindSignatures        #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NumericUnderscores    #-}
 {-# LANGUAGE RankNTypes            #-}
@@ -7,6 +9,7 @@ module Device.GD32F4xx where
 
 import           Control.Monad.State
 import           Core.Context
+import           Data.Display.FrameBuffer.NeoPixel
 import           Device.GD32F4xx.Display.NeoPixel
 import           Device.GD32F4xx.ENET
 import           Device.GD32F4xx.Flash
@@ -15,20 +18,20 @@ import           Device.GD32F4xx.GPIO.Input
 import           Device.GD32F4xx.GPIO.Mode
 import           Device.GD32F4xx.GPIO.OpenDrain
 import           Device.GD32F4xx.GPIO.Output
-import           Device.GD32F4xx.Mac              (makeMac)
+import           Device.GD32F4xx.Mac               (makeMac)
 import           Device.GD32F4xx.PWM
-import           Device.GD32F4xx.SystemClock      as G
+import           Device.GD32F4xx.SystemClock       as G
 import           Device.GD32F4xx.SysTick
-import           Device.GD32F4xx.Timer            (Timer, cfg_timer_1,
-                                                   cfg_timer_2, cfg_timer_3,
-                                                   cfg_timer_6, cfg_timer_7)
+import           Device.GD32F4xx.Timer             (Timer, cfg_timer_1,
+                                                    cfg_timer_2, cfg_timer_3,
+                                                    cfg_timer_6, cfg_timer_7)
 import           Device.GD32F4xx.UART
 import           GHC.TypeNats
 import           Interface.GPIO.Port
-import           Interface.Mac                    (Mac)
+import           Interface.Mac                     (Mac)
 import           Interface.MCU
 import           Interface.OneWire
-import           Interface.SystemClock            (SystemClock)
+import           Interface.SystemClock             (SystemClock)
 import           Ivory.Language
 import           Support.Device.GD32F4xx
 import           Support.Device.GD32F4xx.DMA
@@ -41,15 +44,15 @@ import           Support.Device.GD32F4xx.USART
 
 
 
-type UART'         = forall m n. MonadState Context m => KnownNat n => m (UART n)
-type Input'        = forall m.   MonadState Context m => GPIO_PUPD -> m Input
-type Output'       = forall m.   MonadState Context m => GPIO_PUPD -> m Output
-type OpenDrain'    = forall m.   MonadState Context m => m OpenDrain
-type Timer'        = forall m.   MonadState Context m => Uint32 -> Uint32 -> m Timer
-type PWM'          = forall m.   MonadState Context m => Uint32 -> Uint32 -> m PWM
-type NeoPixel'     = forall m.   MonadState Context m => m NeoPixel
-type OneWire'      = forall m.   MonadState Context m => m OpenDrain -> m OneWire
-type Enet'         = forall m.   MonadState Context m => m ENET
+type UART'      = forall m n. MonadState Context m => KnownNat n => m (UART n)
+type Input'     = forall m.   MonadState Context m => GPIO_PUPD -> m Input
+type Output'    = forall m.   MonadState Context m => GPIO_PUPD -> m Output
+type OpenDrain' = forall m.   MonadState Context m => m OpenDrain
+type Timer'     = forall m.   MonadState Context m => Uint32 -> Uint32 -> m Timer
+type PWM'       = forall m.   MonadState Context m => Uint32 -> Uint32 -> m PWM
+type NeoPixel'  = forall m n. MonadState Context m => KnownNat (BufferSize n) => m (NeoPixel n)
+type OneWire'   = forall m.   MonadState Context m => m OpenDrain -> m OneWire
+type Enet'      = forall m.   MonadState Context m => m ENET
 
 
 data GD32F4xx = GD32F4xx
