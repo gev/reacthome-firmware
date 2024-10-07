@@ -12,6 +12,7 @@ module Feature.Dopplers
 
 
 
+import           Control.Monad        ((<=<))
 import           Control.Monad.Reader (MonadReader, asks)
 import           Control.Monad.State  (MonadState)
 import           Core.Actions
@@ -20,11 +21,13 @@ import qualified Core.Domain          as D
 import           Core.Task
 import qualified Core.Transport       as T
 import           Data.Buffer
+import           Data.Data            (cast)
 import           Data.Fixed
 import           Data.Value
 import qualified Interface.ADC        as I
 import           Interface.MCU
 import           Ivory.Language
+import           Ivory.Language.Float (IFloat (IFloat))
 import           Ivory.Stdlib
 
 
@@ -32,11 +35,10 @@ import           Ivory.Stdlib
 data Doppler a = Doppler
     { adc         :: a
     , expectation :: Value IFloat
-    , measurement :: Value IFloat
-    , threshold   :: Value IFloat
     , current     :: Value Uint8
     , previous    :: Value Uint8
-    , count       :: Value Uint32
+    , median0     :: Value IFloat
+    , median1     :: Value IFloat
     }
 
 
@@ -55,17 +57,16 @@ dopplers :: ( MonadState Context m
             , I.ADC a
             ) => List n (p -> m a) -> t -> m (Dopplers n)
 dopplers analogInput transport = do
-    mcu              <- asks D.mcu
-    doppler          <- zipWithM (mkDoppler transport) analogInput nats
+    mcu     <- asks D.mcu
+    doppler <- zipWithM (mkDoppler transport) analogInput nats
 
     let dopplers = Dopplers { n = fromIntegral $ length analogInput
                             , doppler
                             , transport
                             }
 
-    addTask $ delay     1 "doppler_measure" $ mapM_ measure doppler
-    addTask $ delay   200 "doppler_sync"    $ sync  dopplers
-    addTask $ delay 15000 "doppler_reset"   $ reset dopplers
+    addTask $ delay 1 "doppler_measure" $ mapM_ measure   doppler
+    addTask $ delay t "doppler_sync"    $ sync  dopplers
 
     pure dopplers
 
@@ -77,24 +78,21 @@ mkDoppler :: ( MonadState Context m
              , I.ADC a
              ) => t -> (p -> m a) -> Int-> m (Doppler a)
 mkDoppler transport analogInput index = do
-    let name          = "doppler_" <> show index <> "_"
-    mcu              <- asks D.mcu
-    let peripherals'  = peripherals mcu
-    adc              <- analogInput peripherals'
-    expectation      <- value (name <> "expectation") 0.5
-    measurement      <- value (name <> "measurement")   0
-    threshold        <- value (name <> "threshold"  )   level
-    current          <- value (name <> "current"    )   0
-    previous         <- value (name <> "previous"   )   0
-    count            <- value (name <> "count"      )   0
+    let name     = "doppler_" <> show index <> "_"
+    mcu         <- asks D.mcu
+    adc         <- analogInput $ peripherals mcu
+    expectation <- value (name <> "expectation") 0.5
+    current     <- value (name <> "current"    )   0
+    previous    <- value (name <> "previous"   )   0
+    median0     <- value (name <> "median0"    )   0
+    median1     <- value (name <> "median1"    )   $ level / 2
 
     let doppler = Doppler { adc
                           , expectation
-                          , measurement
-                          , threshold
                           , current
                           , previous
-                          , count
+                          , median0
+                          , median1
                           }
 
     pure doppler
@@ -107,58 +105,52 @@ measure Doppler {..} = do
 
     expectation' <- deref expectation
 
-    measurement' <- deref measurement
-    store measurement a'
-
-    let derivative = a' - measurement'
-
     let diff  = abs $ a' - expectation'
-    threshold' <- deref threshold
-    when (diff <? level)  $
-        store expectation $ average alpha expectation' a'
-    when (diff <? level') $
-        store threshold   $ average alpha threshold' diff
 
-    let range = iMax expectation' $ 1 - expectation'
-    let threshold'' = high * threshold'
-    value <- local $ ival 0
-    ifte_ (diff >? threshold'')
-          (store value $ (diff - threshold'') / (range - threshold''))
-          (
-            when (derivative >? threshold' / 2 .|| diff >? threshold' * low) $ do
-              count' <- deref count
-              store count $ count' + 1
+    when (diff <? range)  $
+        store expectation $ average alpha expectation' a'
+
+    median0'    <- deref median0
+    median1'    <- deref median1
+    measurement <- local $ ival 0
+
+    ifte_ (diff >? level)
+          (do
+            store measurement diff
+            store median0 $ average betta median0' level
+          )
+          (do
+            ifte_ (diff >? median1')
+                  (store median0 $ average betta median0' diff)
+                  (store median0 $ average betta median0' median1')
+            store median1 $ average alpha median1' diff
           )
 
-    value' <- deref value
-    count' <- deref count
-    when (count' >? maxCount) $ store count 0
-    current' <- deref current
-    let current'' = castDefault $ count' .| castDefault (255 * value')
+    let threshold = average k median1' level
+    let median'   = sqrt $ median0' - threshold
+    measurement' <- deref measurement
+    let value'    = iMax (measurement' - threshold) median'
+    expectation' <- deref expectation
+    let maxRange  = iMax expectation' (1 - expectation') - threshold
+    let current'' = castDefault $ 255 * value' / maxRange
+    current'     <- deref current
     store current $ iMax current' current''
 
 
 
 sync :: Dopplers n -> Ivory (ProcEffects s t) ()
 sync Dopplers {..} = do
-    shouldSync <- mapM syncDoppler doppler
+    shouldSync <- mapM shouldSyncDoppler doppler
     let shouldTransmit = foldr (.||) false shouldSync
-    when shouldTransmit $ T.lazyTransmit transport (1 + n) (\transmit -> do
-            transmit actionDoppler1
-            mapM_ transmit =<< mapM deref (current <$> doppler)
-        )
+    when shouldTransmit $ T.lazyTransmit transport (1 + n) $ \transmit -> do
+        transmit actionDoppler1
+        mapM_ transmit =<< mapM deref (current <$> doppler)
     mapM_ ((`store` 0) . current) doppler
 
 
 
-reset :: Dopplers n -> Ivory (ProcEffects s t) ()
-reset Dopplers {..} = do
-    mapM_ ((`store` 0) . count) doppler
-
-
-
-syncDoppler :: Doppler a -> Ivory (ProcEffects s t) IBool
-syncDoppler Doppler{..} = do
+shouldSyncDoppler :: Doppler a -> Ivory (ProcEffects s t) IBool
+shouldSyncDoppler Doppler{..} = do
     current' <- deref current
     previous' <- deref previous
     let shouldSync = current' /=? previous'
@@ -167,7 +159,7 @@ syncDoppler Doppler{..} = do
 
 
 
-average :: Num a => a -> a -> a -> a
+average :: IFloat -> IFloat -> IFloat -> IFloat
 average alpha a b = a * (1 - alpha) + b * alpha
 
 
@@ -177,9 +169,13 @@ iMax a b = (a >? b) ? (a, b)
 
 
 
-alpha    = 0.0001
-level    = 0.3
-level'   = 0.05
-low      = 3.6
-high     = 3.8
-maxCount = 16
+sub = (-)
+
+
+
+t     = 200
+range = 0.3
+alpha = 0.0001
+betta = 0.01
+level = 0.12
+k     = 0.23
