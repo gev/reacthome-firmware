@@ -39,7 +39,7 @@ import           Util.Random
 
 dt = 1 / safeCast E.fps :: IFloat
 
-type Nd = 20
+type Nd = 5
 
 data ALED ng ns np = forall d f t. (Display (d Nd), Flash f, LazyTransport t) => ALED
     { display          :: d Nd
