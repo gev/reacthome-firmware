@@ -1,29 +1,29 @@
-{-# LANGUAGE DataKinds       #-}
-{-# LANGUAGE NamedFieldPuns  #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RecordWildCards  #-}
 module Implementation.DI where
 
 import           Control.Monad
+import           Control.Monad.Reader  (MonadReader)
+import           Control.Monad.RWS     (asks)
+import           Control.Monad.State   (MonadState)
 import           Core.Actions
+import           Core.Context
 import           Core.Controller
+import           Core.Domain
+import           Core.Task
+import           Core.Transport
+import           Data.Value
 import           Feature.ALED
-import           Feature.DInputs (DInputs, forceSyncDInputs)
+import           Feature.DInputs       (DInputs, forceSyncDInputs)
 import           Feature.DS18B20
 import           GHC.TypeNats
+import           Interface.GPIO.Output
+import           Interface.GPIO.Port
+import           Interface.MCU         (peripherals)
 import           Ivory.Language
 import           Ivory.Stdlib
-import Control.Monad.State (MonadState)
-import Core.Context
-import Control.Monad.Reader (MonadReader)
-import Core.Domain
-import Interface.GPIO.Output
-import Interface.GPIO.Port
-import Control.Monad.RWS (asks)
-import Interface.MCU (peripherals)
-import Data.Value
-import Core.Task
-import Core.Transport
 
 
 data DI n = DI
@@ -33,13 +33,13 @@ data DI n = DI
 
 
 
-di :: (MonadState Context m, MonadReader (Domain p c) m, Output o, Pull p u, Transport t) 
+di :: (MonadState Context m, MonadReader (Domain p c) m, Output o, Pull p u, Transport t)
    => m t -> (Bool -> t -> m (DInputs n)) -> (p -> u -> m o) -> (t -> m (ALED 10 100 2040)) -> m (DI n)
 di transport' dinputs' pin aled' = do
     transport <- transport'
     dinputs <- dinputs' True transport
     -- ds18b20 transport
-    
+
     aled    <- aled' transport
 
     let name          = "blink"

@@ -1,58 +1,54 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE NoStarIsType     #-}
-{-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE RecordWildCards  #-}
-{-# LANGUAGE TypeOperators    #-}
+{-# LANGUAGE DataKinds           #-}
+{-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE RecordWildCards     #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Data.Display.FrameBuffer.NeoPixel where
 
-import           Control.Monad.State
+import           Control.Applicative    (Const (Const))
+import           Control.Monad.State    (MonadState)
 import           Core.Context
+import           Data.Bits
+import           Data.Functor
 import           Data.Value
+import           GHC.IO.Buffer          (Buffer (Buffer))
 import           GHC.TypeNats
-import           Interface.Display
 import           Ivory.Language
+import           Ivory.Language.MemArea (ConstMemArea (ConstMemArea))
 import           Ivory.Language.Proc
+import           Ivory.Language.Proxy
 
 
 
-type BufferSize n = 8 * n + 1
+type BufferSize = 12
+
+bufferSize :: Num a => a
+bufferSize = fromIntegral $ fromTypeNat (aNat :: NatType BufferSize)
 
 
-
-data FrameBufferNeoPixel n t = FrameBufferNeoPixel
-    { buffer   :: Values (BufferSize n) t
-    , zeroDuty :: t
-    , oneDuty  :: t
+newtype FrameBufferNeoPixel t = FrameBufferNeoPixel
+    { matrix :: ConstRef Global (Array 256 (Array BufferSize (Stored t)))
     }
 
 
 
 neoPixelBuffer :: ( MonadState Context m
                   , SafeCast Uint8 t, IvoryInit t, IvoryZeroVal t, Num t
-                  , KnownNat (BufferSize n)
                   )
-               => String -> Uint8 -> m (FrameBufferNeoPixel n t)
+               => String -> Int -> m (FrameBufferNeoPixel t)
 neoPixelBuffer id period = do
-    let zeroDuty = safeCast $ period `iDiv` 4
-    let oneDuty  = 3 * zeroDuty
-    buffer      <- values' ("neo_pixel_buffer" <> id) 0x0
-    pure $ FrameBufferNeoPixel { buffer, zeroDuty, oneDuty }
+    let matrix = constArea "neo_pixel_matrix" . iarray $ iarray . map (ival . fromIntegral) . (<> replicate (bufferSize - 8) 0) <$> table
+    addConstArea matrix
+    pure $ FrameBufferNeoPixel { matrix = addrOf matrix }
+    where
+        table = [0..255] <&> \i ->
+                    [0..7] <&> \j ->
+                        let f = (i `shiftL` j) .&. 0x80 :: Int
+                        in if f == 0x80 then oneDuty
+                                        else zeroDuty
+        zeroDuty = period `div` 4
+        oneDuty  = 3 * zeroDuty
 
 
-
-writeByte :: (IvoryStore t, KnownNat (BufferSize n))
-          => FrameBufferNeoPixel n t -> Sint32 -> Uint8
-          -> Ivory ('Effects (Returns ()) b (Scope s)) ()
-writeByte FrameBufferNeoPixel{..} i value = do
-    v <- local $ ival value
-    for 8 $ \jx -> do
-        v' <- deref v
-        let b = v' .& 0x80
-        let byte = buffer ! (toIx (8 * i) + jx)
-        ifte_ (b ==? 0x80)
-            (store byte oneDuty )
-            (store byte zeroDuty)
-        store v $ v' `iShiftL` 1
+getByte :: IvoryType t => FrameBufferNeoPixel t -> Uint8 -> ConstRef Global (Array BufferSize (Stored t))
+getByte FrameBufferNeoPixel{..} value = matrix ! toIx value

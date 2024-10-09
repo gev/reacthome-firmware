@@ -32,8 +32,8 @@ import           Ivory.Stdlib
 
 
 
-data Indicator ni no = forall d. (Display (d 10)) => Indicator
-    { display   :: d 10
+data Indicator ni no = forall d. (Display d) => Indicator
+    { display   :: d
     , hue       :: IFloat
     , ats       :: ATS
     , dinputs   :: DInputs      ni
@@ -56,11 +56,11 @@ maxValue = 0.3 :: IFloat
 
 indicator :: ( MonadState Context m
              , MonadReader (D.Domain p c) m
-             , Display (d 10), Handler (Render 60) (d 10)
+             , Display d, Handler (Render 60) d
              , T.Transport t
              , KnownNat ni, KnownNat no
              )
-          => (p -> m (d 10)) -> IFloat -> ATS -> DInputs ni -> Relays no -> t
+          => (p -> m d) -> IFloat -> ATS -> DInputs ni -> Relays no -> t
           -> m (Indicator ni no)
 indicator mkDisplay hue ats dinputs relays transport = do
     mcu          <- asks D.mcu

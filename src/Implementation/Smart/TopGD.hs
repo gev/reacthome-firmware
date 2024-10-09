@@ -16,6 +16,7 @@ import           Core.Handler                 (Handler, addHandler)
 import           Core.Task
 import           Core.Transport
 import           Data.Buffer
+import           Data.Matrix
 import           Data.Serialize
 import           Data.Value
 import           Endpoint.DInputs             as E (DInputs)
@@ -37,7 +38,6 @@ import           Interface.Flash
 import           Interface.MCU                (peripherals)
 import           Ivory.Language
 import           Ivory.Stdlib
-import Data.Matrix
 
 
 
@@ -65,7 +65,7 @@ data Top n = Top
 
 topGD :: ( MonadState Context m
          , MonadReader (D.Domain p c) m
-         , Handler (Render 192) (d 3), Display (d 3)
+         , Handler (Render 192) d, Display d
          , LazyTransport t
          , KnownNat n
          , Flash f
@@ -75,7 +75,7 @@ topGD :: ( MonadState Context m
       -> (E.DInputs n -> t -> f-> m (Vibro n))
       -> m PowerTouch
       -> (t -> m SHT21)
-      -> (p -> m (d 3))
+      -> (p -> m d)
       -> (p -> f)
       -> m (Top n)
 topGD transport' dinputs' vibro' touch' sht21' display' etc' = do
