@@ -32,6 +32,7 @@ import           Formula.Smart.Top.TopG4
 import           Formula.Smart.Top.TopG4D
 import           Formula.Smart.Top.TopG6
 import           Formula.UdpEcho450
+import           Implementation.Smart.Bottom
 
 
 main :: IO ()
@@ -39,7 +40,7 @@ main = do
     -- gcc gd32f350k8u6 [ di4rsm
     --                  ]
 
-    gcc gd32f330k8u6 [ di4, doppler5 ]
+    gcc gd32f330k8u6 [ di4, doppler5, smartBottom2 ]
 
     -- gcc gd32f330k8u6 [ relay12
     --                  , dimmerDC12
