@@ -135,7 +135,7 @@ transmitFrameBuffer NeoPixel{..} frame = do
     store (dmaParams ~> memory0_addr) =<< castConstArrayUint16ToUint32 (toCArray $ getByte buff p)
     I.resetCounter   pwmTimer
     initSingleDMA    dmaPer dmaChannel dmaParams
-    enableChannelDMA dmaPer dmaChannel
+    -- enableChannelDMA dmaPer dmaChannel
     store offset $ offset' + 1
 
 

@@ -36,7 +36,7 @@ data DI n = DI
 di :: Monad m => m t -> (Bool -> t -> m (DInputs n)) -> (t -> m DS18B20) -> (t -> m (ALED 10 100 2040)) -> m (DI n)
 di transport' dinputs' ds18b20 aled' = do
     transport <- transport'
-    ds18b20 transport
+    -- ds18b20 transport
     dinputs <- dinputs' True transport
     aled    <- aled' transport
     pure DI { dinputs, aled }
