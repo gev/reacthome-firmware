@@ -33,27 +33,12 @@ data DI n = DI
 
 
 
-di :: (MonadState Context m, MonadReader (Domain p c) m, Output o, Pull p u, Transport t)
-   => m t -> (Bool -> t -> m (DInputs n)) -> (p -> u -> m o) -> (t -> m (ALED 10 100 2040)) -> m (DI n)
-di transport' dinputs' pin aled' = do
+di :: Monad m => m t -> (Bool -> t -> m (DInputs n)) -> (t -> m DS18B20) -> (t -> m (ALED 10 100 2040)) -> m (DI n)
+di transport' dinputs' ds18b20 aled' = do
     transport <- transport'
+    ds18b20 transport
     dinputs <- dinputs' True transport
-    -- ds18b20 transport
-
     aled    <- aled' transport
-
-    let name          = "blink"
-    mcu              <- asks mcu
-    let peripherals'  = peripherals mcu
-    out              <- pin peripherals' $ pullNone peripherals'
-    state            <- value (name <> "_state") false
-
-    addTask $ yeld name $ do
-        v <- deref state
-        store state $ iNot v
-        ifte_ v (set   out)
-                (reset out)
-
     pure DI { dinputs, aled }
 
 

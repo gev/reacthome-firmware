@@ -27,7 +27,6 @@ di4 = Formula { name           = "di4"
                                              :> in_pa_9
                                              :> Nil
                                     )
-                                    out_pa_8
-                                    -- (ds18b20 ow_1 od_pa_8)
+                                    (ds18b20 ow_1 od_pa_8)
                                     (aled npx_pwm_0 etc)
               }
