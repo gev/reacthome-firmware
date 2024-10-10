@@ -107,7 +107,14 @@ mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer dmaIRQn selCh
 
 instance KnownNat n => Handler (Render n) NeoPixel where
   addHandler (Render npx@NeoPixel{..} frameRate frame render) = do
+
     addModule $ makeIRQHandler dmaIRQn $ handleDMA npx frame
+
+    addInit ("neopixel_init" <> symbol dmaChannel) $ do
+        render
+        store offset 0
+        transmitFrameBuffer npx frame
+
     addTask $ delay (1000 `iDiv` frameRate)
                     ("neo_pixel_" <> show pwmPort) $ do
                         shouldUpdate <- render

@@ -92,14 +92,20 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn chxcv pwmPort' = do
             disableCirculationDMA         dmaChannel
             enableInterruptDMA            dmaChannel dma_int_ftf
 
-
     pure NeoPixel { pwmTimer, pwmChannel, dmaIRQn, pwmPort, dmaChannel, dmaParams, buff, offset }
 
 
 
 instance KnownNat n => Handler (Render n) NeoPixel where
   addHandler (Render npx@NeoPixel{..} frameRate frame render) = do
+
     addBody (makeIRQHandlerName dmaIRQn) (handleDMA npx frame)
+
+    addInit ("neopixel_init" <> symbol dmaChannel) $ do
+        render
+        store offset 0
+        transmitFrameBuffer npx frame
+
     addTask $ delay (1000 `iDiv` frameRate)
                     ("neo_pixel_" <> show pwmPort) $ do
                         shouldUpdate <- render
