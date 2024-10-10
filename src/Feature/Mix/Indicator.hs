@@ -91,6 +91,7 @@ indicator mkDisplay hue ats dinputs relays transport = do
     addHandler $ Render display 25 frameBuffer $ do
         update indicator
         render indicator
+        pure   true
 
     pure indicator
 

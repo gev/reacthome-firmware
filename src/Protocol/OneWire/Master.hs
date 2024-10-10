@@ -608,7 +608,7 @@ getCRC = proc "one_wire_get_crc" $ \buff -> body $ do
 
 popAction :: OneWireMaster -> (Uint8 -> Uint8 -> Uint8 -> Ivory eff ()) -> Ivory eff ()
 popAction OneWireMaster{..} run =
-    pop actionQ $ \i -> do
+    flip (pop' actionQ) (disableOneWire onewire) $ \i -> do
         let a = actionB ! toIx i
         action'  <- deref (a ~> action_ )
         payload' <- deref (a ~> payload_)
@@ -623,3 +623,4 @@ pushAction OneWireMaster{..} action' payload' index' =
         store (a ~> action_ ) action'
         store (a ~> payload_) payload'
         store (a ~> index_  ) index'
+        enableOneWire onewire

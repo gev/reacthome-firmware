@@ -102,9 +102,10 @@ instance KnownNat n => Handler (Render n) NeoPixel where
     addBody (makeIRQHandlerName dmaIRQn) (handleDMA npx frame)
     addTask $ delay (1000 `iDiv` frameRate)
                     ("neo_pixel_" <> show pwmPort) $ do
-                        render
-                        store offset 0
-                        transmitFrameBuffer npx frame
+                        shouldUpdate <- render
+                        when shouldUpdate $ do
+                            store offset 0
+                            transmitFrameBuffer npx frame
 
 
 

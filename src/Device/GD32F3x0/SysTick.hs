@@ -36,3 +36,5 @@ instance Handler HandleTimer SysTick where
 instance Timer SysTick where
   setCounter _ _ = pure()
   getCounter _ = pure 0
+  enableInterrupt _ = pure ()
+  disableInterrupt _ = pure ()

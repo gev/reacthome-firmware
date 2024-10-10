@@ -98,11 +98,12 @@ aled mkDisplay etc transport = do
 
 
 update :: forall s ng ns np. (KnownNat ng, KnownNat ns, KnownNat np)
-       => ALED ng ns np -> Random Uint8 -> Ivory (ProcEffects s ()) ()
+       => ALED ng ns np -> Random Uint8 -> Ivory (ProcEffects s ()) IBool
 update ALED{..} random = do
     let np'  = fromIntegral $ fromTypeNat (aNat :: NatType np)
     sx      <- local (ival 0)
     px      <- local (ival 0)
+    shouldUpdate <- local $ ival false
     arrayMap $ \gx -> do
         tx <- local (ival 0)
 
@@ -181,10 +182,13 @@ update ALED{..} random = do
                                                      p'
                                       )
                               let v' = c' * m'
+                              p' <- deref p
                               cond_ [ v' >? 255 ==> store p 255 >> store state true
                                     , v' >? 0 ==> store p (castDefault v') >> store state true
                                     , true ==> store p 0
                                     ]
+                              p'' <- deref p
+                              when (p'' /=? p') $ store shouldUpdate true
                               store px $ px' + 1
                       )
                       (for (toIx pixelSize' :: Ix np) . const $ do
@@ -203,6 +207,8 @@ update ALED{..} random = do
     px' <- deref px
     upTo px' (np' - 1) $ \ix ->
         store (E.subPixels getALED ! ix) 0
+
+    deref shouldUpdate
 
 
 

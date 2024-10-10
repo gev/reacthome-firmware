@@ -75,9 +75,10 @@ topA4P transport' dinputs' sht21' display' etc' = do
     let top      = Top { dinputs, leds, buttons, sht21 }
 
     addHandler $ Render display 30 frameBuffer $ do
-        updateLeds leds
+        updateLeds    leds
         updateButtons buttons
-        render leds
+        render        leds
+        pure          true
 
     pure top
 

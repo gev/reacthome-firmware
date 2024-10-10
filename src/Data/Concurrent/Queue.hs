@@ -51,6 +51,15 @@ push Queue{..} handle =
         up consumerS
 
 
+push' :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+push' Queue{..} handle =
+    down' producerS $ do
+        x <- deref producerIx
+        handle x
+        store producerIx $ x + 1
+        up consumerS
+
+
 pop :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
 pop Queue{..} handle =
     down consumerS $ do
@@ -60,11 +69,32 @@ pop Queue{..} handle =
         up producerS
 
 
+pop' :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+pop' Queue{..} handle =
+     down' consumerS $ do
+        x <- deref consumerIx
+        handle x
+        store consumerIx $ x + 1
+        up producerS
+
+
 peek :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
-peek Queue{..} handle = do
+peek Queue{..} handle = 
     check consumerS $ do
         x <- deref consumerIx
         handle x
+
+
+peek' :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+peek' Queue{..} handle = 
+    check' consumerS $ do
+        x <- deref consumerIx
+        handle x
+
+
+size :: Queue n -> Ivory eff Uint16
+size Queue{..} =
+    (-) <$> deref producerIx <*> deref consumerIx
 
 
 remove :: Queue n -> Ivory eff ()
@@ -83,6 +113,3 @@ clear Queue{..} = do
     store (getSemaphore consumerS) 0
 
 
-size :: Queue n -> Ivory eff Uint16
-size Queue{..} =
-    (-) <$> deref producerIx <*> deref consumerIx
