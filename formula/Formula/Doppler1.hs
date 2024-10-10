@@ -21,7 +21,7 @@ import           Transport.RS485.RBUS
 doppler1 :: Formula GD32F3x0
 doppler1 = Formula { name           = "doppler1"
                    , model          = deviceTypeDoppler1Di4
-                   , version        = (2, 2)
+                   , version        = (2, 3)
                    , shouldInit     = true
                    , implementation = doppler (rbus $ rs485 uart_1 out_pa_4)
                                               (dopplers $  adc_pa_7
