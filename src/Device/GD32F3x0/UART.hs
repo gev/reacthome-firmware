@@ -93,9 +93,9 @@ handleUART u@UART{..} onReceive onTransmit onDrain = do
 
 handleTransmit :: KnownNat n => UART n -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
 handleTransmit UART{..} onTransmit onDrain = do
-    tbe <- getInterruptFlag    uart usart_int_flag_tbe
+    tbe <- getInterruptFlag uart usart_int_flag_tbe
     when tbe $ do
-        clearInterruptFlag     uart usart_int_flag_tbe
+        clearInterruptFlag  uart usart_int_flag_tbe
         index' <- deref index
         size'  <- deref size
         ifte_ (safeCast index' <? size')
@@ -104,9 +104,9 @@ handleTransmit UART{..} onTransmit onDrain = do
                 store index $ index' + 1
             )
             (do
-                disableInterrupt        uart usart_int_tbe
+                disableInterrupt uart usart_int_tbe
                 M.when (isJust onDrain) $ do
-                    enableInterrupt     uart usart_int_tc
+                    enableInterrupt uart usart_int_tc
                 onTransmit
             )
 
@@ -131,24 +131,25 @@ handleReceive uart onReceive = do
 
 handleDrain :: USART_PERIPH -> Ivory eff () -> Ivory eff ()
 handleDrain uart onDrain = do
-    tc <- getInterruptFlag      uart usart_int_flag_tc
+    tc <- getInterruptFlag uart usart_int_flag_tc
     when tc $ do
-        clearInterruptFlag      uart usart_int_flag_tc
+        clearInterruptFlag uart usart_int_flag_tc
+        disableInterrupt   uart usart_int_tc
         onDrain
 
 
 
 instance KnownNat n => I.UART (UART n) where
     configUART (UART {..}) baudrate length stop parity = do
-        deinitUSART         uart
-        configReceive       uart usart_receive_enable
-        configTransmit      uart usart_transmit_enable
-        enableInterrupt     uart usart_int_rbne
-        setBaudrate         uart baudrate
-        setWordLength       uart $ coerceWordLength length
-        setStopBit          uart $ coerceStopBit    stop
-        configParity        uart $ coerceParity     parity
-        enableUSART         uart
+        deinitUSART     uart
+        configReceive   uart usart_receive_enable
+        configTransmit  uart usart_transmit_enable
+        enableInterrupt uart usart_int_rbne
+        setBaudrate     uart baudrate
+        setWordLength   uart $ coerceWordLength length
+        setStopBit      uart $ coerceStopBit    stop
+        configParity    uart $ coerceParity     parity
+        enableUSART     uart
 
 
     transmit UART{..} write = do
@@ -158,8 +159,7 @@ instance KnownNat n => I.UART (UART n) where
             store (txBuff ! toIx size') value
             store size $ size' + 1
         store index 0
-        disableInterrupt uart usart_int_tc
-        enableInterrupt  uart usart_int_tbe
+        enableInterrupt uart usart_int_tbe
 
 
 
