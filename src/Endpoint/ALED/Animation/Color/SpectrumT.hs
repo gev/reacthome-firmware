@@ -20,6 +20,6 @@ renderSpectrumT time subpixel animation brightness = do
     inverseDirection' <- deref $ animation ~> inverseDirection
     when inverseDirection' $ store t (1 - time)
     t' <- deref t
-    let i = castDefault t' * 255 + safeCast phase' :: Sint32
+    let i = castDefault $ t' * 255 + safeCast phase' :: Sint32
     cos' <- deref $ addrOf cosT ! toIx i
     pure $ brightness * (cos' * (max - min) + min)
