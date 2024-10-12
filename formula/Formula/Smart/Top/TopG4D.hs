@@ -16,7 +16,7 @@ import           Transport.UART.RBUS          (rbus)
 smartTopG4D :: Formula GD32F3x0
 smartTopG4D =  Formula { name           = "smart_top_g4d"
                        , model          = deviceTypeSmartTopG4D
-                       , version        = (4, 3)
+                       , version        = (4, 4)
                        , shouldInit     = false
                        , implementation = topGD (rbus uart_1 115_200)
                                                 (dinputs $  in_pb_7

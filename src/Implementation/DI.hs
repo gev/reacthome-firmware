@@ -1,19 +1,29 @@
-{-# LANGUAGE DataKinds       #-}
-{-# LANGUAGE NamedFieldPuns  #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RecordWildCards  #-}
 module Implementation.DI where
 
 import           Control.Monad
+import           Control.Monad.Reader  (MonadReader)
+import           Control.Monad.RWS     (asks)
+import           Control.Monad.State   (MonadState)
 import           Core.Actions
+import           Core.Context
 import           Core.Controller
+import           Core.Domain
+import           Core.Task
+import           Core.Transport
+import           Data.Value
 import           Feature.ALED
-import           Feature.DInputs (DInputs, forceSyncDInputs)
+import           Feature.DInputs       (DInputs, forceSyncDInputs)
 import           Feature.DS18B20
 import           GHC.TypeNats
+import           Interface.GPIO.Output
+import           Interface.GPIO.Port
+import           Interface.MCU         (peripherals)
 import           Ivory.Language
 import           Ivory.Stdlib
-
-
 
 
 data DI n = DI
@@ -31,9 +41,11 @@ di transport' dinputs' ds18b20 aled' = do
     aled    <- aled' transport
     pure DI { dinputs, aled }
 
+
 onGetState DI{..} buff size = do
     forceSyncDInputs dinputs
     forceSyncAled aled
+
 
 instance KnownNat n => Controller (DI n) where
     handle d@DI{..} buff size = do

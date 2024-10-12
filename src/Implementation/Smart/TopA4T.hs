@@ -54,7 +54,7 @@ data Top n = Top
 
 topA4T :: ( MonadState Context m
          , MonadReader (D.Domain p c) m
-         , Display (d 3), Handler (Render (Canvas1DSize 5)) (d 3)
+         , Display d, Handler (Render (Canvas1DSize 5)) d
          , LazyTransport t
          , Flash f
          , KnownNat n
@@ -64,7 +64,7 @@ topA4T :: ( MonadState Context m
       -> (E.DInputs n -> t -> f-> m (Vibro n))
       -> m PowerTouch
       -> (t -> m SHT21)
-      -> (p -> m (d 3))
+      -> (p -> m d)
       -> (p -> f)
       -> m (Top n)
 topA4T transport' dinputs' vibro' touch' sht21' display' etc' = do
@@ -85,9 +85,10 @@ topA4T transport' dinputs' vibro' touch' sht21' display' etc' = do
     let top       = Top { dinputs, leds, vibro, buttons, sht21 }
 
     addHandler $ Render display 30 frameBuffer $ do
-        updateLeds leds
+        updateLeds    leds
         updateButtons buttons
-        render leds
+        render        leds
+        pure          true
 
     pure top
 

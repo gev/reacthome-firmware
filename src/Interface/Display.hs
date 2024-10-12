@@ -17,7 +17,7 @@ data Render n d = Render
     { display   :: d
     , frameRate :: Uint32
     , frame     :: Values n Uint8
-    , render    :: forall s. Ivory (ProcEffects s ()) ()
+    , render    :: forall s. Ivory (ProcEffects s ()) IBool
     }
 
 

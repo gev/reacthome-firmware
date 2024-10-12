@@ -39,10 +39,8 @@ import           Util.Random
 
 dt = 1 / safeCast E.fps :: IFloat
 
-type Nd = 20
-
-data ALED ng ns np = forall d f t. (Display (d Nd), Flash f, LazyTransport t) => ALED
-    { display          :: d Nd
+data ALED ng ns np = forall d f t. (Display d, Flash f, LazyTransport t) => ALED
+    { display          :: d
     , getALED          :: E.ALED ng ns np
     , etc              :: f
     , transport        :: t
@@ -59,11 +57,11 @@ maxValue = 0.3 :: IFloat
 
 aled :: ( MonadState Context m
         , MonadReader (D.Domain p c) m
-        , Display (d Nd), Handler (Render np) (d Nd)
+        , Display d, Handler (Render np) d
         , KnownNat ng, KnownNat ns, KnownNat np
         , LazyTransport t
         , Flash f
-        ) => (p -> m (d Nd)) -> (p-> f) -> t -> m (ALED ng ns np)
+        ) => (p -> m d) -> (p-> f) -> t -> m (ALED ng ns np)
 aled mkDisplay etc transport = do
     mcu              <- asks D.mcu
     display          <- mkDisplay $ peripherals mcu
@@ -91,7 +89,7 @@ aled mkDisplay etc transport = do
 
     addHandler $ Render display E.fps (E.subPixels getALED) $ update aled random
 
-    addTask $ delay      100    "save_config" $ saveConfig aled
+    addTask $ delay       10000 "save_config" $ saveConfig aled
     addTask $ delayPhase  40 25 "sync_state"  $ syncState  aled
     addTask $ delayPhase  40 26 "sync_groups" $ syncGroups aled
 
@@ -100,11 +98,12 @@ aled mkDisplay etc transport = do
 
 
 update :: forall s ng ns np. (KnownNat ng, KnownNat ns, KnownNat np)
-       => ALED ng ns np -> Random Uint8 -> Ivory (ProcEffects s ()) ()
+       => ALED ng ns np -> Random Uint8 -> Ivory (ProcEffects s ()) IBool
 update ALED{..} random = do
     let np'  = fromIntegral $ fromTypeNat (aNat :: NatType np)
     sx      <- local (ival 0)
     px      <- local (ival 0)
+    shouldUpdate <- local $ ival false
     arrayMap $ \gx -> do
         tx <- local (ival 0)
 
@@ -183,10 +182,13 @@ update ALED{..} random = do
                                                      p'
                                       )
                               let v' = c' * m'
+                              p' <- deref p
                               cond_ [ v' >? 255 ==> store p 255 >> store state true
                                     , v' >? 0 ==> store p (castDefault v') >> store state true
                                     , true ==> store p 0
                                     ]
+                              p'' <- deref p
+                              when (p'' /=? p') $ store shouldUpdate true
                               store px $ px' + 1
                       )
                       (for (toIx pixelSize' :: Ix np) . const $ do
@@ -205,6 +207,8 @@ update ALED{..} random = do
     px' <- deref px
     upTo px' (np' - 1) $ \ix ->
         store (E.subPixels getALED ! ix) 0
+
+    deref shouldUpdate
 
 
 

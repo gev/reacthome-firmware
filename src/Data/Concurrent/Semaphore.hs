@@ -38,8 +38,27 @@ down (Semaphore s) run = do
         run
 
 
+down' :: (IvoryStore t, IvoryOrd t, Num t)
+      => Semaphore t -> Ivory eff () -> Ivory eff () -> Ivory eff ()
+down' (Semaphore s) runT runF = do
+    v <- deref s
+    ifte_ (v >? 0)
+          (do
+            store s $ v - 1
+            runT
+          ) runF
+
+
 check :: (IvoryStore t, IvoryOrd t, Num t)
       => Semaphore t -> Ivory eff () -> Ivory eff ()
 check (Semaphore s) run = do
     v <- deref s
     when (v >? 0) run
+
+
+check' :: (IvoryStore t, IvoryOrd t, Num t)
+       => Semaphore t -> Ivory eff () -> Ivory eff () -> Ivory eff ()
+check' (Semaphore s) runT runF = do
+    v <- deref s
+    ifte_ (v >? 0) runT runF
+

@@ -24,6 +24,7 @@ import           Device.GD32F3x0.GPIO.Port
 import           GHC.TypeNats
 import qualified Interface.UART                as I
 
+import           Core.Task
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Ivory.Support
@@ -92,9 +93,9 @@ handleUART u@UART{..} onReceive onTransmit onDrain = do
 
 handleTransmit :: KnownNat n => UART n -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
 handleTransmit UART{..} onTransmit onDrain = do
-    tbe <- getInterruptFlag    uart usart_int_flag_tbe
+    tbe <- getInterruptFlag uart usart_int_flag_tbe
     when tbe $ do
-        clearInterruptFlag     uart usart_int_flag_tbe
+        clearInterruptFlag  uart usart_int_flag_tbe
         index' <- deref index
         size'  <- deref size
         ifte_ (safeCast index' <? size')
@@ -103,17 +104,16 @@ handleTransmit UART{..} onTransmit onDrain = do
                 store index $ index' + 1
             )
             (do
-                disableInterrupt        uart usart_int_tbe
+                disableInterrupt uart usart_int_tbe
                 M.when (isJust onDrain) $ do
-                    disableInterrupt    uart usart_int_rbne
-                    enableInterrupt     uart usart_int_tc
+                    enableInterrupt uart usart_int_tc
                 onTransmit
             )
 
 
 handleReceive :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
 handleReceive uart onReceive = do
-    rbne <- getInterruptFlag    uart usart_int_flag_rbne
+    rbne <- getInterruptFlag   uart usart_int_flag_rbne
     when rbne $ do
         clearInterruptFlag     uart usart_int_flag_rbne
         ferr        <- getFlag uart usart_flag_ferr
@@ -124,42 +124,43 @@ handleReceive uart onReceive = do
         clearFlag              uart usart_flag_nerr
         clearFlag              uart usart_flag_orerr
         clearFlag              uart usart_flag_perr
-        value <- S.receiveData uart
-        when (iNot $ ferr .|| nerr .|| orerr .|| perr) $ onReceive value
+        when (iNot $ ferr .|| nerr .|| orerr .|| perr) $ do
+            value <- S.receiveData uart
+            onReceive value
 
 
 handleDrain :: USART_PERIPH -> Ivory eff () -> Ivory eff ()
 handleDrain uart onDrain = do
-    tc <- getInterruptFlag      uart usart_int_flag_tc
+    tc <- getInterruptFlag uart usart_int_flag_tc
     when tc $ do
-        clearInterruptFlag      uart usart_int_flag_tc
-        disableInterrupt        uart usart_int_tc
-        enableInterrupt         uart usart_int_rbne
+        clearInterruptFlag uart usart_int_flag_tc
+        disableInterrupt   uart usart_int_tc
         onDrain
 
 
 
 instance KnownNat n => I.UART (UART n) where
     configUART (UART {..}) baudrate length stop parity = do
-        deinitUSART         uart
-        configReceive       uart usart_receive_enable
-        configTransmit      uart usart_transmit_enable
-        enableInterrupt     uart usart_int_rbne
-        setBaudrate         uart baudrate
-        setWordLength       uart $ coerceWordLength length
-        setStopBit          uart $ coerceStopBit    stop
-        configParity        uart $ coerceParity     parity
-        enableUSART         uart
+        deinitUSART     uart
+        configReceive   uart usart_receive_enable
+        configTransmit  uart usart_transmit_enable
+        enableInterrupt uart usart_int_rbne
+        setBaudrate     uart baudrate
+        setWordLength   uart $ coerceWordLength length
+        setStopBit      uart $ coerceStopBit    stop
+        configParity    uart $ coerceParity     parity
+        enableUSART     uart
 
 
     transmit UART{..} write = do
         store size 0
-        store index 0
         write $ \value -> do
             size' <- deref size
             store (txBuff ! toIx size') value
             store size $ size' + 1
+        store index 0
         enableInterrupt uart usart_int_tbe
+
 
 
     enable u = enableUSART (uart u)

@@ -60,7 +60,7 @@ type ADC'       = forall m.   MonadState Context m => m ADC
 type DAC'       = forall m.   MonadState Context m => m DAC
 type Timer'     = forall m.   MonadState Context m => Uint32 -> Uint32 -> m Timer
 type PWM'       = forall m.   MonadState Context m => Uint32 -> Uint32 -> m PWM
-type NeoPixel'  = forall m n. MonadState Context m => KnownNat (BufferSize n) => m (NeoPixel n)
+type NeoPixel'  = forall m.   MonadState Context m => m NeoPixel
 type EXTI'      = forall m.   MonadState Context m => m EXTI
 type OneWire'   = forall m.   MonadState Context m => m OpenDrain -> m OneWire
 

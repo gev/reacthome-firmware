@@ -41,7 +41,6 @@ initOneWire :: OneWire -> Ivory eff ()
 initOneWire OneWire{..} = OD.set port
 
 
-
 pullUp :: OneWire -> Ivory eff ()
 pullUp OneWire{..} = OD.set port
 
@@ -53,6 +52,13 @@ pullDown OneWire{..} = OD.reset port
 getState :: OneWire -> Ivory eff IBool
 getState OneWire{..} = OD.get port
 
+
+enableOneWire :: OneWire -> Ivory eff ()
+enableOneWire OneWire{..} = T.enableInterrupt timer
+
+
+disableOneWire :: OneWire -> Ivory eff ()
+disableOneWire OneWire{..} = T.disableInterrupt timer
 
 
 handleTimer :: MonadState Context m => OneWire -> (forall eff. Ivory eff ()) -> m ()

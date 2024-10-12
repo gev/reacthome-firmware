@@ -40,7 +40,7 @@ instance Compiler GCC GD32F3x0 where
                     -- , "-fms-extensions"
                     , "-ffunction-sections"
                     , "-Wall", "-Wno-main"
-                    , "-O3"
+                    , "-Os"
                     ]
 
         , ld      = "-Tsupport/device/gd32f3x0/gd32f3x0.ld"

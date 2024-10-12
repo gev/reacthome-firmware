@@ -113,3 +113,5 @@ instance Handler I.HandleTimer Timer where
 instance I.Timer Timer where
     setCounter t = writeCounter (timer t)
     getCounter t = readCounter  (timer t)
+    enableInterrupt t = enableTimerInterrupt (timer t) timer_int_up
+    disableInterrupt t = disableTimerInterrupt (timer t) timer_int_up

@@ -90,9 +90,9 @@ handleUART u@UART{..} onReceive onTransmit onDrain = do
 
 handleTransmit :: KnownNat n => UART n -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
 handleTransmit UART{..} onTransmit onDrain = do
-    tbe <- getInterruptFlag    uart usart_int_flag_tbe
+    tbe <- getInterruptFlag uart usart_int_flag_tbe
     when tbe $ do
-        clearInterruptFlag     uart usart_int_flag_tbe
+        clearInterruptFlag uart usart_int_flag_tbe
         index' <- deref index
         size'  <- deref size
         ifte_ (safeCast index' <? size')
@@ -101,10 +101,9 @@ handleTransmit UART{..} onTransmit onDrain = do
                 store index $ index' + 1
             )
             (do
-                disableInterrupt        uart usart_int_tbe
+                disableInterrupt uart usart_int_tbe
                 M.when (isJust onDrain) $ do
-                    disableInterrupt    uart usart_int_rbne
-                    enableInterrupt     uart usart_int_tc
+                    enableInterrupt uart usart_int_tc
                 onTransmit
             )
 
@@ -122,8 +121,9 @@ handleReceive uart onReceive = do
         clearFlag              uart usart_flag_nerr
         clearFlag              uart usart_flag_orerr
         clearFlag              uart usart_flag_perr
-        value <- S.receiveData uart
-        when (iNot $ ferr .|| nerr .|| orerr .|| perr) $ onReceive value
+        when (iNot $ ferr .|| nerr .|| orerr .|| perr) $ do
+            value <- S.receiveData uart
+            onReceive value
 
 
 handleDrain :: USART_PERIPH -> Ivory eff () -> Ivory eff ()
@@ -132,7 +132,6 @@ handleDrain uart onDrain = do
     when tc $ do
         clearInterruptFlag      uart usart_int_flag_tc
         disableInterrupt        uart usart_int_tc
-        enableInterrupt         uart usart_int_rbne
         onDrain
 
 

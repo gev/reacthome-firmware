@@ -50,7 +50,7 @@ type Output'    = forall m.   MonadState Context m => GPIO_PUPD -> m Output
 type OpenDrain' = forall m.   MonadState Context m => m OpenDrain
 type Timer'     = forall m.   MonadState Context m => Uint32 -> Uint32 -> m Timer
 type PWM'       = forall m.   MonadState Context m => Uint32 -> Uint32 -> m PWM
-type NeoPixel'  = forall m n. MonadState Context m => KnownNat (BufferSize n) => m (NeoPixel n)
+type NeoPixel'  = forall m.   MonadState Context m => m NeoPixel
 type OneWire'   = forall m.   MonadState Context m => m OpenDrain -> m OneWire
 type Enet'      = forall m.   MonadState Context m => m ENET
 
