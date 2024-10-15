@@ -122,9 +122,8 @@ handleReceive uart onReceive = do
         clearFlag              uart usart_flag_nerr
         clearFlag              uart usart_flag_orerr
         clearFlag              uart usart_flag_perr
-        when (iNot $ ferr .|| nerr .|| orerr .|| perr) $ do
-            value <- S.receiveData uart
-            onReceive value
+        when (iNot $ ferr .|| nerr .|| orerr .|| perr) $
+            onReceive =<< S.receiveData uart
 
 
 handleDrain :: USART_PERIPH -> Ivory eff () -> Ivory eff ()
