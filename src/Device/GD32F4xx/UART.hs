@@ -40,8 +40,6 @@ data UART n = UART
     { uart    :: USART_PERIPH
     , rcu     :: RCU_PERIPH
     , uartIRQ :: IRQn
-    , rx      :: Port
-    , tx      :: Port
     , txBuff  :: Buffer n Uint16
     , index   :: Value Uint16
     , size    :: Value Uint16
@@ -71,7 +69,7 @@ mkUART uart rcu uartIRQ rx' tx' = do
             enableIrqNvic       uartIRQ 0 0
             enablePeriphClock   rcu
 
-    pure UART { uart, rcu, uartIRQ, rx, tx, txBuff, index, size }
+    pure UART { uart, rcu, uartIRQ, txBuff, index, size }
 
 
 
@@ -103,7 +101,6 @@ handleTransmit UART{..} onTransmit onDrain = do
             (do
                 disableInterrupt uart usart_int_tbe
                 M.when (isJust onDrain) $ do
-                    disableInterrupt uart usart_int_rbne
                     enableInterrupt uart usart_int_tc
                 onTransmit
             )
@@ -122,8 +119,8 @@ handleReceive uart onReceive = do
         clearFlag              uart usart_flag_nerr
         clearFlag              uart usart_flag_orerr
         clearFlag              uart usart_flag_perr
+        value <- S.receiveData uart
         when (iNot $ ferr .|| nerr .|| orerr .|| perr) $ do
-            value <- S.receiveData uart
             onReceive value
 
 
@@ -133,7 +130,6 @@ handleDrain uart onDrain = do
     when tc $ do
         clearInterruptFlag      uart usart_int_flag_tc
         disableInterrupt        uart usart_int_tc
-        enableInterrupt         uart usart_int_rbne
         onDrain
 
 

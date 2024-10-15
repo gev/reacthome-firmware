@@ -43,8 +43,6 @@ data UART n = UART
     { uart    :: USART_PERIPH
     , rcu     :: RCU_PERIPH
     , uartIRQ :: IRQn
-    , rx      :: Port
-    , tx      :: Port
     , txBuff  :: Buffer n Uint16
     , index   :: Value Uint16
     , size    :: Value Uint16
@@ -74,7 +72,7 @@ mkUART uart rcu uartIRQ rx' tx' = do
             enableIrqNvic       uartIRQ 0 0
             enablePeriphClock   rcu
 
-    pure UART { uart, rcu, uartIRQ, rx, tx, txBuff, index, size }
+    pure UART { uart, rcu, uartIRQ, txBuff, index, size }
 
 
 
