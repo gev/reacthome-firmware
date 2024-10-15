@@ -7,13 +7,20 @@ import           Ivory.Stdlib
 import           Util.Random
 
 
-renderRandomX :: IFloat
+renderRandomX :: Sint32
+              -> IFloat
               -> Random Uint8
               -> Record AnimationStruct
+              -> IFloat
               -> Ivory (AllowBreak (ProcEffects s ())) IFloat
-renderRandomX value random animation = do
-    dt' <- deref $ animation ~> dt
+renderRandomX subpixel value random animation brightness = do
     i   <- next random
-    ifte (safeCast i / 255  <=? dt' * safeCast fps)
-         (safeCast <$> next random)
-         (pure value)
+    dt' <- deref $ animation ~> dt
+    (* brightness) <$> ifte (safeCast i / 255 <=? dt' * safeCast fps)
+                            (do
+                                min <- safeCast <$> deref (animation ~> params ! toIx (2 * subpixel))
+                                max <- safeCast <$> deref (animation ~> params ! toIx (2 * subpixel + 1))
+                                r   <- safeCast <$> next random
+                                pure $ brightness * (r * (max - min) / 255 + min)
+                            )
+                            (pure value)

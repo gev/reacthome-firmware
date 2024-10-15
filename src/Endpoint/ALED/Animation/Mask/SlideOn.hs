@@ -13,7 +13,18 @@ renderSlideOn :: IFloat
               -> Record AnimationStruct
               -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 renderSlideOn time segmentSize pixel animation = do
-    let x = castDefault $ time * safeCast segmentSize
-    ifte (pixel <=? x)
-         (pure 1)
-         (pure 0)
+    inverse <- deref $ animation ~> inverseDirection
+    ifte inverse
+        (do
+            let x = castDefault $ (1 - time) * safeCast segmentSize
+            ifte (pixel >=? x)
+                 (pure 1)
+                 (pure 0)
+        )
+        (do
+            let x = castDefault $ time * safeCast segmentSize
+            ifte (pixel <=? x)
+                 (pure 1)
+                 (pure 0)
+
+        )

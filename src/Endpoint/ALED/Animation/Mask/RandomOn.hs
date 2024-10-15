@@ -14,8 +14,8 @@ renderRandomOn :: IFloat
                -> Record AnimationStruct
                -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 renderRandomOn time pixel random animation = do
-    let x  = pixel .% 64
-    let px = toIx $ x `iDiv` 8
+    let x  = pixel .% 96
+    let px = toIx $ x `iDiv` 12
     let b  = castDefault $ pixel .% 8
     let p  = animation ~> params ! px
     startLoop' <- deref $ animation ~> startLoop

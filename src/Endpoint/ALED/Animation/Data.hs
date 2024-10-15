@@ -14,7 +14,7 @@ type AnimationStruct = "animation_struct"
 [ivory|
     struct animation_struct
     { kind           :: Uint8
-    ; params         :: Array 8 (Stored Uint8)
+    ; params         :: Array 12 (Stored Uint8)
     ; time           :: IFloat
     ; timeEnd        :: IFloat
     ; dt             :: IFloat
@@ -24,5 +24,6 @@ type AnimationStruct = "animation_struct"
     ; animationLoop  :: IBool
     ; inLoop         :: IBool
     ; startLoop      :: IBool
+    ; inverseDirection    :: IBool
     }
 |]

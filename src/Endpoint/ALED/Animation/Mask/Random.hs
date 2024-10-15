@@ -12,8 +12,10 @@ renderRandom :: Random Uint8
              -> Record AnimationStruct
              -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 renderRandom random animation = do
-    t' <- deref $ animation ~> dt
-    t  <- next random
-    safeCast <$> ifte (safeCast t / 255 <? t')
-                      (deref $ animation ~> params ! 1)
-                      (deref $ animation ~> params ! 0)
+    d  <- deref $ animation ~> params ! 2
+    p  <- deref $ animation ~> params ! 3
+    p' <- next random
+    (/ (safeCast d + 1)) . safeCast
+        <$> ifte (p' <? p)
+                 (deref $ animation ~> params ! 1)
+                 (deref $ animation ~> params ! 0)

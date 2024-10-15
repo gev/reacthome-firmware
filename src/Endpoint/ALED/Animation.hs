@@ -23,16 +23,12 @@ import           Endpoint.ALED.Animation.Mask.Random
 import           Endpoint.ALED.Animation.Mask.RandomOff
 import           Endpoint.ALED.Animation.Mask.RandomOn
 import           Endpoint.ALED.Animation.Mask.Slide
-import           Endpoint.ALED.Animation.Mask.Slide'
-import           Endpoint.ALED.Animation.Mask.Slide''
+import           Endpoint.ALED.Animation.Mask.SlideInOut
+import           Endpoint.ALED.Animation.Mask.SlideInOut'
 import           Endpoint.ALED.Animation.Mask.SlideOff
-import           Endpoint.ALED.Animation.Mask.SlideOff'
-import           Endpoint.ALED.Animation.Mask.SlideOffIn
-import           Endpoint.ALED.Animation.Mask.SlideOffOut
+import           Endpoint.ALED.Animation.Mask.SlideOffInOut
 import           Endpoint.ALED.Animation.Mask.SlideOn
-import           Endpoint.ALED.Animation.Mask.SlideOn'
-import           Endpoint.ALED.Animation.Mask.SlideOnIn
-import           Endpoint.ALED.Animation.Mask.SlideOnOut
+import           Endpoint.ALED.Animation.Mask.SlideOnInOut
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
@@ -40,7 +36,8 @@ import           Util.Random
 
 
 
-renderColor :: Random Uint8
+renderColor :: IFloat
+            -> Random Uint8
             -> Record AnimationStruct
             -> Sint32
             -> Uint16
@@ -49,20 +46,20 @@ renderColor :: Random Uint8
             -> Sint32
             -> IFloat
             -> Ivory (AllowBreak (ProcEffects s ())) IFloat
-renderColor random animation segment segmentSize pixel pixelSize subpixel value = do
+renderColor brightness random animation segment segmentSize pixel pixelSize subpixel value = do
     animationState' <- deref $ animation ~> animationState
     ifte animationState'
          (do
             time' <- getTime animation segment
             kind' <- deref $ animation ~> kind
-            let (-->) p r = kind' ==? p ==> r animation
+            let (-->) p r = kind' ==? p ==> r animation brightness
             ifte (time' <? 0 .|| time' >? 1)
                  (pure value)
                  (cond [ 0x00 --> renderFade      time' subpixel value
                        , 0x10 --> renderSpectrumT time' subpixel
                        , 0x11 --> renderSpectrumX time' segmentSize pixel subpixel
                        , 0x20 --> renderRandomT   time' subpixel value random
-                       , 0x21 --> renderRandomX   value random
+                       , 0x21 --> renderRandomX   subpixel value random
                        , true ==> pure value
                        ]
                  )
@@ -89,27 +86,23 @@ renderMask random animation segment segmentSize pixel = do
                    , true ==> do
                         let (-->) p r = kind' ==? p ==> r animation
                         cond [ 0x00 --> renderOff
-                             , 0x01 --> renderFadeOff     time'
-                             , 0x02 --> renderRandomOff   time' pixel random
-                             , 0x03 --> renderSlideOff    time' segmentSize pixel
-                             , 0x04 --> renderSlideOff'   time' segmentSize pixel
-                             , 0x05 --> renderSlideOffIn  time' segmentSize pixel
-                             , 0x06 --> renderSlideOffOut time' segmentSize pixel
+                             , 0x01 --> renderFadeOff       time'
+                             , 0x02 --> renderRandomOff     time' pixel random
+                             , 0x03 --> renderSlideOff      time' segmentSize pixel
+                             , 0x04 --> renderSlideOffInOut time' segmentSize pixel
 
                              , 0x10 --> renderOn
-                             , 0x11 --> renderFadeOn      time'
-                             , 0x12 --> renderRandomOn    time' pixel random
-                             , 0x13 --> renderSlideOn     time' segmentSize pixel
-                             , 0x14 --> renderSlideOn'    time' segmentSize pixel
-                             , 0x15 --> renderSlideOnIn   time' segmentSize pixel
-                             , 0x16 --> renderSlideOnOut  time' segmentSize pixel
+                             , 0x11 --> renderFadeOn        time'
+                             , 0x12 --> renderRandomOn      time' pixel random
+                             , 0x13 --> renderSlideOn       time' segmentSize pixel
+                             , 0x14 --> renderSlideOnInOut  time' segmentSize pixel
 
-                             , 0x20 --> renderBlink       time'
-                             , 0x21 --> renderRandom      random
-                             , 0x22 --> renderEiffel      time' random
-                             , 0x23 --> renderSlide       time' segmentSize pixel
-                             , 0x24 --> renderSlide'      time' segmentSize pixel
-                             , 0x25 --> renderSlide''     time' segmentSize pixel
+                             , 0x20 --> renderBlink         time'
+                             , 0x21 --> renderRandom        random
+                             , 0x22 --> renderEiffel        time' random
+                             , 0x23 --> renderSlide         time' segmentSize pixel
+                             , 0x24 --> renderSlideInOut    time' segmentSize pixel
+                             , 0x25 --> renderSlideInOut'   time' segmentSize pixel
                              , true ==> pure 1
                              ]
                    ]
@@ -121,14 +114,13 @@ getTime :: Record AnimationStruct
         -> Sint32
         -> Ivory (AllowBreak (ProcEffects s ())) IFloat
 getTime animation segment = do
-      inLoop'  <- deref $ animation ~> inLoop
-      phase'   <- deref $ animation ~> phase
-      time'    <- deref $ animation ~> time
+      inverseDirection' <- deref $ animation ~> inverseDirection
+      inLoop'      <- deref $ animation ~> inLoop
+      phase'       <- deref $ animation ~> phase
+      time'        <- deref $ animation ~> time
       let phase = safeCast segment * phase'
       t <- local . ival $ time' - phase
       when inLoop' $ do
             t' <- deref t
-            cond_ [ t' <? 0 ==> store t (t' - floorF t')
-                  , t' >? 1 ==> store t (ceilF t' - t')
-                  ]
+            store t $ t' - floorF t'
       deref t
