@@ -18,7 +18,7 @@ import           Transport.RS485.RBUS
 di4 :: Formula GD32F3x0
 di4 = Formula { name           = "di4"
               , model          = deviceTypeDi4
-              , version        = (5, 3)
+              , version        = (5, 4)
               , shouldInit     = true
               , implementation = di (rbus $ rs485 uart_1 out_pa_4)
                                     (dinputs $  in_pa_12

@@ -16,7 +16,7 @@ import           Transport.RS485.RBUS
 mix6x12 :: Formula GD32F3x0
 mix6x12 = Formula { name       = "mix6x12"
                   , model      = deviceTypeMix6x12Rs
-                  , version    = (3, 3)
+                  , version    = (3, 4)
                   , shouldInit = true
                   , implementation = mix (rbus $ rs485 uart_0 out_pb_2)
                                          (dinputs $  in_pa_4

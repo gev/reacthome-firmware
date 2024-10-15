@@ -15,7 +15,7 @@ import           Transport.RS485.RBUS
 relay12 :: Formula GD32F3x0
 relay12 = Formula { name       = "relay12"
                   , model      = deviceTypeRelay12Rs
-                  , version    = (3, 2)
+                  , version    = (3, 3)
                   , shouldInit = true
                   , implementation = relay (rbus $ rs485 uart_0 out_pb_2)
                                            (relays $  out_pb_1
