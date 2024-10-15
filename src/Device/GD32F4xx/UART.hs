@@ -103,6 +103,7 @@ handleTransmit UART{..} onTransmit onDrain = do
             (do
                 disableInterrupt uart usart_int_tbe
                 M.when (isJust onDrain) $ do
+                    disableInterrupt uart usart_int_rbne
                     enableInterrupt uart usart_int_tc
                 onTransmit
             )
@@ -132,6 +133,7 @@ handleDrain uart onDrain = do
     when tc $ do
         clearInterruptFlag      uart usart_int_flag_tc
         disableInterrupt        uart usart_int_tc
+        enableInterrupt         uart usart_int_rbne
         onDrain
 
 
@@ -151,11 +153,11 @@ instance KnownNat n => I.UART (UART n) where
 
     transmit UART{..} write = do
         store size 0
-        store index 0
         write $ \value -> do
             size' <- deref size
             store (txBuff ! toIx size') value
             store size $ size' + 1
+        store index 0
         enableInterrupt uart usart_int_tbe
 
 
