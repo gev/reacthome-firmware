@@ -13,6 +13,7 @@ import           Data.Buffer
 import           Data.Fixed
 import           Data.Serialize
 import           Data.Value
+import qualified Endpoint.ALED           as E
 import           Endpoint.Dimmers        as Dim (dimmers, initialize,
                                                  syncDimmerGroup)
 import           Feature.ALED
@@ -27,7 +28,6 @@ import           Feature.RS485.RBUS.Data (RBUS (..))
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
-import qualified Endpoint.ALED                as E
 
 
 
@@ -36,7 +36,6 @@ data Hub ni nd nr = Hub
     { rbus       :: List      nr RBUS
     , dimmers    :: Dimmers   nd
     , dinputs    :: DInputs   ni
-    , ds18b20    :: DS18B20
     , indicator  :: Indicator 20
     , aled       :: ALED      10 100 2400
     , shouldInit :: Value IBool
@@ -58,11 +57,11 @@ hub transport' rbus' dimmers' dinputs' ds18b20' indicator' aled' = do
     rbus       <- rbus' transport
     dimmers    <- dimmers' transport
     dinputs    <- dinputs' True transport
-    ds18b20    <- ds18b20' transport
     indicator  <- indicator' transport
     aled       <- aled' transport
     shouldInit <- asks D.shouldInit
-    pure Hub { rbus, dimmers, dinputs, ds18b20, indicator, shouldInit, aled }
+    ds18b20' transport
+    pure Hub { rbus, dimmers, dinputs, indicator, shouldInit, aled }
 
 
 
