@@ -162,23 +162,14 @@ void fmc_erase_sector_by_address(uint32_t address)
 
 void fmc_write_32bit(uint32_t address, int32_t data_32bit)
 {
-    fmc_sector_info_struct start_sector_info;
-    fmc_sector_info_struct end_sector_info;
-    uint32_t sector_num,i;
-    
     /* unlock the flash program erase controller */
     fmc_unlock();
     /* clear pending flags */
     fmc_flag_clear(FMC_FLAG_END | FMC_FLAG_OPERR | FMC_FLAG_WPERR | FMC_FLAG_PGMERR | FMC_FLAG_PGSERR);
     /* get the information of the start and end sectors */
-    start_sector_info = fmc_sector_info_get(address);
-    end_sector_info = fmc_sector_info_get(address + 4);
-
 
     /* write data_32 to the corresponding address */
-    if(FMC_READY == fmc_word_program(address, data_32bit)){
-        address = address + 4;
-    }else{ 
+    if(FMC_READY != fmc_word_program(address, data_32bit)){
         while(1);
     }
     /* lock the flash program erase controller */
@@ -369,4 +360,3 @@ void fmc_read_8bit_data(uint32_t address, uint16_t length, int8_t* data_8)
         address++;
     }
 }
-
