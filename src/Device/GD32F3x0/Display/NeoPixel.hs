@@ -48,7 +48,7 @@ data NeoPixel = NeoPixel
     , dmaChannel :: DMA_CHANNEL
     , dmaIRQn    :: IRQn
     , dmaParams  :: Record DMA_PARAM_STRUCT
-    , buff       :: FrameBufferNeoPixel Uint8
+    , buff'      :: FrameBufferNeoPixel Uint8
     , offset     :: Index Uint16
     }
 
@@ -61,7 +61,7 @@ mkNeoPixelPWM :: (MonadState Context m)
               -> (GPIO_PUPD -> Port)
               -> m NeoPixel
 mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn chxcv pwmPort' = do
-    buff         <- neoPixelBuffer (symbol dmaChannel) pwmPeriod
+    buff'        <- neoPixelBuffer (symbol dmaChannel) pwmPeriod
     let pwmPort   = pwmPort' gpio_pupd_none
     let dmaInit   = dmaParam [ direction    .= ival dma_memory_to_peripheral
                              , memory_inc   .= ival dma_memory_increase_enable
@@ -69,7 +69,7 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn chxcv pwmPort' = do
                              , periph_inc   .= ival dma_periph_increase_disable
                              , periph_width .= ival dma_peripheral_width_16bit
                              , priority     .= ival dma_priority_low
-                             , number       .= ival bufferSize
+                             , number       .= ival (arrayLen $ buff buff')
                              ]
     pwmTimer     <- timer' system_core_clock pwmPeriod
     dmaParams    <- record ("dma_param" <> symbol dmaChannel) dmaInit
@@ -92,7 +92,7 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn chxcv pwmPort' = do
             disableCirculationDMA         dmaChannel
             enableInterruptDMA            dmaChannel dma_int_ftf
 
-    pure NeoPixel { pwmTimer, pwmChannel, dmaIRQn, pwmPort, dmaChannel, dmaParams, buff, offset }
+    pure NeoPixel { pwmTimer, pwmChannel, dmaIRQn, pwmPort, dmaChannel, dmaParams, buff', offset }
 
 
 
@@ -130,7 +130,8 @@ transmitFrameBuffer :: KnownNat n => NeoPixel -> Values n Uint8 ->Ivory eff ()
 transmitFrameBuffer NeoPixel{..} frame = do
     offset' <- deref offset
     p <- deref (frame ! toIx offset')
-    store (dmaParams ~> memory_addr) =<< castConstArrayUint8ToUint32 (toCArray $ getByte buff p)
+    writeByte buff' p
+    store (dmaParams ~> memory_addr) =<< castArrayUint8ToUint32 (toCArray $ buff buff')
     I.resetCounter   pwmTimer
     initDMA          dmaChannel dmaParams
     enableChannelDMA dmaChannel

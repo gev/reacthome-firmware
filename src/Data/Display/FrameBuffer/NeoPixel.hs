@@ -1,5 +1,6 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE NamedFieldPuns      #-}
 {-# LANGUAGE RecordWildCards     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
@@ -9,9 +10,9 @@ import           Control.Applicative    (Const (Const))
 import           Control.Monad.State    (MonadState)
 import           Core.Context
 import           Data.Bits
+import           Data.Buffer
 import           Data.Functor
 import           Data.Value
-import           GHC.IO.Buffer          (Buffer (Buffer))
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Language.MemArea (ConstMemArea (ConstMemArea))
@@ -20,14 +21,9 @@ import           Ivory.Language.Proxy
 
 
 
-type BufferSize = 12
-
-bufferSize :: Num a => a
-bufferSize = fromIntegral $ fromTypeNat (aNat :: NatType BufferSize)
-
-
-newtype FrameBufferNeoPixel t = FrameBufferNeoPixel
-    { matrix :: ConstRef Global (Array 256 (Array BufferSize (Stored t)))
+data FrameBufferNeoPixel t = FrameBufferNeoPixel
+    { matrix :: ConstRef Global (Array 256 (Array 8 (Stored t)))
+    , buff   :: Buffer 12 t
     }
 
 
@@ -37,9 +33,10 @@ neoPixelBuffer :: ( MonadState Context m
                   )
                => String -> Int -> m (FrameBufferNeoPixel t)
 neoPixelBuffer id period = do
-    let matrix = constArea "neo_pixel_matrix" . iarray $ iarray . map (ival . fromIntegral) . (<> replicate (bufferSize - 8) 0) <$> table
+    let matrix = constArea "neo_pixel_matrix" . iarray $ iarray . map (ival . fromIntegral) <$> table
+    buff      <- buffer    "neo_pixel_buffer"
     addConstArea matrix
-    pure $ FrameBufferNeoPixel { matrix = addrOf matrix }
+    pure $ FrameBufferNeoPixel { matrix = addrOf matrix, buff }
     where
         table = [0..255] <&> \i ->
                     [0..7] <&> \j ->
@@ -50,5 +47,7 @@ neoPixelBuffer id period = do
         oneDuty  = 3 * zeroDuty
 
 
-getByte :: IvoryType t => FrameBufferNeoPixel t -> Uint8 -> ConstRef Global (Array BufferSize (Stored t))
-getByte FrameBufferNeoPixel{..} value = matrix ! toIx value
+writeByte :: (IvoryType t, IvoryStore t) => FrameBufferNeoPixel t -> Uint8 -> Ivory eff ()
+writeByte FrameBufferNeoPixel{..} value =
+    arrayMap $ \ix ->
+        store (buff ! toIx ix) =<< deref (matrix ! toIx value ! ix)
