@@ -1,11 +1,10 @@
+{-# LANGUAGE DataKinds     #-}
+{-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Support.Device.GD32F4xx.FmcOperation.FmcOperation
-    ( eraseSector
+    ( eraseSectorByAddress
     , write32Bit
 
     , inclFmcOperation
@@ -16,8 +15,8 @@ import           Ivory.Support
 import           Ivory.Support.Device.GD32F4xx
 
 
-eraseSector :: Uint32 -> Ivory eff ()
-eraseSector = call_ fmc_erase_sector_by_address
+eraseSectorByAddress :: Uint32 -> Ivory eff ()
+eraseSectorByAddress = call_ fmc_erase_sector_by_address
 
 fmc_erase_sector_by_address :: Def ('[Uint32] :-> ())
 fmc_erase_sector_by_address = fun "fmc_erase_sector_by_address"

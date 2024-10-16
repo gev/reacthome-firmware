@@ -1,8 +1,8 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE TypeOperators              #-}
 
 module Support.Device.GD32F4xx.FMC
     ( FMC_FLAG
@@ -11,6 +11,7 @@ module Support.Device.GD32F4xx.FMC
     , fmc_flag_wperr
     , fmc_flag_pgmerr
     , fmc_flag_pgserr
+    , fmc_flag_rdderr
 
     , FMC_OB_WP
     , ob_wp_all
@@ -42,6 +43,7 @@ fmc_flag_operr  = FMC_FLAG $ ext "FMC_FLAG_OPERR"
 fmc_flag_wperr  = FMC_FLAG $ ext "FMC_FLAG_WPERR"
 fmc_flag_pgmerr = FMC_FLAG $ ext "FMC_FLAG_PGMERR"
 fmc_flag_pgserr = FMC_FLAG $ ext "FMC_FLAG_PGSERR"
+fmc_flag_rdderr = FMC_FLAG $ ext "FMC_FLAG_RDDERR"
 
 
 newtype FMC_OB_WP = FMC_OB_WP Uint32
@@ -121,6 +123,7 @@ inclFMC = do
     inclSym fmc_flag_wperr
     inclSym fmc_flag_pgmerr
     inclSym fmc_flag_pgserr
+    inclSym fmc_flag_rdderr
 
     inclSym ob_wp_all
 
