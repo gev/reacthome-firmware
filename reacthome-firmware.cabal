@@ -264,6 +264,7 @@ executable reacthome-firmware
                     , Support.ReadAddr
                     , Support.Serialize
                     , Support.CMSIS.CoreCM4
+                    , Support.CMSIS.CoreCMFunc
 
                     , Support.Device.GD32F3x0
                     , Support.Device.GD32F3x0.DBG

@@ -2,6 +2,7 @@ module Support.Device.GD32F4xx where
 
 import           Ivory.Language.Module
 import           Support.CMSIS.CoreCM4
+import           Support.CMSIS.CoreCMFunc
 import           Support.Device.GD32F4xx.DBG
 import           Support.Device.GD32F4xx.DMA
 import           Support.Device.GD32F4xx.EXTI
@@ -33,3 +34,4 @@ inclGD32F4xx = do
     inclFmcOperation
     inclFMC
     inclCoreCM4
+    inclCoreCMFunc
