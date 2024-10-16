@@ -12,12 +12,19 @@ module Support.Device.GD32F4xx.FMC
     , fmc_flag_pgmerr
     , fmc_flag_pgserr
 
+    , FMC_OB_WP
+    , ob_wp_all
+
 
     , unlockFMC
     , lockFMC
+    , unlockOB
+    , lockOB
+    , startOB
     , clearFlagFMC
     , programWordFMC
     , eraseSectorFMC
+    , writeProtectionDisableOB
 
     , inclFMC
     ) where
@@ -37,6 +44,10 @@ fmc_flag_pgmerr = FMC_FLAG $ ext "FMC_FLAG_PGMERR"
 fmc_flag_pgserr = FMC_FLAG $ ext "FMC_FLAG_PGSERR"
 
 
+newtype FMC_OB_WP = FMC_OB_WP Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
+ob_wp_all = FMC_OB_WP $ ext "OB_WP_ALL"
+
 
 unlockFMC :: Ivory eff ()
 unlockFMC = call_ fmc_unlock
@@ -50,6 +61,27 @@ lockFMC = call_ fmc_lock
 
 fmc_lock :: Def ('[] :-> ())
 fmc_lock = fun "fmc_lock"
+
+
+unlockOB :: Ivory eff ()
+unlockOB = call_ ob_unlock
+
+ob_unlock :: Def ('[] :-> ())
+ob_unlock = fun "ob_unlock"
+
+
+lockOB :: Ivory eff ()
+lockOB = call_ ob_lock
+
+ob_lock :: Def ('[] :-> ())
+ob_lock = fun "ob_lock"
+
+
+startOB :: Ivory eff ()
+startOB = call_ ob_start
+
+ob_start :: Def ('[] :-> ())
+ob_start = fun "ob_start"
 
 
 clearFlagFMC :: FMC_FLAG -> Ivory eff ()
@@ -73,6 +105,14 @@ fmc_sector_erase :: Def ('[Uint32] :-> ())
 fmc_sector_erase = fun "fmc_sector_erase"
 
 
+writeProtectionDisableOB :: FMC_OB_WP -> Ivory eff ()
+writeProtectionDisableOB = call_ ob_write_protection_disable
+
+ob_write_protection_disable :: Def ('[FMC_OB_WP] :-> ())
+ob_write_protection_disable = fun "ob_write_protection_disable"
+
+
+
 inclFMC :: ModuleDef
 inclFMC = do
 
@@ -82,8 +122,14 @@ inclFMC = do
     inclSym fmc_flag_pgmerr
     inclSym fmc_flag_pgserr
 
+    inclSym ob_wp_all
+
     incl fmc_unlock
     incl fmc_lock
+    incl ob_unlock
+    incl ob_lock
+    incl ob_start
     incl fmc_flag_clear
     incl fmc_word_program
     incl fmc_sector_erase
+    incl ob_write_protection_disable
