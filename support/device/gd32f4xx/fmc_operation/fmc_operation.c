@@ -145,7 +145,7 @@ void fmc_erase_sector_by_address(uint32_t address)
     /* get information about the sector in which the specified address is located */
     sector_info = fmc_sector_info_get(address);
     if(FMC_WRONG_SECTOR_NAME == sector_info.sector_name){
-        while(1);
+        // while(1);
     }else{
         /* unlock the flash program erase controller */
         fmc_unlock(); 
@@ -153,7 +153,7 @@ void fmc_erase_sector_by_address(uint32_t address)
         fmc_flag_clear(FMC_FLAG_END | FMC_FLAG_OPERR | FMC_FLAG_WPERR | FMC_FLAG_PGMERR | FMC_FLAG_PGSERR);
         /* wait the erase operation complete*/
         if(FMC_READY != fmc_sector_erase(sector_info.sector_num)){
-            while(1);
+            // while(1);
         } 
         /* lock the flash program erase controller */
         fmc_lock();
@@ -170,7 +170,7 @@ void fmc_write_32bit(uint32_t address, int32_t data_32bit)
 
     /* write data_32 to the corresponding address */
     if(FMC_READY != fmc_word_program(address, data_32bit)){
-        while(1);
+        // while(1);
     }
     /* lock the flash program erase controller */
     fmc_lock();
