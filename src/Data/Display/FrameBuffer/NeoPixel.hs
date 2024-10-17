@@ -34,7 +34,7 @@ neoPixelBuffer :: ( MonadState Context m
                => String -> Int -> m (FrameBufferNeoPixel t)
 neoPixelBuffer id period = do
     let matrix = constArea "neo_pixel_matrix" . iarray $ iarray . map (ival . fromIntegral) <$> table
-    buff      <- buffer    "neo_pixel_buffer"
+    buff      <- values'   "neo_pixel_buffer" 0
     addConstArea matrix
     pure $ FrameBufferNeoPixel { matrix = addrOf matrix, buff }
     where
