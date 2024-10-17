@@ -16,7 +16,7 @@ import           Transport.UART.RBUS          (rbus)
 smartTopA6T :: Formula GD32F3x0
 smartTopA6T =  Formula { name           = "smart_top_a6t"
                        , model          = deviceTypeSmartTopA6T
-                       , version        = (4, 4)
+                       , version        = (4, 6)
                        , shouldInit     = false
                        , implementation = topA6T (rbus uart_1 115_200)
                                                  (dinputs $  in_pa_15
