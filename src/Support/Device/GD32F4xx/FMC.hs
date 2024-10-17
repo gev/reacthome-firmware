@@ -5,15 +5,7 @@
 {-# LANGUAGE TypeOperators              #-}
 
 module Support.Device.GD32F4xx.FMC
-    ( FMC_FLAG
-    , fmc_flag_end
-    , fmc_flag_operr
-    , fmc_flag_wperr
-    , fmc_flag_pgmerr
-    , fmc_flag_pgserr
-    , fmc_flag_rdderr
-
-    , FMC_SECTOR
+    ( FMC_SECTOR
     , fmc_sector_0
     , fmc_sector_1
     , fmc_sector_2
@@ -26,6 +18,15 @@ module Support.Device.GD32F4xx.FMC
     , fmc_sector_9
     , fmc_sector_10
     , fmc_sector_11
+    
+    , FMC_FLAG
+    , fmc_flag_end
+    , fmc_flag_operr
+    , fmc_flag_wperr
+    , fmc_flag_pgmerr
+    , fmc_flag_pgserr
+    , fmc_flag_rdderr
+
 
     , FMC_OB_WP
     , ob_wp_all
