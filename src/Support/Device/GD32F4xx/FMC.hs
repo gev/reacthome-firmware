@@ -13,6 +13,20 @@ module Support.Device.GD32F4xx.FMC
     , fmc_flag_pgserr
     , fmc_flag_rdderr
 
+    , FMC_SECTOR
+    , fmc_sector_0
+    , fmc_sector_1
+    , fmc_sector_2
+    , fmc_sector_3
+    , fmc_sector_4
+    , fmc_sector_5
+    , fmc_sector_6
+    , fmc_sector_7
+    , fmc_sector_8
+    , fmc_sector_9
+    , fmc_sector_10
+    , fmc_sector_11
+
     , FMC_OB_WP
     , ob_wp_all
 
@@ -35,6 +49,21 @@ import           Ivory.Support
 import           Ivory.Support.Device.GD32F4xx
 
 
+
+newtype FMC_SECTOR = FMC_SECTOR Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
+fmc_sector_0  = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_0"
+fmc_sector_1  = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_1"
+fmc_sector_2  = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_2"
+fmc_sector_3  = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_3"
+fmc_sector_4  = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_4"
+fmc_sector_5  = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_5"
+fmc_sector_6  = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_6"
+fmc_sector_7  = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_7"
+fmc_sector_8  = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_8"
+fmc_sector_9  = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_9"
+fmc_sector_10 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_10"
+fmc_sector_11 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_11"
 
 newtype FMC_FLAG = FMC_FLAG Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
@@ -100,10 +129,10 @@ fmc_word_program :: Def ('[Uint32, Uint32] :-> ())
 fmc_word_program = fun "fmc_word_program"
 
 
-eraseSectorFMC :: Uint32 -> Ivory eff ()
+eraseSectorFMC :: FMC_SECTOR -> Ivory eff ()
 eraseSectorFMC = call_ fmc_sector_erase
 
-fmc_sector_erase :: Def ('[Uint32] :-> ())
+fmc_sector_erase :: Def ('[FMC_SECTOR] :-> ())
 fmc_sector_erase = fun "fmc_sector_erase"
 
 
@@ -117,6 +146,19 @@ ob_write_protection_disable = fun "ob_write_protection_disable"
 
 inclFMC :: ModuleDef
 inclFMC = do
+
+    inclSym fmc_sector_0
+    inclSym fmc_sector_1
+    inclSym fmc_sector_2
+    inclSym fmc_sector_3
+    inclSym fmc_sector_4
+    inclSym fmc_sector_5
+    inclSym fmc_sector_6
+    inclSym fmc_sector_7
+    inclSym fmc_sector_8
+    inclSym fmc_sector_9
+    inclSym fmc_sector_10
+    inclSym fmc_sector_11
 
     inclSym fmc_flag_end
     inclSym fmc_flag_operr

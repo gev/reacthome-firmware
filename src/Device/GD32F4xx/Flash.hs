@@ -13,12 +13,12 @@ import           Support.Device.GD32F4xx.FMC
 
 data PageAddr = PageAddr
     { base   :: Uint32
-    , sector :: Uint32
+    , sector :: FMC_SECTOR
     }
 
 
 
-mkPage :: Uint32 -> Uint32 -> PageAddr
+mkPage :: Uint32 -> FMC_SECTOR -> PageAddr
 mkPage =  PageAddr
 
 

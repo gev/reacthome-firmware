@@ -40,6 +40,7 @@ import           Support.Device.GD32F4xx.IRQ
 import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.Timer
 import           Support.Device.GD32F4xx.USART
+import           Support.Device.GD32F4xx.FMC
 
 
 
@@ -547,7 +548,7 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
                       (pb_13 af_11)
                       enet_irqn
 
-    , etc = mkPage 0x808_0000 64
+    , etc = mkPage 0x808_0000 fmc_sector_8
 
     }
 
