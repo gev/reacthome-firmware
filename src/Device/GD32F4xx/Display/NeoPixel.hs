@@ -125,7 +125,7 @@ instance KnownNat n => Handler (Render n) NeoPixel where
 
 
 handleDMA :: KnownNat n
-          => NeoPixel -> Values n Uint8 -> Ivory ('Effects (Returns ()) b (Scope s)) ()
+          => NeoPixel -> Values n Uint8 -> Ivory eff ()
 handleDMA npx@NeoPixel{..} frame = do
     f <- getInterruptFlagDMA  dmaPer dmaChannel dma_int_flag_ftf
     when f $ do
@@ -136,7 +136,7 @@ handleDMA npx@NeoPixel{..} frame = do
 
 
 
-transmitFrameBuffer :: KnownNat n => NeoPixel -> Values n Uint8 -> Ivory ('Effects (Returns ()) b (Scope s)) ()
+transmitFrameBuffer :: KnownNat n => NeoPixel -> Values n Uint8 -> Ivory eff ()
 transmitFrameBuffer NeoPixel{..} frame = do
     offset' <- deref offset
     p <- deref (frame ! toIx offset')
