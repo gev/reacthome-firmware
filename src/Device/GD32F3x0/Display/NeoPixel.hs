@@ -103,15 +103,15 @@ instance KnownNat n => Handler (Render n) NeoPixel where
 
     addInit ("neopixel_init" <> symbol dmaChannel) $ do
         render
-        store offset 0
-        transmitFrameBuffer npx frame
+        store offset 1
+        transmitFrameBuffer npx $ frame ! 0
 
     addTask $ delay (1000 `iDiv` frameRate)
                     ("neo_pixel_" <> show pwmPort) $ do
                         shouldUpdate <- render
                         when shouldUpdate $ do
-                            store offset 0
-                            transmitFrameBuffer npx frame
+                            store offset 1
+                            transmitFrameBuffer npx $ frame ! 0
 
 
 
@@ -121,21 +121,19 @@ handleDMA npx@NeoPixel{..} frame = do
     when f $ do
         clearInterruptFlagDMA dmaChannel dma_int_flag_g
         offset' <- deref offset
-        when (offset' <? arrayLen frame) $
-            transmitFrameBuffer npx frame
+        when (offset' <? arrayLen frame) $ do
+            transmitFrameBuffer npx $ frame ! toIx offset'
+            store offset $ offset' + 1
 
 
 
-transmitFrameBuffer :: KnownNat n => NeoPixel -> Values n Uint8 -> Ivory eff ()
-transmitFrameBuffer NeoPixel{..} frame = do
-    offset' <- deref offset
-    p <- deref (frame ! toIx offset')
-    writeByte buff' p
+transmitFrameBuffer :: NeoPixel -> Value Uint8 -> Ivory eff ()
+transmitFrameBuffer NeoPixel{..} value = do
+    writeByte buff' =<< deref value
     store (dmaParams ~> memory_addr) =<< castArrayUint8ToUint32 (toCArray $ buff buff')
     I.resetCounter   pwmTimer
     initDMA          dmaChannel dmaParams
     enableChannelDMA dmaChannel
-    store offset $ offset' + 1
 
 
 
