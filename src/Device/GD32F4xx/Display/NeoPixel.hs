@@ -96,7 +96,7 @@ mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer dmaIRQn selCh
             configPrimaryOutput           t true
             enableTimerDMA                t timer_dma_upd
             enableTimer                   t
-            enableIrqNvic                 dmaIRQn 0 0
+            enableIrqNvic                 dmaIRQn 1 1
             disableCirculationDMA         dmaPer dmaChannel
             selectChannelSubperipheralDMA dmaPer dmaChannel dmaSubPer
             enableInterruptDMA            dmaPer dmaChannel dma_chxctl_ftfie
