@@ -126,7 +126,7 @@ handleDMA npx@NeoPixel{..} frame = do
 
 
 
-transmitFrameBuffer :: KnownNat n => NeoPixel -> Values n Uint8 ->Ivory eff ()
+transmitFrameBuffer :: KnownNat n => NeoPixel -> Values n Uint8 -> Ivory eff ()
 transmitFrameBuffer NeoPixel{..} frame = do
     offset' <- deref offset
     p <- deref (frame ! toIx offset')
