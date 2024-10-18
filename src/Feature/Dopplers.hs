@@ -177,5 +177,5 @@ t     = 200
 range = 0.3
 alpha = 0.0001
 betta = 0.01
-level = 0.12
+level = 0.07
 k     = 0.23
