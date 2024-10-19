@@ -104,35 +104,33 @@ measure Doppler {..} = do
     a' <- I.getReduced adc
 
     expectation' <- deref expectation
-
-    let diff  = abs $ a' - expectation'
+    let diff = abs $ a' - expectation'
 
     when (diff <? range)  $
         store expectation $ average alpha expectation' a'
 
-    median0'    <- deref median0
-    median1'    <- deref median1
-    measurement <- local $ ival 0
+    median0'     <- deref median0
+    median1'     <- deref median1
+    measurement  <- local $ ival 0
 
-    ifte_ (diff >? level)
-          (do
-            store measurement diff
-            store median0 $ average betta median0' level
-          )
-          (do
-            ifte_ (diff >? median1')
-                  (store median0 $ average betta median0' diff)
-                  (store median0 $ average betta median0' median1')
-            store median1 $ average alpha median1' diff
-          )
+    cond_ [ diff >? level
+                ==> store measurement diff
+                 >> store median0 (average (betta * level) median0' level)
+          , diff >? median1'
+                ==> store median0 (average (betta * diff) median0' diff)
+          , true
+                ==> store median0 (average (betta * median1') median0' median1')
+          ]
 
-    let threshold = average k median1' level
-    let median'   = sqrt $ median0' - threshold
+    let threshold = average gamma median1' level
+    when (diff <? threshold) $
+        store median1 (average alpha median1' diff)
+
+    let threshold' = average gamma' median1' level
     measurement' <- deref measurement
-    let value'    = iMax (measurement' - threshold) median'
-    expectation' <- deref expectation
-    let maxRange  = iMax expectation' (1 - expectation') - threshold
-    let current'' = castDefault $ 255 * value' / maxRange
+    let value'    = iMax measurement' median0' - threshold'
+    let maxRange  = iMax expectation' (1 - expectation') - threshold'
+    let current'' = castDefault $ 255 * sqrt (value' / maxRange)
     current'     <- deref current
     store current $ iMax current' current''
 
@@ -173,9 +171,10 @@ sub = (-)
 
 
 
-t     = 200
-range = 0.3
-alpha = 0.0001
-betta = 0.01
-level = 0.07
-k     = 0.23
+t      = 200
+range  =   0.3
+level  =   0.1
+alpha  =   0.0001
+betta  =   0.05
+gamma  =   0.15
+gamma' =   0.09

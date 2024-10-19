@@ -54,6 +54,6 @@ main = do
 
     gcc gd32f330k8u6 [ doppler5 ]
 
-    gcc gd32f450vgt6 [ server
-                     , rsHub4
-                     ]
+    -- gcc gd32f450vgt6 [ server
+    --                  , rsHub4
+    --                  ]
