@@ -130,7 +130,8 @@ measure Doppler {..} = do
     measurement' <- deref measurement
     let value'    = iMax measurement' median0' - threshold'
     let maxRange  = iMax expectation' (1 - expectation') - threshold'
-    let current'' = castDefault $ 255 * sqrt (value' / maxRange)
+    let x = value' / maxRange
+    let current'' = castDefault $ 127.5 * (x + sqrt x)
     current'     <- deref current
     store current $ iMax current' current''
 
@@ -177,4 +178,4 @@ level  =   0.1
 alpha  =   0.0001
 betta  =   0.05
 gamma  =   0.15
-gamma' =   0.09
+gamma' =   0.12
