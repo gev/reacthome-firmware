@@ -18,6 +18,22 @@ module Support.Device.GD32F4xx.FMC
     , fmc_sector_9
     , fmc_sector_10
     , fmc_sector_11
+    , fmc_sector_12
+    , fmc_sector_13
+    , fmc_sector_14
+    , fmc_sector_15
+    , fmc_sector_16
+    , fmc_sector_17
+    , fmc_sector_18
+    , fmc_sector_19
+    , fmc_sector_20
+    , fmc_sector_21
+    , fmc_sector_22
+    , fmc_sector_23
+    , fmc_sector_24
+    , fmc_sector_25
+    , fmc_sector_26
+    , fmc_sector_27
 
     , FMC_FLAG
     , fmc_flag_end
@@ -184,6 +200,22 @@ inclFMC = do
     inclSym fmc_sector_9
     inclSym fmc_sector_10
     inclSym fmc_sector_11
+    inclSym fmc_sector_12
+    inclSym fmc_sector_13
+    inclSym fmc_sector_14
+    inclSym fmc_sector_15
+    inclSym fmc_sector_16
+    inclSym fmc_sector_17
+    inclSym fmc_sector_18
+    inclSym fmc_sector_19
+    inclSym fmc_sector_20
+    inclSym fmc_sector_21
+    inclSym fmc_sector_22
+    inclSym fmc_sector_23
+    inclSym fmc_sector_24
+    inclSym fmc_sector_25
+    inclSym fmc_sector_26
+    inclSym fmc_sector_27
 
     inclSym fmc_flag_end
     inclSym fmc_flag_operr
