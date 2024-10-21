@@ -59,12 +59,12 @@ cook mcu Formula{..} = do
 
 
 
-generate :: ModuleDef -> String -> IO ()
-generate moduleDef name = runCompiler
+generate :: ModuleDef -> String -> String -> IO ()
+generate moduleDef name path = runCompiler
     [package name moduleDef]
     []
     initialOpts
-        { outDir = Just "./firmware"
+        { outDir = Just ("./firmware/" <> path)
         , constFold = True
         }
 
@@ -76,5 +76,6 @@ build config MCUmod{..} formulas =
     shake config =<< mapM run formulas
     where
         run f@Formula{..} = do
-            generate (cook mcu f) name
-            pure name
+            generate (cook mcu f) name path
+            pure $ path <> "/" <> name
+        path = model <> modification
