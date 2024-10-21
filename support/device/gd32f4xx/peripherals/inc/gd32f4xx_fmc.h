@@ -363,6 +363,7 @@ void ob_lock(void);
 void ob_start(void);
 /* erase option byte */
 void ob_erase(void);
+void ob_dbs_set(void);
 /* enable write protect */
 ErrStatus ob_write_protection_enable(uint32_t ob_wp);
 /* disable write protect */

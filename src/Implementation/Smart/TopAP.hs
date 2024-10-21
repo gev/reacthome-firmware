@@ -57,14 +57,14 @@ topAP :: ( MonadState Context m
       -> (Bool -> t -> m (DI.DInputs n))
       -> (t -> m SHT21)
       -> (p -> m d)
-      -> (p -> f)
+      -> (p -> m f)
       -> m (Top n)
 topAP transport' dinputs' sht21' display' etc' = do
     transport   <- transport'
     shouldInit  <- asks D.shouldInit
     mcu         <- asks D.mcu
     display     <- display' $ peripherals mcu
-    let etc      = etc' $ peripherals mcu
+    etc         <- etc' $ peripherals mcu
     dinputs     <- dinputs' False transport
     frameBuffer <- values' "top_frame_buffer" 0
     leds        <- mkLeds frameBuffer [0, 5, 1, 4, 2, 3] transport etc (replicate 6 true)

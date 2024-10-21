@@ -37,6 +37,7 @@ module Support.Device.GD32F4xx.FMC
     , unlockOB
     , lockOB
     , startOB
+    , setDbsOB
     , clearFlagFMC
     , programWordFMC
     , eraseSectorFMC
@@ -116,6 +117,13 @@ ob_start :: Def ('[] :-> ())
 ob_start = fun "ob_start"
 
 
+setDbsOB :: Ivory eff ()
+setDbsOB = call_ ob_dbs_set
+
+ob_dbs_set :: Def ('[] :-> ())
+ob_dbs_set = fun "ob_dbs_set"
+
+
 clearFlagFMC :: FMC_FLAG -> Ivory eff ()
 clearFlagFMC = call_ fmc_flag_clear
 
@@ -175,6 +183,7 @@ inclFMC = do
     incl ob_unlock
     incl ob_lock
     incl ob_start
+    incl ob_dbs_set
     incl fmc_flag_clear
     incl fmc_word_program
     incl fmc_sector_erase

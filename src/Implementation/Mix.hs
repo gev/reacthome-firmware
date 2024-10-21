@@ -82,9 +82,11 @@ mix :: ( MonadState Context m
     -> R.Relays no
     -> t
     -> m (Indicator ni no))
-    -> (p -> f)
+    -> (p -> m f)
     -> m (Mix ni no)
-mix transport' dinputs' relays' indicator' etc = do
+mix transport' dinputs' relays' indicator' etc' = do
+    mcu          <- asks D.mcu
+    etc          <- etc' $ peripherals mcu
     transport    <- transport'
     relays       <- relays' transport
     dinputs      <- dinputs' True transport
@@ -98,7 +100,7 @@ mix transport' dinputs' relays' indicator' etc = do
                         , rules
                         , ats
                         , indicator
-                        , etc = etc (peripherals mcu)
+                        , etc
                         , shouldInit
                         , transmit = T.transmitBuffer transport
                         }

@@ -54,7 +54,7 @@ type PWM'       = forall m.   MonadState Context m => Uint32 -> Uint32 -> m PWM
 type NeoPixel'  = forall m.   MonadState Context m => m NeoPixel
 type OneWire'   = forall m.   MonadState Context m => m OpenDrain -> m OneWire
 type Enet'      = forall m.   MonadState Context m => m ENET
-
+type PageAddr'  = forall m.   MonadState Context m => m PageAddr
 
 data GD32F4xx = GD32F4xx
     { uart_0    :: UART'
@@ -255,7 +255,7 @@ data GD32F4xx = GD32F4xx
 
     , eth_0     :: Enet'
 
-    , etc       :: PageAddr
+    , etc       :: PageAddr'
     }
 
 

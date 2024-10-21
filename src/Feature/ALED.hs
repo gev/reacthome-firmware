@@ -61,11 +61,12 @@ aled :: ( MonadState Context m
         , KnownNat ng, KnownNat ns, KnownNat np
         , LazyTransport t
         , Flash f
-        ) => (p -> m d) -> (p-> f) -> t -> m (ALED ng ns np)
-aled mkDisplay etc transport = do
+        ) => (p -> m d) -> (p -> m f) -> t -> m (ALED ng ns np)
+aled mkDisplay etc' transport = do
     mcu              <- asks D.mcu
     display          <- mkDisplay $ peripherals mcu
     getALED          <- E.mkALED
+    etc              <- etc'  $ peripherals mcu
     shouldSaveConfig <- value "aled_should_save_config" false
     shouldSyncGroups <- value "aled_should_sync_groups" false
     groupIndex       <- value "aled_group_index" 0
@@ -74,7 +75,7 @@ aled mkDisplay etc transport = do
 
     let aled = ALED { display
                     , getALED
-                    , etc = etc (peripherals mcu)
+                    , etc
                     , transport
                     , shouldSaveConfig
                     , shouldSyncGroups

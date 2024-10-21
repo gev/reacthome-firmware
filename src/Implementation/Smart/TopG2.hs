@@ -65,14 +65,14 @@ topG2 :: ( MonadState Context m
       -> m PowerTouch
       -> (t -> m SHT21)
       -> (p -> m d)
-      -> (p -> f)
+      -> (p -> m f)
       -> m (Top n)
 topG2 transport' dinputs' vibro' touch' sht21' display' etc' = do
     transport      <- transport'
     shouldInit     <- asks D.shouldInit
     mcu            <- asks D.mcu
     display        <- display' $ peripherals mcu
-    let etc         = etc' $ peripherals mcu
+    etc            <- etc' $ peripherals mcu
     dinputs        <- dinputs' True transport
     vibro          <- vibro' (DI.getDInputs dinputs) transport etc
     touch'

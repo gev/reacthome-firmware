@@ -516,6 +516,38 @@ void ob_erase(void)
     }
 }
 
+void ob_dbs_set(void)
+{
+    uint32_t reg, reg1;
+    fmc_state_enum fmc_state = FMC_READY;
+    /* wait for the FMC ready */
+    fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
+    reg = FMC_OBCTL0;
+    reg1 = FMC_OBCTL1;
+
+    if(FMC_READY == fmc_state) {
+
+        /* reset the OB_FWDGT, OB_DEEPSLEEP and OB_STDBY, set according to ob_fwdgt ,ob_deepsleep and ob_stdby */
+        reg |= (FMC_OBCTL0_NWDG_HW | FMC_OBCTL0_NRST_DPSLP | FMC_OBCTL0_NRST_STDBY);
+        /* reset the BOR level */
+        reg |= FMC_OBCTL0_BOR_TH;
+        /* reset option byte boot bank value */
+        reg &= ~FMC_OBCTL0_BB;
+        /* reset option byte dbs value */
+        reg |= FMC_OBCTL0_DBS;
+
+        /* reset drp and wp value */
+        reg |= FMC_OBCTL0_WP0;
+        reg &= (~FMC_OBCTL0_DRP);
+        FMC_OBCTL0 = reg;
+
+        reg1 |= FMC_OBCTL1_WP1;
+        FMC_OBCTL1 = reg1;
+
+        FMC_OBCTL0 = reg;
+    }
+}
+
 /*!
     \brief    enable write protection
     \param[in]  ob_wp: specify sector to be write protected

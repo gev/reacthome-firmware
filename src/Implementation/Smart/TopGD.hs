@@ -76,7 +76,7 @@ topGD :: ( MonadState Context m
       -> m PowerTouch
       -> (t -> m SHT21)
       -> (p -> m d)
-      -> (p -> f)
+      -> (p -> m f)
       -> m (Top n)
 topGD transport' dinputs' vibro' touch' sht21' display' etc' = do
     transport    <- transport'
@@ -86,7 +86,7 @@ topGD transport' dinputs' vibro' touch' sht21' display' etc' = do
 
     frameBuffer  <- values' "top_frame_buffer" 0
 
-    let etc       = etc' $ peripherals mcu
+    etc            <- etc' $ peripherals mcu
 
     vibro        <- vibro' (DI.getDInputs dinputs) transport etc
 
