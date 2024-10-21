@@ -1,6 +1,6 @@
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RecordWildCards  #-}
 
 module Device.GD32F4xx.Flash where
 
@@ -23,7 +23,13 @@ data PageAddr = PageAddr
 
 
 mkPage :: MonadState Context m => Uint32 -> FMC_SECTOR -> m PageAddr
-mkPage base sector =  do 
+mkPage base sector =
+    pure PageAddr {base, sector}
+
+
+
+mkPage' :: MonadState Context m => Uint32 -> FMC_SECTOR -> m PageAddr
+mkPage' base sector =  do
     addInit "fmc" setDbsOB
     pure PageAddr {base, sector}
 

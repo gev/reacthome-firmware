@@ -1,21 +1,21 @@
-{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns   #-}
 module Device.GD32F3x0.Flash where
 
 
-import           Interface.Flash hiding (getAddr)
+import           Control.Monad.State
+import           Core.Context
+import           Interface.Flash             hiding (getAddr)
 import           Ivory.Language
 import           Support.Cast
 import           Support.Device.GD32F3x0.FMC
-import Core.Context
-import Control.Monad.State
 
 
 newtype PageAddr = PageAddr {getAddr :: Uint32}
 
 
 mkPage :: MonadState Context m => Uint32 -> m PageAddr
-mkPage getAddr = do
+mkPage getAddr =
     pure PageAddr { getAddr }
 
 

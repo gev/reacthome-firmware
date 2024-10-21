@@ -259,8 +259,8 @@ data GD32F4xx = GD32F4xx
     }
 
 
-gd32f4xx :: String -> String -> MCUmod GD32F4xx
-gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
+gd32f4xx :: PageAddr' -> String -> String -> MCUmod GD32F4xx
+gd32f4xx etc' = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
     { uart_0    = mkUART usart0
                          rcu_usart0
                          usart0_irqn
@@ -548,17 +548,17 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
                       (pb_13 af_11)
                       enet_irqn
 
-    , etc = mkPage 0x808_0000 fmc_sector_12
+    , etc = etc'
 
     }
 
 
 
 gd32f450vgt6 :: MCUmod GD32F4xx
-gd32f450vgt6 = gd32f4xx "gd32f450" "vgt6"
+gd32f450vgt6 = gd32f4xx (mkPage' 0x808_0000 fmc_sector_12) "gd32f450" "vgt6"
 
 gd32f450vit6 :: MCUmod GD32F4xx
-gd32f450vit6 = gd32f4xx "gd32f450" "vit6"
+gd32f450vit6 = gd32f4xx (mkPage 0x810_0000 fmc_sector_12) "gd32f450" "vit6"
 
 
 instance Pull GD32F4xx GPIO_PUPD where
