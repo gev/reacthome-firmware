@@ -18,7 +18,7 @@ module Support.Device.GD32F4xx.FMC
     , fmc_sector_9
     , fmc_sector_10
     , fmc_sector_11
-    
+
     , FMC_FLAG
     , fmc_flag_end
     , fmc_flag_operr
@@ -66,6 +66,22 @@ fmc_sector_8  = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_8"
 fmc_sector_9  = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_9"
 fmc_sector_10 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_10"
 fmc_sector_11 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_11"
+fmc_sector_12 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_12"
+fmc_sector_13 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_13"
+fmc_sector_14 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_14"
+fmc_sector_15 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_15"
+fmc_sector_16 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_16"
+fmc_sector_17 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_17"
+fmc_sector_18 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_18"
+fmc_sector_19 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_19"
+fmc_sector_20 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_20"
+fmc_sector_21 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_21"
+fmc_sector_22 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_22"
+fmc_sector_23 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_23"
+fmc_sector_24 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_24"
+fmc_sector_25 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_25"
+fmc_sector_26 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_26"
+fmc_sector_27 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_27"
 
 newtype FMC_FLAG = FMC_FLAG Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
