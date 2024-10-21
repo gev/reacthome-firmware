@@ -5,7 +5,6 @@
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE TypeOperators         #-}
 
 module Device.GD32F4xx.UART where
 

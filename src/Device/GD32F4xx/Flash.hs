@@ -30,7 +30,10 @@ mkPage base sector =
 
 mkPage' :: MonadState Context m => Uint32 -> FMC_SECTOR -> m PageAddr
 mkPage' base sector =  do
-    addInit "fmc" setDbsOB
+    addInit "fmc" $ do
+        unlockOB
+        setDbsOB
+        lockOB
     pure PageAddr {base, sector}
 
 
@@ -52,7 +55,7 @@ instance Flash PageAddr where
         -- clearFlagFMC fmc_flag_wperr
         -- clearFlagFMC fmc_flag_pgmerr
         -- clearFlagFMC fmc_flag_pgserr
-        -- lockFMC
+        lockFMC
 
     erasePage PageAddr{..}  _ = do
         unlockFMC
@@ -68,7 +71,7 @@ instance Flash PageAddr where
         -- clearFlagFMC fmc_flag_wperr
         -- clearFlagFMC fmc_flag_pgmerr
         -- clearFlagFMC fmc_flag_pgserr
-        -- lockFMC
+        lockFMC
 
     read page offset =
         derefUint32 $ address page offset

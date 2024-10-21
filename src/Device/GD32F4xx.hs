@@ -555,7 +555,7 @@ gd32f4xx etc' = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
 
 
 gd32f450vgt6 :: MCUmod GD32F4xx
-gd32f450vgt6 = gd32f4xx (mkPage' 0x808_0000 fmc_sector_12) "gd32f450" "vgt6"
+gd32f450vgt6 = gd32f4xx (mkPage 0x808_0000 fmc_sector_8) "gd32f450" "vgt6"
 
 gd32f450vit6 :: MCUmod GD32F4xx
 gd32f450vit6 = gd32f4xx (mkPage 0x810_0000 fmc_sector_12) "gd32f450" "vit6"

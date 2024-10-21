@@ -32,7 +32,7 @@ instance Flash PageAddr where
         -- clearFlagFMC fmc_flag_end
         -- clearFlagFMC fmc_flag_wperr
         -- clearFlagFMC fmc_flag_pgerr
-        -- lockFMC
+        lockFMC
 
     erasePage page offset = do
         unlockFMC
@@ -43,7 +43,7 @@ instance Flash PageAddr where
         -- clearFlagFMC fmc_flag_end
         -- clearFlagFMC fmc_flag_wperr
         -- clearFlagFMC fmc_flag_pgerr
-        -- lockFMC
+        lockFMC
 
     read page offset =
         derefUint32 $ address page offset
