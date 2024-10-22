@@ -28,35 +28,33 @@ instance Flash PageAddr where
 
     write page offset value = do
         unlockFMC
-        -- clearFlagFMC fmc_flag_end
-        -- clearFlagFMC fmc_flag_operr
-        -- clearFlagFMC fmc_flag_wperr
-        -- clearFlagFMC fmc_flag_pgmerr
-        -- clearFlagFMC fmc_flag_pgserr
-        -- clearFlagFMC fmc_flag_rdderr
+        clearFlagFMC fmc_flag_end
+        clearFlagFMC fmc_flag_operr
+        clearFlagFMC fmc_flag_wperr
+        clearFlagFMC fmc_flag_pgmerr
+        clearFlagFMC fmc_flag_pgserr
         programWordFMC (address page offset) value
         -- clearFlagFMC fmc_flag_end
         -- clearFlagFMC fmc_flag_operr
         -- clearFlagFMC fmc_flag_wperr
         -- clearFlagFMC fmc_flag_pgmerr
         -- clearFlagFMC fmc_flag_pgserr
-        -- lockFMC
+        lockFMC
 
     erasePage PageAddr{..}  _ = do
         unlockFMC
-        -- clearFlagFMC fmc_flag_end
-        -- clearFlagFMC fmc_flag_operr
-        -- clearFlagFMC fmc_flag_wperr
-        -- clearFlagFMC fmc_flag_pgmerr
-        -- clearFlagFMC fmc_flag_pgserr
-        -- clearFlagFMC fmc_flag_rdderr
+        clearFlagFMC fmc_flag_end
+        clearFlagFMC fmc_flag_operr
+        clearFlagFMC fmc_flag_wperr
+        clearFlagFMC fmc_flag_pgmerr
+        clearFlagFMC fmc_flag_pgserr
         eraseSectorFMC sector
         -- clearFlagFMC fmc_flag_end
         -- clearFlagFMC fmc_flag_operr
         -- clearFlagFMC fmc_flag_wperr
         -- clearFlagFMC fmc_flag_pgmerr
         -- clearFlagFMC fmc_flag_pgserr
-        -- lockFMC
+        lockFMC
 
     read page offset =
         derefUint32 $ address page offset
