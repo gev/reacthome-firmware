@@ -17,32 +17,26 @@ import           Ivory.Language
 
 
 data SystemClock where
-    SystemClock :: (Timer t, Counter c)
+    SystemClock :: Timer t
                 => { timer   :: t
-                   , counter :: c
                    , time    :: Value Uint32
                    }
                 -> SystemClock
 
 
-systemClock :: (MonadState Context m, Timer t, Counter c)
-            => m t -> m c -> m SystemClock
-systemClock timer' counter' = do
+systemClock :: (MonadState Context m, Timer t)
+            => m t -> m SystemClock
+systemClock timer' = do
     time    <- value "system_time" 0
     timer   <- timer'
-    counter <- counter'
     let handle' :: Ivory eff ()
         handle' = do
             t <- deref time
             store time $ t + 1
     addHandler $ HandleTimer timer handle'
-    pure SystemClock { timer, counter, time }
+    pure SystemClock { timer, time }
 
 
 
 getSystemTime :: SystemClock -> Ivory eff Uint32
 getSystemTime = deref . time
-
-
-instance Counter SystemClock where
-    readCounter SystemClock{..} = readCounter counter

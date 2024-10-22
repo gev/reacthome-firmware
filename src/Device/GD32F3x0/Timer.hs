@@ -95,7 +95,7 @@ instance I.Counter Timer where
 
 instance Handler I.HandleTimer Timer where
     addHandler (I.HandleTimer {I.timer = Timer{..}, handle}) = do
-        addInit (symbol timer <> "_irq_init") initTimerIRQ'
+        addInit (symbol timer <> "_irq") initTimerIRQ'
         addModule $ makeIRQHandler irq handleIRQ'
         where
             initTimerIRQ' :: Ivory eff ()
@@ -106,7 +106,7 @@ instance Handler I.HandleTimer Timer where
             handleIRQ' :: Ivory eff ()
             handleIRQ' = do
                 flag <- getTimerInterruptFlag timer timer_int_flag_up
-                when flag $ do 
+                when flag $ do
                     clearTimerInterruptFlag timer timer_int_flag_up
                     handle
 
