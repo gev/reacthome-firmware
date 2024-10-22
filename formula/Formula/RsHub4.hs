@@ -20,7 +20,7 @@ import           Transport.UDP.RBUS as U
 rsHub4 :: Formula GD32F4xx
 rsHub4 = Formula { name           = "rs_hub4"
                  , model          = deviceTypeRsHub4
-                 , version        = (5, 0)
+                 , version        = (5, 4)
                  , shouldInit     = true
                  , implementation = hub (U.rbus eth_0)
                                         (F.rbus    $  rs485 uart_5 out_pb_14

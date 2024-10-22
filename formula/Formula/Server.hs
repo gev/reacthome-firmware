@@ -21,7 +21,7 @@ import           Transport.UART.RBUS as U
 server :: Formula GD32F4xx
 server = Formula { name           = "server"
                  , model          = deviceTypeServer
-                 , version        = (5, 0)
+                 , version        = (5, 4)
                  , shouldInit     = true
                  , implementation = hub (U.rbus uart_1 1_000_000)
                                         (F.rbus    $  rs485 uart_5 out_pb_14
