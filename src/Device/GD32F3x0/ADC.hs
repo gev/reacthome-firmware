@@ -48,7 +48,6 @@ initADC ADC{..} = do
     configExternalTriggerADC       adc_regular_channel true
     enableADC
     enableCalibrationADC
-    enableDmaModeADC
     enableSoftwareTriggerADC       adc_regular_channel
 
 
