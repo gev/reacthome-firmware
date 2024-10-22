@@ -1,15 +1,16 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GADTs            #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE DataKinds           #-}
+{-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE GADTs               #-}
+{-# LANGUAGE NamedFieldPuns      #-}
+{-# LANGUAGE RankNTypes          #-}
+{-# LANGUAGE RecordWildCards     #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
+{-# LANGUAGE KindSignatures      #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Feature.DInputs where
 
-import           Control.Monad         (zipWithM_)
 import           Control.Monad.Reader  (MonadReader, asks)
 import           Control.Monad.State   (MonadState)
 import           Core.Context
@@ -17,6 +18,7 @@ import qualified Core.Domain           as D
 import           Core.Task
 import qualified Core.Transport        as T
 import           Data.Buffer
+import           Data.Fixed
 import           Data.Index
 import           Data.Record
 import           Data.Serialize
@@ -28,37 +30,41 @@ import           Interface.GPIO.Port
 import           Interface.MCU         (MCU, peripherals, systemClock)
 import           Interface.SystemClock (SystemClock, getSystemTime)
 import           Ivory.Language
+import           Ivory.Language.Proxy
 import           Ivory.Stdlib
 
 
 
-data DInputs = forall i. Input i => DInputs
-    { n          :: Int
-    , zero       :: IBool
-    , getDInputs :: DI.DInputs
-    , getInputs  :: [i]
+data DInputs n = forall i. Input i => DInputs
+    { zero       :: IBool
+    , getDInputs :: DI.DInputs n
+    , getInputs  :: List n i
     , current    :: Index Uint8
     , clock      :: SystemClock
-    , transmit   :: forall n. KnownNat n
-                 => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
+    , transmit   :: forall l. KnownNat l
+                 => Buffer l Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
 
 
 
-dinputs :: (MonadState Context m, MonadReader (D.Domain p c) m, T.Transport t, Input i, Pull p d)
-          => [p -> d -> m i] -> Bool -> t -> m DInputs
+dinputs :: forall m n p c i d t.
+           ( MonadState Context m
+           , MonadReader (D.Domain p c) m
+           , T.Transport t
+           , Input i, Pull p d
+           , KnownNat n
+           )
+        => List n (p -> d -> m i) -> Bool -> t -> m (DInputs n)
 dinputs inputs zero' transport = do
-    mcu        <- asks D.mcu
-    let clock   = systemClock mcu
+    mcu             <- asks D.mcu
+    let clock        = systemClock mcu
     let peripherals' = peripherals mcu
-    let pull    = if zero' then pullUp else pullDown
-    is         <- mapM (($ pull peripherals') . ($ peripherals')) inputs
-    let n       = length is
-    getDInputs <- DI.dinputs "dinputs" n
-    current    <- index "current_dinput"
+    let pull         = if zero' then pullUp else pullDown
+    is              <- mapM (($ pull peripherals') . ($ peripherals')) inputs
+    getDInputs      <- DI.mkDinputs "dinputs"
+    current         <- index "current_dinput"
 
-    let dinputs = DInputs { n
-                          , zero = if zero' then true else false
+    let dinputs = DInputs { zero = if zero' then true else false
                           , getDInputs
                           , getInputs = is
                           , current
@@ -75,19 +81,19 @@ dinputs inputs zero' transport = do
 
 
 
-forceSyncDInputs :: DInputs -> Ivory eff ()
-forceSyncDInputs dinputs = DI.runDInputs (getDInputs dinputs) $
-    \dis -> arrayMap $ \ix -> store (addrOf dis ! ix ~> DI.synced) false
+forceSyncDInputs :: KnownNat n => DInputs n -> Ivory eff ()
+forceSyncDInputs DInputs{..} = do
+    arrayMap $ \ix -> store (( DI.dinputs getDInputs ! ix) ~> DI.synced) false
 
 
 
-manageDInputs :: DInputs -> Ivory eff ()
-manageDInputs DInputs{..} = zipWithM_ zip getInputs [0..]
+manageDInputs :: KnownNat n => DInputs n -> Ivory eff ()
+manageDInputs DInputs{..} = zipWithM_ zip getInputs ints
     where
         zip :: Input i => i -> Int -> Ivory eff ()
-        zip input i = DI.runDInputs getDInputs $ \dis -> do
+        zip input i = do
             let ix = fromIntegral i
-            let di = addrOf dis ! ix
+            let di = DI.dinputs getDInputs ! ix
             manageDInput zero di input =<< getSystemTime clock
 
 
@@ -108,7 +114,7 @@ manageDInput zero di input t  = do
 
 
 
-syncDInputs :: DInputs -> Ivory (ProcEffects s ()) ()
+syncDInputs :: KnownNat n => DInputs n -> Ivory (ProcEffects s ()) ()
 syncDInputs dis@DInputs{..} = do
     i <- deref current
     syncDInput dis i
@@ -116,12 +122,12 @@ syncDInputs dis@DInputs{..} = do
 
 
 
-syncDInput :: DInputs -> Uint8 -> Ivory (ProcEffects s ()) ()
-syncDInput DInputs{..} i =
-    DI.runDInputs getDInputs $ \dis -> do
-        let di = addrOf dis ! toIx i
-        synced <- deref $ di ~> DI.synced
-        when (iNot synced) $ do
-            msg <- DI.message getDInputs (i .% fromIntegral n)
-            transmit msg
-            store (di ~> DI.synced) true
+syncDInput :: KnownNat n => DInputs n -> Uint8 -> Ivory (ProcEffects s ()) ()
+syncDInput DInputs{..} i = do
+    let n = fromIntegral $ length getInputs
+    let di = DI.dinputs getDInputs ! toIx i
+    synced <- deref $ di ~> DI.synced
+    when (iNot synced) $ do
+        msg <- DI.message getDInputs (i .% n)
+        transmit msg
+        store (di ~> DI.synced) true

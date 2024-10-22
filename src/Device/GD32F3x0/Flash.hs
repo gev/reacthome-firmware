@@ -1,4 +1,3 @@
-
 module Device.GD32F3x0.Flash where
 
 
@@ -21,25 +20,25 @@ instance Flash PageAddr where
 
     write page offset value = do
         unlockFMC
-        clearFlagFMC fmc_flag_end
-        clearFlagFMC fmc_flag_wperr
-        clearFlagFMC fmc_flag_pgerr
+        -- clearFlagFMC fmc_flag_end
+        -- clearFlagFMC fmc_flag_wperr
+        -- clearFlagFMC fmc_flag_pgerr
         programWordFMC (address page offset) value
-        clearFlagFMC fmc_flag_end
-        clearFlagFMC fmc_flag_wperr
-        clearFlagFMC fmc_flag_pgerr
-        lockFMC
+        -- clearFlagFMC fmc_flag_end
+        -- clearFlagFMC fmc_flag_wperr
+        -- clearFlagFMC fmc_flag_pgerr
+        -- lockFMC
 
-    erasePage (PageAddr page) = do
+    erasePage page offset = do
         unlockFMC
-        clearFlagFMC fmc_flag_end
-        clearFlagFMC fmc_flag_wperr
-        clearFlagFMC fmc_flag_pgerr
-        erasePageFMC page
-        clearFlagFMC fmc_flag_end
-        clearFlagFMC fmc_flag_wperr
-        clearFlagFMC fmc_flag_pgerr
-        lockFMC
+        -- clearFlagFMC fmc_flag_end
+        -- clearFlagFMC fmc_flag_wperr
+        -- clearFlagFMC fmc_flag_pgerr
+        erasePageFMC (address page offset)
+        -- clearFlagFMC fmc_flag_end
+        -- clearFlagFMC fmc_flag_wperr
+        -- clearFlagFMC fmc_flag_pgerr
+        -- lockFMC
 
     read page offset =
         derefUint32 $ address page offset

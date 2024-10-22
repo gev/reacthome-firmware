@@ -1,3 +1,4 @@
+{-# LANGUAGE DataKinds       #-}
 {-# LANGUAGE NamedFieldPuns  #-}
 {-# LANGUAGE RecordWildCards #-}
 
@@ -9,19 +10,20 @@ import           Core.Controller
 import           Data.Serialize
 import           Feature.Indicator   (Indicator, onFindMe)
 import           Feature.Relays      (Relays, onDo, onGetState, onGroup, onInit)
+import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
 
 
 
-data Relay = Relay
-    { relays    :: Relays
-    , indicator :: Indicator
+data Relay n = Relay
+    { relays    :: Relays    n
+    , indicator :: Indicator 20
     }
 
 
 
-relay :: Monad m => m t -> (t -> m Relays) -> (t -> m Indicator) -> m Relay
+relay :: Monad m => m t -> (t -> m (Relays n)) -> (t -> m (Indicator 20)) -> m (Relay n)
 relay transport' relays' indicator' = do
     transport <- transport'
     relays    <- relays' transport
@@ -30,7 +32,7 @@ relay transport' relays' indicator' = do
 
 
 
-instance Controller Relay where
+instance KnownNat n => Controller (Relay n) where
     handle Relay{..} buff size = do
         action <- unpack buff 0
         cond_ [ action ==? actionDo         ==> onDo       relays    buff size

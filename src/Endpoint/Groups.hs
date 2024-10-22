@@ -3,7 +3,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE QuasiQuotes       #-}
-{-# LANGUAGE RankNTypes        #-}
+{-# LANGUAGE RecordWildCards   #-}
 
 module Endpoint.Groups where
 
@@ -30,31 +30,28 @@ type GroupStruct = "group_struct"
 
 
 
-data Groups = Groups
-    { runGroups :: RunRecords GroupStruct
-    , payload   :: Buffer 7 Uint8
+data Groups n = Groups
+    { groups  :: Records n GroupStruct
+    , payload :: Buffer 7 Uint8
     }
 
-groups :: MonadState Context m =>  String -> Int -> m Groups
-groups name n = do
+mkGroups :: (MonadState Context m, KnownNat n) =>  String -> m (Groups n)
+mkGroups name = do
     addStruct (Proxy :: Proxy GroupStruct)
-    let runGroups = runRecords name $ replicate n go
-    payload      <- buffer "group_message"
-    runGroups addArea
-    pure Groups { runGroups, payload }
-    where go =  [ enabled   .= ival false
-                , delay     .= ival 0
-                , synced    .= ival false
-                ]
+    groups    <- records' name [ enabled .= ival false
+                               , delay   .= ival 0
+                               , synced  .= ival false
+                               ]
+    payload   <- buffer "group_message"
+    pure Groups { groups, payload }
 
 
 
-message :: Groups -> Uint8 -> Ivory eff (Buffer 7 Uint8)
-message (Groups runGroup payload) i = do
-    runGroup $ \r -> do
-        let group = addrOf r ! toIx i
-        pack   payload 0 actionGroup
-        pack   payload 1 $ i + 1
-        pack   payload 2 =<< deref (group ~> enabled)
-        packLE payload 3 =<< deref (group ~> delay)
+message :: KnownNat n => Groups n -> Uint8 -> Ivory eff (Buffer 7 Uint8)
+message Groups{..} i = do
+    let group = groups ! toIx i
+    pack   payload 0 actionGroup
+    pack   payload 1 $ i + 1
+    pack   payload 2 =<< deref (group ~> enabled)
+    packLE payload 3 =<< deref (group ~> delay)
     pure payload

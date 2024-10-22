@@ -2,10 +2,13 @@
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use camelCase" #-}
+{-# LANGUAGE RankNTypes    #-}
 
 module Support.Cast
     ( castArrayUint8ToUint32
     , castArrayUint16ToUint32
+    , castConstArrayUint8ToUint32
+    , castConstArrayUint16ToUint32
     , castFloatToUint16
     , castFloatToUint8
     , derefUint32
@@ -38,6 +41,20 @@ castArrayUint16ToUint32 = call cast_array_uint16_to_uint32
 
 cast_array_uint16_to_uint32 :: Def ('[Ref s (CArray (Stored Uint16))] :-> Uint32)
 cast_array_uint16_to_uint32 = importProc "cast_to_uint32" "cast.h"
+
+
+
+castConstArrayUint8ToUint32 :: ConstRef s (CArray (Stored Uint8)) -> Ivory eff Uint32
+castConstArrayUint8ToUint32 = call cast_const_array_uint8_to_uint32
+
+cast_const_array_uint8_to_uint32 :: Def ('[ConstRef s (CArray (Stored Uint8))] :-> Uint32)
+cast_const_array_uint8_to_uint32 = importProc "cast_to_uint32" "cast.h"
+
+castConstArrayUint16ToUint32 :: ConstRef s (CArray (Stored Uint16)) -> Ivory eff Uint32
+castConstArrayUint16ToUint32 = call cast_const_array_uint16_to_uint32
+
+cast_const_array_uint16_to_uint32 :: Def ('[ConstRef s (CArray (Stored Uint16))] :-> Uint32)
+cast_const_array_uint16_to_uint32 = importProc "cast_to_uint32" "cast.h"
 
 
 

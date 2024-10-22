@@ -1,9 +1,8 @@
-{-# LANGUAGE DataKinds          #-}
-{-# LANGUAGE FlexibleContexts   #-}
-{-# LANGUAGE NamedFieldPuns     #-}
-{-# LANGUAGE NumericUnderscores #-}
-{-# LANGUAGE RankNTypes         #-}
-{-# LANGUAGE RecordWildCards    #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE RecordWildCards  #-}
 
 module Implementation.Smart.TopAP where
 
@@ -17,6 +16,8 @@ import           Core.Handler
 import           Core.Task
 import           Core.Transport
 import           Data.Buffer
+import           Data.Display.Canvas1D     (Canvas1DSize)
+import           Data.Matrix
 import           Data.Value
 import           Endpoint.DInputs          as E (DInputs)
 import           Feature.DInputs           as DI (DInputs (getDInputs),
@@ -25,75 +26,72 @@ import           Feature.RS485.RBUS.Data   (RBUS (shouldConfirm))
 import           Feature.Sht21             (SHT21)
 import           Feature.Smart.Top.Buttons
 import           Feature.Smart.Top.LEDs    (LEDs, mkLeds, onBlink, onDim, onDo,
-                                            onImage, onInitColors, onSetColor,
-                                            render, updateLeds)
+                                            onImage, onPalette, onSetColor,
+                                            render, sendLEDs, updateLeds)
 import           GHC.TypeNats
 import           Interface.Display         (Display, Render (Render))
+import           Interface.Flash
 import           Interface.MCU             (peripherals)
 import           Ivory.Language
 import           Ivory.Stdlib
 
 
 
-data Top = Top
-    { dinputs    :: DI.DInputs
-    , leds       :: LEDs    6
-    , buttons    :: Buttons 6
-    , sht21      :: SHT21
-    , shouldInit :: Value    IBool
-    , initBuff   :: Values 1 Uint8
-    , transmit   :: forall n. KnownNat n
-                 => Buffer n Uint8 -> forall s t. Ivory (ProcEffects s t) ()
+data Top n = Top
+    { dinputs :: DI.DInputs n
+    , leds    :: LEDs       4 n
+    , buttons :: Buttons    n 4 n
+    , sht21   :: SHT21
     }
 
 
 
-topAP :: (MonadState Context m , MonadReader (D.Domain p c) m, Transport t, LazyTransport t, Display d)
-      => m t -> (Bool -> t -> m DI.DInputs) -> (t -> m SHT21) -> (p -> m d) -> m Top
-topAP transport' dinputs' sht21' display' = do
-    transport          <- transport'
-    shouldInit         <- asks D.shouldInit
-    mcu                <- asks D.mcu
-    display            <- display' $ peripherals mcu
-    dinputs            <- dinputs' False transport
-    let runFrameBuffer  = runValues "top_frame_buffer" $ replicate 18 0
-    leds               <- mkLeds runFrameBuffer [0, 5, 1, 4, 2, 3] transport
-    buttons            <- mkButtons leds (getDInputs dinputs) 1 transport
-    sht21              <- sht21' transport
-    initBuff           <- values "top_init_buffer" [actionInitialize]
-    let top             = Top { dinputs, leds, buttons, sht21
-                              , initBuff, shouldInit
-                              , transmit = transmitBuffer transport
-                              }
+topAP :: ( MonadState Context m
+         , MonadReader (D.Domain p c) m
+         , Display d, Handler (Render (Canvas1DSize n)) d
+         , LazyTransport t
+         , Flash f
+         , KnownNat n, KnownNat (Canvas1DSize n)
+         )
+      => m t
+      -> (Bool -> t -> m (DI.DInputs n))
+      -> (t -> m SHT21)
+      -> (p -> m d)
+      -> (p -> f)
+      -> m (Top n)
+topAP transport' dinputs' sht21' display' etc' = do
+    transport   <- transport'
+    shouldInit  <- asks D.shouldInit
+    mcu         <- asks D.mcu
+    display     <- display' $ peripherals mcu
+    let etc      = etc' $ peripherals mcu
+    dinputs     <- dinputs' False transport
+    frameBuffer <- values' "top_frame_buffer" 0
+    leds        <- mkLeds frameBuffer [0, 5, 1, 4, 2, 3] transport etc (replicate 6 true)
+    ledsPerButton  <- values "leds_per_button" [1, 1, 1, 1, 1, 1]
+    ledsOfButton   <- matrix "leds_of_button"  [[0,0,0,0], [1,0,0,0], [2,0,0,0], [3,0,0,0], [4,0,0,0], [5,0,0,0]]
+    buttons        <- mkButtons leds (DI.getDInputs dinputs) ledsPerButton ledsOfButton transport
+    sht21       <- sht21' transport
+    let top      = Top { dinputs, leds, buttons, sht21 }
 
-    runFrameBuffer addArea
-
-    addHandler $ Render display 30 runFrameBuffer $ do
-        updateLeds leds
+    addHandler $ Render display 30 frameBuffer $ do
+        updateLeds    leds
         updateButtons buttons
-        render leds
-
-    addTask $ delay 1_000 "top_init" $ initTop top
+        render        leds
+        pure          true
 
     pure top
 
 
 
-initTop :: Top -> Ivory (ProcEffects s t) ()
-initTop Top{..} = do
-    shouldInit' <- deref shouldInit
-    when shouldInit' $ transmit initBuff
+onGetState :: KnownNat n => Top n -> Ivory (ProcEffects s t) ()
+onGetState Top{..} = do
+    forceSyncDInputs dinputs
+    sendLEDs leds
 
 
 
-onInit :: KnownNat n => Top -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
-onInit Top{..} buff size = do
-    colors <- onInitColors leds  buff size
-    when colors $
-        store shouldInit false
-
-
-instance Controller Top where
+instance KnownNat n => Controller (Top n) where
 
     handle t@Top{..} buff size = do
         action <- deref $ buff ! 0
@@ -102,7 +100,7 @@ instance Controller Top where
               , action ==? actionRGB        ==> onSetColor       leds    buff size
               , action ==? actionImage      ==> onImage          leds    buff size
               , action ==? actionBlink      ==> onBlink          leds    buff size
-              , action ==? actionInitialize ==> onInit           t       buff size
+              , action ==? actionPalette    ==> onPalette        leds    buff size
               , action ==? actionFindMe     ==> onFindMe         buttons buff size
-              , action ==? actionGetState   ==> forceSyncDInputs dinputs
+              , action ==? actionGetState   ==> onGetState       t
               ]

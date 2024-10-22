@@ -3,7 +3,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE NamedFieldPuns    #-}
 {-# LANGUAGE QuasiQuotes       #-}
-{-# LANGUAGE RankNTypes        #-}
 {-# LANGUAGE RecordWildCards   #-}
 
 module Endpoint.DInputs where
@@ -31,31 +30,29 @@ type DInputStruct = "dinput_struct"
 
 
 
-data DInputs = DInputs
-    { runDInputs :: RunRecords DInputStruct
-    , payload    :: Buffer 3 Uint8
+data DInputs n = DInputs
+    { dinputs :: Records n DInputStruct
+    , payload :: Buffer 3 Uint8
     }
 
-dinputs :: MonadState Context m => String -> Int -> m DInputs
-dinputs name n = do
+
+
+mkDinputs :: (MonadState Context m, KnownNat n) => String -> m ( DInputs n )
+mkDinputs name = do
     addStruct (Proxy :: Proxy DInputStruct)
-    let runDInputs = runRecords name $ replicate n go
-    payload       <- buffer "dinput_message"
-    let dinputs    = DInputs {runDInputs, payload}
-    runDInputs addArea
-    pure dinputs
-    where go = [ state     .= ival false
-               , timestamp .= ival 0
-               , synced    .= ival false
-               ]
+    dinputs <-  records' name [ state     .= ival false
+                              , timestamp .= ival 0
+                              , synced    .= ival false
+                              ]
+    payload <- buffer "dinput_message"
+    pure DInputs {dinputs, payload}
 
 
 
-message :: DInputs -> Uint8 -> Ivory eff (Buffer 3 Uint8)
+message :: KnownNat n => DInputs n -> Uint8 -> Ivory eff (Buffer 3 Uint8)
 message DInputs{..} i = do
-    runDInputs $ \di -> do
-        let dinput = addrOf di ! toIx i
-        pack   payload 0 actionDi
-        pack   payload 1 $ i + 1
-        pack   payload 2 =<< deref (dinput ~> state)
+    let dinput = dinputs ! toIx i
+    pack   payload 0 actionDi
+    pack   payload 1 $ i + 1
+    pack   payload 2 =<< deref (dinput ~> state)
     pure payload

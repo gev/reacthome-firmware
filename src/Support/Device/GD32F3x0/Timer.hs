@@ -95,6 +95,7 @@ module Support.Device.GD32F3x0.Timer
     , deinitTimer
     , enableTimer
     , enableTimerInterrupt
+    , disableTimerInterrupt
     , getTimerInterruptFlag
     , clearTimerInterruptFlag
     , initTimer
@@ -107,6 +108,9 @@ module Support.Device.GD32F3x0.Timer
     , initChannelOcTimer
     , enableTimerDMA
     , ch0cv
+    , ch1cv
+    , ch2cv
+    , ch3cv
 
     , inclTimer
     ) where
@@ -325,6 +329,13 @@ timer_interrupt_enable :: Def ('[TIMER_PERIPH, TIMER_INT] :-> ())
 timer_interrupt_enable = fun "timer_interrupt_enable"
 
 
+disableTimerInterrupt :: TIMER_PERIPH -> TIMER_INT -> Ivory eff ()
+disableTimerInterrupt = call_ timer_interrupt_disable
+
+timer_interrupt_disable :: Def ('[TIMER_PERIPH, TIMER_INT] :-> ())
+timer_interrupt_disable = fun "timer_interrupt_disable"
+
+
 getTimerInterruptFlag :: TIMER_PERIPH -> TIMER_INT_FLAG -> Ivory eff IBool
 getTimerInterruptFlag = call timer_interrupt_flag_get
 
@@ -416,6 +427,27 @@ timer_ch0cv :: Def ('[TIMER_PERIPH] :-> Uint32)
 timer_ch0cv = fun "(uint32_t) &TIMER_CH0CV"
 
 
+ch1cv :: TIMER_PERIPH -> Ivory eff Uint32
+ch1cv = call timer_ch1cv
+
+timer_ch1cv :: Def ('[TIMER_PERIPH] :-> Uint32)
+timer_ch1cv = fun "(uint32_t) &TIMER_CH1CV"
+
+
+ch2cv :: TIMER_PERIPH -> Ivory eff Uint32
+ch2cv = call timer_ch2cv
+
+timer_ch2cv :: Def ('[TIMER_PERIPH] :-> Uint32)
+timer_ch2cv = fun "(uint32_t) &TIMER_CH2CV"
+
+
+ch3cv :: TIMER_PERIPH -> Ivory eff Uint32
+ch3cv = call timer_ch3cv
+
+timer_ch3cv :: Def ('[TIMER_PERIPH] :-> Uint32)
+timer_ch3cv = fun "(uint32_t) &TIMER_CH3CV"
+
+
 inclTimer :: ModuleDef
 inclTimer = do
     inclSym timer0
@@ -467,6 +499,7 @@ inclTimer = do
     incl timer_interrupt_flag_get
     incl timer_interrupt_flag_clear
     incl timer_interrupt_enable
+    incl timer_interrupt_disable
     incl timer_deinit
     incl timer_enable
     incl timer_init
@@ -480,3 +513,6 @@ inclTimer = do
     incl timer_channel_output_config
     incl timer_dma_enable
     incl timer_ch0cv
+    incl timer_ch1cv
+    incl timer_ch2cv
+    incl timer_ch3cv

@@ -34,6 +34,7 @@ module Support.Device.GD32F4xx.Timer
     , timer2
     , timer3
     , timer6
+    , timer7
 
     , TIMER_ALIGNE_MODE
     , timer_counter_edge
@@ -94,6 +95,7 @@ module Support.Device.GD32F4xx.Timer
     , deinitTimer
     , enableTimer
     , enableTimerInterrupt
+    , disableTimerInterrupt
     , getTimerInterruptFlag
     , clearTimerInterruptFlag
     , initTimer
@@ -186,6 +188,7 @@ timer1 = TIMER_PERIPH $ ext "TIMER1"
 timer2 = TIMER_PERIPH $ ext "TIMER2"
 timer3 = TIMER_PERIPH $ ext "TIMER3"
 timer6 = TIMER_PERIPH $ ext "TIMER6"
+timer7 = TIMER_PERIPH $ ext "TIMER7"
 
 
 
@@ -325,6 +328,13 @@ timer_interrupt_enable :: Def ('[TIMER_PERIPH, TIMER_INT] :-> ())
 timer_interrupt_enable = fun "timer_interrupt_enable"
 
 
+disableTimerInterrupt :: TIMER_PERIPH -> TIMER_INT -> Ivory eff ()
+disableTimerInterrupt = call_ timer_interrupt_disable
+
+timer_interrupt_disable :: Def ('[TIMER_PERIPH, TIMER_INT] :-> ())
+timer_interrupt_disable = fun "timer_interrupt_disable"
+
+
 getTimerInterruptFlag :: TIMER_PERIPH -> TIMER_INT_FLAG -> Ivory eff IBool
 getTimerInterruptFlag = call timer_interrupt_flag_get
 
@@ -445,6 +455,7 @@ inclTimer = do
     inclSym timer2
     inclSym timer3
     inclSym timer6
+    inclSym timer7
 
     inclSym timer_counter_edge
     inclSym timer_counter_up
@@ -488,6 +499,7 @@ inclTimer = do
     incl timer_interrupt_flag_get
     incl timer_interrupt_flag_clear
     incl timer_interrupt_enable
+    incl timer_interrupt_disable
     incl timer_deinit
     incl timer_enable
     incl timer_init

@@ -14,42 +14,51 @@ import           Data.Buffer
 import           Data.Color
 import           Data.Serialize
 import           Data.Value
-import           Endpoint.DInputs       (DInputs (runDInputs), state)
+import           Endpoint.DInputs       (DInputs (dinputs), state)
 import           Feature.Smart.Top.LEDs (LEDs (order, pixels))
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
+import Data.Matrix
 
 
+type LEDsOnButtonStruct = "led_on_buttons_struct"
 
-data Buttons l = forall t. (LazyTransport t, KnownNat l) => Buttons
-    { leds            :: LEDs l
-    , dinputs         :: DInputs
-    , leds'per'button :: Ix   l
-    , start           :: Value      IBool
-    , findMe          :: Value      IBool
-    , t               :: Value      Sint32
-    , transport       :: t
+
+data Buttons n pn ln = forall t. (LazyTransport t, KnownNat ln) => Buttons
+    { leds             :: LEDs    pn ln
+    , getDInputs       :: DInputs n
+    , leds'per'button  :: Values  n (Ix 4)
+    , leds'of'button   :: Matrix  n 4 (Ix ln)
+    , start            :: Value   IBool
+    , findMe           :: Value   IBool
+    , t                :: Value   Sint32
+    , transport        :: t
     }
 
 
 
-mkButtons :: (MonadState Context m, LazyTransport t, KnownNat l)
-          => LEDs l -> DInputs -> Ix l -> t -> m (Buttons l)
-mkButtons leds dinputs leds'per'button transport = do
+mkButtons :: (MonadState Context m, LazyTransport t, KnownNat ln)
+          => LEDs pn ln -> DInputs n 
+          -> Values n (Ix 4) -> Matrix n 4 (Ix ln) -> t 
+          -> m (Buttons n pn ln)
+mkButtons leds getDInputs leds'per'button leds'of'button transport = do
     start      <- value "buttons_start"   true
     findMe     <- value "buttons_find_me" false
     t          <- value "buttons_t"       0
 
     addConstArea sinT
 
-    pure Buttons { leds, dinputs, leds'per'button
+    pure Buttons { leds, getDInputs
+                 , leds'per'button, leds'of'button
                  , start, findMe, t
                  , transport
                  }
 
 
-updateButtons :: KnownNat l => Buttons l -> Ivory (ProcEffects s ()) ()
+updateButtons :: (KnownNat n, KnownNat ln)
+              => Buttons n pn ln
+              -> Ivory (ProcEffects s ()) ()
 updateButtons Buttons{..} = do
     pixel'  <- local . istruct $ rgb 0 0 0
     pixel'' <- local . istruct $ rgb 1 1 1
@@ -66,27 +75,28 @@ updateButtons Buttons{..} = do
             store t $ t' + 1
         )
 
-    runDInputs dinputs $ \di ->
-        arrayMap $ \ix -> do
-            state' <- deref $ addrOf di ! ix ~> state
-            for leds'per'button $ \ kx -> do
-                let sx = toIx $ fromIx leds'per'button * fromIx ix + fromIx kx
-                dx <- deref $ order leds ! sx
-                ifte_ state'
-                    (run (pixels leds ! dx) pixel'')
-                    (when start'
-                        (run (pixels leds ! dx) pixel')
-                    )
+    arrayMap $ \ix -> do
+        state' <- deref $ dinputs getDInputs ! ix ~> state
+        leds'  <- deref $ leds'per'button ! ix
+        for leds' $ \kx -> do
+            sx <- deref $ leds'of'button ! ix ! kx
+            dx <- deref $ order leds ! sx
+            ifte_ state'
+                (run (pixels leds ! dx) pixel'')
+                (when start'
+                    (run (pixels leds ! dx) pixel')
+                )
     where
         run dst src = do
             store (dst ~> r) =<< deref (src ~> r)
             store (dst ~> g) =<< deref (src ~> g)
             store (dst ~> b) =<< deref (src ~> b)
+            
 
 
-onFindMe :: KnownNat n
-         => Buttons l
-         -> Buffer n Uint8
+onFindMe :: KnownNat b
+         => Buttons n pn ln
+         -> Buffer b Uint8
          -> Uint8
          -> Ivory (ProcEffects s t) ()
 onFindMe Buttons{..} buff size =
@@ -102,5 +112,5 @@ onFindMe Buttons{..} buff size =
 
 
 sinT :: ConstMemArea (Array 120 (Stored IFloat))
-sinT = constArea "sinT" $ iarray $ ival . ifloat . f . fromInteger <$> [0..119]
+sinT = constArea "button_sin_table" $ iarray $ ival . ifloat . f . fromIntegral <$> [0..119]
     where f i = sin (pi * i / 120)

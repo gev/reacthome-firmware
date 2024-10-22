@@ -106,9 +106,12 @@ instance Handler I.HandleTimer Timer where
             handleIRQ' :: Ivory eff ()
             handleIRQ' = do
                 flag <- getTimerInterruptFlag timer timer_int_flag_up
-                when flag $ clearTimerInterruptFlag timer timer_int_flag_up
-                handle
+                when flag $ do 
+                    clearTimerInterruptFlag timer timer_int_flag_up
+                    handle
 
 instance I.Timer Timer where
     setCounter t = writeCounter (timer t)
     getCounter t = readCounter  (timer t)
+    enableInterrupt t = enableTimerInterrupt (timer t) timer_int_up
+    disableInterrupt t = disableTimerInterrupt (timer t) timer_int_up

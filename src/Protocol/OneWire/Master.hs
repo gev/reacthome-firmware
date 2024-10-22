@@ -98,8 +98,8 @@ data OneWireMaster = OneWireMaster
     , payload               :: Value        Uint8
     , index                 :: Value        Uint8
     , time                  :: Value        Uint8
-    , actionB               :: Records 256  OneWireAction
-    , actionQ               :: Queue   256
+    , actionB               :: Records  24  OneWireAction
+    , actionQ               :: Queue    24
     , tmp                   :: Value        Uint8
     , width                 :: Value        Uint8
     , count                 :: Value        Uint8
@@ -608,7 +608,7 @@ getCRC = proc "one_wire_get_crc" $ \buff -> body $ do
 
 popAction :: OneWireMaster -> (Uint8 -> Uint8 -> Uint8 -> Ivory eff ()) -> Ivory eff ()
 popAction OneWireMaster{..} run =
-    pop actionQ $ \i -> do
+    flip (pop' actionQ) (disableOneWire onewire) $ \i -> do
         let a = actionB ! toIx i
         action'  <- deref (a ~> action_ )
         payload' <- deref (a ~> payload_)
@@ -623,3 +623,4 @@ pushAction OneWireMaster{..} action' payload' index' =
         store (a ~> action_ ) action'
         store (a ~> payload_) payload'
         store (a ~> index_  ) index'
+        enableOneWire onewire

@@ -138,6 +138,7 @@ dmaParam p = p <+>
 
 newtype DMA_PERIPH = DMA_PERIPH Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
+instance ExtSymbol DMA_PERIPH
 
 dma0 = DMA_PERIPH $ ext "DMA0"
 dma1 = DMA_PERIPH $ ext "DMA1"

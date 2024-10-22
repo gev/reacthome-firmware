@@ -37,7 +37,7 @@ queue id = do
     let consumerId  = name  <>  "_consumer"
     producerIx     <- index     producerId
     consumerIx     <- index     consumerId
-    producerS      <- semaphore producerId $ fromInteger $ fromTypeNat (aNat :: NatType n)
+    producerS      <- semaphore producerId $ fromIntegral $ fromTypeNat (aNat :: NatType n)
     consumerS      <- semaphore consumerId 0
     pure Queue { producerIx, consumerIx, producerS, consumerS }
 
@@ -45,6 +45,15 @@ queue id = do
 push :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
 push Queue{..} handle =
     down producerS $ do
+        x <- deref producerIx
+        handle x
+        store producerIx $ x + 1
+        up consumerS
+
+
+push' :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+push' Queue{..} handle =
+    down' producerS $ do
         x <- deref producerIx
         handle x
         store producerIx $ x + 1
@@ -60,11 +69,32 @@ pop Queue{..} handle =
         up producerS
 
 
+pop' :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+pop' Queue{..} handle =
+     down' consumerS $ do
+        x <- deref consumerIx
+        handle x
+        store consumerIx $ x + 1
+        up producerS
+
+
 peek :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
-peek Queue{..} handle = do
+peek Queue{..} handle = 
     check consumerS $ do
         x <- deref consumerIx
         handle x
+
+
+peek' :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+peek' Queue{..} handle = 
+    check' consumerS $ do
+        x <- deref consumerIx
+        handle x
+
+
+size :: Queue n -> Ivory eff Uint16
+size Queue{..} =
+    (-) <$> deref producerIx <*> deref consumerIx
 
 
 remove :: Queue n -> Ivory eff ()
@@ -79,10 +109,7 @@ clear :: forall n eff. KnownNat n => Queue n -> Ivory eff ()
 clear Queue{..} = do
     store consumerIx 0
     store producerIx 0
-    store (getSemaphore producerS) $ fromInteger $ fromTypeNat (aNat :: NatType n)
+    store (getSemaphore producerS) $ fromIntegral $ fromTypeNat (aNat :: NatType n)
     store (getSemaphore consumerS) 0
 
 
-size :: Queue n -> Ivory eff Uint16
-size Queue{..} =
-    (-) <$> deref producerIx <*> deref consumerIx

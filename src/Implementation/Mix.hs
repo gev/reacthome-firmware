@@ -1,9 +1,12 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GADTs            #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE DataKinds            #-}
+{-# LANGUAGE FlexibleContexts     #-}
+{-# LANGUAGE GADTs                #-}
+{-# LANGUAGE NamedFieldPuns       #-}
+{-# LANGUAGE RankNTypes           #-}
+{-# LANGUAGE RecordWildCards      #-}
+{-# LANGUAGE ScopedTypeVariables  #-}
+{-# LANGUAGE UndecidableInstances #-}
+
 
 module Implementation.Mix where
 
@@ -23,13 +26,12 @@ import           Data.Serialize
 import           Data.Value
 import           Endpoint.ATS                as A
 import qualified Endpoint.DInputs            as DI
-import           Endpoint.DInputsRelaysRules
+import           Endpoint.DInputsRelaysRules as Ru
 import qualified Endpoint.Groups             as G
 import qualified Endpoint.Relays             as R
 import           Feature.DInputs             as FDI (DInputs (DInputs, getDInputs, getInputs),
                                                      dinputs, forceSyncDInputs,
-                                                     manageDInputs, n,
-                                                     syncDInputs)
+                                                     manageDInputs, syncDInputs)
 import           Feature.Mix.Indicator       as FI (Indicator, indicator,
                                                     onFindMe)
 import           Feature.Relays              as FR (Relays (Relays, getGroups, getRelays),
@@ -46,20 +48,19 @@ import           Interface.GPIO.Output
 import           Interface.GPIO.Port
 import           Interface.MCU               as I
 import           Ivory.Language
+import           Ivory.Language.Proxy
 import           Ivory.Stdlib
 import           Prelude                     hiding (error)
 import           Util.CRC16
 
 
 
-data Mix = forall f. Flash f => Mix
-    { relaysN    :: Int
-    , relays     :: Relays
-    , dinputs    :: DInputs
-    , dinputsN   :: Int
-    , rules      :: Rules
+data Mix ni no = forall f. Flash f => Mix
+    { relays     :: Relays       no
+    , dinputs    :: DInputs      ni
+    , rules      :: Rules     ni no
     , ats        :: ATS
-    , indicator  :: Indicator
+    , indicator  :: Indicator ni no
     , etc        :: f
     , shouldInit :: Value IBool
     , transmit   :: forall n. KnownNat n
@@ -70,24 +71,30 @@ data Mix = forall f. Flash f => Mix
 
 mix :: ( MonadState Context m
        , MonadReader (Domain p c) m
-       , Transport t
        , Flash f
-       ) => m t -> (Bool -> t -> m DInputs) -> (t -> m Relays) -> (ATS -> DI.DInputs -> R.Relays -> t -> m Indicator) -> (p -> f) -> m Mix
+       , Transport t
+       , KnownNat ni, KnownNat no, KnownNat (PayloadSize no)
+       )
+    => m t
+    -> (Bool -> t -> m (DInputs ni))
+    -> (t -> m (Relays no))
+    -> (ATS -> DI.DInputs ni
+    -> R.Relays no
+    -> t
+    -> m (Indicator ni no))
+    -> (p -> f)
+    -> m (Mix ni no)
 mix transport' dinputs' relays' indicator' etc = do
     transport    <- transport'
     relays       <- relays' transport
-    let relaysN   = FR.n relays
     dinputs      <- dinputs' True transport
-    let dinputsN  = FDI.n dinputs
-    rules        <- mkRules transport dinputsN relaysN
+    rules        <- mkRules transport
     ats          <- mkATS transport
     indicator    <- indicator' ats (getDInputs dinputs) (getRelays relays) transport
     mcu          <- asks D.mcu
     shouldInit   <- asks D.shouldInit
     let mix       = Mix { relays
-                        , relaysN
                         , dinputs
-                        , dinputsN
                         , rules
                         , ats
                         , indicator
@@ -110,7 +117,8 @@ mix transport' dinputs' relays' indicator' etc = do
 
 
 
-manage :: Mix -> Ivory ('Effects (Returns ()) r (Scope s)) ()
+manage :: (KnownNat ni, KnownNat no)
+       => Mix ni no -> Ivory ('Effects (Returns ()) r (Scope s)) ()
 manage Mix{..} = do
     manageDInputs  dinputs
     manageRules    rules (getDInputs dinputs) (getRelays relays) (getGroups relays)
@@ -119,7 +127,8 @@ manage Mix{..} = do
 
 
 
-sync :: Mix -> Ivory (ProcEffects s ()) ()
+sync :: (KnownNat ni, KnownNat no, KnownNat (PayloadSize no))
+     => Mix ni no -> Ivory (ProcEffects s ()) ()
 sync Mix{..} = do
     syncDInputs dinputs
     syncRelays  relays
@@ -128,7 +137,7 @@ sync Mix{..} = do
 
 
 
-instance Controller Mix where
+instance (KnownNat ni, KnownNat no, KnownNat (PayloadSize no)) => Controller (Mix ni no) where
     handle  mix@Mix{..} buff size = do
         shouldInit' <- deref shouldInit
         action <- deref $ buff ! 0
@@ -144,26 +153,27 @@ instance Controller Mix where
 
 
 
-onRule :: KnownNat n => Mix -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onRule :: forall l ni no s t. (KnownNat l, KnownNat ni, KnownNat no, KnownNat (PayloadSize no))
+       => Mix ni no -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onRule mix@Mix{..} buff size = do
-    let relaysN'  = fromIntegral relaysN
-    let dinputsN' = fromIntegral dinputsN
+    let relaysN  = fromIntegral $ natVal (aNat :: NatType no)
+    let dinputsN = fromIntegral $ natVal (aNat :: NatType ni)
     i <- subtract 1 <$> deref (buff ! 1)
-    when (size ==? 2 + 2 * relaysN' .&& i <? dinputsN') $ do
+    when (size ==? 2 + 2 * relaysN .&& i <? dinputsN) $ do
         kx <- local $ ival 2
-        let run :: (Rules -> RunMatrix Uint8) -> Ivory eff ()
-            run runRules = runRules rules $ \rs -> arrayMap $ \jx -> do
+        let run rules = arrayMap $ \jx -> do
                 kx' <- deref kx
-                store (addrOf rs ! toIx i ! jx) =<< unpack buff kx'
+                store (rules ! toIx i ! jx) =<< unpack buff kx'
                 store kx $ kx' + 1
-        run runRulesOff
-        run runRulesOn
+        run $ rulesOff rules
+        run $ rulesOn rules
         fillPayload rules i
-        runPayload rules $ \p -> transmit . addrOf $ p
+        transmit $ Ru.payload rules
         save mix
 
 
-onMode :: KnownNat n => Mix -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onMode :: (KnownNat l, KnownNat ni, KnownNat no)
+       => Mix ni no -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onMode mix@Mix{..} buff size = do
     when (size ==? 2 ) $ do
         store (mode ats) =<< unpack buff 1
@@ -173,7 +183,7 @@ onMode mix@Mix{..} buff size = do
 
 
 
-onGetState :: Mix -> Ivory eff ()
+onGetState :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory eff ()
 onGetState Mix{..} = do
     forceSyncDInputs dinputs
     forceSyncRules rules
@@ -184,51 +194,51 @@ onGetState Mix{..} = do
 
 
 
-save :: Mix -> Ivory (ProcEffects s t) ()
+save :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s t) ()
 save Mix{..} = do
-    erasePage etc
+    erasePage etc 0
     crc   <- local $ istruct initCRC16
     mode' <- deref (mode ats)
     updateCRC16 crc mode'
     F.write etc 0 $ safeCast mode'
     kx <- local $ ival 4
-    let run :: (Rules -> RunMatrix Uint8) -> Ivory eff ()
-        run runRules = runRules rules $ \rs -> arrayMap $ \ix -> arrayMap $ \jx -> do
+    let run rules = arrayMap $ \ix -> arrayMap $ \jx -> do
             kx' <- deref kx
-            v   <- deref (addrOf rs ! ix ! jx)
+            v   <- deref (rules ! ix ! jx)
             updateCRC16 crc v
             F.write etc kx' $ safeCast v
             store kx $ kx' + 4
-    run runRulesOff
-    run runRulesOn
+    run $ rulesOff rules
+    run $ rulesOn rules
     kx' <- deref kx
     F.write etc kx' . safeCast =<< deref (crc ~> msb)
     F.write etc (kx' + 4) . safeCast =<< deref (crc ~> lsb)
 
 
 
-load :: Mix -> Ivory (ProcEffects s ()) ()
+load :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s ()) ()
 load mix@Mix{..} = do
     valid <- checkCRC mix
     when valid $ do
         store (mode ats) . castDefault =<< F.read etc 0
         manageLock mix
         kx <- local $ ival 4
-        let run :: (Rules -> RunMatrix Uint8) -> Ivory eff ()
-            run runRules = runRules rules $ \rs -> arrayMap $ \ix -> arrayMap $ \jx -> do
+        let run rules = arrayMap $ \ix -> arrayMap $ \jx -> do
                 kx' <- deref kx
-                store (addrOf rs ! ix ! jx) . castDefault =<< F.read etc kx'
+                store (rules ! ix ! jx) . castDefault =<< F.read etc kx'
                 store kx $ kx' + 4
-        run runRulesOff
-        run runRulesOn
+        run $ rulesOff rules
+        run $ rulesOn rules
 
 
-checkCRC :: Mix -> Ivory (ProcEffects s ()) IBool
+checkCRC :: forall ni no s. (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s ()) IBool
 checkCRC Mix{..} = do
+    let relaysN  = fromIntegral $ natVal (aNat :: NatType no)
+    let dinputsN = fromIntegral $ natVal (aNat :: NatType ni)
     crc   <- local $ istruct initCRC16
     updateCRC16 crc . castDefault =<< F.read etc 0
     kx <- local $ ival 4
-    times (fromIntegral $ 2 * dinputsN * relaysN :: Ix 256) $ \_ -> do
+    times (2 * dinputsN * relaysN :: Ix 256) $ \_ -> do
         kx' <- deref kx
         updateCRC16 crc . castDefault =<< F.read etc kx'
         store kx $ kx' + 4
@@ -241,8 +251,8 @@ checkCRC Mix{..} = do
 
 
 
-manageLock Mix{..} = R.runRelays (getRelays relays) $ \r -> do
-    let r' = addrOf r
+manageLock Mix{..} = do
+    let r' = R.relays $ getRelays relays
     mode' <- deref $ mode ats
     arrayMap $ \ix -> store (r' ! ix ~> R.lock) false
     cond_ [ mode' ==? mode_N1_G ==> do

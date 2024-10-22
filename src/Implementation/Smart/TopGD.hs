@@ -1,9 +1,8 @@
-{-# LANGUAGE DataKinds          #-}
-{-# LANGUAGE FlexibleContexts   #-}
-{-# LANGUAGE NamedFieldPuns     #-}
-{-# LANGUAGE NumericUnderscores #-}
-{-# LANGUAGE RankNTypes         #-}
-{-# LANGUAGE RecordWildCards    #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE RecordWildCards  #-}
 
 module Implementation.Smart.TopGD where
 
@@ -13,12 +12,13 @@ import           Core.Actions
 import           Core.Context
 import           Core.Controller
 import qualified Core.Domain                  as D
-import           Core.Handler                 (addHandler)
+import           Core.Handler                 (Handler, addHandler)
 import           Core.Task
 import           Core.Transport
 import           Data.Buffer
+import           Data.Matrix
+import           Data.Serialize
 import           Data.Value
-import           Device.GD32F3x0.ADC          (ADC (buff))
 import           Endpoint.DInputs             as E (DInputs)
 import           Feature.DInputs              as DI (DInputs (getDInputs),
                                                      forceSyncDInputs)
@@ -26,29 +26,27 @@ import           Feature.RS485.RBUS.Data      (RBUS (shouldConfirm))
 import           Feature.Sht21                (SHT21)
 import           Feature.Smart.Top.Buttons
 import           Feature.Smart.Top.LEDs       (LEDs, mkLeds, onBlink, onDim,
-                                               onDo, onImage, onInitColors,
-                                               onSetColor, render, updateLeds)
+                                               onDo, onImage, onPalette,
+                                               onSetColor, render, sendLEDs,
+                                               updateLeds)
 import           Feature.Smart.Top.PowerTouch (PowerTouch)
 import           Feature.Smart.Top.Vibro      (Vibro, onInitVibro, onVibro,
-                                               vibro)
+                                               sendVibro, vibro)
 import           GHC.TypeNats
 import           Interface.Display            (Display, Render (Render))
+import           Interface.Flash
 import           Interface.MCU                (peripherals)
 import           Ivory.Language
 import           Ivory.Stdlib
 
 
 
-data Top = Top
-    { dinputs    :: DI.DInputs
-    , leds       :: LEDs     64
-    , buttons    :: Buttons  64
-    , vibro      :: Vibro
-    , sht21      :: SHT21
-    , shouldInit :: Value    IBool
-    , initBuff   :: Values 1 Uint8
-    , transmit   :: forall n. KnownNat n
-                 => Buffer n Uint8 -> forall s t. Ivory (ProcEffects s t) ()
+data Top n = Top
+    { dinputs :: DI.DInputs n
+    , leds    :: LEDs      12 64
+    , buttons :: Buttons    n 12 64
+    , vibro   :: Vibro      n
+    , sht21   :: SHT21
     }
 
 
@@ -65,80 +63,80 @@ data Top = Top
       5 4                                        3 2
 -}
 
-topGD :: (MonadState Context m , MonadReader (D.Domain p c) m, Transport t, LazyTransport t, Display d)
-      => m t -> (Bool -> t -> m DI.DInputs) -> (E.DInputs -> t -> m Vibro) -> m PowerTouch -> (t -> m SHT21) -> (p -> m d) -> m Top
-topGD transport' dinputs' vibro' touch' sht21' display' = do
-    transport          <- transport'
-    shouldInit         <- asks D.shouldInit
-    mcu                <- asks D.mcu
-    display            <- display' $ peripherals mcu
-    dinputs            <- dinputs' True transport
+topGD :: ( MonadState Context m
+         , MonadReader (D.Domain p c) m
+         , Handler (Render 192) d, Display d
+         , LazyTransport t
+         , KnownNat n
+         , Flash f
+         )
+      => m t
+      -> (Bool -> t -> m (DI.DInputs n))
+      -> (E.DInputs n -> t -> f-> m (Vibro n))
+      -> m PowerTouch
+      -> (t -> m SHT21)
+      -> (p -> m d)
+      -> (p -> f)
+      -> m (Top n)
+topGD transport' dinputs' vibro' touch' sht21' display' etc' = do
+    transport    <- transport'
+    mcu          <- asks D.mcu
+    display      <- display' $ peripherals mcu
+    dinputs      <- dinputs' True transport
 
-    let runFrameBuffer  = runValues "top_frame_buffer" $ replicate 204 0
+    frameBuffer  <- values' "top_frame_buffer" 0
 
-    vibro              <- vibro' (getDInputs dinputs) transport
+    let etc       = etc' $ peripherals mcu
+
+    vibro        <- vibro' (DI.getDInputs dinputs) transport etc
 
     touch'
 
-    leds               <- mkLeds runFrameBuffer [  6,  7,      0,  1
-                                                ,  5,  4,      3,  2
+    leds         <- mkLeds frameBuffer [  6,  7,      0,  1
+                                       ,  5,  4,      3,  2
 
-                                                ,  8
-                                                ,  9
-                                                , 10
+                                       ,  8
+                                       ,  9
+                                       , 10
 
-                                                , 11
+                                       , 11
 
-                                                , 58, 63
-                                                , 59, 62
-                                                , 60, 61
+                                       , 58, 63
+                                       , 59, 62
+                                       , 60, 61
 
-                                                ,     17,     22, 23, 30,     35, 36, 43,     49, 50, 57
-                                                ,     16,     21,     29,     34,     42,     48,     56
-                                                , 12, 15,     20, 24, 28,     33, 37, 41,     47, 51, 55
-                                                ,     14,     19,     27,     32,     40,     46,     54
-                                                ,     13,     18, 25, 26,     31, 38, 39, 44, 45, 52, 53
-                                                ] transport
+                                       ,     17,     22, 23, 30,     35, 36, 43,     49, 50, 57
+                                       ,     16,     21,     29,     34,     42,     48,     56
+                                       , 12, 15,     20, 24, 28,     33, 37, 41,     47, 51, 55
+                                       ,     14,     19,     27,     32,     40,     46,     54
+                                       ,     13,     18, 25, 26,     31, 38, 39, 44, 45, 52, 53
+                                       ] transport etc (replicate 64 true)
 
-    buttons            <- mkButtons leds (getDInputs dinputs) 2 transport
+    ledsPerButton <- values "leds_per_button" [2, 2, 2, 2, 2, 2]
+    ledsOfButton  <- matrix "leds_of_button"  [[0,1,0,0], [2,3,0,0], [4,5,0,0], [6,7,0,0], [8,9,0,0], [10,11,0,0]]
+    buttons       <- mkButtons leds (DI.getDInputs dinputs) ledsPerButton ledsOfButton transport
 
-    sht21              <- sht21' transport
+    sht21         <- sht21' transport
 
-    initBuff           <- values "top_init_buffer" [actionInitialize]
+    let top       = Top { dinputs, leds, vibro, buttons, sht21 }
 
-    let top             = Top { dinputs, leds, vibro, buttons, sht21
-                              , initBuff, shouldInit
-                              , transmit = transmitBuffer transport
-                              }
-    runFrameBuffer addArea
-
-    addHandler $ Render display 30 runFrameBuffer $ do
-        updateLeds leds
+    addHandler $ Render display 30 frameBuffer $ do
+        updateLeds    leds
         updateButtons buttons
-        render leds
-
-    addTask $ delay 1_000 "top_init" $ initTop top
+        render        leds
+        pure          true
 
     pure top
 
 
 
-initTop :: Top -> Ivory (ProcEffects s t) ()
-initTop Top{..} = do
-    shouldInit' <- deref shouldInit
-    when shouldInit' $ transmit initBuff
+onGetState :: KnownNat n => Top n -> Ivory (ProcEffects s t) ()
+onGetState Top{..} = do
+    forceSyncDInputs dinputs
+    sendVibro vibro
+    sendLEDs leds
 
-
-
-onInit :: KnownNat n => Top -> Buffer n Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
-onInit Top{..} buff size = do
-    colors <- onInitColors leds  buff size
-    vibro  <- onInitVibro  vibro buff size
-    when (colors .&& vibro) $
-        store shouldInit false
-
-
-instance Controller Top where
+instance KnownNat n => Controller (Top n) where
 
     handle t@Top{..} buff size = do
         action <- deref $ buff ! 0
@@ -147,8 +145,8 @@ instance Controller Top where
               , action ==? actionRGB        ==> onSetColor       leds    buff size
               , action ==? actionImage      ==> onImage          leds    buff size
               , action ==? actionBlink      ==> onBlink          leds    buff size
+              , action ==? actionPalette    ==> onPalette        leds    buff size
               , action ==? actionVibro      ==> onVibro          vibro   buff size
-              , action ==? actionInitialize ==> onInit           t       buff size
               , action ==? actionFindMe     ==> onFindMe         buttons buff size
-              , action ==? actionGetState   ==> forceSyncDInputs dinputs
+              , action ==? actionGetState   ==> onGetState       t
               ]

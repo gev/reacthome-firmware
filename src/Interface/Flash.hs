@@ -1,4 +1,5 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+
 module Interface.Flash where
 
 import           Ivory.Language
@@ -13,6 +14,7 @@ class Flash f where
     address   :: f -> Addr -> Uint32
     write     :: f -> Addr -> Data -> Ivory eff ()
     read      :: f -> Addr -> Ivory eff Uint32
-    erasePage :: f -> Ivory eff ()
+    erasePage :: f -> Addr -> Ivory eff ()
+
 
 addr = Addr

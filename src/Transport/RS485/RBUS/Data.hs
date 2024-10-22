@@ -13,7 +13,7 @@ import           Protocol.RS485.RBUS.Slave
 
 data RBUS = RBUS
     { clock         :: SystemClock
-    , rs            :: RS485
+    , rs            :: RS485   300
     , protocol      :: Slave   255
     , rxBuff        :: Buffer  300 Uint8
     , rxQueue       :: Queue   300
@@ -21,9 +21,8 @@ data RBUS = RBUS
     , msgSize       :: Buffer   32 Uint8
     , msgTTL        :: Buffer   32 Uint8
     , msgQueue      :: Queue    32
-    , msgBuff       :: Buffer  600 Uint8
+    , msgBuff       :: Buffer  300 Uint8
     , msgIndex      :: Value       Uint16
-    , txBuff        :: Buffer  300 Uint16
     , initBuff      :: Buffer    1 Uint8
     , rxLock        :: Value       IBool
     , txLock        :: Value       IBool

@@ -6,6 +6,8 @@ module Interface.UART where
 
 import           Core.Context
 import           Core.Handler
+import           Data.Buffer
+import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Language.Module
 
@@ -36,14 +38,16 @@ data StopBit
 
 class Handler HandleUART u => UART u where
 
-    configUART    :: u -> Uint32
-                       -> WordLength
-                       -> StopBit
-                       -> Parity
-                       -> Ivory eff ()
+    configUART :: u
+               -> Uint32
+               -> WordLength
+               -> StopBit
+               -> Parity
+               -> Ivory eff ()
 
-    transmit      :: u -> Ref s1 (CArray (Stored Uint16))
-                       -> Uint16
-                       -> Ivory (ProcEffects s2 t) ()
+    transmit   :: u
+               -> ((Uint16 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ())
+               -> Ivory (ProcEffects s t) ()
 
-    enable        :: u -> Ivory eff ()
+    enable     :: u
+               -> Ivory eff ()

@@ -1,13 +1,13 @@
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NamedFieldPuns   #-}
-{-# LANGUAGE QuasiQuotes      #-}
-{-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE DataKinds           #-}
+{-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE NamedFieldPuns      #-}
+{-# LANGUAGE QuasiQuotes         #-}
+{-# LANGUAGE RecordWildCards     #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Endpoint.Dimmers where
 
-import           Control.Monad.State (MonadState)
+import           Control.Monad.State  (MonadState)
 import           Core.Actions
 import           Core.Context
 import           Data.Buffer
@@ -15,6 +15,7 @@ import           Data.Record
 import           Data.Serialize
 import           GHC.TypeNats
 import           Ivory.Language
+import           Ivory.Language.Proxy (NatType, aNat)
 import           Ivory.Stdlib
 import           Support.Cast
 
@@ -36,21 +37,23 @@ type DimmerStruct = "dimmer_struct"
 
 
 
-data Dimmers = Dimmers
-    { runDimmers :: RunRecords DimmerStruct
-    , payload    :: Buffer 6 Uint8
+data Dimmers n = Dimmers
+    { dimmers :: Records n DimmerStruct
+    , payload :: Buffer 6 Uint8
     }
 
 
-
-mkDimmers :: MonadState Context m => String -> Int -> m Dimmers
-mkDimmers name n = do
+mkDimmers :: forall n m.
+           ( MonadState Context m
+           , KnownNat n
+           )
+          => String -> m (Dimmers n)
+mkDimmers name = do
     addStruct (Proxy :: Proxy DimmerStruct)
-    let runDimmers = runRecords name $ go . fromIntegral <$> [1..n]
-    payload       <- buffer "dimmer_message"
-    let dimmers    = Dimmers {runDimmers, payload}
-    runDimmers addArea
-    pure dimmers
+    dimmers     <- records name $ go . fromIntegral
+                               <$> [1..natVal (aNat :: NatType n)]
+    payload     <- buffer "dimmer_message"
+    pure Dimmers {dimmers, payload}
     where go i = [ mode       .= ival 0
                  , brightness .= ival 0
                  , velocity   .= ival 0
@@ -62,21 +65,24 @@ mkDimmers name n = do
 
 
 
-message :: Dimmers -> Uint8 -> Ivory eff (Buffer 6 Uint8)
+
+message :: KnownNat n
+        => Dimmers n -> Uint8
+        -> Ivory eff (Buffer 6 Uint8)
 message Dimmers{..} i = do
-    runDimmers $ \d -> do
-        let dimmer = addrOf d ! toIx i
-        pack payload 0 actionDim
-        pack payload 1 $ i + 1
-        pack payload 2 =<< deref (dimmer ~> group)
-        pack payload 3 =<< deref (dimmer ~> mode )
-        pack payload 4 =<< castFloatToUint8 . (* 255) =<< deref (dimmer ~> brightness)
-        pack payload 5 =<< castFloatToUint8 . (* 255) =<< deref (dimmer ~> velocity  )
+    pack payload 0 actionDim
+    pack payload 1 $ i + 1
+    pack payload 2 =<< deref (dimmer ~> group)
+    pack payload 3 =<< deref (dimmer ~> mode )
+    pack payload 4 =<< castFloatToUint8 . (* 255) =<< deref (dimmer ~> brightness)
+    pack payload 5 =<< castFloatToUint8 . (* 255) =<< deref (dimmer ~> velocity  )
     pure payload
+    where
+        dimmer = dimmers ! toIx i
 
 
-
-initialize :: Record DimmerStruct -> Uint8 -> Uint8 -> IFloat -> IFloat -> Ivory eff ()
+initialize :: Record DimmerStruct -> Uint8 -> Uint8 -> IFloat -> IFloat
+           -> Ivory eff ()
 initialize dimmer group' mode' brightness' velocity' = do
     store (dimmer ~> group     ) group'
     store (dimmer ~> mode      ) mode'
@@ -84,24 +90,29 @@ initialize dimmer group' mode' brightness' velocity' = do
     store (dimmer ~> value     ) brightness'
     store (dimmer ~> velocity  ) velocity'
 
-on :: Dimmers -> Uint8 -> Ivory eff ()
+on :: KnownNat n => Dimmers n -> Uint8
+   -> Ivory eff ()
 on = runCheckMode $ \dimmer -> do
     store (dimmer ~> brightness) 1
     store (dimmer ~> value     ) 1
 
-off :: Dimmers -> Uint8 -> Ivory eff ()
+off :: KnownNat n => Dimmers n -> Uint8 -> Ivory eff ()
 off = runCheckMode $ \dimmer -> do
     store (dimmer ~> brightness) 0
     store (dimmer ~> value     ) 0
 
-fade :: IFloat -> IFloat -> Dimmers -> Uint8 -> Ivory eff ()
+fade :: KnownNat n
+     => IFloat -> IFloat -> Dimmers n -> Uint8
+     -> Ivory eff ()
 fade brightness' velocity' = runCheckMode $ \dimmer -> do
     store (dimmer ~> brightness) brightness'
     store (dimmer ~> value     ) brightness'
     store (dimmer ~> velocity  ) velocity'
     store (dimmer ~> delta     ) $ 0.0001 / (1.02 - velocity');
 
-setBrightness :: IFloat -> Dimmers -> Uint8 -> Ivory eff ()
+setBrightness :: KnownNat n
+              => IFloat -> Dimmers n -> Uint8
+              -> Ivory eff ()
 setBrightness brightness' = runCheckMode $ \dimmer -> do
     mode <- deref $ dimmer ~> mode
     ifte_ (mode ==? 4)
@@ -117,21 +128,25 @@ setBrightness brightness' = runCheckMode $ \dimmer -> do
             store (dimmer ~> value     ) $ safeCast brightness'
         )
 
-setMode :: Uint8 -> Dimmers -> Uint8 -> Ivory eff ()
+setMode :: KnownNat n
+        => Uint8 -> Dimmers n -> Uint8
+        -> Ivory eff ()
 setMode  mode' = runDimmer $ \dimmer -> do
     store (dimmer ~> mode      ) mode'
     store (dimmer ~> brightness) 0
     store (dimmer ~> value     ) 0
     store (dimmer ~> synced    ) false
 
-setGroup :: Uint8 -> Dimmers -> Uint8 -> Ivory eff ()
+setGroup :: KnownNat n => Uint8 -> Dimmers n -> Uint8 -> Ivory eff ()
 setGroup group' = runDimmer $ \dimmer -> do
     store (dimmer ~> group ) group'
     store (dimmer ~> synced) false
 
 
 
-runCheckMode :: (Record DimmerStruct -> Ivory eff ()) -> Dimmers -> Uint8 -> Ivory eff ()
+runCheckMode :: KnownNat n
+             => (Record DimmerStruct -> Ivory eff ()) -> Dimmers n -> Uint8
+             -> Ivory eff ()
 runCheckMode run = runDimmer $ \dimmer -> do
     mode' <- deref $ dimmer ~> mode
     when (mode' /=? 0) $ do
@@ -139,22 +154,26 @@ runCheckMode run = runDimmer $ \dimmer -> do
         store (dimmer ~> synced) false
 
 
-runDimmer :: (Record DimmerStruct -> Ivory eff ()) -> Dimmers -> Uint8 -> Ivory eff ()
-runDimmer run dimmers index =
-    runDimmers dimmers $ \ds -> do
-        let ix' = toIx index
-        let dimmer' = addrOf ds ! ix'
-        run dimmer'
-        syncDimmerGroup ds dimmer' ix'
+runDimmer :: KnownNat n
+          => (Record DimmerStruct -> Ivory eff ()) -> Dimmers n -> Uint8
+          -> Ivory eff ()
+runDimmer run Dimmers{..} index = do
+    run dimmer
+    syncDimmerGroup dimmers dimmer ix
+    where
+        ix = toIx index
+        dimmer = dimmers ! ix
 
 
 
-syncDimmerGroup :: KnownNat n => Records' n DimmerStruct -> Record DimmerStruct -> Ix n -> Ivory eff ()
+syncDimmerGroup :: KnownNat n
+                => Records n DimmerStruct -> Record DimmerStruct -> Ix n
+                -> Ivory eff ()
 syncDimmerGroup ds dimmer' ix' = do
     group' <- deref $ dimmer' ~> group
     arrayMap $ \ix'' ->
         when (ix'' /=? ix') $ do
-            let dimmer'' = addrOf ds ! ix''
+            let dimmer'' = ds ! ix''
             group'' <- deref $ dimmer'' ~> group
             when (group'' ==? group') $ do
                 let sync :: IvoryStore a

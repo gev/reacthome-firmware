@@ -14,9 +14,9 @@ import           Device.GD32F3x0.Timer
 import qualified Interface.PWM                  as I
 import qualified Interface.Timer                as I
 import           Ivory.Language
+import           Support.Device.GD32F3x0.GPIO
 import           Support.Device.GD32F3x0.System
 import           Support.Device.GD32F3x0.Timer
-import Support.Device.GD32F3x0.GPIO
 
 
 {--
@@ -40,7 +40,7 @@ mkPWM timer' pwmChannel port' frequency period = do
     pwmTimer <- timer' frequency period
     let port  = port' gpio_pupd_none
 
-    initPort port 
+    initPort port
 
     addInit (show port <> "_pwm") $ do
             let t = timer pwmTimer
@@ -74,8 +74,10 @@ coerceModePWM I.FORCE_LOW  = timer_oc_mode_low
 
 
 instance I.Timer PWM where
-    setCounter PWM{..} = I.setCounter pwmTimer
-    getCounter PWM{..} = I.getCounter pwmTimer
+    setCounter       PWM{..} = I.setCounter pwmTimer
+    getCounter       PWM{..} = I.getCounter pwmTimer
+    enableInterrupt  PWM{..} = I.enableInterrupt pwmTimer
+    disableInterrupt PWM{..} = I.disableInterrupt pwmTimer
 
 
 
