@@ -53,8 +53,6 @@ data ALED ng ns np = forall d f t. (Display d, Flash f, LazyTransport t) => ALED
 
 
 
-maxValue = 0.3 :: IFloat
-
 aled :: ( MonadState Context m
         , MonadReader (D.Domain p c) m
         , Display d, Handler (Render np) d
