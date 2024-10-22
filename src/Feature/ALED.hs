@@ -86,7 +86,7 @@ aled mkDisplay etc' transport = do
 
     random <- mkRandom "aled" 1
 
-    addInit "aed_load_config" $ loadConfig aled
+    addInit "aled_load_config" $ loadConfig aled
 
     addHandler $ Render display E.fps (E.subPixels getALED) $ update aled random
 

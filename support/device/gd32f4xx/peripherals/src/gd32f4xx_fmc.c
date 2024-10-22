@@ -538,7 +538,7 @@ fmc_state_enum ob_dbs_set(void)
     {
         reg |= FMC_OBCTL0_DBS;
         FMC_OBCTL0 = reg;
-        ob_start();
+        // ob_start();
         fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
     }
     return fmc_state;
