@@ -105,8 +105,8 @@ onDo Dimmers{..} buff size = do
                 let index' = index - 1
                 value' <- deref $ buff ! 2
                 ifte_ (value' ==? 0)
-                    (onOn  getDimmers index')
                     (onOff getDimmers index')
+                    (onOn  getDimmers index')
 
 
 
