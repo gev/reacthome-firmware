@@ -39,6 +39,7 @@ data Doppler a = Doppler
     , previous    :: Value Uint8
     , median0     :: Value IFloat
     , median1     :: Value IFloat
+    , count       :: Value (Ix N)
     }
 
 
@@ -65,7 +66,7 @@ dopplers analogInput transport = do
                             , transport
                             }
 
-    addTask $ delay 1 "doppler_measure" $ mapM_ measure   doppler
+    addTask $ delay 1 "doppler_measure" $ mapM_ measure doppler
     addTask $ delay t "doppler_sync"    $ sync  dopplers
 
     pure dopplers
@@ -86,6 +87,7 @@ mkDoppler transport analogInput index = do
     previous    <- value (name <> "previous"   )   0
     median0     <- value (name <> "median0"    )   0
     median1     <- value (name <> "median1"    )   $ level / 2
+    count       <- value (name <> "count") 0
 
     let doppler = Doppler { adc
                           , expectation
@@ -93,6 +95,7 @@ mkDoppler transport analogInput index = do
                           , previous
                           , median0
                           , median1
+                          , count
                           }
 
     pure doppler
@@ -144,15 +147,20 @@ sync Dopplers {..} = do
     when shouldTransmit $ T.lazyTransmit transport (1 + n) $ \transmit -> do
         transmit actionDoppler1
         mapM_ transmit =<< mapM deref (current <$> doppler)
-    mapM_ ((`store` 0) . current) doppler
+    mapM_ (\Doppler{..} -> do
+            count' <- deref count
+            store count $ count' + 1
+            when (count' ==? 0) $ store current 0
+          ) doppler
 
 
 
 shouldSyncDoppler :: Doppler a -> Ivory (ProcEffects s t) IBool
 shouldSyncDoppler Doppler{..} = do
-    current' <- deref current
+    count'    <- deref count
+    current'  <- deref current
     previous' <- deref previous
-    let shouldSync = current' /=? previous'
+    let shouldSync = current' >? previous' .|| count' ==? 0
     when shouldSync $ store previous current'
     pure shouldSync
 
@@ -171,6 +179,8 @@ iMax a b = (a >? b) ? (a, b)
 sub = (-)
 
 
+
+type N =   5
 
 t      = 200
 range  =   0.3
