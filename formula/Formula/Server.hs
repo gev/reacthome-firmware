@@ -6,11 +6,11 @@ import           Core.Models
 import           Data.Color
 import           Data.Fixed
 import           Device.GD32F4xx
+import           Feature.ALED        (aled)
 import           Feature.Dimmers.DC
 import           Feature.DInputs
 import           Feature.DS18B20
 import           Feature.Indicator
-import           Feature.ALED                (aled)
 import           Feature.RS485.RBUS  as F
 import           Implementation.Hub  (hub)
 import           Interface.RS485
@@ -21,7 +21,7 @@ import           Transport.UART.RBUS as U
 server :: Formula GD32F4xx
 server = Formula { name           = "server"
                  , model          = deviceTypeServer
-                 , version        = (5, 4)
+                 , version        = (5, 5)
                  , shouldInit     = true
                  , implementation = hub (U.rbus uart_1 1_000_000)
                                         (F.rbus    $  rs485 uart_5 out_pb_14
