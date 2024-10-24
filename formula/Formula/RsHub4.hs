@@ -5,11 +5,11 @@ import           Core.Models
 import           Data.Color
 import           Data.Fixed
 import           Device.GD32F4xx
+import           Feature.ALED       (aled)
 import           Feature.Dimmers.DC
 import           Feature.DInputs
 import           Feature.DS18B20
 import           Feature.Indicator
-import           Feature.ALED                (aled)
 import           Feature.RS485.RBUS as F
 import           Implementation.Hub (hub)
 import           Interface.RS485
@@ -20,7 +20,7 @@ import           Transport.UDP.RBUS as U
 rsHub4 :: Formula GD32F4xx
 rsHub4 = Formula { name           = "rs_hub4"
                  , model          = deviceTypeRsHub4
-                 , version        = (5, 4)
+                 , version        = (5, 5)
                  , shouldInit     = true
                  , implementation = hub (U.rbus eth_0)
                                         (F.rbus    $  rs485 uart_5 out_pb_14
