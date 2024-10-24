@@ -17,7 +17,3 @@ import           Support.Device.GD32F3x0.Timer
 --}
 systemClock :: MonadState Context m => m SystemClock
 systemClock = I.systemClock (sysTick 83_999)
-                            (timer_14 $ timerParam [ prescaler .= ival 83
-                                                   , period    .= ival 0xff_ff
-                                                   ]
-                            )

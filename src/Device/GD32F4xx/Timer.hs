@@ -5,7 +5,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE TypeOperators         #-}
 
 module Device.GD32F4xx.Timer where
 
@@ -100,7 +99,7 @@ instance I.Counter Timer where
 
 instance Handler I.HandleTimer Timer where
     addHandler (I.HandleTimer {I.timer = Timer{..}, handle}) = do
-        addInit (symbol timer <> "_irq_init") initTimerIRQ'
+        addInit (symbol timer <> "_irq") initTimerIRQ'
         addModule $ makeIRQHandler irq handleIRQ'
         where
             initTimerIRQ' :: Ivory eff ()
@@ -119,4 +118,3 @@ instance I.Timer Timer where
     getCounter t = readCounter  (timer t)
     enableInterrupt t = enableTimerInterrupt (timer t) timer_int_up
     disableInterrupt t = disableTimerInterrupt (timer t) timer_int_up
-

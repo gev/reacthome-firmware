@@ -6,6 +6,7 @@ import           Build.Firmware
 import           Control.Monad.State
 import           Device.GD32F3x0
 import           Device.GD32F4xx
+import           Formula.Blink330             (blink330)
 import           Formula.DI4
 import           Formula.DI4RSM
 import           Formula.DimmerAC12
@@ -52,8 +53,8 @@ main = do
     --                  , doppler5
     --                  ]
 
-    gcc gd32f330k8u6 [ doppler5 ]
+    -- gcc gd32f450vgt6 [ server
+    --                  , rsHub4
+    --                  ]
 
-    gcc gd32f450vgt6 [ server
-                     , rsHub4
-                     ]
+    gcc gd32f330k8u6 [ doppler5 ]
