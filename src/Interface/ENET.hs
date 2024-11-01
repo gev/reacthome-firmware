@@ -9,7 +9,7 @@ import           Core.Handler
 
 data HandleEnet e = HandleEnet
     { enet  :: e
-    , handle :: forall eff. Ivory eff ()
+    , handle :: forall s. Ivory (ProcEffects s ()) ()
     }
 
 class Handler HandleEnet e => Enet e where
