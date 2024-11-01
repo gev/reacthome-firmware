@@ -81,7 +81,7 @@ OF SUCH DAMAGE.
 #define PBUF_POOL_BUFSIZE       1500                     /* the size of each pbuf in the pbuf pool */
 
 /* TCP options */
-#define LWIP_TCP                1
+#define LWIP_TCP                0
 #define TCP_TTL                 255
 
 #define TCP_QUEUE_OOSEQ         0                        /* controls if TCP should queue segments that arrive out of
@@ -99,11 +99,11 @@ OF SUCH DAMAGE.
                                                    
 
 /* ICMP options */
-#define LWIP_ICMP               1
+#define LWIP_ICMP               0
 
 
 /* DHCP options */
-#define LWIP_DHCP               1                        /* define to 1 if you want DHCP configuration of interfaces,
+#define LWIP_DHCP               0                        /* define to 1 if you want DHCP configuration of interfaces,
                                                             DHCP is not implemented in lwIP 0.5.1, however, so
                                                             turning this on does currently not work. */
 
@@ -134,7 +134,7 @@ OF SUCH DAMAGE.
                                                             SO_RCVTIMEO processing */
                                                             
 /* Lwip debug options */
-#define LWIP_DEBUG              1
+#define LWIP_DEBUG              0
 
 
 
