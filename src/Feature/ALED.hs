@@ -136,9 +136,12 @@ update ALED{..} random = do
             let end'' = end' * safeCast segmentSize'
             for (toIx segmentSize' :: Ix np) $ \pixelX -> do
                 let pixelX' = fromIx pixelX
-                x <- local $ ival pixelX'
+                x    <- local $ ival pixelX'
                 when direction' $ store x (safeCast segmentSize' - pixelX' - 1)
-                x' <- deref x
+                x'   <- deref x
+                px'  <- deref px
+                let p = E.subPixels getALED ! px'
+                p' <- deref p
                 ifte_ (brightness' >? 0 .&& (safeCast x' >=? start'' .&& safeCast x' <? end'') /=? inverse')
                       (do
                           m' <- ifte maskAnimationSplit'
@@ -155,9 +158,6 @@ update ALED{..} random = do
                                                   (x' + tx')
                                     )
                           for (toIx pixelSize' :: Ix np) $ \subpixelX -> do
-                              px' <- deref px
-                              let p = E.subPixels getALED ! px'
-                              p' <- safeCast <$> deref p
                               c' <- ifte colorAnimationSplit'
                                       (E.renderColor brightness'
                                                      random
@@ -167,7 +167,7 @@ update ALED{..} random = do
                                                      x'
                                                      pixelSize'
                                                      (fromIx subpixelX)
-                                                     p'
+                                                     (safeCast p')
                                       )
                                       (E.renderColor brightness'
                                                      random
@@ -177,23 +177,21 @@ update ALED{..} random = do
                                                      (x' + tx')
                                                      pixelSize'
                                                      (fromIx subpixelX)
-                                                     p'
+                                                     (safeCast p')
                                       )
                               let v' = c' * m'
-                              p' <- deref p
                               cond_ [ v' >? 255 ==> store p 255 >> store state true
                                     , v' >? 0 ==> store p (castDefault v') >> store state true
                                     , true ==> store p 0
                                     ]
                               p'' <- deref p
                               when (p'' /=? p') $ store shouldUpdate true
-                              store px $ px' + 1
                       )
                       (for (toIx pixelSize' :: Ix np) . const $ do
-                            px' <- deref px
+                            when (p' /=? 0) $ store shouldUpdate true
                             store (E.subPixels getALED ! px') 0
-                            store px $ px' + 1
                       )
+                store px $ px' + 1
             store sx $ sx' + 1
         state' <- deref $ group ~> E.groupState
         state'' <- deref state

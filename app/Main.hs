@@ -57,4 +57,4 @@ main = do
     --                  , rsHub4
     --                  ]
 
-    gcc gd32f450vgt6 [ rsHub4 ]
+    gcc gd32f330k8u6 [ doppler5 ]
