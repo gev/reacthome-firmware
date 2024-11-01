@@ -8,7 +8,7 @@ module Support.Device.GD32F4xx.Misc
     ( NVIC_VECTTAB
     , nvic_vecttab_flash
 
-    , PROIRITY_GROUP
+    , PRIORITY_GROUP
     , nvic_prigroup_pre2_sub2
 
     , SYSTICK_CLOCK_SOURCE
@@ -33,10 +33,10 @@ newtype NVIC_VECTTAB = NVIC_VECTTAB Uint32
 nvic_vecttab_flash  = NVIC_VECTTAB $ ext "NVIC_VECTTAB_FLASH"
 
 
-newtype PROIRITY_GROUP = PROIRITY_GROUP Uint32
+newtype PRIORITY_GROUP = PRIORITY_GROUP Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
-nvic_prigroup_pre2_sub2 = PROIRITY_GROUP $ ext "NVIC_PRIGROUP_PRE2_SUB2"
+nvic_prigroup_pre2_sub2 = PRIORITY_GROUP $ ext "NVIC_PRIGROUP_PRE2_SUB2"
 
 
 newtype SYSTICK_CLOCK_SOURCE = SYSTICK_CLOCK_SOURCE Uint32
@@ -60,10 +60,10 @@ nvic_vector_table_set :: Def ('[NVIC_VECTTAB, Uint32] :-> ())
 nvic_vector_table_set = fun "nvic_vector_table_set"
 
 
-setPriorityGroup :: PROIRITY_GROUP -> Ivory eff ()
+setPriorityGroup :: PRIORITY_GROUP -> Ivory eff ()
 setPriorityGroup = call_ nvic_priority_group_set
 
-nvic_priority_group_set :: Def ('[PROIRITY_GROUP] :-> ())
+nvic_priority_group_set :: Def ('[PRIORITY_GROUP] :-> ())
 nvic_priority_group_set = fun "nvic_priority_group_set"
 
 
@@ -86,4 +86,3 @@ inclMisc = do
     incl nvic_vector_table_set
     incl nvic_priority_group_set
     incl systick_clksource_set
-
