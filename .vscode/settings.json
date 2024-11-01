@@ -1,6 +1,6 @@
 {
   "haskell.formattingProvider": "stylish-haskell",
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
   "editor.formatOnType": false,
   "C_Cpp.formatting": "Disabled",
   "C_Cpp.autoAddFileAssociations": false,
