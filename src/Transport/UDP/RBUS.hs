@@ -163,8 +163,8 @@ receivePackets :: (LwipPort e, Enet e) => e -> RBUS ->  Ivory (ProcEffects s ())
 receivePackets enet RBUS{..} = 
     forever $ do
         reval <- rxFrameSize enet
-        cond_ [ reval >? 1 ==> void (inputLwipPortIf enet netif)
-              , true ==> breakOut
+        cond_ [ reval  >? 1 ==> void (inputLwipPortIf enet netif)
+              , reval ==? 0 ==> breakOut
               ]
 
 discoveryTask :: RBUS -> Ivory (ProcEffects s t) ()
