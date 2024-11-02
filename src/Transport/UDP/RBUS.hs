@@ -148,10 +148,7 @@ rbus enet' = do
         startIgmp netif
         setUpNetif netif
 
-    addHandler $ HandleEnet enet $ do
-        reval <- rxFrameSize enet
-        when (reval >? 1) $
-            void $ inputLwipPortIf enet netif
+    addHandler $ HandleEnet enet $ receivePackets enet rbus
 
     addTask $ delay 1_000 "tmr_arp"         tmrEtharp
     addTask $ delay   100 "tmr_igmp"        tmrIgmp
@@ -161,6 +158,14 @@ rbus enet' = do
     pure rbus
 
 
+
+receivePackets :: (LwipPort e, Enet e) => e -> RBUS ->  Ivory (ProcEffects s ()) ()
+receivePackets enet RBUS{..} = 
+    forever $ do
+        reval <- rxFrameSize enet
+        cond_ [ reval >? 1 ==> void (inputLwipPortIf enet netif)
+              , true ==> breakOut
+              ]
 
 discoveryTask :: RBUS -> Ivory (ProcEffects s t) ()
 discoveryTask rbus@RBUS{..} = do
