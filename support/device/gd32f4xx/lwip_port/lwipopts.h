@@ -55,11 +55,11 @@ OF SUCH DAMAGE.
                                                             is compiled. 4 byte alignment -> define MEM_ALIGNMENT 
                                                             to 4, 2 byte alignment -> define MEM_ALIGNMENT to 2 */
 
-#define MEM_SIZE                (20*1024)                /* the size of the heap memory, if the application will 
+#define MEM_SIZE                (80*1024)                /* the size of the heap memory, if the application will 
                                                             send a lot of data that needs to be copied, this should
                                                             be set high */
 
-#define MEMP_NUM_PBUF           10                       /* the number of memp struct pbufs. If the application
+#define MEMP_NUM_PBUF           40                       /* the number of memp struct pbufs. If the application
                                                             sends a lot of data out of ROM (or other static memory),
                                                             this should be set high */
 
