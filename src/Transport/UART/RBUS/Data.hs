@@ -27,10 +27,10 @@ data RBUS where
              , protocol      :: U.RBUS  255
              , rxBuff        :: Buffer  300 Uint8
              , rxQueue       :: Queue   300
-             , msgOffset     :: Buffer   32 Uint16
-             , msgSize       :: Buffer   32 Uint8
-             , msgQueue      :: Queue    32
-             , msgBuff       :: Buffer  300 Uint8
+             , msgOffset     :: Buffer  128 Uint16
+             , msgSize       :: Buffer  128 Uint8
+             , msgQueue      :: Queue   128
+             , msgBuff       :: Buffer 1200 Uint8
              , msgIndex      :: Value       Uint16
              , txBuff        :: Buffer  300 Uint16
              , discoveryBuff :: Buffer   10 Uint8
