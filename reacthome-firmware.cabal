@@ -300,6 +300,7 @@ executable reacthome-firmware
                     , Support.Device.GD32F4xx.ENET
                     , Support.Device.GD32F4xx.FMC
                     , Support.Device.GD32F4xx.I2C
+                    , Support.Device.GD32F4xx.SPI
                     , Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif
                     , Support.Lwip.Ethernet 
 
