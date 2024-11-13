@@ -32,6 +32,7 @@ module Support.Device.GD32F4xx.SPI
     , initI2S
     , configPscI2S
     , configFullDuplexModeI2S
+    , dataSpi
 
     , inclSPI
     ) where
@@ -114,6 +115,13 @@ i2s_full_duplex_mode_config :: Def ('[SPI_PERIPH, I2S_MODE, I2S_STANDARD, I2S_CK
 i2s_full_duplex_mode_config = fun "i2s_full_duplex_mode_config"
 
 
+dataSpi :: SPI_PERIPH -> Ivory eff Uint32
+dataSpi = call spi_data
+
+spi_data :: Def ('[SPI_PERIPH] :-> Uint32)
+spi_data = fun "(uint32_t)&SPI_DATA"
+
+
 
 inclSPI :: ModuleDef
 inclSPI = do
@@ -121,6 +129,8 @@ inclSPI = do
     incl i2s_init
     incl i2s_psc_config
     incl i2s_full_duplex_mode_config
+    incl spi_data
+
 
     inclSym spi1
     inclSym spi2
