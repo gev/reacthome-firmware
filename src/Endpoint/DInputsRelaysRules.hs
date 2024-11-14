@@ -89,7 +89,7 @@ forceSyncRules Rules{..} = store synced false
 
 manageRules :: (KnownNat ni, KnownNat no)
             => Rules ni no -> DInputs ni -> Relays no -> Groups no
-            -> Ivory ('Effects (Returns ()) r (Scope s)) ()
+            -> Ivory (ProcEffects s ()) ()
 manageRules Rules{..} DInputs{..} relays groups =
     arrayMap $ \ix' -> do
         let n = arrayLen dinputs
