@@ -13,9 +13,11 @@ import           Ivory.Language.Module
 
 
 data Formula p where
-    Formula :: { name           ::  String
-               , model          ::  Uint8
-               , version        :: (Uint8, Uint8)
-               , shouldInit     ::  IBool
-               , implementation ::  StateT Context (Reader (Domain p i)) i
+    Formula :: { name            ::  String
+               , model           ::  Uint8
+               , version         :: (Uint8, Uint8)
+               , shouldInit      ::  IBool
+               , quartzFrequency ::  Int
+               , systemFrequency ::  Int
+               , implementation  ::  StateT Context (Reader (Domain p i)) i
                } -> Formula p

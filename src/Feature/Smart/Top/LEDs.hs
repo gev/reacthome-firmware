@@ -13,7 +13,7 @@
 module Feature.Smart.Top.LEDs where
 
 
-import           Control.Monad.Reader  (MonadReader, asks, forM_, zipWithM_)
+import           Control.Monad.Reader  (MonadReader, asks)
 import           Control.Monad.State   (MonadState)
 import           Core.Actions
 import           Core.Context
