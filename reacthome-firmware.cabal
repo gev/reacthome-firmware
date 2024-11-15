@@ -132,6 +132,8 @@ executable reacthome-firmware
                     , Formula.DimmerDC12
                     , Formula.Mix6x12
                     , Formula.DI4
+                    , Formula.DI4LA
+                    , Formula.DI4RSM
                     , Formula.UdpEcho450
                     , Formula.RsHub4
                     , Formula.Sht21
@@ -143,7 +145,6 @@ executable reacthome-firmware
                     , Formula.Smart.Bottom.Bottom2
                     , Formula.Doppler1
                     , Formula.Doppler5
-                    , Formula.DI4RSM
                     , Formula.Smart.Top.TopA4T
                     , Formula.Smart.Top.TopA6T
                     , Formula.Smart.Top.TopG6
@@ -152,6 +153,8 @@ executable reacthome-firmware
 
                     , Implementation.Blink
                     , Implementation.DI
+                    , Implementation.DILA
+                    , Implementation.DIRSM 
                     , Implementation.Dimmer
                     , Implementation.Dummy
                     , Implementation.Echo
@@ -164,7 +167,6 @@ executable reacthome-firmware
                     , Implementation.UdpEcho
                     , Implementation.Relay
                     , Implementation.Doppler
-                    , Implementation.DIRSM 
                     , Implementation.Smart.TopA4T
                     , Implementation.Smart.TopA6T
                     , Implementation.Smart.TopG6

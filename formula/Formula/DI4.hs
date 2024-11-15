@@ -17,7 +17,7 @@ import           Transport.RS485.RBUS
 di4 :: Formula GD32F3x0
 di4 = Formula { name            = "di4"
               , model           = deviceTypeDi4
-              , version         = (5, 5)
+              , version         = (4, 5)
               , shouldInit      = true
               , quartzFrequency =  8_000_000
               , systemFrequency = 84_000_000
@@ -29,5 +29,4 @@ di4 = Formula { name            = "di4"
                                               :> Nil
                                      )
                                      (ds18b20 ow_1 od_pa_8)
-                                     (aled npx_pwm_0 etc)
               }

@@ -52,6 +52,7 @@ deviceTypeSmart6Push     = 0x2C :: Uint8
 deviceTypeDoppler1Di4    = 0x2D :: Uint8
 deviceTypeDoppler5Di4    = 0x2E :: Uint8
 deviceTypeDi4Rsm         = 0x2F :: Uint8
+deviceTypeDi4La           = 0x40 :: Uint8
 
 
 

@@ -72,7 +72,7 @@ module Support.Device.GD32F4xx.I2C
 
 import           Ivory.Language
 import           Ivory.Support
-import           Ivory.Support.Device.GD32F3x0
+import           Ivory.Support.Device.GD32F4xx
 
 
 newtype I2C_PERIPH = I2C_PERIPH Uint32

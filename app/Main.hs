@@ -4,6 +4,7 @@ import           Build.Compiler.GCC
 import           Device.GD32F3x0
 import           Device.GD32F4xx
 import           Formula.DI4
+import           Formula.DI4LA
 import           Formula.DI4RSM
 import           Formula.DimmerAC12
 import           Formula.DimmerDC12
@@ -35,6 +36,7 @@ main = do
                      , dimmerAC12
                      , mix6x12
                      , di4
+                     , di4la
                      , smartBottom1
                      , smartBottom2
                      , smartTopA4P
