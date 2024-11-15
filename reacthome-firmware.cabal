@@ -136,8 +136,6 @@ executable reacthome-firmware
                     , Formula.DI4RSM
                     , Formula.UdpEcho450
                     , Formula.RsHub4
-                    , Formula.Sht21
-                    , Formula.Scd40
                     , Formula.Smart.Top.TopA6P
                     , Formula.Smart.Top.TopA4P
                     , Formula.Smart.Top.TopG4D

@@ -30,7 +30,7 @@ import           Transport.RS485.RBUS.Tx
 
 
 rbus :: (MonadState Context m, MonadReader (D.Domain p c) m, Controller c)
-     => m (RS485 300) -> m RBUS
+     => m (RS485 32 300) -> m RBUS
 rbus rs485 = do
 
     model          <- asks D.model
@@ -44,8 +44,6 @@ rbus rs485 = do
     let clock       = systemClock mcu
 
     rs             <- rs485
-    rxBuff         <- buffer (name <> "_rx"            )
-    rxQueue        <- queue  (name <> "_rx"            )
     msgOffset      <- buffer (name <> "_msg_offset"    )
     msgSize        <- buffer (name <> "_msg_size"      )
     msgTTL         <- buffer (name <> "_msg_ttl"       )
@@ -86,7 +84,6 @@ rbus rs485 = do
     protocol <- slave name (mac mcu) model version onMessage onConfirm onDiscovery onReceive
 
     let rbus = RBUS { clock, rs, protocol
-                    , rxBuff, rxQueue
                     , msgOffset, msgSize, msgTTL, msgQueue, msgBuff, msgIndex
                     , initBuff
                     , rxLock, txLock

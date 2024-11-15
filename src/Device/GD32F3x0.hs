@@ -51,18 +51,18 @@ import           Support.Device.GD32F3x0.USART
 
 
 
-type UART'      = forall m n. MonadState Context m => KnownNat n => m (UART n)
-type I2C'       = forall m n. MonadState Context m => KnownNat n => m (I2C n)
-type Input'     = forall m.   MonadState Context m => GPIO_PUPD -> m Input
-type Output'    = forall m.   MonadState Context m => GPIO_PUPD -> m Output
-type OpenDrain' = forall m.   MonadState Context m => m OpenDrain
-type ADC'       = forall m.   MonadState Context m => m ADC
-type DAC'       = forall m.   MonadState Context m => m DAC
-type Timer'     = forall m.   MonadState Context m => Uint32 -> Uint32 -> m Timer
-type PWM'       = forall m.   MonadState Context m => Uint32 -> Uint32 -> m PWM
-type NeoPixel'  = forall m.   MonadState Context m => m NeoPixel
-type EXTI'      = forall m.   MonadState Context m => m EXTI
-type OneWire'   = forall m.   MonadState Context m => m OpenDrain -> m OneWire
+type UART'      = forall m rn tn. MonadState Context m => KnownNat rn => KnownNat tn => m (UART rn tn)
+type I2C'       = forall m n.     MonadState Context m => KnownNat n => m (I2C n)
+type Input'     = forall m.       MonadState Context m => GPIO_PUPD -> m Input
+type Output'    = forall m.       MonadState Context m => GPIO_PUPD -> m Output
+type OpenDrain' = forall m.       MonadState Context m => m OpenDrain
+type ADC'       = forall m.       MonadState Context m => m ADC
+type DAC'       = forall m.       MonadState Context m => m DAC
+type Timer'     = forall m.       MonadState Context m => Uint32 -> Uint32 -> m Timer
+type PWM'       = forall m.       MonadState Context m => Uint32 -> Uint32 -> m PWM
+type NeoPixel'  = forall m.       MonadState Context m => m NeoPixel
+type EXTI'      = forall m.       MonadState Context m => m EXTI
+type OneWire'   = forall m.       MonadState Context m => m OpenDrain -> m OneWire
 
 
 data GD32F3x0 = GD32F3x0

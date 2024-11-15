@@ -2,27 +2,24 @@
 
 module Transport.RS485.RBUS.Rx    where
 
-import           Data.Concurrent.Queue        as Q
 import           Interface.SystemClock
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Protocol.RS485.RBUS.Slave.Rx
 import           Transport.RS485.RBUS.Data
+import qualified Interface.RS485 as I
 
 
-rxHandle :: RBUS -> Uint16 -> Ivory eff ()
-rxHandle RBUS{..} value = do
+rxHandle :: RBUS -> Ivory eff ()
+rxHandle RBUS{..} = do
     store rxLock true
     store rxTimestamp =<< getSystemTime clock
-    push rxQueue $ \i ->
-        store (rxBuff ! toIx i) $ castDefault value
+
 
 
 rxTask :: RBUS -> Ivory (ProcEffects s ()) ()
 rxTask RBUS{..} =
-    pop rxQueue $ \i -> do
-        v <- deref $ rxBuff ! toIx i
-        receive protocol $ castDefault v
+    I.receive rs $ receive protocol . castDefault 
 
 
 {--
@@ -33,7 +30,7 @@ resetTask RBUS{..} = do
     t0 <- deref rxTimestamp
     t1 <- getSystemTime clock
     when (t1 - t0 >? 1) $ do
-        Q.clear rxQueue
-        reset   protocol
-        store   rxLock false
-        store   rxTimestamp t1
+        I.clearRX rs
+        reset     protocol
+        store     rxLock false
+        store     rxTimestamp t1

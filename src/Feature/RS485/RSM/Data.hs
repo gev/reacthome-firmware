@@ -16,11 +16,9 @@ import           Ivory.Language
 data RSM = forall t. (LazyTransport t, Transport t) => RSM
      { index       :: Int
      , clock       :: SystemClock
-     , rs          :: RS485  300
+     , rs          :: RS485   32 300
      , baudrate    :: Value      Uint32
      , lineControl :: Value      Uint8
-     , rxBuff      :: Buffer  64 Uint16
-     , rxQueue     :: Queue   64
      , rsBuff      :: Buffer 253 Uint8
      , rsSize      :: Value      Uint8
      , rxLock      :: Value      IBool

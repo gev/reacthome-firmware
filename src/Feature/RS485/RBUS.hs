@@ -40,13 +40,13 @@ import qualified Interface.RS485 as RS
 
 
 rbus :: (MonadState Context m, MonadReader (D.Domain p c) m, LazyTransport t, Transport t)
-     => List n (m (I.RS485 300)) -> t -> m (List n RBUS)
+     => List n (m (I.RS485 32 300)) -> t -> m (List n RBUS)
 rbus rs485 transport = zipWithM (rbus' transport) rs485 nats
 
 
 
 rbus' :: (MonadState Context m, MonadReader (D.Domain p c) m, LazyTransport t, Transport t)
-     => t -> m (I.RS485 300) -> Int -> m RBUS
+     => t -> m (I.RS485 32 300) -> Int -> m RBUS
 rbus' transport rs485 index = do
     rs               <- rs485
 
@@ -60,8 +60,6 @@ rbus' transport rs485 index = do
     mode             <- value  (name <> "_mode"             ) modeNone
     baudrate         <- value  (name <> "_baudrate"         ) defaultBaudrate
     lineControl      <- value  (name <> "_line_control"     ) 0
-    rxBuff           <- buffer (name <> "_rx"               )
-    rxQueue          <- queue  (name <> "_rx"               )
     msgOffset        <- buffer (name <> "_msg_offset"       )
     msgSize          <- buffer (name <> "_msg_size"         )
     msgConfirm       <- values (name <> "_msg_confirm"      ) (replicate 255 false)
@@ -126,7 +124,6 @@ rbus' transport rs485 index = do
     protocol <- master name onMessage onConfirm onDiscovery onPing onReceive
 
     let rbus = RBUS { index, clock, rs, mode, baudrate, lineControl, protocol
-                    , rxBuff, rxQueue
                     , msgOffset, msgSize, msgConfirm, msgTTL, msgQueue, msgBuff, msgIndex
                     , rsBuff, rsSize
                     , rxLock, txLock
@@ -276,7 +273,7 @@ configureMode r = do
           , mode' ==? modeRS485 ==> configureRS485 r
           ]
     store (rxLock r) false
-    Q.clear $ rxQueue r
+    I.clearRX $ rs r
 
 
 

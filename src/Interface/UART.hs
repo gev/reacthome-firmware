@@ -14,7 +14,7 @@ import           Ivory.Language.Module
 
 data HandleUART u = HandleUART
     { uart       :: u
-    , onReceive  :: Uint16 -> forall eff. Ivory eff ()
+    , onReceive  :: forall eff. Ivory eff ()
     , onTransmit :: forall eff. Ivory eff ()
     , onDrain    :: forall eff. Maybe (Ivory eff ())
     }
@@ -44,6 +44,13 @@ class Handler HandleUART u => UART u where
                -> StopBit
                -> Parity
                -> Ivory eff ()
+
+    clearRX    :: u
+               -> Ivory eff ()
+
+    receive    :: u
+               -> (Uint16 -> Ivory (ProcEffects s t) ())
+               -> Ivory (ProcEffects s t) ()
 
     transmit   :: u
                -> ((Uint16 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ())

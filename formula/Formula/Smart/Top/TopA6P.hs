@@ -10,7 +10,7 @@ import           Feature.DInputs            (dinputs)
 import           Feature.Sht21              (sht21)
 import           Implementation.Smart.TopAP (topAP)
 import           Ivory.Language
-import           Transport.UART.RBUS        (rbus)
+import           Transport.UART.RBUS       
 
 smartTopA6P :: Formula GD32F3x0
 smartTopA6P =  Formula { name            = "smart_top_a6p"
@@ -19,7 +19,7 @@ smartTopA6P =  Formula { name            = "smart_top_a6p"
                        , shouldInit      = false
                        , quartzFrequency =  8_000_000
                        , systemFrequency = 84_000_000
-                       , implementation  = topAP (rbus uart_0 115_200)
+                       , implementation  = topAP (rbusTop uart_0)
                                                  (dinputs $  in_pa_4
                                                           :> in_pb_2
                                                           :> in_pa_5

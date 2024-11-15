@@ -20,16 +20,18 @@ import           Transport.UDP.RBUS       (discoveryTask)
 
 
 
+discoveryTask :: (KnownNat q, KnownNat l) => RBUS q l -> Ivory (ProcEffects s t) ()
 discoveryTask rbus@RBUS{..} = toQueue rbus discoveryBuff
 
 
 
-txHandle :: RBUS -> Ivory eff ()
+txHandle :: RBUS q l -> Ivory eff ()
 txHandle RBUS{..} = store txLock false
 
 
 
-txTask :: RBUS -> Ivory (ProcEffects s ()) ()
+txTask :: (KnownNat q, KnownNat l) 
+       => RBUS q l -> Ivory (ProcEffects s ()) ()
 txTask r@RBUS{..} = do
     txLock' <- deref txLock
     when (iNot txLock') $
@@ -45,9 +47,9 @@ txTask r@RBUS{..} = do
 
 
 
-toQueue :: KnownNat l
-        => RBUS
-        -> Buffer l Uint8
+toQueue :: (KnownNat q, KnownNat l, KnownNat n)
+        => RBUS q l
+        -> Buffer n Uint8
         -> Ivory (ProcEffects s t) ()
 toQueue RBUS{..} buff = push msgQueue $ \i -> do
     index <- deref msgIndex
@@ -58,10 +60,11 @@ toQueue RBUS{..} buff = push msgQueue $ \i -> do
     store (msgSize   ! ix) size
 
 
-toQueue' :: RBUS
-        -> Uint8
-        -> ((Uint8 -> forall eff. Ivory eff ()) -> forall eff. Ivory eff ())
-        -> Ivory (ProcEffects s t) ()
+toQueue' :: (KnownNat q, KnownNat l)
+         => RBUS q l
+         -> Uint8
+         -> ((Uint8 -> forall eff. Ivory eff ()) -> forall eff. Ivory eff ())
+         -> Ivory (ProcEffects s t) ()
 toQueue' RBUS{..} size' transmit = push msgQueue $ \i -> do
     index <- deref msgIndex
     size  <- run protocol (transmitMessage' size' transmit) msgBuff index
@@ -72,10 +75,10 @@ toQueue' RBUS{..} size' transmit = push msgQueue $ \i -> do
 
 
 
-run :: KnownNat l
+run :: KnownNat n
     => U.RBUS 255
     -> ((Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ())
-    -> Buffer l Uint8
+    -> Buffer n Uint8
     -> Uint16
     -> Ivory (ProcEffects s t) Uint8
 run protocol transmit buff offset = do

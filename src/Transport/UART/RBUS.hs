@@ -28,11 +28,38 @@ import qualified Protocol.UART.RBUS       as U
 import           Transport.UART.RBUS.Data
 import           Transport.UART.RBUS.Rx
 import           Transport.UART.RBUS.Tx
+import GHC.TypeNats
 
 
 
-rbus :: (MonadState Context m, MonadReader (D.Domain p c) m, UART (u 300), Controller c)
-     => (p -> m (u 300)) -> Uint32 -> m RBUS
+rbusTop :: ( MonadState Context m, MonadReader (D.Domain p c) m
+           ,  UART (u 32 300), Controller c
+           ) 
+        => (p -> m (u 32 300)) -> m (RBUS 32 300)
+rbusTop uart' = rbus uart' 115_200
+
+
+rbusTopGD :: ( MonadState Context m, MonadReader (D.Domain p c) m
+             , UART (u 32 300), Controller c
+             ) 
+          => (p -> m (u 32 300)) -> m (RBUS 32 512)
+rbusTopGD uart' = rbus uart' 115_200
+
+
+rbusHub :: ( MonadState Context m
+           , MonadReader (D.Domain p c) m
+           , UART (u 32 300), Controller c
+           ) 
+        => (p -> m (u 32 300)) -> m (RBUS 32 1200)
+rbusHub uart' = rbus uart' 1_000_000
+
+
+
+rbus :: ( MonadState Context m, MonadReader (D.Domain p c) m
+        , UART (u 32 300), Controller c
+        , KnownNat q, KnownNat l
+        )
+     => (p -> m (u 32 300)) -> Uint32 -> m (RBUS q l)
 rbus uart' speed = do
     mcu            <- asks D.mcu
     implementation <- asks D.implementation
@@ -49,16 +76,21 @@ rbus uart' speed = do
 
 
 
-mkRbus :: (MonadState Context m, MonadReader (D.Domain p c) m, UART (u 300))
-     => String -> u 300 -> Uint32 -> (forall s. Buffer 255 Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()) -> m RBUS
+mkRbus :: ( MonadState Context m, MonadReader (D.Domain p c) m
+          , UART (u 32 300)
+          , KnownNat q, KnownNat l
+          )
+       => String 
+       -> u 32 300 
+       -> Uint32 
+       -> (forall s. Buffer 255 Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()) 
+       -> m (RBUS q l)
 mkRbus name uart speed onMessage = do
     mcu           <- asks D.mcu
     model         <- asks D.model
     version       <- asks D.version
     let mac        = I.mac mcu
     let clock      = I.systemClock mcu
-    rxBuff        <- buffer (name <> "_rx"          )
-    rxQueue       <- queue  (name <> "_rx"          )
     msgOffset     <- buffer (name <> "_msg_offset"  )
     msgSize       <- buffer (name <> "_msg_size"    )
     msgQueue      <- queue  (name <> "_msg"         )
@@ -73,7 +105,6 @@ mkRbus name uart speed onMessage = do
     let rbus = RBUS { name, speed
                     , model, version, mac
                     , clock, uart, protocol
-                    , rxBuff, rxQueue
                     , msgOffset, msgSize, msgQueue, msgBuff, msgIndex
                     , txLock
                     , discoveryBuff
@@ -104,9 +135,9 @@ initialize RBUS{..} = do
 
 
 
-instance Transport RBUS where
+instance (KnownNat q, KnownNat l) => Transport (RBUS q l) where
     transmitBuffer = toQueue
 
 
-instance LazyTransport RBUS where
+instance (KnownNat q, KnownNat l) => LazyTransport (RBUS q l) where
     lazyTransmit = toQueue'
