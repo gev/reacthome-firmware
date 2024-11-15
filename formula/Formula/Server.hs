@@ -16,7 +16,7 @@ import           Feature.RS485.RBUS  as F
 import           Implementation.Hub  (hub)
 import           Interface.RS485
 import           Ivory.Language
-import           Transport.UART.RBUS as U
+import           Transport.UART.RBUS
 
 
 server :: Formula GD32F4xx
@@ -26,7 +26,7 @@ server = Formula { name            = "server"
                  , shouldInit      = true
                  , quartzFrequency =  25_000_000
                  , systemFrequency = 200_000_000
-                 , implementation  = hub (U.rbus uart_1 1_000_000)
+                 , implementation  = hub (rbusHub uart_1)
                                          (F.rbus    $  rs485 uart_5 out_pb_14
                                                     :> rs485 uart_3 out_pc_12
                                                     :> rs485 uart_2 out_pb_15

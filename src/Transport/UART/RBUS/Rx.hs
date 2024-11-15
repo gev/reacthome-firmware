@@ -10,19 +10,19 @@ import           Transport.UART.RBUS.Data
 import qualified Interface.UART as I
 
 
-rxHandle :: RBUS -> Ivory eff ()
+rxHandle :: RBUS q l -> Ivory eff ()
 rxHandle RBUS{..} =
     store rxTimestamp =<< getSystemTime clock
 
 
-rxTask :: RBUS -> Ivory (ProcEffects s ()) ()
+rxTask :: RBUS q l -> Ivory (ProcEffects s ()) ()
 rxTask RBUS{..} = I.receive uart $ receive protocol . castDefault
 
 
 {--
     TODO: Use IDLE and Error interrupts
 --}
-resetTask :: RBUS -> Ivory eff ()
+resetTask :: RBUS q l -> Ivory eff ()
 resetTask RBUS{..} = do
     t0 <- deref rxTimestamp
     t1 <- getSystemTime clock

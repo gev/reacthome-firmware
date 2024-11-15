@@ -12,7 +12,7 @@ import           Feature.Smart.Top.PowerTouch (powerTouch)
 import           Feature.Smart.Top.Vibro      (vibro)
 import           Implementation.Smart.TopA6T  (topA6T)
 import           Ivory.Language
-import           Transport.UART.RBUS          (rbus)
+import           Transport.UART.RBUS         
 
 smartTopA6T :: Formula GD32F3x0
 smartTopA6T =  Formula { name            = "smart_top_a6t"
@@ -21,7 +21,7 @@ smartTopA6T =  Formula { name            = "smart_top_a6t"
                        , shouldInit      = false
                        , quartzFrequency =  8_000_000
                        , systemFrequency = 84_000_000
-                       , implementation  = topA6T (rbus uart_1 115_200)
+                       , implementation  = topA6T (rbusTop uart_1)
                                                   (dinputs $  in_pa_15
                                                            :> in_pb_7
                                                            :> in_pb_3

@@ -35,7 +35,7 @@ data Top where
       => { pin :: i
          , isDetected    :: Value IBool
          , transportUp   :: t
-         , transportDown :: RBUS
+         , transportDown :: RBUS 32 512
          } -> Top
 
 

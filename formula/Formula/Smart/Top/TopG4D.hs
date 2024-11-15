@@ -12,7 +12,7 @@ import           Feature.Smart.Top.PowerTouch (powerTouch)
 import           Feature.Smart.Top.Vibro      (vibro)
 import           Implementation.Smart.TopGD   (topGD)
 import           Ivory.Language
-import           Transport.UART.RBUS          (rbus)
+import           Transport.UART.RBUS        
 
 smartTopG4D :: Formula GD32F3x0
 smartTopG4D =  Formula { name            = "smart_top_g4d"
@@ -21,7 +21,7 @@ smartTopG4D =  Formula { name            = "smart_top_g4d"
                        , shouldInit      = false
                        , quartzFrequency =  8_000_000
                        , systemFrequency = 84_000_000
-                       , implementation  = topGD (rbus uart_1 115_200)
+                       , implementation  = topGD (rbusTop uart_1)
                                                  (dinputs $  in_pb_7
                                                           :> in_pb_5
                                                           :> in_pb_8

@@ -31,8 +31,8 @@ data Echo = Echo
 
 echo :: ( MonadState Context m
         , MonadReader (Domain p Echo) m
-        , T.Transport t
-        ) => m t -> m Echo
+        , T.Transport (t 32 300)
+        ) => m (t 32 300) -> m Echo
 echo transport' = do
     transport <- transport'
     buff <- values "echo_buffer" [9,8,7,6,5,4,3,2,1,0]
