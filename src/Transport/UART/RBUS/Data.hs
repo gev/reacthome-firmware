@@ -16,17 +16,15 @@ import qualified Protocol.UART.RBUS    as U
 
 
 data RBUS where
-     RBUS :: UART (u 300)
+     RBUS :: UART (u 32 300)
           => { name          :: String
              , speed         :: Uint32
              , model         :: Value       Uint8
              , version       :: Version
              , mac           :: Mac
              , clock         :: SystemClock
-             , uart          :: u       300
+             , uart          :: u        32 300
              , protocol      :: U.RBUS  255
-             , rxBuff        :: Buffer  300 Uint8
-             , rxQueue       :: Queue   300
              , msgOffset     :: Buffer  128 Uint16
              , msgSize       :: Buffer  128 Uint8
              , msgQueue      :: Queue   128

@@ -45,15 +45,15 @@ import           Support.Device.GD32F4xx.USART
 
 
 
-type UART'      = forall m n. MonadState Context m => KnownNat n => m (UART n)
-type Input'     = forall m.   MonadState Context m => GPIO_PUPD -> m Input
-type Output'    = forall m.   MonadState Context m => GPIO_PUPD -> m Output
-type OpenDrain' = forall m.   MonadState Context m => m OpenDrain
-type Timer'     = forall m.   MonadState Context m => Uint32 -> Uint32 -> m Timer
-type PWM'       = forall m.   MonadState Context m => Uint32 -> Uint32 -> m PWM
-type NeoPixel'  = forall m.   MonadState Context m => m NeoPixel
-type OneWire'   = forall m.   MonadState Context m => m OpenDrain -> m OneWire
-type Enet'      = forall m.   MonadState Context m => m ENET
+type UART'      = forall m rn tn. MonadState Context m => KnownNat rn => KnownNat tn => m (UART rn tn)
+type Input'     = forall m.       MonadState Context m => GPIO_PUPD -> m Input
+type Output'    = forall m.       MonadState Context m => GPIO_PUPD -> m Output
+type OpenDrain' = forall m.       MonadState Context m => m OpenDrain
+type Timer'     = forall m.       MonadState Context m => Uint32 -> Uint32 -> m Timer
+type PWM'       = forall m.       MonadState Context m => Uint32 -> Uint32 -> m PWM
+type NeoPixel'  = forall m.       MonadState Context m => m NeoPixel
+type OneWire'   = forall m.       MonadState Context m => m OpenDrain -> m OneWire
+type Enet'      = forall m.       MonadState Context m => m ENET
 
 
 data GD32F4xx = GD32F4xx
