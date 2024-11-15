@@ -16,22 +16,20 @@ instance Compiler GCC GD32F4xx where
 
     GCC { path    = model
 
-        , defs    = [ "-D" <> (toUpper <$> model)
-                    , "-DUSE_STDPERIPH_DRIVER"
-                    ]
+        , defs    = ("-D" <>) <$> [ (toUpper <$> model)
+                                  , "USE_STDPERIPH_DRIVER"
+                                  ] 
 
-        , incs    = [ "-Isupport/inc"
-                    , "-Isupport/CMSIS/inc"
-                    , "-Isupport/device/gd32f4xx/inc"
-                    , "-Isupport/device/gd32f4xx/peripherals/inc"
-                    , "-Isupport/device/gd32f4xx/lwip_port"
-                    , "-Isupport/device/gd32f4xx/lwip_port/arch"
-                    , "-Isupport/device/gd32f4xx/lwip_port/Basic"
-                    , "-Isupport/device/ksz8091"
-                    , "-Isupport/lwip-2.1.2/src/include"
-                    ]
-
-
+        , incs    = ("-I" <>) <$> [ "support/inc"
+                                  , "support/CMSIS/inc"
+                                  , "support/device/gd32f4xx/inc"
+                                  , "support/device/gd32f4xx/peripherals/inc"
+                                  , "support/device/gd32f4xx/lwip_port"
+                                  , "support/device/gd32f4xx/lwip_port/arch"
+                                  , "support/device/gd32f4xx/lwip_port/Basic"
+                                  , "support/device/ksz8091"
+                                  , "support/lwip-2.1.2/src/include"
+                                  ]
 
         , libs    = [ "support/device/gd32f4xx"
                     , "support/lwip-2.1.2/src"

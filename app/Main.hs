@@ -1,12 +1,8 @@
 module Main where
 
-import           Build.Compiler
 import           Build.Compiler.GCC
-import           Build.Firmware
-import           Control.Monad.State
 import           Device.GD32F3x0
 import           Device.GD32F4xx
-import           Formula.Blink330             (blink330)
 import           Formula.DI4
 import           Formula.DI4RSM
 import           Formula.DimmerAC12
