@@ -22,6 +22,7 @@ smartBottom2 =  Formula { name            = "smart_bottom_2"
                         , model           = deviceTypeSmartBottom2
                         , version         = (4, 6)
                         , shouldInit      = true
+                        , mcu             = gd32f330k8u6
                         , quartzFrequency =  8_000_000
                         , systemFrequency = 84_000_000
                         , implementation  = bottom2 (rbus $ rs485 uart_1 out_pa_4)
