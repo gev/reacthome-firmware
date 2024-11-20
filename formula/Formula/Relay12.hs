@@ -19,6 +19,7 @@ relay12 = Formula { name            = "relay12"
                   , model           = deviceTypeRelay12Rs
                   , version         = (3, 4)
                   , shouldInit      = true
+                  , mcu             = gd32f330k8u6
                   , quartzFrequency =  8_000_000
                   , systemFrequency = 84_000_000
                   , implementation  = relay (rbus $ rs485 uart_0 out_pb_2)

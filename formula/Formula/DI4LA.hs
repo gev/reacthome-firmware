@@ -21,6 +21,7 @@ di4la = Formula { name            = "di4la"
                 , model           = deviceTypeDi4La
                 , version         = (1, 5)
                 , shouldInit      = true
+                , mcu             = gd32f330k8u6
                 , quartzFrequency =  8_000_000
                 , systemFrequency = 84_000_000
                 , implementation  = dila (rbus $ rs485 uart_1 out_pa_4)

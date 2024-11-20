@@ -23,6 +23,7 @@ doppler5 = Formula { name            = "doppler5"
                    , model           = deviceTypeDoppler5Di4
                    , version         = (2, 5)
                    , shouldInit      = true
+                   , mcu             = gd32f330k8u6
                    , quartzFrequency =  8_000_000
                    , systemFrequency = 84_000_000
                    , implementation  = doppler (rbus $ rs485 uart_1 out_pa_4)

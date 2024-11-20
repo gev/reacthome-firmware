@@ -20,6 +20,7 @@ dimmerAC12 = Formula { name            = "dimmerAC12"
                      , model           = deviceTypeDim12AcRs
                      , version         = (2, 6)
                      , shouldInit      = true
+                     , mcu             = gd32f330k8u6
                      , quartzFrequency =  8_000_000
                      , systemFrequency = 84_000_000
                      , implementation  = dimmer (rbus $ rs485 uart_0 out_pb_2)
