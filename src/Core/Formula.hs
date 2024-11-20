@@ -9,6 +9,7 @@ import           Core.Context
 import           Core.Domain
 import           Ivory.Language
 import           Ivory.Language.Module
+import Interface.MCU
 
 
 
@@ -17,6 +18,7 @@ data Formula p where
                , model           ::  Uint8
                , version         :: (Uint8, Uint8)
                , shouldInit      ::  IBool
+               , mcu             ::  MCU p
                , quartzFrequency ::  Int
                , systemFrequency ::  Int
                , implementation  ::  StateT Context (Reader (Domain p i)) i
