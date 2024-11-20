@@ -17,7 +17,7 @@ import           Core.Transport
 import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Data.Value
-import           Interface.MCU             (MCU (peripherals, systemClock), mac)
+import           Interface.MCU             
 import           Interface.RS485
 import           Ivory.Language
 import           Ivory.Stdlib

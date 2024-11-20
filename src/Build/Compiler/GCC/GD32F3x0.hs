@@ -12,11 +12,11 @@ import           Interface.MCU
 
 instance Compiler GCC GD32F3x0 where
 
-  mkCompiler MCUmod{..} =
+  mkCompiler MCU{..} =
 
     GCC { path    = model
 
-        , defs    = ("-D" <>) <$> [ (toUpper <$> model)
+        , defs    = ("-D" <>) <$> [ toUpper <$> model
                                   , "USE_STDPERIPH_DRIVER"
                                   ] 
 

@@ -27,7 +27,7 @@ import           Feature.RS485.RBUS.Data
 import           Feature.RS485.RBUS.Rx
 import           Feature.RS485.RBUS.Tx
 import           GHC.TypeNats
-import           Interface.MCU                       (MCU (peripherals, systemClock))
+import           Interface.MCU                       
 import qualified Interface.RS485                     as I
 import           Ivory.Language
 import           Ivory.Stdlib

@@ -20,8 +20,8 @@ import           Ivory.Language.Module
 
 
 
-cook :: State Context (MCU p) -> Formula p -> ModuleDef
-cook mcu Formula{..} = do
+cook :: State Context (Platform p) -> Formula p -> ModuleDef
+cook platform Formula{..} = do
 
 
     inclModule
@@ -32,7 +32,7 @@ cook mcu Formula{..} = do
 
 
     where (domain'         , domainContext'        ) = runState (domain model version mcu' shouldInit implementation') mempty
-          (mcu'            , mcuContext'           ) = runState mcu mempty
+          (mcu'            , mcuContext'           ) = runState platform mempty
           (implementation' , implementationContext') = runReader (runStateT implementation mempty) domain'
 
           (Context inclModule inits tasks syncs bodies) = mcuContext'
@@ -71,10 +71,10 @@ generate moduleDef name = runCompiler
 
 
 build :: Shake c
-      => c -> MCUmod p -> [Formula p] -> IO ()
-build config MCUmod{..} formulas =
+      => c -> MCU p -> [Formula p] -> IO ()
+build config MCU{..} formulas =
     shake config =<< mapM run formulas
     where
         run f@Formula{..} = do
-            generate (cook mcu f) name
+            generate (cook platform f) name
             pure name

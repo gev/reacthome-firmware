@@ -18,13 +18,13 @@ import           Interface.MCU
 
 
 gcc :: Compiler GCC p
-    => MCUmod p -> [Formula p] -> IO ()
+    => MCU p -> [Formula p] -> IO ()
 gcc = mkGCC >>= build
 
 
 
 mkGCC :: Compiler GCC p
-      => MCUmod p -> GCC
+      => MCU p -> GCC
 mkGCC = mkCompiler
 
 

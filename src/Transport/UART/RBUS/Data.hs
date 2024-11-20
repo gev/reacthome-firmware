@@ -8,7 +8,7 @@ import           Data.Buffer
 import           Data.Concurrent.Queue
 import           Data.Value
 import           Interface.Mac
-import           Interface.MCU         (MCU (mac))
+import           Interface.MCU         
 import           Interface.SystemClock
 import           Interface.UART
 import           Ivory.Language

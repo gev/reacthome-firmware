@@ -17,28 +17,28 @@ import           Ivory.Language
 import           Ivory.Language.Module
 
 
-data MCU p = MCU
+data Platform p = Platform
     { systemClock :: SystemClock
     , peripherals :: p
     , mac         :: Mac
     }
 
 
-data MCUmod p = MCUmod
-    { mcu          :: forall m. MonadState Context m => m (MCU p)
+data MCU p = MCU
+    { platform     :: forall m. MonadState Context m => m (Platform p)
     , model        :: String
     , modification :: String
     }
 
 
-mkMCU :: (MonadState Context m)
-      => m SystemClock
-      -> (Buffer 6 Uint8 -> forall s. Ivory (ProcEffects s ()) ())
-      -> ModuleDef
-      -> p
-      -> m (MCU p)
-mkMCU systemClock' initializeMac mcuModule peripherals = do
+mkPlatform :: (MonadState Context m)
+           => m SystemClock
+           -> (Buffer 6 Uint8 -> forall s. Ivory (ProcEffects s ()) ())
+           -> ModuleDef
+           -> p
+           -> m (Platform p)
+mkPlatform systemClock' initializeMac mcuModule peripherals = do
     addModule mcuModule
     systemClock <- systemClock'
     mac         <- makeMac initializeMac "mac"
-    pure MCU { systemClock, peripherals, mac }
+    pure Platform { systemClock, peripherals, mac }

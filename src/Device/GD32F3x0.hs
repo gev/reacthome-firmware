@@ -184,8 +184,8 @@ data GD32F3x0 = GD32F3x0
     }
 
 
-gd32f3x0 :: String -> String -> MCUmod GD32F3x0
-gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
+gd32f3x0 :: String -> String -> MCU GD32F3x0
+gd32f3x0 = MCU $ mkPlatform G.systemClock makeMac inclGD32F3x0 GD32F3x0
     { uart_0    = mkUART usart0
                          rcu_usart0
                          usart0_irqn
@@ -376,10 +376,10 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
 
 
 
-gd32f330k8u6 :: MCUmod GD32F3x0
+gd32f330k8u6 :: MCU GD32F3x0
 gd32f330k8u6 = gd32f3x0 "gd32f330" "k8u6"
 
-gd32f350k8u6 :: MCUmod GD32F3x0
+gd32f350k8u6 :: MCU GD32F3x0
 gd32f350k8u6 = gd32f3x0 "gd32f350" "k8u6"
 
 
