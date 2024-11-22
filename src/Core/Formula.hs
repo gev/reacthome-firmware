@@ -3,23 +3,24 @@
 
 module Core.Formula where
 
+import           Build.Compiler
 import           Control.Monad.Reader
 import           Control.Monad.State
 import           Core.Context
 import           Core.Domain
+import           Interface.MCU
 import           Ivory.Language
 import           Ivory.Language.Module
-import Interface.MCU
 
 
 
-data Formula p where
-    Formula :: { name            ::  String
-               , model           ::  Uint8
-               , version         :: (Uint8, Uint8)
-               , shouldInit      ::  IBool
-               , mcu             ::  MCU p
-               , quartzFrequency ::  Int
-               , systemFrequency ::  Int
-               , implementation  ::  StateT Context (Reader (Domain p i)) i
-               } -> Formula p
+data Formula p = forall i. Formula
+    { name            ::  String
+    , model           ::  Uint8
+    , version         :: (Int, Int)
+    , shouldInit      ::  IBool
+    , mcu             ::  MCU p
+    , quartzFrequency ::  Int
+    , systemFrequency ::  Int
+    , implementation  ::  StateT Context (Reader (Domain p i)) i
+    }

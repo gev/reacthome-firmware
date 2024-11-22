@@ -10,6 +10,8 @@ import           Build.Compiler.GCC.GD32F4xx
 import           Build.Firmware
 import           Build.Shake
 import           Core.Formula
+import           Data.Digest.Pure.MD5        (md5)
+import           Data.String
 import           Development.Shake
 import           Development.Shake.FilePath
 import           Development.Shake.Util
@@ -17,14 +19,12 @@ import           Interface.MCU
 
 
 
-gcc :: Compiler GCC p
-    => MCU p -> [Formula p] -> IO ()
-gcc = mkGCC >>= build
+gcc :: Compiler GCC p => Formula p -> IO ()
+gcc f@Formula{..} = build (mkGCC mcu) f
 
 
 
-mkGCC :: Compiler GCC p
-      => MCU p -> GCC
+mkGCC :: Compiler GCC p => MCU p -> GCC
 mkGCC = mkCompiler
 
 
@@ -37,25 +37,25 @@ oc = "arm-none-eabi-objcopy"
 
 
 
-target :: Foldable t => FilePath -> [FilePath] -> t String -> [FilePath]
-target build ns = concatMap $ \x -> [build <> "/firmware" </> n <.> x | n <- ns]
+target :: FilePath -> FilePath -> [String] -> [FilePath]
+target build name xs = [build <> "/firmware" </> name <.> x | x <- xs]
 
 source :: FilePath -> FilePath
-source = dropDirectory1 . dropDirectory1 . dropExtension
+source = dropDirectory1 . dropDirectory1 . dropDirectory1 . dropExtension
 
 
 
 instance Shake GCC where
 
-    key GCC{..} = mconcat cflags
+    hash GCC{..} = show . md5 . fromString $ mconcat cflags <> mconcat defs
 
-    shake GCC{..} ns = do
+    shake c@GCC{..} name = do
 
-        let build = "build/" <> path
+        let build = "build" </> path </> hash c
 
         shakeArgs shakeOptions{shakeFiles=build} $ do
 
-            want $ target build ns ["hex", "bin"]
+            want $ target build name ["hex", "bin"]
 
             phony "clean" $ do
                 putInfo $ "Cleaning files in " <> build

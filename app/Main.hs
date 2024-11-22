@@ -28,29 +28,26 @@ import           Formula.Smart.Top.TopG6
 
 main :: IO ()
 main = do
-    gcc gd32f350k8u6 [ di4rsm
-                     ]
-
-    gcc gd32f330k8u6 [ relay12
-                     , dimmerDC12
-                     , dimmerAC12
-                     , mix6x12
-                     , di4
-                     , di4la
-                     , smartBottom1
-                     , smartBottom2
-                     , smartTopA4P
-                     , smartTopG6
-                     , smartTopG4
-                     , smartTopG2
-                     , smartTopA6P
-                     , smartTopA4T
-                     , smartTopA6T
-                     , smartTopG4D
-                     , doppler1
-                     , doppler5
-                     ]
-
-    gcc gd32f450vgt6 [ server
-                     , rsHub4
-                     ]
+    mapM_ gcc [ di4
+              , di4
+              , di4rsm
+              , relay12
+              , dimmerDC12
+              , dimmerAC12
+              , doppler1
+              , doppler5
+              , mix6x12
+              , smartBottom1
+              , smartBottom2
+              , smartTopA4P
+              , smartTopA4T
+              , smartTopA6P
+              , smartTopA6T
+              , smartTopG2
+              , smartTopG4
+              , smartTopG4D
+              , smartTopG6
+              ]
+    mapM_ gcc [ rsHub4
+              , server
+              ]

@@ -12,17 +12,17 @@ import           Core.Context
 import           Core.Domain
 import           Core.Formula
 import           Core.Scheduler
+import           Data.Bifunctor
 import           Data.List
-import           Interface.MCU
+import           Interface.MCU                   as I
 import           Ivory.Compile.C.CmdlineFrontend
 import           Ivory.Language
 import           Ivory.Language.Module
 
 
 
-cook :: State Context (Platform p) -> Formula p -> ModuleDef
-cook platform Formula{..} = do
-
+cook :: Formula p -> ModuleDef
+cook Formula{ ..} = do
 
     inclModule
     mapM_ incl multiBodyFunctions
@@ -30,9 +30,8 @@ cook platform Formula{..} = do
     incl  loop
     incl  main
 
-
-    where (domain'         , domainContext'        ) = runState (domain model version mcu' shouldInit implementation') mempty
-          (mcu'            , mcuContext'           ) = runState platform mempty
+    where (domain'         , domainContext'        ) = runState (domain model version' mcu' shouldInit implementation') mempty
+          (mcu'            , mcuContext'           ) = runState (platform mcu ) mempty
           (implementation' , implementationContext') = runReader (runStateT implementation mempty) domain'
 
           (Context inclModule inits tasks syncs bodies) = mcuContext'
@@ -57,6 +56,8 @@ cook platform Formula{..} = do
             call_ loop
             ret 0
 
+          version' = bimap fromIntegral fromIntegral version
+
 
 
 generate :: ModuleDef -> String -> IO ()
@@ -70,11 +71,11 @@ generate moduleDef name = runCompiler
 
 
 
-build :: Shake c
-      => c -> MCU p -> [Formula p] -> IO ()
-build config MCU{..} formulas =
-    shake config =<< mapM run formulas
-    where
-        run f@Formula{..} = do
-            generate (cook platform f) name
-            pure name
+build :: Shake c => c -> Formula p -> IO ()
+build config f@Formula{..} = do
+    let name' = name <> "-" <> I.model mcu <> I.modification mcu <> "-" <> major version <> "." <> minor version
+    generate (cook f) name'
+    shake config name'
+
+    where major = show . fst
+          minor = show . snd

@@ -14,11 +14,11 @@ instance Compiler GCC GD32F3x0 where
 
   mkCompiler MCU{..} =
 
-    GCC { path    = model
+    GCC { path    = model <> modification
 
         , defs    = ("-D" <>) <$> [ toUpper <$> model
                                   , "USE_STDPERIPH_DRIVER"
-                                  ] 
+                                  ]
 
         , incs    = ("-I" <>) <$> [ "support/inc"
                                   , "support/CMSIS/inc"
