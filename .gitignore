@@ -1,6 +1,7 @@
 */.vscode
 .VSCodeCounter
 build
+dist
 dist-newstyle
 firmware
 .DS_Store

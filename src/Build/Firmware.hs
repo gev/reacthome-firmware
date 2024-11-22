@@ -60,12 +60,12 @@ cook Formula{ ..} = do
 
 
 
-generate :: ModuleDef -> String -> IO ()
-generate moduleDef name = runCompiler
+generate :: ModuleDef -> String -> String -> IO ()
+generate moduleDef path name = runCompiler
     [package name moduleDef]
     []
     initialOpts
-        { outDir = Just "./firmware"
+        { outDir = Just $ "./firmware" <> "/" <> path
         , constFold = True
         }
 
@@ -74,8 +74,8 @@ generate moduleDef name = runCompiler
 build :: Shake c => c -> Formula p -> IO ()
 build config f@Formula{..} = do
     let name' = name <> "-" <> I.model mcu <> I.modification mcu <> "-" <> major version <> "." <> minor version
-    generate (cook f) name'
-    shake config name'
+    generate (cook f) name name'
+    shake config $ name <> "/" <> name'
 
     where major = show . fst
           minor = show . snd

@@ -51,23 +51,25 @@ instance Shake GCC where
 
     shake c@GCC{..} name = do
 
+        let dist = "dist"
         let build = "build" </> path </> hash c
 
         shakeArgs shakeOptions{shakeFiles=build} $ do
 
-            want $ target build name ["hex", "bin"]
+            want $ target dist name ["hex", "bin"]
 
             phony "clean" $ do
                 putInfo $ "Cleaning files in " <> build
                 removeFilesAfter build ["//*"]
 
-            build <> "//*.bin" %> \out -> do
-                let elf = out -<.> "elf"
+            dist <> "//*.bin" %> \out -> do
+                let elf = build </> dropDirectory1 out -<.> "elf"
                 need [elf]
                 cmd_ oc "-O binary" elf out
 
-            build <> "//*.hex" %> \out -> do
-                let elf = out -<.> "elf"
+
+            dist <> "//*.hex" %> \out -> do
+                let elf = build </> dropDirectory1 out -<.> "elf"
                 need [elf]
                 cmd_ oc "-O ihex" elf out
 
