@@ -29,7 +29,7 @@ import           Formula.Smart.Top.TopG6
 main :: IO ()
 main = do
     mapM_ gcc [ di4
-              , di4
+              , di4la
               , di4rsm
               , relay12
               , dimmerDC12
