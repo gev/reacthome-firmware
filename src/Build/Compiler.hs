@@ -1,8 +1,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 module Build.Compiler where
-
-import           Interface.MCU
+import           Core.Formula
 
 class Compiler c p where
-    mkCompiler :: MCU p -> c
+    mkCompiler :: Formula p -> c

@@ -20,11 +20,11 @@ import           Interface.MCU
 
 
 gcc :: Compiler GCC p => Formula p -> IO ()
-gcc f@Formula{..} = build (mkGCC mcu) f
+gcc = mkGCC >>= build
 
 
 
-mkGCC :: Compiler GCC p => MCU p -> GCC
+mkGCC :: Compiler GCC p => Formula p -> GCC
 mkGCC = mkCompiler
 
 

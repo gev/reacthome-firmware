@@ -3,7 +3,6 @@
 
 module Core.Formula where
 
-import           Build.Compiler
 import           Control.Monad.Reader
 import           Control.Monad.State
 import           Core.Context
