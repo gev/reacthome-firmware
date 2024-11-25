@@ -64,6 +64,6 @@ instance Compiler GCC GD32F3x0 where
 
 sysClockDefs :: Int -> Int -> [String]
 sysClockDefs 8_000_000 84_000_000 = [ "HXTAL_VALUE=((uint32_t)8000000)"
-                                    , "__SYSTEM_CLOCK_84M_PLL_HXTAL=((uint32_t)108000000)"
+                                    , "__SYSTEM_CLOCK_84M_PLL_HXTAL=((uint32_t)84000000)"
                                     ]
 sysClockDefs         _          _ = error "Unsupported clock configuration"
