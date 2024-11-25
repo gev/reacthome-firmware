@@ -24,6 +24,7 @@ server = Formula { name            = "server"
                  , model           = deviceTypeServer
                  , version         = (5, 5)
                  , shouldInit      = true
+                 , mcu             = gd32f450vgt6
                  , quartzFrequency =  25_000_000
                  , systemFrequency = 200_000_000
                  , implementation  = hub (rbusHub uart_1)

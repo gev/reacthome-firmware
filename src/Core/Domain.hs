@@ -27,7 +27,7 @@ import           Util.String
 data Domain p i where
      Domain :: { model          :: Value Uint8
                , version        :: V.Version
-               , mcu            :: I.MCU p
+               , mcu            :: I.Platform p
                , mustInit       :: IBool
                , shouldInit     :: Value IBool
                , implementation :: i
@@ -38,7 +38,7 @@ data Domain p i where
 domain :: (MonadState Context m)
        => Uint8
        -> (Uint8, Uint8)
-       -> I.MCU p
+       -> I.Platform p
        -> IBool
        -> i
        -> m (Domain p i)

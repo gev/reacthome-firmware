@@ -1,24 +1,28 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE NumericUnderscores    #-}
 
 module Build.Compiler.GCC.GD32F3x0 where
 
 import           Build.Compiler
 import           Build.Compiler.GCC.Config
+import           Core.Formula              (Formula (Formula), mcu,
+                                            quartzFrequency, systemFrequency)
 import           Data.Char
 import           Device.GD32F3x0
 import           Interface.MCU
 
 
+
 instance Compiler GCC GD32F3x0 where
 
-  mkCompiler MCUmod{..} =
+  mkCompiler Formula{mcu, quartzFrequency, systemFrequency} =
 
-    GCC { path    = model
+    GCC { path    = model mcu <> modification mcu
 
-        , defs    = ("-D" <>) <$> [ (toUpper <$> model)
+        , defs    = ("-D" <>) <$> [ toUpper <$> model mcu
                                   , "USE_STDPERIPH_DRIVER"
-                                  ] 
+                                  ] <> sysClockDefs quartzFrequency systemFrequency
 
         , incs    = ("-I" <>) <$> [ "support/inc"
                                   , "support/CMSIS/inc"
@@ -55,3 +59,11 @@ instance Compiler GCC GD32F3x0 where
                     , "-specs=nano.specs"
                     ]
         }
+
+
+
+sysClockDefs :: Int -> Int -> [String]
+sysClockDefs 8_000_000 84_000_000 = [ "HXTAL_VALUE=((uint32_t)8000000)"
+                                    , "__SYSTEM_CLOCK_84M_PLL_HXTAL=((uint32_t)84000000)"
+                                    ]
+sysClockDefs         _          _ = error "Unsupported clock configuration"

@@ -13,7 +13,7 @@ import           Core.Task
 import           Data.Value
 import           Interface.GPIO.Output
 import           Interface.GPIO.Port
-import           Interface.MCU         (MCU (peripherals))
+import           Interface.MCU         
 import           Interface.Timer       (HandleTimer (..), Timer)
 import           Ivory.Language
 

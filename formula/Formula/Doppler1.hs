@@ -23,6 +23,7 @@ doppler1 = Formula { name            = "doppler1"
                    , model           = deviceTypeDoppler1Di4
                    , version         = (2, 5)
                    , shouldInit      = true
+                   , mcu             = gd32f330k8u6
                    , quartzFrequency =  8_000_000
                    , systemFrequency = 84_000_000
                    , implementation  = doppler (rbus $ rs485 uart_1 out_pa_4)

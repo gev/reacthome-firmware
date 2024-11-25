@@ -27,7 +27,7 @@ import           Feature.RS485.RSM.Data
 import           Feature.RS485.RSM.Rx
 import           Feature.RS485.RSM.Tx
 import           GHC.TypeNats
-import           Interface.MCU          (MCU (peripherals, systemClock))
+import           Interface.MCU          
 import           Interface.RS485        (RS485)
 import qualified Interface.RS485        as I
 import qualified Interface.RS485        as RS

@@ -19,6 +19,7 @@ smartTopG2 =  Formula { name            = "smart_top_g2"
                       , model           = deviceTypeSmartTopG2
                       , version         = (4, 6)
                       , shouldInit      = false
+                      , mcu             = gd32f330k8u6
                       , quartzFrequency =  8_000_000
                       , systemFrequency = 84_000_000
                       , implementation  = topG2 (rbusTop uart_1)

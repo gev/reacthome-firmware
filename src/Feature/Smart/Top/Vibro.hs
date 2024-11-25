@@ -24,7 +24,7 @@ import           GHC.TypeNats
 import           Interface.Flash       as F
 import           Interface.GPIO.Output (Output, reset, set)
 import           Interface.GPIO.Port   (Pull, pullNone)
-import           Interface.MCU         (MCU (peripherals, systemClock))
+import           Interface.MCU         
 import           Interface.SystemClock (SystemClock, getSystemTime)
 import           Ivory.Language
 import           Ivory.Stdlib
