@@ -18,7 +18,7 @@ import           Transport.RS485.RBUS
 dimmerAC12 :: Formula GD32F3x0
 dimmerAC12 = Formula { name            = "dimmerAC12"
                      , model           = deviceTypeDim12AcRs
-                     , version         = (2, 6)
+                     , version         = (2, 7)
                      , shouldInit      = true
                      , mcu             = gd32f330k8u6
                      , quartzFrequency =  8_000_000
