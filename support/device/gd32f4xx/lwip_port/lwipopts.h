@@ -59,7 +59,7 @@ OF SUCH DAMAGE.
                                                             send a lot of data that needs to be copied, this should
                                                             be set high */
 
-#define MEMP_NUM_PBUF           40                       /* the number of memp struct pbufs. If the application
+#define MEMP_NUM_PBUF           56                       /* the number of memp struct pbufs. If the application
                                                             sends a lot of data out of ROM (or other static memory),
                                                             this should be set high */
 
