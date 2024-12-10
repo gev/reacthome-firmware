@@ -48,6 +48,7 @@ void dma_config(void);
 void rcu_config(void);
 void gpio_config(void);
 void spi_config(void);
+
 ErrStatus memory_compare(uint16_t *src, uint16_t *dst, uint8_t length);
 /*!
     \brief      main function
@@ -56,9 +57,6 @@ ErrStatus memory_compare(uint16_t *src, uint16_t *dst, uint8_t length);
     \retval     none
 */
 int main(void) {
-  /* initialize led1 and led2 */
-  // gd_eval_led_init(LED1);
-  // gd_eval_led_init(LED2);
 
   /* enable peripheral clock */
   rcu_config();
@@ -70,41 +68,35 @@ int main(void) {
   spi_config();
   /* enbale I2S and I2S_ADD*/
   i2s_enable(SPI2);
-  i2s_enable(I2S2_ADD);
+  // i2s_enable(I2S2_ADD);
   i2s_enable(I2S1_ADD);
-  i2s_enable(SPI1);
+  // i2s_enable(SPI1);
 
   /* enable DMA channel */
-  dma_channel_enable(DMA0, DMA_CH0);
+  // dma_channel_enable(DMA0, DMA_CH0);
   dma_channel_enable(DMA0, DMA_CH5);
-  dma_channel_enable(DMA0, DMA_CH4);
+  // dma_channel_enable(DMA0, DMA_CH4);
   dma_channel_enable(DMA0, DMA_CH3);
 
   /* enable SPI DMA */
   spi_dma_enable(I2S1_ADD, SPI_DMA_RECEIVE);
-  spi_dma_enable(SPI2, SPI_DMA_RECEIVE);
-  spi_dma_enable(I2S2_ADD, SPI_DMA_TRANSMIT);
-  spi_dma_enable(SPI1, SPI_DMA_TRANSMIT);
+  // spi_dma_enable(I2S2_ADD, SPI_DMA_RECEIVE);
+  spi_dma_enable(SPI2, SPI_DMA_TRANSMIT);
+  // spi_dma_enable(SPI1, SPI_DMA_TRANSMIT);
+
 
   /* wait dma transmit complete */
-  while (!dma_flag_get(DMA0, DMA_CH0, DMA_INTF_FTFIF));
-  while (!dma_flag_get(DMA0, DMA_CH5, DMA_INTF_FTFIF));
-  while (!dma_flag_get(DMA0, DMA_CH4, DMA_INTF_FTFIF));
-  while (!dma_flag_get(DMA0, DMA_CH3, DMA_INTF_FTFIF));
+  // while (!dma_flag_get(DMA0, DMA_CH0, DMA_FLAG_FTF));
+  while (!dma_flag_get(DMA0, DMA_CH5, DMA_FLAG_FTF));
+  // while (!dma_flag_get(DMA0, DMA_CH4, DMA_FLAG_FTF));
+  while (!dma_flag_get(DMA0, DMA_CH3, DMA_FLAG_FTF));
+
 
   /* compare receive data with send data */
   if (ERROR != memory_compare(i2s2_txbuffer, i2s1_rxbuffer, ARRAYSIZE)) {
-    // gd_eval_led_on(LED1);
-  } else {
-    // gd_eval_led_off(LED1);
-  }
-
-  /* compare receive data with send data */
-  if (ERROR != memory_compare(i2s1_txbuffer, i2s2_rxbuffer, ARRAYSIZE)) {
-    // gd_eval_led_on(LED2);
-  } else {
-    // gd_eval_led_off(LED2);
-  }
+    gpio_bit_set(GPIOA, GPIO_PIN_8);
+  } 
+  
   while (1) {
   }
 }
@@ -144,38 +136,31 @@ void gpio_config(void) {
   gpio_mode_set(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_14 | GPIO_PIN_15);
   gpio_mode_set(GPIOD, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_1);
   gpio_mode_set(GPIOC, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_6 | GPIO_PIN_7);
+  gpio_output_options_set(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_25MHZ, GPIO_PIN_15 | GPIO_PIN_14);
+  gpio_output_options_set(GPIOD, GPIO_OTYPE_PP, GPIO_OSPEED_25MHZ, GPIO_PIN_1);
+  gpio_output_options_set(GPIOC, GPIO_OTYPE_PP, GPIO_OSPEED_25MHZ, GPIO_PIN_6 | GPIO_PIN_7); 
   gpio_af_set(GPIOB, GPIO_AF_6, GPIO_PIN_14);
   gpio_af_set(GPIOB, GPIO_AF_5, GPIO_PIN_15);
   gpio_af_set(GPIOD, GPIO_AF_7, GPIO_PIN_1);
   gpio_af_set(GPIOC, GPIO_AF_5, GPIO_PIN_6);
   gpio_af_set(GPIOC, GPIO_AF_5, GPIO_PIN_7);
 
-  // /* configure I2S1 and I2S1_ADD pins: I2S1_WS(PB12), I2S1_CK(PB13),
-  // I2S1_SD(PB15), I2S1_ADD_SD(PB14) */ 
-  // gpio_mode_set(GPIOB, GPIO_MODE_AF,
-  // GPIO_PUPD_NONE, GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15);
-  // gpio_output_options_set(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_25MHZ,
-  // GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15); gpio_af_set(GPIOB,
-  // GPIO_AF_5, GPIO_PIN_12); gpio_af_set(GPIOB, GPIO_AF_5, GPIO_PIN_13);
-  // gpio_af_set(GPIOB, GPIO_AF_6, GPIO_PIN_14);
-  // gpio_af_set(GPIOB, GPIO_AF_5, GPIO_PIN_15);
 
-  /* configure I2S2 and I2S2_ADD pins: I2S2_WS(PA15), I2S2_CK(PB3),
-   * I2S2_SD(PB5), I2S2_ADD_SD(PB4) */
-  gpio_mode_set(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE,
-                GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5);
-  gpio_output_options_set(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_25MHZ,
-                          GPIO_PIN_3 | GPIO_PIN_4 | GPIO_PIN_5);
+  // b5 - out, A15 - ws, b3 - clk, b10 - mclk 
   gpio_mode_set(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_15);
+  gpio_mode_set(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_3 | GPIO_PIN_5 | GPIO_PIN_10);        
   gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_25MHZ, GPIO_PIN_15);
-  gpio_af_set(GPIOB, GPIO_AF_6, GPIO_PIN_3);
-  gpio_af_set(GPIOB, GPIO_AF_7, GPIO_PIN_4);
-  gpio_af_set(GPIOB, GPIO_AF_6, GPIO_PIN_5);
+  gpio_output_options_set(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_25MHZ, GPIO_PIN_3 | GPIO_PIN_5 | GPIO_PIN_10);
   gpio_af_set(GPIOA, GPIO_AF_6, GPIO_PIN_15);
+  gpio_af_set(GPIOB, GPIO_AF_6, GPIO_PIN_3);
+  gpio_af_set(GPIOB, GPIO_AF_6, GPIO_PIN_5);
+  gpio_af_set(GPIOB, GPIO_AF_6, GPIO_PIN_10);
 
-  gpio_mode_set(GPIOD, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_12);
-  gpio_output_options_set(GPIOD, GPIO_OTYPE_PP, GPIO_OSPEED_25MHZ, GPIO_PIN_12);
-  gpio_bit_set(GPIOD, GPIO_PIN_12);
+  
+  gpio_mode_set(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_8);
+  gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_25MHZ, GPIO_PIN_8);
+  gpio_bit_reset(GPIOA, GPIO_PIN_8);
+
 }
 
 /*!
@@ -189,17 +174,17 @@ void spi_config(void) {
   spi_i2s_deinit(SPI1);
 
   /* configure I2S1 and I2S1_ADD */
-  i2s_init(SPI1, I2S_MODE_MASTERTX, I2S_STD_PHILLIPS, I2S_CKPL_LOW);
+  i2s_init(I2S1_ADD, I2S_MODE_SLAVERX, I2S_STD_PHILLIPS, I2S_CKPL_LOW);
   i2s_psc_config(SPI1, I2S_AUDIOSAMPLE_48K, I2S_FRAMEFORMAT_DT16B_CH16B,
                  I2S_MCKOUT_ENABLE);
-  i2s_full_duplex_mode_config(I2S1_ADD, I2S_MODE_MASTERRX, I2S_STD_MSB,
-                              I2S_CKPL_LOW, I2S_FRAMEFORMAT_DT32B_CH32B);
+  i2s_full_duplex_mode_config(SPI1, I2S_MODE_SLAVERX, I2S_STD_PHILLIPS,
+                              I2S_CKPL_LOW, I2S_FRAMEFORMAT_DT16B_CH16B);
 
   /* configure I2S2 and I2S2_ADD */
-  i2s_init(SPI2, I2S_MODE_SLAVERX, I2S_STD_PHILLIPS, I2S_CKPL_LOW);
+  i2s_init(SPI2, I2S_MODE_MASTERTX, I2S_STD_PHILLIPS, I2S_CKPL_LOW);
   i2s_psc_config(SPI2, I2S_AUDIOSAMPLE_48K, I2S_FRAMEFORMAT_DT16B_CH16B,
-                 I2S_MCKOUT_DISABLE);
-  i2s_full_duplex_mode_config(I2S2_ADD, I2S_MODE_SLAVERX, I2S_STD_PHILLIPS,
+                 I2S_MCKOUT_ENABLE);
+  i2s_full_duplex_mode_config(I2S2_ADD, I2S_MODE_MASTERTX, I2S_STD_PHILLIPS,
                               I2S_CKPL_LOW, I2S_FRAMEFORMAT_DT16B_CH16B);
 }
 
@@ -221,7 +206,7 @@ void dma_config(void) {
   dma_init_struct.circular_mode = DMA_CIRCULAR_MODE_DISABLE;
   dma_single_data_mode_init(DMA0, DMA_CH4, &dma_init_struct);
   dma_channel_subperipheral_select(DMA0, DMA_CH4, DMA_SUBPERI0);
-
+    
   /* configure I2S1_ADD receive dma */
   dma_deinit(DMA0, DMA_CH3);
   dma_init_struct.periph_addr = (uint32_t)&SPI_DATA(I2S1_ADD);
@@ -231,23 +216,23 @@ void dma_config(void) {
   dma_single_data_mode_init(DMA0, DMA_CH3, &dma_init_struct);
   dma_channel_subperipheral_select(DMA0, DMA_CH3, DMA_SUBPERI3);
 
-  /* configure I2S2_ADD transmit dma */
+  /* configure SPI2 transmit dma */
   dma_deinit(DMA0, DMA_CH5);
-  dma_init_struct.periph_addr = (uint32_t)&SPI_DATA(I2S2_ADD);
+  dma_init_struct.periph_addr = (uint32_t)&SPI_DATA(SPI2);
   dma_init_struct.memory0_addr = (uint32_t)i2s2_txbuffer;
   dma_init_struct.direction = DMA_MEMORY_TO_PERIPH;
   dma_init_struct.priority = DMA_PRIORITY_LOW;
   dma_single_data_mode_init(DMA0, DMA_CH5, &dma_init_struct);
-  dma_channel_subperipheral_select(DMA0, DMA_CH5, DMA_SUBPERI2);
+  dma_channel_subperipheral_select(DMA0, DMA_CH5, DMA_SUBPERI0);
 
-  /* configure SPI2 receive dma */
+  /* configure I2S2_ADD receive dma */
   dma_deinit(DMA0, DMA_CH0);
-  dma_init_struct.periph_addr = (uint32_t)&SPI_DATA(SPI2);
+  dma_init_struct.periph_addr = (uint32_t)&SPI_DATA(I2S2_ADD);
   dma_init_struct.memory0_addr = (uint32_t)i2s2_rxbuffer;
   dma_init_struct.direction = DMA_PERIPH_TO_MEMORY;
   dma_init_struct.priority = DMA_PRIORITY_ULTRA_HIGH;
   dma_single_data_mode_init(DMA0, DMA_CH0, &dma_init_struct);
-  dma_channel_subperipheral_select(DMA0, DMA_CH0, DMA_SUBPERI0);
+  dma_channel_subperipheral_select(DMA0, DMA_CH0, DMA_SUBPERI3);
 }
 /*!
     \brief      memory compare function
