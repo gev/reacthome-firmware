@@ -1,7 +1,7 @@
 r
 h
-loadbin build/gd32f450/firmware/server.bin, 0x8000000
+loadbin dist/firmware/server/server-gd32f450vgt6-5.5.bin, 0x8000000
 g
-verifybin build/gd32f450/firmware/server.bin, 0x8000000
+verifybin dist/firmware/server/server-gd32f450vgt6-5.5.bin, 0x8000000
 r
 q

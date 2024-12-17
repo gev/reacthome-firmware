@@ -49,5 +49,5 @@ main = do
             --   , smartTopG6
               ]
     mapM_ gcc [ rsHub4
-            --   , server
+              , server
               ]
