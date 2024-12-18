@@ -13,17 +13,18 @@ import           Interface.SystemClock
 import           Interface.UART
 import           Ivory.Language
 import qualified Protocol.UART.RBUS    as U
+import GHC.TypeNats
 
 
 data RBUS q l where
-     RBUS :: UART (u 32 300)
+     RBUS :: (UART (u si so), KnownNat si, KnownNat so)
           => { name          :: String
              , speed         :: Uint32
              , model         :: Value       Uint8
              , version       :: Version
              , mac           :: Mac
              , clock         :: SystemClock
-             , uart          :: u        32 300
+             , uart          :: u        si so
              , protocol      :: U.RBUS  255
              , msgOffset     :: Buffer    q Uint16
              , msgSize       :: Buffer    q Uint8

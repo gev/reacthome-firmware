@@ -17,5 +17,5 @@ echo = Formula { name            = "echo"
                , mcu             = gd32f450vgt6
                , quartzFrequency =  8_000_000
                , systemFrequency = 84_000_000
-               , implementation  = E.echo $ rbus uart_7 1_000_000
+               , implementation  = E.echo $ rbusEcho uart_7
                }
