@@ -17,14 +17,14 @@ import GHC.TypeNats
 
 
 data RBUS q l where
-     RBUS :: (UART (u si so), KnownNat si, KnownNat so)
+     RBUS :: (UART (u rn tn), KnownNat rn, KnownNat tn)
           => { name          :: String
              , speed         :: Uint32
              , model         :: Value       Uint8
              , version       :: Version
              , mac           :: Mac
              , clock         :: SystemClock
-             , uart          :: u        si so
+             , uart          :: u        rn tn
              , protocol      :: U.RBUS  255
              , msgOffset     :: Buffer    q Uint16
              , msgSize       :: Buffer    q Uint8

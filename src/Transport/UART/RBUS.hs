@@ -63,10 +63,10 @@ rbusEcho uart' = rbus uart' 1_000_000
 
 
 rbus :: ( MonadState Context m, MonadReader (D.Domain p c) m
-        , UART (u si so), Controller c
-        , KnownNat q, KnownNat l, KnownNat si, KnownNat so
+        , UART (u rn tn), Controller c
+        , KnownNat q, KnownNat l, KnownNat rn, KnownNat tn
         )
-     => (p -> m (u si so)) -> Uint32 -> m (RBUS q l)
+     => (p -> m (u rn tn)) -> Uint32 -> m (RBUS q l)
 rbus uart' speed = do
     mcu            <- asks D.mcu
     implementation <- asks D.implementation
@@ -84,11 +84,11 @@ rbus uart' speed = do
 
 
 mkRbus :: ( MonadState Context m, MonadReader (D.Domain p c) m
-          , UART (u si so)
-          , KnownNat q, KnownNat l, KnownNat si, KnownNat so
+          , UART (u rn tn)
+          , KnownNat q, KnownNat l, KnownNat rn, KnownNat tn
           )
        => String 
-       -> u si so
+       -> u rn tn
        -> Uint32 
        -> (forall s. Buffer 255 Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()) 
        -> m (RBUS q l)
