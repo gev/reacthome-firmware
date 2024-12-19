@@ -31,7 +31,7 @@ main = do
     mapM_ gcc [ di4
             --   , di4la
             --   , di4rsm
-            --   , relay12
+              , relay12
             --   , dimmerDC12
             --   , dimmerAC12
             --   , doppler1
