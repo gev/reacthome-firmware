@@ -43,6 +43,7 @@ data HandleRS485 r = HandleRS485
     { re         :: r
     , onReceive  :: forall eff. Ivory eff ()
     , onTransmit :: forall eff. Ivory eff ()
+    , onError    :: forall eff. Ivory eff ()
     }
 
 
@@ -89,8 +90,8 @@ configureRS485 RS485{..} = configUART uart
 
 
 instance Handler HandleRS485 (RS485 rn tn) where
-    addHandler (HandleRS485 RS485{..} onReceive onTransmit) = do
-        addHandler $ HandleUART uart onReceive onTransmit (Just $ reset rede)
+    addHandler (HandleRS485 RS485{..} onReceive onTransmit onError) = do
+        addHandler $ HandleUART uart onReceive onTransmit (Just $ reset rede) onError
 
 
 

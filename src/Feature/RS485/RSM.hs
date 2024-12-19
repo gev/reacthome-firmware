@@ -79,7 +79,7 @@ rsm' transport rs485 index = do
                     , transport
                     }
 
-    addHandler $ I.HandleRS485 rs (rxHandle rsm) (txHandle rsm)
+    addHandler $ I.HandleRS485 rs (rxHandle rsm) (txHandle rsm) (errorHandle rsm)
 
     addTask $ yeld (name <> "_rx"   ) $ rxTask    rsm
     addTask $ yeld (name <> "_sync" ) $ syncTask  rsm

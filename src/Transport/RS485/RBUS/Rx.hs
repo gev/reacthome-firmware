@@ -16,10 +16,16 @@ rxHandle RBUS{..} = do
     store rxTimestamp =<< getSystemTime clock
 
 
-
 rxTask :: RBUS -> Ivory (ProcEffects s ()) ()
 rxTask RBUS{..} =
     I.receive rs $ receive protocol . castDefault 
+
+
+errorHandle :: RBUS -> Ivory eff ()
+errorHandle RBUS{..} = do
+    I.clearRX rs
+    reset     protocol
+    store     rxLock false
 
 
 {--

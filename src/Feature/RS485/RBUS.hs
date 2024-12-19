@@ -136,7 +136,7 @@ rbus' transport rs485 index = do
                     , transport
                     }
 
-    addHandler $ I.HandleRS485 rs (rxHandle rbus) (txHandle rbus)
+    addHandler $ I.HandleRS485 rs (rxHandle rbus) (txHandle rbus) (errorHandle rbus)
 
     addTask $ yeld (name <> "_rx"   ) $ rxTask    rbus
     addTask $ yeld (name <> "_tx"   ) $ txTask    rbus

@@ -19,6 +19,12 @@ rxTask :: RBUS q l -> Ivory (ProcEffects s ()) ()
 rxTask RBUS{..} = I.receive uart $ receive protocol . castDefault
 
 
+errorHandle :: RBUS q l -> Ivory eff ()
+errorHandle RBUS{..} = do
+    I.clearRX uart
+    reset     protocol
+
+
 {--
     TODO: Use IDLE and Error interrupts
 --}

@@ -91,7 +91,7 @@ rbus rs485 = do
                     , shouldConfirm, shouldInit
                     }
 
-    addHandler $ HandleRS485 rs (rxHandle rbus) (txHandle rbus)
+    addHandler $ HandleRS485 rs (rxHandle rbus) (txHandle rbus) (errorHandle rbus)
 
     addInit name $ configureRS485 rs defaultBaudrate WL_8b SB_1b None
 

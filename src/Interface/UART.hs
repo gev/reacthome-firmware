@@ -17,6 +17,7 @@ data HandleUART u = HandleUART
     , onReceive  :: forall eff. Ivory eff ()
     , onTransmit :: forall eff. Ivory eff ()
     , onDrain    :: forall eff. Maybe (Ivory eff ())
+    , onError    :: forall eff. Ivory eff ()
     }
 
 

@@ -96,8 +96,8 @@ mkUART uart rcu uartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn rx' tx' = do
 
 
 instance KnownNat rn => Handler I.HandleUART (UART rn tn) where
-    addHandler (I.HandleUART u@UART{..} onReceive onTransmit onDrain) = do
-        addModule $ makeIRQHandler uartIRQ (handleUART u onReceive onDrain)
+    addHandler (I.HandleUART u@UART{..} onReceive onTransmit onDrain onError) = do
+        addModule $ makeIRQHandler uartIRQ (handleUART u onReceive onDrain onError)
         addModule $ makeIRQHandler dmaIRQn (handleDMA dmaPer dmaCh uart onTransmit onDrain)
 
 
@@ -111,24 +111,28 @@ handleDMA dmaPer dmaCh uart onTransmit onDrain = do
         onTransmit
 
 
-handleUART :: KnownNat rn => UART rn tn -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
-handleUART u@UART{..} onReceive onDrain = do
-    handleError u
+handleUART :: KnownNat rn => UART rn tn -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+handleUART u@UART{..} onReceive onDrain onError = do
+    handleError u onError
     handleReceive u onReceive
     traverse_ (handleDrain uart) onDrain
 
-handleError :: KnownNat rn => UART rn tn -> Ivory eff ()
-handleError UART{..} = do
-    clear usart_int_flag_err_ferr   [usart_flag_ferr]
-    clear usart_int_flag_err_nerr   [usart_flag_nerr]
-    clear usart_int_flag_err_orerr  [usart_flag_orerr]
-    clear usart_int_flag_perr       [usart_flag_perr, usart_flag_eperr]
-    clear usart_int_flag_rbne_orerr [usart_flag_orerr]
+handleError :: KnownNat rn => UART rn tn -> Ivory eff () -> Ivory eff ()
+handleError UART{..} onError = do
+    errs <- sequence [ clear usart_int_flag_err_ferr   [usart_flag_ferr]
+                     , clear usart_int_flag_err_nerr   [usart_flag_nerr]
+                     , clear usart_int_flag_err_orerr  [usart_flag_orerr]
+                     , clear usart_int_flag_perr       [usart_flag_perr, usart_flag_eperr]
+                     , clear usart_int_flag_rbne_orerr [usart_flag_orerr]
+                     ]
+    let err = foldr (.||) false errs
+    when err onError
     where clear i f = do
             i' <- getInterruptFlag uart i
             when i' $ do
                 clearInterruptFlag uart i
                 mapM_ (clearFlag uart) f
+            pure i'
     
 handleReceive :: KnownNat rn => UART rn tn -> Ivory eff () -> Ivory eff ()
 handleReceive UART{..} onReceive = do

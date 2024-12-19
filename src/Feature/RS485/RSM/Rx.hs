@@ -28,6 +28,12 @@ rxTask :: RSM -> Ivory (ProcEffects s ()) ()
 rxTask = rxRS485
 
 
+errorHandle :: RSM -> Ivory eff ()
+errorHandle RSM{..} = do
+    I.clearRX rs
+    store rxLock false
+    store rsSize 0
+
 
 {-
     TODO: handle 16 bit values

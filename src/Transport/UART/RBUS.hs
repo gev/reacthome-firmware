@@ -118,7 +118,7 @@ mkRbus name uart speed onMessage = do
                     , rxTimestamp
                     }
 
-    addHandler $ HandleUART uart (rxHandle rbus) (txHandle rbus) Nothing
+    addHandler $ HandleUART uart (rxHandle rbus) (txHandle rbus) Nothing (errorHandle rbus)
 
     addInit name $ initialize rbus
 

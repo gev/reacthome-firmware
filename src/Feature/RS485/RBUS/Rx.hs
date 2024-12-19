@@ -61,6 +61,12 @@ rxRS485 RBUS{..} = do
             store rsSize 0
 
 
+errorHandle :: RBUS -> Ivory eff ()
+errorHandle RBUS{..} = do
+    I.clearRX rs
+    reset     protocol
+    store     rxLock false
+
 
 {--
     TODO: Use IDLE and Error interrupts
