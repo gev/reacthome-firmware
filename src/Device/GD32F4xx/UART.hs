@@ -101,7 +101,8 @@ instance KnownNat rn => Handler I.HandleUART (UART rn tn) where
         addModule $ makeIRQHandler dmaIRQn (handleDMA dmaPer dmaCh uart onTransmit onDrain)
 
 
-handleDMA :: DMA_PERIPH -> DMA_CHANNEL -> USART_PERIPH -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
+handleDMA :: DMA_PERIPH -> DMA_CHANNEL -> USART_PERIPH 
+          -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
 handleDMA dmaPer dmaCh uart onTransmit onDrain = do
     f <- getInterruptFlagDMA    dmaPer dmaCh dma_int_flag_ftf
     when f $ do
@@ -111,7 +112,12 @@ handleDMA dmaPer dmaCh uart onTransmit onDrain = do
         onTransmit
 
 
-handleUART :: KnownNat rn => UART rn tn -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+handleUART :: KnownNat rn 
+           => UART rn tn 
+           -> Ivory eff () 
+           -> Maybe (Ivory eff ()) 
+           -> Ivory eff () 
+           -> Ivory eff ()
 handleUART u@UART{..} onReceive onDrain onError = do
     handleError u onError
     handleReceive u onReceive

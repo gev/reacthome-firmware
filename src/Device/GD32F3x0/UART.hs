@@ -81,13 +81,20 @@ mkUART uart rcu uartIRQ rx' tx' = do
 
 
 instance (KnownNat rn, KnownNat tn) => Handler I.HandleUART (UART rn tn) where
-    addHandler (I.HandleUART u@UART{..} onReceive onTransmit onDrain) = do
-        addModule $ makeIRQHandler uartIRQ (handleUART u onReceive onTransmit onDrain)
+    addHandler (I.HandleUART u@UART{..} onReceive onTransmit onDrain onError) = do
+        addModule $ makeIRQHandler uartIRQ (handleUART u onReceive onTransmit onDrain onError)
 
 
 
-handleUART :: (KnownNat tn, KnownNat rn) => UART rn tn -> Ivory eff () -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
-handleUART u@UART{..} onReceive onTransmit onDrain = do
+handleUART :: (KnownNat tn, KnownNat rn) 
+           => UART rn tn 
+           -> Ivory eff () 
+           -> Ivory eff () 
+           -> Maybe (Ivory eff ()) 
+           -> Ivory eff () 
+           -> Ivory eff ()
+handleUART u@UART{..} onReceive onTransmit onDrain onError = do
+    handleError u onError
     handleReceive u onReceive
     handleTransmit u onTransmit onDrain
     mapM_ (handleDrain uart) onDrain
@@ -111,6 +118,25 @@ handleTransmit UART{..} onTransmit onDrain = do
                       enableInterrupt uart usart_int_tc
                   onTransmit
               )
+
+
+handleError :: KnownNat rn => UART rn tn -> Ivory eff () -> Ivory eff ()
+handleError UART{..} onError = do
+    errs <- sequence [ 
+                    --    clear usart_int_flag_err_ferr   [usart_flag_ferr]
+                    --  , clear usart_int_flag_err_nerr   [usart_flag_nerr]
+                    --  , clear usart_int_flag_err_orerr  [usart_flag_orerr]
+                    --  , clear usart_int_flag_perr       [usart_flag_perr, usart_flag_eperr]
+                    --  , clear usart_int_flag_rbne_orerr [usart_flag_orerr]
+                     ] 
+    let err = foldr (.||) false errs
+    when err onError
+    where clear i f = do
+            i' <- getInterruptFlag uart i
+            when i' $ do
+                clearInterruptFlag uart i
+                -- mapM_ (clearFlag uart) f
+            pure i'
 
 
 handleReceive :: KnownNat rn => UART rn tn -> Ivory eff () -> Ivory eff ()
