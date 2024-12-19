@@ -130,7 +130,6 @@ handleError UART{..} = do
                 clearInterruptFlag uart i
                 mapM_ (clearFlag uart) f
     
-
 handleReceive :: KnownNat rn => UART rn tn -> Ivory eff () -> Ivory eff ()
 handleReceive UART{..} onReceive = do
     rbne  <- getInterruptFlag  uart usart_int_flag_rbne
