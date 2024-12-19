@@ -40,13 +40,13 @@ import qualified Interface.RS485 as RS
 
 
 rbus :: (MonadState Context m, MonadReader (D.Domain p c) m, LazyTransport t, Transport t)
-     => List n (m (I.RS485 32 300)) -> t -> m (List n RBUS)
+     => List n (m (I.RS485 300 300)) -> t -> m (List n RBUS)
 rbus rs485 transport = zipWithM (rbus' transport) rs485 nats
 
 
 
 rbus' :: (MonadState Context m, MonadReader (D.Domain p c) m, LazyTransport t, Transport t)
-     => t -> m (I.RS485 32 300) -> Int -> m RBUS
+     => t -> m (I.RS485 300 300) -> Int -> m RBUS
 rbus' transport rs485 index = do
     rs               <- rs485
 
@@ -275,8 +275,6 @@ configureMode r = do
     store (rxLock r) false
     I.clearRX $ rs r
 
-
-
 configureRBUS :: RBUS -> Ivory eff ()
 configureRBUS RBUS{..} = do
     I.configureRS485 rs defaultBaudrate I.WL_8b I.SB_1b I.None
@@ -285,7 +283,6 @@ configureRBUS RBUS{..} = do
     store shouldPing true
     Q.clear msgQueue
     reset protocol
-
 
 
 configureRS485 :: RBUS -> Ivory eff ()
