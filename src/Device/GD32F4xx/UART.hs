@@ -151,27 +151,27 @@ handleReceive UART{..} onReceive = do
 
 handleDrain :: USART_PERIPH -> Ivory eff () -> Ivory eff ()
 handleDrain uart onDrain = do
-    tc <- getInterruptFlag      uart usart_int_flag_tc
+    tc <- getInterruptFlag uart usart_int_flag_tc
     when tc $ do
-        clearInterruptFlag      uart usart_int_flag_tc
-        disableInterrupt        uart usart_int_tc
+        clearInterruptFlag uart usart_int_flag_tc
+        disableInterrupt   uart usart_int_tc
         onDrain
 
 
 
 instance (KnownNat rn, KnownNat tn) => I.UART (UART rn tn) where
     configUART (UART {..}) baudrate length stop parity = do
-        deinitUSART         uart
-        configReceive       uart usart_receive_enable
-        configTransmit      uart usart_transmit_enable
-        enableInterrupt     uart usart_int_rbne
-        enableInterrupt     uart usart_int_err
-        enableInterrupt     uart usart_int_perr
-        setBaudrate         uart baudrate
-        setWordLength       uart $ coerceWordLength length
-        setStopBit          uart $ coerceStopBit    stop
-        configParity        uart $ coerceParity     parity
-        enableUSART         uart
+        deinitUSART     uart
+        configReceive   uart usart_receive_enable
+        configTransmit  uart usart_transmit_enable
+        enableInterrupt uart usart_int_rbne
+        enableInterrupt uart usart_int_err
+        enableInterrupt uart usart_int_perr
+        setBaudrate     uart baudrate
+        setWordLength   uart $ coerceWordLength length
+        setStopBit      uart $ coerceStopBit    stop
+        configParity    uart $ coerceParity     parity
+        enableUSART     uart
 
     clearRX UART{..} = Q.clear rxQueue
 
