@@ -123,11 +123,11 @@ handleTransmit UART{..} onTransmit onDrain = do
 handleError :: KnownNat rn => UART rn tn -> Ivory eff () -> Ivory eff ()
 handleError UART{..} onError = do
     errs <- sequence [ 
-                    --    clear usart_int_flag_err_ferr   [usart_flag_ferr]
-                    --  , clear usart_int_flag_err_nerr   [usart_flag_nerr]
-                    --  , clear usart_int_flag_err_orerr  [usart_flag_orerr]
-                    --  , clear usart_int_flag_perr       [usart_flag_perr, usart_flag_eperr]
-                    --  , clear usart_int_flag_rbne_orerr [usart_flag_orerr]
+                       clear usart_int_flag_err_ferr   usart_flag_ferr
+                     , clear usart_int_flag_err_nerr   usart_flag_nerr
+                     , clear usart_int_flag_err_orerr  usart_flag_orerr
+                     , clear usart_int_flag_perr       usart_flag_perr
+                     , clear usart_int_flag_rbne_orerr usart_flag_orerr
                      ] 
     let err = foldr (.||) false errs
     when err onError
@@ -135,7 +135,7 @@ handleError UART{..} onError = do
             i' <- getInterruptFlag uart i
             when i' $ do
                 clearInterruptFlag uart i
-                -- mapM_ (clearFlag uart) f
+                clearFlag uart f
             pure i'
 
 
@@ -174,6 +174,8 @@ instance (KnownNat rn, KnownNat tn) => I.UART (UART rn tn) where
         configReceive   uart usart_receive_enable
         configTransmit  uart usart_transmit_enable
         enableInterrupt uart usart_int_rbne
+        enableInterrupt uart usart_int_err
+        enableInterrupt uart usart_int_perr
         setBaudrate     uart baudrate
         setWordLength   uart $ coerceWordLength length
         setStopBit      uart $ coerceStopBit    stop
