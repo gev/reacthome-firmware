@@ -144,18 +144,9 @@ handleReceive UART{..} onReceive = do
     rbne <- getInterruptFlag   uart usart_int_flag_rbne
     when rbne $ do
         clearInterruptFlag     uart usart_int_flag_rbne
-        ferr        <- getFlag uart usart_flag_ferr
-        nerr        <- getFlag uart usart_flag_nerr
-        orerr       <- getFlag uart usart_flag_orerr
-        perr        <- getFlag uart usart_flag_perr
-        clearFlag              uart usart_flag_ferr
-        clearFlag              uart usart_flag_nerr
-        clearFlag              uart usart_flag_orerr
-        clearFlag              uart usart_flag_perr
-        when (iNot $ ferr .|| nerr .|| orerr .|| perr) $ 
-            push rxQueue $ \i -> do
-                store (rxBuff ! toIx i) =<< S.receiveData uart
-                onReceive 
+        push rxQueue $ \i -> do
+            store (rxBuff ! toIx i) =<< S.receiveData uart
+            onReceive 
 
 
 handleDrain :: USART_PERIPH -> Ivory eff () -> Ivory eff ()
