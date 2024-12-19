@@ -62,6 +62,7 @@ module Support.Device.GD32F4xx.USART
     , usart_flag_nerr
     , usart_flag_perr
     , usart_flag_orerr
+    , usart_flag_eperr
 
     , USART_DENT
     , usart_dent_enable
@@ -189,6 +190,7 @@ usart_flag_ferr   = USART_FLAG $ ext "USART_FLAG_FERR"
 usart_flag_nerr   = USART_FLAG $ ext "USART_FLAG_NERR"
 usart_flag_perr   = USART_FLAG $ ext "USART_FLAG_PERR"
 usart_flag_orerr  = USART_FLAG $ ext "USART_FLAG_ORERR"
+usart_flag_eperr  = USART_FLAG $ ext "USART_FLAG_EPERR"
 
 
 
@@ -377,6 +379,7 @@ inclUSART = do
     inclSym usart_flag_nerr
     inclSym usart_flag_perr
     inclSym usart_flag_orerr
+    inclSym usart_flag_eperr
 
     inclSym usart_dent_enable
     inclSym usart_dent_disable
