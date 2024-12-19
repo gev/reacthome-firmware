@@ -106,11 +106,11 @@ rbus enet' = do
     addModule inclEtharp
     addModule inclIgmp
 
-    let sysNow :: Def ('[] :-> Uint32)
-        sysNow = proc "sys_now" $ body $
-            ret =<< getSystemTime (systemClock mcu)
+    -- let sysNow :: Def ('[] :-> Uint32)
+    --     sysNow = proc "sys_now" $ body $
+    --         ret =<< getSystemTime (systemClock mcu)
 
-    addProc sysNow
+    -- addProc sysNow
     addProc $ netifStatusCallback rbus
     addProc $ receiveCallback rbus
 
