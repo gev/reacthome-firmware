@@ -119,10 +119,10 @@ handleUART u@UART{..} onReceive onDrain = do
 
 handleError :: KnownNat rn => UART rn tn -> Ivory eff ()
 handleError UART{..} = do
-    clear usart_int_flag_err_ferr [usart_flag_ferr]
-    clear usart_int_flag_err_nerr [usart_flag_nerr]
-    clear usart_int_flag_err_orerr [usart_flag_orerr]
-    clear usart_int_flag_perr [usart_flag_perr, usart_flag_eperr]
+    clear usart_int_flag_err_ferr   [usart_flag_ferr]
+    clear usart_int_flag_err_nerr   [usart_flag_nerr]
+    clear usart_int_flag_err_orerr  [usart_flag_orerr]
+    clear usart_int_flag_perr       [usart_flag_perr, usart_flag_eperr]
     clear usart_int_flag_rbne_orerr [usart_flag_orerr]
     where clear i f = do
             i' <- getInterruptFlag uart i
