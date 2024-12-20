@@ -95,12 +95,8 @@ rbus' transport rs485 index = do
             store confirmAddress address
             store shouldConfirm true
 
-    let onConfirm address' = store (msgConfirm ! toIx address') true
-            -- peek msgQueue $ \i -> do
-            --     let ix = toIx i
-            --     offset   <- deref $ msgOffset ! ix
-            --     address  <- deref $ msgBuff ! toIx (offset + 1)
-            --     when (address ==? safeCast address') $ remove msgQueue
+    let onConfirm address' = 
+            store (msgConfirm ! toIx address') true
 
     let onPing mac address model version = do
             T.lazyTransmit transport 13 $ \transmit -> do
