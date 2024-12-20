@@ -28,5 +28,6 @@ data RBUS = RBUS
     , txTimestamp   :: Value       Uint32
     , initTimestamp :: Value       Uint32
     , shouldConfirm :: Value       IBool
+    , msgConfirmed  :: Value       IBool
     , shouldInit    :: Value       IBool
     }
