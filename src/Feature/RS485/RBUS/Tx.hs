@@ -72,11 +72,11 @@ doTransmitMessage r@RBUS{..} = do
                                 let sx = dx + toIx offset
                                 write . safeCast =<< deref (msgBuff ! sx)
                         store (msgTTL ! ix) $ ttl - 1
+                        store txTimestamp t1
                         store txLock true
                     )
             )
             (remove msgQueue)
-        store txTimestamp t1
 
 
 
