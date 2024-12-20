@@ -57,7 +57,7 @@ rbus rs485 = do
     txTimestamp    <- value  (name <> "_timestamp_tx"  ) 0
     initTimestamp  <- value  (name <> "_timestamp_init") 0
     shouldConfirm  <- value  (name <> "_should_confirm") false
-    msgConfirmed   <- value  (name <> "confirmed")       false
+    msgConfirmed   <- value  (name <> "confirmed"      ) false
 
     {--
         TODO: move dispatcher outside
