@@ -79,7 +79,7 @@ rbus rs485 = do
          mapM_ call_ syncs
 
 
-    let onConfirm address' = store msgConfirmed true
+    let onConfirm = store msgConfirmed true
 
     let onReceive = store rxLock false
 
