@@ -24,34 +24,35 @@ modeRS485 = 0 :: Uint8
 
 
 data RBUS = forall t. (LazyTransport t, Transport t) => RBUS
-     { index            :: Int
-     , clock            :: SystemClock
-     , rs               :: RS485   300 300
-     , mode             :: Value       Uint8
-     , baudrate         :: Value       Uint32
-     , lineControl      :: Value       Uint8
-     , protocol         :: Master  255 
-     , msgOffset        :: Buffer   64 Uint16
-     , msgSize          :: Buffer   64 Uint16
-     , msgTTL           :: Buffer   64 Uint8
-     , msgQueue         :: Queue    64
-     , msgConfirm       :: Values  255 IBool
-     , msgBuff          :: Buffer 1024 Uint16
-     , msgIndex         :: Value       Uint16
-     , rsBuff           :: Buffer  253 Uint8
-     , rsSize           :: Value       Uint8
-     , rxLock           :: Value       IBool
-     , txLock           :: Value       IBool
-     , rxTimestamp      :: Value       Uint32
-     , txTimestamp      :: Value       Uint32
-     , shouldDiscovery  :: Value       IBool
-     , shouldConfirm    :: Value       IBool
-     , shouldPing       :: Value       IBool
-     , discoveryAddress :: Value       Uint8
-     , confirmAddress   :: Value       Uint8
-     , pingAddress      :: Value       Uint8
-     , shouldInit       :: Value       IBool
-     , synced           :: Value       IBool
-     , payload          :: Buffer    8 Uint8
-     , transport        :: t
+     { index             :: Int
+     , clock             :: SystemClock
+     , rs                :: RS485    300 300
+     , mode              :: Value        Uint8
+     , baudrate          :: Value        Uint32
+     , lineControl       :: Value        Uint8
+     , protocol          :: Master   255 
+     , msgOffset         :: Buffer    64 Uint16
+     , msgSize           :: Buffer    64 Uint8
+     , msgTTL            :: Buffer    64 Uint8
+     , msgQueue          :: Queue     64
+     , msgWaitingConfirm :: Values   255 IBool
+     , msgConfirmed      :: Values   255 IBool
+     , msgBuff           :: Buffer  3072 Uint8
+     , msgIndex          :: Value        Uint16
+     , rsBuff            :: Buffer   253 Uint8
+     , rsSize            :: Value        Uint8
+     , rxLock            :: Value        IBool
+     , txLock            :: Value        IBool
+     , rxTimestamp       :: Value        Uint32
+     , txTimestamp       :: Value        Uint32
+     , shouldDiscovery   :: Value        IBool
+     , shouldConfirm     :: Value        IBool
+     , shouldPing        :: Value        IBool
+     , discoveryAddress  :: Value        Uint8
+     , confirmAddress    :: Value        Uint8
+     , pingAddress       :: Value        Uint8
+     , shouldInit        :: Value        IBool
+     , synced            :: Value        IBool
+     , payload           :: Buffer     8 Uint8
+     , transport         :: t
      }

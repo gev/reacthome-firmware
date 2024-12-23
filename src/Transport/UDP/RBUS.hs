@@ -45,6 +45,7 @@ import           Transport.RS485.RBUS.Tx (initTask)
 import           Transport.UDP.RBUS.Data
 import           Transport.UDP.RBUS.Rx
 import           Transport.UDP.RBUS.Tx
+import Data.Concurrent.Queue
 
 
 
@@ -66,6 +67,11 @@ rbus enet' = do
     netmask         <- record_ "udp_netmask"
     broadcastIP     <- record_ "udp_broadcast_ip"
     hasIP           <- value   "udp_has_ip" false
+    rxMsgOffset     <- value   "udp_rx_msg_offset" 0
+    rxMsgOffsets    <- values_ "udp_rx_msg_offsets"
+    rxMsgSizes      <- values_ "udp_rx_msg_sizes" 
+    rxMsgQueue      <- queue   "udp_rx_msg_queue"
+    rxMsgBuff       <- buffer  "udp_rx_msg"
     rxBuff          <- buffer  "udp_rx"
     txBuff          <- buffer  "udp_tx"
     discovery       <- buffer  "udp_discovery"
@@ -86,8 +92,13 @@ rbus enet' = do
                       , localIP, netmask
                       , broadcastIP
                       , hasIP
-                      , txBuff
+                      , rxMsgOffset
+                      , rxMsgOffsets
+                      , rxMsgSizes
+                      , rxMsgQueue
+                      , rxMsgBuff
                       , rxBuff
+                      , txBuff
                       , discovery
                       , requestIP
                       , requestInit
@@ -150,9 +161,10 @@ rbus enet' = do
 
     addHandler $ HandleEnet enet $ receivePackets enet rbus
 
+    addTask $ yeld        "udp_rx"        $ rxTask          rbus
+    addTask $ yeld        "udp_discovery" $ discoveryTask   rbus
     addTask $ delay 1_000 "tmr_arp"         tmrEtharp
     addTask $ delay   100 "tmr_igmp"        tmrIgmp
-    addTask $ yeld        "udp_discovery" $ discoveryTask   rbus
     addTask $ delay 2_000 "request_init"  $ requestInitTask rbus
 
     pure rbus

@@ -14,33 +14,46 @@ import           Support.Lwip.Pbuf
 import           Support.Lwip.Udp
 import           Transport.UDP.RBUS.Data
 import           Transport.UDP.RBUS.Tx
+import Data.Concurrent.Queue
 
 
 
 receiveCallback :: RBUS -> Def (UdpRecvFn s1 s2 s3 s4)
 receiveCallback rbus@RBUS{..} = proc "udp_echo_callback" $ \_ upcb pbuff addr port -> body $ do
-    len <- castDefault <$> deref (pbuff ~> tot_len)
-    when (len >? 0 .&& len <=? 255) $ do
-        for (toIx len) $ \ix ->
-            store (rxBuff ! ix) =<< getPbufAt pbuff (castDefault $ fromIx ix)
-        receive rbus len
+    size <- castDefault <$> deref (pbuff ~> tot_len)
+    when (size >? 0 .&& size <? arrayLen rxBuff) $ do
+        push rxMsgQueue $ \i -> do
+            let ix = toIx i
+            offset <- deref rxMsgOffset
+            store (rxMsgOffsets ! ix) offset
+            store (rxMsgSizes ! ix) size
+            let offset' = offset + safeCast size
+            store rxMsgOffset $ offset' 
+            j <- local $ ival 0
+            for (toIx size) $ \jx -> do
+                j' <- deref j
+                let kx = jx + toIx offset
+                store (rxMsgBuff ! kx) =<< getPbufAt pbuff j'
+                store j $ j' + 1
     ret =<< freePbuf pbuff
 
 
-
-receive :: RBUS -> Uint8 -> Ivory (ProcEffects s t) ()
-receive rbus@RBUS{..} len = do
+rxTask :: RBUS -> Ivory (ProcEffects s ()) ()
+rxTask rbus@RBUS{..} = pop rxMsgQueue $ \i -> do
+    let ix = toIx i
+    offset <- deref $ rxMsgOffsets ! ix
+    size   <- deref $ rxMsgSizes ! ix
+    for (toIx size) $ \jx -> store (rxBuff ! jx) =<< deref (rxMsgBuff ! toIx (safeCast offset+ fromIx jx))
     action <- deref $ rxBuff ! 0
-    cond_ [ action ==? actionDiscovery ==> handleDiscovery rbus len
-          , action ==? actionIpAddress ==> handleAddress   rbus len
-          , true                       ==> handleMessage   rbus len
+    cond_ [ action ==? actionDiscovery ==> handleDiscovery rbus size
+          , action ==? actionIpAddress ==> handleAddress   rbus size
+          , true                       ==> handleMessage   rbus size
           ]
 
 
-
 handleDiscovery :: RBUS -> Uint8 -> Ivory (ProcEffects s t) ()
-handleDiscovery rbus@RBUS{..} len =
-    when (len ==? 7) $ do
+handleDiscovery rbus@RBUS{..} size =
+    when (size ==? 7) $ do
         ip1 <- unpack rxBuff 1
         ip2 <- unpack rxBuff 2
         ip3 <- unpack rxBuff 3
@@ -52,8 +65,8 @@ handleDiscovery rbus@RBUS{..} len =
 
 
 handleAddress :: RBUS -> Uint8 -> Ivory (ProcEffects s t) ()
-handleAddress rbus@RBUS{..} len =
-    when (len ==? 15) $ do
+handleAddress rbus@RBUS{..} size =
+    when (size ==? 15) $ do
         isValid <- local $ ival true
         arrayMap $ \ix -> do
             m  <- deref $ mac ! ix
