@@ -81,9 +81,9 @@ instance Handler I.HandleEnet ENET where
         addModule $ makeIRQHandler enetIRQ $ handleENET handle
 
 handleENET handle = do
+    handle
     clearEnetInterruptfFlag enet_dma_int_flag_rs_clr
     clearEnetInterruptfFlag enet_dma_int_flag_ni_clr
-    handle
 
 instance I.Enet ENET where
     rxFrameSize _ = getEnetRxframeSize

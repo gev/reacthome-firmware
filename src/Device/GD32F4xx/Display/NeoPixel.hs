@@ -128,11 +128,11 @@ handleDMA :: KnownNat n => NeoPixel -> Values n Uint8 -> Ivory eff ()
 handleDMA npx@NeoPixel{..} frame = do
     f <- getInterruptFlagDMA  dmaPer dmaChannel dma_int_flag_ftf
     when f $ do
-        clearInterruptFlagDMA dmaPer dmaChannel dma_int_flag_ftf
         offset' <- deref offset
         when (offset' <? arrayLen frame) $ do
             transmitFrameBuffer npx $ frame ! toIx offset'
             store offset $ offset' + 1
+        clearInterruptFlagDMA dmaPer dmaChannel dma_int_flag_ftf
 
 
 

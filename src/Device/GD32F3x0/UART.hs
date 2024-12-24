@@ -104,7 +104,6 @@ handleTransmit :: KnownNat tn => UART rn tn -> Ivory eff () -> Maybe (Ivory eff 
 handleTransmit UART{..} onTransmit onDrain = do
     tbe <- getInterruptFlag uart usart_int_flag_tbe
     when tbe $ do
-        clearInterruptFlag  uart usart_int_flag_tbe
         index' <- deref index
         size'  <- deref size
         ifte_ (safeCast index' <? size')
@@ -118,6 +117,7 @@ handleTransmit UART{..} onTransmit onDrain = do
                       enableInterrupt uart usart_int_tc
                   onTransmit
               )
+        clearInterruptFlag  uart usart_int_flag_tbe
 
 
 handleError :: KnownNat rn => UART rn tn -> Ivory eff () -> Ivory eff ()
@@ -134,8 +134,8 @@ handleError UART{..} onError = do
     where clear i f = do
             i' <- getInterruptFlag uart i
             when i' $ do
-                clearInterruptFlag uart i
                 clearFlag uart f
+                clearInterruptFlag uart i
             pure i'
 
 
@@ -143,19 +143,19 @@ handleReceive :: KnownNat rn => UART rn tn -> Ivory eff () -> Ivory eff ()
 handleReceive UART{..} onReceive = do
     rbne <- getInterruptFlag   uart usart_int_flag_rbne
     when rbne $ do
-        clearInterruptFlag     uart usart_int_flag_rbne
         push rxQueue $ \i -> do
             store (rxBuff ! toIx i) =<< S.receiveData uart
             onReceive 
+        clearInterruptFlag     uart usart_int_flag_rbne
 
 
 handleDrain :: USART_PERIPH -> Ivory eff () -> Ivory eff ()
 handleDrain uart onDrain = do
     tc <- getInterruptFlag uart usart_int_flag_tc
     when tc $ do
-        clearInterruptFlag uart usart_int_flag_tc
         disableInterrupt   uart usart_int_tc
         onDrain
+        clearInterruptFlag uart usart_int_flag_tc
 
 
 
