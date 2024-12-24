@@ -67,11 +67,6 @@ rbus enet' = do
     netmask         <- record_ "udp_netmask"
     broadcastIP     <- record_ "udp_broadcast_ip"
     hasIP           <- value   "udp_has_ip" false
-    rxMsgOffset     <- value   "udp_rx_msg_offset" 0
-    rxMsgOffsets    <- values_ "udp_rx_msg_offsets"
-    rxMsgSizes      <- values_ "udp_rx_msg_sizes" 
-    rxMsgQueue      <- queue   "udp_rx_msg_queue"
-    rxMsgBuff       <- buffer  "udp_rx_msg"
     rxBuff          <- buffer  "udp_rx"
     txBuff          <- buffer  "udp_tx"
     discovery       <- buffer  "udp_discovery"
@@ -92,11 +87,6 @@ rbus enet' = do
                       , localIP, netmask
                       , broadcastIP
                       , hasIP
-                      , rxMsgOffset
-                      , rxMsgOffsets
-                      , rxMsgSizes
-                      , rxMsgQueue
-                      , rxMsgBuff
                       , rxBuff
                       , txBuff
                       , discovery
@@ -117,11 +107,6 @@ rbus enet' = do
     addModule inclEtharp
     addModule inclIgmp
 
-    -- let sysNow :: Def ('[] :-> Uint32)
-    --     sysNow = proc "sys_now" $ body $
-    --         ret =<< getSystemTime (systemClock mcu)
-
-    -- addProc sysNow
     addProc $ netifStatusCallback rbus
     addProc $ receiveCallback rbus
 
@@ -159,9 +144,9 @@ rbus enet' = do
         startIgmp netif
         setUpNetif netif
 
-    addHandler $ HandleEnet enet $ receivePackets enet rbus
+    -- addHandler $ HandleEnet enet $ pure ()
 
-    addTask $ yeld        "udp_rx"        $ rxTask          rbus
+    addTask $ yeld        "udp_rx"        $ rxTask   enet   rbus
     addTask $ yeld        "udp_discovery" $ discoveryTask   rbus
     addTask $ delay 1_000 "tmr_arp"         tmrEtharp
     addTask $ delay   100 "tmr_igmp"        tmrIgmp
@@ -170,14 +155,6 @@ rbus enet' = do
     pure rbus
 
 
-
-receivePackets :: (LwipPort e, Enet e) => e -> RBUS ->  Ivory (ProcEffects s ()) ()
-receivePackets enet RBUS{..} = 
-    forever $ do
-        reval <- rxFrameSize enet
-        cond_ [ reval  >? 1 ==> void (inputLwipPortIf enet netif)
-              , reval ==? 0 ==> breakOut
-              ]
 
 discoveryTask :: RBUS -> Ivory (ProcEffects s t) ()
 discoveryTask rbus@RBUS{..} = do

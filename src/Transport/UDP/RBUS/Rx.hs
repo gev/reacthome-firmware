@@ -15,39 +15,36 @@ import           Support.Lwip.Udp
 import           Transport.UDP.RBUS.Data
 import           Transport.UDP.RBUS.Tx
 import Data.Concurrent.Queue
+import Interface.LwipPort
+import Interface.ENET
+import Control.Monad (void)
 
+
+
+rxTask :: (LwipPort e, Enet e) => e -> RBUS ->  Ivory (ProcEffects s ()) ()
+rxTask enet RBUS{..} = do
+    reval <- rxFrameSize enet
+    when (reval >? 1) $ 
+        void $ inputLwipPortIf enet netif
 
 
 receiveCallback :: RBUS -> Def (UdpRecvFn s1 s2 s3 s4)
-receiveCallback rbus@RBUS{..} = proc "udp_receive_callback" $ \_ upcb pbuff addr port -> body $ do
+receiveCallback rbus@RBUS{..} = proc "udp_echo_callback" $ \_ upcb pbuff addr port -> body $ do
     size <- castDefault <$> deref (pbuff ~> tot_len)
-    when (size >? 0 .&& size <? arrayLen rxBuff) $ do
-        push rxMsgQueue $ \i -> do
-            let ix = toIx i
-            offset <- deref rxMsgOffset
-            let offset' = offset + safeCast size
-            store rxMsgOffset $ offset' 
-            store (rxMsgOffsets ! ix) offset
-            store (rxMsgSizes ! ix) size
-            j <- local $ ival 0
-            for (toIx size) $ \jx -> do
-                j' <- deref j
-                let kx = jx + toIx offset
-                store (rxMsgBuff ! kx) =<< getPbufAt pbuff j'
-                store j $ j' + 1
+    when (size >? 0 .&& size <=? arrayLen rxBuff) $ do
+        for (toIx size) $ \ix ->
+            store (rxBuff ! ix) =<< getPbufAt pbuff (castDefault $ fromIx ix)
+        receive rbus size
     ret =<< freePbuf pbuff
 
 
-rxTask :: RBUS -> Ivory (ProcEffects s ()) ()
-rxTask rbus@RBUS{..} = pop rxMsgQueue $ \i -> do
-    let ix = toIx i
-    offset <- deref $ rxMsgOffsets ! ix
-    size   <- deref $ rxMsgSizes ! ix
-    for (toIx size) $ \jx -> store (rxBuff ! jx) =<< deref (rxMsgBuff ! toIx (safeCast offset+ fromIx jx))
+
+receive :: RBUS -> Uint8 -> Ivory (ProcEffects s t) ()
+receive rbus@RBUS{..} len = do
     action <- deref $ rxBuff ! 0
-    cond_ [ action ==? actionDiscovery ==> handleDiscovery rbus size
-          , action ==? actionIpAddress ==> handleAddress   rbus size
-          , true                       ==> handleMessage   rbus size
+    cond_ [ action ==? actionDiscovery ==> handleDiscovery rbus len
+          , action ==? actionIpAddress ==> handleAddress   rbus len
+          , true                       ==> handleMessage   rbus len
           ]
 
 

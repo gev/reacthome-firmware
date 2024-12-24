@@ -24,11 +24,6 @@ data RBUS = RBUS
     , localIP         :: Record      IP_ADDR_4_STRUCT
     , netmask         :: Record      IP_ADDR_4_STRUCT
     , broadcastIP     :: Record      IP_ADDR_4_STRUCT
-    , rxMsgOffset     :: Value       Uint16
-    , rxMsgOffsets    :: Values   40 Uint16
-    , rxMsgSizes      :: Values   40 Uint8
-    , rxMsgQueue      :: Queue    40
-    , rxMsgBuff       :: Buffer 1200 Uint8
     , rxBuff          :: Buffer  255 Uint8
     , txBuff          :: Buffer  255 Uint8
     , discovery       :: Buffer    4 Uint8
