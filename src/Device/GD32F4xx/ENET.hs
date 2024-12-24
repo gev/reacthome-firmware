@@ -54,8 +54,8 @@ mkENET ethRmiiRefClk ethRmiiMdio ethRmiiMdc ethRmiiCrsDv ethRmiiRxd0 ethRmiiRxd1
     addModule inclEthernetif
 
     addInit "enet_" $ do
-        setVectorTableNvic nvic_vecttab_flash 0
-        setPriorityGroup nvic_prigroup_pre2_sub2
+        -- setVectorTableNvic nvic_vecttab_flash 0
+        -- setPriorityGroup nvic_prigroup_pre2_sub2
         -- enableIrqNvic enetIRQ 0 0
 
         enablePeriphClock rcu_syscfg
