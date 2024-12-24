@@ -19,16 +19,16 @@ import Data.Concurrent.Queue
 
 
 receiveCallback :: RBUS -> Def (UdpRecvFn s1 s2 s3 s4)
-receiveCallback rbus@RBUS{..} = proc "udp_echo_callback" $ \_ upcb pbuff addr port -> body $ do
+receiveCallback rbus@RBUS{..} = proc "udp_receive_callback" $ \_ upcb pbuff addr port -> body $ do
     size <- castDefault <$> deref (pbuff ~> tot_len)
     when (size >? 0 .&& size <? arrayLen rxBuff) $ do
         push rxMsgQueue $ \i -> do
             let ix = toIx i
             offset <- deref rxMsgOffset
-            store (rxMsgOffsets ! ix) offset
-            store (rxMsgSizes ! ix) size
             let offset' = offset + safeCast size
             store rxMsgOffset $ offset' 
+            store (rxMsgOffsets ! ix) offset
+            store (rxMsgSizes ! ix) size
             j <- local $ ival 0
             for (toIx size) $ \jx -> do
                 j' <- deref j
