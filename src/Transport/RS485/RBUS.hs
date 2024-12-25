@@ -30,7 +30,7 @@ import           Transport.RS485.RBUS.Tx
 
 
 rbus :: (MonadState Context m, MonadReader (D.Domain p c) m, Controller c)
-     => m (RS485 128 300) -> m RBUS
+     => m (RS485 256 300) -> m RBUS
 rbus rs485 = do
 
     model          <- asks D.model
