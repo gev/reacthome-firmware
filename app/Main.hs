@@ -23,6 +23,7 @@ import           Formula.Smart.Top.TopA6T
 import           Formula.Smart.Top.TopG2
 import           Formula.Smart.Top.TopG4
 import           Formula.Smart.Top.TopG4D
+import           Formula.Smart.Top.TopA4TD
 import           Formula.Smart.Top.TopG6
 
 
@@ -31,7 +32,7 @@ main = do
     mapM_ gcc [ di4
             --   , di4la
             --   , di4rsm
-              , relay12
+              -- , relay12
             --   , dimmerDC12
             --   , dimmerAC12
             --   , doppler1
@@ -41,6 +42,7 @@ main = do
             --   , smartBottom2
             --   , smartTopA4P
             --   , smartTopA4T
+              , smartTopA4TD
             --   , smartTopA6P
             --   , smartTopA6T
             --   , smartTopG2
@@ -51,3 +53,6 @@ main = do
     mapM_ gcc [ rsHub4
               , server
               ]
+    -- mapM_ gcc [ rsHub4
+    --           , server
+    --           ]
