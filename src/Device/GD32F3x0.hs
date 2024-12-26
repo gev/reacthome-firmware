@@ -165,6 +165,7 @@ data GD32F3x0 = GD32F3x0
 
     , exti_pa_0 :: EXTI'
     , exti_pa_5 :: EXTI'
+    , exti_pb_7 :: EXTI'
 
     , ow_0      :: OneWire'
     , ow_1      :: OneWire'
@@ -350,6 +351,12 @@ gd32f3x0 = MCU $ mkPlatform G.systemClock makeMac inclGD32F3x0 GD32F3x0
                          exti_source_gpioa
                          exti_source_pin5
                          exti_5
+
+    , exti_pb_7 = mkEXTI pb_7
+                         exti4_15_irqn
+                         exti_source_gpiob
+                         exti_source_pin7
+                         exti_7
 
 
     , ow_0  = mkOneWire cfg_timer_15
