@@ -1,7 +1,7 @@
 r
 h
-loadbin build/gd32f330/firmware/di4.bin, 0x8000000
+loadbin dist/firmware/smart_bottom_2/smart_bottom_2-gd32f330k8u6-4.6.bin, 0x8000000 
 g
-verifybin build/gd32f330/firmware/di4.bin, 0x8000000
+verifybin dist/firmware/smart_bottom_2/smart_bottom_2-gd32f330k8u6-4.6.bin, 0x8000000
 r
 q
