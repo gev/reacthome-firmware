@@ -18,13 +18,13 @@ import           Transport.RS485.RBUS
 dimmerAC1 :: Formula GD32F3x0
 dimmerAC1 =  Formula { name            = "dimmerAC1"
                      , model           = deviceTypeDim1AcRs
-                     , version         = (1, 0)
+                     , version         = (2, 0)
                      , shouldInit      = true
                      , mcu             = gd32f330k8u6
                      , quartzFrequency =  8_000_000
                      , systemFrequency = 84_000_000
                      , implementation  = dimmer (rbus $ rs485 uart_1 out_pa_4)
-                                                (dimmersAC (  pwm_11
+                                                (dimmersAC (  pwm_4
                                                            :> Nil 
                                                            )
                                                            exti_pb_7
