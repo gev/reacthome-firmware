@@ -24,7 +24,7 @@ dimmerAC1 =  Formula { name            = "dimmerAC1"
                      , quartzFrequency =  8_000_000
                      , systemFrequency = 84_000_000
                      , implementation  = dimmer (rbus $ rs485 uart_1 out_pa_4)
-                                                (dimmersAC (  pwm_4
+                                                (dimmersAC (  pwm_11
                                                            :> Nil 
                                                            )
                                                            exti_pb_7
