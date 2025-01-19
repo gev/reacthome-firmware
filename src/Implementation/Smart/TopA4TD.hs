@@ -92,8 +92,10 @@ topA4TD transport' dinputs' vibro' touch' sht21' display' etc' = do
 
     touch'
 
-    leds         <- mkLeds frameBuffer [   0,  5,      1,  4
-                                        ,  2,  3    
+    leds         <- mkLeds frameBuffer [   0
+                                        ,  5,  1
+                                        ,  4,  2
+                                        ,  3    
 
                                         ,  6
                                         ,  7
