@@ -54,8 +54,8 @@ handleEXTI :: EXTI_LINE -> Ivory eff () -> Ivory eff ()
 handleEXTI ex handle = do
     f <- getExtiInterruptFlag ex
     when f $ do
-        clearExtiInterruptFlag ex
         handle
+        clearExtiInterruptFlag ex
 
 
 instance I.EXTI EXTI

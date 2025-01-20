@@ -45,6 +45,7 @@ import           Transport.RS485.RBUS.Tx (initTask)
 import           Transport.UDP.RBUS.Data
 import           Transport.UDP.RBUS.Rx
 import           Transport.UDP.RBUS.Tx
+import Data.Concurrent.Queue
 
 
 
@@ -86,8 +87,8 @@ rbus enet' = do
                       , localIP, netmask
                       , broadcastIP
                       , hasIP
-                      , txBuff
                       , rxBuff
+                      , txBuff
                       , discovery
                       , requestIP
                       , requestInit
@@ -106,11 +107,6 @@ rbus enet' = do
     addModule inclEtharp
     addModule inclIgmp
 
-    -- let sysNow :: Def ('[] :-> Uint32)
-    --     sysNow = proc "sys_now" $ body $
-    --         ret =<< getSystemTime (systemClock mcu)
-
-    -- addProc sysNow
     addProc $ netifStatusCallback rbus
     addProc $ receiveCallback rbus
 
@@ -148,24 +144,17 @@ rbus enet' = do
         startIgmp netif
         setUpNetif netif
 
-    addHandler $ HandleEnet enet $ receivePackets enet rbus
+    -- addHandler $ HandleEnet enet $ pure ()
 
+    addTask $ yeld        "udp_rx"        $ rxTask   enet   rbus
+    addTask $ yeld        "udp_discovery" $ discoveryTask   rbus
     addTask $ delay 1_000 "tmr_arp"         tmrEtharp
     addTask $ delay   100 "tmr_igmp"        tmrIgmp
-    addTask $ yeld        "udp_discovery" $ discoveryTask   rbus
     addTask $ delay 2_000 "request_init"  $ requestInitTask rbus
 
     pure rbus
 
 
-
-receivePackets :: (LwipPort e, Enet e) => e -> RBUS ->  Ivory (ProcEffects s ()) ()
-receivePackets enet RBUS{..} = 
-    forever $ do
-        reval <- rxFrameSize enet
-        cond_ [ reval  >? 1 ==> void (inputLwipPortIf enet netif)
-              , reval ==? 0 ==> breakOut
-              ]
 
 discoveryTask :: RBUS -> Ivory (ProcEffects s t) ()
 discoveryTask rbus@RBUS{..} = do

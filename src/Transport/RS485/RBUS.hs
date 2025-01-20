@@ -30,7 +30,7 @@ import           Transport.RS485.RBUS.Tx
 
 
 rbus :: (MonadState Context m, MonadReader (D.Domain p c) m, Controller c)
-     => m (RS485 300 300) -> m RBUS
+     => m (RS485 256 300) -> m RBUS
 rbus rs485 = do
 
     model          <- asks D.model
@@ -44,20 +44,21 @@ rbus rs485 = do
     let clock       = systemClock mcu
 
     rs             <- rs485
-    msgOffset      <- buffer (name <> "_msg_offset"    )
-    msgSize        <- buffer (name <> "_msg_size"      )
-    msgTTL         <- buffer (name <> "_msg_ttl"       )
-    msgQueue       <- queue  (name <> "_msg"           )
-    msgBuff        <- buffer (name <> "_msg"           )
-    msgIndex       <- value  (name <> "_msg_index"     ) 0
-    initBuff       <- values (name <> "_init_request"  ) [0xf2]
-    rxLock         <- value  (name <> "_rx_lock"       ) false
-    txLock         <- value  (name <> "_tx_lock"       ) false
-    rxTimestamp    <- value  (name <> "_timestamp_rx"  ) 0
-    txTimestamp    <- value  (name <> "_timestamp_tx"  ) 0
-    initTimestamp  <- value  (name <> "_timestamp_init") 0
-    shouldConfirm  <- value  (name <> "_should_confirm") false
-    msgConfirmed   <- value  (name <> "confirmed"      ) false
+    msgOffset      <- buffer (name <> "_msg_offset"     )
+    msgSize        <- buffer (name <> "_msg_size"       )
+    msgTTL         <- buffer (name <> "_msg_ttl"        )
+    msgQueue       <- queue  (name <> "_msg"            )
+    msgBuff        <- buffer (name <> "_msg"            )
+    msgIndex       <- value  (name <> "_msg_index"      ) 0
+    initBuff       <- values (name <> "_init_request"   ) [0xf2]
+    rxLock         <- value  (name <> "_rx_lock"        ) false
+    txLock         <- value  (name <> "_tx_lock"        ) false
+    rxTimestamp    <- value  (name <> "_timestamp_rx"   ) 0
+    txTimestamp    <- value  (name <> "_timestamp_tx"   ) 0
+    initTimestamp  <- value  (name <> "_timestamp_init" ) 0
+    shouldConfirm  <- value  (name <> "_should_confirm" ) false
+    msgConfirmed   <- value  (name <> "confirmed"       ) false
+    waitingConfirm <- value  (name <> "_waiting_confirm") false
 
     {--
         TODO: move dispatcher outside
@@ -79,7 +80,11 @@ rbus rs485 = do
          mapM_ call_ syncs
 
 
-    let onConfirm = store msgConfirmed true
+    let onConfirm = do
+            waitingConfirm' <- deref waitingConfirm
+            when waitingConfirm' $ do
+                store msgConfirmed true
+                store waitingConfirm false
 
     let onReceive = store rxLock false
 
@@ -90,7 +95,8 @@ rbus rs485 = do
                     , initBuff
                     , rxLock, txLock
                     , rxTimestamp, txTimestamp, initTimestamp
-                    , shouldConfirm, msgConfirmed, shouldInit
+                    , shouldConfirm, msgConfirmed, waitingConfirm
+                    , shouldInit
                     }
 
     addHandler $ HandleRS485 rs (rxHandle rbus) (txHandle rbus) (errorHandle rbus)

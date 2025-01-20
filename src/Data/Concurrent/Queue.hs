@@ -46,8 +46,8 @@ push :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
 push Queue{..} handle =
     down producerS $ do
         x <- deref producerIx
-        handle x
         store producerIx $ x + 1
+        handle x
         up consumerS
 
 
@@ -55,8 +55,8 @@ push' :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
 push' Queue{..} handle =
     down' producerS $ do
         x <- deref producerIx
-        handle x
         store producerIx $ x + 1
+        handle x
         up consumerS
 
 
@@ -64,8 +64,8 @@ pop :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
 pop Queue{..} handle =
     down consumerS $ do
         x <- deref consumerIx
-        handle x
         store consumerIx $ x + 1
+        handle x
         up producerS
 
 
@@ -73,8 +73,8 @@ pop' :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
 pop' Queue{..} handle =
      down' consumerS $ do
         x <- deref consumerIx
-        handle x
         store consumerIx $ x + 1
+        handle x
         up producerS
 
 
@@ -103,6 +103,7 @@ remove Queue{..} =
         x <- deref consumerIx
         store consumerIx $ x + 1
         up producerS
+        
 
 
 clear :: forall n eff. KnownNat n => Queue n -> Ivory eff ()
@@ -111,5 +112,3 @@ clear Queue{..} = do
     store producerIx 0
     store (getSemaphore producerS) $ fromIntegral $ fromTypeNat (aNat :: NatType n)
     store (getSemaphore consumerS) 0
-
-

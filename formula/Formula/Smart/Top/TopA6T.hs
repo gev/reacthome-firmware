@@ -17,7 +17,7 @@ import           Transport.UART.RBUS
 smartTopA6T :: Formula GD32F3x0
 smartTopA6T =  Formula { name            = "smart_top_a6t"
                        , model           = deviceTypeSmartTopA6T
-                       , version         = (4, 6)
+                       , version         = (4, 7)
                        , shouldInit      = false
                        , mcu             = gd32f330k8u6
                        , quartzFrequency =  8_000_000

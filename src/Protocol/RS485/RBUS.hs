@@ -34,7 +34,7 @@ preambleSlave  = Preamble { discovery = 0x55
 defaultBaudrate     = 1_000_000 :: Uint32
 
 
-messageTTL          = 16   :: Uint8
+messageTTL          =   16 :: Uint8
 
 
 broadcastAddress    = 0xff :: Uint8

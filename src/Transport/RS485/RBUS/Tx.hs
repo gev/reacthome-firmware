@@ -74,6 +74,7 @@ doTransmitMessage r@RBUS{..} = do
                                 let sx = dx + toIx offset
                                 write . safeCast =<< deref (msgBuff ! sx)
                         store (msgTTL ! ix) $ ttl - 1
+                        store waitingConfirm true
                         store txTimestamp t1
                         store txLock true
                     )

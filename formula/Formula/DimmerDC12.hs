@@ -8,7 +8,7 @@ import           Data.Fixed
 import           Device.GD32F3x0
 import           Feature.Dimmers.DC
 import           Feature.Indicator
-import           Implementation.Dimmer (dimmer)
+import           Implementation.DimmerDIN (dimmer)
 import           Interface.RS485
 import           Ivory.Language
 import           Transport.RS485.RBUS
@@ -18,7 +18,7 @@ import           Transport.RS485.RBUS
 dimmerDC12 :: Formula GD32F3x0
 dimmerDC12 = Formula { name            = "dimmerDC12"
                      , model           = deviceTypeDim12DcRs
-                     , version         = (2, 6)
+                     , version         = (2, 7)
                      , shouldInit      = true
                      , mcu             = gd32f330k8u6
                      , quartzFrequency =  8_000_000

@@ -22,7 +22,7 @@ import           Transport.UART.RBUS
 server :: Formula GD32F4xx
 server = Formula { name            = "server"
                  , model           = deviceTypeServer
-                 , version         = (5, 5)
+                 , version         = (5, 6)
                  , shouldInit      = true
                  , mcu             = gd32f450vgt6
                  , quartzFrequency =  25_000_000

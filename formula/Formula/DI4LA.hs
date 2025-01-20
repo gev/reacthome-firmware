@@ -19,7 +19,7 @@ import           Transport.RS485.RBUS
 di4la :: Formula GD32F3x0
 di4la = Formula { name            = "di4la"
                 , model           = deviceTypeDi4La
-                , version         = (1, 5)
+                , version         = (1, 6)
                 , shouldInit      = true
                 , mcu             = gd32f330k8u6
                 , quartzFrequency =  8_000_000

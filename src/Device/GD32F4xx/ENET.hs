@@ -54,9 +54,9 @@ mkENET ethRmiiRefClk ethRmiiMdio ethRmiiMdc ethRmiiCrsDv ethRmiiRxd0 ethRmiiRxd1
     addModule inclEthernetif
 
     addInit "enet_" $ do
-        setVectorTableNvic nvic_vecttab_flash 0
-        setPriorityGroup nvic_prigroup_pre2_sub2
-        enableIrqNvic enetIRQ 0 0
+        -- setVectorTableNvic nvic_vecttab_flash 0
+        -- setPriorityGroup nvic_prigroup_pre2_sub2
+        -- enableIrqNvic enetIRQ 0 0
 
         enablePeriphClock rcu_syscfg
         configPhyInterface enet_phy_rmii
@@ -66,11 +66,11 @@ mkENET ethRmiiRefClk ethRmiiMdio ethRmiiMdc ethRmiiCrsDv ethRmiiRxd0 ethRmiiRxd1
         enablePeriphClock rcu_enetrx
         deinitENET
         resetSoftwareENET
-        isReady <- initENET enet_100m_fullduplex enet_no_autochecksum enet_broadcast_frames_pass
+        initENET enet_100m_fullduplex enet_no_autochecksum enet_broadcast_frames_pass
         enableEnetFilterFeature enet_multicast_filter_pass
-        when isReady $ do
-            enableInterruptENET enet_dma_int_nie
-            enableInterruptENET enet_dma_int_rie
+        -- when isReady $ do
+        --     enableInterruptENET enet_dma_int_nie
+        --     enableInterruptENET enet_dma_int_rie
 
     pure ENET { enetIRQ }
 
@@ -81,9 +81,9 @@ instance Handler I.HandleEnet ENET where
         addModule $ makeIRQHandler enetIRQ $ handleENET handle
 
 handleENET handle = do
+    handle
     clearEnetInterruptfFlag enet_dma_int_flag_rs_clr
     clearEnetInterruptfFlag enet_dma_int_flag_ni_clr
-    handle
 
 instance I.Enet ENET where
     rxFrameSize _ = getEnetRxframeSize

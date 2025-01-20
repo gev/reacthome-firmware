@@ -6,8 +6,9 @@ import           Device.GD32F4xx
 import           Formula.DI4
 import           Formula.DI4LA
 import           Formula.DI4RSM
-import           Formula.DimmerAC12
 import           Formula.DimmerDC12
+import           Formula.DimmerAC12
+import           Formula.DimmerAC1
 import           Formula.Doppler1
 import           Formula.Doppler5
 import           Formula.Mix6x12
@@ -49,9 +50,6 @@ main = do
             --   , smartTopG4
             --   , smartTopG4D
             --   , smartTopG6
-              ]
-    mapM_ gcc [ rsHub4
-              , server
               ]
     -- mapM_ gcc [ rsHub4
     --           , server

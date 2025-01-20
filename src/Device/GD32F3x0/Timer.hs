@@ -107,8 +107,8 @@ instance Handler I.HandleTimer Timer where
             handleIRQ' = do
                 flag <- getTimerInterruptFlag timer timer_int_flag_up
                 when flag $ do
-                    clearTimerInterruptFlag timer timer_int_flag_up
                     handle
+                    clearTimerInterruptFlag timer timer_int_flag_up
 
 instance I.Timer Timer where
     setCounter t = writeCounter (timer t)

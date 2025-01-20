@@ -130,6 +130,7 @@ executable reacthome-firmware
                     , Formula.Server
                     , Formula.DimmerAC12
                     , Formula.DimmerDC12
+                    , Formula.DimmerAC1
                     , Formula.Mix6x12
                     , Formula.DI4
                     , Formula.DI4LA
@@ -154,6 +155,7 @@ executable reacthome-firmware
                     , Implementation.DI
                     , Implementation.DILA
                     , Implementation.DIRSM 
+                    , Implementation.DimmerDIN
                     , Implementation.Dimmer
                     , Implementation.Dummy
                     , Implementation.Echo
