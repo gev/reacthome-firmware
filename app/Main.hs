@@ -24,6 +24,7 @@ import           Formula.Smart.Top.TopA6T
 import           Formula.Smart.Top.TopG2
 import           Formula.Smart.Top.TopG4
 import           Formula.Smart.Top.TopG4D
+import           Formula.Smart.Top.TopA4TD
 import           Formula.Smart.Top.TopG6
 
 
@@ -32,10 +33,9 @@ main = do
     mapM_ gcc [ di4
             --   , di4la
             --   , di4rsm
-            --   , relay12
-              , dimmerDC12
-              , dimmerAC12
-              , dimmerAC1
+              -- , relay12
+            --   , dimmerDC12
+            --   , dimmerAC12
             --   , doppler1
             --   , doppler5
             --   , mix6x12
@@ -43,6 +43,7 @@ main = do
             --   , smartBottom2
             --   , smartTopA4P
             --   , smartTopA4T
+              , smartTopA4TD
             --   , smartTopA6P
             --   , smartTopA6T
             --   , smartTopG2

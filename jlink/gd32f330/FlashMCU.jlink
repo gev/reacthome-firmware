@@ -1,5 +1,6 @@
 r
 h
+
 loadbin dist/firmware/smart_bottom_2/smart_bottom_2-gd32f330k8u6-4.6.bin, 0x8000000 
 g
 verifybin dist/firmware/smart_bottom_2/smart_bottom_2-gd32f330k8u6-4.6.bin, 0x8000000
