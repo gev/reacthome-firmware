@@ -67,7 +67,7 @@ C_SOURCES =  \
 ../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_ipa.c   \
 ../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_syscfg.c\
 main.c \
-main.c \
+src4392.c \
 
 
 

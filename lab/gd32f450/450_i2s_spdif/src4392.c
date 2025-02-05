@@ -1,7 +1,7 @@
 #include "src4392.h"
-#include "gd32f3x0.h"
+#include "gd32f4xx.h"
 
-#define SRC_4392_ADDRESS 0b1110000
+#define SRC_4392_ADDRESS (0b1110000 << 1)
 #define SRC_4392_CONFIG_N 10
 
 uint8_t src_4392_config[SRC_4392_CONFIG_N][2] = {
@@ -17,8 +17,14 @@ uint8_t src_4392_config[SRC_4392_CONFIG_N][2] = {
     {0x2f, 0b00000000},
 };
 
+void mute_config(){
+    rcu_periph_clock_enable(RCU_GPIOC);
+    gpio_mode_set(GPIOC, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_2);
+    gpio_output_options_set(GPIOC, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_2);
+    gpio_bit_reset(GPIOC, GPIO_PIN_2);
+}
 
-i2c_config(){
+void i2c_config(){
     rcu_periph_clock_enable(RCU_GPIOA);
     rcu_periph_clock_enable(RCU_GPIOC);
 
@@ -45,7 +51,7 @@ i2c_config(){
 
 }
 
-i2c_send(uint8_t addr, uint8_t *data, uint8_t size){
+void i2c_send(uint8_t addr, uint8_t *data, uint8_t size){
         /* wait until I2C bus is idle */
     while(i2c_flag_get(I2C2, I2C_FLAG_I2CBSY));
     /* send a start condition to I2C bus */
@@ -61,7 +67,7 @@ i2c_send(uint8_t addr, uint8_t *data, uint8_t size){
     /* wait until the transmit data buffer is empty */
     while(!i2c_flag_get(I2C2, I2C_FLAG_TBE));
 
-    for(i = 0; i < size; i++) {
+    for(uint8_t i = 0; i < size; i++) {
         /* data transmission */
         i2c_data_transmit(I2C2, data[i]);
         /* wait until the TBE bit is set */
@@ -72,9 +78,12 @@ i2c_send(uint8_t addr, uint8_t *data, uint8_t size){
     while(I2C_CTL0(I2C2) & I2C_CTL0_STOP);
 }
 
-init_src4392(){
+void init_src4392(){
+    mute_config();
     i2c_config();
+    gpio_bit_set(GPIOC, GPIO_PIN_2);
     for (uint8_t i = 0; i < SRC_4392_CONFIG_N; i++){
         i2c_send(SRC_4392_ADDRESS, src_4392_config[i], 2);
     }
+    gpio_bit_reset(GPIOC, GPIO_PIN_2);
 }
