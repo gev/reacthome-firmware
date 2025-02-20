@@ -8,11 +8,19 @@
 uint32_t i2s1_txbuffer[ARRAYSIZE] = {0xffff5555, 0x2222FFFF, 0x2222FFFF, 0x2222FFFF,
                                      0x0, 0xFFFFFFFF, 0x0, 0xFFFFFFFF};
 uint32_t i2s1_rxbuffer[ARRAYSIZE] = {0};
+uint32_t intermediate_buffer[ARRAYSIZE] = {0};
 
 void dma_config(void);
 void rcu_config(void);
 void gpio_config(void);
 void spi_config(void);
+
+
+void swap_16bit_halves(uint32_t *buffer, size_t size) {
+    for (size_t i = 0; i < size; i++) {
+        buffer[i] = (buffer[i] >> 16) | (buffer[i] << 16);
+    }
+}
 
 int main(void) {
 
@@ -30,22 +38,28 @@ int main(void) {
   i2s_enable(SPI1);
   i2s_enable(I2S1_ADD);
 
-
   /* enable DMA channel */
-  // dma_channel_enable(DMA0, DMA_CH3);
+  dma_channel_enable(DMA0, DMA_CH3);
   dma_channel_enable(DMA0, DMA_CH4);
 
-
   /* enable SPI DMA */
-  // spi_dma_enable(I2S1_ADD, SPI_DMA_RECEIVE);
+  spi_dma_enable(I2S1_ADD, SPI_DMA_RECEIVE);
   spi_dma_enable(SPI1, SPI_DMA_TRANSMIT);
 
-  while (!dma_flag_get(DMA0, DMA_CH4, DMA_FLAG_FTF));
   
   while (1) {
-    // memcpy(i2s1_txbuffer, i2s1_rxbuffer, sizeof(i2s1_txbuffer));
-    // spi_dma_enable(SPI1, SPI_DMA_TRANSMIT);
-    // while (!dma_flag_get(DMA0, DMA_CH4, DMA_FLAG_FTF));
+    while (!dma_flag_get(DMA0, DMA_CH4, DMA_FLAG_FTF));
+    memcpy(intermediate_buffer, i2s1_rxbuffer, ARRAYSIZE * sizeof(uint32_t));
+    
+    swap_16bit_halves(intermediate_buffer, ARRAYSIZE);
+
+    for (uint32_t i = 0; i < ARRAYSIZE; i++) {
+      intermediate_buffer[i] >>= 1;
+    }
+    swap_16bit_halves(intermediate_buffer, ARRAYSIZE);
+
+    memcpy(i2s1_txbuffer, intermediate_buffer, ARRAYSIZE * sizeof(uint32_t));
+    spi_dma_enable(SPI1, SPI_DMA_TRANSMIT);
   }
 }
 
@@ -123,21 +137,21 @@ void dma_config(void) {
   dma_init_struct.periph_addr = (uint32_t)&SPI_DATA(SPI1);
   dma_init_struct.memory0_addr = (uint32_t)i2s1_txbuffer;
   dma_init_struct.direction = DMA_MEMORY_TO_PERIPH;
-  dma_init_struct.periph_memory_width = DMA_PERIPH_WIDTH_32BIT;
+  dma_init_struct.periph_memory_width = DMA_PERIPH_WIDTH_16BIT;
   dma_init_struct.priority = DMA_PRIORITY_LOW;
-  dma_init_struct.number = ARRAYSIZE;
+  dma_init_struct.number = ARRAYSIZE * 2;
   dma_init_struct.periph_inc = DMA_PERIPH_INCREASE_DISABLE;
   dma_init_struct.memory_inc = DMA_MEMORY_INCREASE_ENABLE;
-  dma_init_struct.circular_mode = DMA_CIRCULAR_MODE_DISABLE;
+  dma_init_struct.circular_mode = DMA_CIRCULAR_MODE_ENABLE;
   dma_single_data_mode_init(DMA0, DMA_CH4, &dma_init_struct);
   dma_channel_subperipheral_select(DMA0, DMA_CH4, DMA_SUBPERI0);
     
-  // /* configure I2S1_ADD receive dma */
-  // dma_deinit(DMA0, DMA_CH3);
-  // dma_init_struct.periph_addr = (uint32_t)&SPI_DATA(I2S1_ADD);
-  // dma_init_struct.memory0_addr = (uint32_t)i2s1_rxbuffer;
-  // dma_init_struct.direction = DMA_PERIPH_TO_MEMORY;
-  // dma_init_struct.priority = DMA_PRIORITY_HIGH;
-  // dma_single_data_mode_init(DMA0, DMA_CH3, &dma_init_struct);
-  // dma_channel_subperipheral_select(DMA0, DMA_CH3, DMA_SUBPERI3);
+  /* configure I2S1_ADD receive dma */
+  dma_deinit(DMA0, DMA_CH3);
+  dma_init_struct.periph_addr = (uint32_t)&SPI_DATA(I2S1_ADD);
+  dma_init_struct.memory0_addr = (uint32_t)i2s1_rxbuffer;
+  dma_init_struct.direction = DMA_PERIPH_TO_MEMORY;
+  dma_init_struct.priority = DMA_PRIORITY_HIGH;
+  dma_single_data_mode_init(DMA0, DMA_CH3, &dma_init_struct);
+  dma_channel_subperipheral_select(DMA0, DMA_CH3, DMA_SUBPERI3);
 }
