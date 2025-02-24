@@ -49,16 +49,16 @@ int main(void) {
   
   while (1) {
     while (!dma_flag_get(DMA0, DMA_CH4, DMA_FLAG_FTF));
-    memcpy(intermediate_buffer, i2s1_rxbuffer, ARRAYSIZE * sizeof(uint32_t));
+    memcpy(intermediate_buffer, i2s1_rxbuffer, sizeof(intermediate_buffer));
     
     swap_16bit_halves(intermediate_buffer, ARRAYSIZE);
 
     for (uint32_t i = 0; i < ARRAYSIZE; i++) {
-      intermediate_buffer[i] >>= 1;
+      // intermediate_buffer[i] ;
     }
     swap_16bit_halves(intermediate_buffer, ARRAYSIZE);
 
-    memcpy(i2s1_txbuffer, intermediate_buffer, ARRAYSIZE * sizeof(uint32_t));
+    memcpy(i2s1_txbuffer, intermediate_buffer, sizeof(i2s1_txbuffer));
     spi_dma_enable(SPI1, SPI_DMA_TRANSMIT);
   }
 }
