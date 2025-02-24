@@ -200,7 +200,6 @@ calculateValue dimmer = do
                     (store (dimmer ~> value) newValue)
           , value' >? brightness' ==> do
                 let newValue = value' - delta'
-                store (dimmer ~> value) newValue
                 ifte_ (newValue <? brightness')
                     (store (dimmer ~> value) brightness')
                     (store (dimmer ~> value) newValue)
