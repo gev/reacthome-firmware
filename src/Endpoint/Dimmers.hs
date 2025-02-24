@@ -106,7 +106,6 @@ fade :: KnownNat n
      -> Ivory eff ()
 fade brightness' velocity' = runCheckMode $ \dimmer -> do
     store (dimmer ~> brightness) brightness'
-    store (dimmer ~> value     ) brightness'
     store (dimmer ~> velocity  ) velocity'
     store (dimmer ~> delta     ) $ 0.0001 / (1.02 - velocity');
 
@@ -195,13 +194,16 @@ calculateValue dimmer = do
     value'      <- deref $ dimmer ~> value
     delta'      <- deref $ dimmer ~> delta
     cond_ [ value' <? brightness' ==> do
-                store (dimmer ~> value) $ value' + delta'
-                when (value' >? 1) $
-                    store (dimmer ~> value) 1
+                let newValue = value' + delta'
+                ifte_ (newValue >? brightness')  
+                    (store (dimmer ~> value) brightness')
+                    (store (dimmer ~> value) newValue)
           , value' >? brightness' ==> do
-                store (dimmer ~> value) $ value' - delta'
-                when (value' <? 0) $
-                    store (dimmer ~> value) 0
+                let newValue = value' - delta'
+                store (dimmer ~> value) newValue
+                ifte_ (newValue <? brightness')
+                    (store (dimmer ~> value) brightness')
+                    (store (dimmer ~> value) newValue)
           ]
 
 
