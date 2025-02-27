@@ -34,8 +34,9 @@ main = do
             --   , di4la
             --   , di4rsm
               -- , relay12
-            --   , dimmerDC12
-            --   , dimmerAC12
+              , dimmerDC12
+              , dimmerAC12
+              , dimmerAC1
             --   , doppler1
             --   , doppler5
             --   , mix6x12
@@ -43,7 +44,7 @@ main = do
             --   , smartBottom2
             --   , smartTopA4P
             --   , smartTopA4T
-              , smartTopA4TD
+              -- , smartTopA4TD
             --   , smartTopA6P
             --   , smartTopA6T
             --   , smartTopG2
@@ -51,6 +52,6 @@ main = do
             --   , smartTopG4D
             --   , smartTopG6
               ]
-    -- mapM_ gcc [ rsHub4
-    --           , server
-    --           ]
+    mapM_ gcc [ rsHub4
+              , server
+              ]
