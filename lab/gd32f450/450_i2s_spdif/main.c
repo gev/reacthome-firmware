@@ -47,19 +47,26 @@ int main(void) {
   spi_dma_enable(SPI1, SPI_DMA_TRANSMIT);
 
   
+  nvic_irq_enable(DMA0_Channel3_IRQn, 0, 0);
+  nvic_irq_enable(DMA0_Channel4_IRQn, 0, 0);
+  
+  dma_interrupt_enable(DMA0, DMA_CH3, DMA_CHXCTL_FTFIE);
+  dma_interrupt_enable(DMA0, DMA_CH4, DMA_CHXCTL_FTFIE);
+  
+  
   while (1) {
-    while (!dma_flag_get(DMA0, DMA_CH4, DMA_FLAG_FTF));
-    memcpy(intermediate_buffer, i2s1_rxbuffer, sizeof(intermediate_buffer));
+    // while (!dma_flag_get(DMA0, DMA_CH4, DMA_FLAG_FTF));
+    // memcpy(intermediate_buffer, i2s1_rxbuffer, sizeof(intermediate_buffer));
     
-    swap_16bit_halves(intermediate_buffer, ARRAYSIZE);
+    // swap_16bit_halves(intermediate_buffer, ARRAYSIZE);
 
-    for (uint32_t i = 0; i < ARRAYSIZE; i++) {
-      // intermediate_buffer[i] ;
-    }
-    swap_16bit_halves(intermediate_buffer, ARRAYSIZE);
+    // for (uint32_t i = 0; i < ARRAYSIZE; i++) {
+    //   // intermediate_buffer[i] ;
+    // }
+    // swap_16bit_halves(intermediate_buffer, ARRAYSIZE);
 
-    memcpy(i2s1_txbuffer, intermediate_buffer, sizeof(i2s1_txbuffer));
-    spi_dma_enable(SPI1, SPI_DMA_TRANSMIT);
+    // memcpy(i2s1_txbuffer, intermediate_buffer, sizeof(i2s1_txbuffer));
+    // spi_dma_enable(SPI1, SPI_DMA_TRANSMIT);
   }
 }
 
@@ -154,4 +161,27 @@ void dma_config(void) {
   dma_init_struct.priority = DMA_PRIORITY_HIGH;
   dma_single_data_mode_init(DMA0, DMA_CH3, &dma_init_struct);
   dma_channel_subperipheral_select(DMA0, DMA_CH3, DMA_SUBPERI3);
+
+}
+
+//receive
+void DMA0_Channel3_IRQHandler(void) {
+  if (dma_interrupt_flag_get(DMA0, DMA_CH3, DMA_INT_FLAG_FTF)) {
+    dma_interrupt_flag_clear(DMA0, DMA_CH3, DMA_INT_FLAG_FTF);
+
+    memcpy(intermediate_buffer, i2s1_rxbuffer, sizeof(intermediate_buffer));
+    
+    swap_16bit_halves(intermediate_buffer, ARRAYSIZE);
+
+  }
+}
+//transmit
+void DMA0_Channel4_IRQHandler(void) {
+  if (dma_interrupt_flag_get(DMA0, DMA_CH4, DMA_INT_FLAG_FTF)) {
+    dma_interrupt_flag_clear(DMA0, DMA_CH4, DMA_INT_FLAG_FTF);
+
+    swap_16bit_halves(intermediate_buffer, ARRAYSIZE);
+
+    memcpy(i2s1_txbuffer, intermediate_buffer, sizeof(i2s1_txbuffer));
+  }
 }
