@@ -154,7 +154,7 @@ executable reacthome-firmware
                     , Implementation.Blink
                     , Implementation.DI
                     , Implementation.DILA
-                    , Implementation.DIRSM 
+                    , Implementation.DIRSM
                     , Implementation.Dimmer
                     , Implementation.Dummy
                     , Implementation.Echo
@@ -194,6 +194,7 @@ executable reacthome-firmware
                     , Interface.I2C
                     , Interface.ADC
                     , Interface.DAC
+                    , Interface.I2STX
 
                     , Protocol.OneWire.Master
                     , Protocol.RS485.RBUS
@@ -257,6 +258,7 @@ executable reacthome-firmware
                     , Device.GD32F4xx.UART
                     , Device.GD32F4xx.Flash
                     , Device.GD32F4xx.ENET
+                    , Device.GD32F4xx.I2STX
 
                     , Ivory.Support
                     , Ivory.Support.Device.GD32F3x0

@@ -3,6 +3,8 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use camelCase" #-}
 
 module Support.Device.GD32F4xx.SPI
     ( SPI_PERIPH
@@ -28,11 +30,17 @@ module Support.Device.GD32F4xx.SPI
     , I2S_MCKOUT
     , i2s_mckout_enable
 
+    , SPI_DMA_DEFINITION
+    , spi_dma_transmit
+    , spi_dma_receive
+
     , deinitSPII2S
     , initI2S
     , configPscI2S
     , configFullDuplexModeI2S
-    , dataSpi
+    , dataSPI
+    , enableI2S
+    , enableSpiDma
 
     , inclSPI
     ) where
@@ -86,6 +94,13 @@ newtype I2S_MCKOUT = I2S_MCKOUT Uint32
 i2s_mckout_enable = I2S_MCKOUT $ ext "I2S_MCKOUT_ENABLE"
 
 
+newtype SPI_DMA_DEFINITION = SPI_DMA_DEFINITION Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)    
+
+spi_dma_transmit = SPI_DMA_DEFINITION $ ext "SPI_DMA_TRANSMIT"
+spi_dma_receive = SPI_DMA_DEFINITION $ ext "SPI_DMA_RECEIVE"
+
+
 
 deinitSPII2S :: SPI_PERIPH -> Ivory eff ()
 deinitSPII2S = call_ spi_i2s_deinit
@@ -115,11 +130,25 @@ i2s_full_duplex_mode_config :: Def ('[SPI_PERIPH, I2S_MODE, I2S_STANDARD, I2S_CK
 i2s_full_duplex_mode_config = fun "i2s_full_duplex_mode_config"
 
 
-dataSpi :: SPI_PERIPH -> Ivory eff Uint32
-dataSpi = call spi_data
+dataSPI :: SPI_PERIPH -> Ivory eff Uint32
+dataSPI = call spi_data
 
 spi_data :: Def ('[SPI_PERIPH] :-> Uint32)
 spi_data = fun "(uint32_t)&SPI_DATA"
+
+
+enableI2S :: SPI_PERIPH -> Ivory eff ()
+enableI2S = call_ i2s_enable
+
+i2s_enable :: Def ('[SPI_PERIPH] :-> ())
+i2s_enable = fun "i2s_enable"
+
+
+enableSpiDma :: SPI_PERIPH -> SPI_DMA_DEFINITION -> Ivory eff ()
+enableSpiDma = call_ spi_dma_enable
+
+spi_dma_enable :: Def ('[SPI_PERIPH, SPI_DMA_DEFINITION] :-> ())
+spi_dma_enable = fun "spi_dma_enable"
 
 
 
@@ -130,7 +159,8 @@ inclSPI = do
     incl i2s_psc_config
     incl i2s_full_duplex_mode_config
     incl spi_data
-
+    incl i2s_enable
+    incl spi_dma_enable
 
     inclSym spi1
     inclSym spi2
@@ -145,3 +175,6 @@ inclSPI = do
     inclSym i2s_frameformat_dt32b_ch32b
 
     inclSym i2s_mckout_enable
+    
+    inclSym spi_dma_transmit
+    inclSym spi_dma_receive 
