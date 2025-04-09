@@ -195,6 +195,7 @@ executable reacthome-firmware
                     , Interface.ADC
                     , Interface.DAC
                     , Interface.I2STX
+                    , Interface.I2SRX
 
                     , Protocol.OneWire.Master
                     , Protocol.RS485.RBUS
@@ -259,6 +260,7 @@ executable reacthome-firmware
                     , Device.GD32F4xx.Flash
                     , Device.GD32F4xx.ENET
                     , Device.GD32F4xx.I2STX
+                    , Device.GD32F4xx.I2SRX
 
                     , Ivory.Support
                     , Ivory.Support.Device.GD32F3x0
