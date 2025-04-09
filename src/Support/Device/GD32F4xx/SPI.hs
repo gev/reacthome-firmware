@@ -10,6 +10,8 @@ module Support.Device.GD32F4xx.SPI
     ( SPI_PERIPH
     , spi1
     , spi2
+    , i2s1_add
+    , i2s2_add
 
     , I2S_MODE
     , i2s_mode_mastertx
@@ -53,8 +55,10 @@ newtype SPI_PERIPH = SPI_PERIPH Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 instance ExtSymbol SPI_PERIPH
 
-spi1 = SPI_PERIPH $ ext "SPI1"
-spi2 = SPI_PERIPH $ ext "SPI2"
+spi1     = SPI_PERIPH $ ext "SPI1"
+spi2     = SPI_PERIPH $ ext "SPI2"
+i2s1_add = SPI_PERIPH $ ext "I2S1_ADD"
+i2s2_add = SPI_PERIPH $ ext "I2S2_ADD"
 
 
 newtype I2S_MODE = I2S_MODE Uint32
@@ -164,6 +168,8 @@ inclSPI = do
 
     inclSym spi1
     inclSym spi2
+    inclSym i2s1_add
+    inclSym i2s2_add
 
     inclSym i2s_std_phillips
 
