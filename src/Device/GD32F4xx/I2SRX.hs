@@ -88,7 +88,4 @@ handleDMA i2s handle = do
         arrayMap $ \ix -> do 
             word <- deref (rxBuff i2s ! ix)
             handle $ swap16bit word
-
-
-swap16bit :: Uint32 -> Uint32
-swap16bit t = ( t `iShiftR` 16) .| ( t `iShiftR` 16)
+    where swap16bit w = ( w `iShiftR` 16) .| ( w `iShiftR` 16)
