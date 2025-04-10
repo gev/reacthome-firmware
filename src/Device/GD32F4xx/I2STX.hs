@@ -114,8 +114,8 @@ handleDMA i2s transmit = do
                 store (dmaParams i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray (txBuff1 i2s))
                 enableSpiDma (spi i2s) spi_dma_transmit
                 arrayMap $ \ix -> do
-                    t <- transmit -- add swap16 bit
-                    store (txBuff2 i2s ! ix) t
+                    t <- transmit 
+                    store (txBuff2 i2s ! ix) $ swap16bit t
                 store (sendNumBuff i2s) 1
             ) 
             (do 
@@ -124,6 +124,10 @@ handleDMA i2s transmit = do
                 enableSpiDma (spi i2s) spi_dma_transmit
                 arrayMap $ \ix -> do
                     t <- transmit
-                    store (txBuff1 i2s ! ix) t
+                    store (txBuff1 i2s ! ix) $ swap16bit t
                 store (sendNumBuff i2s) 0
             )
+
+
+swap16bit :: Uint32 -> Uint32
+swap16bit t = ( t `iShiftR` 16) .| ( t `iShiftR` 16)

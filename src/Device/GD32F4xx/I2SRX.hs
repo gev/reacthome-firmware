@@ -87,4 +87,8 @@ handleDMA i2s handle = do
         clearInterruptFlagDMA (dmaPer i2s) (dmaCh i2s) dma_int_flag_ftf
         arrayMap $ \ix -> do 
             word <- deref (rxBuff i2s ! ix)
-            handle word
+            handle $ swap16bit word
+
+
+swap16bit :: Uint32 -> Uint32
+swap16bit t = ( t `iShiftR` 16) .| ( t `iShiftR` 16)
