@@ -40,13 +40,12 @@ data I2SRX n = I2SRX  { i2s_add   :: SPI_PERIPH
 mkI2SRX :: (MonadState Context m, KnownNat n)   
             => SPI_PERIPH
             -> RCU_PERIPH
-            -> RCU_PERIPH
             -> DMA_PERIPH
             -> DMA_CHANNEL
             -> DMA_SUBPERIPH
             -> IRQn
             -> (GPIO_PUPD -> G.Port) -> m (I2SRX n)
-mkI2SRX i2s_add rcuSpi rcuDma dmaPer dmaCh dmaSubPer dmaIRQn rxPin = do
+mkI2SRX i2s_add rcuDma dmaPer dmaCh dmaSubPer dmaIRQn rxPin = do
     let dmaInit = dmaParam [ periph_inc          .= ival dma_periph_increase_disable
                            , memory_inc          .= ival dma_memory_increase_enable
                            , periph_memory_width .= ival dma_periph_width_32bit
@@ -63,7 +62,6 @@ mkI2SRX i2s_add rcuSpi rcuDma dmaPer dmaCh dmaSubPer dmaIRQn rxPin = do
     addInit (symbol i2s_add) $ do 
         store (dmaParams ~> periph_addr) =<< dataSPI i2s_add
         store (dmaParams ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray rxBuff) 
-        enablePeriphClock   rcuSpi
         enablePeriphClock   rcuDma
         configFullDuplexModeI2S i2s_add i2s_mode_mastertx i2s_std_phillips i2s_ckpl_low i2s_frameformat_dt32b_ch32b
         enableI2S           i2s_add
@@ -88,4 +86,4 @@ handleDMA i2s handle = do
         arrayMap $ \ix -> do 
             word <- deref (rxBuff i2s ! ix)
             handle $ swap16bit word
-    where swap16bit w = ( w `iShiftR` 16) .| ( w `iShiftR` 16)
+    where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)

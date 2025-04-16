@@ -127,4 +127,4 @@ handleDMA i2s transmit = do
                     store (txBuff1 i2s ! ix) $ swap16bit t
                 store (sendNumBuff i2s) 0
             )
-    where swap16bit w = ( w `iShiftR` 16) .| ( w `iShiftR` 16)
+    where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)
