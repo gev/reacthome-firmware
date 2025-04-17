@@ -68,6 +68,7 @@ deviceTypeSmartTopG6    = 0x34 :: Uint8
 deviceTypeSmartTopG4    = 0x35 :: Uint8
 deviceTypeSmartTopG2    = 0x36 :: Uint8
 deviceTypeSmartTopA4P   = 0x37 :: Uint8
+deviceTypeSmartTopA4TD  = 0x38 :: Uint8
 
 deviceTypeSmartBottom1  = 0x3a :: Uint8
 deviceTypeSmartBottom2  = 0x3b :: Uint8
@@ -104,6 +105,7 @@ deviceTypeRsHub4Old     = 0xB2 :: Uint8
 deviceTypeDim12AcRs     = 0xB3 :: Uint8
 deviceTypeDim12DcRs     = 0xB4 :: Uint8
 deviceTypeMix6x12Rs     = 0xB5 :: Uint8
+deviceTypeDim1AcRs      = 0xB6 :: Uint8
 
 deviceTypeServer        = 0xC0 :: Uint8
 deviceTypeRsHub4        = 0xC1 :: Uint8

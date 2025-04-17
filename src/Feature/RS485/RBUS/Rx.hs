@@ -8,21 +8,19 @@ module Feature.RS485.RBUS.Rx where
 
 import           Core.Domain                   (Domain (shouldInit))
 import           Core.Transport
-import           Data.Concurrent.Queue         as Q
 import           Feature.RS485.RBUS.Data
 import           Interface.SystemClock
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Protocol.RS485.RBUS.Master.Rx
+import qualified Interface.RS485 as I
 
 
 
-rxHandle :: RBUS -> Uint16 -> Ivory eff ()
-rxHandle RBUS{..} value = do
+rxHandle :: RBUS -> Ivory eff ()
+rxHandle RBUS{..} = do
     store rxLock true
     store rxTimestamp =<< getSystemTime clock
-    push rxQueue $ \i ->
-        store (rxBuff ! toIx i) value
 
 
 
@@ -36,8 +34,7 @@ rxTask r = do
 
 
 rxRBUS :: RBUS -> Ivory (ProcEffects s ()) ()
-rxRBUS RBUS{..} = pop rxQueue $ \i ->
-    receive protocol . castDefault =<< deref (rxBuff ! toIx i)
+rxRBUS RBUS{..} = I.receive rs $ receive protocol . castDefault
 
 
 
@@ -52,8 +49,8 @@ rxRS485 RBUS{..} = do
         t0        <- deref rxTimestamp
         t1        <- getSystemTime clock
         let dt     = 40_000 ./ baudrate' + 1 -- wait 4 bytes timeout
-        pop rxQueue $ \i -> do
-            store (rsBuff ! toIx rsSize') . castDefault =<< deref (rxBuff ! toIx i)
+        I.receive rs $ \v -> do
+            store (rsBuff ! toIx rsSize') $ castDefault v
             store rsSize $ rsSize' + 1
         when (rsSize' >? 0 .&& t1 - t0 >? dt) $ do
             lazyTransmit transport (rsSize' + 2) $ \transmit -> do
@@ -63,6 +60,12 @@ rxRS485 RBUS{..} = do
                     transmit . castDefault =<< deref (rsBuff ! ix)
             store rsSize 0
 
+
+errorHandle :: RBUS -> Ivory eff ()
+errorHandle RBUS{..} = do
+    I.clearRX rs
+    reset     protocol
+    store     rxLock false
 
 
 {--
@@ -74,7 +77,7 @@ resetTask RBUS{..} = do
     t0      <- deref rxTimestamp
     t1      <- getSystemTime clock
     when (mode' ==? modeRBUS .&& t1 - t0 >? 1) $ do
-        Q.clear rxQueue
-        reset   protocol
-        store   rxLock false
-        store   rxTimestamp t1
+        I.clearRX rs
+        reset     protocol
+        store     rxLock false
+        store     rxTimestamp t1

@@ -51,18 +51,18 @@ import           Support.Device.GD32F3x0.USART
 
 
 
-type UART'      = forall m n. MonadState Context m => KnownNat n => m (UART n)
-type I2C'       = forall m n. MonadState Context m => KnownNat n => m (I2C n)
-type Input'     = forall m.   MonadState Context m => GPIO_PUPD -> m Input
-type Output'    = forall m.   MonadState Context m => GPIO_PUPD -> m Output
-type OpenDrain' = forall m.   MonadState Context m => m OpenDrain
-type ADC'       = forall m.   MonadState Context m => m ADC
-type DAC'       = forall m.   MonadState Context m => m DAC
-type Timer'     = forall m.   MonadState Context m => Uint32 -> Uint32 -> m Timer
-type PWM'       = forall m.   MonadState Context m => Uint32 -> Uint32 -> m PWM
-type NeoPixel'  = forall m.   MonadState Context m => m NeoPixel
-type EXTI'      = forall m.   MonadState Context m => m EXTI
-type OneWire'   = forall m.   MonadState Context m => m OpenDrain -> m OneWire
+type UART'      = forall m rn tn. MonadState Context m => KnownNat rn => KnownNat tn => m (UART rn tn)
+type I2C'       = forall m n.     MonadState Context m => KnownNat n => m (I2C n)
+type Input'     = forall m.       MonadState Context m => GPIO_PUPD -> m Input
+type Output'    = forall m.       MonadState Context m => GPIO_PUPD -> m Output
+type OpenDrain' = forall m.       MonadState Context m => m OpenDrain
+type ADC'       = forall m.       MonadState Context m => m ADC
+type DAC'       = forall m.       MonadState Context m => m DAC
+type Timer'     = forall m.       MonadState Context m => Uint32 -> Uint32 -> m Timer
+type PWM'       = forall m.       MonadState Context m => Uint32 -> Uint32 -> m PWM
+type NeoPixel'  = forall m.       MonadState Context m => m NeoPixel
+type EXTI'      = forall m.       MonadState Context m => m EXTI
+type OneWire'   = forall m.       MonadState Context m => m OpenDrain -> m OneWire
 
 
 data GD32F3x0 = GD32F3x0
@@ -165,6 +165,7 @@ data GD32F3x0 = GD32F3x0
 
     , exti_pa_0 :: EXTI'
     , exti_pa_5 :: EXTI'
+    , exti_pb_7 :: EXTI'
 
     , ow_0      :: OneWire'
     , ow_1      :: OneWire'
@@ -184,8 +185,8 @@ data GD32F3x0 = GD32F3x0
     }
 
 
-gd32f3x0 :: String -> String -> MCUmod GD32F3x0
-gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
+gd32f3x0 :: String -> String -> MCU GD32F3x0
+gd32f3x0 = MCU $ mkPlatform G.systemClock makeMac inclGD32F3x0 GD32F3x0
     { uart_0    = mkUART usart0
                          rcu_usart0
                          usart0_irqn
@@ -351,6 +352,12 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
                          exti_source_pin5
                          exti_5
 
+    , exti_pb_7 = mkEXTI pb_7
+                         exti4_15_irqn
+                         exti_source_gpiob
+                         exti_source_pin7
+                         exti_7
+
 
     , ow_0  = mkOneWire cfg_timer_15
     , ow_1  = mkOneWire cfg_timer_2
@@ -376,10 +383,10 @@ gd32f3x0 = MCUmod $ mkMCU G.systemClock makeMac inclGD32F3x0 GD32F3x0
 
 
 
-gd32f330k8u6 :: MCUmod GD32F3x0
+gd32f330k8u6 :: MCU GD32F3x0
 gd32f330k8u6 = gd32f3x0 "gd32f330" "k8u6"
 
-gd32f350k8u6 :: MCUmod GD32F3x0
+gd32f350k8u6 :: MCU GD32F3x0
 gd32f350k8u6 = gd32f3x0 "gd32f350" "k8u6"
 
 

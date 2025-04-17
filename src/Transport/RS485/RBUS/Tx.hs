@@ -61,13 +61,23 @@ doTransmitMessage r@RBUS{..} = do
         ifte_ (ttl >? 0)
             (do offset <- deref $ msgOffset ! ix
                 size   <- deref $ msgSize ! ix
-                RS.transmit rs $ \write ->
-                    for (toIx size) $ \dx -> do
-                        let sx = dx + toIx offset
-                        write . safeCast =<< deref (msgBuff ! sx)
-                store (msgTTL ! ix) $ ttl - 1
-                store txTimestamp =<< getSystemTime clock
-                store txLock true
+                confirmed'    <- deref msgConfirmed
+                ifte_ confirmed'
+                    (do
+                        store msgConfirmed false
+                        remove msgQueue
+                    )
+                    (do
+                        size  <- deref $ msgSize ! ix
+                        RS.transmit rs $ \write ->
+                            for (toIx size) $ \dx -> do
+                                let sx = dx + toIx offset
+                                write . safeCast =<< deref (msgBuff ! sx)
+                        store (msgTTL ! ix) $ ttl - 1
+                        store waitingConfirm true
+                        store txTimestamp t1
+                        store txLock true
+                    )
             )
             (remove msgQueue)
 

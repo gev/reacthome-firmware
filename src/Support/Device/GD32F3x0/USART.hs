@@ -44,11 +44,18 @@ module Support.Device.GD32F3x0.USART
     , usart_int_rbne
     , usart_int_tbe
     , usart_int_tc
-
+    , usart_int_perr
+    , usart_int_err
+    
     , USART_INT_FLAG
     , usart_int_flag_rbne
     , usart_int_flag_tbe
     , usart_int_flag_tc
+    , usart_int_flag_rbne_orerr
+    , usart_int_flag_err_orerr
+    , usart_int_flag_err_nerr
+    , usart_int_flag_err_ferr
+    , usart_int_flag_perr
 
     , USART_DENT
     , usart_dent_enable
@@ -89,15 +96,23 @@ newtype USART_INT = USART_INT Uint32
 usart_int_rbne = USART_INT $ ext "USART_INT_RBNE"
 usart_int_tbe  = USART_INT $ ext "USART_INT_TBE"
 usart_int_tc   = USART_INT $ ext "USART_INT_TC"
+usart_int_perr = USART_INT $ ext "USART_INT_PERR"
+usart_int_err  = USART_INT $ ext "USART_INT_ERR"
 
 
 
 newtype USART_INT_FLAG = USART_INT_FLAG Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
-usart_int_flag_rbne = USART_INT_FLAG $ ext "USART_INT_FLAG_RBNE"
-usart_int_flag_tbe  = USART_INT_FLAG $ ext "USART_INT_FLAG_TBE"
-usart_int_flag_tc   = USART_INT_FLAG $ ext "USART_INT_FLAG_TC"
+usart_int_flag_rbne         = USART_INT_FLAG $ ext "USART_INT_FLAG_RBNE"
+usart_int_flag_tbe          = USART_INT_FLAG $ ext "USART_INT_FLAG_TBE"
+usart_int_flag_tc           = USART_INT_FLAG $ ext "USART_INT_FLAG_TC"
+usart_int_flag_rbne_orerr   = USART_INT_FLAG $ ext "USART_INT_FLAG_RBNE_ORERR"
+usart_int_flag_err_orerr    = USART_INT_FLAG $ ext "USART_INT_FLAG_ERR_ORERR"
+usart_int_flag_err_nerr     = USART_INT_FLAG $ ext "USART_INT_FLAG_ERR_NERR"
+usart_int_flag_err_ferr     = USART_INT_FLAG $ ext "USART_INT_FLAG_ERR_FERR"
+usart_int_flag_perr         = USART_INT_FLAG $ ext "USART_INT_FLAG_PERR"
+
 
 
 
@@ -303,10 +318,17 @@ inclUSART = do
     inclSym usart_int_rbne
     inclSym usart_int_tbe
     inclSym usart_int_tc
+    inclSym usart_int_perr
+    inclSym usart_int_err
 
     inclSym usart_int_flag_rbne
     inclSym usart_int_flag_tbe
     inclSym usart_int_flag_tc
+    inclSym usart_int_flag_rbne_orerr
+    inclSym usart_int_flag_err_orerr 
+    inclSym usart_int_flag_err_nerr  
+    inclSym usart_int_flag_err_ferr  
+    inclSym usart_int_flag_perr      
 
     inclSym usart0
     inclSym usart1

@@ -12,17 +12,17 @@ import           Core.Context
 import           Core.Domain
 import           Core.Formula
 import           Core.Scheduler
+import           Data.Bifunctor
 import           Data.List
-import           Interface.MCU
+import           Interface.MCU                   as I
 import           Ivory.Compile.C.CmdlineFrontend
 import           Ivory.Language
 import           Ivory.Language.Module
 
 
 
-cook :: State Context (MCU p) -> Formula p -> ModuleDef
-cook mcu Formula{..} = do
-
+cook :: Formula p -> ModuleDef
+cook Formula{ ..} = do
 
     inclModule
     mapM_ incl multiBodyFunctions
@@ -30,9 +30,8 @@ cook mcu Formula{..} = do
     incl  loop
     incl  main
 
-
-    where (domain'         , domainContext'        ) = runState (domain model version mcu' shouldInit implementation') mempty
-          (mcu'            , mcuContext'           ) = runState mcu mempty
+    where (domain'         , domainContext'        ) = runState (domain model version' mcu' shouldInit implementation') mempty
+          (mcu'            , mcuContext'           ) = runState (platform mcu ) mempty
           (implementation' , implementationContext') = runReader (runStateT implementation mempty) domain'
 
           (Context inclModule inits tasks syncs bodies) = mcuContext'
@@ -57,24 +56,26 @@ cook mcu Formula{..} = do
             call_ loop
             ret 0
 
+          version' = bimap fromIntegral fromIntegral version
 
 
-generate :: ModuleDef -> String -> IO ()
-generate moduleDef name = runCompiler
+
+generate :: ModuleDef -> String -> String -> IO ()
+generate moduleDef path name = runCompiler
     [package name moduleDef]
     []
     initialOpts
-        { outDir = Just "./firmware"
+        { outDir = Just $ "./firmware" <> "/" <> path
         , constFold = True
         }
 
 
 
-build :: Shake c
-      => c -> MCUmod p -> [Formula p] -> IO ()
-build config MCUmod{..} formulas =
-    shake config =<< mapM run formulas
-    where
-        run f@Formula{..} = do
-            generate (cook mcu f) name
-            pure name
+build :: Shake c => c -> Formula p -> IO ()
+build config f@Formula{..} = do
+    let name' = name <> "-" <> I.model mcu <> I.modification mcu <> "-" <> major version <> "." <> minor version
+    generate (cook f) name name'
+    shake config $ name <> "/" <> name'
+
+    where major = show . fst
+          minor = show . snd

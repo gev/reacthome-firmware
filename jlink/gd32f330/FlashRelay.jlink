@@ -1,0 +1,7 @@
+r
+h
+loadbin dist/firmware/relay12/relay12-gd32f330k8u6-3.5.bin, 0x8000000
+g
+verifybin dist/firmware/relay12/relay12-gd32f330k8u6-3.5.bin, 0x8000000
+r
+q

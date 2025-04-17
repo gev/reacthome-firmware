@@ -40,8 +40,8 @@ txTask r@RBUS{..} = do
         shouldDiscovery' <- deref shouldDiscovery
         shouldConfirm'   <- deref shouldConfirm
         shouldPing'      <- deref shouldPing
-        cond_ [ shouldPing'      ==> doPing r
-              , shouldConfirm'   ==> doConfirm r
+        cond_ [ shouldConfirm'   ==> doConfirm r
+              , shouldPing'      ==> doPing r
               , shouldDiscovery' ==> doDiscovery r
               , true             ==> doTransmitMessage r
               ]
@@ -53,30 +53,33 @@ doTransmitMessage r@RBUS{..} = do
     t0 <- deref txTimestamp
     t1 <- getSystemTime clock
     when (t1 - t0 >? 1) $ peek msgQueue $ \i -> do
-        let ix = toIx i
-        ttl <- deref $ msgTTL ! ix
-        ifte_ (ttl >? 0)
-            (do offset        <- deref $ msgOffset ! ix
-                address       <- deref $ msgBuff ! toIx (offset + 1)
-                let confirmed  = msgConfirm ! toIx address
-                confirmed'    <- deref confirmed
-                ifte_ confirmed'
-                    (do
-                        store confirmed false
-                        remove msgQueue
-                    )
-                    (do
-                        size  <- deref $ msgSize ! ix
-                        RS.transmit rs $ \write ->
-                            for (toIx size) $ \dx -> do
-                                let sx = dx + toIx offset
-                                write . safeCast =<< deref (msgBuff ! sx)
-                        store (msgTTL ! ix) $ ttl - 1
-                        store txLock true
-                    )
+        let ix         = toIx i
+        offset        <- deref $ msgOffset ! ix
+        address       <- deref $ msgBuff ! toIx (offset + 1)
+        let ax         = toIx address
+        let confirmed  = msgConfirmed ! ax
+        confirmed'    <- deref confirmed
+        store confirmed false
+        ifte_ confirmed'
+            (do
+                remove msgQueue
             )
-            (remove msgQueue)
-        store txTimestamp t1
+            (do
+                ttl <- deref $ msgTTL ! ix
+                ifte_ (ttl >? 0)
+                      (do
+                          size  <- deref $ msgSize ! ix
+                          RS.transmit rs $ \write ->
+                              for (toIx size) $ \dx -> do
+                                  let sx = dx + toIx offset
+                                  write . safeCast =<< deref (msgBuff ! sx)
+                          store (msgTTL ! ix) $ ttl - 1
+                          store txTimestamp t1
+                          store txLock true
+                          store (msgWaitingConfirm ! ax) true
+                      )
+                      (remove msgQueue)
+            )
 
 
 
@@ -128,11 +131,11 @@ toQueue :: KnownNat l
         -> Ivory (ProcEffects s t) ()
 toQueue RBUS{..} address buff offset size = push msgQueue $ \i -> do
     index <- deref msgIndex
-    size <- run protocol (transmitMessage address buff offset size) msgBuff index
-    store msgIndex $ index + size
+    size' <- run protocol (transmitMessage address buff offset size) msgBuff index
+    store msgIndex $ index + safeCast size'
     let ix = toIx i
     store (msgOffset ! ix) index
-    store (msgSize   ! ix) size
+    store (msgSize   ! ix) size'
     store (msgTTL    ! ix) messageTTL
 
 
@@ -140,16 +143,16 @@ toQueue RBUS{..} address buff offset size = push msgQueue $ \i -> do
 run :: KnownNat l
     => Master 255
     -> (Master 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ())
-    -> Buffer l Uint16
+    -> Buffer l Uint8
     -> Uint16
-    -> Ivory (ProcEffects s t) Uint16
+    -> Ivory (ProcEffects s t) Uint8
 run protocol transmit buff offset = do
     size  <- local $ ival 0
     let go :: Uint8 -> Ivory eff ()
         go v = do
             i <- deref size
-            let ix = toIx $ offset + i
-            store (buff ! ix) $ safeCast v
+            let ix = toIx $ offset + safeCast i
+            store (buff ! ix) v
             store size $ i + 1
     transmit protocol go
     deref size

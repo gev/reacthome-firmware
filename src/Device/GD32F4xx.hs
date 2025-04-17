@@ -48,17 +48,17 @@ import           Support.Device.GD32F4xx.SPI
 
 
 
-type UART'      = forall m n. MonadState Context m => KnownNat n => m (UART n)
-type Input'     = forall m.   MonadState Context m => GPIO_PUPD -> m Input
-type Output'    = forall m.   MonadState Context m => GPIO_PUPD -> m Output
-type OpenDrain' = forall m.   MonadState Context m => m OpenDrain
-type Timer'     = forall m.   MonadState Context m => Uint32 -> Uint32 -> m Timer
-type PWM'       = forall m.   MonadState Context m => Uint32 -> Uint32 -> m PWM
-type NeoPixel'  = forall m.   MonadState Context m => m NeoPixel
-type OneWire'   = forall m.   MonadState Context m => m OpenDrain -> m OneWire
-type I2STX'     = forall m n. MonadState Context m => KnownNat n => m (I2STX n)
-type I2SRX'     = forall m n. MonadState Context m => KnownNat n => m (I2SRX n)
-type Enet'      = forall m.   MonadState Context m => m ENET
+type UART'      = forall m rn tn. MonadState Context m => KnownNat rn => KnownNat tn => m (UART rn tn)
+type Input'     = forall m.       MonadState Context m => GPIO_PUPD -> m Input
+type Output'    = forall m.       MonadState Context m => GPIO_PUPD -> m Output
+type OpenDrain' = forall m.       MonadState Context m => m OpenDrain
+type Timer'     = forall m.       MonadState Context m => Uint32 -> Uint32 -> m Timer
+type PWM'       = forall m.       MonadState Context m => Uint32 -> Uint32 -> m PWM
+type NeoPixel'  = forall m.       MonadState Context m => m NeoPixel
+type OneWire'   = forall m.       MonadState Context m => m OpenDrain -> m OneWire
+type I2STX'     = forall m n.     MonadState Context m => KnownNat n => m (I2STX n)
+type I2SRX'     = forall m n.     MonadState Context m => KnownNat n => m (I2SRX n)
+type Enet'      = forall m.       MonadState Context m => m ENET
 
 
 data GD32F4xx = GD32F4xx
@@ -268,8 +268,8 @@ data GD32F4xx = GD32F4xx
     }
 
 
-gd32f4xx :: String -> String -> MCUmod GD32F4xx
-gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
+gd32f4xx :: String -> String -> MCU GD32F4xx
+gd32f4xx = MCU $ mkPlatform G.systemClock makeMac inclGD32F4xx GD32F4xx
     { uart_0    = mkUART usart0
                          rcu_usart0
                          usart0_irqn
@@ -578,10 +578,10 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
 
 
 
-gd32f450vgt6 :: MCUmod GD32F4xx
+gd32f450vgt6 :: MCU GD32F4xx
 gd32f450vgt6 = gd32f4xx "gd32f450" "vgt6"
 
-gd32f450vit6 :: MCUmod GD32F4xx
+gd32f450vit6 :: MCU GD32F4xx
 gd32f450vit6 = gd32f4xx "gd32f450" "vit6"
 
 

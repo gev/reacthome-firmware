@@ -14,16 +14,27 @@ import           Support.Lwip.Pbuf
 import           Support.Lwip.Udp
 import           Transport.UDP.RBUS.Data
 import           Transport.UDP.RBUS.Tx
+import Data.Concurrent.Queue
+import Interface.LwipPort
+import Interface.ENET
+import Control.Monad (void)
 
+
+
+rxTask :: (LwipPort e, Enet e) => e -> RBUS ->  Ivory (ProcEffects s ()) ()
+rxTask enet RBUS{..} = do
+    reval <- rxFrameSize enet
+    when (reval >? 1) $ 
+        void $ inputLwipPortIf enet netif
 
 
 receiveCallback :: RBUS -> Def (UdpRecvFn s1 s2 s3 s4)
 receiveCallback rbus@RBUS{..} = proc "udp_echo_callback" $ \_ upcb pbuff addr port -> body $ do
-    len <- castDefault <$> deref (pbuff ~> tot_len)
-    when (len >? 0 .&& len <=? 255) $ do
-        for (toIx len) $ \ix ->
+    size <- castDefault <$> deref (pbuff ~> tot_len)
+    when (size >? 0 .&& size <=? arrayLen rxBuff) $ do
+        for (toIx size) $ \ix ->
             store (rxBuff ! ix) =<< getPbufAt pbuff (castDefault $ fromIx ix)
-        receive rbus len
+        receive rbus size
     ret =<< freePbuf pbuff
 
 
@@ -37,10 +48,9 @@ receive rbus@RBUS{..} len = do
           ]
 
 
-
 handleDiscovery :: RBUS -> Uint8 -> Ivory (ProcEffects s t) ()
-handleDiscovery rbus@RBUS{..} len =
-    when (len ==? 7) $ do
+handleDiscovery rbus@RBUS{..} size =
+    when (size ==? 7) $ do
         ip1 <- unpack rxBuff 1
         ip2 <- unpack rxBuff 2
         ip3 <- unpack rxBuff 3
@@ -52,8 +62,8 @@ handleDiscovery rbus@RBUS{..} len =
 
 
 handleAddress :: RBUS -> Uint8 -> Ivory (ProcEffects s t) ()
-handleAddress rbus@RBUS{..} len =
-    when (len ==? 15) $ do
+handleAddress rbus@RBUS{..} size =
+    when (size ==? 15) $ do
         isValid <- local $ ival true
         arrayMap $ \ix -> do
             m  <- deref $ mac ! ix

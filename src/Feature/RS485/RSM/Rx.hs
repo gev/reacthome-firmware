@@ -8,27 +8,31 @@ module Feature.RS485.RSM.Rx where
 
 import           Core.Domain                   (Domain (shouldInit))
 import           Core.Transport
-import           Data.Concurrent.Queue         as Q
 import           Feature.RS485.RSM.Data
 import           Interface.SystemClock
 import           Ivory.Language
 import           Ivory.Stdlib
+import qualified Interface.RS485 as I
 
 
 
 
-rxHandle :: RSM -> Uint16 -> Ivory eff ()
-rxHandle RSM{..} value = do
+rxHandle :: RSM -> Ivory eff ()
+rxHandle RSM{..} = do
     store rxLock true
     store rxTimestamp =<< getSystemTime clock
-    push rxQueue $ \i ->
-        store (rxBuff ! toIx i) value
 
 
 
 rxTask :: RSM -> Ivory (ProcEffects s ()) ()
 rxTask = rxRS485
 
+
+errorHandle :: RSM -> Ivory eff ()
+errorHandle RSM{..} = do
+    I.clearRX rs
+    store rxLock false
+    store rsSize 0
 
 
 {-
@@ -42,8 +46,8 @@ rxRS485 RSM{..} = do
         t0        <- deref rxTimestamp
         t1        <- getSystemTime clock
         let dt     = 40_000 ./ baudrate' + 1 -- wait 4 bytes timeout
-        pop rxQueue $ \i -> do
-            store (rsBuff ! toIx rsSize') . castDefault =<< deref (rxBuff ! toIx i)
+        I.receive rs $ \v -> do
+            store (rsBuff ! toIx rsSize') $ castDefault v
             store rsSize $ rsSize' + 1
         when (rsSize' >? 0 .&& t1 - t0 >? dt) $ do
             lazyTransmit transport (rsSize' + 2) $ \transmit -> do

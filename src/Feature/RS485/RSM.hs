@@ -6,7 +6,6 @@
 {-# LANGUAGE RecordWildCards           #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
-{-# LANGUAGE ExistentialQuantification #-}
 
 module Feature.RS485.RSM where
 
@@ -28,7 +27,7 @@ import           Feature.RS485.RSM.Data
 import           Feature.RS485.RSM.Rx
 import           Feature.RS485.RSM.Tx
 import           GHC.TypeNats
-import           Interface.MCU          (MCU (peripherals, systemClock))
+import           Interface.MCU          
 import           Interface.RS485        (RS485)
 import qualified Interface.RS485        as I
 import qualified Interface.RS485        as RS
@@ -39,12 +38,12 @@ import           Ivory.Stdlib
 
 
 rsm :: (MonadState Context m, MonadReader (D.Domain p c) m, LazyTransport t, Transport t)
-     => List n (m (I.RS485 300)) -> t -> m (List n RSM)
+     => List n (m (I.RS485 32 300)) -> t -> m (List n RSM)
 rsm rs485 transport = zipWithM (rsm' transport) rs485 nats
 
 
 rsm' :: (MonadState Context m, MonadReader (D.Domain p c) m, LazyTransport t, Transport t)
-     => t -> m (I.RS485 300) -> Int -> m RSM
+     => t -> m (I.RS485 32 300) -> Int -> m RSM
 rsm' transport rs485 index = do
     rs               <- rs485
 
@@ -57,8 +56,6 @@ rsm' transport rs485 index = do
     rs               <- rs485
     baudrate         <- value  (name <> "_baudrate"         ) 9600
     lineControl      <- value  (name <> "_line_control"     ) 0
-    rxBuff           <- buffer (name <> "_rx"               )
-    rxQueue          <- queue  (name <> "_rx"               )
     rsBuff           <- buffer (name <> "_rs"               )
     rsSize           <- value  (name <> "_rs_size"          ) 0
     rxLock           <- value  (name <> "_rx_lock"          ) false
@@ -73,7 +70,6 @@ rsm' transport rs485 index = do
 
 
     let rsm = RSM { index, clock, rs, baudrate, lineControl
-                    , rxBuff, rxQueue
                     , rsBuff, rsSize
                     , rxLock, txLock
                     , rxTimestamp, txTimestamp
@@ -83,7 +79,7 @@ rsm' transport rs485 index = do
                     , transport
                     }
 
-    addHandler $ I.HandleRS485 rs (rxHandle rsm) (txHandle rsm)
+    addHandler $ I.HandleRS485 rs (rxHandle rsm) (txHandle rsm) (errorHandle rsm)
 
     addTask $ yeld (name <> "_rx"   ) $ rxTask    rsm
     addTask $ yeld (name <> "_sync" ) $ syncTask  rsm
@@ -181,7 +177,7 @@ configureMode :: RSM -> Ivory eff ()
 configureMode r = do
     configureRS485 r
     store (rxLock r) false
-    Q.clear $ rxQueue r
+    I.clearRX $ rs r
 
 
 
