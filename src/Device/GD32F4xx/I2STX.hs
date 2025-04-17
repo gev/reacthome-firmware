@@ -107,10 +107,10 @@ handleDMA :: KnownNat n => I2STX n -> Ivory (AllowBreak eff) Uint32 -> Ivory eff
 handleDMA i2s transmit = do
     f <- getInterruptFlagDMA (dmaPer i2s) (dmaCh i2s) dma_int_flag_ftf
     S.when f $ do
+        clearInterruptFlagDMA (dmaPer i2s) (dmaCh i2s) dma_int_flag_ftf
         numBuff <- deref $ sendNumBuff i2s
         ifte_ (numBuff ==? 0) 
             (do 
-                clearInterruptFlagDMA (dmaPer i2s) (dmaCh i2s) dma_int_flag_ftf
                 store (dmaParams i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray (txBuff1 i2s))
                 enableSpiDma (spi i2s) spi_dma_transmit
                 arrayMap $ \ix -> do
@@ -119,7 +119,6 @@ handleDMA i2s transmit = do
                 store (sendNumBuff i2s) 1
             ) 
             (do 
-                clearInterruptFlagDMA (dmaPer i2s) (dmaCh i2s) dma_int_flag_ftf
                 store (dmaParams i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray (txBuff2 i2s))
                 enableSpiDma (spi i2s) spi_dma_transmit
                 arrayMap $ \ix -> do
