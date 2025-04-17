@@ -29,12 +29,16 @@ import               Ivory.Support
 import               Data.Record
 import               Support.Device.GD32F4xx.Misc
 import               Support.Cast
+import Data.Value
 
 data I2SRX n = I2SRX  { i2s_add   :: SPI_PERIPH
                       , dmaPer    :: DMA_PERIPH
                       , dmaCh     :: DMA_CHANNEL
+                      , dmaParams :: Record DMA_SINGLE_PARAM_STRUCT
                       , dmaIRQn   :: IRQn
-                      , rxBuff    :: Buffer n Uint32
+                      , numRxBuff :: Value Uint8
+                      , rxBuff0   :: Buffer n Uint32
+                      , rxBuff1   :: Buffer n Uint32
                       }
 
 mkI2SRX :: (MonadState Context m, KnownNat n)   
@@ -54,14 +58,16 @@ mkI2SRX i2s_add rcuDma dmaPer dmaCh dmaSubPer dmaIRQn rxPin = do
                            , priority            .= ival dma_priority_high
                            ]
     dmaParams  <- record (symbol i2s_add <> "_dma_param") dmaInit
-    rxBuff     <- buffer (symbol i2s_add <> "_rx_buff")
+    rxBuff0    <- buffer (symbol i2s_add <> "_rx_buff")
+    rxBuff1    <- buffer (symbol i2s_add <> "_rx_buff")
+    numRxBuff  <- value  (symbol i2s_add <> "_num_rx_buff") 0
 
     let rx   = rxPin gpio_pupd_none
     G.initPort rx
 
     addInit (symbol i2s_add) $ do 
         store (dmaParams ~> periph_addr) =<< dataSPI i2s_add
-        store (dmaParams ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray rxBuff) 
+        store (dmaParams ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray rxBuff0) 
         enablePeriphClock   rcuDma
         configFullDuplexModeI2S i2s_add i2s_mode_mastertx i2s_std_phillips i2s_ckpl_low i2s_frameformat_dt32b_ch32b
         enableI2S           i2s_add
@@ -70,7 +76,7 @@ mkI2SRX i2s_add rcuDma dmaPer dmaCh dmaSubPer dmaIRQn rxPin = do
         enableInterruptDMA  dmaPer dmaCh dma_chxctl_ftfie
         enableSpiDma        i2s_add spi_dma_receive
         
-    pure I2SRX {i2s_add, dmaPer, dmaCh, dmaIRQn, rxBuff}
+    pure I2SRX {i2s_add, dmaPer, dmaCh, dmaParams, dmaIRQn, numRxBuff, rxBuff0, rxBuff1}
 
 
 instance KnownNat n => Handler I.HandleI2SRX (I2SRX n) where
@@ -83,7 +89,23 @@ handleDMA i2s handle = do
     f <- getInterruptFlagDMA (dmaPer i2s) (dmaCh i2s) dma_int_flag_ftf
     S.when f $ do 
         clearInterruptFlagDMA (dmaPer i2s) (dmaCh i2s) dma_int_flag_ftf
-        arrayMap $ \ix -> do 
-            word <- deref (rxBuff i2s ! ix)
-            handle $ swap16bit word
+        numBuff <- deref $ numRxBuff i2s
+        ifte_ (numBuff ==? 0) 
+            (do
+                receiveBuff i2s (rxBuff0 i2s) (rxBuff1 i2s) handle
+                store (numRxBuff i2s) 1
+            )
+            (do
+                receiveBuff i2s (rxBuff1 i2s) (rxBuff0 i2s) handle
+                store (numRxBuff i2s) 0
+            )
+
+
+
+receiveBuff :: KnownNat n => I2SRX n -> Buffer n Uint32 -> Buffer n Uint32 -> (Uint32 -> Ivory (AllowBreak eff) ()) -> Ivory eff ()
+receiveBuff i2s buff0 buff1 handle = do
+    store (dmaParams i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray buff0)
+    arrayMap $ \ix -> do 
+        word <- deref (buff1 ! ix)
+        handle $ swap16bit word
     where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)
