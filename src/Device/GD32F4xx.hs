@@ -26,6 +26,8 @@ import           Device.GD32F4xx.Timer             (Timer, cfg_timer_1,
                                                     cfg_timer_2, cfg_timer_3,
                                                     cfg_timer_6, cfg_timer_7)
 import           Device.GD32F4xx.UART
+import           Device.GD32F4xx.I2STX
+import           Device.GD32F4xx.I2SRX
 import           GHC.TypeNats
 import           Interface.GPIO.Port
 import           Interface.Mac                     (Mac)
@@ -41,6 +43,7 @@ import           Support.Device.GD32F4xx.IRQ
 import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.Timer
 import           Support.Device.GD32F4xx.USART
+import           Support.Device.GD32F4xx.SPI
 
 
 
@@ -53,6 +56,8 @@ type Timer'     = forall m.   MonadState Context m => Uint32 -> Uint32 -> m Time
 type PWM'       = forall m.   MonadState Context m => Uint32 -> Uint32 -> m PWM
 type NeoPixel'  = forall m.   MonadState Context m => m NeoPixel
 type OneWire'   = forall m.   MonadState Context m => m OpenDrain -> m OneWire
+type I2STX'     = forall m n. MonadState Context m => KnownNat n => m (I2STX n)
+type I2SRX'     = forall m n. MonadState Context m => KnownNat n => m (I2SRX n)
 type Enet'      = forall m.   MonadState Context m => m ENET
 
 
@@ -252,6 +257,10 @@ data GD32F4xx = GD32F4xx
     , npx_pwm_1 :: NeoPixel'
 
     , ow_0      :: OneWire'
+
+    , i2s_tx_1  :: I2STX'
+
+    , i2s_rx_1  :: I2SRX'
 
     , eth_0     :: Enet'
 
@@ -536,6 +545,21 @@ gd32f4xx = MCUmod $ mkMCU G.systemClock makeMac inclGD32F4xx GD32F4xx
 
 
     , ow_0  = mkOneWire cfg_timer_6
+
+    , i2s_tx_1 = mkI2STX spi1 rcu_spi1
+                         rcu_dma0 dma0 dma_ch4 
+                         dma_subperi0
+                         dma0_channel4_irqn
+                         (pb_15  af_5)
+                         (pd_1  af_7)
+                         (pc_7  af_5)
+                         (pc_6  af_5)
+
+    , i2s_rx_1 = mkI2SRX i2s1_add
+                         rcu_dma0 dma0 dma_ch3 
+                         dma_subperi3
+                         dma0_channel3_irqn
+                         (pb_14  af_6)
 
     , eth_0 = mkENET  (pa_1  af_11)
                       (pa_2  af_11)
