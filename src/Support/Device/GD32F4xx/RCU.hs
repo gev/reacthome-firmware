@@ -33,6 +33,9 @@ module Support.Device.GD32F4xx.RCU
     , rcu_enetrx
     , rcu_i2c0
     , rcu_i2c1
+    , rcu_spi1
+    , rcu_spi2
+
     , rcu_timer_psc_mul4
 
     , enablePeriphClock
@@ -75,6 +78,8 @@ rcu_enettx = RCU_PERIPH $ ext "RCU_ENETTX"
 rcu_enetrx = RCU_PERIPH $ ext "RCU_ENETRX"
 rcu_i2c0    = RCU_PERIPH $ ext "RCU_I2C0"
 rcu_i2c1    = RCU_PERIPH $ ext "RCU_I2C1"
+rcu_spi1    = RCU_PERIPH $ ext "RCU_SPI1"
+rcu_spi2    = RCU_PERIPH $ ext "RCU_SPI2"
 
 
 newtype TIMER_PSC_MUL = TIMER_PSC_MUL Uint32
@@ -124,6 +129,9 @@ inclRCU = do
     inclSym rcu_enetrx
     inclSym rcu_i2c0
     inclSym rcu_i2c1
+    inclSym rcu_spi1
+    inclSym rcu_spi2
+
     inclSym rcu_timer_psc_mul4
 
     incl rcu_periph_clock_enable

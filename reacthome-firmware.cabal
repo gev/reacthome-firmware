@@ -1,343 +1,325 @@
-cabal-version:      3.6
-name:               reacthome-firmware
-version:            0.1.0.0
-
+cabal-version: 3.6
+name: reacthome-firmware
+version: 0.1.0.0
 -- A short (one-line) description of the package.
 -- synopsis:
-
 -- A longer description of the package.
 -- description:
-
 -- A URL where users can report bugs.
 -- bug-reports:
-
 -- The license under which the package is released.
 -- license:
-author:               Evgeny Gazdovsky
-maintainer:           gazdovsky@gmail.com
-
+author: Evgeny Gazdovsky
+maintainer: gazdovsky@gmail.com
 -- A copyright notice.
 -- copyright:
 -- category:
-extra-source-files:   CHANGELOG.md
+extra-source-files: CHANGELOG.md
 
 executable reacthome-firmware
-    main-is:          Main.hs
+  main-is: Main.hs
+  -- Modules included in this executable, other than Main.
+  other-modules:
+    Build.Compiler
+    Build.Compiler.GCC
+    Build.Compiler.GCC.Config
+    Build.Compiler.GCC.GD32F3x0
+    Build.Compiler.GCC.GD32F4xx
+    Build.Firmware
+    Build.Shake
+    Core.Actions
+    Core.Context
+    Core.Controller
+    Core.Dispatcher
+    Core.Domain
+    Core.FSM
+    Core.Formula
+    Core.Handler
+    Core.Models
+    Core.Scheduler
+    Core.Task
+    Core.Transport
+    Core.Version
+    Data.Area
+    Data.Buffer
+    Data.Color
+    Data.Concurrent.Queue
+    Data.Concurrent.Semaphore
+    Data.Display.Canvas1D
+    Data.Display.FrameBuffer.NeoPixel
+    Data.Fixed
+    Data.Index
+    Data.Matrix
+    Data.Record
+    Data.Serialize
+    Data.Value
+    Device.GD32F3x0
+    Device.GD32F3x0.ADC
+    Device.GD32F3x0.DAC
+    Device.GD32F3x0.Display.NeoPixel
+    Device.GD32F3x0.EXTI
+    Device.GD32F3x0.Flash
+    Device.GD32F3x0.GPIO
+    Device.GD32F3x0.GPIO.Input
+    Device.GD32F3x0.GPIO.Mode
+    Device.GD32F3x0.GPIO.OpenDrain
+    Device.GD32F3x0.GPIO.Output
+    Device.GD32F3x0.GPIO.Port
+    Device.GD32F3x0.I2C
+    Device.GD32F3x0.Mac
+    Device.GD32F3x0.PWM
+    Device.GD32F3x0.SysTick
+    Device.GD32F3x0.SystemClock
+    Device.GD32F3x0.Timer
+    Device.GD32F3x0.UART
+    Device.GD32F4xx
+    Device.GD32F4xx.Display.NeoPixel
+    Device.GD32F4xx.ENET
+    Device.GD32F4xx.Flash
+    Device.GD32F4xx.GPIO
+    Device.GD32F4xx.GPIO.Input
+    Device.GD32F4xx.GPIO.Mode
+    Device.GD32F4xx.GPIO.OpenDrain
+    Device.GD32F4xx.GPIO.Output
+    Device.GD32F4xx.GPIO.Port
+    Device.GD32F4xx.I2SRX
+    Device.GD32F4xx.I2STX
+    Device.GD32F4xx.Mac
+    Device.GD32F4xx.PWM
+    Device.GD32F4xx.SysTick
+    Device.GD32F4xx.SystemClock
+    Device.GD32F4xx.Timer
+    Device.GD32F4xx.UART
+    Endpoint.ALED
+    Endpoint.ALED.Animation
+    Endpoint.ALED.Animation.Color.Fade
+    Endpoint.ALED.Animation.Color.RandomT
+    Endpoint.ALED.Animation.Color.RandomX
+    Endpoint.ALED.Animation.Color.SpectrumT
+    Endpoint.ALED.Animation.Color.SpectrumX
+    Endpoint.ALED.Animation.CosT
+    Endpoint.ALED.Animation.Data
+    Endpoint.ALED.Animation.Mask.Blink
+    Endpoint.ALED.Animation.Mask.Eiffel
+    Endpoint.ALED.Animation.Mask.FadeOff
+    Endpoint.ALED.Animation.Mask.FadeOn
+    Endpoint.ALED.Animation.Mask.Off
+    Endpoint.ALED.Animation.Mask.On
+    Endpoint.ALED.Animation.Mask.Random
+    Endpoint.ALED.Animation.Mask.RandomOff
+    Endpoint.ALED.Animation.Mask.RandomOn
+    Endpoint.ALED.Animation.Mask.Slide
+    Endpoint.ALED.Animation.Mask.SlideInOut
+    Endpoint.ALED.Animation.Mask.SlideInOut'
+    Endpoint.ALED.Animation.Mask.SlideOff
+    Endpoint.ALED.Animation.Mask.SlideOffInOut
+    Endpoint.ALED.Animation.Mask.SlideOn
+    Endpoint.ALED.Animation.Mask.SlideOnInOut
+    Endpoint.AOutputs
+    Endpoint.ATS
+    Endpoint.DInputs
+    Endpoint.DInputsRelaysRules
+    Endpoint.Dimmers
+    Endpoint.Groups
+    Endpoint.Relays
+    Feature.ALED
+    Feature.AOutputs
+    Feature.DInputs
+    Feature.DS18B20
+    Feature.Dimmers
+    Feature.Dimmers.AC
+    Feature.Dimmers.DC
+    Feature.Dopplers
+    Feature.Indicator
+    Feature.Mix.Indicator
+    Feature.RS485.RBUS
+    Feature.RS485.RBUS.Data
+    Feature.RS485.RBUS.Rx
+    Feature.RS485.RBUS.Tx
+    Feature.RS485.RSM
+    Feature.RS485.RSM.Data
+    Feature.RS485.RSM.Rx
+    Feature.RS485.RSM.Tx
+    Feature.Relays
+    Feature.Scd40
+    Feature.Sht21
+    Feature.Smart.Top
+    Feature.Smart.Top.Buttons
+    Feature.Smart.Top.LEDs
+    Feature.Smart.Top.Palette
+    Feature.Smart.Top.PowerTouch
+    Feature.Smart.Top.Vibro
+    Formula.Blink330
+    Formula.Blink450
+    Formula.DI4
+    Formula.DI4LA
+    Formula.DI4RSM
+    Formula.DimmerAC1
+    Formula.DimmerAC12
+    Formula.DimmerDC12
+    Formula.Doppler1
+    Formula.Doppler5
+    Formula.Echo
+    Formula.Mix6x12
+    Formula.Relay12
+    Formula.RsHub4
+    Formula.Server
+    Formula.Smart.Bottom.Bottom1
+    Formula.Smart.Bottom.Bottom2
+    Formula.Smart.Top.TopA4P
+    Formula.Smart.Top.TopA4T
+    Formula.Smart.Top.TopA4TD
+    Formula.Smart.Top.TopA6P
+    Formula.Smart.Top.TopA6T
+    Formula.Smart.Top.TopG2
+    Formula.Smart.Top.TopG4
+    Formula.Smart.Top.TopG4D
+    Formula.Smart.Top.TopG6
+    Formula.UdpEcho450
+    Implementation.Blink
+    Implementation.DI
+    Implementation.DILA
+    Implementation.DIRSM
+    Implementation.Dimmer
+    Implementation.DimmerDIN
+    Implementation.Doppler
+    Implementation.Dummy
+    Implementation.Echo
+    Implementation.Hub
+    Implementation.Mix
+    Implementation.Relay
+    Implementation.Smart.Bottom
+    Implementation.Smart.TopA4P
+    Implementation.Smart.TopA4T
+    Implementation.Smart.TopA4TD
+    Implementation.Smart.TopA6T
+    Implementation.Smart.TopAP
+    Implementation.Smart.TopG2
+    Implementation.Smart.TopG4
+    Implementation.Smart.TopG6
+    Implementation.Smart.TopGD
+    Implementation.UdpEcho
+    Interface.ADC
+    Interface.Counter
+    Interface.DAC
+    Interface.Display
+    Interface.ENET
+    Interface.EXTI
+    Interface.Flash
+    Interface.GPIO.Input
+    Interface.GPIO.OpenDrain
+    Interface.GPIO.Output
+    Interface.GPIO.Port
+    Interface.I2C
+    Interface.I2SRX
+    Interface.I2STX
+    Interface.LwipPort
+    Interface.MCU
+    Interface.Mac
+    Interface.OneWire
+    Interface.PWM
+    Interface.RS485
+    Interface.SystemClock
+    Interface.Timer
+    Interface.UART
+    Ivory.Support
+    Ivory.Support.Device.GD32F3x0
+    Ivory.Support.Device.GD32F4xx
+    Protocol.OneWire.Master
+    Protocol.RS485.RBUS
+    Protocol.RS485.RBUS.Master
+    Protocol.RS485.RBUS.Master.MacTable
+    Protocol.RS485.RBUS.Master.Rx
+    Protocol.RS485.RBUS.Master.Tx
+    Protocol.RS485.RBUS.Slave
+    Protocol.RS485.RBUS.Slave.Rx
+    Protocol.RS485.RBUS.Slave.Tx
+    Protocol.UART.RBUS
+    Protocol.UART.RBUS.Rx
+    Protocol.UART.RBUS.Tx
+    Support.CMSIS.CoreCM4
+    Support.CMSIS.CoreCMFunc
+    Support.Cast
+    Support.Device.GD32F3x0
+    Support.Device.GD32F3x0.ADC
+    Support.Device.GD32F3x0.DAC
+    Support.Device.GD32F3x0.DBG
+    Support.Device.GD32F3x0.DMA
+    Support.Device.GD32F3x0.EXTI
+    Support.Device.GD32F3x0.FMC
+    Support.Device.GD32F3x0.GPIO
+    Support.Device.GD32F3x0.I2C
+    Support.Device.GD32F3x0.IRQ
+    Support.Device.GD32F3x0.Misc
+    Support.Device.GD32F3x0.RCU
+    Support.Device.GD32F3x0.SYSCFG
+    Support.Device.GD32F3x0.System
+    Support.Device.GD32F3x0.Timer
+    Support.Device.GD32F3x0.USART
+    Support.Device.GD32F4xx
+    Support.Device.GD32F4xx.DBG
+    Support.Device.GD32F4xx.DMA
+    Support.Device.GD32F4xx.ENET
+    Support.Device.GD32F4xx.EXTI
+    Support.Device.GD32F4xx.FMC
+    Support.Device.GD32F4xx.GPIO
+    Support.Device.GD32F4xx.I2C
+    Support.Device.GD32F4xx.IRQ
+    Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif
+    Support.Device.GD32F4xx.Misc
+    Support.Device.GD32F4xx.RCU
+    Support.Device.GD32F4xx.SPI
+    Support.Device.GD32F4xx.SYSCFG
+    Support.Device.GD32F4xx.System
+    Support.Device.GD32F4xx.Timer
+    Support.Device.GD32F4xx.USART
+    Support.Lwip.Err
+    Support.Lwip.Etharp
+    Support.Lwip.Ethernet
+    Support.Lwip.IP_addr
+    Support.Lwip.Igmp
+    Support.Lwip.Mem
+    Support.Lwip.Memp
+    Support.Lwip.Netif
+    Support.Lwip.Pbuf
+    Support.Lwip.Tcp
+    Support.Lwip.Udp
+    Support.ReadAddr
+    Support.Serialize
+    Test
+    Transport.RS485.RBUS
+    Transport.RS485.RBUS.Data
+    Transport.RS485.RBUS.Rx
+    Transport.RS485.RBUS.Tx
+    Transport.UART.RBUS
+    Transport.UART.RBUS.Data
+    Transport.UART.RBUS.Rx
+    Transport.UART.RBUS.Tx
+    Transport.UDP.RBUS
+    Transport.UDP.RBUS.Data
+    Transport.UDP.RBUS.Rx
+    Transport.UDP.RBUS.Tx
+    Util.CRC16
+    Util.Random
+    Util.String
 
-    -- Modules included in this executable, other than Main.
-    other-modules:    Core.Controller
-                    , Core.Context
-                    , Core.Domain
-                    , Core.Dispatcher
-                    , Core.Formula
-                    , Core.FSM
-                    , Core.Handler
-                    , Core.Scheduler
-                    , Core.Task
-                    , Core.Transport
-                    , Core.Version
-                    , Core.Actions
-                    , Core.Models
+  build-depends:
+    base >=4.16 && <5.0,
+    bytestring,
+    ivory,
+    ivory-backend-c,
+    ivory-stdlib,
+    mtl,
+    pureMD5,
+    shake,
+    template-haskell,
 
-                    , Build.Compiler
-                    , Build.Compiler.GCC
-                    , Build.Compiler.GCC.Config
-                    , Build.Compiler.GCC.GD32F3x0
-                    , Build.Compiler.GCC.GD32F4xx
-                    , Build.Firmware
-                    , Build.Shake
+  hs-source-dirs:
+    app
+    formula
+    src
+    test
 
-                    , Data.Fixed
-                    , Data.Area
-                    , Data.Value
-                    , Data.Record
-                    , Data.Buffer
-                    , Data.Index
-                    , Data.Matrix
-                    , Data.Color
-                    , Data.Display.Canvas1D
-                    , Data.Display.FrameBuffer.NeoPixel
-                    , Data.Serialize
-                    , Data.Concurrent.Semaphore
-                    , Data.Concurrent.Queue
-
-                    , Endpoint.ALED
-                    , Endpoint.ALED.Animation
-                    , Endpoint.ALED.Animation.CosT
-                    , Endpoint.ALED.Animation.Data
-                    , Endpoint.ALED.Animation.Color.Fade
-                    , Endpoint.ALED.Animation.Color.RandomT
-                    , Endpoint.ALED.Animation.Color.RandomX
-                    , Endpoint.ALED.Animation.Color.SpectrumT
-                    , Endpoint.ALED.Animation.Color.SpectrumX
-                    , Endpoint.ALED.Animation.Mask.Blink
-                    , Endpoint.ALED.Animation.Mask.Eiffel
-                    , Endpoint.ALED.Animation.Mask.FadeOff
-                    , Endpoint.ALED.Animation.Mask.FadeOn
-                    , Endpoint.ALED.Animation.Mask.Off
-                    , Endpoint.ALED.Animation.Mask.On
-                    , Endpoint.ALED.Animation.Mask.Random
-                    , Endpoint.ALED.Animation.Mask.RandomOff
-                    , Endpoint.ALED.Animation.Mask.RandomOn
-                    , Endpoint.ALED.Animation.Mask.Slide
-                    , Endpoint.ALED.Animation.Mask.SlideInOut
-                    , Endpoint.ALED.Animation.Mask.SlideInOut'
-                    , Endpoint.ALED.Animation.Mask.SlideOff
-                    , Endpoint.ALED.Animation.Mask.SlideOffInOut
-                    , Endpoint.ALED.Animation.Mask.SlideOn
-                    , Endpoint.ALED.Animation.Mask.SlideOnInOut
-                    
-                    , Endpoint.ATS
-                    , Endpoint.DInputs
-                    , Endpoint.DInputsRelaysRules
-                    , Endpoint.Groups
-                    , Endpoint.Dimmers
-                    , Endpoint.Relays
-                    , Endpoint.AOutputs 
-
-                    , Feature.ALED
-                    , Feature.AOutputs
-                    , Feature.DInputs
-                    , Feature.Dimmers
-                    , Feature.Dimmers.AC
-                    , Feature.Dimmers.DC
-                    , Feature.Dopplers
-                    , Feature.DS18B20
-                    , Feature.Indicator
-                    , Feature.Mix.Indicator
-                    , Feature.Relays
-                    , Feature.RS485.RBUS
-                    , Feature.RS485.RBUS.Data
-                    , Feature.RS485.RBUS.Rx
-                    , Feature.RS485.RBUS.Tx
-                    , Feature.RS485.RSM
-                    , Feature.RS485.RSM.Data
-                    , Feature.RS485.RSM.Rx
-                    , Feature.RS485.RSM.Tx
-                    , Feature.Scd40
-                    , Feature.Sht21
-                    , Feature.Smart.Top
-                    , Feature.Smart.Top.Buttons
-                    , Feature.Smart.Top.LEDs
-                    , Feature.Smart.Top.Palette
-                    , Feature.Smart.Top.PowerTouch
-                    , Feature.Smart.Top.Vibro
-
-                    , Formula.Blink330
-                    , Formula.Blink450
-                    , Formula.Echo
-                    , Formula.Relay12
-                    , Formula.Server
-                    , Formula.DimmerAC12
-                    , Formula.DimmerDC12
-                    , Formula.DimmerAC1
-                    , Formula.Mix6x12
-                    , Formula.DI4
-                    , Formula.DI4LA
-                    , Formula.DI4RSM
-                    , Formula.UdpEcho450
-                    , Formula.RsHub4
-                    , Formula.Smart.Top.TopA6P
-                    , Formula.Smart.Top.TopA4P
-                    , Formula.Smart.Top.TopG4D
-                    , Formula.Smart.Bottom.Bottom1
-                    , Formula.Smart.Bottom.Bottom2
-                    , Formula.Doppler1
-                    , Formula.Doppler5
-                    , Formula.Smart.Top.TopA4T
-                    , Formula.Smart.Top.TopA4TD
-                    , Formula.Smart.Top.TopA6T
-                    , Formula.Smart.Top.TopG6
-                    , Formula.Smart.Top.TopG4
-                    , Formula.Smart.Top.TopG2
-
-                    , Implementation.Blink
-                    , Implementation.DI
-                    , Implementation.DILA
-                    , Implementation.DIRSM 
-                    , Implementation.DimmerDIN
-                    , Implementation.Dimmer
-                    , Implementation.Dummy
-                    , Implementation.Echo
-                    , Implementation.Hub
-                    , Implementation.Mix
-                    , Implementation.Smart.Bottom
-                    , Implementation.Smart.TopAP
-                    , Implementation.Smart.TopA4P
-                    , Implementation.Smart.TopGD
-                    , Implementation.UdpEcho
-                    , Implementation.Relay
-                    , Implementation.Doppler
-                    , Implementation.Smart.TopA4T
-                    , Implementation.Smart.TopA4TD
-                    , Implementation.Smart.TopA6T
-                    , Implementation.Smart.TopG6
-                    , Implementation.Smart.TopG4
-                    , Implementation.Smart.TopG2
-
-                    , Interface.Counter
-                    , Interface.GPIO.Input
-                    , Interface.GPIO.Output
-                    , Interface.GPIO.OpenDrain
-                    , Interface.GPIO.Port
-                    , Interface.Mac
-                    , Interface.MCU
-                    , Interface.SystemClock
-                    , Interface.Timer
-                    , Interface.UART
-                    , Interface.RS485
-                    , Interface.OneWire
-                    , Interface.PWM
-                    , Interface.EXTI
-                    , Interface.Display
-                    , Interface.Flash
-                    , Interface.ENET
-                    , Interface.LwipPort
-                    , Interface.I2C
-                    , Interface.ADC
-                    , Interface.DAC
-
-                    , Protocol.OneWire.Master
-                    , Protocol.RS485.RBUS
-                    , Protocol.RS485.RBUS.Master
-                    , Protocol.RS485.RBUS.Master.MacTable
-                    , Protocol.RS485.RBUS.Master.Rx
-                    , Protocol.RS485.RBUS.Master.Tx
-                    , Protocol.RS485.RBUS.Slave
-                    , Protocol.RS485.RBUS.Slave.Rx
-                    , Protocol.RS485.RBUS.Slave.Tx
-                    , Protocol.UART.RBUS
-                    , Protocol.UART.RBUS.Rx
-                    , Protocol.UART.RBUS.Tx
-
-                    , Transport.RS485.RBUS
-                    , Transport.RS485.RBUS.Data
-                    , Transport.RS485.RBUS.Rx
-                    , Transport.RS485.RBUS.Tx
-                    , Transport.UART.RBUS
-                    , Transport.UART.RBUS.Data
-                    , Transport.UART.RBUS.Rx
-                    , Transport.UART.RBUS.Tx
-                    , Transport.UDP.RBUS
-                    , Transport.UDP.RBUS.Data
-                    , Transport.UDP.RBUS.Rx
-                    , Transport.UDP.RBUS.Tx
-
-                    , Device.GD32F3x0
-                    , Device.GD32F3x0.Display.NeoPixel
-                    , Device.GD32F3x0.EXTI
-                    , Device.GD32F3x0.GPIO
-                    , Device.GD32F3x0.GPIO.Mode
-                    , Device.GD32F3x0.GPIO.Port
-                    , Device.GD32F3x0.GPIO.Input
-                    , Device.GD32F3x0.GPIO.Output
-                    , Device.GD32F3x0.GPIO.OpenDrain
-                    , Device.GD32F3x0.Mac
-                    , Device.GD32F3x0.PWM
-                    , Device.GD32F3x0.SystemClock
-                    , Device.GD32F3x0.SysTick
-                    , Device.GD32F3x0.Timer
-                    , Device.GD32F3x0.UART
-                    , Device.GD32F3x0.Flash
-                    , Device.GD32F3x0.I2C
-                    , Device.GD32F3x0.ADC
-                    , Device.GD32F3x0.DAC
-                    
-                    , Device.GD32F4xx
-                    , Device.GD32F4xx.Display.NeoPixel
-                    , Device.GD32F4xx.GPIO
-                    , Device.GD32F4xx.GPIO.Mode
-                    , Device.GD32F4xx.GPIO.Port
-                    , Device.GD32F4xx.GPIO.Input
-                    , Device.GD32F4xx.GPIO.Output
-                    , Device.GD32F4xx.GPIO.OpenDrain
-                    , Device.GD32F4xx.Mac
-                    , Device.GD32F4xx.PWM
-                    , Device.GD32F4xx.SysTick
-                    , Device.GD32F4xx.SystemClock
-                    , Device.GD32F4xx.Timer
-                    , Device.GD32F4xx.UART
-                    , Device.GD32F4xx.Flash
-                    , Device.GD32F4xx.ENET
-
-                    , Ivory.Support
-                    , Ivory.Support.Device.GD32F3x0
-                    , Ivory.Support.Device.GD32F4xx
-
-                    , Support.Cast
-                    , Support.ReadAddr
-                    , Support.Serialize
-                    , Support.CMSIS.CoreCM4
-                    , Support.CMSIS.CoreCMFunc
-
-                    , Support.Device.GD32F3x0
-                    , Support.Device.GD32F3x0.DBG
-                    , Support.Device.GD32F3x0.DMA
-                    , Support.Device.GD32F3x0.GPIO
-                    , Support.Device.GD32F3x0.IRQ
-                    , Support.Device.GD32F3x0.Misc
-                    , Support.Device.GD32F3x0.RCU
-                    , Support.Device.GD32F3x0.Timer
-                    , Support.Device.GD32F3x0.USART
-                    , Support.Device.GD32F3x0.EXTI
-                    , Support.Device.GD32F3x0.SYSCFG
-                    , Support.Device.GD32F3x0.System
-                    , Support.Device.GD32F3x0.FMC
-                    , Support.Device.GD32F3x0.I2C
-                    , Support.Device.GD32F3x0.ADC
-                    , Support.Device.GD32F3x0.DAC 
-
-                    , Support.Device.GD32F4xx
-                    , Support.Device.GD32F4xx.DBG
-                    , Support.Device.GD32F4xx.DMA
-                    , Support.Device.GD32F4xx.GPIO
-                    , Support.Device.GD32F4xx.IRQ
-                    , Support.Device.GD32F4xx.Misc
-                    , Support.Device.GD32F4xx.RCU
-                    , Support.Device.GD32F4xx.Timer
-                    , Support.Device.GD32F4xx.USART
-                    , Support.Device.GD32F4xx.EXTI
-                    , Support.Device.GD32F4xx.SYSCFG
-                    , Support.Device.GD32F4xx.System
-                    , Support.Device.GD32F4xx.ENET
-                    , Support.Device.GD32F4xx.FMC
-                    , Support.Device.GD32F4xx.I2C
-                    , Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif
-                    , Support.Lwip.Ethernet 
-
-                    , Support.Lwip.Mem
-                    , Support.Lwip.Memp
-                    , Support.Lwip.IP_addr
-                    , Support.Lwip.Netif
-                    , Support.Lwip.Udp
-                    , Support.Lwip.Err
-                    , Support.Lwip.Pbuf
-                    , Support.Lwip.Tcp
-                    , Support.Lwip.Etharp
-                    , Support.Lwip.Igmp
-
-                    , Test
-
-                    , Util.CRC16
-                    , Util.Random
-                    , Util.String
-
-    build-depends:    base >=4.16 && <5.0
-                    , mtl  
-                    , ivory
-                    , ivory-backend-c
-                    , ivory-stdlib
-                    , shake
-                    , pureMD5
-                    , bytestring
-                    , template-haskell
-
-    hs-source-dirs:   app
-                    , formula
-                    , src
-                    , test
-
-    -- LANGUAGE extensions used by modules in this package.
-    -- other-extensions: 
-
-    default-language: Haskell2010
+  -- LANGUAGE extensions used by modules in this package.
+  -- other-extensions:
+  default-language: Haskell2010
