@@ -38,9 +38,9 @@ data I2STX n = I2STX  { spi         :: SPI_PERIPH
                       , dmaCh       :: DMA_CHANNEL
                       , dmaParams   :: Record DMA_SINGLE_PARAM_STRUCT
                       , dmaIRQn     :: IRQn
-                      , sendNumBuff :: Value Uint8
+                      , numTxBuff   :: Value Uint8
+                      , txBuff0     :: Buffer n Uint32
                       , txBuff1     :: Buffer n Uint32
-                      , txBuff2     :: Buffer n Uint32
                       }
 
 
@@ -66,9 +66,9 @@ mkI2STX spi rcuSpi rcuDma dmaPer dmaCh dmaSubPer dmaIRQn txPin wsPin sckPin mclk
                            , priority            .= ival dma_priority_ultra_high
                            ]
     dmaParams   <- record (symbol spi <> "_dma_param") dmaInit
-    sendNumBuff <- value  (symbol spi <> "_num_buff") 0
+    numTxBuff   <- value  (symbol spi <> "_num_tx_buff") 0
+    txBuff0     <- buffer $ symbol spi <> "_tx_buff0"
     txBuff1     <- buffer $ symbol spi <> "_tx_buff1"
-    txBuff2     <- buffer $ symbol spi <> "_tx_buff2"
 
     let tx   = txPin gpio_pupd_none
     let ws   = wsPin gpio_pupd_none
@@ -95,7 +95,7 @@ mkI2STX spi rcuSpi rcuDma dmaPer dmaCh dmaSubPer dmaIRQn txPin wsPin sckPin mclk
             enableSpiDma        spi spi_dma_transmit
 
 
-    pure I2STX {spi, dmaPer, dmaCh, dmaParams, dmaIRQn, sendNumBuff, txBuff1, txBuff2}
+    pure I2STX {spi, dmaPer, dmaCh, dmaParams, dmaIRQn, numTxBuff, txBuff0, txBuff1}
 
 
 instance KnownNat n => Handler I.HandleI2STX (I2STX n) where
@@ -108,22 +108,24 @@ handleDMA i2s transmit = do
     f <- getInterruptFlagDMA (dmaPer i2s) (dmaCh i2s) dma_int_flag_ftf
     S.when f $ do
         clearInterruptFlagDMA (dmaPer i2s) (dmaCh i2s) dma_int_flag_ftf
-        numBuff <- deref $ sendNumBuff i2s
+        numBuff <- deref $ numTxBuff i2s
         ifte_ (numBuff ==? 0) 
             (do 
-                store (dmaParams i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray (txBuff1 i2s))
-                enableSpiDma (spi i2s) spi_dma_transmit
-                arrayMap $ \ix -> do
-                    t <- transmit 
-                    store (txBuff2 i2s ! ix) $ swap16bit t
-                store (sendNumBuff i2s) 1
+                transmitBuff i2s (txBuff0 i2s) (txBuff1 i2s) transmit
+                store (numTxBuff i2s) 1
             ) 
             (do 
-                store (dmaParams i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray (txBuff2 i2s))
-                enableSpiDma (spi i2s) spi_dma_transmit
-                arrayMap $ \ix -> do
-                    t <- transmit
-                    store (txBuff1 i2s ! ix) $ swap16bit t
-                store (sendNumBuff i2s) 0
+                transmitBuff i2s (txBuff1 i2s) (txBuff0 i2s) transmit
+                store (numTxBuff i2s) 0
             )
+
+    
+
+transmitBuff :: KnownNat n => I2STX n -> Buffer n Uint32 -> Buffer n Uint32 -> Ivory (AllowBreak eff) Uint32 -> Ivory eff ()
+transmitBuff i2s buff0 buff1 transmit = do  
+    store (dmaParams i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray buff0)
+    enableSpiDma (spi i2s) spi_dma_transmit
+    arrayMap $ \ix -> do
+        t <- transmit 
+        store (buff1 ! ix) $ swap16bit t
     where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)
