@@ -267,6 +267,14 @@ void i2s_psc_config(uint32_t spi_periph, uint32_t i2s_audiosample, uint32_t i2s_
     rcu_osci_on(RCU_HXTAL);
     /* wait for oscillator stabilization flags is SET */
     rcu_osci_stab_wait(RCU_HXTAL);
+
+/////////////ADDED_DMITRY_TYAZHLOV////////////////
+    RCU_PLLI2S = 0;
+
+    RCU_PLLI2S |= (uint32_t)256 << 6;
+    RCU_PLLI2S |= (uint32_t)5 << 28;
+//////////////////////END/////////////////////////
+
     /* turn on the PLLI2S */
     rcu_osci_on(RCU_PLLI2S_CK);
     /* wait for PLLI2S flags is SET */
@@ -311,6 +319,11 @@ void i2s_psc_config(uint32_t spi_periph, uint32_t i2s_audiosample, uint32_t i2s_
         i2sdiv = 2U;
         i2sof = 0U;
     }
+
+/////////////ADDED_DMITRY_TYAZHLOV////////////////
+    i2sdiv = 2;
+    i2sof = 0;
+//////////////////////END/////////////////////////
 
     /* configure SPI_I2SPSC */
     SPI_I2SPSC(spi_periph) = (uint32_t)(i2sdiv | i2sof | i2s_mckout);
