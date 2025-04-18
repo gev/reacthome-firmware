@@ -1,10 +1,13 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE RecordWildCards       #-}
+{-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE NumericUnderscores    #-}
 
 module Build.Compiler.GCC.GD32F4xx where
 
 import           Build.Compiler
 import           Build.Compiler.GCC.Config
+import           Core.Formula              (Formula (Formula), mcu,
+                                            quartzFrequency, systemFrequency)
 import           Data.Char
 import           Device.GD32F4xx
 import           Interface.MCU
@@ -12,26 +15,24 @@ import           Interface.MCU
 
 instance Compiler GCC GD32F4xx where
 
-  mkCompiler MCUmod{..} =
+  mkCompiler f@Formula{mcu, quartzFrequency, systemFrequency} =
 
-    GCC { path    = model
+    GCC { path    = model mcu <> modification mcu
 
-        , defs    = [ "-D" <> (toUpper <$> model)
-                    , "-DUSE_STDPERIPH_DRIVER"
-                    ]
+        , defs    = ("-D" <>) <$> [ toUpper <$> model mcu
+                                  , "USE_STDPERIPH_DRIVER"
+                                  ] <> sysClockDefs quartzFrequency systemFrequency
 
-        , incs    = [ "-Isupport/inc"
-                    , "-Isupport/CMSIS/inc"
-                    , "-Isupport/device/gd32f4xx/inc"
-                    , "-Isupport/device/gd32f4xx/peripherals/inc"
-                    , "-Isupport/device/gd32f4xx/lwip_port"
-                    , "-Isupport/device/gd32f4xx/lwip_port/arch"
-                    , "-Isupport/device/gd32f4xx/lwip_port/Basic"
-                    , "-Isupport/device/ksz8091"
-                    , "-Isupport/lwip-2.1.2/src/include"
-                    ]
-
-
+        , incs    = ("-I" <>) <$> [ "support/inc"
+                                  , "support/CMSIS/inc"
+                                  , "support/device/gd32f4xx/inc"
+                                  , "support/device/gd32f4xx/peripherals/inc"
+                                  , "support/device/gd32f4xx/lwip_port"
+                                  , "support/device/gd32f4xx/lwip_port/arch"
+                                  , "support/device/gd32f4xx/lwip_port/Basic"
+                                  , "support/device/ksz8091"
+                                  , "support/lwip-2.1.2/src/include"
+                                  ]
 
         , libs    = [ "support/device/gd32f4xx"
                     , "support/lwip-2.1.2/src"
@@ -64,3 +65,12 @@ instance Compiler GCC GD32F4xx where
                     , "-specs=nano.specs"
                     ]
         }
+
+sysClockDefs :: Int -> Int -> [String]
+sysClockDefs 25_000_000 200_000_000 = [ "HXTAL_VALUE=((uint32_t)25000000)"
+                                      , "__SYSTEM_CLOCK_200M_PLL_25M_HXTAL=(uint32_t)(200000000)"
+                                      ]
+sysClockDefs 24_000_000 240_000_000 = ["HXTAL_VALUE=((uint32_t)24000000)"
+                                      , "__SYSTEM_CLOCK_240M_PLL_24M_HXTAL=(uint32_t)(240000000)"
+                                      ]
+sysClockDefs          _           _ = error "Unsupported clock configuration"

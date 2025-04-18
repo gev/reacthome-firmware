@@ -1,8 +1,7 @@
 {
   "haskell.formattingProvider": "stylish-haskell",
-  "editor.formatOnSave": false,
   "editor.formatOnType": false,
-  "C_Cpp.formatting": "Disabled",
+  "C_Cpp.formatting": "disabled",
   "C_Cpp.autoAddFileAssociations": false,
   "cSpell.words": [
     "ADVCTL",

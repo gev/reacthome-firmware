@@ -7,6 +7,7 @@
 module Support.Cast
     ( castArrayUint8ToUint32
     , castArrayUint16ToUint32
+    , castArrayUint32ToUint32
     , castConstArrayUint8ToUint32
     , castConstArrayUint16ToUint32
     , castFloatToUint16
@@ -26,6 +27,7 @@ inclCast = do
     incl cast_to_uint16
     incl cast_array_uint8_to_uint32
     incl cast_array_uint16_to_uint32
+    incl cast_array_uint32_to_uint32
     incl deref_uint32
 
 
@@ -41,6 +43,12 @@ castArrayUint16ToUint32 = call cast_array_uint16_to_uint32
 
 cast_array_uint16_to_uint32 :: Def ('[Ref s (CArray (Stored Uint16))] :-> Uint32)
 cast_array_uint16_to_uint32 = importProc "cast_to_uint32" "cast.h"
+
+castArrayUint32ToUint32 :: Ref s (CArray (Stored Uint32)) -> Ivory eff Uint32
+castArrayUint32ToUint32 = call cast_array_uint32_to_uint32
+
+cast_array_uint32_to_uint32 :: Def ('[Ref s (CArray (Stored Uint32))] :-> Uint32)
+cast_array_uint32_to_uint32 = importProc "cast_to_uint32" "cast.h"
 
 
 

@@ -5,7 +5,6 @@
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE TypeOperators         #-}
 
 module Device.GD32F4xx.UART where
 
@@ -14,6 +13,7 @@ import           Control.Monad.State           (MonadState)
 import           Core.Context
 import           Core.Handler
 import           Data.Buffer
+import           Data.Concurrent.Queue as Q
 import           Data.Foldable
 import           Data.Maybe
 import           Data.Record
@@ -34,7 +34,8 @@ import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.USART as S
 
 
-data UART n = UART
+
+data UART rn tn = UART
     { uart      :: USART_PERIPH
     , rcu       :: RCU_PERIPH
     , uartIRQ   :: IRQn
@@ -44,12 +45,14 @@ data UART n = UART
     , dmaSubPer :: DMA_SUBPERIPH
     , dmaIRQn   :: IRQn
     , dmaParams :: Record DMA_SINGLE_PARAM_STRUCT
-    , txBuff    :: Buffer n Uint16
+    , rxQueue   :: Queue  rn
+    , rxBuff    :: Buffer rn Uint16
+    , txBuff    :: Buffer tn Uint16
     }
 
 
 
-mkUART :: (MonadState Context m, KnownNat n)
+mkUART :: (MonadState Context m, KnownNat rn, KnownNat tn)
        => USART_PERIPH
        -> RCU_PERIPH
        -> IRQn
@@ -60,7 +63,7 @@ mkUART :: (MonadState Context m, KnownNat n)
        -> IRQn
        -> (GPIO_PUPD -> G.Port)
        -> (GPIO_PUPD -> G.Port)
-       -> m (UART n)
+       -> m (UART rn tn)
 mkUART uart rcu uartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn rx' tx' = do
 
     let dmaInit = dmaParam [ periph_inc          .= ival dma_periph_increase_disable
@@ -71,6 +74,8 @@ mkUART uart rcu uartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn rx' tx' = do
                            , priority            .= ival dma_priority_ultra_high
                            ]
     dmaParams  <- record (symbol uart <> "_dma_param") dmaInit
+    rxQueue    <- queue  (symbol uart <> "_rx_queue")
+    rxBuff     <- buffer (symbol uart <> "_rx_buff")
     txBuff     <- buffer (symbol uart <> "_tx_buff")
 
     let rx = rx' gpio_pupd_none
@@ -86,70 +91,93 @@ mkUART uart rcu uartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn rx' tx' = do
             enableIrqNvic       dmaIRQn 1 0
             enablePeriphClock   rcu
 
-    pure UART { uart, rcu, uartIRQ, dmaRcu, dmaPer, dmaCh, dmaSubPer, dmaIRQn, dmaParams, txBuff }
+    pure UART { uart, rcu, uartIRQ, dmaRcu, dmaPer, dmaCh, dmaSubPer, dmaIRQn, dmaParams, rxQueue, rxBuff, txBuff }
 
 
 
-instance Handler I.HandleUART (UART n) where
-    addHandler (I.HandleUART UART{..} onReceive onTransmit onDrain) = do
-        addModule $ makeIRQHandler uartIRQ (handleUART uart onReceive onDrain)
+instance KnownNat rn => Handler I.HandleUART (UART rn tn) where
+    addHandler (I.HandleUART u@UART{..} onReceive onTransmit onDrain onError) = do
+        addModule $ makeIRQHandler uartIRQ (handleUART u onReceive onDrain onError)
         addModule $ makeIRQHandler dmaIRQn (handleDMA dmaPer dmaCh uart onTransmit onDrain)
 
 
-handleDMA :: DMA_PERIPH -> DMA_CHANNEL -> USART_PERIPH -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
+handleDMA :: DMA_PERIPH -> DMA_CHANNEL -> USART_PERIPH 
+          -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
 handleDMA dmaPer dmaCh uart onTransmit onDrain = do
     f <- getInterruptFlagDMA    dmaPer dmaCh dma_int_flag_ftf
     when f $ do
-        clearInterruptFlagDMA   dmaPer dmaCh dma_int_flag_ftf
         M.when (isJust onDrain) $ do
             enableInterrupt     uart usart_int_tc
         onTransmit
+        clearInterruptFlagDMA   dmaPer dmaCh dma_int_flag_ftf
 
 
-handleUART :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Maybe (Ivory eff ()) -> Ivory eff ()
-handleUART uart onReceive onDrain = do
-    handleReceive uart onReceive
+handleUART :: KnownNat rn 
+           => UART rn tn 
+           -> Ivory eff () 
+           -> Maybe (Ivory eff ()) 
+           -> Ivory eff () 
+           -> Ivory eff ()
+handleUART u@UART{..} onReceive onDrain onError = do
+    handleError u onError
+    handleReceive u onReceive
     traverse_ (handleDrain uart) onDrain
 
-handleReceive :: USART_PERIPH -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
-handleReceive uart onReceive = do
-    rbne  <- getInterruptFlag   uart usart_int_flag_rbne
+handleError :: KnownNat rn => UART rn tn -> Ivory eff () -> Ivory eff ()
+handleError UART{..} onError = do
+    errs <- sequence [ clear usart_int_flag_err_ferr   [usart_flag_ferr]
+                     , clear usart_int_flag_err_nerr   [usart_flag_nerr]
+                     , clear usart_int_flag_err_orerr  [usart_flag_orerr]
+                     , clear usart_int_flag_perr       [usart_flag_perr, usart_flag_eperr]
+                     , clear usart_int_flag_rbne_orerr [usart_flag_orerr]
+                     ]
+    let err = foldr (.||) false errs
+    when err onError
+    where clear i f = do
+            i' <- getInterruptFlag uart i
+            when i' $ do
+                mapM_ (clearFlag uart) f
+                clearInterruptFlag uart i
+            pure i'
+    
+handleReceive :: KnownNat rn => UART rn tn -> Ivory eff () -> Ivory eff ()
+handleReceive UART{..} onReceive = do
+    rbne  <- getInterruptFlag  uart usart_int_flag_rbne
     when rbne $ do
+        push rxQueue $ \i -> do
+            store (rxBuff ! toIx i) =<< S.receiveData uart
+            onReceive
         clearInterruptFlag     uart usart_int_flag_rbne
-        ferr        <- getFlag uart usart_flag_ferr
-        nerr        <- getFlag uart usart_flag_nerr
-        orerr       <- getFlag uart usart_flag_orerr
-        perr        <- getFlag uart usart_flag_perr
-        clearFlag              uart usart_flag_ferr
-        clearFlag              uart usart_flag_nerr
-        clearFlag              uart usart_flag_orerr
-        clearFlag              uart usart_flag_perr
-        when (iNot $ ferr .|| nerr .|| orerr .|| perr) $
-            onReceive =<< S.receiveData uart
 
 handleDrain :: USART_PERIPH -> Ivory eff () -> Ivory eff ()
 handleDrain uart onDrain = do
-    tc <- getInterruptFlag      uart usart_int_flag_tc
+    tc <- getInterruptFlag uart usart_int_flag_tc
     when tc $ do
-        clearInterruptFlag      uart usart_int_flag_tc
-        disableInterrupt        uart usart_int_tc
+        disableInterrupt   uart usart_int_tc
         onDrain
+        clearInterruptFlag uart usart_int_flag_tc
 
 
 
-instance KnownNat n => I.UART (UART n) where
+instance (KnownNat rn, KnownNat tn) => I.UART (UART rn tn) where
     configUART (UART {..}) baudrate length stop parity = do
-        deinitUSART         uart
-        configReceive       uart usart_receive_enable
-        configTransmit      uart usart_transmit_enable
-        enableInterrupt     uart usart_int_rbne
-        setBaudrate         uart baudrate
-        setWordLength       uart $ coerceWordLength length
-        setStopBit          uart $ coerceStopBit    stop
-        configParity        uart $ coerceParity     parity
-        enableUSART         uart
+        deinitUSART     uart
+        configReceive   uart usart_receive_enable
+        configTransmit  uart usart_transmit_enable
+        enableInterrupt uart usart_int_rbne
+        enableInterrupt uart usart_int_err
+        enableInterrupt uart usart_int_perr
+        setBaudrate     uart baudrate
+        setWordLength   uart $ coerceWordLength length
+        setStopBit      uart $ coerceStopBit    stop
+        configParity    uart $ coerceParity     parity
+        enableUSART     uart
 
+    clearRX UART{..} = Q.clear rxQueue
 
+    receive UART{..} read = 
+        pop rxQueue $ \i -> 
+            read =<< deref (rxBuff ! toIx i)
 
     transmit UART{..} write = do
         size <- local $ ival (0 :: Uint16)
@@ -189,5 +217,5 @@ coerceParity I.Odd  = usart_pm_odd
 
 
 
-instance Show (UART n) where
+instance Show (UART rn tn) where
     show UART{..} = symbol uart

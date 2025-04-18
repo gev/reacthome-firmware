@@ -7,26 +7,22 @@ module Implementation.Dimmer where
 import           Core.Actions
 import           Core.Controller
 import           Feature.Dimmers
-import           Feature.Indicator (Indicator, onFindMe)
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Stdlib
 
 
 
-data Dimmer n = Dimmer
-    { dimmers   :: Dimmers   n
-    , indicator :: Indicator 20
-    }
+newtype Dimmer n = Dimmer
+                 { dimmers :: Dimmers n }
 
 
 
-dimmer :: Monad m => m t -> (t -> m (Dimmers n)) ->(t -> m (Indicator 20)) -> m (Dimmer n)
-dimmer transport' dimmers' indicator' = do
+dimmer :: Monad m => m t -> (t -> m (Dimmers n)) -> m (Dimmer n)
+dimmer transport' dimmers' = do
     transport <- transport'
     dimmers   <- dimmers' transport
-    indicator <- indicator' transport
-    pure Dimmer { dimmers, indicator }
+    pure Dimmer { dimmers }
 
 
 
@@ -37,5 +33,4 @@ instance KnownNat n => Controller (Dimmer n) where
               , action ==? actionDim        ==> onDim      dimmers buff size
               , action ==? actionInitialize ==> onInit     dimmers buff size
               , action ==? actionGetState   ==> onGetState dimmers
-              , action ==? actionFindMe     ==> onFindMe   indicator buff size
               ]

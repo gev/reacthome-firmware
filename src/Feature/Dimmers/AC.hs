@@ -156,7 +156,7 @@ manageNoCrossZero :: KnownNat n => Dimmers n -> CrossZero -> Ivory eff ()
 manageNoCrossZero Dimmers{..} CrossZero{..} = do
     isNoCrossZero' <- deref isNoCrossZero
     when isNoCrossZero' $
-        zipWithM_ zip getPWMs nats
+        zipWithM_ zip getPWMs ints
     where
         zip :: I.PWM p => p -> Int -> Ivory eff ()
         zip pwm i = do

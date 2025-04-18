@@ -57,11 +57,11 @@ udpEcho enet = do
     addProc netifStatusCallback
     addProc udpEchoReceiveCallback
 
-    let sysNow :: Def ('[] :-> Uint32)
-        sysNow = proc "sys_now" $ body $
-            ret =<< getSystemTime (systemClock mcu)
+    -- let sysNow :: Def ('[] :-> Uint32)
+    --     sysNow = proc "sys_now" $ body $
+    --         ret =<< getSystemTime (systemClock mcu)
 
-    addProc sysNow
+    -- addProc sysNow
 
     addInit "udp_echo" $ do
         initMem
