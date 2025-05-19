@@ -1,8 +1,8 @@
+{-# LANGUAGE BlockArguments   #-}
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RecordWildCards  #-}
-{-# LANGUAGE BlockArguments #-}
 
 module Feature.Lanamp where
 
@@ -27,13 +27,11 @@ import           Ivory.Language
 
 
 data Lanamp t r = Lanamp
-    { i2stx     :: I2STX  t
-    , txBuff :: Buffer 2000 Uint32
-    , txQueue   :: Queue  2000
-    , i2srx     :: I2SRX  r
-    , rxBuff :: Buffer 2000 Uint32
-    , rxQueue   :: Queue  2000
-    , i2sWord     :: Value Uint32
+    { i2stx    :: I2STX  t
+    , i2sBuff  :: Buffer 2000 Uint32
+    , i2sQueue :: Queue  2000
+    , i2srx    :: I2SRX  r
+    , i2sWord  :: Value Uint32
     }
 
 mkLanAmp :: ( MonadState Context m
@@ -44,25 +42,20 @@ mkLanAmp :: ( MonadState Context m
 mkLanAmp i2stx' i2srx' = do
     let  name   =   "lanamp"
     mcu         <-  asks D.mcu
-    txBuff      <-  values' (name <> "txBuff") 0
-    txQueue     <-  queue   (name <> "_queue_tx")
-    rxBuff      <-  values' (name <> "rxBuff") 0
-    rxQueue     <-  queue   (name <> "_queue_rx")
+    i2sBuff     <-  values' (name <> "i2sBuff") 0
+    i2sQueue    <-  queue   (name <> "i2sQueue")
     i2stx       <-  i2stx' $ peripherals mcu
     i2srx       <-  i2srx' $ peripherals mcu
-    i2sWord       <-  value (name <> "_word1") 0
+    i2sWord     <-  value (name <> "_word1") 0
 
     let lanamp = Lanamp { i2stx
-                        , txBuff
-                        , txQueue
+                        , i2sBuff
+                        , i2sQueue
                         , i2srx
-                        , rxBuff
-                        , rxQueue
                         , i2sWord
                         }
 
 
-    addTask $ yeld "lanamp_sync" (sync lanamp)
     addHandler $ HandleI2SRX i2srx (receive lanamp)
     addHandler $ HandleI2STX i2stx (transmit lanamp)
 
@@ -72,19 +65,12 @@ mkLanAmp i2stx' i2srx' = do
 
 receive :: Lanamp t r -> Uint32 -> Ivory eff ()
 receive (Lanamp {..}) word =
-    push rxQueue $ \i -> do
-        store (rxBuff ! toIx i) word
+    push i2sQueue $ \i -> do
+        store (i2sBuff ! toIx i) word
 
 
 transmit :: Lanamp t r -> Ivory eff Uint32
 transmit (Lanamp {..}) = do
-    flip (pop' txQueue) (store i2sWord 0) $ \i -> do
-        store i2sWord =<< deref (txBuff ! toIx i)
+    flip (pop' i2sQueue) (store i2sWord 0) $ \i -> do
+        store i2sWord =<< deref (i2sBuff ! toIx i)
     deref i2sWord
-
-
-sync :: Lanamp t r -> Ivory eff ()
-sync (Lanamp {..}) = do
-     pop rxQueue $ \i -> do
-        push txQueue $ \j -> do
-            store (txBuff ! toIx j) =<< deref (rxBuff ! toIx i)

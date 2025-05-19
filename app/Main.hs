@@ -54,7 +54,7 @@ main = do
     --           , smartTopG6
     --           ]
     mapM_ gcc [ 
-               server
-              , soundbox
-              , rsHub4
+               soundbox
+            --   , server
+            --   , rsHub4
               ]

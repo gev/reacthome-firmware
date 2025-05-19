@@ -16,7 +16,7 @@ import           Data.Buffer
 
 data HandleI2SRX i = HandleI2SRX 
     { i2s    :: i 
-    , handle  :: forall n eff. Uint32 -> forall eff. Ivory eff ()
+    , handle  :: forall n eff. Uint32 -> Ivory eff ()
     }
 
 

@@ -127,5 +127,5 @@ transmitBuff i2s buff0 buff1 transmit = do
     enableSpiDma (spi i2s) spi_dma_transmit
     arrayMap $ \ix -> do
         t <- transmit 
-        store (buff1 ! ix) $ swap16bit t
-    where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)
+        store (buff1 ! ix)  t
+    -- where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)

@@ -107,5 +107,5 @@ receiveBuff i2s buff0 buff1 handle = do
     store (dmaParams i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray buff0)
     arrayMap $ \ix -> do 
         word <- deref (buff1 ! ix)
-        handle $ swap16bit word
-    where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)
+        handle  word
+    -- where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)
