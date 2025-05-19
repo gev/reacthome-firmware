@@ -42,8 +42,8 @@ mkLanAmp :: ( MonadState Context m
 mkLanAmp i2stx' i2srx' = do
     let  name   =   "lanamp"
     mcu         <-  asks D.mcu
-    i2sBuff     <-  values' (name <> "i2sBuff") 0
-    i2sQueue    <-  queue   (name <> "i2sQueue")
+    i2sBuff     <-  values' (name <> "_i2sBuff") 0
+    i2sQueue    <-  queue   (name <> "_i2sQueue")
     i2stx       <-  i2stx' $ peripherals mcu
     i2srx       <-  i2srx' $ peripherals mcu
     i2sWord     <-  value (name <> "_word1") 0

@@ -43,7 +43,7 @@ mkSRC4392 i2c' = do
 
     let src4392 = SRC4392 {i2c, address, config, tempBuff}
 
-    addInit "src4392_init" $ do
+    addInit "src4392" $ do
         address' <- deref address
         arrayMap $ \jx -> do
             arrayMap $ \ix -> store (tempBuff ! toIx ix) =<< deref (config ! jx ! ix)
