@@ -28,6 +28,7 @@ import           Device.GD32F4xx.Timer             (Timer, cfg_timer_1,
 import           Device.GD32F4xx.UART
 import           Device.GD32F4xx.I2STX
 import           Device.GD32F4xx.I2SRX
+import           Device.GD32F4xx.I2C
 import           GHC.TypeNats
 import           Interface.GPIO.Port
 import           Interface.Mac                     (Mac)
@@ -44,11 +45,13 @@ import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.Timer
 import           Support.Device.GD32F4xx.USART
 import           Support.Device.GD32F4xx.SPI
+import           Support.Device.GD32F4xx.I2C
 
 
 
 
 type UART'      = forall m rn tn. MonadState Context m => KnownNat rn => KnownNat tn => m (UART rn tn)
+type I2C'       = forall m n.     MonadState Context m => KnownNat n => m (I2C n)
 type Input'     = forall m.       MonadState Context m => GPIO_PUPD -> m Input
 type Output'    = forall m.       MonadState Context m => GPIO_PUPD -> m Output
 type OpenDrain' = forall m.       MonadState Context m => m OpenDrain
@@ -257,6 +260,8 @@ data GD32F4xx = GD32F4xx
     , npx_pwm_1 :: NeoPixel'
 
     , ow_0      :: OneWire'
+
+    , i2c_2     :: I2C'
 
     , i2s_tx_1  :: I2STX'
 
@@ -545,6 +550,13 @@ gd32f4xx = MCU $ mkPlatform G.systemClock makeMac inclGD32F4xx GD32F4xx
 
 
     , ow_0  = mkOneWire cfg_timer_6
+
+    , i2c_2 = mkI2C i2c2
+                    rcu_i2c2
+                    i2c2_ev_irqn
+                    i2c2_er_irqn
+                    (pc_9 af_4)
+                    (pa_8  af_4)
 
     , i2s_tx_1 = mkI2STX spi1 rcu_spi1
                          rcu_dma0 dma0 dma_ch4 

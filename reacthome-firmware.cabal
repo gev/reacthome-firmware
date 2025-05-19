@@ -90,6 +90,7 @@ executable reacthome-firmware
     Device.GD32F4xx.SystemClock
     Device.GD32F4xx.Timer
     Device.GD32F4xx.UART
+    Device.GD32F4xx.I2C
     Endpoint.ALED
     Endpoint.ALED.Animation
     Endpoint.ALED.Animation.Color.Fade
@@ -143,12 +144,14 @@ executable reacthome-firmware
     Feature.Relays
     Feature.Scd40
     Feature.Sht21
+    Feature.SRC4392
     Feature.Smart.Top
     Feature.Smart.Top.Buttons
     Feature.Smart.Top.LEDs
     Feature.Smart.Top.Palette
     Feature.Smart.Top.PowerTouch
     Feature.Smart.Top.Vibro
+    Feature.Lanamp
     Formula.Blink330
     Formula.Blink450
     Formula.DI4
@@ -176,6 +179,7 @@ executable reacthome-firmware
     Formula.Smart.Top.TopG4D
     Formula.Smart.Top.TopG6
     Formula.UdpEcho450
+    Formula.Soundbox
     Implementation.Blink
     Implementation.DI
     Implementation.DILA
@@ -199,6 +203,7 @@ executable reacthome-firmware
     Implementation.Smart.TopG6
     Implementation.Smart.TopGD
     Implementation.UdpEcho
+    Implementation.Soundbox
     Interface.ADC
     Interface.Counter
     Interface.DAC

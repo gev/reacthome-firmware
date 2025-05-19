@@ -70,7 +70,7 @@ sysClockDefs :: Int -> Int -> [String]
 sysClockDefs 25_000_000 200_000_000 = [ "HXTAL_VALUE=((uint32_t)25000000)"
                                       , "__SYSTEM_CLOCK_200M_PLL_25M_HXTAL=(uint32_t)(200000000)"
                                       ]
-sysClockDefs 24_000_000 240_000_000 = ["HXTAL_VALUE=((uint32_t)24000000)"
-                                      , "__SYSTEM_CLOCK_240M_PLL_24M_HXTAL=(uint32_t)(240000000)"
+sysClockDefs 24_000_000 192_000_000 = ["HXTAL_VALUE=((uint32_t)24000000)"
+                                      , "__SYSTEM_CLOCK_192M_PLL_24M_HXTAL=(uint32_t)(192000000)"
                                       ]
 sysClockDefs          _           _ = error "Unsupported clock configuration"
