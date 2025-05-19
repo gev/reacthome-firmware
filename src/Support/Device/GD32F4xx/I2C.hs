@@ -281,6 +281,7 @@ inclI2C = do
 
     inclSym i2c0
     inclSym i2c1
+    inclSym i2c2
 
     inclSym i2c_dtcy_2
 
