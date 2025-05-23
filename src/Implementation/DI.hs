@@ -5,8 +5,7 @@
 module Implementation.DI where
 
 import           Control.Monad
-import           Control.Monad.Reader  (MonadReader)
-import           Control.Monad.RWS     (asks)
+import           Control.Monad.Reader  (MonadReader, asks)
 import           Control.Monad.State   (MonadState)
 import           Core.Actions
 import           Core.Context

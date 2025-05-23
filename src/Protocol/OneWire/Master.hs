@@ -21,7 +21,6 @@ module Protocol.OneWire.Master
     ) where
 
 import           Control.Monad.State   (MonadState)
-import           Control.Monad.Writer  (runWriter)
 import           Core.Context
 import           Core.FSM
 import           Core.Task             (yeld)

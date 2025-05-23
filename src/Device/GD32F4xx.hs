@@ -18,6 +18,9 @@ import           Device.GD32F4xx.GPIO.Input
 import           Device.GD32F4xx.GPIO.Mode
 import           Device.GD32F4xx.GPIO.OpenDrain
 import           Device.GD32F4xx.GPIO.Output
+import           Device.GD32F4xx.I2C
+import           Device.GD32F4xx.I2SRX
+import           Device.GD32F4xx.I2STX
 import           Device.GD32F4xx.Mac               (makeMac)
 import           Device.GD32F4xx.PWM
 import           Device.GD32F4xx.SystemClock       as G
@@ -26,9 +29,6 @@ import           Device.GD32F4xx.Timer             (Timer, cfg_timer_1,
                                                     cfg_timer_2, cfg_timer_3,
                                                     cfg_timer_6, cfg_timer_7)
 import           Device.GD32F4xx.UART
-import           Device.GD32F4xx.I2STX
-import           Device.GD32F4xx.I2SRX
-import           Device.GD32F4xx.I2C
 import           GHC.TypeNats
 import           Interface.GPIO.Port
 import           Interface.Mac                     (Mac)
@@ -40,12 +40,12 @@ import           Support.Device.GD32F4xx
 import           Support.Device.GD32F4xx.DMA
 import           Support.Device.GD32F4xx.FMC
 import           Support.Device.GD32F4xx.GPIO
+import           Support.Device.GD32F4xx.I2C
 import           Support.Device.GD32F4xx.IRQ
 import           Support.Device.GD32F4xx.RCU
+import           Support.Device.GD32F4xx.SPI
 import           Support.Device.GD32F4xx.Timer
 import           Support.Device.GD32F4xx.USART
-import           Support.Device.GD32F4xx.SPI
-import           Support.Device.GD32F4xx.I2C
 
 
 
@@ -559,7 +559,7 @@ gd32f4xx = MCU $ mkPlatform G.systemClock makeMac inclGD32F4xx GD32F4xx
                     (pa_8  af_4)
 
     , i2s_tx_1 = mkI2STX spi1 rcu_spi1
-                         rcu_dma0 dma0 dma_ch4 
+                         rcu_dma0 dma0 dma_ch4
                          dma_subperi0
                          dma0_channel4_irqn
                          (pb_15  af_5)
@@ -568,7 +568,7 @@ gd32f4xx = MCU $ mkPlatform G.systemClock makeMac inclGD32F4xx GD32F4xx
                          (pc_6  af_5)
 
     , i2s_rx_1 = mkI2SRX i2s1_add
-                         rcu_dma0 dma0 dma_ch3 
+                         rcu_dma0 dma0 dma_ch3
                          dma_subperi3
                          dma0_channel3_irqn
                          (pb_14  af_6)

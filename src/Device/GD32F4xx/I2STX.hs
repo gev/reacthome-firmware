@@ -1,46 +1,46 @@
-{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE NamedFieldPuns        #-}
+{-# LANGUAGE RankNTypes            #-}
 {-# OPTIONS_GHC -Wno-missing-fields #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE RecordWildCards       #-}
 
 
 module Device.GD32F4xx.I2STX where
 
 
-import               Support.Device.GD32F4xx.DMA
-import               Support.Device.GD32F4xx.GPIO
-import               Support.Device.GD32F4xx.IRQ
-import               Support.Device.GD32F4xx.RCU
-import               Support.Device.GD32F4xx.SPI
-import               Ivory.Language
-import               Ivory.Stdlib as S
-import               Data.Buffer
-import               Core.Context
-import               Control.Monad.RWS
-import               qualified Device.GD32F4xx.GPIO.Port as G
-import               Core.Handler
-import               GHC.TypeLits
-import               qualified Interface.I2STX as I
-import               Ivory.Support
-import               Data.Record
-import               Support.Device.GD32F4xx.Misc
-import               Support.Cast
-import               Data.Value
+import           Control.Monad.State          (MonadState)
+import           Core.Context
+import           Core.Handler
+import           Data.Buffer
+import           Data.Record
+import           Data.Value
+import qualified Device.GD32F4xx.GPIO.Port    as G
+import           GHC.TypeLits
+import qualified Interface.I2STX              as I
+import           Ivory.Language
+import           Ivory.Stdlib                 as S
+import           Ivory.Support
+import           Support.Cast
+import           Support.Device.GD32F4xx.DMA
+import           Support.Device.GD32F4xx.GPIO
+import           Support.Device.GD32F4xx.IRQ
+import           Support.Device.GD32F4xx.Misc
+import           Support.Device.GD32F4xx.RCU
+import           Support.Device.GD32F4xx.SPI
 
 
 
-data I2STX n = I2STX  { spi         :: SPI_PERIPH
-                      , dmaPer      :: DMA_PERIPH
-                      , dmaCh       :: DMA_CHANNEL
-                      , dmaParams   :: Record DMA_SINGLE_PARAM_STRUCT
-                      , dmaIRQn     :: IRQn
-                      , numTxBuff   :: Value Uint8
-                      , txBuff0     :: Buffer n Uint32
-                      , txBuff1     :: Buffer n Uint32
+data I2STX n = I2STX  { spi       :: SPI_PERIPH
+                      , dmaPer    :: DMA_PERIPH
+                      , dmaCh     :: DMA_CHANNEL
+                      , dmaParams :: Record DMA_SINGLE_PARAM_STRUCT
+                      , dmaIRQn   :: IRQn
+                      , numTxBuff :: Value Uint8
+                      , txBuff0   :: Buffer n Uint32
+                      , txBuff1   :: Buffer n Uint32
                       }
 
 
@@ -109,23 +109,23 @@ handleDMA i2s transmit = do
     S.when f $ do
         clearInterruptFlagDMA (dmaPer i2s) (dmaCh i2s) dma_int_flag_ftf
         numBuff <- deref $ numTxBuff i2s
-        ifte_ (numBuff ==? 0) 
-            (do 
+        ifte_ (numBuff ==? 0)
+            (do
                 transmitBuff i2s (txBuff0 i2s) (txBuff1 i2s) transmit
                 store (numTxBuff i2s) 1
-            ) 
-            (do 
+            )
+            (do
                 transmitBuff i2s (txBuff1 i2s) (txBuff0 i2s) transmit
                 store (numTxBuff i2s) 0
             )
 
-    
+
 
 transmitBuff :: KnownNat n => I2STX n -> Buffer n Uint32 -> Buffer n Uint32 -> Ivory (AllowBreak eff) Uint32 -> Ivory eff ()
-transmitBuff i2s buff0 buff1 transmit = do  
+transmitBuff i2s buff0 buff1 transmit = do
     store (dmaParams i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray buff0)
     enableSpiDma (spi i2s) spi_dma_transmit
     arrayMap $ \ix -> do
-        t <- transmit 
+        t <- transmit
         store (buff1 ! ix)  t
     -- where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)

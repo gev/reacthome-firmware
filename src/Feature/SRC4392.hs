@@ -7,18 +7,19 @@
 module Feature.SRC4392 where
 
 
-import           Control.Monad.RWS
+import           Control.Monad.Reader (MonadReader, asks)
+import           Control.Monad.State  (MonadState)
 import           Core.Context
-import qualified Core.Domain       as D
+import qualified Core.Domain          as D
+import           Core.Handler
 import           Core.Task
 import           Data.Buffer
 import           Data.Matrix
 import           Data.Value
-import qualified Interface.I2C     as I
+import qualified Interface.I2C        as I
 import           Interface.MCU
 import           Ivory.Language
 import           Ivory.Stdlib
-import Core.Handler
 
 
 
