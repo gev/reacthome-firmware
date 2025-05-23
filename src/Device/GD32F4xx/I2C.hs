@@ -64,7 +64,7 @@ mkI2C i2c rcu eventIrq errorIrq sda' scl' = do
         configClockI2C i2c 400000 i2c_dtcy_2
         configModeAddrI2C i2c i2c_i2cmode_enable i2c_addformat_7bits 0
         enableI2C i2c
-        -- configAckI2C i2c i2c_ack_enable
+        configAckI2C i2c i2c_ack_enable
         enableIrqNvic       eventIrq 0 0
         enableIrqNvic       errorIrq 0 1
 
@@ -79,7 +79,7 @@ instance KnownNat n => I.I2C I2C n where
         store address addr
         store mode false
         store index 0
-        configAckI2C i2c i2c_ack_enable
+        configAckI2C       i2c i2c_ack_enable
         enableInterruptI2C i2c i2c_int_ev
         enableInterruptI2C i2c i2c_int_buf
         enableInterruptI2C i2c i2c_int_err

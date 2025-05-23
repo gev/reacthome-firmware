@@ -226,10 +226,10 @@ i2c_stop_on_bus :: Def ('[I2C_PERIPH] :-> ())
 i2c_stop_on_bus = fun "i2c_stop_on_bus"
 
 
-getFlagI2C :: I2C_PERIPH -> I2C_FLAG -> Ivory eff ()
-getFlagI2C = call_ i2c_flag_get
+getFlagI2C :: I2C_PERIPH -> I2C_FLAG -> Ivory eff IBool
+getFlagI2C = call i2c_flag_get
 
-i2c_flag_get :: Def ('[I2C_PERIPH, I2C_FLAG] :-> ())
+i2c_flag_get :: Def ('[I2C_PERIPH, I2C_FLAG] :-> IBool)
 i2c_flag_get = fun "i2c_flag_get"
 
 

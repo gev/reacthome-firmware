@@ -19,13 +19,20 @@ import           Ivory.Language
 import           Ivory.Stdlib
 
 data Soundbox = Soundbox {
-        lanamp  :: Lanamp 20 20
-    ,   src4392 :: S.SRC4392
+       src4392 :: S.SRC4392
+    -- ,  lanamp  :: Lanamp 20 20
     }
 
+-- soundbox :: (MonadState Context m, MonadReader (D.Domain p c) m, I.I2C i 2) =>
+--             (p -> m (I2STX 20)) -> (p -> m (I2SRX 20)) -> (p -> m (i 2)) -> m Soundbox
+-- soundbox i2sTx i2sRx i2c = do
+--     src4392 <- S.mkSRC4392 i2c
+--     lanamp  <- mkLanAmp i2sTx i2sRx
+--     pure Soundbox { lanamp, src4392 }
+
+
 soundbox :: (MonadState Context m, MonadReader (D.Domain p c) m, I.I2C i 2) =>
-            (p -> m (I2STX 20)) -> (p -> m (I2SRX 20)) -> (p -> m (i 2)) -> m Soundbox
-soundbox i2sTx i2sRx i2c = do
+            (p -> m (i 2)) -> m Soundbox
+soundbox i2c = do
     src4392 <- S.mkSRC4392 i2c
-    lanamp  <- mkLanAmp i2sTx i2sRx
-    pure Soundbox { lanamp, src4392 }
+    pure Soundbox { src4392 }

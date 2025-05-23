@@ -556,7 +556,7 @@ gd32f4xx = MCU $ mkPlatform G.systemClock makeMac inclGD32F4xx GD32F4xx
                     i2c2_ev_irqn
                     i2c2_er_irqn
                     (pc_9 af_4)
-                    (pa_8  af_4)
+                    (pa_8 af_4)
 
     , i2s_tx_1 = mkI2STX spi1 rcu_spi1
                          rcu_dma0 dma0 dma_ch4
