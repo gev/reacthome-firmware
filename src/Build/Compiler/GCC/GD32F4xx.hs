@@ -21,6 +21,7 @@ instance Compiler GCC GD32F4xx where
 
         , defs    = ("-D" <>) <$> [ toUpper <$> model mcu
                                   , "USE_STDPERIPH_DRIVER"
+                                  , "IF_USE_EXTERNPHY_LIB"
                                   ] <> sysClockDefs quartzFrequency systemFrequency
 
         , incs    = ("-I" <>) <$> [ "support/inc"
