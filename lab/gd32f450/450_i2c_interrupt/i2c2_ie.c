@@ -1,6 +1,6 @@
 /*!
-    \file    i2c2_ie.c
-    \brief   i2c2 master receiver interrupt program
+    \file    i2c0_ie.c
+    \brief   I2C2 master transmitter interrupt program
 
     \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
@@ -45,40 +45,23 @@ uint32_t event1;
 void i2c2_event_irq_handler(void)
 {
     if(i2c_interrupt_flag_get(I2C2, I2C_INT_FLAG_SBSEND)) {
-        /* the master sends slave address */
-        i2c_master_addressing(I2C2, I2C2_SLAVE_ADDRESS7, I2C_RECEIVER);
+        /* send slave address */
+        i2c_master_addressing(I2C2, I2C2_SLAVE_ADDRESS7, I2C_TRANSMITTER);
     } else if(i2c_interrupt_flag_get(I2C2, I2C_INT_FLAG_ADDSEND)) {
-        if((1 == i2c_nbytes) || (2 == i2c_nbytes)) {
-            /* clear the ACKEN before the ADDSEND is cleared */
-            i2c_ack_config(I2C2, I2C_ACK_DISABLE);
-            /* clear the ADDSEND bit */
-            i2c_interrupt_flag_clear(I2C2, I2C_INT_FLAG_ADDSEND);
-        } else {
-            /* clear the ADDSEND bit */
-            i2c_interrupt_flag_clear(I2C2, I2C_INT_FLAG_ADDSEND);
-        }
-    } else if(i2c_interrupt_flag_get(I2C2, I2C_INT_FLAG_RBNE)) {
+        /*clear ADDSEND bit */
+        i2c_interrupt_flag_clear(I2C2, I2C_INT_FLAG_ADDSEND);
+    } else if(i2c_interrupt_flag_get(I2C2, I2C_INT_FLAG_TBE)) {
         if(i2c_nbytes > 0) {
-            if(3 == i2c_nbytes) {
-                /* wait until the second last data byte is received into the shift register */
-                while(!i2c_interrupt_flag_get(I2C2, I2C_INT_FLAG_BTC));
-                /* send a NACK for the last data byte */
-                i2c_ack_config(I2C2, I2C_ACK_DISABLE);
-            }
-            /* read a data byte from I2C_DATA*/
-            *i2c_rxbuffer++ = i2c_data_receive(I2C2);
+            /* the master sends a data byte */
+            i2c_data_transmit(I2C2, *i2c_txbuffer++);
             i2c_nbytes--;
-            if(0 == i2c_nbytes) {
-                /* send a stop condition */
-                i2c_stop_on_bus(I2C2);
-                status = SUCCESS;
-                i2c_ack_config(I2C2, I2C_ACK_ENABLE);
-                i2c_ackpos_config(I2C2, I2C_ACKPOS_CURRENT);
-                /* disable the I2C2 interrupt */
-                i2c_interrupt_disable(I2C2, I2C_INT_ERR);
-                i2c_interrupt_disable(I2C2, I2C_INT_BUF);
-                i2c_interrupt_disable(I2C2, I2C_INT_EV);
-            }
+        } else {
+            /* the master sends a stop condition to I2C bus */
+            i2c_stop_on_bus(I2C2);
+            /* disable the I2C2 interrupt */
+            i2c_interrupt_disable(I2C2, I2C_INT_ERR);
+            i2c_interrupt_disable(I2C2, I2C_INT_BUF);
+            i2c_interrupt_disable(I2C2, I2C_INT_EV);
         }
     }
 }

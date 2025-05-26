@@ -43,7 +43,7 @@ OF SUCH DAMAGE.
 
 #define IF_USE_EXTERNPHY_LIB             1
 #if (1 == IF_USE_EXTERNPHY_LIB)
-#include "phy.h"
+// #include "phy.h"
 #endif
 
 #ifndef ENET_RXBUF_NUM

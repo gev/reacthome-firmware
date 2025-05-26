@@ -81,11 +81,7 @@ int main(void)
     i2c_interrupt_enable(I2C2, I2C_INT_ERR);
     i2c_interrupt_enable(I2C2, I2C_INT_EV);
     i2c_interrupt_enable(I2C2, I2C_INT_BUF);
-
-    if(2 == i2c_nbytes) {
-        /* send ACK for the next byte */
-        i2c_ackpos_config(I2C2, I2C_ACKPOS_NEXT);
-    }
+    
     /* the master waits until the I2C bus is idle */
     while(i2c_flag_get(I2C2, I2C_FLAG_I2CBSY));
     /* the master sends a start condition to I2C bus */
