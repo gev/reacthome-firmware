@@ -19,5 +19,5 @@ blink330 = Formula { name            = "blink330"
                    , mcu             = gd32f330k8u6
                    , quartzFrequency =  8_000_000
                    , systemFrequency = 84_000_000
-                   , implementation  = blink out_pa_15 timer_15
+                   , implementation  = blink out_pa_15
                    }
