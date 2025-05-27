@@ -60,7 +60,7 @@ mkSRC4392 i2c' = do
 
 initSrc4392 SRC4392{..} = do
     count' <- deref count
-    when (count' <? 10) $ do
+    when (count' <? arrayLen config) $ do
         arrayMap $ \ix -> store (tempBuff ! ix) =<< deref (config ! toIx count' ! ix)
         I.transmit i2c address tempBuff
         store count $ count' + 1
