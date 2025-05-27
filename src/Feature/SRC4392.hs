@@ -28,7 +28,6 @@ data SRC4392 = forall i. I.I2C i 2 => SRC4392
     { i2c      :: i 2
     , address  :: Uint8
     , config   :: Matrix 10 2 Uint8
-    , tempBuff :: Buffer 2 Uint8
     , count    :: Value Uint8
     }
 
@@ -37,7 +36,6 @@ mkSRC4392 :: (MonadState Context m, MonadReader (D.Domain p c) m, I.I2C i 2)
 mkSRC4392 i2c' = do
     mcu      <- asks D.mcu
     i2c      <- i2c' $ peripherals mcu
-    tempBuff <- buffer "src4392"
     count    <- value "src4392_count" 0
     config   <- matrix "src4392_config" [[0x7f, 0x00],
                                          [0x01, 0x3F],
@@ -50,7 +48,7 @@ mkSRC4392 i2c' = do
                                          [0x2d, 0x02],
                                          [0x2f, 0x00]]
 
-    let src4392 = SRC4392 {i2c, address = 0xe0, config, tempBuff, count}
+    let src4392 = SRC4392 {i2c, address = 0xe0, config, count}
 
     addTask $ delay 10 "src4392_init" $ initSrc4392 src4392
 
@@ -61,6 +59,5 @@ mkSRC4392 i2c' = do
 initSrc4392 SRC4392{..} = do
     count' <- deref count
     when (count' <? arrayLen config) $ do
-        arrayMap $ \ix -> store (tempBuff ! ix) =<< deref (config ! toIx count' ! ix)
-        I.transmit i2c address tempBuff
+        I.transmit i2c address $ config ! toIx count'
         store count $ count' + 1
