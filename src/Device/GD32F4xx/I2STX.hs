@@ -15,9 +15,11 @@ import           Core.Context
 import           Core.Handler
 import           Core.Task
 import           Data.Buffer
+import           Data.DoubleBuffer
 import           Data.Record
 import           Data.Value
 import qualified Device.GD32F4xx.GPIO.Port    as G
+import           Device.GD32F4xx.I2S
 import           GHC.TypeLits
 import qualified Interface.I2S                as I
 import qualified Interface.I2STX              as I
@@ -32,8 +34,6 @@ import           Support.Device.GD32F4xx.IRQ
 import           Support.Device.GD32F4xx.Misc
 import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.SPI
-import           Device.GD32F4xx.I2S
-import           Data.DoubleBuffer
 
 
 
@@ -42,7 +42,7 @@ data I2STX n = I2STX  { spi       :: SPI_PERIPH
                       , dmaCh     :: DMA_CHANNEL
                       , dmaParams :: Record DMA_SINGLE_PARAM_STRUCT
                       , dmaIRQn   :: IRQn
-                      , txBuff    :: DoubleBuffer n Uint32   
+                      , txBuff    :: DoubleBuffer n Uint32
                       }
 
 
@@ -63,7 +63,7 @@ mkI2STX spi rcuSpi rcuDma dmaPer dmaCh dmaSubPer dmaIRQn txPin wsPin sckPin mclk
     let dmaInit = dmaParam [ periph_inc          .= ival dma_periph_increase_disable
                            , memory_inc          .= ival dma_memory_increase_enable
                            , periph_memory_width .= ival dma_periph_width_16bit
-                           , circular_mode       .= ival dma_circular_mode_disable
+                           , circular_mode       .= ival dma_circular_mode_enable
                            , direction           .= ival dma_memory_to_periph
                            , priority            .= ival dma_priority_ultra_high
                            ]
@@ -89,20 +89,22 @@ mkI2STX spi rcuSpi rcuDma dmaPer dmaCh dmaSubPer dmaIRQn txPin wsPin sckPin mclk
             enablePeriphClock   rcuSpi
             deinitDMA           dmaPer dmaCh
             store (dmaParams ~> periph_addr) =<< dataSPI spi
-            -- store (dmaParams ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray txBuff)
-            store (dmaParams ~> number) $ lengthDoubleArray txBuff * 2
-            -- initSingleDMA       dmaPer dmaCh dmaParams
+            store (dmaParams ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray txBuff1)
+            store (dmaParams ~> number) $ arrayLen txBuff0 * 2
+            initSingleDMA       dmaPer dmaCh dmaParams
             selectChannelSubperipheralDMA dmaPer dmaCh dmaSubPer
             initI2S             spi i2s_mode_mastertx i2s_std_phillips i2s_ckpl_low
             configPscI2S        spi i2s_audiosample_48k i2s_frameformat_dt32b_ch32b i2s_mckout_enable
             enableI2S           spi
-            -- enableChannelDMA    dmaPer dmaCh
-            -- enableSpiDma        spi spi_dma_transmit
+            enableChannelDMA    dmaPer dmaCh
+            enableSpiDma        spi spi_dma_transmit
             enableIrqNvic       dmaIRQn 1 0
-            -- enableInterruptDMA  dmaPer dmaCh dma_chxctl_ftfie
-            transmitBuff        i2stx txBuff
+            enableInterruptDMA  dmaPer dmaCh dma_chxctl_ftfie
 
-    pure i2stx 
+
+    pure I2STX {spi, dmaPer, dmaCh, dmaParams, dmaIRQn, numTxBuff, txBuff0, txBuff1}
+
+    pure i2stx
 
 instance KnownNat n => Handler I.HandleI2STX (I2STX n) where
     addHandler I.HandleI2STX{..} = do
@@ -120,14 +122,13 @@ transmitBuff i2s dbuff = do
     let handleBuff = dataExchangeDmaI2S spi_dma_transmit (spi i2s) (dmaParams i2s) (dmaPer i2s) (dmaCh i2s) dma_chxctl_ftfie
     selectDmaBuff dbuff handleBuff
 
-prepareBuff :: KnownNat n => Ivory (AllowBreak (ProcEffects s ())) I.Sample -> Buffer n Uint32 -> Ivory (ProcEffects s ()) ()
-prepareBuff prepare buff = do
-    i <- local $ ival (0 :: Uint16)
-    forever $ do
-        i' <- deref i
-        when (i' >=? arrayLen buff) breakOut
-        t <- prepare
-        store (buff ! toIx i') . swap16bit =<< deref (t ~> I.left)
-        store (buff ! toIx (i' + 1)) . swap16bit =<< deref (t ~> I.right)
-        store i (i' + 2)
+
+
+transmitBuff :: KnownNat n => I2STX n -> Buffer n Uint32 -> Buffer n Uint32 -> Ivory (AllowBreak eff) Uint32 -> Ivory eff ()
+transmitBuff i2s buff0 buff1 transmit = do
+    store (dmaParams i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray buff0)
+    enableSpiDma (spi i2s) spi_dma_transmit
+    arrayMap $ \ix -> do
+        t <- transmit
+        store (buff1 ! ix) $ swap16bit t
     where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)
