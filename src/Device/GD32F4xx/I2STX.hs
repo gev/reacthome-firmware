@@ -60,8 +60,8 @@ mkI2STX spi rcuSpi rcuDma dmaPer dmaCh dmaSubPer dmaIRQn txPin wsPin sckPin mclk
 
     let dmaInit = dmaParam [ periph_inc          .= ival dma_periph_increase_disable
                            , memory_inc          .= ival dma_memory_increase_enable
-                           , periph_memory_width .= ival dma_periph_width_32bit
-                           , circular_mode       .= ival dma_circular_mode_disable
+                           , periph_memory_width .= ival dma_periph_width_16bit
+                           , circular_mode       .= ival dma_circular_mode_enable
                            , direction           .= ival dma_memory_to_periph
                            , priority            .= ival dma_priority_ultra_high
                            ]
@@ -70,9 +70,9 @@ mkI2STX spi rcuSpi rcuDma dmaPer dmaCh dmaSubPer dmaIRQn txPin wsPin sckPin mclk
     txBuff0     <- buffer $ symbol spi <> "_tx_buff0"
     txBuff1     <- buffer $ symbol spi <> "_tx_buff1"
 
-    let tx   = txPin gpio_pupd_none
-    let ws   = wsPin gpio_pupd_none
-    let sck  = sckPin gpio_pupd_none
+    let tx   = txPin   gpio_pupd_none
+    let ws   = wsPin   gpio_pupd_none
+    let sck  = sckPin  gpio_pupd_none
     let mclk = mclkPin gpio_pupd_none
 
     G.initPort tx
@@ -81,18 +81,21 @@ mkI2STX spi rcuSpi rcuDma dmaPer dmaCh dmaSubPer dmaIRQn txPin wsPin sckPin mclk
     G.initPort mclk
 
     addInit (symbol spi) $ do
+            enablePeriphClock   rcuDma
+            enablePeriphClock   rcuSpi
+            deinitDMA           dmaPer dmaCh
             store (dmaParams ~> periph_addr) =<< dataSPI spi
             store (dmaParams ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray txBuff1)
-            store (dmaParams ~> number) $ arrayLen txBuff1 * 2
-            enablePeriphClock   rcuSpi
-            enablePeriphClock   rcuDma
+            store (dmaParams ~> number) $ arrayLen txBuff0 * 2
+            initSingleDMA       dmaPer dmaCh dmaParams
+            selectChannelSubperipheralDMA dmaPer dmaCh dmaSubPer
             initI2S             spi i2s_mode_mastertx i2s_std_phillips i2s_ckpl_low
             configPscI2S        spi i2s_audiosample_48k i2s_frameformat_dt32b_ch32b i2s_mckout_enable
             enableI2S           spi
             enableChannelDMA    dmaPer dmaCh
+            enableSpiDma        spi spi_dma_transmit
             enableIrqNvic       dmaIRQn 1 0
             enableInterruptDMA  dmaPer dmaCh dma_chxctl_ftfie
-            enableSpiDma        spi spi_dma_transmit
 
 
     pure I2STX {spi, dmaPer, dmaCh, dmaParams, dmaIRQn, numTxBuff, txBuff0, txBuff1}
@@ -127,5 +130,5 @@ transmitBuff i2s buff0 buff1 transmit = do
     enableSpiDma (spi i2s) spi_dma_transmit
     arrayMap $ \ix -> do
         t <- transmit
-        store (buff1 ! ix)  t
-    -- where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)
+        store (buff1 ! ix) $ swap16bit t
+    where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)

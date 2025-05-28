@@ -52,7 +52,7 @@ mkI2SRX :: (MonadState Context m, KnownNat n)
 mkI2SRX i2s_add rcuDma dmaPer dmaCh dmaSubPer dmaIRQn rxPin = do
     let dmaInit = dmaParam [ periph_inc          .= ival dma_periph_increase_disable
                            , memory_inc          .= ival dma_memory_increase_enable
-                           , periph_memory_width .= ival dma_periph_width_32bit
+                           , periph_memory_width .= ival dma_periph_width_16bit
                            , circular_mode       .= ival dma_circular_mode_enable
                            , direction           .= ival dma_periph_to_memory
                            , priority            .= ival dma_priority_high
@@ -66,15 +66,18 @@ mkI2SRX i2s_add rcuDma dmaPer dmaCh dmaSubPer dmaIRQn rxPin = do
     G.initPort rx
 
     addInit (symbol i2s_add) $ do
+        enablePeriphClock   rcuDma
         store (dmaParams ~> periph_addr) =<< dataSPI i2s_add
         store (dmaParams ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray rxBuff0)
-        enablePeriphClock   rcuDma
+        store (dmaParams ~> number) $ arrayLen rxBuff0 * 2
+        initSingleDMA       dmaPer dmaCh dmaParams
+        selectChannelSubperipheralDMA dmaPer dmaCh dmaSubPer
         configFullDuplexModeI2S i2s_add i2s_mode_mastertx i2s_std_phillips i2s_ckpl_low i2s_frameformat_dt32b_ch32b
         enableI2S           i2s_add
         enableChannelDMA    dmaPer dmaCh
+        enableSpiDma        i2s_add spi_dma_receive
         enableIrqNvic       dmaIRQn 1 0
         enableInterruptDMA  dmaPer dmaCh dma_chxctl_ftfie
-        enableSpiDma        i2s_add spi_dma_receive
 
     pure I2SRX {i2s_add, dmaPer, dmaCh, dmaParams, dmaIRQn, numRxBuff, rxBuff0, rxBuff1}
 
@@ -107,5 +110,5 @@ receiveBuff i2s buff0 buff1 handle = do
     store (dmaParams i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray buff0)
     arrayMap $ \ix -> do
         word <- deref (buff1 ! ix)
-        handle  word
-    -- where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)
+        handle $ swap16bit word
+    where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)
