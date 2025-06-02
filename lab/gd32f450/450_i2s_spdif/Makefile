@@ -20,9 +20,9 @@ TARGET = 450_led
 # building variables
 ######################################
 # debug build?
-DEBUG = 1
+DEBUG = 0
 # optimization
-OPT = -Og
+OPT = -O3
 
 
 #######################################
@@ -116,7 +116,9 @@ AS_DEFS =
 
 # C defines
 C_DEFS =  \
--DGD32F450
+-DGD32F450 \
+-D'HXTAL_VALUE=((uint32_t)24000000)' \
+-D'__SYSTEM_CLOCK_192M_PLL_24M_HXTAL=(uint32_t)(192000000)' \
 
 
 
