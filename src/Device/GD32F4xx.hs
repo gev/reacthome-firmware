@@ -60,8 +60,7 @@ type PWM'       = forall m.       MonadState Context m => Uint32 -> Uint32 -> m 
 type NeoPixel'  = forall m.       MonadState Context m => m NeoPixel
 type OneWire'   = forall m.       MonadState Context m => m OpenDrain -> m OneWire
 type I2STX'     = forall m n.     MonadState Context m => KnownNat n => m (I2STX n)
-type I2SRX'     = forall m n.     MonadState Context m => KnownNat n => m (I2SRX n)
-type I2STRX'    = forall m tn rn.   MonadState Context m => KnownNat tn => KnownNat rn => m (I2STRX tn rn)
+type I2STRX'    = forall m tn rn. MonadState Context m => KnownNat tn => KnownNat rn => m (I2STRX tn rn)
 type Enet'      = forall m.       MonadState Context m => m ENET
 
 
@@ -265,8 +264,6 @@ data GD32F4xx = GD32F4xx
     , i2c_2     :: I2C'
 
     , i2s_tx_1  :: I2STX'
-
-    , i2s_trx_1 :: I2STRX'
 
     , i2s_trx_1 :: I2STRX'
 
@@ -569,20 +566,6 @@ gd32f4xx = MCU $ mkPlatform G.systemClock makeMac inclGD32F4xx GD32F4xx
                          (pd_1  af_7)
                          (pc_7  af_5)
                          (pc_6  af_5)
-
-    , i2s_trx_1 = mkI2STRX spi1 rcu_spi1
-                           rcu_dma0 dma0 dma_ch4
-                           dma_subperi0
-                           dma0_channel4_irqn
-                           (pb_15  af_5)
-                           (pd_1  af_7)
-                           (pc_7  af_5)
-                           (pc_6  af_5)
-                           i2s1_add
-                           rcu_dma0 dma0 dma_ch3
-                           dma_subperi3
-                           dma0_channel3_irqn
-                           (pb_14  af_6)
 
     , i2s_trx_1 = mkI2STRX spi1 rcu_spi1
                            rcu_dma0 dma0 dma_ch4
