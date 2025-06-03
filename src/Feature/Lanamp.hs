@@ -67,6 +67,6 @@ receive (Lanamp {..}) word =
 
 transmit :: Lanamp t r -> Ivory eff Uint32
 transmit (Lanamp {..}) = do
-    flip (pop' i2sQueue) (store i2sWord 0) $ \i -> do
+    pop i2sQueue $ \i -> do
         store i2sWord =<< deref (i2sBuff ! toIx i)
     deref i2sWord
