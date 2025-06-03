@@ -82,7 +82,6 @@ executable reacthome-firmware
     Device.GD32F4xx.GPIO.OpenDrain
     Device.GD32F4xx.GPIO.Output
     Device.GD32F4xx.GPIO.Port
-    Device.GD32F4xx.I2SRX
     Device.GD32F4xx.I2STX
     Device.GD32F4xx.I2STRX
     Device.GD32F4xx.Mac
