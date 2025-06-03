@@ -23,5 +23,5 @@ soundbox = Formula
     , mcu             = gd32f450vgt6
     , quartzFrequency =  24_000_000
     , systemFrequency = 192_000_000
-    , implementation  = I.soundbox i2s_tx_1 i2s_rx_1 i2c_2 out_pd_12
+    , implementation  = I.soundbox i2s_trx_1 i2c_2 out_pd_12
     }

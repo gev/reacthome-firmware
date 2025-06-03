@@ -34,56 +34,60 @@ import           Support.Device.GD32F4xx.SPI
 
 
 
-data I2STRX tn rn = I2STRX { spi       :: SPI_PERIPH
-                         , dmaPerTx    :: DMA_PERIPH
-                         , dmaChTx     :: DMA_CHANNEL
-                         , dmaParamsTx :: Record DMA_SINGLE_PARAM_STRUCT
-                         , dmaIRQnTx   :: IRQn
-                         , numTxBuff   :: Value Uint8
-                         , txBuff0     :: Buffer tn Uint32
-                         , txBuff1     :: Buffer tn Uint32
-   
-                         , i2s_add     :: SPI_PERIPH
-                         , dmaPerRx    :: DMA_PERIPH
-                         , dmaChRx     :: DMA_CHANNEL
-                         , dmaParamsRx :: Record DMA_SINGLE_PARAM_STRUCT
-                         , dmaIRQnRx   :: IRQn
-                         , numRxBuff   :: Value Uint8
-                         , rxBuff0     :: Buffer rn Uint32
-                         , rxBuff1     :: Buffer rn Uint32
-                         }
+data I2STRX tn rn = I2STRX { spi         :: SPI_PERIPH
+                           , dmaPerTx    :: DMA_PERIPH
+                           , dmaChTx     :: DMA_CHANNEL
+                           , dmaParamsTx :: Record DMA_SINGLE_PARAM_STRUCT
+                           , dmaIRQnTx   :: IRQn
+                           , numTxBuff   :: Value Uint8
+                           , txBuff0     :: Buffer tn Uint32
+                           , txBuff1     :: Buffer tn Uint32
+     
+                           , i2s_add     :: SPI_PERIPH
+                           , dmaPerRx    :: DMA_PERIPH
+                           , dmaChRx     :: DMA_CHANNEL
+                           , dmaParamsRx :: Record DMA_SINGLE_PARAM_STRUCT
+                           , dmaIRQnRx   :: IRQn
+                           , numRxBuff   :: Value Uint8
+                           , rxBuff0     :: Buffer rn Uint32
+                           , rxBuff1     :: Buffer rn Uint32
+                           }
 
 
 
-mkI2STRX :: (MonadState Context m, KnownNat tn, KnownNat rn)   => SPI_PERIPH
-                                    -> RCU_PERIPH
-                                    -> RCU_PERIPH
-                                    -> DMA_PERIPH
-                                    -> DMA_CHANNEL
-                                    -> DMA_SUBPERIPH
-                                    -> IRQn
-                                    -> (GPIO_PUPD -> G.Port)
-                                    -> (GPIO_PUPD -> G.Port)
-                                    -> (GPIO_PUPD -> G.Port)
-                                    -> (GPIO_PUPD -> G.Port) 
-                                    -> SPI_PERIPH 
-                                    -> RCU_PERIPH 
-                                    -> DMA_PERIPH 
-                                    -> DMA_CHANNEL 
-                                    -> DMA_SUBPERIPH 
-                                    -> IRQn 
-                                    -> (GPIO_PUPD -> G.Port)
-                                    -> m (I2STRX tn rn)
+mkI2STRX :: (MonadState Context m
+            , KnownNat tn
+            , KnownNat rn)   
+            => SPI_PERIPH
+            -> RCU_PERIPH
+            -> RCU_PERIPH
+            -> DMA_PERIPH
+            -> DMA_CHANNEL
+            -> DMA_SUBPERIPH
+            -> IRQn
+            -> (GPIO_PUPD -> G.Port)
+            -> (GPIO_PUPD -> G.Port)
+            -> (GPIO_PUPD -> G.Port)
+            -> (GPIO_PUPD -> G.Port) 
+            -> SPI_PERIPH 
+            -> RCU_PERIPH 
+            -> DMA_PERIPH 
+            -> DMA_CHANNEL 
+            -> DMA_SUBPERIPH 
+            -> IRQn 
+            -> (GPIO_PUPD -> G.Port)
+            -> m (I2STRX tn rn)
+
 mkI2STRX spi rcuSpiTx rcuDmaTx dmaPerTx dmaChTx dmaSubPerTx dmaIRQnTx txPin wsPin sckPin mclkPin 
-        i2s_add rcuDmaRx dmaPerRx dmaChRx dmaSubPerRx dmaIRQnRx rxPin = do
+         i2s_add rcuDmaRx dmaPerRx dmaChRx dmaSubPerRx dmaIRQnRx rxPin = do
 
     let dmaInitTx = dmaParam [ periph_inc          .= ival dma_periph_increase_disable
-                           , memory_inc          .= ival dma_memory_increase_enable
-                           , periph_memory_width .= ival dma_periph_width_16bit
-                           , circular_mode       .= ival dma_circular_mode_enable
-                           , direction           .= ival dma_memory_to_periph
-                           , priority            .= ival dma_priority_ultra_high
-                           ]
+                             , memory_inc          .= ival dma_memory_increase_enable
+                             , periph_memory_width .= ival dma_periph_width_16bit
+                             , circular_mode       .= ival dma_circular_mode_disable
+                             , direction           .= ival dma_memory_to_periph
+                             , priority            .= ival dma_priority_ultra_high
+                             ]
     dmaParamsTx <- record (symbol spi <> "_dma_param") dmaInitTx
     numTxBuff   <- value  (symbol spi <> "_num_tx_buff") 0
     txBuff0     <- buffer $ symbol spi <> "_tx_buff0"
@@ -101,16 +105,16 @@ mkI2STRX spi rcuSpiTx rcuDmaTx dmaPerTx dmaChTx dmaSubPerTx dmaIRQnTx txPin wsPi
 
 
     let dmaInitRx = dmaParam [ periph_inc          .= ival dma_periph_increase_disable
-                           , memory_inc          .= ival dma_memory_increase_enable
-                           , periph_memory_width .= ival dma_periph_width_16bit
-                           , circular_mode       .= ival dma_circular_mode_enable
-                           , direction           .= ival dma_periph_to_memory
-                           , priority            .= ival dma_priority_high
-                           ]
+                             , memory_inc          .= ival dma_memory_increase_enable
+                             , periph_memory_width .= ival dma_periph_width_16bit
+                             , circular_mode       .= ival dma_circular_mode_disable
+                             , direction           .= ival dma_periph_to_memory
+                             , priority            .= ival dma_priority_high
+                             ]
     dmaParamsRx  <- record (symbol i2s_add <> "_dma_param") dmaInitRx
-    rxBuff0    <- buffer (symbol i2s_add <> "_rx_buff")
-    rxBuff1    <- buffer (symbol i2s_add <> "_rx_buff")
-    numRxBuff  <- value  (symbol i2s_add <> "_num_rx_buff") 0
+    rxBuff0      <- buffer (symbol i2s_add <> "_rx_buff_0")
+    rxBuff1      <- buffer (symbol i2s_add <> "_rx_buff_1")
+    numRxBuff    <- value  (symbol i2s_add <> "_num_rx_buff") 0
 
     let rx   = rxPin gpio_pupd_none
 
@@ -122,7 +126,7 @@ mkI2STRX spi rcuSpiTx rcuDmaTx dmaPerTx dmaChTx dmaSubPerTx dmaIRQnTx txPin wsPi
         enablePeriphClock   rcuSpiTx
         deinitDMA           dmaPerTx dmaChTx
         store (dmaParamsTx ~> periph_addr) =<< dataSPI spi
-        store (dmaParamsTx ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray txBuff1)
+        store (dmaParamsTx ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray txBuff0)
         store (dmaParamsTx ~> number) $ arrayLen txBuff0 * 2
         initSingleDMA       dmaPerTx dmaChTx dmaParamsTx
         selectChannelSubperipheralDMA dmaPerTx dmaChTx dmaSubPerTx
@@ -176,10 +180,12 @@ handleDMATx i2s transmit = do
 transmitBuff :: KnownNat tn => I2STRX tn rn -> Buffer tn Uint32 -> Buffer tn Uint32 -> Ivory (AllowBreak eff) Uint32 -> Ivory eff ()
 transmitBuff i2s buff0 buff1 transmit = do
     store (dmaParamsTx i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray buff0)
-    enableSpiDma (spi i2s) spi_dma_transmit
+    initSingleDMA (dmaPerTx i2s) (dmaChTx i2s) (dmaParamsTx i2s)
+    enableSpiDma        (spi i2s) spi_dma_transmit
+    enableInterruptDMA  (dmaPerTx i2s) (dmaChTx i2s) dma_chxctl_ftfie
     arrayMap $ \ix -> do
-        tn <- transmit
-        store (buff1 ! ix) $ swap16bit tn
+        t <- transmit
+        store (buff1 ! ix) $ swap16bit t
     where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)
 
 
@@ -208,6 +214,9 @@ handleDMARx i2s handle = do
 receiveBuff :: KnownNat rn => I2STRX tn rn -> Buffer rn Uint32 -> Buffer rn Uint32 -> (Uint32 -> Ivory (AllowBreak eff) ()) -> Ivory eff ()
 receiveBuff i2s buff0 buff1 handle = do
     store (dmaParamsRx i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray buff0)
+    initSingleDMA (dmaPerRx i2s) (dmaChRx i2s) (dmaParamsRx i2s)
+    enableSpiDma        (i2s_add i2s) spi_dma_receive
+    enableInterruptDMA  (dmaPerRx i2s) (dmaChRx i2s) dma_chxctl_ftfie
     arrayMap $ \ix -> do
         word <- deref (buff1 ! ix)
         handle $ swap16bit word
