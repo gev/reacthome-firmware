@@ -181,6 +181,7 @@ transmitBuff :: KnownNat tn => I2STRX tn rn -> Buffer tn Uint32 -> Buffer tn Uin
 transmitBuff i2s buff0 buff1 transmit = do
     store (dmaParamsTx i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray buff0)
     initSingleDMA (dmaPerTx i2s) (dmaChTx i2s) (dmaParamsTx i2s)
+    enableChannelDMA    (dmaPerTx i2s) (dmaChTx i2s)
     enableSpiDma        (spi i2s) spi_dma_transmit
     enableInterruptDMA  (dmaPerTx i2s) (dmaChTx i2s) dma_chxctl_ftfie
     arrayMap $ \ix -> do
@@ -215,6 +216,7 @@ receiveBuff :: KnownNat rn => I2STRX tn rn -> Buffer rn Uint32 -> Buffer rn Uint
 receiveBuff i2s buff0 buff1 handle = do
     store (dmaParamsRx i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray buff0)
     initSingleDMA (dmaPerRx i2s) (dmaChRx i2s) (dmaParamsRx i2s)
+    enableChannelDMA    (dmaPerRx i2s) (dmaChRx i2s)
     enableSpiDma        (i2s_add i2s) spi_dma_receive
     enableInterruptDMA  (dmaPerRx i2s) (dmaChRx i2s) dma_chxctl_ftfie
     arrayMap $ \ix -> do
