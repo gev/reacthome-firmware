@@ -75,6 +75,5 @@ receive (Lanamp {..}) word =
 transmit :: Lanamp t r -> Ivory eff Sample
 transmit (Lanamp {..}) = do
     pop i2sQueue $ \i -> do
-        store (i2sWord ~> left) =<< deref (i2sBuff ! toIx i ~> left)
-        store (i2sWord ~> right)=<< deref (i2sBuff ! toIx i ~> right)
-    pure i2sWord
+        store i2sWord =<< deref (i2sBuff ! toIx i)
+    deref i2sWord
