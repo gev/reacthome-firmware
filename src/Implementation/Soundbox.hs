@@ -25,8 +25,8 @@ data Soundbox = Soundbox {
     }
 
 soundbox :: (MonadState Context m, MonadReader (D.Domain p c) m, I.I2C i 2, Output o, Pull p u) =>
-            (p -> m (I2STX 20)) -> (p -> m (I2SRX 20)) -> (p -> m (i 2)) -> (p -> u -> m o) -> m Soundbox
-soundbox i2sTx i2sRx i2c shutdown= do
+            (p -> m (I2STRX 20 20)) -> (p -> m (i 2)) -> (p -> u -> m o) -> m Soundbox
+soundbox i2sTrx i2c shutdown= do
     src4392 <- S.mkSRC4392 i2c shutdown
-    lanamp  <- mkLanAmp i2sTx i2sRx
+    lanamp  <- mkLanAmp i2sTrx
     pure Soundbox { lanamp, src4392 }
