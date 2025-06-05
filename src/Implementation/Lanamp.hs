@@ -6,6 +6,7 @@
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Implementation.Lanamp where
 
@@ -52,7 +53,6 @@ data Lanamp t = Lanamp
     , i2sBuff  :: Buffer 3000 Uint32
     , i2sQueue :: Queue  3000
     , i2sWord  :: Value Uint32
-    , rtpBuff  :: Buffer 1292 Uint8
     }
 
 
@@ -76,7 +76,6 @@ mkLanamp enet i2sTx' = do
     i2sTx       <-  i2sTx' $ peripherals mcu
     i2sBuff     <-  values' (name <> "_i2sBuff") 0
     i2sQueue    <-  queue   (name <> "_i2sQueue")
-    rtpBuff     <-  values' (name <> "_rtpBuff") 0
     i2sWord     <-  value (name <> "_word1") 0
 
 
@@ -84,7 +83,6 @@ mkLanamp enet i2sTx' = do
                         , i2sBuff
                         , i2sQueue
                         , i2sWord
-                        , rtpBuff
                         }
 
     addModule inclEthernet
@@ -102,9 +100,9 @@ mkLanamp enet i2sTx' = do
     addInit "lanamp" $ do
         initMem
         initMemp
-        createIpAddr4 ip4 172 16 2 1
-        createIpAddr4 netmask 255 240 0 0
-        createIpAddr4 gateway 172 16 0 1
+        createIpAddr4 ip4 192 168 88 9
+        createIpAddr4 netmask 255 255 255 0
+        createIpAddr4 gateway 192 168 88 1
         store (netif ~> hwaddr_len) 6
         arrayCopy (netif ~> hwaddr) (mac mcu) 0 6
 
@@ -125,8 +123,8 @@ mkLanamp enet i2sTx' = do
 
     addTask $ delay 1000 "eth_arp" tmrEtharp
 
-
     addHandler $ HandleI2STX i2sTx (transmitI2S lanamp)
+
     pure lanamp
 
 
@@ -145,15 +143,18 @@ netifStatusCallback lanamp = proc "netif_callback" $ \netif -> body $ do
 
 
 udpReceiveCallback :: Lanamp t -> Def (UdpRecvFn s1 s2 s3 s4)
-udpReceiveCallback (Lanamp {..}) = proc "udp_echo_callback" $ \_ upcb pbuff addr port -> body $ do
+udpReceiveCallback lanamp = proc "udp_echo_callback" $ \_ upcb pbuff addr port -> body $ do
     size <- deref (pbuff ~> tot_len)
-    when (size >? 0 .&& size <=? arrayLen rtpBuff) $ do
-        for (toIx size) $ \ix ->
-            store (rtpBuff ! ix) =<< getPbufAt pbuff (castDefault $ fromIx ix)
-            
-        let n = 640 :: Uint16
-        for (toIx n)  $ \ix ->
-            unpackLE rtpBuff ((ix * 2) + 12) >>= pushRTPBuffToQueue (Lanamp {..})
+    when (size >? 0) $ do
+        index <- local $ ival 12
+        forever $ do
+            index' <- deref index
+            when (index' >=? size) breakOut
+            msb <- safeCast <$> getPbufAt pbuff index'
+            lsb <- safeCast <$> getPbufAt pbuff (index' + 1)
+            let val  = (msb `iShiftL` 8) .| lsb 
+            pushRTPBuffToQueue lanamp val
+            store index $ index' + 2
 
     ret =<< freePbuf pbuff
 
@@ -161,7 +162,8 @@ udpReceiveCallback (Lanamp {..}) = proc "udp_echo_callback" $ \_ upcb pbuff addr
 pushRTPBuffToQueue :: Lanamp t -> Uint16 -> Ivory eff ()
 pushRTPBuffToQueue (Lanamp {..}) word =
     push i2sQueue $ \i -> do
-        store (i2sBuff ! toIx i) $ safeCast word
+        let val = twosComplementRep $ safeCast (twosComplementCast word) * 4096 
+        store (i2sBuff ! toIx i) val
 
 
 transmitI2S :: Lanamp t -> Ivory eff Uint32
