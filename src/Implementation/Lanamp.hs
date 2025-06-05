@@ -73,6 +73,20 @@ mkLanamp enet i2sTx' = do
     gateway   <- record_ "gateway"
     netif     <- record_ "netif"
 
+    i2sTx       <-  i2sTx' $ peripherals mcu
+    i2sBuff     <-  values' (name <> "_i2sBuff") 0
+    i2sQueue    <-  queue   (name <> "_i2sQueue")
+    rtpBuff     <-  values' (name <> "_rtpBuff") 0
+    i2sWord     <-  value (name <> "_word1") 0
+
+
+    let lanamp = Lanamp { i2sTx
+                        , i2sBuff
+                        , i2sQueue
+                        , i2sWord
+                        , rtpBuff
+                        }
+
     addModule inclEthernet
     addModule inclNetif
     addModule inclUdp
@@ -81,24 +95,6 @@ mkLanamp enet i2sTx' = do
     addModule inclIP_addr
     addModule inclPbuf
     addModule inclEtharp
-
-    i2sTx       <-  i2sTx' $ peripherals mcu
-    i2sBuff     <-  values' (name <> "_i2sBuff") 0
-    i2sQueue    <-  queue   (name <> "_i2sQueue")
-    rtpBuff     <-  values' (name <> "_rtpBuff") 0
-    i2sWord     <-  value (name <> "_word1") 0
-
-    -- let sysNow :: Def ('[] :-> Uint32)
-    --     sysNow = proc "sys_now" $ body $
-    --         ret =<< getSystemTime (systemClock mcu)
-
-    -- addProc sysNow
-    let lanamp = Lanamp { i2sTx
-                        , i2sBuff
-                        , i2sQueue
-                        , i2sWord
-                        , rtpBuff
-                        }
 
     addProc $ udpReceiveCallback lanamp
     addProc $ netifStatusCallback lanamp
@@ -117,14 +113,17 @@ mkLanamp enet i2sTx' = do
         setNetifStatusCallback netif (procPtr $ netifStatusCallback lanamp)
         setUpNetif netif
 
-    addHandler $ HandleEnet enet' $ do
+    -- addHandler $ HandleEnet enet' $ do
+    --     reval <- rxFrameSize enet'
+    --     when (reval >? 1) $
+    --         void $ inputLwipPortIf enet' netif
+
+    addTask $ yeld "udp_rx" $ do 
         reval <- rxFrameSize enet'
-        when (reval >? 1) $
+        when (reval >? 1) $ 
             void $ inputLwipPortIf enet' netif
 
     addTask $ delay 1000 "eth_arp" tmrEtharp
-
-
 
 
     addHandler $ HandleI2STX i2sTx (transmitI2S lanamp)
