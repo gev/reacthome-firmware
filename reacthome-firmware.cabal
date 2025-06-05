@@ -43,7 +43,7 @@ executable reacthome-firmware
     Data.Area
     Data.Buffer
     Data.Color
-    Data.Concurrent.Atomically
+    Data.Concurrent.ElasticQueue
     Data.Concurrent.Queue
     Data.Concurrent.Semaphore
     Data.Display.Canvas1D
