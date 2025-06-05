@@ -61,7 +61,7 @@ mkI2STX spi rcuSpi rcuDma dmaPer dmaCh dmaSubPer dmaIRQn txPin wsPin sckPin mclk
     let dmaInit = dmaParam [ periph_inc          .= ival dma_periph_increase_disable
                            , memory_inc          .= ival dma_memory_increase_enable
                            , periph_memory_width .= ival dma_periph_width_16bit
-                           , circular_mode       .= ival dma_circular_mode_enable
+                           , circular_mode       .= ival dma_circular_mode_disable
                            , direction           .= ival dma_memory_to_periph
                            , priority            .= ival dma_priority_ultra_high
                            ]
@@ -127,7 +127,10 @@ handleDMA i2s transmit = do
 transmitBuff :: KnownNat n => I2STX n -> Buffer n Uint32 -> Buffer n Uint32 -> Ivory (AllowBreak eff) Uint32 -> Ivory eff ()
 transmitBuff i2s buff0 buff1 transmit = do
     store (dmaParams i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray buff0)
-    enableSpiDma (spi i2s) spi_dma_transmit
+    initSingleDMA (dmaPer i2s) (dmaCh i2s) (dmaParams i2s)
+    enableChannelDMA    (dmaPer i2s) (dmaCh i2s)
+    enableSpiDma        (spi i2s) spi_dma_transmit
+    enableInterruptDMA  (dmaPer i2s) (dmaCh i2s) dma_chxctl_ftfie
     arrayMap $ \ix -> do
         t <- transmit
         store (buff1 ! ix) $ swap16bit t
