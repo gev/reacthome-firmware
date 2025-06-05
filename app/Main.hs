@@ -27,34 +27,39 @@ import           Formula.Smart.Top.TopG2
 import           Formula.Smart.Top.TopG4
 import           Formula.Smart.Top.TopG4D
 import           Formula.Smart.Top.TopG6
+import           Formula.Soundbox
+import           Formula.Lanamp
+import           Formula.UdpEcho450
 
 
 main :: IO ()
 main = do
-    mapM_ gcc [ di4
-              , di4la
-              , di4rsm
-              , relay12
-              , dimmerDC12
-              , dimmerAC12
-              , dimmerAC1
-              , doppler1
-              , doppler5
-              , mix6x12
-              , smartBottom1
-              , smartBottom2
-              , smartTopA4P
-              , smartTopA4T
-              , smartTopA4TD
-              , smartTopA6P
-              , smartTopA6T
-              , smartTopG2
-              , smartTopG4
-              , smartTopG4D
-              , smartTopG6
-              ]
-    mapM_ gcc [
-                -- blink450
-               rsHub4
-              , server
+    -- mapM_ gcc [ di4
+    --           , di4la
+    --           , di4rsm
+    --           , relay12
+    --           , dimmerDC12
+    --           , dimmerAC12
+    --           , dimmerAC1
+    --           , doppler1
+    --           , doppler5
+    --           , mix6x12
+    --           , smartBottom1
+    --           , smartBottom2
+    --           , smartTopA4P
+    --           , smartTopA4T
+    --           , smartTopA4TD
+    --           , smartTopA6P
+    --           , smartTopA6T
+    --           , smartTopG2
+    --           , smartTopG4
+    --           , smartTopG4D
+    --           , smartTopG6
+    --           ]
+    mapM_ gcc [ 
+                udpEcho450
+              , lanamp              
+            --  soundbox
+            --   , server
+            --   , rsHub4
               ]
