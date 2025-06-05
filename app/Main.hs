@@ -27,6 +27,8 @@ import           Formula.Smart.Top.TopG4D
 import           Formula.Smart.Top.TopA4TD
 import           Formula.Smart.Top.TopG6
 import           Formula.Soundbox
+import           Formula.Lanamp
+import           Formula.UdpEcho450
 
 
 main :: IO ()
@@ -54,7 +56,9 @@ main = do
     --           , smartTopG6
     --           ]
     mapM_ gcc [ 
-               soundbox
+                udpEcho450
+              , lanamp              
+            --  soundbox
             --   , server
             --   , rsHub4
               ]

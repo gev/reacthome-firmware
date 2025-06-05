@@ -180,6 +180,7 @@ executable reacthome-firmware
     Formula.Smart.Top.TopG6
     Formula.UdpEcho450
     Formula.Soundbox
+    Formula.Lanamp
     Implementation.Blink
     Implementation.DI
     Implementation.DILA
@@ -204,6 +205,7 @@ executable reacthome-firmware
     Implementation.Smart.TopGD
     Implementation.UdpEcho
     Implementation.Soundbox
+    Implementation.Lanamp
     Interface.ADC
     Interface.Counter
     Interface.DAC
