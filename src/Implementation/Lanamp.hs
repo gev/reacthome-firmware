@@ -26,6 +26,7 @@ import           GHC.TypeNats
 import           Interface.ENET
 import           Interface.GPIO.Output
 import           Interface.GPIO.Port
+import           Interface.I2S
 import           Interface.I2STX
 import           Interface.LwipPort
 import           Interface.MCU
@@ -42,28 +43,26 @@ import           Support.Lwip.Memp
 import           Support.Lwip.Netif
 import           Support.Lwip.Pbuf
 import           Support.Lwip.Udp
-import Interface.I2S
-
-
 
 
 
 data Lanamp i o = Lanamp
     { i2sTx    :: i
     , pin      :: o
-    , i2sBuff  :: Records 5000 SampleStruct
-    , i2sQueue :: ElasticQueue  5000
+    , i2sBuff  :: Records (4480) SampleStruct
+    , i2sQueue :: ElasticQueue  (4480)
     , i2sWord  :: Sample
     , flag     :: Value IBool
     }
 
+type I2S i = i 640 
 
 mkLanamp :: ( MonadState Context m
             , MonadReader (Domain p c) m
             , Enet e, LwipPort e, Output o
-            , Handler HandleI2STX (i 32), Pull p d
+            , Handler HandleI2STX (I2S i), Pull p d
             )
-         => (p -> m e) -> (p -> m (i 32)) -> (p -> d -> m o) -> m (Lanamp (i 32) o)
+         => (p -> m e) -> (p -> m (I2S i)) -> (p -> d -> m o) -> m (Lanamp (I2S i) o)
 mkLanamp enet i2sTx' pin' = do
     let name = "lanamp"
     mcu       <- asks D.mcu
@@ -103,9 +102,9 @@ mkLanamp enet i2sTx' pin' = do
     addInit "lanamp" $ do
         initMem
         initMemp
-        createIpAddr4 ip4 192 168 88 9
-        createIpAddr4 netmask 255 255 255 0
-        createIpAddr4 gateway 192 168 88 1
+        createIpAddr4 ip4 172 16 2 2
+        createIpAddr4 netmask 255 240 0 0
+        createIpAddr4 gateway 172 16 0 1
         store (netif ~> hwaddr_len) 6
         arrayCopy (netif ~> hwaddr) (mac mcu) 0 6
 
@@ -129,7 +128,7 @@ mkLanamp enet i2sTx' pin' = do
 
 
 
-netifStatusCallback :: Lanamp (i 32) o -> Def (NetifStatusCallbackFn s)
+netifStatusCallback :: Lanamp (I2S i) o -> Def (NetifStatusCallbackFn s)
 netifStatusCallback lanamp = proc "netif_callback" $ \netif -> body $ do
      flags' <- deref $ netif ~> flags
      when (flags' .& netif_flag_up /=?  0) $ do
@@ -141,7 +140,7 @@ netifStatusCallback lanamp = proc "netif_callback" $ \netif -> body $ do
 
 
 
-udpReceiveCallback :: Lanamp (i 32) o -> Def (UdpRecvFn s1 s2 s3 s4)
+udpReceiveCallback :: Lanamp (I2S i) o -> Def (UdpRecvFn s1 s2 s3 s4)
 udpReceiveCallback lanamp = proc "udp_echo_callback" $ \_ upcb pbuff addr port -> body $ do
     size <- deref (pbuff ~> tot_len)
     when (size ==? 1292) $ do
@@ -157,11 +156,10 @@ udpReceiveCallback lanamp = proc "udp_echo_callback" $ \_ upcb pbuff addr port -
             let valr  = (msbr `iShiftL` 8) .| lsbr
             pushRTPBuffToQueue lanamp vall valr
             store index $ index' + 4
-
     ret =<< freePbuf pbuff
 
 
-pushRTPBuffToQueue :: Lanamp (i 32) o -> Uint16 -> Uint16 -> Ivory eff ()
+pushRTPBuffToQueue :: Lanamp (I2S i) o -> Uint16 -> Uint16 -> Ivory eff ()
 pushRTPBuffToQueue (Lanamp {..}) wordL wordR =
     push i2sQueue $ \i -> do
         let vall = twosComplementRep $ safeCast (twosComplementCast wordL) * 4096
@@ -170,7 +168,7 @@ pushRTPBuffToQueue (Lanamp {..}) wordL wordR =
         store (i2sBuff ! toIx i ~> right) valr
 
 
-transmitI2S :: Output o => Lanamp (i 32) o -> Ivory eff Sample
+transmitI2S :: Output o => Lanamp (I2S i) o -> Ivory eff Sample
 transmitI2S (Lanamp {..}) = do
     pop' i2sQueue
         (\i -> do
