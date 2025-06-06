@@ -84,7 +84,7 @@ pop ElasticQueue{..} handle = do
 pop' :: ElasticQueue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
 pop' ElasticQueue{..} handleT handleF = do
     isReady' <- deref isReady
-    when isReady' $ do
+    flip (ifte_ isReady') handleF $ do
         flip (down' consumerS) (store isReady false >> handleF) $ do
             x <- deref consumerIx
             store consumerIx $ x + 1
