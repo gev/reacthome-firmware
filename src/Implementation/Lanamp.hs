@@ -55,7 +55,7 @@ data Lanamp i o = Lanamp
     , flag     :: Value IBool
     }
 
-type I2S i = i 640 
+type I2S i = i 640
 
 mkLanamp :: ( MonadState Context m
             , MonadReader (Domain p c) m
@@ -63,10 +63,10 @@ mkLanamp :: ( MonadState Context m
             , Handler HandleI2STX (I2S i), Pull p d
             )
          => (p -> m e) -> (p -> m (I2S i)) -> (p -> d -> m o) -> m (Lanamp (I2S i) o)
-mkLanamp enet i2sTx' pin' = do
+mkLanamp enet' i2sTx' pin' = do
     let name = "lanamp"
     mcu       <- asks D.mcu
-    enet'     <- enet $ peripherals mcu
+    enet      <- enet' $ peripherals mcu
     ip4       <- record_ "ipaddr4"
     netmask   <- record_ "netmask"
     gateway   <- record_ "gateway"
@@ -108,16 +108,16 @@ mkLanamp enet i2sTx' pin' = do
         store (netif ~> hwaddr_len) 6
         arrayCopy (netif ~> hwaddr) (mac mcu) 0 6
 
-        addNetif netif ip4 netmask gateway nullPtr (initLwipPortIf enet') inputEthernetPtr
+        addNetif netif ip4 netmask gateway nullPtr (initLwipPortIf enet) inputEthernetPtr
         setNetifDefault netif
         setNetifStatusCallback netif (procPtr $ netifStatusCallback lanamp)
         setUpNetif netif
 
 
     addTask $ yeld "udp_rx" $ do
-        reval <- rxFrameSize enet'
+        reval <- rxFrameSize enet
         when (reval >? 1) $
-            void $ inputLwipPortIf enet' netif
+            void $ inputLwipPortIf enet netif
 
     addTask $ delay 1000 "eth_arp" tmrEtharp
 
