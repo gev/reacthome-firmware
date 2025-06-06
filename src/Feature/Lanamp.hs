@@ -21,15 +21,16 @@ import           Interface.I2SRX
 import           Interface.I2STX
 import           Interface.MCU
 import           Ivory.Language
+import Data.Record
 
 
 
 
 data Lanamp t r = Lanamp
     { i2sTrx    :: I2STRX  t r
-    , i2sBuff  :: Buffer 256 Uint32
+    , i2sBuff  :: Records 256 SampleStruct
     , i2sQueue :: Queue  256
-    , i2sWord  :: Value Uint32
+    , i2sWord  :: Sample
     }
 
 mkLanAmp :: ( MonadState Context m
@@ -40,10 +41,10 @@ mkLanAmp :: ( MonadState Context m
 mkLanAmp i2sTrx' = do
     let  name   =   "lanamp"
     mcu         <-  asks D.mcu
-    i2sBuff     <-  values' (name <> "_i2sBuff") 0
+    i2sBuff     <-  records' (name <> "_i2sBuff") [left .= izero, right .= izero]
     i2sQueue    <-  queue   (name <> "_i2sQueue")
     i2sTrx      <-  i2sTrx' $ peripherals mcu
-    i2sWord     <-  value (name <> "_word1") 0
+    i2sWord     <-  record (name <> "_word1") [left .= izero, right .= izero]
 
     let lanamp = Lanamp { i2sTrx
                         , i2sBuff
@@ -65,8 +66,8 @@ receive (Lanamp {..}) word =
         store (i2sBuff ! toIx i) word
 
 
-transmit :: Lanamp t r -> Ivory eff Uint32
+transmit :: Lanamp t r -> Ivory eff Sample
 transmit (Lanamp {..}) = do
     pop i2sQueue $ \i -> do
         store i2sWord =<< deref (i2sBuff ! toIx i)
-    deref i2sWord
+    pure i2sWord

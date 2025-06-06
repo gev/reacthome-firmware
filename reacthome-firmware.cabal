@@ -219,6 +219,7 @@ executable reacthome-firmware
     Interface.GPIO.Output
     Interface.GPIO.Port
     Interface.I2C
+    Interface.I2S
     Interface.I2SRX
     Interface.I2STX
     Interface.LwipPort

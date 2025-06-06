@@ -30,6 +30,8 @@ import           Support.Device.GD32F4xx.IRQ
 import           Support.Device.GD32F4xx.Misc
 import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.SPI
+import qualified Interface.I2S as I
+import Control.Arrow (ArrowChoice(left))
 
 
 
@@ -106,7 +108,7 @@ instance KnownNat n => Handler I.HandleI2STX (I2STX n) where
         addModule $ makeIRQHandler (dmaIRQn i2s) (handleDMA i2s handle)
 
 
-handleDMA :: KnownNat n => I2STX n -> Ivory (AllowBreak eff) Uint32 -> Ivory eff ()
+handleDMA :: KnownNat n => I2STX n -> Ivory (AllowBreak (ProcEffects s ())) I.Sample -> Ivory (ProcEffects s ()) ()
 handleDMA i2s transmit = do
     f <- getInterruptFlagDMA (dmaPer i2s) (dmaCh i2s) dma_int_flag_ftf
     S.when f $ do
@@ -124,14 +126,23 @@ handleDMA i2s transmit = do
 
 
 
-transmitBuff :: KnownNat n => I2STX n -> Buffer n Uint32 -> Buffer n Uint32 -> Ivory (AllowBreak eff) Uint32 -> Ivory eff ()
+transmitBuff :: KnownNat n 
+             => I2STX n 
+             -> Buffer n Uint32 -> Buffer n Uint32 
+             -> (Ivory (AllowBreak  (ProcEffects s ())) Uint32, Ivory (AllowBreak  (ProcEffects s ())) Uint32) 
+             -> Ivory (ProcEffects s ()) ()
 transmitBuff i2s buff0 buff1 transmit = do
     store (dmaParams i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray buff0)
     initSingleDMA (dmaPer i2s) (dmaCh i2s) (dmaParams i2s)
     enableChannelDMA    (dmaPer i2s) (dmaCh i2s)
     enableSpiDma        (spi i2s) spi_dma_transmit
     enableInterruptDMA  (dmaPer i2s) (dmaCh i2s) dma_chxctl_ftfie
-    arrayMap $ \ix -> do
-        t <- transmit
-        store (buff1 ! ix) $ swap16bit t
+    i <- local $ ival (0 :: Sint32)
+    forever $ do
+        i' <- deref i
+        when (i' >=? arrayLen buff1) breakOut
+        let (left, right) = transmit
+        store (buff1 ! toIx i') . swap16bit =<< left
+        store (buff1 ! toIx (i' + 1)) . swap16bit =<< right
+        store i (i' + 2)
     where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)

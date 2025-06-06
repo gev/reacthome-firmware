@@ -12,11 +12,12 @@ import           GHC.TypeNats
 import           Core.Context
 import           Core.Handler
 import           Data.Buffer
+import           Interface.I2S
 
 
 data HandleI2SRX i = HandleI2SRX 
     { i2s    :: i 
-    , handle  :: forall n eff. Uint32 -> Ivory eff ()
+    , handle  :: forall eff. (Uint32, Uint32) -> Ivory eff ()
     }
 
 

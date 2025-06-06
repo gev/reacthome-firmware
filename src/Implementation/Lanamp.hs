@@ -1,31 +1,37 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use newtype instead of data" #-}
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TypeOperators    #-}
-{-# LANGUAGE NamedFieldPuns #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE DataKinds           #-}
+{-# LANGUAGE FlexibleContexts    #-}
+{-# LANGUAGE NamedFieldPuns      #-}
+{-# LANGUAGE RecordWildCards     #-}
 
 module Implementation.Lanamp where
 
-import           Control.Monad         (void)
-import           Control.Monad.Reader  (MonadReader, asks)
-import           Control.Monad.State   (MonadState)
+import           Control.Monad                (void)
+import           Control.Monad.Reader         (MonadReader, asks)
+import           Control.Monad.State          (MonadState)
 import           Core.Context
 import           Core.Controller
-import           Core.Domain           as D
+import           Core.Domain                  as D
 import           Core.Handler
 import           Core.Task
+import           Data.Buffer
+import           Data.Concurrent.ElasticQueue
 import           Data.Record
+import           Data.Serialize
 import           Data.Value
 import           Device.GD32F4xx
+import           GHC.TypeNats
 import           Interface.ENET
+import           Interface.GPIO.Output
+import           Interface.GPIO.Port
+import           Interface.I2STX
 import           Interface.LwipPort
 import           Interface.MCU
-import           Interface.SystemClock (getSystemTime)
+import           Interface.SystemClock        (getSystemTime)
 import           Ivory.Language
+import           Ivory.Language.Uint
 import           Ivory.Stdlib
 import           Ivory.Stdlib.Control
 import           Support.Lwip.Etharp
@@ -36,35 +42,28 @@ import           Support.Lwip.Memp
 import           Support.Lwip.Netif
 import           Support.Lwip.Pbuf
 import           Support.Lwip.Udp
-import           Device.GD32F4xx.I2STX (I2STX)
-import           Data.Buffer
-import           Data.Concurrent.Queue
-import           GHC.TypeNats
-import Interface.I2STX
-import Data.Serialize
-import Ivory.Language.Uint
 
 
 
 
 
-data Lanamp t = Lanamp
-    { i2sTx    :: I2STX  t
-    , i2sBuff  :: Buffer 3000 Uint32
-    , i2sQueue :: Queue  3000
-    , i2sWord  :: Value Uint32
+data Lanamp i o = Lanamp
+    { i2sTx    :: i
+    , pin      :: o
+    , i2sBuff  :: Records 5000 SampleStruct
+    , i2sQueue :: ElasticQueue  5000
+    , i2sWord  :: Sample
+    , flag     :: Value IBool
     }
 
 
-receive :: Lanamp t -> Uint32 -> Ivory eff ()
-receive (Lanamp {..}) word =
-    push i2sQueue $ \i -> do
-        store (i2sBuff ! toIx i) word
-
-
-mkLanamp :: (MonadState Context m, MonadReader (Domain p c) m, Enet e, LwipPort e)
-      => (p -> m e) -> (p -> m (I2STX 32)) -> m (Lanamp 32)
-mkLanamp enet i2sTx' = do
+mkLanamp :: ( MonadState Context m
+            , MonadReader (Domain p c) m
+            , Enet e, LwipPort e, Output o
+            , Handler HandleI2STX (i 32), Pull p d
+            )
+         => (p -> m e) -> (p -> m (i 32)) -> (p -> d -> m o) -> m (Lanamp (i 32) o)
+mkLanamp enet i2sTx' pin' = do
     let name = "lanamp"
     mcu       <- asks D.mcu
     enet'     <- enet $ peripherals mcu
@@ -72,17 +71,20 @@ mkLanamp enet i2sTx' = do
     netmask   <- record_ "netmask"
     gateway   <- record_ "gateway"
     netif     <- record_ "netif"
-
+    pin       <- pin' (peripherals mcu) $ pullNone (peripherals mcu)
     i2sTx       <-  i2sTx' $ peripherals mcu
-    i2sBuff     <-  values' (name <> "_i2sBuff") 0
-    i2sQueue    <-  queue   (name <> "_i2sQueue")
-    i2sWord     <-  value (name <> "_word1") 0
+    i2sBuff     <-  records' (name <> "_i2s_buff_l") [left .= izero, right .= izero]
+    i2sQueue    <-  elastic (name <> "_i2s")
+    i2sWord     <-  record (name <> "_word1") [left .= izero, right .= izero]
+    flag        <-  value (name <> "_flag") false
 
 
     let lanamp = Lanamp { i2sTx
+                        , pin
                         , i2sBuff
                         , i2sQueue
                         , i2sWord
+                        , flag
                         }
 
     addModule inclEthernet
@@ -116,9 +118,9 @@ mkLanamp enet i2sTx' = do
     --     when (reval >? 1) $
     --         void $ inputLwipPortIf enet' netif
 
-    addTask $ yeld "udp_rx" $ do 
+    addTask $ yeld "udp_rx" $ do
         reval <- rxFrameSize enet'
-        when (reval >? 1) $ 
+        when (reval >? 1) $
             void $ inputLwipPortIf enet' netif
 
     addTask $ delay 1000 "eth_arp" tmrEtharp
@@ -130,7 +132,7 @@ mkLanamp enet i2sTx' = do
 
 
 
-netifStatusCallback :: Lanamp t -> Def (NetifStatusCallbackFn s)
+netifStatusCallback :: Lanamp (i 32) o -> Def (NetifStatusCallbackFn s)
 netifStatusCallback lanamp = proc "netif_callback" $ \netif -> body $ do
      flags' <- deref $ netif ~> flags
      when (flags' .& netif_flag_up /=?  0) $ do
@@ -142,32 +144,47 @@ netifStatusCallback lanamp = proc "netif_callback" $ \netif -> body $ do
 
 
 
-udpReceiveCallback :: Lanamp t -> Def (UdpRecvFn s1 s2 s3 s4)
+udpReceiveCallback :: Lanamp (i 32) o -> Def (UdpRecvFn s1 s2 s3 s4)
 udpReceiveCallback lanamp = proc "udp_echo_callback" $ \_ upcb pbuff addr port -> body $ do
     size <- deref (pbuff ~> tot_len)
-    when (size >? 0) $ do
+    when (size ==? 1292) $ do
         index <- local $ ival 12
         forever $ do
             index' <- deref index
             when (index' >=? size) breakOut
-            msb <- safeCast <$> getPbufAt pbuff index'
-            lsb <- safeCast <$> getPbufAt pbuff (index' + 1)
-            let val  = (msb `iShiftL` 8) .| lsb 
-            pushRTPBuffToQueue lanamp val
-            store index $ index' + 2
+            msbl <- safeCast <$> getPbufAt pbuff index'
+            lsbl <- safeCast <$> getPbufAt pbuff (index' + 1)
+            let vall  = (msbl `iShiftL` 8) .| lsbl
+            msbr <- safeCast <$> getPbufAt pbuff (index' + 2)
+            lsbr <- safeCast <$> getPbufAt pbuff (index' + 3)
+            let valr  = (msbr `iShiftL` 8) .| lsbr
+            pushRTPBuffToQueue lanamp vall valr
+            store index $ index' + 4
 
     ret =<< freePbuf pbuff
 
 
-pushRTPBuffToQueue :: Lanamp t -> Uint16 -> Ivory eff ()
-pushRTPBuffToQueue (Lanamp {..}) word =
+pushRTPBuffToQueue :: Lanamp (i 32) o -> Uint16 -> Uint16 -> Ivory eff ()
+pushRTPBuffToQueue (Lanamp {..}) wordL wordR =
     push i2sQueue $ \i -> do
-        let val = twosComplementRep $ safeCast (twosComplementCast word) * 4096 
-        store (i2sBuff ! toIx i) val
+        let vall = twosComplementRep $ safeCast (twosComplementCast wordL) * 4096
+        store (i2sBuff ! toIx i ~> left) vall
+        let valr = twosComplementRep $ safeCast (twosComplementCast wordR) * 4096
+        store (i2sBuff ! toIx i ~> right) valr
 
 
-transmitI2S :: Lanamp t -> Ivory eff Uint32
+transmitI2S :: Output o => Lanamp (i 32) o -> Ivory eff Sample
 transmitI2S (Lanamp {..}) = do
-    pop i2sQueue $ \i -> do
-        store i2sWord =<< deref (i2sBuff ! toIx i)
-    deref i2sWord
+    pop' i2sQueue
+        (\i -> do
+            store (i2sWord ~> left) =<< deref (i2sBuff ! toIx i ~> left)
+            store (i2sWord ~> right)=<< deref (i2sBuff ! toIx i ~> right)
+        )
+        (do
+            flag' <- deref flag
+            ifte_ flag'
+                (set pin)
+                (reset pin)
+            store flag $ iNot flag'
+        )
+    pure i2sWord
