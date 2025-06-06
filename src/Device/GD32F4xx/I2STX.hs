@@ -19,8 +19,8 @@ import           Data.Record
 import           Data.Value
 import qualified Device.GD32F4xx.GPIO.Port    as G
 import           GHC.TypeLits
-import qualified Interface.I2STX              as I
 import qualified Interface.I2S                as I
+import qualified Interface.I2STX              as I
 import           Ivory.Language
 import           Ivory.Stdlib                 as S
 import           Ivory.Support
@@ -88,7 +88,7 @@ mkI2STX spi rcuSpi rcuDma dmaPer dmaCh dmaSubPer dmaIRQn txPin wsPin sckPin mclk
             enablePeriphClock   rcuSpi
             deinitDMA           dmaPer dmaCh
             store (dmaParams ~> periph_addr) =<< dataSPI spi
-            store (dmaParams ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray txBuff1)
+            store (dmaParams ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray txBuff0)
             store (dmaParams ~> number) $ arrayLen txBuff0 * 2
             initSingleDMA       dmaPer dmaCh dmaParams
             selectChannelSubperipheralDMA dmaPer dmaCh dmaSubPer
