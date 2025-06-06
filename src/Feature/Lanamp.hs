@@ -22,6 +22,7 @@ import           Interface.I2STX
 import           Interface.MCU
 import           Ivory.Language
 import Data.Record
+import Interface.I2S
 
 
 
@@ -60,14 +61,16 @@ mkLanAmp i2sTrx' = do
 
 
 
-receive :: Lanamp t r -> Uint32 -> Ivory eff ()
+receive :: Lanamp t r -> Sample -> Ivory eff ()
 receive (Lanamp {..}) word =
     push i2sQueue $ \i -> do
-        store (i2sBuff ! toIx i) word
+        store (i2sBuff ! toIx i ~> left) =<< deref (word ~> left)
+        store (i2sBuff ! toIx i ~> right) =<< deref (word ~> right)
 
 
 transmit :: Lanamp t r -> Ivory eff Sample
 transmit (Lanamp {..}) = do
     pop i2sQueue $ \i -> do
-        store i2sWord =<< deref (i2sBuff ! toIx i)
+        store (i2sWord ~> left) =<< deref (i2sBuff ! toIx i ~> left)
+        store (i2sWord ~> right)=<< deref (i2sBuff ! toIx i ~> right)
     pure i2sWord

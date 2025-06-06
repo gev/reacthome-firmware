@@ -20,6 +20,7 @@ import           Data.Value
 import qualified Device.GD32F4xx.GPIO.Port    as G
 import           GHC.TypeLits
 import qualified Interface.I2STX              as I
+import qualified Interface.I2S                as I
 import           Ivory.Language
 import           Ivory.Stdlib                 as S
 import           Ivory.Support
@@ -30,8 +31,6 @@ import           Support.Device.GD32F4xx.IRQ
 import           Support.Device.GD32F4xx.Misc
 import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.SPI
-import qualified Interface.I2S as I
-import Control.Arrow (ArrowChoice(left))
 
 
 
@@ -82,6 +81,8 @@ mkI2STX spi rcuSpi rcuDma dmaPer dmaCh dmaSubPer dmaIRQn txPin wsPin sckPin mclk
     G.initPort sck
     G.initPort mclk
 
+    addStruct (Proxy:: Proxy I.SampleStruct)
+
     addInit (symbol spi) $ do
             enablePeriphClock   rcuDma
             enablePeriphClock   rcuSpi
@@ -126,11 +127,7 @@ handleDMA i2s transmit = do
 
 
 
-transmitBuff :: KnownNat n 
-             => I2STX n 
-             -> Buffer n Uint32 -> Buffer n Uint32 
-             -> (Ivory (AllowBreak  (ProcEffects s ())) Uint32, Ivory (AllowBreak  (ProcEffects s ())) Uint32) 
-             -> Ivory (ProcEffects s ()) ()
+transmitBuff :: KnownNat n => I2STX n -> Buffer n Uint32 -> Buffer n Uint32 -> Ivory (AllowBreak  (ProcEffects s ())) I.Sample -> Ivory (ProcEffects s ()) ()
 transmitBuff i2s buff0 buff1 transmit = do
     store (dmaParams i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray buff0)
     initSingleDMA (dmaPer i2s) (dmaCh i2s) (dmaParams i2s)
@@ -141,8 +138,8 @@ transmitBuff i2s buff0 buff1 transmit = do
     forever $ do
         i' <- deref i
         when (i' >=? arrayLen buff1) breakOut
-        let (left, right) = transmit
-        store (buff1 ! toIx i') . swap16bit =<< left
-        store (buff1 ! toIx (i' + 1)) . swap16bit =<< right
+        t <- transmit
+        store (buff1 ! toIx i') . swap16bit =<< deref (t ~> I.left)
+        store (buff1 ! toIx (i' + 1)) . swap16bit =<< deref (t ~> I.right)
         store i (i' + 2)
     where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)

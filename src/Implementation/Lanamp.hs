@@ -42,6 +42,7 @@ import           Support.Lwip.Memp
 import           Support.Lwip.Netif
 import           Support.Lwip.Pbuf
 import           Support.Lwip.Udp
+import Interface.I2S
 
 
 
@@ -113,10 +114,6 @@ mkLanamp enet i2sTx' pin' = do
         setNetifStatusCallback netif (procPtr $ netifStatusCallback lanamp)
         setUpNetif netif
 
-    -- addHandler $ HandleEnet enet' $ do
-    --     reval <- rxFrameSize enet'
-    --     when (reval >? 1) $
-    --         void $ inputLwipPortIf enet' netif
 
     addTask $ yeld "udp_rx" $ do
         reval <- rxFrameSize enet'

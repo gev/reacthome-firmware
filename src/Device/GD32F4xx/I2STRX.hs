@@ -120,12 +120,13 @@ mkI2STRX spi rcuSpiTx rcuDmaTx dmaPerTx dmaChTx dmaSubPerTx dmaIRQnTx txPin wsPi
     rxBuff0      <- buffer   (symbol i2s_add <> "_rx_buff_0")
     rxBuff1      <- buffer   (symbol i2s_add <> "_rx_buff_1")
     numRxBuff    <- value    (symbol i2s_add <> "_num_rx_buff") 0
-    sample       <- records' (symbol i2s_add <> "_sample") [I.left .= izero, I.right .= izero]
+    sample       <- record   (symbol i2s_add <> "_sample") [I.left .= izero, I.right .= izero]
 
     let rx   = rxPin gpio_pupd_none
 
     G.initPort rx
 
+    addStruct (Proxy:: Proxy I.SampleStruct)
 
     addInit (symbol spi) $ do
         enablePeriphClock   rcuDmaTx

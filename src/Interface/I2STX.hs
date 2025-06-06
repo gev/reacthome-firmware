@@ -21,7 +21,7 @@ import           Interface.I2S
 data HandleI2STX i = HandleI2STX
     { i2s    :: i
     -- , handle :: forall n eff. Uint32 -> forall eff. Ivory eff ()
-    , handle :: forall eff. (Ivory eff Uint32, Ivory eff Uint32)
+    , handle :: forall eff. Ivory eff Sample 
     }
 {-
      Implementation of I2STX
