@@ -104,7 +104,7 @@ peek ElasticQueue{..} handle = do
 peek' :: ElasticQueue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
 peek' ElasticQueue{..} handleT handleF = do
     isReady' <- deref isReady
-    when isReady' $ do
+    flip (ifte_ isReady') handleF $ do
         flip (check' consumerS) handleF $ do
             x <- deref consumerIx
             handleT x
