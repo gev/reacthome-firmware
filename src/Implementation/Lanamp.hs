@@ -148,6 +148,7 @@ udpReceiveCallback l@Lanamp{..} =
         index <- local $ ival 12
         forever $ do
             flip (push' i2sQueue) (blink l >> breakOut) $ \i -> do
+            -- flip (push' i2sQueue) (breakOut) $ \i -> do
                 index' <- deref index
                 when (index' >=? size) breakOut
                 msbl <- getPbufAt pbuff index'
@@ -166,8 +167,8 @@ udpReceiveCallback l@Lanamp{..} =
 
 transmitI2S :: Output o => Lanamp (I2S i) o -> Ivory eff Sample
 transmitI2S l@Lanamp {..} = do
-    -- flip (pop' i2sQueue) (blink l) $ \i -> do
-    pop i2sQueue $ \i -> do
+    flip (pop' i2sQueue) (blink l) $ \i -> do
+    -- pop i2sQueue $ \i -> do
         store (i2sWord ~> left) =<< deref (i2sBuff ! toIx i ~> left)
         store (i2sWord ~> right)=<< deref (i2sBuff ! toIx i ~> right)
     pure i2sWord
