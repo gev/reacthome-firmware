@@ -24,8 +24,8 @@ import           Ivory.Stdlib
 data Queue (n :: Nat) = Queue
     { producerIx :: Index Uint16
     , consumerIx :: Index Uint16
-    , producerS  :: Semaphore Uint32
-    , consumerS  :: Semaphore Uint32
+    , producerS  :: Semaphore Uint16
+    , consumerS  :: Semaphore Uint16
     }
 
 
@@ -79,14 +79,14 @@ pop' Queue{..} handle =
 
 
 peek :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
-peek Queue{..} handle = 
+peek Queue{..} handle =
     check consumerS $ do
         x <- deref consumerIx
         handle x
 
 
 peek' :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
-peek' Queue{..} handle = 
+peek' Queue{..} handle =
     check' consumerS $ do
         x <- deref consumerIx
         handle x
@@ -94,7 +94,7 @@ peek' Queue{..} handle =
 
 size :: Queue n -> Ivory eff Uint16
 size Queue{..} =
-    (-) <$> deref producerIx <*> deref consumerIx
+    deref $ getSemaphore consumerS
 
 
 remove :: Queue n -> Ivory eff ()
@@ -103,7 +103,7 @@ remove Queue{..} =
         x <- deref consumerIx
         store consumerIx $ x + 1
         up producerS
-        
+
 
 
 clear :: forall n eff. KnownNat n => Queue n -> Ivory eff ()

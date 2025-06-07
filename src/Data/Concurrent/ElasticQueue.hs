@@ -25,8 +25,8 @@ import           Ivory.Stdlib
 data ElasticQueue (n :: Nat) = ElasticQueue
     { producerIx :: Index Uint16
     , consumerIx :: Index Uint16
-    , producerS  :: Semaphore Uint32
-    , consumerS  :: Semaphore Uint32
+    , producerS  :: Semaphore Uint16
+    , consumerS  :: Semaphore Uint16
     , isReady    :: Value IBool
     , half       :: Uint16
     }
@@ -38,18 +38,18 @@ elastic id = do
     let size        = fromIntegral $ fromTypeNat (aNat :: NatType n)
     let half        = size `iDiv` 2
     let name        = id    <>  "_queue"
-    let producerId  = name  <>  "_queue_producer"
-    let consumerId  = name  <>  "_queue_consumer"
+    let producerId  = name  <>  "_producer"
+    let consumerId  = name  <>  "_consumer"
     producerIx     <- index     producerId
     consumerIx     <- index     consumerId
     producerS      <- semaphore producerId $ safeCast size
     consumerS      <- semaphore consumerId 0
-    isReady        <- value (name <> "_queue_is_ready") false
+    isReady        <- value (name <> "_is_ready") false
     pure ElasticQueue { producerIx, consumerIx, producerS, consumerS, isReady, half }
 
 
 push :: ElasticQueue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
-push q@ElasticQueue{..} handle =
+push q@ElasticQueue{..} handle = do
     down producerS $ do
         x <- deref producerIx
         store producerIx $ x + 1
@@ -60,7 +60,7 @@ push q@ElasticQueue{..} handle =
 
 
 push' :: ElasticQueue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
-push' q@ElasticQueue{..} handleT handleF =
+push' q@ElasticQueue{..} handleT handleF = do
     flip (down' producerS) handleF $ do
         x <- deref producerIx
         store producerIx $ x + 1
@@ -112,7 +112,7 @@ peek' ElasticQueue{..} handleT handleF = do
 
 size :: ElasticQueue n -> Ivory eff Uint16
 size ElasticQueue{..} =
-    (-) <$> deref producerIx <*> deref consumerIx
+    deref $ getSemaphore consumerS
 
 
 remove :: ElasticQueue n -> Ivory eff ()
