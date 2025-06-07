@@ -34,8 +34,8 @@ down :: (IvoryStore t, IvoryOrd t, Num t)
 down (Semaphore s) run = do
     v <- deref s
     when (v >? 0) $ do
-        run
         store s $ v - 1
+        run
 
 
 down' :: (IvoryStore t, IvoryOrd t, Num t)
@@ -44,8 +44,8 @@ down' (Semaphore s) runT runF = do
     v <- deref s
     ifte_ (v >? 0)
           (do
-            runT
             store s $ v - 1
+            runT
           ) runF
 
 
