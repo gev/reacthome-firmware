@@ -13,6 +13,7 @@ import           Control.Monad.State           (MonadState)
 import           Core.Context
 import           Core.Handler
 import           Data.Buffer
+import           Data.Concurrent.Queue         as Q
 import           Data.Foldable
 import           Data.Maybe
 import           Data.Queue                    as Q
@@ -173,10 +174,10 @@ instance (KnownNat rn, KnownNat tn) => I.UART (UART rn tn) where
         configParity    uart $ coerceParity     parity
         enableUSART     uart
 
-    clearRX UART{..} = Q.clear rxQueue
+    clearRX UART{..} = Q.clearConcurrently rxQueue
 
     receive UART{..} read =
-        pop rxQueue $ \i ->
+        popConcurrently rxQueue $ \i ->
             read =<< deref (rxBuff ! toIx i)
 
     transmit UART{..} write = do
