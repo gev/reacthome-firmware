@@ -1,4 +1,4 @@
-module Data.Concurrent.Lock where
+module Data.Concurrent.Lock (atomically) where
 
 import           Ivory.Language
 import           Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
