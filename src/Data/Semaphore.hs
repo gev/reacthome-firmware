@@ -3,7 +3,7 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
-module Data.Concurrent.Semaphore where
+module Data.Semaphore where
 
 import           Control.Monad.State (MonadState)
 import           Core.Context
@@ -61,4 +61,3 @@ check' :: (IvoryStore t, IvoryOrd t, Num t)
 check' (Semaphore s) runT runF = do
     v <- deref s
     ifte_ (v >? 0) runT runF
-

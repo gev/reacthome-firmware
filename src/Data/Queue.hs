@@ -5,11 +5,11 @@
 {-# LANGUAGE RecordWildCards     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Data.Concurrent.Queue where
+module Data.Queue where
 
 import           Control.Monad.State       (MonadState)
 import           Core.Context
-import           Data.Concurrent.Semaphore
+import           Data.Semaphore
 import           Data.Index
 import           GHC.TypeNats
 import           Ivory.Language

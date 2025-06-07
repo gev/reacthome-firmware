@@ -7,7 +7,7 @@
 module Transport.UART.RBUS.Tx where
 
 import           Data.Buffer
-import           Data.Concurrent.Queue
+import           Data.Queue
 import           GHC.TypeNats
 import           Interface.SystemClock
 import qualified Interface.UART           as U
@@ -30,7 +30,7 @@ txHandle RBUS{..} = store txLock false
 
 
 
-txTask :: (KnownNat q, KnownNat l) 
+txTask :: (KnownNat q, KnownNat l)
        => RBUS q l -> Ivory (ProcEffects s ()) ()
 txTask r@RBUS{..} = do
     txLock' <- deref txLock
