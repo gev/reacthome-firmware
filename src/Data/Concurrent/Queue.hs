@@ -6,9 +6,9 @@
 
 module Data.Concurrent.Queue where
 
-import           Data.Concurrent.Lock
+import           Data.Concurrent.Atomically
 import           Data.Concurrent.Semaphore
-import           Data.Queue                as Q
+import           Data.Queue                 as Q
 import           Data.Semaphore
 import           GHC.TypeNats
 import           Ivory.Language

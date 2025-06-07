@@ -5,7 +5,7 @@
 
 module Data.Concurrent.Semaphore where
 
-import           Data.Concurrent.Lock
+import           Data.Concurrent.Atomically
 import           Data.Semaphore
 import           Ivory.Language
 import           Ivory.Stdlib
