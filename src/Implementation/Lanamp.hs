@@ -49,13 +49,13 @@ import           Support.Lwip.Udp
 data Lanamp i o = Lanamp
     { i2sTx    :: i
     , pin      :: o
-    , i2sBuff  :: Records (4480) SampleStruct
-    , i2sQueue :: ElasticQueue  (4480)
+    , i2sBuff  :: Records (20000) SampleStruct
+    , i2sQueue :: ElasticQueue  (20000)
     , i2sWord  :: Sample
     , flag     :: Value IBool
     }
 
-type I2S i = i 640
+type I2S i = i 96
 
 mkLanamp :: ( MonadState Context m
             , MonadReader (Domain p c) m
@@ -73,7 +73,7 @@ mkLanamp enet' i2sTx' pin' = do
     netif     <- record_ "netif"
     pin       <- pin' (peripherals mcu) $ pullNone (peripherals mcu)
     i2sTx       <-  i2sTx' $ peripherals mcu
-    i2sBuff     <-  records' (name <> "_i2s_buff_l") [left .= izero, right .= izero]
+    i2sBuff     <-  records_ (name <> "_i2s_buff_l")
     i2sQueue    <-  elastic (name <> "_i2s")
     i2sWord     <-  record (name <> "_word1") [left .= izero, right .= izero]
     flag        <-  value (name <> "_flag") false
@@ -128,7 +128,7 @@ mkLanamp enet' i2sTx' pin' = do
 
 
 
-netifStatusCallback :: Lanamp (I2S i) o -> Def (NetifStatusCallbackFn s)
+netifStatusCallback :: Output o => Lanamp (I2S i) o -> Def (NetifStatusCallbackFn s)
 netifStatusCallback lanamp = proc "netif_callback" $ \netif -> body $ do
      flags' <- deref $ netif ~> flags
      when (flags' .& netif_flag_up /=?  0) $ do
@@ -140,46 +140,42 @@ netifStatusCallback lanamp = proc "netif_callback" $ \netif -> body $ do
 
 
 
-udpReceiveCallback :: Lanamp (I2S i) o -> Def (UdpRecvFn s1 s2 s3 s4)
-udpReceiveCallback lanamp = proc "udp_echo_callback" $ \_ upcb pbuff addr port -> body $ do
-    size <- deref (pbuff ~> tot_len)
-    when (size ==? 1292) $ do
+udpReceiveCallback :: Output o => Lanamp (I2S i) o -> Def (UdpRecvFn s1 s2 s3 s4)
+udpReceiveCallback l@Lanamp{..} =
+    proc "udp_receive_callback" $ \_ upcb pbuff addr port -> body $ do
+        -- blink l
+        size <- deref (pbuff ~> tot_len)
         index <- local $ ival 12
         forever $ do
-            index' <- deref index
-            when (index' >=? size) breakOut
-            msbl <- safeCast <$> getPbufAt pbuff index'
-            lsbl <- safeCast <$> getPbufAt pbuff (index' + 1)
-            let vall  = (msbl `iShiftL` 8) .| lsbl
-            msbr <- safeCast <$> getPbufAt pbuff (index' + 2)
-            lsbr <- safeCast <$> getPbufAt pbuff (index' + 3)
-            let valr  = (msbr `iShiftL` 8) .| lsbr
-            pushRTPBuffToQueue lanamp vall valr
-            store index $ index' + 4
-    ret =<< freePbuf pbuff
-
-
-pushRTPBuffToQueue :: Lanamp (I2S i) o -> Uint16 -> Uint16 -> Ivory eff ()
-pushRTPBuffToQueue (Lanamp {..}) wordL wordR =
-    push i2sQueue $ \i -> do
-        let vall = twosComplementRep $ safeCast (twosComplementCast wordL) * 4096
-        store (i2sBuff ! toIx i ~> left) vall
-        let valr = twosComplementRep $ safeCast (twosComplementCast wordR) * 4096
-        store (i2sBuff ! toIx i ~> right) valr
+            flip (push' i2sQueue) (blink l >> breakOut) $ \i -> do
+                index' <- deref index
+                when (index' >=? size) breakOut
+                msbl <- getPbufAt pbuff index'
+                lsbl <- getPbufAt pbuff (index' + 1)
+                let wordL  = (safeCast msbl `iShiftL` 8) .| safeCast lsbl :: Uint16
+                let vall = twosComplementRep $ safeCast (twosComplementCast wordL) * 1024
+                store (i2sBuff ! toIx i ~> left) vall
+                msbr <- getPbufAt pbuff (index' + 2)
+                lsbr <- getPbufAt pbuff (index' + 3)
+                let wordR  = (safeCast msbr `iShiftL` 8) .| safeCast lsbr :: Uint16
+                let valr = twosComplementRep $ safeCast (twosComplementCast wordR) * 1024
+                store (i2sBuff ! toIx i ~> right) valr
+                store index $ index' + 4
+        ret =<< freePbuf pbuff
 
 
 transmitI2S :: Output o => Lanamp (I2S i) o -> Ivory eff Sample
-transmitI2S (Lanamp {..}) = do
-    pop' i2sQueue
-        (\i -> do
-            store (i2sWord ~> left) =<< deref (i2sBuff ! toIx i ~> left)
-            store (i2sWord ~> right)=<< deref (i2sBuff ! toIx i ~> right)
-        )
-        (do
-            flag' <- deref flag
-            ifte_ flag'
-                (set pin)
-                (reset pin)
-            store flag $ iNot flag'
-        )
+transmitI2S l@Lanamp {..} = do
+    -- flip (pop' i2sQueue) (blink l) $ \i -> do
+    pop i2sQueue $ \i -> do
+        store (i2sWord ~> left) =<< deref (i2sBuff ! toIx i ~> left)
+        store (i2sWord ~> right)=<< deref (i2sBuff ! toIx i ~> right)
     pure i2sWord
+
+blink :: Output a => Lanamp i a -> Ivory eff ()
+blink Lanamp {..}= do
+    flag' <- deref flag
+    ifte_ flag'
+        (set pin)
+        (reset pin)
+    store flag $ iNot flag'
