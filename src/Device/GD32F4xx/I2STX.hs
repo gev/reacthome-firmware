@@ -134,7 +134,7 @@ transmitBuff i2s buff0 buff1 transmit = do
     enableChannelDMA    (dmaPer i2s) (dmaCh i2s)
     enableSpiDma        (spi i2s) spi_dma_transmit
     enableInterruptDMA  (dmaPer i2s) (dmaCh i2s) dma_chxctl_ftfie
-    i <- local $ ival (0 :: Sint32)
+    i <- local $ ival (0 :: Uint16)
     forever $ do
         i' <- deref i
         when (i' >=? arrayLen buff1) breakOut
