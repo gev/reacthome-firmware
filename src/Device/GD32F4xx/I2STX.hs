@@ -140,12 +140,12 @@ transmitBuff i2s buff = do
     enableInterruptDMA  (dmaPer i2s) (dmaCh i2s) dma_chxctl_ftfie
 
 prepareBuff :: KnownNat n => I2STX n -> Buffer n Uint32 -> Ivory (AllowBreak (ProcEffects s ())) I.Sample -> Ivory (ProcEffects s ()) ()
-prepareBuff i2s buff transmit = do
+prepareBuff i2s buff prepare = do
     i <- local $ ival (0 :: Uint16)
     forever $ do
         i' <- deref i
         when (i' >=? arrayLen buff) breakOut
-        t <- transmit
+        t <- prepare
         store (buff ! toIx i') . swap16bit =<< deref (t ~> I.left)
         store (buff ! toIx (i' + 1)) . swap16bit =<< deref (t ~> I.right)
         store i (i' + 2)
