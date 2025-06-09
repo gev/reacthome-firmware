@@ -53,8 +53,8 @@ data Lanamp i o = Lanamp
     { i2sTx    :: i
     , pin3     :: o
     , pin7     :: o
-    , i2sBuff  :: Records (20000) SampleStruct
-    , i2sQueue :: ElasticQueue  (20000)
+    , i2sBuff  :: Records (4480) SampleStruct
+    , i2sQueue :: ElasticQueue  (4480)
     , i2sWord  :: Sample
     , flag3    :: Value IBool
     , flag7    :: Value IBool
@@ -159,21 +159,21 @@ udpReceiveCallback l@Lanamp{..} =
         when (size ==? 1292) $ do
             index <- local $ ival 12
             forever $ do
-                flip (push' i2sQueue) (blink7 l >> breakOut) $ \i -> do
+                index' <- deref index
+                when (index' >=? size) breakOut
+                flip (push' i2sQueue) (blink7 l) $ \ix -> do
                 -- flip (push' i2sQueue) (breakOut) $ \i -> do
-                    index' <- deref index
-                    when (index' >=? size) breakOut
                     msbl <- getPbufAt pbuff index'
                     lsbl <- getPbufAt pbuff (index' + 1)
                     let wordL  = (safeCast msbl `iShiftL` 8) .| safeCast lsbl :: Uint16
                     let vall = twosComplementRep $ safeCast (twosComplementCast wordL) * 1024
-                    store (i2sBuff ! toIx i ~> left) vall
+                    store (i2sBuff ! ix ~> left) vall
                     msbr <- getPbufAt pbuff (index' + 2)
                     lsbr <- getPbufAt pbuff (index' + 3)
                     let wordR  = (safeCast msbr `iShiftL` 8) .| safeCast lsbr :: Uint16
                     let valr = twosComplementRep $ safeCast (twosComplementCast wordR) * 1024
-                    store (i2sBuff ! toIx i ~> right) valr
-                    store index $ index' + 4
+                    store (i2sBuff ! ix ~> right) valr
+                store index $ index' + 4
         ret =<< freePbuf pbuff
 
 

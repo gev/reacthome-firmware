@@ -127,8 +127,8 @@ handleDMA i2s = do
         clearInterruptFlagDMA (dmaPer i2s) (dmaCh i2s) dma_int_flag_ftf
         numTxBuff' <- deref $ numTxBuff i2s
         ifte_ (numTxBuff' ==? 0)
-            (transmitBuff i2s (txBuff0 i2s))
             (transmitBuff i2s (txBuff1 i2s))
+            (transmitBuff i2s (txBuff0 i2s))
         store (numTxBuff i2s) $ 1 - numTxBuff'
 
 transmitBuff :: KnownNat n => I2STX n -> Buffer n Uint32 -> Ivory (ProcEffects s ()) ()
