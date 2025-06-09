@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE FlexibleContexts    #-}
-{-# LANGUAGE KindSignatures      #-}
 {-# LANGUAGE NamedFieldPuns      #-}
 {-# LANGUAGE RecordWildCards     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -21,9 +20,9 @@ import           Ivory.Stdlib
 {--
     TODO: Make polymorph?
 --}
-data Queue (n :: Nat) = Queue
-    { producerIx :: Index Uint16
-    , consumerIx :: Index Uint16
+data Queue n = Queue
+    { producerIx :: Index (Ix n)
+    , consumerIx :: Index (Ix n)
     , producerS  :: Semaphore Uint16
     , consumerS  :: Semaphore Uint16
     }
@@ -42,7 +41,7 @@ queue id = do
     pure Queue { producerIx, consumerIx, producerS, consumerS }
 
 
-push :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
+push :: KnownNat n => Queue n -> (Ix n -> Ivory eff ()) -> Ivory eff ()
 push Queue{..} handle =
     down producerS $ do
         x <- deref producerIx
@@ -51,7 +50,7 @@ push Queue{..} handle =
         up consumerS
 
 
-push' :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+push' :: KnownNat n => Queue n -> (Ix n -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
 push' Queue{..} handle =
     down' producerS $ do
         x <- deref producerIx
@@ -60,7 +59,7 @@ push' Queue{..} handle =
         up consumerS
 
 
-pop :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
+pop :: KnownNat n => Queue n -> (Ix n -> Ivory eff ()) -> Ivory eff ()
 pop Queue{..} handle =
     down consumerS $ do
         x <- deref consumerIx
@@ -69,7 +68,7 @@ pop Queue{..} handle =
         up producerS
 
 
-pop' :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+pop' :: KnownNat n => Queue n -> (Ix n -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
 pop' Queue{..} handle =
      down' consumerS $ do
         x <- deref consumerIx
@@ -78,14 +77,14 @@ pop' Queue{..} handle =
         up producerS
 
 
-peek :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
+peek :: KnownNat n => Queue n -> (Ix n -> Ivory eff ()) -> Ivory eff ()
 peek Queue{..} handle =
     check consumerS $ do
         x <- deref consumerIx
         handle x
 
 
-peek' :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+peek' :: KnownNat n => Queue n -> (Ix n -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
 peek' Queue{..} handle =
     check' consumerS $ do
         x <- deref consumerIx
@@ -93,11 +92,11 @@ peek' Queue{..} handle =
 
 
 size :: Queue n -> Ivory eff Uint16
-size Queue{..} =
-    deref $ getSemaphore consumerS
+size Queue{..} = do
+    deref $ getSemaphore producerS
 
 
-remove :: Queue n -> Ivory eff ()
+remove :: KnownNat n => Queue n -> Ivory eff ()
 remove Queue{..} =
     down consumerS $ do
         x <- deref consumerIx

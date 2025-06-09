@@ -1,6 +1,5 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE FlexibleContexts    #-}
-{-# LANGUAGE KindSignatures      #-}
 {-# LANGUAGE NamedFieldPuns      #-}
 {-# LANGUAGE RecordWildCards     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
@@ -22,9 +21,9 @@ import           Ivory.Stdlib
 {--
     TODO: Make polymorph?
 --}
-data ElasticQueue (n :: Nat) = ElasticQueue
-    { producerIx :: Index Uint16
-    , consumerIx :: Index Uint16
+data ElasticQueue n = ElasticQueue
+    { producerIx :: Index (Ix n)
+    , consumerIx :: Index (Ix n)
     , producerS  :: Semaphore Uint16
     , consumerS  :: Semaphore Uint16
     , isReady    :: Value IBool
@@ -48,7 +47,7 @@ elastic id = do
     pure ElasticQueue { producerIx, consumerIx, producerS, consumerS, isReady, half }
 
 
-push :: ElasticQueue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
+push :: KnownNat n => ElasticQueue n -> (Ix n -> Ivory eff ()) -> Ivory eff ()
 push q@ElasticQueue{..} handle = do
     down producerS $ do
         x <- deref producerIx
@@ -59,7 +58,7 @@ push q@ElasticQueue{..} handle = do
         when (s >=? half) $ store isReady true
 
 
-push' :: ElasticQueue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+push' :: KnownNat n => ElasticQueue n -> (Ix n -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
 push' q@ElasticQueue{..} handleT handleF = do
     flip (down' producerS) handleF $ do
         x <- deref producerIx
@@ -70,7 +69,7 @@ push' q@ElasticQueue{..} handleT handleF = do
         when (s >=? half) $ store isReady true
 
 
-pop :: ElasticQueue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
+pop :: KnownNat n => ElasticQueue n -> (Ix n -> Ivory eff ()) -> Ivory eff ()
 pop ElasticQueue{..} handle = do
     isReady' <- deref isReady
     when isReady' $ do
@@ -81,7 +80,7 @@ pop ElasticQueue{..} handle = do
             up producerS
 
 
-pop' :: ElasticQueue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+pop' :: KnownNat n => ElasticQueue n -> (Ix n -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
 pop' ElasticQueue{..} handleT handleF = do
     isReady' <- deref isReady
     flip (ifte_ isReady') handleF $ do
@@ -92,7 +91,7 @@ pop' ElasticQueue{..} handleT handleF = do
             up producerS
 
 
-peek :: ElasticQueue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
+peek :: KnownNat n => ElasticQueue n -> (Ix n -> Ivory eff ()) -> Ivory eff ()
 peek ElasticQueue{..} handle = do
     isReady' <- deref isReady
     when isReady' $ do
@@ -101,7 +100,7 @@ peek ElasticQueue{..} handle = do
             handle x
 
 
-peek' :: ElasticQueue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+peek' :: KnownNat n => ElasticQueue n -> (Ix n -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
 peek' ElasticQueue{..} handleT handleF = do
     isReady' <- deref isReady
     flip (ifte_ isReady') handleF $ do
@@ -115,7 +114,7 @@ size ElasticQueue{..} =
     deref $ getSemaphore consumerS
 
 
-remove :: ElasticQueue n -> Ivory eff ()
+remove :: KnownNat n => ElasticQueue n -> Ivory eff ()
 remove ElasticQueue{..} = do
     isReady' <- deref isReady
     when isReady' $ do

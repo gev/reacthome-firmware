@@ -32,6 +32,7 @@ import           Support.Device.GD32F4xx.IRQ
 import           Support.Device.GD32F4xx.Misc
 import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.SPI
+import Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
 
 
 
@@ -70,7 +71,7 @@ mkI2STX spi rcuSpi rcuDma dmaPer dmaCh dmaSubPer dmaIRQn txPin wsPin sckPin mclk
                            ]
     dmaParams   <- record (symbol spi <> "_dma_param") dmaInit
     numPrBuff   <- value  (symbol spi <> "_num_pr_buff") 0
-    numTxBuff   <- value  (symbol spi <> "_num_tx_buff") 0
+    numTxBuff   <- value  (symbol spi <> "_num_tx_buff") 1
     txBuff0     <- buffer $ symbol spi <> "_tx_buff0"
     txBuff1     <- buffer $ symbol spi <> "_tx_buff1"
 
@@ -112,7 +113,7 @@ instance KnownNat n => Handler I.HandleI2STX (I2STX n) where
         addTask $ yeld "i2s_prepare_buffer" $ do
             numPrBuff' <- deref $ numPrBuff i2s
             numTxBuff' <- deref $ numTxBuff i2s
-            when (numPrBuff' /=? numTxBuff') $ do
+            when (numPrBuff' ==? numTxBuff') $ do
                 ifte_ (numPrBuff' ==? 0)
                     (do
                         prepareBuff i2s (txBuff0 i2s) handle
