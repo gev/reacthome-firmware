@@ -26,13 +26,13 @@ import           Ivory.Language
 import           Ivory.Stdlib                 as S
 import           Ivory.Support
 import           Support.Cast
+import           Support.CMSIS.CoreCMFunc     (disableIRQ, enableIRQ)
 import           Support.Device.GD32F4xx.DMA
 import           Support.Device.GD32F4xx.GPIO
 import           Support.Device.GD32F4xx.IRQ
 import           Support.Device.GD32F4xx.Misc
 import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.SPI
-import Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
 
 
 
@@ -113,16 +113,11 @@ instance KnownNat n => Handler I.HandleI2STX (I2STX n) where
         addTask $ yeld "i2s_prepare_buffer" $ do
             numPrBuff' <- deref $ numPrBuff i2s
             numTxBuff' <- deref $ numTxBuff i2s
-            when (numPrBuff' ==? numTxBuff') $ do
+            when (numPrBuff' /=? numTxBuff') $ do
                 ifte_ (numPrBuff' ==? 0)
-                    (do
-                        prepareBuff i2s (txBuff0 i2s) handle
-                        store (numPrBuff i2s) 1
-                    )
-                    (do
-                        prepareBuff i2s (txBuff1 i2s) handle
-                        store (numPrBuff i2s) 0
-                    )
+                    (prepareBuff i2s (txBuff0 i2s) handle)
+                    (prepareBuff i2s (txBuff1 i2s) handle)
+                store (numPrBuff i2s) numTxBuff'
 
 
 handleDMA :: KnownNat n => I2STX n -> Ivory (ProcEffects s ()) ()
@@ -132,14 +127,9 @@ handleDMA i2s = do
         clearInterruptFlagDMA (dmaPer i2s) (dmaCh i2s) dma_int_flag_ftf
         numTxBuff' <- deref $ numTxBuff i2s
         ifte_ (numTxBuff' ==? 0)
-            (do
-                transmitBuff i2s (txBuff0 i2s)
-                store (numTxBuff i2s) 1
-            )
-            (do
-                transmitBuff i2s (txBuff1 i2s)
-                store (numTxBuff i2s) 0
-            )
+            (transmitBuff i2s (txBuff0 i2s))
+            (transmitBuff i2s (txBuff1 i2s))
+        store (numTxBuff i2s) $ 1 - numTxBuff'
 
 transmitBuff :: KnownNat n => I2STX n -> Buffer n Uint32 -> Ivory (ProcEffects s ()) ()
 transmitBuff i2s buff = do
