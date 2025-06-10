@@ -115,8 +115,8 @@ instance KnownNat n => Handler I.HandleI2STX (I2STX n) where
             numTxBuff' <- deref $ numTxBuff i2s
             when (numPrBuff' /=? numTxBuff') $ do
                 ifte_ (numPrBuff' ==? 0)
-                    (prepareBuff i2s (txBuff0 i2s) handle)
-                    (prepareBuff i2s (txBuff1 i2s) handle)
+                    (prepareBuff (txBuff0 i2s) handle)
+                    (prepareBuff (txBuff1 i2s) handle)
                 store (numPrBuff i2s) numTxBuff'
 
 
@@ -139,8 +139,8 @@ transmitBuff i2s buff = do
     enableSpiDma        (spi i2s) spi_dma_transmit
     enableInterruptDMA  (dmaPer i2s) (dmaCh i2s) dma_chxctl_ftfie
 
-prepareBuff :: KnownNat n => I2STX n -> Buffer n Uint32 -> Ivory (AllowBreak (ProcEffects s ())) I.Sample -> Ivory (ProcEffects s ()) ()
-prepareBuff i2s buff prepare = do
+prepareBuff :: KnownNat n => Buffer n Uint32 -> Ivory (AllowBreak (ProcEffects s ())) I.Sample -> Ivory (ProcEffects s ()) ()
+prepareBuff buff prepare = do
     i <- local $ ival (0 :: Uint16)
     forever $ do
         i' <- deref i
