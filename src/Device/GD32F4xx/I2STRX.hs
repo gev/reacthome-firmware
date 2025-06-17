@@ -97,8 +97,8 @@ mkI2STRX spi rcuSpiTx rcuDmaTx dmaPerTx dmaChTx dmaSubPerTx dmaIRQnTx txPin wsPi
                              , priority            .= ival dma_priority_ultra_high
                              ]
     dmaParamsTx <- record (symbol spi <> "_dma_param") dmaInitTx
-    numTxBuff   <- value  (symbol spi <> "_num_tx_buff") 0
     numPrBuff   <- value  (symbol spi <> "_num_pr_buff") 0
+    numTxBuff   <- value  (symbol spi <> "_num_tx_buff") 1
     txBuff0     <- buffer $ symbol spi <> "_tx_buff0"
     txBuff1     <- buffer $ symbol spi <> "_tx_buff1"
 
@@ -123,8 +123,8 @@ mkI2STRX spi rcuSpiTx rcuDmaTx dmaPerTx dmaChTx dmaSubPerTx dmaIRQnTx txPin wsPi
     dmaParamsRx  <- record   (symbol i2s_add <> "_dma_param") dmaInitRx
     rxBuff0      <- buffer   (symbol i2s_add <> "_rx_buff_0")
     rxBuff1      <- buffer   (symbol i2s_add <> "_rx_buff_1")
-    numRxBuff    <- value    (symbol i2s_add <> "_num_rx_buff") 0
     numPcBuff    <- value    (symbol i2s_add <> "_num_pc_buff") 0
+    numRxBuff    <- value    (symbol i2s_add <> "_num_rx_buff") 1
     sample       <- record   (symbol i2s_add <> "_sample") [I.left .= izero, I.right .= izero]
 
     let rx   = rxPin gpio_pupd_none
@@ -252,7 +252,7 @@ receiveBuff i2s buff = do
 
 processBuff :: KnownNat rn => I2STRX tn rn -> Buffer rn Uint32 -> (forall eff. I.Sample -> Ivory eff ()) -> Ivory (ProcEffects s ()) ()
 processBuff i2s buff handle = do   
-    i <- local $ ival (0 :: Sint32)
+    i <- local $ ival (0 :: Uint16)
     forever $ do
         i' <- deref i
         when (i' >=? arrayLen buff) breakOut
