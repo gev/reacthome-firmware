@@ -23,6 +23,8 @@ import           Interface.MCU
 import           Ivory.Language
 import Data.Record
 import Interface.I2S
+import Interface.GPIO.Port
+import Interface.GPIO.Output
 
 
 
@@ -36,15 +38,18 @@ data Lanamp t r = Lanamp
 
 mkLanAmp :: ( MonadState Context m
             , MonadReader (D.Domain p c) m
-            , KnownNat t, KnownNat r)
+            , KnownNat t, KnownNat r, Pull p u, Output o)
             => (p -> m (I2STRX t r))
+            -> (p -> u -> m o)
             -> m (Lanamp t r)
-mkLanAmp i2sTrx' = do
+mkLanAmp i2sTrx' shutdown' = do
     let  name   =   "lanamp"
     mcu         <-  asks D.mcu
+    let peripherals' = peripherals mcu
     i2sBuff     <-  records' (name <> "_i2sBuff") [left .= izero, right .= izero]
     i2sQueue    <-  queue   (name <> "_i2sQueue")
     i2sTrx      <-  i2sTrx' $ peripherals mcu
+    shutdown    <-  shutdown' peripherals' $ pullNone peripherals' 
     i2sWord     <-  record (name <> "_word1") [left .= izero, right .= izero]
 
     let lanamp = Lanamp { i2sTrx
@@ -53,6 +58,7 @@ mkLanAmp i2sTrx' = do
                         , i2sWord
                         }
 
+    addInit "lanamp_init" $ set shutdown
 
     addHandler $ HandleI2SRX i2sTrx (receive lanamp)
     addHandler $ HandleI2STX i2sTrx (transmit lanamp)
