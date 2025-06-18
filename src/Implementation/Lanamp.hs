@@ -51,13 +51,9 @@ import           Support.Lwip.Udp
 
 data Lanamp i o = Lanamp
     { i2sTx    :: i
-    , pin3     :: o
-    , pin7     :: o
     , i2sBuff  :: Records (4480) SampleStruct
     , i2sQueue :: ElasticQueue  (4480)
     , i2sWord  :: Sample
-    , flag3    :: Value IBool
-    , flag7    :: Value IBool
     }
 
 type I2S i = i 192
@@ -67,8 +63,8 @@ mkLanamp :: ( MonadState Context m
             , Enet e, LwipPort e, Output o
             , Handler HandleI2STX (I2S i), Pull p d
             )
-         => (p -> m e) -> (p -> m (I2S i)) -> (p -> d -> m o) -> (p -> d -> m o) -> (p -> d -> m o) -> m (Lanamp (I2S i) o)
-mkLanamp enet' i2sTx' shutdown' pin7' pin3' = do
+         => (p -> m e) -> (p -> m (I2S i)) -> (p -> d -> m o) -> m (Lanamp (I2S i) o)
+mkLanamp enet' i2sTx' shutdown' = do
     let name = "lanamp"
     mcu       <- asks D.mcu
     enet      <- enet' $ peripherals mcu
@@ -76,24 +72,16 @@ mkLanamp enet' i2sTx' shutdown' pin7' pin3' = do
     netmask   <- record_ "netmask"
     gateway   <- record_ "gateway"
     netif     <- record_ "netif"
-    pin3        <- pin3' (peripherals mcu) $ pullNone (peripherals mcu)
-    pin7        <- pin7' (peripherals mcu) $ pullNone (peripherals mcu)
-    shutdown    <- shutdown' (peripherals mcu) $ pullNone (peripherals mcu)
-    i2sTx       <-  i2sTx' $ peripherals mcu
-    i2sBuff     <-  records_ (name <> "_i2s_buff_l")
-    i2sQueue    <-  elastic (name <> "_i2s")
-    i2sWord     <-  record (name <> "_word1") [left .= izero, right .= izero]
-    flag3       <-  value (name <> "_flag3") false
-    flag7       <-  value (name <> "_flag7") false
+    shutdown  <- shutdown' (peripherals mcu) $ pullNone (peripherals mcu)
+    i2sTx     <- i2sTx' $ peripherals mcu
+    i2sBuff   <- records_ (name <> "_i2s_buff_l")
+    i2sQueue  <- elastic (name <> "_i2s")
+    i2sWord   <- record (name <> "_word1") [left .= izero, right .= izero]
 
     let lanamp = Lanamp { i2sTx
-                        , pin3
-                        , pin7
                         , i2sBuff
                         , i2sQueue
                         , i2sWord
-                        , flag3
-                        , flag7
                         }
 
     addModule inclEthernet
@@ -154,15 +142,13 @@ netifStatusCallback lanamp = proc "netif_callback" $ \netif -> body $ do
 udpReceiveCallback :: Output o => Lanamp (I2S i) o -> Def (UdpRecvFn s1 s2 s3 s4)
 udpReceiveCallback l@Lanamp{..} =
     proc "udp_receive_callback" $ \_ upcb pbuff addr port -> body $ do
-        -- blink l
         size <- deref (pbuff ~> len)
         when (size ==? 1292) $ do
             index <- local $ ival 12
             forever $ do
                 index' <- deref index
                 when (index' >=? size) breakOut
-                flip (push' i2sQueue) (blink7 l) $ \ix -> do
-                -- flip (push' i2sQueue) (breakOut) $ \i -> do
+                push i2sQueue $ \ix -> do
                     msbl <- getPbufAt pbuff index'
                     lsbl <- getPbufAt pbuff (index' + 1)
                     let wordL  = (safeCast msbl `iShiftL` 8) .| safeCast lsbl :: Uint16
@@ -179,24 +165,7 @@ udpReceiveCallback l@Lanamp{..} =
 
 transmitI2S :: Output o => Lanamp (I2S i) o -> Ivory eff Sample
 transmitI2S l@Lanamp {..} = do
-    flip (pop' i2sQueue) (blink3 l) $ \i -> do
-    -- pop i2sQueue $ \i -> do
+    pop i2sQueue $ \i -> do
         store (i2sWord ~> left) =<< deref (i2sBuff ! toIx i ~> left)
         store (i2sWord ~> right)=<< deref (i2sBuff ! toIx i ~> right)
     pure i2sWord
-
-blink3 :: Output a => Lanamp i a -> Ivory eff ()
-blink3 Lanamp {..}= do
-    flag' <- deref flag3
-    ifte_ flag'
-        (set pin3)
-        (reset pin3)
-    store flag3 $ iNot flag'
-
-blink7 :: Output a => Lanamp i a -> Ivory eff ()
-blink7 Lanamp {..}= do
-    flag' <- deref flag7
-    ifte_ flag'
-        (set pin7)
-        (reset pin7)
-    store flag7 $ iNot flag'
