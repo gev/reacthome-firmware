@@ -21,7 +21,7 @@ import           Transport.RS485.RBUS
 doppler5 :: Formula GD32F3x0
 doppler5 = Formula { name            = "doppler5"
                    , model           = deviceTypeDoppler5Di4
-                   , version         = (2, 6)
+                   , version         = (2, 7)
                    , shouldInit      = true
                    , mcu             = gd32f330k8u6
                    , quartzFrequency =  8_000_000
