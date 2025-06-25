@@ -19,8 +19,9 @@ import           Core.Task
 import           Core.Transport
 import           Core.Version
 import           Data.Buffer
-import           Data.Concurrent.Queue
+import           Data.Queue
 import           Data.Value
+import           GHC.TypeNats
 import qualified Interface.MCU            as I
 import           Interface.UART
 import           Ivory.Language
@@ -28,27 +29,26 @@ import qualified Protocol.UART.RBUS       as U
 import           Transport.UART.RBUS.Data
 import           Transport.UART.RBUS.Rx
 import           Transport.UART.RBUS.Tx
-import GHC.TypeNats
 
 
 
 rbusTop :: ( MonadState Context m, MonadReader (D.Domain p c) m
            ,  UART (u 32 300), Controller c
-           ) 
+           )
         => (p -> m (u 32 300)) -> m (RBUS 32 300)
 rbusTop uart' = rbus uart' 115_200
 
 
 rbusTopGD :: ( MonadState Context m, MonadReader (D.Domain p c) m
              , UART (u 32 300), Controller c
-             ) 
+             )
           => (p -> m (u 32 300)) -> m (RBUS 32 512)
 rbusTopGD uart' = rbus uart' 115_200
 
 rbusHub :: ( MonadState Context m
            , MonadReader (D.Domain p c) m
            , UART (u 300 300), Controller c
-           ) 
+           )
         => (p -> m (u 300 300)) -> m (RBUS 32 1200)
 rbusHub uart' = rbus uart' 1_000_000
 
@@ -56,7 +56,7 @@ rbusHub uart' = rbus uart' 1_000_000
 rbusEcho :: ( MonadState Context m
            , MonadReader (D.Domain p c) m
            , UART (u 32 300), Controller c
-           ) 
+           )
         => (p -> m (u 32 300)) -> m (RBUS 32 300)
 rbusEcho uart' = rbus uart' 1_000_000
 
@@ -87,10 +87,10 @@ mkRbus :: ( MonadState Context m, MonadReader (D.Domain p c) m
           , UART (u rn tn)
           , KnownNat q, KnownNat l, KnownNat rn, KnownNat tn
           )
-       => String 
+       => String
        -> u rn tn
-       -> Uint32 
-       -> (forall s. Buffer 255 Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()) 
+       -> Uint32
+       -> (forall s. Buffer 255 Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ())
        -> m (RBUS q l)
 mkRbus name uart speed onMessage = do
     mcu           <- asks D.mcu

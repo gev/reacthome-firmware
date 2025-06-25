@@ -8,6 +8,7 @@ module Transport.UART.RBUS.Tx where
 
 import           Data.Buffer
 import           Data.Concurrent.Queue
+import           Data.Queue
 import           GHC.TypeNats
 import           Interface.SystemClock
 import qualified Interface.UART           as U
@@ -16,7 +17,7 @@ import           Ivory.Stdlib
 import qualified Protocol.UART.RBUS       as U
 import           Protocol.UART.RBUS.Tx
 import           Transport.UART.RBUS.Data
-import           Transport.UDP.RBUS       (discoveryTask)
+import           Transport.UDP.RBUS
 
 
 
@@ -30,12 +31,12 @@ txHandle RBUS{..} = store txLock false
 
 
 
-txTask :: (KnownNat q, KnownNat l) 
+txTask :: (KnownNat q, KnownNat l)
        => RBUS q l -> Ivory (ProcEffects s ()) ()
 txTask r@RBUS{..} = do
     txLock' <- deref txLock
     when (iNot txLock') $
-        pop msgQueue $ \i -> do
+        popConcurrently msgQueue $ \i -> do
             let ix = toIx i
             offset <- deref $ msgOffset ! ix
             size   <- deref $ msgSize ! ix

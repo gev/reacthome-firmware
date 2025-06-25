@@ -5,7 +5,7 @@ module Transport.UART.RBUS.Data where
 
 import           Core.Version          (Version)
 import           Data.Buffer
-import           Data.Concurrent.Queue
+import           Data.Queue
 import           Data.Value
 import           Interface.Mac
 import           Interface.MCU         

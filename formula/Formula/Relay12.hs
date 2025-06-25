@@ -17,7 +17,7 @@ import           Transport.RS485.RBUS
 relay12 :: Formula GD32F3x0
 relay12 = Formula { name            = "relay12"
                   , model           = deviceTypeRelay12Rs
-                  , version         = (3, 6)
+                  , version         = (3, 7)
                   , shouldInit      = true
                   , mcu             = gd32f330k8u6
                   , quartzFrequency =  8_000_000

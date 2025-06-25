@@ -16,15 +16,16 @@ import qualified Control.Monad                 as M
 import           Control.Monad.State           (MonadState)
 import           Core.Context
 import           Core.Handler
+import           Core.Task
 import           Data.Buffer
-import           Data.Concurrent.Queue as Q
+import           Data.Concurrent.Queue         as Q
 import           Data.Maybe
+import           Data.Queue                    as Q
 import           Data.Record
 import           Data.Value
 import           Device.GD32F3x0.GPIO.Port
 import           GHC.TypeNats
 import qualified Interface.UART                as I
-import           Core.Task
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Ivory.Support
@@ -43,7 +44,7 @@ data UART rn tn = UART
     { uart    :: USART_PERIPH
     , rcu     :: RCU_PERIPH
     , uartIRQ :: IRQn
-    , rxQueue :: Queue  rn   
+    , rxQueue :: Queue  rn
     , rxBuff  :: Buffer rn Uint16
     , txBuff  :: Buffer tn Uint16
     , index   :: Value Uint16
@@ -86,12 +87,12 @@ instance (KnownNat rn, KnownNat tn) => Handler I.HandleUART (UART rn tn) where
 
 
 
-handleUART :: (KnownNat tn, KnownNat rn) 
-           => UART rn tn 
-           -> Ivory eff () 
-           -> Ivory eff () 
-           -> Maybe (Ivory eff ()) 
-           -> Ivory eff () 
+handleUART :: (KnownNat tn, KnownNat rn)
+           => UART rn tn
+           -> Ivory eff ()
+           -> Ivory eff ()
+           -> Maybe (Ivory eff ())
+           -> Ivory eff ()
            -> Ivory eff ()
 handleUART u@UART{..} onReceive onTransmit onDrain onError = do
     handleError u onError
@@ -122,13 +123,13 @@ handleTransmit UART{..} onTransmit onDrain = do
 
 handleError :: KnownNat rn => UART rn tn -> Ivory eff () -> Ivory eff ()
 handleError UART{..} onError = do
-    errs <- sequence [ 
+    errs <- sequence [
                        clear usart_int_flag_err_ferr   usart_flag_ferr
                      , clear usart_int_flag_err_nerr   usart_flag_nerr
                      , clear usart_int_flag_err_orerr  usart_flag_orerr
                      , clear usart_int_flag_perr       usart_flag_perr
                      , clear usart_int_flag_rbne_orerr usart_flag_orerr
-                     ] 
+                     ]
     let err = foldr (.||) false errs
     when err onError
     where clear i f = do
@@ -145,7 +146,7 @@ handleReceive UART{..} onReceive = do
     when rbne $ do
         push rxQueue $ \i -> do
             store (rxBuff ! toIx i) =<< S.receiveData uart
-            onReceive 
+            onReceive
         clearInterruptFlag     uart usart_int_flag_rbne
 
 
@@ -173,10 +174,10 @@ instance (KnownNat rn, KnownNat tn) => I.UART (UART rn tn) where
         configParity    uart $ coerceParity     parity
         enableUSART     uart
 
-    clearRX UART{..} = Q.clear rxQueue
+    clearRX UART{..} = Q.clearConcurrently rxQueue
 
-    receive UART{..} read = 
-        pop rxQueue $ \i -> 
+    receive UART{..} read =
+        popConcurrently rxQueue $ \i ->
             read =<< deref (rxBuff ! toIx i)
 
     transmit UART{..} write = do

@@ -8,7 +8,7 @@ module Feature.RS485.RSM.Tx where
 
 import           Control.Monad          (zipWithM_)
 import           Data.Buffer
-import           Data.Concurrent.Queue
+import           Data.Queue
 import           Feature.RS485.RSM.Data
 import           GHC.TypeNats
 import           Interface.Mac

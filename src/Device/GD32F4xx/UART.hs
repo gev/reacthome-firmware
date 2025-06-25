@@ -13,9 +13,10 @@ import           Control.Monad.State           (MonadState)
 import           Core.Context
 import           Core.Handler
 import           Data.Buffer
-import           Data.Concurrent.Queue as Q
+import           Data.Concurrent.Queue         as Q
 import           Data.Foldable
 import           Data.Maybe
+import           Data.Queue                    as Q
 import           Data.Record
 import qualified Device.GD32F4xx.GPIO.Port     as G
 import           GHC.TypeNats
@@ -101,7 +102,7 @@ instance KnownNat rn => Handler I.HandleUART (UART rn tn) where
         addModule $ makeIRQHandler dmaIRQn (handleDMA dmaPer dmaCh uart onTransmit onDrain)
 
 
-handleDMA :: DMA_PERIPH -> DMA_CHANNEL -> USART_PERIPH 
+handleDMA :: DMA_PERIPH -> DMA_CHANNEL -> USART_PERIPH
           -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
 handleDMA dmaPer dmaCh uart onTransmit onDrain = do
     f <- getInterruptFlagDMA    dmaPer dmaCh dma_int_flag_ftf
@@ -112,11 +113,11 @@ handleDMA dmaPer dmaCh uart onTransmit onDrain = do
         clearInterruptFlagDMA   dmaPer dmaCh dma_int_flag_ftf
 
 
-handleUART :: KnownNat rn 
-           => UART rn tn 
-           -> Ivory eff () 
-           -> Maybe (Ivory eff ()) 
-           -> Ivory eff () 
+handleUART :: KnownNat rn
+           => UART rn tn
+           -> Ivory eff ()
+           -> Maybe (Ivory eff ())
+           -> Ivory eff ()
            -> Ivory eff ()
 handleUART u@UART{..} onReceive onDrain onError = do
     handleError u onError
@@ -139,7 +140,7 @@ handleError UART{..} onError = do
                 mapM_ (clearFlag uart) f
                 clearInterruptFlag uart i
             pure i'
-    
+
 handleReceive :: KnownNat rn => UART rn tn -> Ivory eff () -> Ivory eff ()
 handleReceive UART{..} onReceive = do
     rbne  <- getInterruptFlag  uart usart_int_flag_rbne
@@ -173,10 +174,10 @@ instance (KnownNat rn, KnownNat tn) => I.UART (UART rn tn) where
         configParity    uart $ coerceParity     parity
         enableUSART     uart
 
-    clearRX UART{..} = Q.clear rxQueue
+    clearRX UART{..} = Q.clearConcurrently rxQueue
 
-    receive UART{..} read = 
-        pop rxQueue $ \i -> 
+    receive UART{..} read =
+        popConcurrently rxQueue $ \i ->
             read =<< deref (rxBuff ! toIx i)
 
     transmit UART{..} write = do

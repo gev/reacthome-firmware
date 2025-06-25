@@ -19,7 +19,7 @@ import           Core.Task
 import           Core.Transport                      as T
 import           Core.Version
 import           Data.Buffer
-import           Data.Concurrent.Queue               as Q
+import           Data.Queue               as Q
 import           Data.Fixed
 import           Data.Serialize
 import           Data.Value

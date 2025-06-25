@@ -8,7 +8,7 @@
 module Transport.RS485.RBUS.Tx where
 
 import           Data.Buffer
-import           Data.Concurrent.Queue
+import           Data.Queue
 import           GHC.TypeNats
 import qualified Interface.RS485              as RS
 import           Interface.SystemClock

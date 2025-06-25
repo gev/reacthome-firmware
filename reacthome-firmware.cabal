@@ -43,6 +43,7 @@ executable reacthome-firmware
     Data.Area
     Data.Buffer
     Data.Color
+    Data.Concurrent.Atomically
     Data.Concurrent.Queue
     Data.Concurrent.Semaphore
     Data.Display.Canvas1D
@@ -50,7 +51,9 @@ executable reacthome-firmware
     Data.Fixed
     Data.Index
     Data.Matrix
+    Data.Queue
     Data.Record
+    Data.Semaphore
     Data.Serialize
     Data.Value
     Device.GD32F3x0

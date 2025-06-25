@@ -1,9 +1,9 @@
-{-# LANGUAGE DataKinds                 #-}
-{-# LANGUAGE FlexibleContexts          #-}
-{-# LANGUAGE FlexibleInstances         #-}
-{-# LANGUAGE NamedFieldPuns            #-}
-{-# LANGUAGE RankNTypes                #-}
-{-# LANGUAGE RecordWildCards           #-}
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE FlexibleContexts  #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE NamedFieldPuns    #-}
+{-# LANGUAGE RankNTypes        #-}
+{-# LANGUAGE RecordWildCards   #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
 
@@ -19,15 +19,15 @@ import           Core.Task
 import           Core.Transport         as T
 import           Core.Version
 import           Data.Buffer
-import           Data.Concurrent.Queue  as Q
 import           Data.Fixed
+import           Data.Queue             as Q
 import           Data.Serialize
 import           Data.Value
 import           Feature.RS485.RSM.Data
 import           Feature.RS485.RSM.Rx
 import           Feature.RS485.RSM.Tx
 import           GHC.TypeNats
-import           Interface.MCU          
+import           Interface.MCU
 import           Interface.RS485        (RS485)
 import qualified Interface.RS485        as I
 import qualified Interface.RS485        as RS
