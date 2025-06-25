@@ -5,11 +5,8 @@
 
 module Implementation.Smart.Bottom where
 
-import           Control.Monad.Reader (MonadReader, asks)
 import           Core.Actions
 import           Core.Controller
-import qualified Core.Domain          as D
-import           Data.Value
 import           Feature.ALED
 import           Feature.DInputs
 import           Feature.DS18B20
@@ -23,15 +20,14 @@ import           Ivory.Stdlib
 
 
 data Bottom n = Bottom
-    { top        :: Top
-    , dinputs    :: DInputs n
-    , aled       :: ALED 10 100 2040
-    , shouldInit :: Value IBool
+    { top     :: Top
+    , dinputs :: DInputs n
+    , aled    :: ALED 10 100 2040
     }
 
 
 
-bottom1 :: (KnownNat n, MonadReader (D.Domain p c) m)
+bottom1 :: (KnownNat n, Monad m)
         => m t
         -> (t -> m Top)
         -> (Bool -> t -> m (DInputs n))
@@ -39,17 +35,16 @@ bottom1 :: (KnownNat n, MonadReader (D.Domain p c) m)
         -> (t -> m (ALED 10 100 2040))
         -> m (Bottom n)
 bottom1 transport' top' dinputs' ds18b20 aled' = do
-    transport  <- transport'
-    shouldInit <- asks D.shouldInit
-    dinputs    <- dinputs' True transport
-    top        <- top' transport
-    aled       <- aled' transport
+    transport <- transport'
     ds18b20 transport
-    pure Bottom { top, dinputs, aled, shouldInit }
+    dinputs <- dinputs' True transport
+    top     <- top' transport
+    aled    <- aled' transport
+    pure Bottom { top, dinputs, aled }
 
 
 
-bottom2 :: (KnownNat n, MonadReader (D.Domain p c) m)
+bottom2 :: (KnownNat n, Monad m)
         => m t
         -> (t -> m Top)
         -> (Bool -> t
@@ -77,7 +72,7 @@ instance KnownNat n => Controller (Bottom n) where
         cond_ [ action ==? actionSmartTop               ==> onMessage                top  buff size
               , action ==? actionFindMe                 ==> onFindMe                 top  buff size
               , action ==? actionGetState               ==> onGetState               b    buff size
-              , action ==? actionInitialize             ==> onInitialize             aled buff size shouldInit
+              , action ==? actionInitialize             ==> onInitialize             aled buff size
               , action ==? actionALedOn                 ==> onALedOn                 aled buff size
               , action ==? actionALedOff                ==> onALedOff                aled buff size
               , action ==? actionALedColorAnimationPlay ==> onALedColorAnimationPlay aled buff size

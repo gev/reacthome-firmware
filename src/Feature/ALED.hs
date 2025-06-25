@@ -642,16 +642,16 @@ forceSyncAled ALED{..} = do
 
 
 onInitialize :: forall n ng ns np s t. (KnownNat n, KnownNat ng)
-             => ALED ng ns np -> Buffer n Uint8 -> Uint8 -> Value IBool
+             => ALED ng ns np -> Buffer n Uint8 -> Uint8
              -> Ivory (ProcEffects s t) ()
-onInitialize ALED{..} buff size shouldInit = do
+onInitialize ALED{..} buff size = do
     let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
     when (size ==? 1 + ng') $ do
         arrayMap $ \ix -> do
             let group = E.groups getALED ! ix
             brightness <- deref $ buff ! toIx (fromIx ix + 1)
             store (group ~> E.brightness) $ safeCast brightness / 255
-        store shouldInit false
+
 
 
 saveConfig :: (KnownNat ng, KnownNat ns)
