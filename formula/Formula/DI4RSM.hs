@@ -18,7 +18,7 @@ import           Transport.RS485.RBUS
 di4rsm :: Formula GD32F3x0
 di4rsm  = Formula { name            = "di4rsm"
                   , model           = deviceTypeDi4Rsm
-                  , version         = (2, 7)
+                  , version         = (2, 8)
                   , shouldInit      = true
                   , mcu             = gd32f350k8u6
                   , quartzFrequency =  8_000_000
