@@ -26,6 +26,7 @@ import           GHC.TypeLits
 import qualified Interface.I2S                as I
 import qualified Interface.I2SRX              as I
 import qualified Interface.I2STX              as I
+import           Interface.I2S          
 import           Ivory.Language
 import           Ivory.Stdlib                 as S
 import           Ivory.Support
@@ -36,6 +37,7 @@ import           Support.Device.GD32F4xx.IRQ
 import           Support.Device.GD32F4xx.Misc
 import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.SPI
+import Device.GD32F4xx.I2S
 
 
 
@@ -183,9 +185,7 @@ instance KnownNat tn => Handler I.HandleI2STX (I2STRX tn rn) where
 
 handleDMATx :: KnownNat tn => I2STRX tn rn -> Ivory (ProcEffects s ()) ()
 handleDMATx i2s = do
-    f <- getInterruptFlagDMA (dmaPerTx i2s) (dmaChTx i2s) dma_int_flag_ftf
-    S.when f $ do
-        clearInterruptFlagDMA (dmaPerTx i2s) (dmaChTx i2s) dma_int_flag_ftf
+    handleI2S (dmaPerTx i2s) (dmaChTx i2s) dma_int_flag_ftf $ do
         numTxBuff' <- deref $ numTxBuff i2s
         ifte_ (numTxBuff' ==? 0)
             (transmitBuff i2s (txBuff1 i2s))
@@ -195,11 +195,7 @@ handleDMATx i2s = do
 
 transmitBuff :: KnownNat tn => I2STRX tn rn -> Buffer tn Uint32 -> Ivory (ProcEffects s ()) ()
 transmitBuff i2s buff = do
-    store (dmaParamsTx i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray buff)
-    initSingleDMA       (dmaPerTx i2s) (dmaChTx i2s) (dmaParamsTx i2s)
-    enableChannelDMA    (dmaPerTx i2s) (dmaChTx i2s)
-    enableSpiDma        (spi i2s) spi_dma_transmit
-    enableInterruptDMA  (dmaPerTx i2s) (dmaChTx i2s) dma_chxctl_ftfie
+    dataExchangeDmaI2S spi_dma_transmit (spi i2s) buff (dmaParamsTx i2s) (dmaPerTx i2s) (dmaChTx i2s) dma_chxctl_ftfie
 
 
 prepareBuff :: KnownNat n => Buffer n Uint32 -> Ivory (AllowBreak (ProcEffects s ())) I.Sample -> Ivory (ProcEffects s ()) ()
@@ -231,9 +227,7 @@ instance KnownNat rn => Handler I.HandleI2SRX (I2STRX tn rn) where
 
 handleDMARx :: KnownNat rn => I2STRX tn rn -> Ivory (ProcEffects s ())  ()
 handleDMARx i2s = do
-    f <- getInterruptFlagDMA (dmaPerRx i2s) (dmaChRx i2s) dma_int_flag_ftf
-    S.when f $ do
-        clearInterruptFlagDMA (dmaPerRx i2s) (dmaChRx i2s) dma_int_flag_ftf
+    handleI2S (dmaPerRx i2s) (dmaChRx i2s) dma_int_flag_ftf $ do
         numRxBuff' <- deref $ numRxBuff i2s
         ifte_ (numRxBuff' ==? 0)
             (receiveBuff i2s (rxBuff1 i2s))
@@ -243,11 +237,7 @@ handleDMARx i2s = do
 
 receiveBuff :: KnownNat rn => I2STRX tn rn -> Buffer rn Uint32 -> Ivory (ProcEffects s ()) ()
 receiveBuff i2s buff = do
-    store (dmaParamsRx i2s ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray buff)
-    initSingleDMA (dmaPerRx i2s) (dmaChRx i2s) (dmaParamsRx i2s)
-    enableChannelDMA    (dmaPerRx i2s) (dmaChRx i2s)
-    enableSpiDma        (i2s_add i2s) spi_dma_receive
-    enableInterruptDMA  (dmaPerRx i2s) (dmaChRx i2s) dma_chxctl_ftfie
+    dataExchangeDmaI2S spi_dma_receive (spi i2s) buff (dmaParamsRx i2s) (dmaPerRx i2s) (dmaChRx i2s) dma_chxctl_ftfie
 
 
 processBuff :: KnownNat rn => I2STRX tn rn -> Buffer rn Uint32 -> (forall eff. I.Sample -> Ivory eff ()) -> Ivory (ProcEffects s ()) ()
