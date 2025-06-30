@@ -132,34 +132,23 @@ mkI2STRX spi rcuSpiTx rcuDmaTx dmaPerTx dmaChTx dmaSubPerTx dmaIRQnTx txPin wsPi
         enablePeriphClock   rcuSpiTx
         deinitDMA           dmaPerTx dmaChTx
         store (dmaParamsTx ~> periph_addr) =<< dataSPI spi
-        -- store (dmaParamsTx ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray txBuff0)
         store (dmaParamsTx ~> number) $ lengthDoubleArray txBuff * 2
-        initSingleDMA       dmaPerTx dmaChTx dmaParamsTx
         selectChannelSubperipheralDMA dmaPerTx dmaChTx dmaSubPerTx
         initI2S             spi i2s_mode_mastertx i2s_std_phillips i2s_ckpl_low
         configPscI2S        spi i2s_audiosample_48k i2s_frameformat_dt32b_ch32b i2s_mckout_enable
-        enableChannelDMA    dmaPerTx dmaChTx
-        enableSpiDma        spi spi_dma_transmit
         enableIrqNvic       dmaIRQnTx 1 0
-        enableInterruptDMA  dmaPerTx dmaChTx dma_chxctl_ftfie
         transmitBuff        i2strx txBuff
 
         enablePeriphClock   rcuDmaRx
         store (dmaParamsRx ~> periph_addr) =<< dataSPI i2s_add
-        -- store (dmaParamsRx ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray rxBuff0)
         store (dmaParamsRx ~> number) $ lengthDoubleArray rxBuff * 2
-        initSingleDMA       dmaPerTx dmaChTx dmaParamsTx
         selectChannelSubperipheralDMA dmaPerRx dmaChRx dmaSubPerRx
         configFullDuplexModeI2S i2s_add i2s_mode_mastertx i2s_std_phillips i2s_ckpl_low i2s_frameformat_dt32b_ch32b
-        enableChannelDMA    dmaPerRx dmaChRx
-        enableSpiDma        i2s_add spi_dma_receive
         enableIrqNvic       dmaIRQnRx 1 0
-        enableInterruptDMA  dmaPerRx dmaChRx dma_chxctl_ftfie
         receiveBuff         i2strx rxBuff
 
         enableI2S           spi
         enableI2S           i2s_add
-
 
     pure i2strx
     
