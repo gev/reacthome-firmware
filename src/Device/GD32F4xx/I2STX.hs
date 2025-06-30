@@ -88,7 +88,7 @@ mkI2STX spi rcuSpi rcuDma dmaPer dmaCh dmaSubPer dmaIRQn txPin wsPin sckPin mclk
             enablePeriphClock   rcuSpi
             deinitDMA           dmaPer dmaCh
             store (dmaParams ~> periph_addr) =<< dataSPI spi
-            store (dmaParams ~> memory0_addr) =<< castArrayUint32ToUint32 (exchangeDBuff txBuff toCArray)
+            -- store (dmaParams ~> memory0_addr) =<< castArrayUint32ToUint32 (exchangeDBuff txBuff toCArray)
             store (dmaParams ~> number) $ lengthDoubleArray txBuff * 2
             initSingleDMA       dmaPer dmaCh dmaParams
             selectChannelSubperipheralDMA dmaPer dmaCh dmaSubPer
