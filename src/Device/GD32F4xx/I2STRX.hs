@@ -2,11 +2,9 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE RankNTypes            #-}
 {-# OPTIONS_GHC -Wno-missing-fields #-}
 {-# LANGUAGE RecordWildCards       #-}
-{-# LANGUAGE TypeApplications      #-}
 
 
 module Device.GD32F4xx.I2STRX where
