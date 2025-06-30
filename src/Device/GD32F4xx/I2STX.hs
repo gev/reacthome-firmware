@@ -101,6 +101,7 @@ mkI2STX spi rcuSpi rcuDma dmaPer dmaCh dmaSubPer dmaIRQn txPin wsPin sckPin mclk
             enableSpiDma        spi spi_dma_transmit
             enableIrqNvic       dmaIRQn 1 0
             enableInterruptDMA  dmaPer dmaCh dma_chxctl_ftfie
+            -- transmitBuff        i2stx txBuff
 
     pure i2stx 
 
@@ -108,7 +109,7 @@ instance KnownNat n => Handler I.HandleI2STX (I2STX n) where
     addHandler I.HandleI2STX{..} = do
         addModule $ makeIRQHandler (dmaIRQn i2s) (handleDMA i2s)
         addTask $ yeld "i2s_prepare_buffer" $ do
-            selectBuff (txBuff i2s) false (prepareBuff handle)
+            selectHandlerBuff (txBuff i2s) (prepareBuff handle)
 
 handleDMA :: KnownNat n => I2STX n -> Ivory (ProcEffects s ()) ()
 handleDMA i2s = do
@@ -118,7 +119,7 @@ handleDMA i2s = do
 transmitBuff :: KnownNat n => I2STX n -> DoubleBuffer n Uint32 -> Ivory (ProcEffects s ()) ()
 transmitBuff i2s dbuff = do
     let handleBuff = dataExchangeDmaI2S spi_dma_transmit (spi i2s) (dmaParams i2s) (dmaPer i2s) (dmaCh i2s) dma_chxctl_ftfie
-    selectBuff dbuff true handleBuff
+    selectDmaBuff dbuff handleBuff
 
 prepareBuff :: KnownNat n => Ivory (AllowBreak (ProcEffects s ())) I.Sample -> Buffer n Uint32 -> Ivory (ProcEffects s ()) ()
 prepareBuff prepare buff = do

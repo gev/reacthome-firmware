@@ -142,7 +142,7 @@ mkI2STRX spi rcuSpiTx rcuDmaTx dmaPerTx dmaChTx dmaSubPerTx dmaIRQnTx txPin wsPi
         enableSpiDma        spi spi_dma_transmit
         enableIrqNvic       dmaIRQnTx 1 0
         enableInterruptDMA  dmaPerTx dmaChTx dma_chxctl_ftfie
-        -- transmitBuff        i2strx txBuff
+        transmitBuff        i2strx txBuff
 
         enablePeriphClock   rcuDmaRx
         store (dmaParamsRx ~> periph_addr) =<< dataSPI i2s_add
@@ -155,7 +155,7 @@ mkI2STRX spi rcuSpiTx rcuDmaTx dmaPerTx dmaChTx dmaSubPerTx dmaIRQnTx txPin wsPi
         enableSpiDma        i2s_add spi_dma_receive
         enableIrqNvic       dmaIRQnRx 1 0
         enableInterruptDMA  dmaPerRx dmaChRx dma_chxctl_ftfie
-        -- receiveBuff         i2strx rxBuff
+        receiveBuff         i2strx rxBuff
 
         enableI2S           spi
         enableI2S           i2s_add
@@ -167,7 +167,7 @@ instance KnownNat tn => Handler I.HandleI2STX (I2STRX tn rn) where
     addHandler I.HandleI2STX{..} = do
         addModule $ makeIRQHandler (dmaIRQnTx i2s) (handleDMATx i2s)
         addTask $ yeld "i2s_prepare_tx_buffer" $ do
-            selectBuff (txBuff i2s) false (prepareBuff handle)
+            selectHandlerBuff (txBuff i2s) (prepareBuff handle)
 
 
 handleDMATx :: KnownNat tn => I2STRX tn rn -> Ivory (ProcEffects s ()) ()
@@ -178,8 +178,8 @@ handleDMATx i2s = do
 
 transmitBuff :: KnownNat tn => I2STRX tn rn -> DoubleBuffer tn Uint32 -> Ivory (ProcEffects s ()) ()
 transmitBuff i2s dbuff = do
-    let handleBuff = dataExchangeDmaI2S spi_dma_transmit (spi i2s) (dmaParamsTx i2s) (dmaPerTx i2s) (dmaChTx i2s) dma_chxctl_ftfie
-    selectBuff dbuff true handleBuff
+    let callbackBuff = dataExchangeDmaI2S spi_dma_transmit (spi i2s) (dmaParamsTx i2s) (dmaPerTx i2s) (dmaChTx i2s) dma_chxctl_ftfie
+    selectDmaBuff dbuff callbackBuff
 
 prepareBuff :: KnownNat n => Ivory (AllowBreak (ProcEffects s ())) I.Sample -> Buffer n Uint32 -> Ivory (ProcEffects s ()) ()
 prepareBuff prepare buff = do
@@ -199,7 +199,7 @@ instance KnownNat rn => Handler I.HandleI2SRX (I2STRX tn rn) where
     addHandler I.HandleI2SRX{..} = do
         addModule $ makeIRQHandler (dmaIRQnRx i2s) (handleDMARx i2s)
         addTask $ yeld "i2s_process_rx_buffer" $ do
-            selectBuff (rxBuff i2s) false (processBuff i2s handle)
+            selectHandlerBuff (rxBuff i2s) (processBuff i2s handle)
 
 
 handleDMARx :: KnownNat rn => I2STRX tn rn -> Ivory (ProcEffects s ())  ()
@@ -209,8 +209,8 @@ handleDMARx i2s = do
 
 receiveBuff :: KnownNat rn => I2STRX tn rn -> DoubleBuffer rn Uint32 -> Ivory (ProcEffects s ()) ()
 receiveBuff i2s dbuff = do
-    let handleBuff = dataExchangeDmaI2S spi_dma_receive (i2s_add i2s) (dmaParamsRx i2s) (dmaPerRx i2s) (dmaChRx i2s) dma_chxctl_ftfie
-    selectBuff dbuff true handleBuff
+    let callbackBuff = dataExchangeDmaI2S spi_dma_receive (i2s_add i2s) (dmaParamsRx i2s) (dmaPerRx i2s) (dmaChRx i2s) dma_chxctl_ftfie
+    selectDmaBuff dbuff callbackBuff
 
 processBuff :: KnownNat rn => I2STRX tn rn -> (forall eff. I.Sample -> Ivory eff ()) -> Buffer rn Uint32 -> Ivory (ProcEffects s ()) ()
 processBuff i2s handle buff = do   
