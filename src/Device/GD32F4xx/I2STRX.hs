@@ -38,6 +38,7 @@ import           Support.Device.GD32F4xx.Misc
 import           Support.Device.GD32F4xx.RCU
 import           Support.Device.GD32F4xx.SPI
 import Device.GD32F4xx.I2S
+import Data.DoubleBuffer
 
 
 
@@ -46,20 +47,14 @@ data I2STRX tn rn = I2STRX { spi         :: SPI_PERIPH
                            , dmaChTx     :: DMA_CHANNEL
                            , dmaParamsTx :: Record DMA_SINGLE_PARAM_STRUCT
                            , dmaIRQnTx   :: IRQn
-                           , numTxBuff   :: Value Uint8
-                           , numPrBuff   :: Value Uint8
-                           , txBuff0     :: Buffer tn Uint32
-                           , txBuff1     :: Buffer tn Uint32
+                           , txBuff      :: DoubleBuffer tn Uint32
 
                            , i2s_add     :: SPI_PERIPH
                            , dmaPerRx    :: DMA_PERIPH
                            , dmaChRx     :: DMA_CHANNEL
                            , dmaParamsRx :: Record DMA_SINGLE_PARAM_STRUCT
                            , dmaIRQnRx   :: IRQn
-                           , numRxBuff   :: Value Uint8
-                           , numPcBuff   :: Value Uint8
-                           , rxBuff0     :: Buffer rn Uint32
-                           , rxBuff1     :: Buffer rn Uint32
+                           , rxBuff      :: DoubleBuffer rn Uint32
                            , sample      :: I.Sample
                            }
 
@@ -99,10 +94,8 @@ mkI2STRX spi rcuSpiTx rcuDmaTx dmaPerTx dmaChTx dmaSubPerTx dmaIRQnTx txPin wsPi
                              , priority            .= ival dma_priority_ultra_high
                              ]
     dmaParamsTx <- record (symbol spi <> "_dma_param") dmaInitTx
-    numPrBuff   <- value  (symbol spi <> "_num_pr_buff") 0
-    numTxBuff   <- value  (symbol spi <> "_num_tx_buff") 1
-    txBuff0     <- buffer $ symbol spi <> "_tx_buff0"
-    txBuff1     <- buffer $ symbol spi <> "_tx_buff1"
+    txBuff      <- doubleBuffer $ symbol spi <> "_tx_buff"
+
 
     let tx   = txPin   gpio_pupd_none
     let ws   = wsPin   gpio_pupd_none
@@ -123,10 +116,7 @@ mkI2STRX spi rcuSpiTx rcuDmaTx dmaPerTx dmaChTx dmaSubPerTx dmaIRQnTx txPin wsPi
                              , priority            .= ival dma_priority_high
                              ]
     dmaParamsRx  <- record   (symbol i2s_add <> "_dma_param") dmaInitRx
-    rxBuff0      <- buffer   (symbol i2s_add <> "_rx_buff_0")
-    rxBuff1      <- buffer   (symbol i2s_add <> "_rx_buff_1")
-    numPcBuff    <- value    (symbol i2s_add <> "_num_pc_buff") 0
-    numRxBuff    <- value    (symbol i2s_add <> "_num_rx_buff") 1
+    rxBuff       <- doubleBuffer   (symbol i2s_add <> "_rx_buff")
     sample       <- record   (symbol i2s_add <> "_sample") [I.left .= izero, I.right .= izero]
 
     let rx   = rxPin gpio_pupd_none
@@ -135,13 +125,15 @@ mkI2STRX spi rcuSpiTx rcuDmaTx dmaPerTx dmaChTx dmaSubPerTx dmaIRQnTx txPin wsPi
 
     addStruct (Proxy:: Proxy I.SampleStruct)
 
+    let i2strx = I2STRX {..}
+
     addInit (symbol spi) $ do
         enablePeriphClock   rcuDmaTx
         enablePeriphClock   rcuSpiTx
         deinitDMA           dmaPerTx dmaChTx
         store (dmaParamsTx ~> periph_addr) =<< dataSPI spi
-        store (dmaParamsTx ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray txBuff0)
-        store (dmaParamsTx ~> number) $ arrayLen txBuff0 * 2
+        -- store (dmaParamsTx ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray txBuff0)
+        store (dmaParamsTx ~> number) $ lengthDoubleArray txBuff * 2
         initSingleDMA       dmaPerTx dmaChTx dmaParamsTx
         selectChannelSubperipheralDMA dmaPerTx dmaChTx dmaSubPerTx
         initI2S             spi i2s_mode_mastertx i2s_std_phillips i2s_ckpl_low
@@ -150,56 +142,47 @@ mkI2STRX spi rcuSpiTx rcuDmaTx dmaPerTx dmaChTx dmaSubPerTx dmaIRQnTx txPin wsPi
         enableSpiDma        spi spi_dma_transmit
         enableIrqNvic       dmaIRQnTx 1 0
         enableInterruptDMA  dmaPerTx dmaChTx dma_chxctl_ftfie
+        -- transmitBuff        i2strx txBuff
 
         enablePeriphClock   rcuDmaRx
         store (dmaParamsRx ~> periph_addr) =<< dataSPI i2s_add
-        store (dmaParamsRx ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray rxBuff0)
-        store (dmaParamsRx ~> number) $ arrayLen rxBuff0 * 2
-        initSingleDMA       dmaPerRx dmaChRx dmaParamsRx
+        -- store (dmaParamsRx ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray rxBuff0)
+        store (dmaParamsRx ~> number) $ lengthDoubleArray rxBuff * 2
+        initSingleDMA       dmaPerTx dmaChTx dmaParamsTx
         selectChannelSubperipheralDMA dmaPerRx dmaChRx dmaSubPerRx
         configFullDuplexModeI2S i2s_add i2s_mode_mastertx i2s_std_phillips i2s_ckpl_low i2s_frameformat_dt32b_ch32b
         enableChannelDMA    dmaPerRx dmaChRx
         enableSpiDma        i2s_add spi_dma_receive
         enableIrqNvic       dmaIRQnRx 1 0
         enableInterruptDMA  dmaPerRx dmaChRx dma_chxctl_ftfie
+        -- receiveBuff         i2strx rxBuff
 
         enableI2S           spi
         enableI2S           i2s_add
 
 
-    pure I2STRX {spi, dmaPerTx, dmaChTx, dmaParamsTx, dmaIRQnTx, numTxBuff, numPrBuff, txBuff0, txBuff1, i2s_add, dmaPerRx, dmaChRx, dmaParamsRx, dmaIRQnRx, numRxBuff, numPcBuff, rxBuff0, rxBuff1, sample}
-
-
+    pure i2strx
+    
 instance KnownNat tn => Handler I.HandleI2STX (I2STRX tn rn) where
     addHandler I.HandleI2STX{..} = do
         addModule $ makeIRQHandler (dmaIRQnTx i2s) (handleDMATx i2s)
         addTask $ yeld "i2s_prepare_tx_buffer" $ do
-            numPrBuff' <- deref $ numPrBuff i2s
-            numTxBuff' <- deref $ numTxBuff i2s
-            when (numPrBuff' /=? numTxBuff') $ do
-                ifte_ (numPrBuff' ==? 0)
-                    (prepareBuff (txBuff0 i2s) handle)
-                    (prepareBuff (txBuff1 i2s) handle)
-                store (numPrBuff i2s) numTxBuff'
+            selectBuff (txBuff i2s) false (prepareBuff handle)
 
 
 handleDMATx :: KnownNat tn => I2STRX tn rn -> Ivory (ProcEffects s ()) ()
 handleDMATx i2s = do
     handleI2S (dmaPerTx i2s) (dmaChTx i2s) dma_int_flag_ftf $ do
-        numTxBuff' <- deref $ numTxBuff i2s
-        ifte_ (numTxBuff' ==? 0)
-            (transmitBuff i2s (txBuff1 i2s))
-            (transmitBuff i2s (txBuff0 i2s))
-        store (numTxBuff i2s) $ 1 - numTxBuff'
+       transmitBuff i2s (txBuff i2s)
 
 
-transmitBuff :: KnownNat tn => I2STRX tn rn -> Buffer tn Uint32 -> Ivory (ProcEffects s ()) ()
-transmitBuff i2s buff = do
-    dataExchangeDmaI2S spi_dma_transmit (spi i2s) (dmaParamsTx i2s) (dmaPerTx i2s) (dmaChTx i2s) dma_chxctl_ftfie buff
+transmitBuff :: KnownNat tn => I2STRX tn rn -> DoubleBuffer tn Uint32 -> Ivory (ProcEffects s ()) ()
+transmitBuff i2s dbuff = do
+    let handleBuff = dataExchangeDmaI2S spi_dma_transmit (spi i2s) (dmaParamsTx i2s) (dmaPerTx i2s) (dmaChTx i2s) dma_chxctl_ftfie
+    selectBuff dbuff true handleBuff
 
-
-prepareBuff :: KnownNat n => Buffer n Uint32 -> Ivory (AllowBreak (ProcEffects s ())) I.Sample -> Ivory (ProcEffects s ()) ()
-prepareBuff buff prepare = do
+prepareBuff :: KnownNat n => Ivory (AllowBreak (ProcEffects s ())) I.Sample -> Buffer n Uint32 -> Ivory (ProcEffects s ()) ()
+prepareBuff prepare buff = do
     i <- local $ ival (0 :: Uint16)
     forever $ do
         i' <- deref i
@@ -216,32 +199,21 @@ instance KnownNat rn => Handler I.HandleI2SRX (I2STRX tn rn) where
     addHandler I.HandleI2SRX{..} = do
         addModule $ makeIRQHandler (dmaIRQnRx i2s) (handleDMARx i2s)
         addTask $ yeld "i2s_process_rx_buffer" $ do
-            numPcBuff' <- deref $ numPcBuff i2s
-            numRxBuff' <- deref $ numRxBuff i2s
-            when (numPcBuff' /=? numRxBuff') $ do
-                ifte_ (numPcBuff' ==? 0)
-                    (processBuff i2s (rxBuff0 i2s) handle)
-                    (processBuff i2s (rxBuff1 i2s) handle)
-                store (numPcBuff i2s) numRxBuff'
+            selectBuff (rxBuff i2s) false (processBuff i2s handle)
 
 
 handleDMARx :: KnownNat rn => I2STRX tn rn -> Ivory (ProcEffects s ())  ()
 handleDMARx i2s = do
     handleI2S (dmaPerRx i2s) (dmaChRx i2s) dma_int_flag_ftf $ do
-        numRxBuff' <- deref $ numRxBuff i2s
-        ifte_ (numRxBuff' ==? 0)
-            (receiveBuff i2s (rxBuff1 i2s))
-            (receiveBuff i2s (rxBuff0 i2s))
-        store (numRxBuff i2s) $ 1 - numRxBuff'
+       receiveBuff i2s (rxBuff i2s)
 
+receiveBuff :: KnownNat rn => I2STRX tn rn -> DoubleBuffer rn Uint32 -> Ivory (ProcEffects s ()) ()
+receiveBuff i2s dbuff = do
+    let handleBuff = dataExchangeDmaI2S spi_dma_receive (i2s_add i2s) (dmaParamsRx i2s) (dmaPerRx i2s) (dmaChRx i2s) dma_chxctl_ftfie
+    selectBuff dbuff true handleBuff
 
-receiveBuff :: KnownNat rn => I2STRX tn rn -> Buffer rn Uint32 -> Ivory (ProcEffects s ()) ()
-receiveBuff i2s buff = do
-    dataExchangeDmaI2S spi_dma_receive (spi i2s) (dmaParamsRx i2s) (dmaPerRx i2s) (dmaChRx i2s) dma_chxctl_ftfie buff
-
-
-processBuff :: KnownNat rn => I2STRX tn rn -> Buffer rn Uint32 -> (forall eff. I.Sample -> Ivory eff ()) -> Ivory (ProcEffects s ()) ()
-processBuff i2s buff handle = do   
+processBuff :: KnownNat rn => I2STRX tn rn -> (forall eff. I.Sample -> Ivory eff ()) -> Buffer rn Uint32 -> Ivory (ProcEffects s ()) ()
+processBuff i2s handle buff = do   
     i <- local $ ival (0 :: Uint16)
     forever $ do
         i' <- deref i

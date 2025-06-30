@@ -83,12 +83,14 @@ mkI2STX spi rcuSpi rcuDma dmaPer dmaCh dmaSubPer dmaIRQn txPin wsPin sckPin mclk
 
     addStruct (Proxy:: Proxy I.SampleStruct)
 
+    let i2stx = I2STX {..}
+
     addInit (symbol spi) $ do
             enablePeriphClock   rcuDma
             enablePeriphClock   rcuSpi
             deinitDMA           dmaPer dmaCh
             store (dmaParams ~> periph_addr) =<< dataSPI spi
-            -- store (dmaParams ~> memory0_addr) =<< castArrayUint32ToUint32 (exchangeDBuff txBuff toCArray)
+            -- store (dmaParams ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray txBuff)
             store (dmaParams ~> number) $ lengthDoubleArray txBuff * 2
             initSingleDMA       dmaPer dmaCh dmaParams
             selectChannelSubperipheralDMA dmaPer dmaCh dmaSubPer
@@ -100,7 +102,7 @@ mkI2STX spi rcuSpi rcuDma dmaPer dmaCh dmaSubPer dmaIRQn txPin wsPin sckPin mclk
             enableIrqNvic       dmaIRQn 1 0
             enableInterruptDMA  dmaPer dmaCh dma_chxctl_ftfie
 
-    pure I2STX {spi, dmaPer, dmaCh, dmaParams, dmaIRQn, txBuff}
+    pure i2stx 
 
 instance KnownNat n => Handler I.HandleI2STX (I2STX n) where
     addHandler I.HandleI2STX{..} = do
