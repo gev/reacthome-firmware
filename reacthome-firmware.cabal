@@ -54,6 +54,7 @@ executable reacthome-firmware
     Data.Record
     Data.Serialize
     Data.Value
+    Data.DoubleBuffer
     Device.GD32F3x0
     Device.GD32F3x0.ADC
     Device.GD32F3x0.DAC

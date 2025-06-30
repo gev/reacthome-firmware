@@ -11,8 +11,8 @@ import           GHC.TypeLits
 import           Data.Buffer
 
 
-dataExchangeDmaI2S :: KnownNat n => SPI_DMA_DEFINITION -> SPI_PERIPH -> Buffer n Uint32 -> Record DMA_SINGLE_PARAM_STRUCT -> DMA_PERIPH -> DMA_CHANNEL -> DMA_INT -> Ivory (ProcEffects s ()) ()
-dataExchangeDmaI2S definition spiPer buff dmaParams dmaPer dmaCh intDma = do
+dataExchangeDmaI2S :: KnownNat n => SPI_DMA_DEFINITION -> SPI_PERIPH -> Record DMA_SINGLE_PARAM_STRUCT -> DMA_PERIPH -> DMA_CHANNEL -> DMA_INT -> Buffer n Uint32 -> Ivory (ProcEffects s ()) ()
+dataExchangeDmaI2S definition spiPer dmaParams dmaPer dmaCh intDma buff = do
     store (dmaParams ~> memory0_addr) =<< castArrayUint32ToUint32 (toCArray buff)
     initSingleDMA       dmaPer dmaCh dmaParams
     enableChannelDMA    dmaPer dmaCh

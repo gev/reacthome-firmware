@@ -56,9 +56,9 @@ main = do
     --           , smartTopG6
     --           ]
     mapM_ gcc [ 
-                udpEcho450
-              , lanamp              
-            --  soundbox
+                -- udpEcho450
+                lanamp              
+              , soundbox
             --   , server
             --   , rsHub4
               ]

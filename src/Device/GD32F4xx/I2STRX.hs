@@ -195,7 +195,7 @@ handleDMATx i2s = do
 
 transmitBuff :: KnownNat tn => I2STRX tn rn -> Buffer tn Uint32 -> Ivory (ProcEffects s ()) ()
 transmitBuff i2s buff = do
-    dataExchangeDmaI2S spi_dma_transmit (spi i2s) buff (dmaParamsTx i2s) (dmaPerTx i2s) (dmaChTx i2s) dma_chxctl_ftfie
+    dataExchangeDmaI2S spi_dma_transmit (spi i2s) (dmaParamsTx i2s) (dmaPerTx i2s) (dmaChTx i2s) dma_chxctl_ftfie buff
 
 
 prepareBuff :: KnownNat n => Buffer n Uint32 -> Ivory (AllowBreak (ProcEffects s ())) I.Sample -> Ivory (ProcEffects s ()) ()
@@ -237,7 +237,7 @@ handleDMARx i2s = do
 
 receiveBuff :: KnownNat rn => I2STRX tn rn -> Buffer rn Uint32 -> Ivory (ProcEffects s ()) ()
 receiveBuff i2s buff = do
-    dataExchangeDmaI2S spi_dma_receive (spi i2s) buff (dmaParamsRx i2s) (dmaPerRx i2s) (dmaChRx i2s) dma_chxctl_ftfie
+    dataExchangeDmaI2S spi_dma_receive (spi i2s) (dmaParamsRx i2s) (dmaPerRx i2s) (dmaChRx i2s) dma_chxctl_ftfie buff
 
 
 processBuff :: KnownNat rn => I2STRX tn rn -> Buffer rn Uint32 -> (forall eff. I.Sample -> Ivory eff ()) -> Ivory (ProcEffects s ()) ()
