@@ -10,6 +10,7 @@ import           Control.Monad.State       (MonadState)
 import           Core.Context
 import           Data.Concurrent.Semaphore
 import           Data.Index
+import           Data.Semaphore
 import           Data.Value
 import           GHC.TypeNats
 import           Ivory.Language

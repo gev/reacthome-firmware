@@ -1,10 +1,10 @@
-{-# LANGUAGE QuasiQuotes           #-}
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DataKinds   #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Interface.I2S where
 
-import Ivory.Language
-import Data.Record
+import           Data.Record
+import           Ivory.Language
 
 type SampleStruct = "sample"
 

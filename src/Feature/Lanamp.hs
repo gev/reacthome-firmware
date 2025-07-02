@@ -6,31 +6,32 @@
 
 module Feature.Lanamp where
 
-import           Control.Monad.Reader  (MonadReader, asks)
-import           Control.Monad.State   (MonadState)
+import           Control.Monad.Reader   (MonadReader, asks)
+import           Control.Monad.State    (MonadState)
 import           Core.Context
-import           Core.Domain           as D
+import           Core.Domain            as D
 import           Core.Handler
 import           Core.Task
 import           Data.Buffer
 import           Data.Concurrent.Queue
+import           Data.Queue
+import           Data.Record
 import           Data.Value
 import           Device.GD32F4xx.I2STRX
 import           GHC.TypeLits
+import           Interface.GPIO.Output
+import           Interface.GPIO.Port
+import           Interface.I2S
 import           Interface.I2SRX
 import           Interface.I2STX
 import           Interface.MCU
 import           Ivory.Language
-import Data.Record
-import Interface.I2S
-import Interface.GPIO.Port
-import Interface.GPIO.Output
 
 
 
 
 data Lanamp t r = Lanamp
-    { i2sTrx    :: I2STRX  t r
+    { i2sTrx   :: I2STRX  t r
     , i2sBuff  :: Records 256 SampleStruct
     , i2sQueue :: Queue  256
     , i2sWord  :: Sample
@@ -49,7 +50,7 @@ mkLanAmp i2sTrx' shutdown' = do
     i2sBuff     <-  records' (name <> "_i2sBuff") [left .= izero, right .= izero]
     i2sQueue    <-  queue   (name <> "_i2sQueue")
     i2sTrx      <-  i2sTrx' $ peripherals mcu
-    shutdown    <-  shutdown' peripherals' $ pullNone peripherals' 
+    shutdown    <-  shutdown' peripherals' $ pullNone peripherals'
     i2sWord     <-  record (name <> "_word1") [left .= izero, right .= izero]
 
     let lanamp = Lanamp { i2sTrx
