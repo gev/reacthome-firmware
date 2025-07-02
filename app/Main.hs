@@ -26,7 +26,8 @@ import           Formula.Smart.Top.TopG4
 import           Formula.Smart.Top.TopG4D
 import           Formula.Smart.Top.TopA4TD
 import           Formula.Smart.Top.TopG6
-import           Formula.Blink450 
+import           Formula.Soundbox
+import           Formula.Lanamp
 
 
 main :: IO ()
@@ -54,7 +55,8 @@ main = do
               , smartTopG6
               ]
     mapM_ gcc [ 
-                -- blink450
-               rsHub4
+                lanamp              
+              , rsHub4
               , server
+              , soundbox
               ]

@@ -21,6 +21,7 @@ instance Compiler GCC GD32F4xx where
 
         , defs    = ("-D" <>) <$> [ toUpper <$> model mcu
                                   , "USE_STDPERIPH_DRIVER"
+                                  , "USE_EXTERNPHY_LIB"
                                   ] <> sysClockDefs quartzFrequency systemFrequency
 
         , incs    = ("-I" <>) <$> [ "support/inc"
@@ -50,7 +51,7 @@ instance Compiler GCC GD32F4xx where
                     -- , "-fms-extensions"
                     , "-ffunction-sections"
                     , "-Wall", "-Wno-main"
-                    , "-O3"
+                    , "-O0"
                     ]
 
         , ld      = "-Tsupport/device/gd32f4xx/gd32f450-470.ld"
@@ -70,7 +71,7 @@ sysClockDefs :: Int -> Int -> [String]
 sysClockDefs 25_000_000 200_000_000 = [ "HXTAL_VALUE=((uint32_t)25000000)"
                                       , "__SYSTEM_CLOCK_200M_PLL_25M_HXTAL=(uint32_t)(200000000)"
                                       ]
-sysClockDefs 24_000_000 240_000_000 = ["HXTAL_VALUE=((uint32_t)24000000)"
-                                      , "__SYSTEM_CLOCK_240M_PLL_24M_HXTAL=(uint32_t)(240000000)"
+sysClockDefs 24_000_000 192_000_000 = ["HXTAL_VALUE=((uint32_t)24000000)"
+                                      , "__SYSTEM_CLOCK_192M_PLL_24M_HXTAL=(uint32_t)(192000000)"
                                       ]
 sysClockDefs          _           _ = error "Unsupported clock configuration"

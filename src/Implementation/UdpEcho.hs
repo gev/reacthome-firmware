@@ -77,12 +77,18 @@ udpEcho enet = do
         setNetifStatusCallback netif (procPtr netifStatusCallback)
         setUpNetif netif
 
-    addHandler $ HandleEnet enet' $ do
+    -- addHandler $ HandleEnet enet' $ do
+    --     reval <- rxFrameSize enet'
+    --     when (reval >? 1) $
+    --         void $ inputLwipPortIf enet' netif
+
+    addTask $ yeld "udp_rx" $ do 
         reval <- rxFrameSize enet'
-        when (reval >? 1) $
+        when (reval >? 1) $ 
             void $ inputLwipPortIf enet' netif
 
-    addTask $ delay 1000 "eth_arp" tmrEtharp
+    addTask $ delay 1000 "eth_arp"         tmrEtharp
+
 
 
 

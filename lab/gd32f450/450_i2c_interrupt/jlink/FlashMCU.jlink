@@ -1,0 +1,7 @@
+r
+h
+loadbin build/450_i2c.bin, 0x8000000
+g
+verifybin build/450_i2c.bin, 0x8000000
+r
+q
