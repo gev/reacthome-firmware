@@ -3,7 +3,7 @@
 module Transport.RS485.RBUS.Data where
 
 import           Data.Buffer
-import           Data.Concurrent.Queue
+import           Data.Queue
 import           Data.Value
 import           Interface.RS485
 import           Interface.SystemClock

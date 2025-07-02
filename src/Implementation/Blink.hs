@@ -17,16 +17,15 @@ import           Interface.MCU
 import           Interface.Timer       (HandleTimer (..), Timer)
 import           Ivory.Language
 
-blink :: (MonadState Context m, MonadReader (Domain p ()) m, Output o, Pull p u, Timer t)
-      => (p -> u -> m o) -> (p -> Uint32 -> Uint32 -> m t) -> m ()
-blink out timer = do
+blink :: (MonadState Context m, MonadReader (Domain p ()) m, Output o, Pull p u)
+      => (p -> u -> m o) -> m ()
+blink out  = do
     let name          = "blink"
     mcu              <- asks mcu
     let peripherals'  = peripherals mcu
     out'             <- out peripherals' $ pullNone peripherals'
-    timer'           <- timer peripherals' 1_000 1
     state            <- value (name <> "_state") false
-    addHandler $ HandleTimer timer' $ do
+    addTask $ delay 1 name $ do 
             v <- deref state
             store state $ iNot v
             ifte_ v (set   out')

@@ -4,8 +4,12 @@
 
 module Transport.UDP.RBUS.Rx    where
 
+import           Control.Monad           (void)
 import           Core.Actions
+import           Data.Queue
 import           Data.Serialize
+import           Interface.ENET
+import           Interface.LwipPort
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Support.Lwip.IP_addr
@@ -14,17 +18,13 @@ import           Support.Lwip.Pbuf
 import           Support.Lwip.Udp
 import           Transport.UDP.RBUS.Data
 import           Transport.UDP.RBUS.Tx
-import Data.Concurrent.Queue
-import Interface.LwipPort
-import Interface.ENET
-import Control.Monad (void)
 
 
 
 rxTask :: (LwipPort e, Enet e) => e -> RBUS ->  Ivory (ProcEffects s ()) ()
 rxTask enet RBUS{..} = do
     reval <- rxFrameSize enet
-    when (reval >? 1) $ 
+    when (reval >? 1) $
         void $ inputLwipPortIf enet netif
 
 

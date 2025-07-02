@@ -45,6 +45,7 @@ data ALED ng ns np = forall d f t. (Display d, Flash f, LazyTransport t) => ALED
     , transport        :: t
     , shouldSaveConfig :: Value IBool
     , shouldSyncGroups :: Value IBool
+    , shouldInit       :: Value IBool
     , groupIndex       :: Value Uint8
     , stateIndex       :: Value (Ix ng)
     , segmentIndex     :: Value (Ix ns)
@@ -63,6 +64,7 @@ aled mkDisplay etc transport = do
     mcu              <- asks D.mcu
     display          <- mkDisplay $ peripherals mcu
     getALED          <- E.mkALED
+    shouldInit       <- asks D.shouldInit
     shouldSaveConfig <- value "aled_should_save_config" false
     shouldSyncGroups <- value "aled_should_sync_groups" false
     groupIndex       <- value "aled_group_index" 0
@@ -78,6 +80,7 @@ aled mkDisplay etc transport = do
                     , groupIndex
                     , stateIndex
                     , segmentIndex
+                    , shouldInit
                     }
 
     random <- mkRandom "aled" 1
@@ -651,6 +654,7 @@ onInitialize ALED{..} buff size = do
             let group = E.groups getALED ! ix
             brightness <- deref $ buff ! toIx (fromIx ix + 1)
             store (group ~> E.brightness) $ safeCast brightness / 255
+        store shouldInit false
 
 
 

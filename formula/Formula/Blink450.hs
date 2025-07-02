@@ -17,5 +17,5 @@ blink450 = Formula { name            = "blink450"
                    , mcu             = gd32f450vgt6
                    , quartzFrequency =  25_000_000
                    , systemFrequency = 200_000_000
-                   , implementation  = blink out_pd_12 timer_7
+                   , implementation  = blink out_pa_8
                    }

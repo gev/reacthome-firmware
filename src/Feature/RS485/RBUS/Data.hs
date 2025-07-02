@@ -5,7 +5,7 @@ module Feature.RS485.RBUS.Data where
 
 import           Core.Transport
 import           Data.Buffer
-import           Data.Concurrent.Queue
+import           Data.Queue
 import           Data.Value
 import           Endpoint.ATS                (ATS (payload))
 import           Endpoint.DInputsRelaysRules (Rules (synced))
@@ -30,7 +30,7 @@ data RBUS = forall t. (LazyTransport t, Transport t) => RBUS
      , mode              :: Value        Uint8
      , baudrate          :: Value        Uint32
      , lineControl       :: Value        Uint8
-     , protocol          :: Master   255 
+     , protocol          :: Master   255
      , msgOffset         :: Buffer    64 Uint16
      , msgSize           :: Buffer    64 Uint8
      , msgTTL            :: Buffer    64 Uint8

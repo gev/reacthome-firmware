@@ -25,7 +25,7 @@ import           Core.Context
 import           Core.FSM
 import           Core.Task             (yeld)
 import           Data.Buffer
-import           Data.Concurrent.Queue
+import           Data.Queue
 import           Data.Record
 import           Data.Value
 import           Feature.RS485.RBUS.Tx (run)
