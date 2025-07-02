@@ -170,6 +170,8 @@ inclSPI = do
     inclSym spi2
     inclSym i2s1_add
     inclSym i2s2_add
+    
+    inclSym i2s_mode_mastertx
 
     inclSym i2s_std_phillips
 

@@ -13,14 +13,14 @@
 ######################################
 # target
 ######################################
-TARGET = 450_led
+TARGET = 450_i2c
 
 
 ######################################
 # building variables
 ######################################
 # debug build?
-DEBUG = 0
+DEBUG = 1
 # optimization
 OPT = -O3
 
@@ -67,7 +67,9 @@ C_SOURCES =  \
 ../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_ipa.c   \
 ../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_syscfg.c\
 main.c \
-src4392.c \
+i2c2_ie.c \
+gd32f4xx_it.c \
+
 
 
 
@@ -117,8 +119,7 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DGD32F450 \
--D'HXTAL_VALUE=((uint32_t)24000000)' \
--D'__SYSTEM_CLOCK_192M_PLL_24M_HXTAL=(uint32_t)(192000000)' \
+-D__SYSTEM_CLOCK_200M_PLL_25M_HXTAL
 
 
 
@@ -131,6 +132,7 @@ C_INCLUDES =  \
 -I../../../support/CMSIS/inc \
 -I../../../support/device/gd32f4xx/peripherals/inc \
 -I.
+
 
 
 # compile gcc flags
@@ -202,10 +204,10 @@ erase:
 	JLinkExe -Device GD32F450VG -If SWD -Speed 1000 jlink/EraseMCU.jlink
 r_flash:
 	make
+#	JLinkExe ip tunnel:69667069::jlink-europe.segger.com -Device GD32F450VG -If SWD -Speed 1000 jlink/FlashMCU.jlink
 	JLinkExe ip 192.168.88.124 -Device GD32F450VG -If SWD -Speed 1000 jlink/FlashMCU.jlink
 r_erase:
-	JLinkExe ip 192.168.56.154 -Device GD32F450VG -If SWD -Speed 1000 jlink/EraseMCU.jlink
-# JLinkExe ip tunnel:801031640::jlink-europe.segger.com -Device GD32F450VG -If SWD -Speed 1000 jlink/EraseMCU.jlink
+	JLinkExe ip tunnel:801031640::jlink-europe.segger.com -Device GD32F450VG -If SWD -Speed 1000 jlink/EraseMCU.jlink
 koro_flash:
 	make
 	JLinkExe ip tunnel:69610692::jlink-europe.segger.com -Device GD32F450VG -If SWD -Speed 1000 jlink/FlashMCU.jlink

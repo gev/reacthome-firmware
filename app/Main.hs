@@ -3,12 +3,13 @@ module Main where
 import           Build.Compiler.GCC
 import           Device.GD32F3x0
 import           Device.GD32F4xx
+import           Formula.Blink450
 import           Formula.DI4
 import           Formula.DI4LA
 import           Formula.DI4RSM
-import           Formula.DimmerDC12
-import           Formula.DimmerAC12
 import           Formula.DimmerAC1
+import           Formula.DimmerAC12
+import           Formula.DimmerDC12
 import           Formula.Doppler1
 import           Formula.Doppler5
 import           Formula.Mix6x12
@@ -19,14 +20,13 @@ import           Formula.Smart.Bottom.Bottom1
 import           Formula.Smart.Bottom.Bottom2
 import           Formula.Smart.Top.TopA4P
 import           Formula.Smart.Top.TopA4T
+import           Formula.Smart.Top.TopA4TD
 import           Formula.Smart.Top.TopA6P
 import           Formula.Smart.Top.TopA6T
 import           Formula.Smart.Top.TopG2
 import           Formula.Smart.Top.TopG4
 import           Formula.Smart.Top.TopG4D
-import           Formula.Smart.Top.TopA4TD
 import           Formula.Smart.Top.TopG6
-import           Formula.Blink450 
 
 
 main :: IO ()
@@ -53,7 +53,7 @@ main = do
               , smartTopG4D
               , smartTopG6
               ]
-    mapM_ gcc [ 
+    mapM_ gcc [
                 -- blink450
                rsHub4
               , server

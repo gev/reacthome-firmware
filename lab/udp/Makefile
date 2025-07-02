@@ -194,7 +194,11 @@ AS_DEFS =
 
 # C defines
 C_DEFS =  \
--DGD32F450
+-DGD32F450 \
+-D'HXTAL_VALUE=((uint32_t)24000000)' \
+-D'__SYSTEM_CLOCK_192M_PLL_24M_HXTAL=(uint32_t)(192000000)' \
+-DUSE_EXTERNPHY_LIB \
+
 
 
 # AS includes
@@ -292,7 +296,7 @@ erase:
 	JLinkExe -Device GD32F450VG -If SWD -Speed 1000 jlink/EraseMCU.jlink
 r_flash:
 	make
-	JLinkExe ip 192.168.88.119 -Device GD32F450VI -If SWD -Speed 1000 jlink/FlashMCU.jlink
+	JLinkExe ip 192.168.88.124 -Device GD32F450VI -If SWD -Speed 1000 jlink/FlashMCU.jlink
 r_erase:
 	JLinkExe ip 192.168.88.107 -Device GD32F450VI -If SWD -Speed 1000 jlink/EraseMCU.jlink
 koro_flash:
