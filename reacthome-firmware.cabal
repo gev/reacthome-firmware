@@ -43,18 +43,20 @@ executable reacthome-firmware
     Data.Area
     Data.Buffer
     Data.Color
-    Data.Concurrent.ElasticQueue
+    Data.Concurrent.Atomically
     Data.Concurrent.Queue
     Data.Concurrent.Semaphore
     Data.Display.Canvas1D
     Data.Display.FrameBuffer.NeoPixel
+    Data.DoubleBuffer
     Data.Fixed
     Data.Index
     Data.Matrix
+    Data.Queue
     Data.Record
+    Data.Semaphore
     Data.Serialize
     Data.Value
-    Data.DoubleBuffer
     Device.GD32F3x0
     Device.GD32F3x0.ADC
     Device.GD32F3x0.DAC
@@ -84,16 +86,16 @@ executable reacthome-firmware
     Device.GD32F4xx.GPIO.OpenDrain
     Device.GD32F4xx.GPIO.Output
     Device.GD32F4xx.GPIO.Port
+    Device.GD32F4xx.I2C
     Device.GD32F4xx.I2S
-    Device.GD32F4xx.I2STX
     Device.GD32F4xx.I2STRX
+    Device.GD32F4xx.I2STX
     Device.GD32F4xx.Mac
     Device.GD32F4xx.PWM
     Device.GD32F4xx.SysTick
     Device.GD32F4xx.SystemClock
     Device.GD32F4xx.Timer
     Device.GD32F4xx.UART
-    Device.GD32F4xx.I2C
     Endpoint.ALED
     Endpoint.ALED.Animation
     Endpoint.ALED.Animation.Color.Fade
@@ -135,6 +137,7 @@ executable reacthome-firmware
     Feature.Dimmers.DC
     Feature.Dopplers
     Feature.Indicator
+    Feature.Lanamp
     Feature.Mix.Indicator
     Feature.RS485.RBUS
     Feature.RS485.RBUS.Data
@@ -145,16 +148,15 @@ executable reacthome-firmware
     Feature.RS485.RSM.Rx
     Feature.RS485.RSM.Tx
     Feature.Relays
+    Feature.SRC4392
     Feature.Scd40
     Feature.Sht21
-    Feature.SRC4392
     Feature.Smart.Top
     Feature.Smart.Top.Buttons
     Feature.Smart.Top.LEDs
     Feature.Smart.Top.Palette
     Feature.Smart.Top.PowerTouch
     Feature.Smart.Top.Vibro
-    Feature.Lanamp
     Formula.Blink330
     Formula.Blink450
     Formula.DI4
@@ -166,6 +168,7 @@ executable reacthome-firmware
     Formula.Doppler1
     Formula.Doppler5
     Formula.Echo
+    Formula.Lanamp
     Formula.Mix6x12
     Formula.Relay12
     Formula.RsHub4
@@ -181,9 +184,8 @@ executable reacthome-firmware
     Formula.Smart.Top.TopG4
     Formula.Smart.Top.TopG4D
     Formula.Smart.Top.TopG6
-    Formula.UdpEcho450
     Formula.Soundbox
-    Formula.Lanamp
+    Formula.UdpEcho450
     Implementation.Blink
     Implementation.DI
     Implementation.DILA
@@ -194,6 +196,7 @@ executable reacthome-firmware
     Implementation.Dummy
     Implementation.Echo
     Implementation.Hub
+    Implementation.Lanamp
     Implementation.Mix
     Implementation.Relay
     Implementation.Smart.Bottom
@@ -206,9 +209,8 @@ executable reacthome-firmware
     Implementation.Smart.TopG4
     Implementation.Smart.TopG6
     Implementation.Smart.TopGD
-    Implementation.UdpEcho
     Implementation.Soundbox
-    Implementation.Lanamp
+    Implementation.UdpEcho
     Interface.ADC
     Interface.Counter
     Interface.DAC

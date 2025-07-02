@@ -8,7 +8,7 @@ module Feature.RS485.RBUS.Tx where
 
 import           Control.Monad                 (zipWithM_)
 import           Data.Buffer
-import           Data.Concurrent.Queue
+import           Data.Queue
 import           Feature.RS485.RBUS.Data
 import           GHC.TypeNats
 import           Interface.Mac

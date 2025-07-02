@@ -3,7 +3,6 @@
 {-# LANGUAGE NamedFieldPuns     #-}
 {-# LANGUAGE RankNTypes         #-}
 {-# LANGUAGE RecordWildCards    #-}
-{-# LANGUAGE TypeOperators      #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use for_" #-}
 {-# LANGUAGE NumericUnderscores #-}
@@ -23,6 +22,7 @@ import           Core.Task
 import           Core.Transport
 import           Core.Version
 import           Data.Buffer
+import           Data.Queue
 import           Data.Record
 import           Data.Value
 import           Interface.ENET
@@ -45,7 +45,6 @@ import           Transport.RS485.RBUS.Tx (initTask)
 import           Transport.UDP.RBUS.Data
 import           Transport.UDP.RBUS.Rx
 import           Transport.UDP.RBUS.Tx
-import Data.Concurrent.Queue
 
 
 

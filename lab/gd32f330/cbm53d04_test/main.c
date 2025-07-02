@@ -38,7 +38,7 @@ OF SUCH DAMAGE.
 void rcu_config(void);
 void gpio_config(void);
 void spi_config(void);
-void src4392_set_voltage(uint8_t ch, float v);
+void cbm53_set_voltage(uint8_t ch, float v);
 
 /*!
     \brief      main function
@@ -61,25 +61,25 @@ int main(void)
 
     while(1) {
         for (uint32_t i = 0; i < 20000000; i++);
-        src4392_set_voltage(0, 0);
-        src4392_set_voltage(1, 0);
+        cbm53_set_voltage(0, 0);
+        cbm53_set_voltage(1, 0);
         for (uint32_t i = 0; i < 20000000; i++);
-        src4392_set_voltage(0, 1);
-        src4392_set_voltage(1, 1);
+        cbm53_set_voltage(0, 1);
+        cbm53_set_voltage(1, 1);
         for (uint32_t i = 0; i < 20000000; i++);
-        src4392_set_voltage(0, 2);
-        src4392_set_voltage(1, 2);
+        cbm53_set_voltage(0, 2);
+        cbm53_set_voltage(1, 2);
         for (uint32_t i = 0; i < 20000000; i++);
-        src4392_set_voltage(0, 3);
-        src4392_set_voltage(1, 3);
+        cbm53_set_voltage(0, 3);
+        cbm53_set_voltage(1, 3);
         for (uint32_t i = 0; i < 20000000; i++);
-        src4392_set_voltage(0, 3.3);
-        src4392_set_voltage(1, 3.3);
+        cbm53_set_voltage(0, 3.3);
+        cbm53_set_voltage(1, 3.3);
 
     }
 }
 
-void src4392_set_voltage(uint8_t ch, float v){
+void cbm53_set_voltage(uint8_t ch, float v){
     const uint8_t offset_ch = 14, offset_pd = 13, offset_ldak = 12;
     const float ref_voltage = 3.3;
 

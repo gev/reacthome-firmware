@@ -17,7 +17,7 @@ import           Transport.UART.RBUS
 smartTopG4 :: Formula GD32F3x0
 smartTopG4 =  Formula { name            = "smart_top_g4"
                       , model           = deviceTypeSmartTopG4
-                      , version         = (4, 7)
+                      , version         = (4, 8)
                       , shouldInit      = false
                       , mcu             = gd32f330k8u6
                       , quartzFrequency =  8_000_000

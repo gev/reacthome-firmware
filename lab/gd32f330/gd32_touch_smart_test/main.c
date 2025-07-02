@@ -6,7 +6,7 @@
 
 #define TOUCH_NUMBER 4
 
-void config_od(uint32_t port, uint32_t pin);
+void config_pullup(uint32_t port, uint32_t pin);
 
 typedef struct {
 	uint32_t port;
@@ -33,7 +33,7 @@ int main(){
 
 
 	for (uint8_t i = 0; i < TOUCH_NUMBER; i++){
-		config_od(touchs[i].port, touchs[i].pin);
+		config_pullup(touchs[i].port, touchs[i].pin);
 	}
 
 	sk6812_initialize();
@@ -50,7 +50,7 @@ int main(){
 	}
 }
 
-void config_od(uint32_t port, uint32_t pin){
+void config_pullup(uint32_t port, uint32_t pin){
 	gpio_mode_set(port, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, pin);
 	gpio_output_options_set(port, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, pin);
 }
