@@ -97,8 +97,7 @@ data OneWireMaster = OneWireMaster
     , payload               :: Value        Uint8
     , index                 :: Value        Uint8
     , time                  :: Value        Uint8
-    , actionB               :: Records  24  OneWireAction
-    , actionQ               :: Queue    24
+    , actionQ               :: Queue    24 (Records  24  OneWireAction)
     , tmp                   :: Value        Uint8
     , width                 :: Value        Uint8
     , count                 :: Value        Uint8
@@ -135,8 +134,7 @@ mkOneWireMaster onewire onData onDiscovery onError = do
     payload                 <- value_   "one_wire_payload"
     index                   <- value_   "one_wire_index"
     time                    <- value    "one_wire_time" 0
-    actionB                 <- records_ "one_wire_actions"
-    actionQ                 <- queue    "one_wire_action"
+    actionQ                 <- queue    "one_wire_action" =<< records_ "one_wire_actions"
     tmp                     <- value_   "one_wire_tmp"
     width                   <- value_   "one_wire_bit_width"
     count                   <- value_   "one_wire_count"
@@ -161,7 +159,6 @@ mkOneWireMaster onewire onData onDiscovery onError = do
                                 , payload
                                 , index
                                 , time
-                                , actionB
                                 , actionQ
                                 , tmp
                                 , width
@@ -607,7 +604,7 @@ getCRC = proc "one_wire_get_crc" $ \buff -> body $ do
 
 popAction :: OneWireMaster -> (Uint8 -> Uint8 -> Uint8 -> Ivory eff ()) -> Ivory eff ()
 popAction OneWireMaster{..} run =
-    flip (pop' actionQ) (disableOneWire onewire) $ \ix -> do
+    flip (pop' actionQ) (disableOneWire onewire) $ \actionB ix -> do
         let a = actionB ! ix
         action'  <- deref (a ~> action_ )
         payload' <- deref (a ~> payload_)
@@ -617,7 +614,7 @@ popAction OneWireMaster{..} run =
 
 pushAction :: OneWireMaster -> Uint8 -> Uint8 -> Uint8 -> Ivory eff ()
 pushAction OneWireMaster{..} action' payload' index' =
-    push actionQ $ \ix -> do
+    push actionQ $ \actionB ix -> do
         let a = actionB ! ix
         store (a ~> action_ ) action'
         store (a ~> payload_) payload'

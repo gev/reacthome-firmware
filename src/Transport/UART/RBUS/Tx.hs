@@ -36,7 +36,7 @@ txTask :: (KnownNat q, KnownNat l)
 txTask r@RBUS{..} = do
     txLock' <- deref txLock
     when (iNot txLock') $
-        popConcurrently msgQueue $ \ix -> do
+        popConcurrently msgQueue $ \Messages{..} ix -> do
             offset <- deref $ msgOffset ! ix
             size   <- deref $ msgSize ! ix
             U.transmit uart $ \write ->
@@ -51,12 +51,13 @@ toQueue :: (KnownNat q, KnownNat l, KnownNat n)
         => RBUS q l
         -> Buffer n Uint8
         -> Ivory (ProcEffects s t) ()
-toQueue RBUS{..} buff = push msgQueue $ \ix -> do
-    index <- deref msgIndex
-    size  <- run protocol (transmitMessage buff) msgBuff index
-    store msgIndex $ index + safeCast size
-    store (msgOffset ! ix) index
-    store (msgSize   ! ix) size
+toQueue RBUS{..} buff =
+    push msgQueue $ \Messages{..} ix -> do
+        index <- deref msgIndex
+        size  <- run protocol (transmitMessage buff) msgBuff index
+        store msgIndex $ index + safeCast size
+        store (msgOffset ! ix) index
+        store (msgSize   ! ix) size
 
 
 toQueue' :: (KnownNat q, KnownNat l)
@@ -64,12 +65,13 @@ toQueue' :: (KnownNat q, KnownNat l)
          -> Uint8
          -> ((Uint8 -> forall eff. Ivory eff ()) -> forall eff. Ivory eff ())
          -> Ivory (ProcEffects s t) ()
-toQueue' RBUS{..} size' transmit = push msgQueue $ \ix -> do
-    index <- deref msgIndex
-    size  <- run protocol (transmitMessage' size' transmit) msgBuff index
-    store msgIndex $ index + safeCast size
-    store (msgOffset ! ix) index
-    store (msgSize   ! ix) size
+toQueue' RBUS{..} size' transmit =
+    push msgQueue $ \Messages{..} ix -> do
+        index <- deref msgIndex
+        size  <- run protocol (transmitMessage' size' transmit) msgBuff index
+        store msgIndex $ index + safeCast size
+        store (msgOffset ! ix) index
+        store (msgSize   ! ix) size
 
 
 

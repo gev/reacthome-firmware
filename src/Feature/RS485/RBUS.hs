@@ -19,23 +19,23 @@ import           Core.Task
 import           Core.Transport                      as T
 import           Core.Version
 import           Data.Buffer
-import           Data.Queue               as Q
 import           Data.Fixed
+import           Data.Queue                          as Q
 import           Data.Serialize
 import           Data.Value
 import           Feature.RS485.RBUS.Data
 import           Feature.RS485.RBUS.Rx
 import           Feature.RS485.RBUS.Tx
 import           GHC.TypeNats
-import           Interface.MCU                       
+import           Interface.MCU
 import qualified Interface.RS485                     as I
+import qualified Interface.RS485                     as RS
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Protocol.RS485.RBUS                 hiding (message)
 import           Protocol.RS485.RBUS.Master          as P
 import           Protocol.RS485.RBUS.Master.MacTable as T
 import           Protocol.RS485.RBUS.Master.Rx
-import qualified Interface.RS485 as RS
 
 
 
@@ -60,12 +60,9 @@ rbus' transport rs485 index = do
     mode              <- value  (name <> "_mode"               ) modeNone
     baudrate          <- value  (name <> "_baudrate"           ) defaultBaudrate
     lineControl       <- value  (name <> "_line_control"       ) 0
-    msgOffset         <- buffer (name <> "_msg_offset"         )
-    msgSize           <- buffer (name <> "_msg_size"           )
     msgWaitingConfirm <- values (name <> "_msg_waiting_confirm") (replicate 255 false)
     msgConfirmed      <- values (name <> "_msg_confirmed"      ) (replicate 255 false)
-    msgTTL            <- buffer (name <> "_msg_ttl"            )
-    msgQueue          <- queue  (name <> "_msg"                )
+    msgQueue          <- queue  (name <> "_msg"                ) =<< messages name
     msgBuff           <- buffer (name <> "_msg"                )
     msgIndex          <- value  (name <> "_msg_index"          ) 0
     rsBuff            <- buffer (name <> "_rs"                 )
@@ -126,7 +123,7 @@ rbus' transport rs485 index = do
     protocol <- master name onMessage onConfirm onDiscovery onPing onReceive
 
     let rbus = RBUS { index, clock, rs, mode, baudrate, lineControl, protocol
-                    , msgOffset, msgSize, msgWaitingConfirm, msgConfirmed, msgTTL, msgQueue, msgBuff, msgIndex
+                    , msgWaitingConfirm, msgConfirmed, msgQueue, msgBuff, msgIndex
                     , rsBuff, rsSize
                     , rxLock, txLock
                     , rxTimestamp, txTimestamp
@@ -243,7 +240,7 @@ transmitRB485 list buff size = do
                 mode'       <- deref mode
                 when (iNot shouldInit' .&& mode' ==? modeRS485 .&& p ==? port) $ do
                     let size' = size - 2
-                    RS.transmit rs $ \write -> 
+                    RS.transmit rs $ \write ->
                         for (toIx size') $ \ix ->
                             write . safeCast =<< deref (buff ! (ix + 2))
                     store txLock true

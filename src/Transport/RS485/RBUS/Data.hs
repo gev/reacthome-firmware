@@ -1,10 +1,15 @@
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns   #-}
 
 module Transport.RS485.RBUS.Data where
 
+import           Control.Monad.State       (MonadState)
+import           Core.Context
 import           Data.Buffer
 import           Data.Queue
 import           Data.Value
+import           GHC.TypeLits              (KnownNat)
 import           Interface.RS485
 import           Interface.SystemClock
 import           Ivory.Language
@@ -15,10 +20,7 @@ data RBUS = RBUS
     { clock          :: SystemClock
     , rs             :: RS485    256 300
     , protocol       :: Slave    255
-    , msgOffset      :: Buffer   32 Uint16
-    , msgSize        :: Buffer   32 Uint8
-    , msgTTL         :: Buffer   32 Uint8
-    , msgQueue       :: Queue    32
+    , msgQueue       :: Queue    32 (Messages 32)
     , msgBuff        :: Buffer  300 Uint8
     , msgIndex       :: Value       Uint16
     , initBuff       :: Buffer    1 Uint8
@@ -32,3 +34,21 @@ data RBUS = RBUS
     , waitingConfirm :: Value       IBool
     , shouldInit     :: Value       IBool
     }
+
+data Messages n = Messages
+    { msgOffset :: Buffer n Uint16
+    , msgSize   :: Buffer n Uint8
+    , msgTTL    :: Buffer n Uint8
+    }
+
+messages :: (KnownNat n, MonadState Context m)
+        => String -> m (Messages n)
+messages name = do
+    msgOffset <- buffer (name <> "_msg_offset")
+    msgSize   <- buffer (name <> "_msg_size"  )
+    msgTTL    <- buffer (name <> "_msg_ttl"   )
+    pure Messages
+            { msgOffset
+            , msgSize
+            , msgTTL
+            }

@@ -98,9 +98,7 @@ mkRbus name uart speed onMessage = do
     version       <- asks D.version
     let mac        = I.mac mcu
     let clock      = I.systemClock mcu
-    msgOffset     <- buffer (name <> "_msg_offset"  )
-    msgSize       <- buffer (name <> "_msg_size"    )
-    msgQueue      <- queue  (name <> "_msg"         )
+    msgQueue      <- queue  (name <> "_msg"         ) =<< messages name
     msgBuff       <- buffer (name <> "_msg"         )
     msgIndex      <- value  (name <> "_msg_index"   ) 0
     discoveryBuff <- buffer (name <> "_discovery"   )
@@ -112,7 +110,7 @@ mkRbus name uart speed onMessage = do
     let rbus = RBUS { name, speed
                     , model, version, mac
                     , clock, uart, protocol
-                    , msgOffset, msgSize, msgQueue, msgBuff, msgIndex
+                    , msgQueue, msgBuff, msgIndex
                     , txLock
                     , discoveryBuff
                     , rxTimestamp

@@ -44,8 +44,7 @@ data UART rn tn = UART
     { uart    :: USART_PERIPH
     , rcu     :: RCU_PERIPH
     , uartIRQ :: IRQn
-    , rxQueue :: Queue  rn
-    , rxBuff  :: Buffer rn Uint16
+    , rxQueue :: Queue  rn (Buffer rn Uint16)
     , txBuff  :: Buffer tn Uint16
     , index   :: Value Uint16
     , size    :: Value Uint16
@@ -61,8 +60,7 @@ mkUART :: (MonadState Context m, KnownNat rn, KnownNat tn)
        -> m (UART rn tn)
 mkUART uart rcu uartIRQ rx' tx' = do
 
-    rxQueue   <- queue  $ symbol uart <> "_rx"
-    rxBuff    <- buffer $ symbol uart <> "_rx"
+    rxQueue   <- queue (symbol uart <> "_rx") =<< buffer (symbol uart <> "_rx")
     txBuff    <- buffer $ symbol uart <> "_tx"
     index     <- value_ $ symbol uart <> "_tx_index"
     size      <- value_ $ symbol uart <> "_tx_size"
@@ -77,7 +75,7 @@ mkUART uart rcu uartIRQ rx' tx' = do
             enableIrqNvic       uartIRQ 0 0
             enablePeriphClock   rcu
 
-    pure UART { uart, rcu, uartIRQ, rxQueue, rxBuff, txBuff, index, size }
+    pure UART { uart, rcu, uartIRQ, rxQueue, txBuff, index, size }
 
 
 
@@ -144,7 +142,7 @@ handleReceive :: KnownNat rn => UART rn tn -> Ivory eff () -> Ivory eff ()
 handleReceive UART{..} onReceive = do
     rbne <- getInterruptFlag   uart usart_int_flag_rbne
     when rbne $ do
-        push rxQueue $ \ix -> do
+        push rxQueue $ \rxBuff ix -> do
             store (rxBuff ! ix) =<< S.receiveData uart
             onReceive
         clearInterruptFlag     uart usart_int_flag_rbne
@@ -177,7 +175,7 @@ instance (KnownNat rn, KnownNat tn) => I.UART (UART rn tn) where
     clearRX UART{..} = Q.clearConcurrently rxQueue
 
     receive UART{..} read =
-        popConcurrently rxQueue $ \ix ->
+        popConcurrently rxQueue $ \rxBuff ix ->
             read =<< deref (rxBuff ! ix)
 
     transmit UART{..} write = do
