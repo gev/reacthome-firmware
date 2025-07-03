@@ -50,5 +50,13 @@ popConcurrently' Queue{..} handle =
         upConcurrently producerS
 
 
+removeConcurrently :: Queue n -> Ivory eff ()
+removeConcurrently Queue{..} =
+    downConcurrently consumerS $ do
+        x <- deref consumerIx
+        store consumerIx $ x + 1
+        up producerS
+
+
 clearConcurrently :: forall n eff. KnownNat n => Queue n -> Ivory eff ()
 clearConcurrently = atomically . Q.clear

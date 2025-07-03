@@ -50,6 +50,7 @@ executable reacthome-firmware
     Data.Display.Canvas1D
     Data.Display.FrameBuffer.NeoPixel
     Data.DoubleBuffer
+    Data.ElasticQueue
     Data.Fixed
     Data.Index
     Data.Matrix

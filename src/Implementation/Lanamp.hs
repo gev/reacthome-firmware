@@ -20,6 +20,7 @@ import           Core.Handler
 import           Core.Task
 import           Data.Buffer
 import           Data.Concurrent.ElasticQueue
+import           Data.ElasticQueue
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
