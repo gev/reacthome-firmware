@@ -229,7 +229,7 @@ taskOneWire = runState' state
 
 handleReady :: OneWireMaster -> Ivory eff ()
 handleReady m =
-    popAction m $ \action' payload' index'  -> do
+    popAction m $ \action' payload' index' -> do
         store (action  m) action'
         store (payload m) payload'
         store (index   m) index'
@@ -607,8 +607,8 @@ getCRC = proc "one_wire_get_crc" $ \buff -> body $ do
 
 popAction :: OneWireMaster -> (Uint8 -> Uint8 -> Uint8 -> Ivory eff ()) -> Ivory eff ()
 popAction OneWireMaster{..} run =
-    flip (pop' actionQ) (disableOneWire onewire) $ \i -> do
-        let a = actionB ! toIx i
+    flip (pop' actionQ) (disableOneWire onewire) $ \ix -> do
+        let a = actionB ! ix
         action'  <- deref (a ~> action_ )
         payload' <- deref (a ~> payload_)
         index'   <- deref (a ~> index_  )
@@ -617,8 +617,8 @@ popAction OneWireMaster{..} run =
 
 pushAction :: OneWireMaster -> Uint8 -> Uint8 -> Uint8 -> Ivory eff ()
 pushAction OneWireMaster{..} action' payload' index' =
-    push actionQ $ \i -> do
-        let a = actionB ! toIx i
+    push actionQ $ \ix -> do
+        let a = actionB ! ix
         store (a ~> action_ ) action'
         store (a ~> payload_) payload'
         store (a ~> index_  ) index'

@@ -166,7 +166,7 @@ udpReceiveCallback l@Lanamp{..} =
 
 transmitI2S :: Output o => Lanamp (I2S i) o -> Ivory eff Sample
 transmitI2S l@Lanamp {..} = do
-    pop i2sQueue $ \i -> do
-        store (i2sWord ~> left) =<< deref (i2sBuff ! toIx i ~> left)
-        store (i2sWord ~> right)=<< deref (i2sBuff ! toIx i ~> right)
+    pop i2sQueue $ \ix -> do
+        store (i2sWord ~> left) =<< deref (i2sBuff ! ix ~> left)
+        store (i2sWord ~> right)=<< deref (i2sBuff ! ix ~> right)
     pure i2sWord

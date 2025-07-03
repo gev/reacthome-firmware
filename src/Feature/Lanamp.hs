@@ -70,14 +70,14 @@ mkLanAmp i2sTrx' shutdown' = do
 
 receive :: Lanamp t r -> Sample -> Ivory eff ()
 receive (Lanamp {..}) word =
-    push i2sQueue $ \i -> do
-        store (i2sBuff ! toIx i ~> left) =<< deref (word ~> left)
-        store (i2sBuff ! toIx i ~> right) =<< deref (word ~> right)
+    push i2sQueue $ \ix -> do
+        store (i2sBuff ! ix ~> left) =<< deref (word ~> left)
+        store (i2sBuff ! ix ~> right) =<< deref (word ~> right)
 
 
 transmit :: Lanamp t r -> Ivory eff Sample
 transmit (Lanamp {..}) = do
-    pop i2sQueue $ \i -> do
-        store (i2sWord ~> left) =<< deref (i2sBuff ! toIx i ~> left)
-        store (i2sWord ~> right)=<< deref (i2sBuff ! toIx i ~> right)
+    pop i2sQueue $ \ix -> do
+        store (i2sWord ~> left) =<< deref (i2sBuff ! ix ~> left)
+        store (i2sWord ~> right)=<< deref (i2sBuff ! ix ~> right)
     pure i2sWord

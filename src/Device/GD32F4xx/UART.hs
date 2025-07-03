@@ -145,8 +145,8 @@ handleReceive :: KnownNat rn => UART rn tn -> Ivory eff () -> Ivory eff ()
 handleReceive UART{..} onReceive = do
     rbne  <- getInterruptFlag  uart usart_int_flag_rbne
     when rbne $ do
-        push rxQueue $ \i -> do
-            store (rxBuff ! toIx i) =<< S.receiveData uart
+        push rxQueue $ \ix -> do
+            store (rxBuff ! ix) =<< S.receiveData uart
             onReceive
         clearInterruptFlag     uart usart_int_flag_rbne
 
@@ -177,8 +177,8 @@ instance (KnownNat rn, KnownNat tn) => I.UART (UART rn tn) where
     clearRX UART{..} = Q.clearConcurrently rxQueue
 
     receive UART{..} read =
-        popConcurrently rxQueue $ \i ->
-            read =<< deref (rxBuff ! toIx i)
+        popConcurrently rxQueue $ \ix ->
+            read =<< deref (rxBuff ! ix)
 
     transmit UART{..} write = do
         size <- local $ ival (0 :: Uint16)

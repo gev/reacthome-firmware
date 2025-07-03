@@ -124,11 +124,10 @@ toQueue :: KnownNat l => RBUS -> Buffer l Uint8 -> Ivory (ProcEffects s t) ()
 toQueue RBUS{..} buff = do
     hasAddress' <- hasAddress protocol
     when hasAddress' $ do
-        push msgQueue $ \i -> do
+        push msgQueue $ \ix -> do
             index <- deref msgIndex
             size  <- run protocol (transmitMessage buff) msgBuff index
             store msgIndex $ index + safeCast size
-            let ix = toIx i
             store (msgOffset ! ix) index
             store (msgSize   ! ix) size
             store (msgTTL    ! ix) messageTTL
@@ -142,11 +141,10 @@ toQueue' :: RBUS
 toQueue' RBUS{..} size' transmit = do
     hasAddress' <- hasAddress protocol
     when hasAddress' $ do
-        push msgQueue $ \i -> do
+        push msgQueue $ \ix -> do
             index <- deref msgIndex
             size  <- run protocol (transmitMessage' size' transmit) msgBuff index
             store msgIndex $ index + safeCast size
-            let ix = toIx i
             store (msgOffset ! ix) index
             store (msgSize   ! ix) size
             store (msgTTL    ! ix) messageTTL

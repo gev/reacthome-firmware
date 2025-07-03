@@ -14,7 +14,7 @@ import           GHC.TypeNats
 import           Ivory.Language
 
 
-pushConcurrently :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
+pushConcurrently :: KnownNat n => Queue n -> (Ix n -> Ivory eff ()) -> Ivory eff ()
 pushConcurrently Queue{..} handle =
     downConcurrently producerS $ do
         x <- deref producerIx
@@ -23,7 +23,7 @@ pushConcurrently Queue{..} handle =
         upConcurrently consumerS
 
 
-pushConcurrently' :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+pushConcurrently' :: KnownNat n => Queue n -> (Ix n -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
 pushConcurrently' Queue{..} handle =
     downConcurrently' producerS $ do
         x <- deref producerIx
@@ -32,7 +32,7 @@ pushConcurrently' Queue{..} handle =
         upConcurrently consumerS
 
 
-popConcurrently :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
+popConcurrently :: KnownNat n => Queue n -> (Ix n -> Ivory eff ()) -> Ivory eff ()
 popConcurrently Queue{..} handle =
     downConcurrently consumerS $ do
         x <- deref consumerIx
@@ -41,7 +41,7 @@ popConcurrently Queue{..} handle =
         upConcurrently producerS
 
 
-popConcurrently' :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+popConcurrently' :: KnownNat n => Queue n -> (Ix n -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
 popConcurrently' Queue{..} handle =
      downConcurrently' consumerS $ do
         x <- deref consumerIx
@@ -50,7 +50,7 @@ popConcurrently' Queue{..} handle =
         upConcurrently producerS
 
 
-removeConcurrently :: Queue n -> Ivory eff ()
+removeConcurrently :: KnownNat n => Queue n -> Ivory eff ()
 removeConcurrently Queue{..} =
     downConcurrently consumerS $ do
         x <- deref consumerIx
