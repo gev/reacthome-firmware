@@ -7,10 +7,10 @@
 
 module Data.Queue where
 
-import           Control.Monad.State       (MonadState)
+import           Control.Monad.State  (MonadState)
 import           Core.Context
-import           Data.Semaphore
 import           Data.Index
+import           Data.Semaphore
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Language.Array
@@ -79,14 +79,14 @@ pop' Queue{..} handle =
 
 
 peek :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
-peek Queue{..} handle = 
+peek Queue{..} handle =
     check consumerS $ do
         x <- deref consumerIx
         handle x
 
 
 peek' :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
-peek' Queue{..} handle = 
+peek' Queue{..} handle =
     check' consumerS $ do
         x <- deref consumerIx
         handle x
@@ -103,7 +103,6 @@ remove Queue{..} =
         x <- deref consumerIx
         store consumerIx $ x + 1
         up producerS
-        
 
 
 clear :: forall n eff. KnownNat n => Queue n -> Ivory eff ()
