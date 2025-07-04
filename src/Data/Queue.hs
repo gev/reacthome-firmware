@@ -1,16 +1,15 @@
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE FlexibleContexts    #-}
-{-# LANGUAGE KindSignatures      #-}
 {-# LANGUAGE NamedFieldPuns      #-}
 {-# LANGUAGE RecordWildCards     #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module Data.Queue where
 
-import           Control.Monad.State       (MonadState)
+import           Control.Monad.State  (MonadState)
 import           Core.Context
-import           Data.Semaphore
 import           Data.Index
+import           Data.Semaphore
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Language.Array
@@ -21,17 +20,18 @@ import           Ivory.Stdlib
 {--
     TODO: Make polymorph?
 --}
-data Queue (n :: Nat) = Queue
-    { producerIx :: Index Uint16
-    , consumerIx :: Index Uint16
-    , producerS  :: Semaphore Uint32
-    , consumerS  :: Semaphore Uint32
+data Queue n t = Queue
+    { producerIx :: Index (Ix n)
+    , consumerIx :: Index (Ix n)
+    , producerS  :: Semaphore Uint16
+    , consumerS  :: Semaphore Uint16
+    , it         :: t
     }
 
 
-queue :: forall m n. (MonadState Context m, KnownNat n)
-      => String -> m (Queue n)
-queue id = do
+queue :: forall m n t. (MonadState Context m, KnownNat n)
+      => String -> t -> m (Queue n t)
+queue id it = do
     let name        = id    <>  "_queue"
     let producerId  = name  <>  "_producer"
     let consumerId  = name  <>  "_consumer"
@@ -39,74 +39,73 @@ queue id = do
     consumerIx     <- index     consumerId
     producerS      <- semaphore producerId $ fromIntegral $ fromTypeNat (aNat :: NatType n)
     consumerS      <- semaphore consumerId 0
-    pure Queue { producerIx, consumerIx, producerS, consumerS }
+    pure Queue { producerIx, consumerIx, producerS, consumerS, it }
 
 
-push :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
+push :: KnownNat n => Queue n t -> (t -> Ix n -> Ivory eff ()) -> Ivory eff ()
 push Queue{..} handle =
     down producerS $ do
         x <- deref producerIx
         store producerIx $ x + 1
-        handle x
+        handle it x
         up consumerS
 
 
-push' :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+push' :: KnownNat n => Queue n t -> (t -> Ix n -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
 push' Queue{..} handle =
     down' producerS $ do
         x <- deref producerIx
         store producerIx $ x + 1
-        handle x
+        handle it x
         up consumerS
 
 
-pop :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
+pop :: KnownNat n => Queue n t -> (t -> Ix n -> Ivory eff ()) -> Ivory eff ()
 pop Queue{..} handle =
     down consumerS $ do
         x <- deref consumerIx
         store consumerIx $ x + 1
-        handle x
+        handle it x
         up producerS
 
 
-pop' :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+pop' :: KnownNat n => Queue n t -> (t -> Ix n -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
 pop' Queue{..} handle =
      down' consumerS $ do
         x <- deref consumerIx
         store consumerIx $ x + 1
-        handle x
+        handle it x
         up producerS
 
 
-peek :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff ()
-peek Queue{..} handle = 
+peek :: KnownNat n => Queue n t -> (t -> Ix n -> Ivory eff ()) -> Ivory eff ()
+peek Queue{..} handle =
     check consumerS $ do
         x <- deref consumerIx
-        handle x
+        handle it x
 
 
-peek' :: Queue n -> (Uint16 -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
-peek' Queue{..} handle = 
+peek' :: KnownNat n => Queue n t -> (t -> Ix n -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+peek' Queue{..} handle =
     check' consumerS $ do
         x <- deref consumerIx
-        handle x
+        handle it x
 
 
-size :: Queue n -> Ivory eff Uint16
+size :: Queue n t -> Ivory eff Uint16
 size Queue{..} =
-    (-) <$> deref producerIx <*> deref consumerIx
+    deref $ getSemaphore consumerS
 
 
-remove :: Queue n -> Ivory eff ()
+remove :: KnownNat n => Queue n t -> Ivory eff ()
 remove Queue{..} =
     down consumerS $ do
         x <- deref consumerIx
         store consumerIx $ x + 1
         up producerS
-        
 
 
-clear :: forall n eff. KnownNat n => Queue n -> Ivory eff ()
+clear :: forall n t eff. KnownNat n => Queue n t -> Ivory eff ()
 clear Queue{..} = do
     store consumerIx 0
     store producerIx 0

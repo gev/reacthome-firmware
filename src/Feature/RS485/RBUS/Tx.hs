@@ -52,7 +52,7 @@ doTransmitMessage :: RBUS -> Ivory (ProcEffects s ()) ()
 doTransmitMessage r@RBUS{..} = do
     t0 <- deref txTimestamp
     t1 <- getSystemTime clock
-    when (t1 - t0 >? 1) $ peek msgQueue $ \i -> do
+    when (t1 - t0 >? 1) $ peek msgQueue $ \Messages {..} i -> do
         let ix         = toIx i
         offset        <- deref $ msgOffset ! ix
         address       <- deref $ msgBuff ! toIx (offset + 1)
@@ -129,7 +129,7 @@ toQueue :: KnownNat l
         -> Ix l
         -> Uint8
         -> Ivory (ProcEffects s t) ()
-toQueue RBUS{..} address buff offset size = push msgQueue $ \i -> do
+toQueue RBUS{..} address buff offset size = push msgQueue $ \Messages {..}  i -> do
     index <- deref msgIndex
     size' <- run protocol (transmitMessage address buff offset size) msgBuff index
     store msgIndex $ index + safeCast size'

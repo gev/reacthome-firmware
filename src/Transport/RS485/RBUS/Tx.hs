@@ -55,8 +55,7 @@ doTransmitMessage :: RBUS -> Ivory (ProcEffects s ()) ()
 doTransmitMessage r@RBUS{..} = do
     t0 <- deref txTimestamp
     t1 <- getSystemTime clock
-    when (t1 - t0 >? 1) $ peek msgQueue $ \i -> do
-        let ix = toIx i
+    when (t1 - t0 >? 1) $ peek msgQueue $ \Messages{..} ix -> do
         ttl <- deref $ msgTTL ! ix
         ifte_ (ttl >? 0)
             (do offset <- deref $ msgOffset ! ix
@@ -124,11 +123,10 @@ toQueue :: KnownNat l => RBUS -> Buffer l Uint8 -> Ivory (ProcEffects s t) ()
 toQueue RBUS{..} buff = do
     hasAddress' <- hasAddress protocol
     when hasAddress' $ do
-        push msgQueue $ \i -> do
+        push msgQueue $ \Messages{..} ix -> do
             index <- deref msgIndex
             size  <- run protocol (transmitMessage buff) msgBuff index
             store msgIndex $ index + safeCast size
-            let ix = toIx i
             store (msgOffset ! ix) index
             store (msgSize   ! ix) size
             store (msgTTL    ! ix) messageTTL
@@ -142,11 +140,10 @@ toQueue' :: RBUS
 toQueue' RBUS{..} size' transmit = do
     hasAddress' <- hasAddress protocol
     when hasAddress' $ do
-        push msgQueue $ \i -> do
+        push msgQueue $ \ Messages{..} ix -> do
             index <- deref msgIndex
             size  <- run protocol (transmitMessage' size' transmit) msgBuff index
             store msgIndex $ index + safeCast size
-            let ix = toIx i
             store (msgOffset ! ix) index
             store (msgSize   ! ix) size
             store (msgTTL    ! ix) messageTTL

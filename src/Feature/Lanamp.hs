@@ -32,8 +32,7 @@ import           Ivory.Language
 
 data Lanamp t r = Lanamp
     { i2sTrx   :: I2STRX  t r
-    , i2sBuff  :: Records 256 SampleStruct
-    , i2sQueue :: Queue  256
+    , i2sQueue :: Queue 256 (Records 256 SampleStruct)
     , i2sWord  :: Sample
     }
 
@@ -47,14 +46,12 @@ mkLanAmp i2sTrx' shutdown' = do
     let  name   =   "lanamp"
     mcu         <-  asks D.mcu
     let peripherals' = peripherals mcu
-    i2sBuff     <-  records' (name <> "_i2sBuff") [left .= izero, right .= izero]
-    i2sQueue    <-  queue   (name <> "_i2sQueue")
+    i2sQueue    <-  queue (name <> "_i2sQueue") =<< records' (name <> "_i2sBuff") [left .= izero, right .= izero]
     i2sTrx      <-  i2sTrx' $ peripherals mcu
     shutdown    <-  shutdown' peripherals' $ pullNone peripherals'
     i2sWord     <-  record (name <> "_word1") [left .= izero, right .= izero]
 
     let lanamp = Lanamp { i2sTrx
-                        , i2sBuff
                         , i2sQueue
                         , i2sWord
                         }
@@ -70,14 +67,14 @@ mkLanAmp i2sTrx' shutdown' = do
 
 receive :: Lanamp t r -> Sample -> Ivory eff ()
 receive (Lanamp {..}) word =
-    push i2sQueue $ \i -> do
-        store (i2sBuff ! toIx i ~> left) =<< deref (word ~> left)
-        store (i2sBuff ! toIx i ~> right) =<< deref (word ~> right)
+    push i2sQueue $ \i2sBuff ix -> do
+        store (i2sBuff ! ix ~> left) =<< deref (word ~> left)
+        store (i2sBuff ! ix ~> right) =<< deref (word ~> right)
 
 
 transmit :: Lanamp t r -> Ivory eff Sample
 transmit (Lanamp {..}) = do
-    pop i2sQueue $ \i -> do
-        store (i2sWord ~> left) =<< deref (i2sBuff ! toIx i ~> left)
-        store (i2sWord ~> right)=<< deref (i2sBuff ! toIx i ~> right)
+    pop i2sQueue $ \i2sBuff ix -> do
+        store (i2sWord ~> left) =<< deref (i2sBuff ! ix ~> left)
+        store (i2sWord ~> right)=<< deref (i2sBuff ! ix ~> right)
     pure i2sWord

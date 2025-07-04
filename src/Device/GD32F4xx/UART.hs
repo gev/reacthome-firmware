@@ -46,8 +46,7 @@ data UART rn tn = UART
     , dmaSubPer :: DMA_SUBPERIPH
     , dmaIRQn   :: IRQn
     , dmaParams :: Record DMA_SINGLE_PARAM_STRUCT
-    , rxQueue   :: Queue  rn
-    , rxBuff    :: Buffer rn Uint16
+    , rxQueue   :: Queue  rn (Buffer rn Uint16)
     , txBuff    :: Buffer tn Uint16
     }
 
@@ -75,8 +74,7 @@ mkUART uart rcu uartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn rx' tx' = do
                            , priority            .= ival dma_priority_ultra_high
                            ]
     dmaParams  <- record (symbol uart <> "_dma_param") dmaInit
-    rxQueue    <- queue  (symbol uart <> "_rx_queue")
-    rxBuff     <- buffer (symbol uart <> "_rx_buff")
+    rxQueue    <- queue  (symbol uart <> "_rx_queue") =<< buffer (symbol uart <> "_rx_buff")
     txBuff     <- buffer (symbol uart <> "_tx_buff")
 
     let rx = rx' gpio_pupd_none
@@ -92,7 +90,7 @@ mkUART uart rcu uartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn rx' tx' = do
             enableIrqNvic       dmaIRQn 1 0
             enablePeriphClock   rcu
 
-    pure UART { uart, rcu, uartIRQ, dmaRcu, dmaPer, dmaCh, dmaSubPer, dmaIRQn, dmaParams, rxQueue, rxBuff, txBuff }
+    pure UART { uart, rcu, uartIRQ, dmaRcu, dmaPer, dmaCh, dmaSubPer, dmaIRQn, dmaParams, rxQueue, txBuff }
 
 
 
@@ -145,8 +143,8 @@ handleReceive :: KnownNat rn => UART rn tn -> Ivory eff () -> Ivory eff ()
 handleReceive UART{..} onReceive = do
     rbne  <- getInterruptFlag  uart usart_int_flag_rbne
     when rbne $ do
-        push rxQueue $ \i -> do
-            store (rxBuff ! toIx i) =<< S.receiveData uart
+        push rxQueue $ \rxBuff ix -> do
+            store (rxBuff ! ix) =<< S.receiveData uart
             onReceive
         clearInterruptFlag     uart usart_int_flag_rbne
 
@@ -177,8 +175,8 @@ instance (KnownNat rn, KnownNat tn) => I.UART (UART rn tn) where
     clearRX UART{..} = Q.clearConcurrently rxQueue
 
     receive UART{..} read =
-        popConcurrently rxQueue $ \i ->
-            read =<< deref (rxBuff ! toIx i)
+        popConcurrently rxQueue $ \rxBuff ix ->
+            read =<< deref (rxBuff ! ix)
 
     transmit UART{..} write = do
         size <- local $ ival (0 :: Uint16)

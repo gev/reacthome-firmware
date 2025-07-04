@@ -44,10 +44,7 @@ rbus rs485 = do
     let clock       = systemClock mcu
 
     rs             <- rs485
-    msgOffset      <- buffer (name <> "_msg_offset"     )
-    msgSize        <- buffer (name <> "_msg_size"       )
-    msgTTL         <- buffer (name <> "_msg_ttl"        )
-    msgQueue       <- queue  (name <> "_msg"            )
+    msgQueue       <- queue  (name <> "_msg"            ) =<< messages name
     msgBuff        <- buffer (name <> "_msg"            )
     msgIndex       <- value  (name <> "_msg_index"      ) 0
     initBuff       <- values (name <> "_init_request"   ) [0xf2]
@@ -91,7 +88,7 @@ rbus rs485 = do
     protocol <- slave name (mac mcu) model version onMessage onConfirm onDiscovery onReceive
 
     let rbus = RBUS { clock, rs, protocol
-                    , msgOffset, msgSize, msgTTL, msgQueue, msgBuff, msgIndex
+                    , msgQueue, msgBuff, msgIndex
                     , initBuff
                     , rxLock, txLock
                     , rxTimestamp, txTimestamp, initTimestamp
