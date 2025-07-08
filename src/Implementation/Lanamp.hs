@@ -61,8 +61,7 @@ data Lanamp i  = Lanamp
 
     , i2sSpdifQueue :: Q.Queue  256 (Records 256 SampleStruct)
 
-    , i2sRtpQueue   :: ElasticQueue 4480
-    , i2sRtpBuff    :: Records 4480 SampleStruct
+    , i2sRtpQueue   :: ElasticQueue 4480 (Records 4480 SampleStruct)
 
     , i2sWord       :: Sample
     , i2sWord1      :: Sample
@@ -103,8 +102,7 @@ mkLanamp enet' i2sTrx' shutdown' i2c mute = do
 
     i2sSpdifQueue <- Q.queue  (name <> "_i2s_spdif_queue") =<< records_ (name <> "_i2s_buff_spdif")
 
-    i2sRtpQueue   <- elastic  (name <> "_i2s_rtp_queue")
-    i2sRtpBuff    <-  records_ (name <> "_i2s_rtp_buff")
+    i2sRtpQueue   <- elastic  (name <> "_i2s_rtp_queue") =<< records_ (name <> "_i2s_rtp_buff")
 
     i2sWord    <- record (name <> "_word") [left .= izero, right .= izero]
     i2sWordMix <- record (name <> "_word_mix") [left .= izero, right .= izero]
@@ -115,7 +113,6 @@ mkLanamp enet' i2sTrx' shutdown' i2c mute = do
                         , i2sQueue
                         , i2sSpdifQueue
                         , i2sRtpQueue
-                        , i2sRtpBuff
                         , i2sWord
                         , i2sWordMix
                         , i2sWord1
@@ -172,10 +169,10 @@ refillBuffI2S l@Lanamp{..} = do
     Q.push i2sQueue\ buff i -> do
 
 
-        Q.pop i2sSpdifQueue $ \ i2sSpdifBuff j -> do
+        Q.pop i2sSpdifQueue $ \i2sSpdifBuff j -> do
             store (i2sWord1 ~> left) =<< deref (i2sSpdifBuff  ! toIx j ~> left) 
             store (i2sWord1 ~> right) =<< deref (i2sSpdifBuff ! toIx j ~> right)
-        pop i2sRtpQueue $ \ l -> do
+        pop i2sRtpQueue $ \i2sRtpBuff l -> do
             store (i2sWord2 ~> left) =<< deref (i2sRtpBuff  ! toIx l ~> left) 
             store (i2sWord2 ~> right) =<< deref (i2sRtpBuff ! toIx l ~> right)
 
@@ -207,16 +204,16 @@ udpReceiveCallback l@Lanamp{..} =
             forever $ do
                 index' <- deref index
                 when (index' >=? size) breakOut
-                push i2sRtpQueue $ \ix -> do
+                push i2sRtpQueue $ \i2sRtpBuff ix -> do
                     msbl <- getPbufAt pbuff index'
                     lsbl <- getPbufAt pbuff (index' + 1)
                     let wordL  = (safeCast msbl `iShiftL` 8) .| safeCast lsbl :: Uint16
-                    let vall = twosComplementRep $ safeCast (twosComplementCast wordL) * 1024
+                    let vall = twosComplementRep $ safeCast (twosComplementCast wordL) * 4096
                     store (i2sRtpBuff ! ix ~> left) vall
                     msbr <- getPbufAt pbuff (index' + 2)
                     lsbr <- getPbufAt pbuff (index' + 3)
                     let wordR  = (safeCast msbr `iShiftL` 8) .| safeCast lsbr :: Uint16
-                    let valr = twosComplementRep $ safeCast (twosComplementCast wordR) * 1024
+                    let valr = twosComplementRep $ safeCast (twosComplementCast wordR) * 4096
                     store (i2sRtpBuff ! ix ~> right) valr
                 store index $ index' + 4
         ret =<< freePbuf pbuff
