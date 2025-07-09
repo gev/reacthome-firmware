@@ -51,6 +51,7 @@ import qualified Interface.I2C as I
 import qualified Feature.SRC4392 as S
 import qualified Data.Queue as Q
 import           Data.ElasticQueue
+import           Feature.RTP
 
 
 
@@ -61,7 +62,8 @@ data Lanamp i  = Lanamp
 
     , i2sSpdifQueue :: Q.Queue  256 (Records 256 SampleStruct)
 
-    , i2sRtpQueue   :: ElasticQueue 4480 (Records 4480 SampleStruct)
+    -- , i2sRtpQueue   :: ElasticQueue 4480 (Records 4480 SampleStruct)
+    , i2sRtp           :: RTP 4480
 
     , i2sWord       :: Sample
     , i2sWord1      :: Sample
@@ -91,18 +93,18 @@ mkLanamp enet' i2sTrx' shutdown' i2c mute = do
     let name = "lanamp"
     mcu       <- asks D.mcu
     enet      <- enet' $ peripherals mcu
-    ip4       <- record_ "ipaddr4"
-    netmask   <- record_ "netmask"
-    gateway   <- record_ "gateway"
-    netif     <- record_ "netif"
+    -- ip4       <- record_ "ipaddr4"
+    -- netmask   <- record_ "netmask"
+    -- gateway   <- record_ "gateway"
+    -- netif     <- record_ "netif"
     shutdown  <- shutdown' (peripherals mcu) $ pullNone (peripherals mcu)
-    i2sTrx     <- i2sTrx' $ peripherals mcu
+    i2sTrx    <- i2sTrx' $ peripherals mcu
 
     i2sQueue  <- Q.queue (name <> "_i2s") =<< records_ (name <> "_i2s_buff_l")
 
     i2sSpdifQueue <- Q.queue  (name <> "_i2s_spdif_queue") =<< records_ (name <> "_i2s_buff_spdif")
 
-    i2sRtpQueue   <- elastic  (name <> "_i2s_rtp_queue") =<< records_ (name <> "_i2s_rtp_buff")
+    i2sRtp   <- mkRTP enet (name <> "_i2s_rtp_buff") (mac mcu)
 
     i2sWord    <- record (name <> "_word") [left .= izero, right .= izero]
     i2sWordMix <- record (name <> "_word_mix") [left .= izero, right .= izero]
@@ -112,7 +114,7 @@ mkLanamp enet' i2sTrx' shutdown' i2c mute = do
     let lanamp = Lanamp { i2sTrx
                         , i2sQueue
                         , i2sSpdifQueue
-                        , i2sRtpQueue
+                        , i2sRtp
                         , i2sWord
                         , i2sWordMix
                         , i2sWord1
@@ -128,30 +130,30 @@ mkLanamp enet' i2sTrx' shutdown' i2c mute = do
     addModule inclPbuf
     addModule inclEtharp
 
-    addProc $ udpReceiveCallback lanamp
-    addProc $ netifStatusCallback lanamp
+    -- addProc $ udpReceiveCallback lanamp
+    -- addProc $ netifStatusCallback lanamp
 
     addInit "lanamp" $ do
-        initMem
-        initMemp
-        createIpAddr4 ip4 172 16 2 2
-        createIpAddr4 netmask 255 240 0 0
-        createIpAddr4 gateway 172 16 0 1
-        store (netif ~> hwaddr_len) 6
-        arrayCopy (netif ~> hwaddr) (mac mcu) 0 6
+        -- initMem
+        -- initMemp
+        -- createIpAddr4 ip4 172 16 2 2
+        -- createIpAddr4 netmask 255 240 0 0
+        -- createIpAddr4 gateway 172 16 0 1
+        -- store (netif ~> hwaddr_len) 6
+        -- arrayCopy (netif ~> hwaddr) (mac mcu) 0 6
 
-        addNetif netif ip4 netmask gateway nullPtr (initLwipPortIf enet) inputEthernetPtr
-        setNetifDefault netif
-        setNetifStatusCallback netif (procPtr $ netifStatusCallback lanamp)
-        setUpNetif netif
+        -- addNetif netif ip4 netmask gateway nullPtr (initLwipPortIf enet) inputEthernetPtr
+        -- setNetifDefault netif
+        -- setNetifStatusCallback netif (procPtr $ netifStatusCallback lanamp)
+        -- setUpNetif netif
 
         set shutdown
 
 
-    addTask $ yeld "udp_rx" $ do
-        reval <- rxFrameSize enet
-        when (reval >? 1) $
-            void $ inputLwipPortIf enet netif
+    -- addTask $ yeld "udp_rx" $ do
+    --     reval <- rxFrameSize enet
+    --     when (reval >? 1) $
+    --         void $ inputLwipPortIf enet netif
 
     addTask $ delay 1000 "eth_arp" tmrEtharp
 
@@ -172,7 +174,7 @@ refillBuffI2S l@Lanamp{..} = do
         Q.pop i2sSpdifQueue $ \i2sSpdifBuff j -> do
             store (i2sWord1 ~> left) =<< deref (i2sSpdifBuff  ! toIx j ~> left) 
             store (i2sWord1 ~> right) =<< deref (i2sSpdifBuff ! toIx j ~> right)
-        pop i2sRtpQueue $ \i2sRtpBuff l -> do
+        pop (rtpBuffQueue i2sRtp) $ \i2sRtpBuff l -> do
             store (i2sWord2 ~> left) =<< deref (i2sRtpBuff  ! toIx l ~> left) 
             store (i2sWord2 ~> right) =<< deref (i2sRtpBuff ! toIx l ~> right)
 
@@ -181,42 +183,6 @@ refillBuffI2S l@Lanamp{..} = do
         store (buff ! toIx i ~> left) =<< deref (mix ~> left)
         store (buff ! toIx i ~> right) =<< deref (mix ~> right)
 
-
-
-netifStatusCallback :: Lanamp (I2S i) -> Def (NetifStatusCallbackFn s)
-netifStatusCallback lanamp = proc "netif_callback" $ \netif -> body $ do
-     flags' <- deref $ netif ~> flags
-     when (flags' .& netif_flag_up /=?  0) $ do
-        upcb <- newUdp
-        when (upcb /=? nullPtr) $ do
-          err <- bindUdp upcb ipAddrAny 2000
-          when (err ==? 0) $
-            recvUdp upcb (procPtr $ udpReceiveCallback lanamp) nullPtr
-
-
-
-udpReceiveCallback :: Lanamp (I2S i) -> Def (UdpRecvFn s1 s2 s3 s4)
-udpReceiveCallback l@Lanamp{..} =
-    proc "udp_receive_callback" $ \_ upcb pbuff addr port -> body $ do
-        size <- deref (pbuff ~> len)
-        when (size ==? 1292) $ do
-            index <- local $ ival 12
-            forever $ do
-                index' <- deref index
-                when (index' >=? size) breakOut
-                push i2sRtpQueue $ \i2sRtpBuff ix -> do
-                    msbl <- getPbufAt pbuff index'
-                    lsbl <- getPbufAt pbuff (index' + 1)
-                    let wordL  = (safeCast msbl `iShiftL` 8) .| safeCast lsbl :: Uint16
-                    let vall = twosComplementRep $ safeCast (twosComplementCast wordL) * 4096
-                    store (i2sRtpBuff ! ix ~> left) vall
-                    msbr <- getPbufAt pbuff (index' + 2)
-                    lsbr <- getPbufAt pbuff (index' + 3)
-                    let wordR  = (safeCast msbr `iShiftL` 8) .| safeCast lsbr :: Uint16
-                    let valr = twosComplementRep $ safeCast (twosComplementCast wordR) * 4096
-                    store (i2sRtpBuff ! ix ~> right) valr
-                store index $ index' + 4
-        ret =<< freePbuf pbuff
 
 
 transmitI2S :: Lanamp (I2S i) -> Ivory eff Sample

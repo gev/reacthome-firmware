@@ -152,6 +152,7 @@ executable reacthome-firmware
     Feature.Relays
     Feature.SRC4392
     Feature.Scd40
+    Feature.RTP
     Feature.Sht21
     Feature.Smart.Top
     Feature.Smart.Top.Buttons
