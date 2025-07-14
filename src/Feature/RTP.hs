@@ -102,12 +102,12 @@ udpReceiveCallback r@RTP{..} =
                     msbl <- getPbufAt pbuff index'
                     lsbl <- getPbufAt pbuff (index' + 1)
                     let wordL  = (safeCast msbl `iShiftL` 8) .| safeCast lsbl :: Uint16
-                    let vall = twosComplementRep $ safeCast (twosComplementCast wordL) * 4096
+                    let vall = safeCast (twosComplementCast wordL) * 4096
                     store (i2sRtpBuff ! ix ~> left) vall
                     msbr <- getPbufAt pbuff (index' + 2)
                     lsbr <- getPbufAt pbuff (index' + 3)
                     let wordR  = (safeCast msbr `iShiftL` 8) .| safeCast lsbr :: Uint16
-                    let valr = twosComplementRep $ safeCast (twosComplementCast wordR) * 4096
+                    let valr =  safeCast (twosComplementCast wordR) * 4096
                     store (i2sRtpBuff ! ix ~> right) valr
                 store index $ index' + 4
         ret =<< freePbuf pbuff

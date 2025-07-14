@@ -127,7 +127,7 @@ prepareBuff prepare buff = do
         i' <- deref i
         when (i' >=? arrayLen buff) breakOut
         t <- prepare
-        store (buff ! toIx i') . swap16bit =<< deref (t ~> I.left)
-        store (buff ! toIx (i' + 1)) . swap16bit =<< deref (t ~> I.right)
+        store (buff ! toIx i') . swap16bit . twosComplementRep =<< deref (t ~> I.left)
+        store (buff ! toIx (i' + 1)) . swap16bit . twosComplementRep =<< deref (t ~> I.right)
         store i (i' + 2)
     where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)

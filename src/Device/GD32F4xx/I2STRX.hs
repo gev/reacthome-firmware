@@ -24,7 +24,7 @@ import           GHC.TypeLits
 import qualified Interface.I2S                as I
 import qualified Interface.I2SRX              as I
 import qualified Interface.I2STX              as I
-import           Interface.I2S          
+import           Interface.I2S
 import           Ivory.Language
 import           Ivory.Stdlib                 as S
 import           Ivory.Support
@@ -149,7 +149,7 @@ mkI2STRX spi rcuSpiTx rcuDmaTx dmaPerTx dmaChTx dmaSubPerTx dmaIRQnTx txPin wsPi
         enableI2S           i2s_add
 
     pure i2strx
-    
+
 instance KnownNat tn => Handler I.HandleI2STX (I2STRX tn rn) where
     addHandler I.HandleI2STX{..} = do
         addModule $ makeIRQHandler (dmaIRQnTx i2s) (handleDMATx i2s)
@@ -175,8 +175,8 @@ prepareBuff prepare buff = do
         i' <- deref i
         when (i' >=? arrayLen buff) breakOut
         t <- prepare
-        store (buff ! toIx i') . swap16bit =<< deref (t ~> I.left)
-        store (buff ! toIx (i' + 1)) . swap16bit =<< deref (t ~> I.right)
+        store (buff ! toIx i') . swap16bit . twosComplementRep =<< deref (t ~> I.left)
+        store (buff ! toIx (i' + 1)) . swap16bit . twosComplementRep =<< deref (t ~> I.right)
         store i (i' + 2)
     where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)
 
@@ -200,13 +200,13 @@ receiveBuff i2s dbuff = do
     selectDmaBuff dbuff callbackBuff
 
 processBuff :: KnownNat rn => I2STRX tn rn -> (forall eff. I.Sample -> Ivory eff ()) -> Buffer rn Uint32 -> Ivory (ProcEffects s ()) ()
-processBuff i2s handle buff = do   
+processBuff i2s handle buff = do
     i <- local $ ival (0 :: Uint16)
     forever $ do
         i' <- deref i
         when (i' >=? arrayLen buff) breakOut
-        store (sample i2s ~> I.left) . swap16bit =<< deref (buff ! toIx i')
-        store (sample i2s ~> I.right) . swap16bit =<< deref (buff ! toIx (i' + 1))
+        store (sample i2s ~> I.left) . twosComplementCast . swap16bit =<< deref (buff ! toIx i')
+        store (sample i2s ~> I.right) . twosComplementCast . swap16bit =<< deref (buff ! toIx (i' + 1))
         store i (i' + 2)
         handle (sample i2s)
     where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)

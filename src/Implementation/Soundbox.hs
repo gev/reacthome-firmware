@@ -92,16 +92,16 @@ mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
 
     src4392 <- S.mkSRC4392 i2c mute
 
-    let name = "lanamp"
+    let name = "soudbox"
     mcu       <- asks D.mcu
 
     let peripherals' = peripherals mcu
 
-    enet        <- enet' peripherals'
+    enet        <- enet'        peripherals'
     shutdownTrx <- shutdownTrx' peripherals' $ pullNone peripherals'
-    shutdownTx  <- shutdownTx' peripherals' $ pullNone peripherals'
-    i2sTrx      <- i2sTrx' peripherals'
-    i2sTx       <- i2sTx'  peripherals'
+    shutdownTx  <- shutdownTx'  peripherals' $ pullNone peripherals'
+    i2sTrx      <- i2sTrx'      peripherals'
+    i2sTx       <- i2sTx'       peripherals'
 
     i2sQueue       <- Q.queue (name <> "_i2s_1") =<< records_ (name <> "_i2s_buff_tx_1")
     i2sQueue2      <- Q.queue (name <> "_i2s_2") =<< records_ (name <> "_i2s_buff_tx_2")
@@ -213,6 +213,6 @@ mixer amp first second = do
     fr <- deref (first ~> right)
     sl <- deref (second ~> left)
     sr <- deref (second ~> right)
-    store (i2sWordMix amp ~> left) $ twosComplementRep (twosComplementCast fl + twosComplementCast sl)
-    store (i2sWordMix amp ~> right) $ twosComplementRep (twosComplementCast fr + twosComplementCast sr)
+    store (i2sWordMix amp ~> left)  (fl + sl)
+    store (i2sWordMix amp ~> right) (fr + sr)
     pure (i2sWordMix amp)

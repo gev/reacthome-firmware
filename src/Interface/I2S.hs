@@ -12,7 +12,7 @@ type Sample = Record SampleStruct
 
 [ivory|
     struct sample {
-        uint32_t left;
-        uint32_t right;
+        int32_t left;
+        int32_t right;
     }
 |]
