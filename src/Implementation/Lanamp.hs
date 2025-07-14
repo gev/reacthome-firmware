@@ -55,13 +55,18 @@ import           Feature.RTP
 
 
 
-data Lanamp i  = Lanamp
-    { i2sTrx        :: i
+data Lanamp i j  = Lanamp
+    { i2sTrx        :: i 256 256
+    , i2sTx         :: j 256
 
-    , i2sQueue      :: Q.Queue  256 (Records 256 SampleStruct)
+    , i2sQueue      :: Q.Queue  512 (Records 512 SampleStruct)
+    , i2sHasPlace   :: Value IBool
+    , i2sQueue2     :: Q.Queue  512 (Records 512 SampleStruct)
+    , i2sHasPlace2  :: Value IBool
 
-    , i2sSpdifQueue :: Q.Queue  256 (Records 256 SampleStruct)
+    , i2sSpdifQueue :: Q.Queue  512 (Records 512 SampleStruct)
 
+    
     -- , i2sRtpQueue   :: ElasticQueue 4480 (Records 4480 SampleStruct)
     , i2sRtp           :: RTP 4480
 
@@ -73,46 +78,57 @@ data Lanamp i  = Lanamp
     }
 
 
-type I2S i = i 192 256
+
+
+
 
 mkLanamp :: ( MonadState Context m
             , MonadReader (Domain p c) m
             , Enet e, LwipPort e, Output o
-            , Handler HandleI2STX (I2S i)
-            , Handler HandleI2SRX (I2S i)
+            , Handler HandleI2STX  (i 256 256)
+            , Handler HandleI2SRX  (i 256 256)
+            , Handler HandleI2STX  (j 256)
             , I.I2C ic 2
             , Pull p d
             )
-         => (p -> m e) -> (p -> m (I2S i))
+         => (p -> m e) -> (p -> m (i 256 256)) -> (p -> m (j 256))
          -> (p -> d -> m o) -> (p -> m (ic 2))
-         -> (p -> d -> m o) -> m (Lanamp (I2S i))
-mkLanamp enet' i2sTrx' shutdown' i2c mute = do
+         -> (p -> d -> m o) -> m (Lanamp i j)
+mkLanamp enet' i2sTrx' i2sTx' shutdown' i2c mute = do
 
     src4392 <- S.mkSRC4392 i2c mute
 
     let name = "lanamp"
     mcu       <- asks D.mcu
-    enet      <- enet' $ peripherals mcu
-    -- ip4       <- record_ "ipaddr4"
-    -- netmask   <- record_ "netmask"
-    -- gateway   <- record_ "gateway"
-    -- netif     <- record_ "netif"
-    shutdown  <- shutdown' (peripherals mcu) $ pullNone (peripherals mcu)
-    i2sTrx    <- i2sTrx' $ peripherals mcu
 
-    i2sQueue  <- Q.queue (name <> "_i2s") =<< records_ (name <> "_i2s_buff_l")
+    let peripherals' = peripherals mcu
+
+    enet      <- enet' peripherals'
+    shutdown  <- shutdown' peripherals' $ pullNone peripherals'
+    i2sTrx    <- i2sTrx' peripherals'
+    i2sTx     <- i2sTx'  peripherals'
+
+    i2sQueue       <- Q.queue (name <> "_i2s_1") =<< records_ (name <> "_i2s_buff_tx_1")
+    i2sHasPlace    <- value (name <> "_i2s_has_place") false
+    i2sQueue2      <- Q.queue (name <> "_i2s_2") =<< records_ (name <> "_i2s_buff_tx_2")
+    i2sHasPlace2   <- value (name <> "_i2s_has_place_2") false
 
     i2sSpdifQueue <- Q.queue  (name <> "_i2s_spdif_queue") =<< records_ (name <> "_i2s_buff_spdif")
 
-    i2sRtp   <- mkRTP enet (name <> "_i2s_rtp_buff") (mac mcu)
+    i2sRtp   <- mkRTP enet (name <> "_rtp") (mac mcu)
 
-    i2sWord    <- record (name <> "_word") [left .= izero, right .= izero]
     i2sWordMix <- record (name <> "_word_mix") [left .= izero, right .= izero]
+    i2sWord    <- record (name <> "_word") [left .= izero, right .= izero]
     i2sWord1   <- record (name <> "_word1") [left .= izero, right .= izero]
     i2sWord2   <- record (name <> "_word2") [left .= izero, right .= izero]
 
+
     let lanamp = Lanamp { i2sTrx
+                        , i2sTx
                         , i2sQueue
+                        , i2sHasPlace
+                        , i2sQueue2
+                        , i2sHasPlace2
                         , i2sSpdifQueue
                         , i2sRtp
                         , i2sWord
@@ -130,30 +146,9 @@ mkLanamp enet' i2sTrx' shutdown' i2c mute = do
     addModule inclPbuf
     addModule inclEtharp
 
-    -- addProc $ udpReceiveCallback lanamp
-    -- addProc $ netifStatusCallback lanamp
 
     addInit "lanamp" $ do
-        -- initMem
-        -- initMemp
-        -- createIpAddr4 ip4 172 16 2 2
-        -- createIpAddr4 netmask 255 240 0 0
-        -- createIpAddr4 gateway 172 16 0 1
-        -- store (netif ~> hwaddr_len) 6
-        -- arrayCopy (netif ~> hwaddr) (mac mcu) 0 6
-
-        -- addNetif netif ip4 netmask gateway nullPtr (initLwipPortIf enet) inputEthernetPtr
-        -- setNetifDefault netif
-        -- setNetifStatusCallback netif (procPtr $ netifStatusCallback lanamp)
-        -- setUpNetif netif
-
         set shutdown
-
-
-    -- addTask $ yeld "udp_rx" $ do
-    --     reval <- rxFrameSize enet
-    --     when (reval >? 1) $
-    --         void $ inputLwipPortIf enet netif
 
     addTask $ delay 1000 "eth_arp" tmrEtharp
 
@@ -163,29 +158,40 @@ mkLanamp enet' i2sTrx' shutdown' i2c mute = do
     addHandler $ HandleI2STX i2sTrx (transmitI2S lanamp)
     addHandler $ HandleI2SRX i2sTrx (receiveI2S lanamp)
 
+    addHandler $ HandleI2STX i2sTx (transmitI2S2 lanamp)
+
     pure lanamp
 
 
-refillBuffI2S :: Lanamp (I2S i) -> Ivory eff ()
+refillBuffI2S :: Lanamp i j -> Ivory eff ()
 refillBuffI2S l@Lanamp{..} = do
-    Q.push i2sQueue\ buff i -> do
 
 
-        Q.pop i2sSpdifQueue $ \i2sSpdifBuff j -> do
-            store (i2sWord1 ~> left) =<< deref (i2sSpdifBuff  ! toIx j ~> left) 
-            store (i2sWord1 ~> right) =<< deref (i2sSpdifBuff ! toIx j ~> right)
-        pop (rtpBuffQueue i2sRtp) $ \i2sRtpBuff l -> do
-            store (i2sWord2 ~> left) =<< deref (i2sRtpBuff  ! toIx l ~> left) 
-            store (i2sWord2 ~> right) =<< deref (i2sRtpBuff ! toIx l ~> right)
+    Q.push i2sQueue \buff1 i -> do
+        Q.push i2sQueue2 \buff2 j -> do
+        
 
-        mix <- mixer l i2sWord1 i2sWord2
+            Q.pop i2sSpdifQueue $ \buff i -> do
+                store (i2sWord1 ~> left) =<< deref (buff  ! toIx i ~> left) 
+                store (i2sWord1 ~> right) =<< deref (buff ! toIx i ~> right)
 
-        store (buff ! toIx i ~> left) =<< deref (mix ~> left)
-        store (buff ! toIx i ~> right) =<< deref (mix ~> right)
+            pop (rtpBuffQueue i2sRtp) $ \buff i -> do
+                store (i2sWord2 ~> left) =<< deref (buff  ! toIx i ~> left) 
+                store (i2sWord2 ~> right) =<< deref (buff ! toIx i ~> right)
+
+            mix <- mixer l i2sWord1 i2sWord2
+            
+
+            store (buff1 ! toIx i ~> left) =<<  deref (mix  ~> left) 
+            store (buff1 ! toIx i ~> right) =<< deref (mix  ~> right)
+
+            store (buff2 ! toIx j ~> left) =<< deref (mix  ~> left) 
+            store (buff2 ! toIx j ~> right) =<< deref (mix  ~> right)
 
 
 
-transmitI2S :: Lanamp (I2S i) -> Ivory eff Sample
+
+transmitI2S :: Lanamp i j -> Ivory eff Sample
 transmitI2S l@Lanamp {..} = do
     Q.pop i2sQueue $ \ i2sBuff i -> do
         store (i2sWord ~> left) =<< deref (i2sBuff ! toIx i ~> left)
@@ -193,14 +199,23 @@ transmitI2S l@Lanamp {..} = do
     pure i2sWord
 
 
-receiveI2S :: Lanamp (I2S i) -> Sample -> Ivory eff ()
+transmitI2S2 :: Lanamp i j -> Ivory eff Sample
+transmitI2S2 l@Lanamp {..} = do
+    Q.pop i2sQueue2 $ \ i2sBuff i -> do
+        store (i2sWord ~> left) =<< deref (i2sBuff ! toIx i ~> left)
+        store (i2sWord ~> right)=<< deref (i2sBuff ! toIx i ~> right)
+    pure i2sWord
+
+
+receiveI2S :: Lanamp i j -> Sample -> Ivory eff ()
 receiveI2S (Lanamp {..}) word =
     Q.push i2sSpdifQueue $ \ i2sSpdifBuff i -> do
         store (i2sSpdifBuff ! toIx i ~> left) =<< deref (word ~> left)
         store (i2sSpdifBuff ! toIx i ~> right) =<< deref (word ~> right)
 
 
-mixer :: Lanamp (I2S i) -> Sample -> Sample -> Ivory eff Sample
+
+mixer :: Lanamp i j -> Sample -> Sample -> Ivory eff Sample
 mixer amp first second = do
     fl <- deref (first ~> left)
     fr <- deref (first ~> right)
