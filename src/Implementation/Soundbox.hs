@@ -60,9 +60,7 @@ data Soundbox i j  = Soundbox
     , i2sTx         :: j 256
 
     , i2sQueue      :: Q.Queue  512 (Records 512 SampleStruct)
-    , i2sHasPlace   :: Value IBool
     , i2sQueue2     :: Q.Queue  512 (Records 512 SampleStruct)
-    , i2sHasPlace2  :: Value IBool
 
     , i2sSpdifQueue :: Q.Queue  512 (Records 512 SampleStruct)
 
@@ -106,9 +104,7 @@ mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
     i2sTx       <- i2sTx'  peripherals'
 
     i2sQueue       <- Q.queue (name <> "_i2s_1") =<< records_ (name <> "_i2s_buff_tx_1")
-    i2sHasPlace    <- value (name <> "_i2s_has_place") false
     i2sQueue2      <- Q.queue (name <> "_i2s_2") =<< records_ (name <> "_i2s_buff_tx_2")
-    i2sHasPlace2   <- value (name <> "_i2s_has_place_2") false
 
     i2sSpdifQueue <- Q.queue  (name <> "_i2s_spdif_queue") =<< records_ (name <> "_i2s_buff_spdif")
 
@@ -123,9 +119,7 @@ mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
     let soundbox = Soundbox { i2sTrx
                             , i2sTx
                             , i2sQueue
-                            , i2sHasPlace
                             , i2sQueue2
-                            , i2sHasPlace2
                             , i2sSpdifQueue
                             , i2sRtp
                             , i2sWord
