@@ -139,7 +139,6 @@ executable reacthome-firmware
     Feature.Dimmers.DC
     Feature.Dopplers
     Feature.Indicator
-    Feature.Lanamp
     Feature.Mix.Indicator
     Feature.RS485.RBUS
     Feature.RS485.RBUS.Data
@@ -171,7 +170,6 @@ executable reacthome-firmware
     Formula.Doppler1
     Formula.Doppler5
     Formula.Echo
-    Formula.Lanamp
     Formula.Mix6x12
     Formula.Relay12
     Formula.RsHub4
@@ -199,7 +197,6 @@ executable reacthome-firmware
     Implementation.Dummy
     Implementation.Echo
     Implementation.Hub
-    Implementation.Lanamp
     Implementation.Mix
     Implementation.Relay
     Implementation.Smart.Bottom

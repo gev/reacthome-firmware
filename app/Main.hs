@@ -27,7 +27,6 @@ import           Formula.Smart.Top.TopG4D
 import           Formula.Smart.Top.TopA4TD
 import           Formula.Smart.Top.TopG6
 import           Formula.Soundbox
-import           Formula.Lanamp
 
 
 main :: IO ()
@@ -54,9 +53,8 @@ main = do
     --           , smartTopG4D
     --           , smartTopG6
     --           ]
-    mapM_ gcc [ 
-                lanamp              
-              -- , rsHub4
+    mapM_ gcc [               
+               soundbox
+            --   , rsHub4
               -- , server
-            --    soundbox
               ]

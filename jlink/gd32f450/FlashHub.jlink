@@ -1,7 +1,7 @@
 r
 h
-loadbin dist/firmware/lanamp/lanamp-gd32f450vit6-1.0.bin 0x8000000
+loadbin dist/firmware/rs_hub4/rs_hub4-gd32f450vgt6-5.13.bin 0x8000000
 g
-verifybin dist/firmware/lanamp/lanamp-gd32f450vit6-1.0.bin 0x8000000
+verifybin dist/firmware/rs_hub4/rs_hub4-gd32f450vgt6-5.13.bin 0x8000000
 r
 q
