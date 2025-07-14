@@ -66,8 +66,6 @@ data Lanamp i j  = Lanamp
 
     , i2sSpdifQueue :: Q.Queue  512 (Records 512 SampleStruct)
 
-    
-    -- , i2sRtpQueue   :: ElasticQueue 4480 (Records 4480 SampleStruct)
     , i2sRtp           :: RTP 4480
 
     , i2sWord       :: Sample
@@ -76,7 +74,6 @@ data Lanamp i j  = Lanamp
 
     , i2sWordMix    :: Sample
     }
-
 
 
 
@@ -91,10 +88,12 @@ mkLanamp :: ( MonadState Context m
             , I.I2C ic 2
             , Pull p d
             )
-         => (p -> m e) -> (p -> m (i 256 256)) -> (p -> m (j 256))
-         -> (p -> d -> m o) -> (p -> m (ic 2))
-         -> (p -> d -> m o) -> m (Lanamp i j)
-mkLanamp enet' i2sTrx' i2sTx' shutdown' i2c mute = do
+         => (p -> m e) 
+         -> (p -> m (i 256 256)) -> (p -> d -> m o)
+         -> (p -> m (j 256)) -> (p -> d -> m o) 
+         -> (p -> m (ic 2)) -> (p -> d -> m o) 
+         -> m (Lanamp i j)
+mkLanamp enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
 
     src4392 <- S.mkSRC4392 i2c mute
 
@@ -103,10 +102,11 @@ mkLanamp enet' i2sTrx' i2sTx' shutdown' i2c mute = do
 
     let peripherals' = peripherals mcu
 
-    enet      <- enet' peripherals'
-    shutdown  <- shutdown' peripherals' $ pullNone peripherals'
-    i2sTrx    <- i2sTrx' peripherals'
-    i2sTx     <- i2sTx'  peripherals'
+    enet        <- enet' peripherals'
+    shutdownTrx <- shutdownTrx' peripherals' $ pullNone peripherals'
+    shutdownTx  <- shutdownTx' peripherals' $ pullNone peripherals'
+    i2sTrx      <- i2sTrx' peripherals'
+    i2sTx       <- i2sTx'  peripherals'
 
     i2sQueue       <- Q.queue (name <> "_i2s_1") =<< records_ (name <> "_i2s_buff_tx_1")
     i2sHasPlace    <- value (name <> "_i2s_has_place") false
@@ -148,7 +148,8 @@ mkLanamp enet' i2sTrx' i2sTx' shutdown' i2c mute = do
 
 
     addInit "lanamp" $ do
-        set shutdown
+        set shutdownTrx
+        set shutdownTx
 
     addTask $ delay 1000 "eth_arp" tmrEtharp
 

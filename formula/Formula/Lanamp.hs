@@ -18,5 +18,5 @@ lanamp = Formula
     , mcu             = gd32f450vit6
     , quartzFrequency =  24_000_000
     , systemFrequency = 192_000_000
-    , implementation  = I.mkLanamp eth_0 i2s_trx_1 i2s_tx_2 out_pd_12 i2c_2 out_pc_2
+    , implementation  = I.mkLanamp eth_0 i2s_trx_1 out_pd_12 i2s_tx_2 out_pb_7 i2c_2 out_pc_2
     }
