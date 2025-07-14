@@ -1,31 +1,31 @@
-{-# LANGUAGE DataKinds       #-}
-{-# LANGUAGE NamedFieldPuns  #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RecordWildCards  #-}
 
 module Feature.RTP where
 
 
 import           Control.Monad.State
 import           Core.Context
+import           Core.Task
 import           Data.ElasticQueue
+import           Data.Functor          (void)
 import           Data.Record
 import           Data.Value
+import           GHC.TypeNats
+import           Interface.ENET
 import           Interface.I2S
 import           Interface.LwipPort
 import           Ivory.Language
 import           Ivory.Stdlib
 import           Support.Lwip.Ethernet
 import           Support.Lwip.IP_addr
+import           Support.Lwip.Mem
+import           Support.Lwip.Memp
 import           Support.Lwip.Netif
 import           Support.Lwip.Pbuf
 import           Support.Lwip.Udp
-import GHC.TypeNats
-import Interface.ENET
-import Core.Task
-import Data.Functor (void)
-import Support.Lwip.Mem
-import Support.Lwip.Memp
 
 
 data RTP n = RTP {
@@ -40,15 +40,15 @@ mkRTP :: ( MonadState Context m
          Values 6 Uint8 -> m (RTP n)
 mkRTP enet name mac = do
 
-    ip4       <- record_ $ name <> "ipaddr4"
-    netmask   <- record_ $ name <> "netmask"
-    gateway   <- record_ $ name <> "gateway"
-    netif     <- record_ $ name <> "netif"
+    ip4       <- record_ $ name <> "_ipaddr4"
+    netmask   <- record_ $ name <> "_netmask"
+    gateway   <- record_ $ name <> "_gateway"
+    netif     <- record_ $ name <> "_netif"
 
     rtpQueue  <- elastic (name <> "_rtp_queue") =<< records_ (name <> "_rtp_buff")
     i2sWord   <- record (name <> "_rtp_word") [left .= izero, right .= izero]
 
-    let rtp = RTP {name, rtpQueue, i2sWord} 
+    let rtp = RTP {name, rtpQueue, i2sWord}
 
     addProc $ udpReceiveCallback rtp
     addProc $ netifStatusCallback rtp

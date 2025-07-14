@@ -1,43 +1,49 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use newtype instead of data" #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE BlockArguments      #-}
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE GADTs               #-}
 {-# LANGUAGE NamedFieldPuns      #-}
 {-# LANGUAGE RankNTypes          #-}
 {-# LANGUAGE RecordWildCards     #-}
-{-# LANGUAGE BlockArguments #-}
 
 module Implementation.Soundbox where
 
-import           Control.Monad                (void)
-import           Control.Monad.Reader         (MonadReader, asks)
-import           Control.Monad.State          (MonadState)
+import           Control.Monad            (void)
+import           Control.Monad.Reader     (MonadReader, asks)
+import           Control.Monad.State      (MonadState)
 import           Core.Context
 import           Core.Controller
-import           Core.Domain                  as D
+import           Core.Domain              as D
 import           Core.Handler
 import           Core.Task
 import           Data.Buffer
+import           Data.ElasticQueue
+import qualified Data.Queue               as Q
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
 import           Device.GD32F4xx
+import           Feature.RTP
+import qualified Feature.SRC4392          as S
 import           GHC.TypeNats
 import           Interface.ENET
 import           Interface.GPIO.Output
 import           Interface.GPIO.Port
+import qualified Interface.I2C            as I
 import           Interface.I2S
+import           Interface.I2SRX
 import           Interface.I2STX
 import           Interface.LwipPort
 import           Interface.MCU
-import           Interface.SystemClock        (getSystemTime)
+import           Interface.SystemClock    (getSystemTime)
 import           Ivory.Language
 import           Ivory.Language.Uint
 import           Ivory.Stdlib
 import           Ivory.Stdlib.Control
-import           Support.CMSIS.CoreCMFunc     (disableIRQ, enableIRQ)
+import           Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
 import           Support.Lwip.Etharp
 import           Support.Lwip.Ethernet
 import           Support.Lwip.IP_addr
@@ -46,12 +52,6 @@ import           Support.Lwip.Memp
 import           Support.Lwip.Netif
 import           Support.Lwip.Pbuf
 import           Support.Lwip.Udp
-import           Interface.I2SRX
-import qualified Interface.I2C as I
-import qualified Feature.SRC4392 as S
-import qualified Data.Queue as Q
-import           Data.ElasticQueue
-import           Feature.RTP
 
 
 
@@ -64,7 +64,7 @@ data Soundbox i j  = Soundbox
 
     , i2sSpdifQueue :: Q.Queue  512 (Records 512 SampleStruct)
 
-    , i2sRtp           :: RTP 4480
+    , i2sRtp        :: RTP 4480
 
     , i2sWord       :: Sample
     , i2sWord1      :: Sample
@@ -83,10 +83,10 @@ mkSoundbox :: ( MonadState Context m
             , I.I2C ic 2
             , Pull p d
             )
-         => (p -> m e) 
+         => (p -> m e)
          -> (p -> m (i 256 256)) -> (p -> d -> m o)
-         -> (p -> m (j 256)) -> (p -> d -> m o) 
-         -> (p -> m (ic 2)) -> (p -> d -> m o) 
+         -> (p -> m (j 256)) -> (p -> d -> m o)
+         -> (p -> m (ic 2)) -> (p -> d -> m o)
          -> m (Soundbox i j)
 mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
 
@@ -161,23 +161,23 @@ refillBuffI2S s@Soundbox{..} = do
 
     Q.push i2sQueue \buff1 i -> do
         Q.push i2sQueue2 \buff2 j -> do
-        
+
 
             Q.pop i2sSpdifQueue $ \buff i -> do
-                store (i2sWord1 ~> left) =<< deref (buff  ! toIx i ~> left) 
+                store (i2sWord1 ~> left) =<< deref (buff  ! toIx i ~> left)
                 store (i2sWord1 ~> right) =<< deref (buff ! toIx i ~> right)
 
             pop (rtpBuffQueue i2sRtp) $ \buff i -> do
-                store (i2sWord2 ~> left) =<< deref (buff  ! toIx i ~> left) 
+                store (i2sWord2 ~> left) =<< deref (buff  ! toIx i ~> left)
                 store (i2sWord2 ~> right) =<< deref (buff ! toIx i ~> right)
 
             mix <- mixer s i2sWord1 i2sWord2
-            
 
-            store (buff1 ! toIx i ~> left) =<<  deref (mix  ~> left) 
+
+            store (buff1 ! toIx i ~> left) =<<  deref (mix  ~> left)
             store (buff1 ! toIx i ~> right) =<< deref (mix  ~> right)
 
-            store (buff2 ! toIx j ~> left) =<< deref (mix  ~> left) 
+            store (buff2 ! toIx j ~> left) =<< deref (mix  ~> left)
             store (buff2 ! toIx j ~> right) =<< deref (mix  ~> right)
 
 
