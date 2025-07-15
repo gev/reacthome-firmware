@@ -2,13 +2,13 @@
 {-# HLINT ignore "Use newtype instead of data" #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
 
+{-# LANGUAGE BlockArguments      #-}
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE GADTs               #-}
 {-# LANGUAGE NamedFieldPuns      #-}
 {-# LANGUAGE RankNTypes          #-}
 {-# LANGUAGE RecordWildCards     #-}
-{-# LANGUAGE BlockArguments #-}
 
 module Implementation.Soundbox where
 
@@ -28,6 +28,7 @@ import           Data.Serialize
 import           Data.Value
 import           Device.GD32F4xx
 import           Feature.RTP
+import           Feature.SPDIF
 import qualified Feature.SRC4392          as S
 import           GHC.TypeNats
 import           Interface.ENET
@@ -63,14 +64,12 @@ data Soundbox i j  = Soundbox
     , i2sQueue1     :: Q.Queue  512 (Records 512 SampleStruct)
     , i2sQueue2     :: Q.Queue  512 (Records 512 SampleStruct)
 
-    , i2sSpdifQueue :: Q.Queue  512 (Records 512 SampleStruct)
+    , i2sSpdif      :: SPDIF 512
 
     , i2sRtp        :: RTP 4480
 
     , sampleTx1     :: Sample
     , sampleTx2     :: Sample
-
-    , i2sSample1    :: Sample
 
     , i2sSampleMix  :: Sample
     }
@@ -108,7 +107,7 @@ mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
     i2sQueue1      <- Q.queue (name <> "_i2s_1") =<< records_ (name <> "_i2s_buff_tx_1")
     i2sQueue2      <- Q.queue (name <> "_i2s_2") =<< records_ (name <> "_i2s_buff_tx_2")
 
-    i2sSpdifQueue <- Q.queue  (name <> "_i2s_spdif_queue") =<< records_ (name <> "_i2s_buff_spdif")
+    i2sSpdif <- mkSpdif i2sTrx
 
     i2sRtp   <- mkRTP enet (name <> "_rtp") (mac mcu)
 
@@ -117,19 +116,16 @@ mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
     sampleTx1    <- record (name <> "_sample_tx1") [left .= izero, right .= izero]
     sampleTx2    <- record (name <> "_sample_tx2") [left .= izero, right .= izero]
 
-    i2sSample1   <- record (name <> "_sample_1") [left .= izero, right .= izero]
-
 
     let soundbox = Soundbox { i2sTrx
                             , i2sTx
                             , i2sQueue1
                             , i2sQueue2
-                            , i2sSpdifQueue
+                            , i2sSpdif
                             , i2sRtp
                             , sampleTx1
                             , sampleTx2
                             , i2sSampleMix
-                            , i2sSample1
                             }
 
     addModule inclEthernet
@@ -152,8 +148,6 @@ mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
 
 
     addHandler $ HandleI2STX i2sTrx (transmitI2S soundbox)
-    addHandler $ HandleI2SRX i2sTrx (receiveI2S soundbox)
-
     addHandler $ HandleI2STX i2sTx (transmitI2S2 soundbox)
 
     pure soundbox
@@ -164,17 +158,14 @@ refillBuffI2S s@Soundbox{..} = do
     Q.push i2sQueue1 \buff1 i -> do
         Q.push i2sQueue2 \buff2 j -> do
 
-            Q.pop i2sSpdifQueue $ \buff i -> do
-                i2sSample1 <== buff ! toIx i
+            spdif <- getSpdifSample i2sSpdif
 
             rtp <- getRtpSample i2sRtp
 
-            mix <- mixer s i2sSample1 rtp
-            
+            mix <- mixer s spdif rtp
+
             buff1 ! toIx i <== mix
             buff2 ! toIx j <== mix
-
-
 
 
 transmitI2S :: Soundbox i j -> Ivory eff Sample
@@ -189,12 +180,6 @@ transmitI2S2 Soundbox {..} = do
     Q.pop i2sQueue2 $ \ i2sBuff i -> do
         sampleTx2 <== i2sBuff ! toIx i
     pure sampleTx2
-
-
-receiveI2S :: Soundbox i j -> Sample -> Ivory eff ()
-receiveI2S Soundbox {..} sample =
-    Q.push i2sSpdifQueue $ \ i2sSpdifBuff i -> do
-        i2sSpdifBuff ! toIx i <== sample
 
 
 

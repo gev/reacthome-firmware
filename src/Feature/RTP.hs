@@ -30,9 +30,9 @@ import           Support.Lwip.Udp
 
 
 data RTP n = RTP {
-     name     :: String
-   , rtpQueue :: ElasticQueue n (Records n SampleStruct)
-   , rtpSample  :: Sample
+     name      :: String
+   , rtpQueue  :: ElasticQueue n (Records n SampleStruct)
+   , rtpSample :: Sample
 }
 
 mkRTP :: ( MonadState Context m
