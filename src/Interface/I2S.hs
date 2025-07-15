@@ -16,3 +16,11 @@ type Sample = Record SampleStruct
         int32_t right;
     }
 |]
+
+
+infix 4 <==
+(<==) :: Sample -> Sample -> Ivory eff ()
+(<==) dst src  = do
+    store (dst ~> left) =<< deref (src ~> left)
+    store (dst ~> right) =<< deref (src ~> right)
+

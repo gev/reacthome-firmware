@@ -1,13 +1,14 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use newtype instead of data" #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE BlockArguments      #-}
+
 {-# LANGUAGE DataKinds           #-}
 {-# LANGUAGE FlexibleContexts    #-}
 {-# LANGUAGE GADTs               #-}
 {-# LANGUAGE NamedFieldPuns      #-}
 {-# LANGUAGE RankNTypes          #-}
 {-# LANGUAGE RecordWildCards     #-}
+{-# LANGUAGE BlockArguments #-}
 
 module Implementation.Soundbox where
 
@@ -59,18 +60,19 @@ data Soundbox i j  = Soundbox
     { i2sTrx        :: i 256 256
     , i2sTx         :: j 256
 
-    , i2sQueue      :: Q.Queue  512 (Records 512 SampleStruct)
+    , i2sQueue1     :: Q.Queue  512 (Records 512 SampleStruct)
     , i2sQueue2     :: Q.Queue  512 (Records 512 SampleStruct)
 
     , i2sSpdifQueue :: Q.Queue  512 (Records 512 SampleStruct)
 
     , i2sRtp        :: RTP 4480
 
-    , i2sWord       :: Sample
-    , i2sWord1      :: Sample
-    , i2sWord2      :: Sample
+    , sampleTx1     :: Sample
+    , sampleTx2     :: Sample
 
-    , i2sWordMix    :: Sample
+    , i2sSample1    :: Sample
+
+    , i2sSampleMix  :: Sample
     }
 
 
@@ -103,29 +105,31 @@ mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
     i2sTrx      <- i2sTrx'      peripherals'
     i2sTx       <- i2sTx'       peripherals'
 
-    i2sQueue       <- Q.queue (name <> "_i2s_1") =<< records_ (name <> "_i2s_buff_tx_1")
+    i2sQueue1      <- Q.queue (name <> "_i2s_1") =<< records_ (name <> "_i2s_buff_tx_1")
     i2sQueue2      <- Q.queue (name <> "_i2s_2") =<< records_ (name <> "_i2s_buff_tx_2")
 
     i2sSpdifQueue <- Q.queue  (name <> "_i2s_spdif_queue") =<< records_ (name <> "_i2s_buff_spdif")
 
     i2sRtp   <- mkRTP enet (name <> "_rtp") (mac mcu)
 
-    i2sWordMix <- record (name <> "_word_mix") [left .= izero, right .= izero]
-    i2sWord    <- record (name <> "_word") [left .= izero, right .= izero]
-    i2sWord1   <- record (name <> "_word1") [left .= izero, right .= izero]
-    i2sWord2   <- record (name <> "_word2") [left .= izero, right .= izero]
+    i2sSampleMix <- record (name <> "_sample_mix") [left .= izero, right .= izero]
+
+    sampleTx1    <- record (name <> "_sample_tx1") [left .= izero, right .= izero]
+    sampleTx2    <- record (name <> "_sample_tx2") [left .= izero, right .= izero]
+
+    i2sSample1   <- record (name <> "_sample_1") [left .= izero, right .= izero]
 
 
     let soundbox = Soundbox { i2sTrx
                             , i2sTx
-                            , i2sQueue
+                            , i2sQueue1
                             , i2sQueue2
                             , i2sSpdifQueue
                             , i2sRtp
-                            , i2sWord
-                            , i2sWordMix
-                            , i2sWord1
-                            , i2sWord2
+                            , sampleTx1
+                            , sampleTx2
+                            , i2sSampleMix
+                            , i2sSample1
                             }
 
     addModule inclEthernet
@@ -157,53 +161,40 @@ mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
 
 refillBuffI2S :: Soundbox i j -> Ivory eff ()
 refillBuffI2S s@Soundbox{..} = do
-
-
-    Q.push i2sQueue \buff1 i -> do
+    Q.push i2sQueue1 \buff1 i -> do
         Q.push i2sQueue2 \buff2 j -> do
 
-
             Q.pop i2sSpdifQueue $ \buff i -> do
-                store (i2sWord1 ~> left) =<< deref (buff  ! toIx i ~> left)
-                store (i2sWord1 ~> right) =<< deref (buff ! toIx i ~> right)
+                i2sSample1 <== buff ! toIx i
 
-            pop (rtpBuffQueue i2sRtp) $ \buff i -> do
-                store (i2sWord2 ~> left) =<< deref (buff  ! toIx i ~> left)
-                store (i2sWord2 ~> right) =<< deref (buff ! toIx i ~> right)
+            rtp <- getRtpSample i2sRtp
 
-            mix <- mixer s i2sWord1 i2sWord2
-
-
-            store (buff1 ! toIx i ~> left) =<<  deref (mix  ~> left)
-            store (buff1 ! toIx i ~> right) =<< deref (mix  ~> right)
-
-            store (buff2 ! toIx j ~> left) =<< deref (mix  ~> left)
-            store (buff2 ! toIx j ~> right) =<< deref (mix  ~> right)
+            mix <- mixer s i2sSample1 rtp
+            
+            buff1 ! toIx i <== mix
+            buff2 ! toIx j <== mix
 
 
 
 
 transmitI2S :: Soundbox i j -> Ivory eff Sample
 transmitI2S Soundbox {..} = do
-    Q.pop i2sQueue $ \ i2sBuff i -> do
-        store (i2sWord ~> left) =<< deref (i2sBuff ! toIx i ~> left)
-        store (i2sWord ~> right)=<< deref (i2sBuff ! toIx i ~> right)
-    pure i2sWord
+    Q.pop i2sQueue1 $ \ i2sBuff i -> do
+        sampleTx1 <== i2sBuff ! toIx i
+    pure sampleTx1
 
 
 transmitI2S2 :: Soundbox i j -> Ivory eff Sample
 transmitI2S2 Soundbox {..} = do
     Q.pop i2sQueue2 $ \ i2sBuff i -> do
-        store (i2sWord ~> left) =<< deref (i2sBuff ! toIx i ~> left)
-        store (i2sWord ~> right)=<< deref (i2sBuff ! toIx i ~> right)
-    pure i2sWord
+        sampleTx2 <== i2sBuff ! toIx i
+    pure sampleTx2
 
 
 receiveI2S :: Soundbox i j -> Sample -> Ivory eff ()
-receiveI2S Soundbox {..} word =
+receiveI2S Soundbox {..} sample =
     Q.push i2sSpdifQueue $ \ i2sSpdifBuff i -> do
-        store (i2sSpdifBuff ! toIx i ~> left) =<< deref (word ~> left)
-        store (i2sSpdifBuff ! toIx i ~> right) =<< deref (word ~> right)
+        i2sSpdifBuff ! toIx i <== sample
 
 
 
@@ -213,6 +204,6 @@ mixer amp first second = do
     fr <- deref (first ~> right)
     sl <- deref (second ~> left)
     sr <- deref (second ~> right)
-    store (i2sWordMix amp ~> left)  (fl + sl)
-    store (i2sWordMix amp ~> right) (fr + sr)
-    pure (i2sWordMix amp)
+    store (i2sSampleMix amp ~> left)  (fl + sl)
+    store (i2sSampleMix amp ~> right) (fr + sr)
+    pure  (i2sSampleMix amp)

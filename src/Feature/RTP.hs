@@ -2,6 +2,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE BlockArguments #-}
 
 module Feature.RTP where
 
@@ -31,7 +32,7 @@ import           Support.Lwip.Udp
 data RTP n = RTP {
      name     :: String
    , rtpQueue :: ElasticQueue n (Records n SampleStruct)
-   , i2sWord  :: Sample
+   , rtpSample  :: Sample
 }
 
 mkRTP :: ( MonadState Context m
@@ -46,9 +47,9 @@ mkRTP enet name mac = do
     netif     <- record_ $ name <> "_netif"
 
     rtpQueue  <- elastic (name <> "_rtp_queue") =<< records_ (name <> "_rtp_buff")
-    i2sWord   <- record (name <> "_rtp_word") [left .= izero, right .= izero]
+    rtpSample <- record (name <> "_rtp_sample") [left .= izero, right .= izero]
 
-    let rtp = RTP {name, rtpQueue, i2sWord}
+    let rtp = RTP {name, rtpQueue, rtpSample}
 
     addProc $ udpReceiveCallback rtp
     addProc $ netifStatusCallback rtp
@@ -102,16 +103,19 @@ udpReceiveCallback r@RTP{..} =
                     msbl <- getPbufAt pbuff index'
                     lsbl <- getPbufAt pbuff (index' + 1)
                     let wordL  = (safeCast msbl `iShiftL` 8) .| safeCast lsbl :: Uint16
-                    let vall = safeCast (twosComplementCast wordL) * 4096
+                    let vall = safeCast (twosComplementCast wordL) * 256
                     store (i2sRtpBuff ! ix ~> left) vall
                     msbr <- getPbufAt pbuff (index' + 2)
                     lsbr <- getPbufAt pbuff (index' + 3)
                     let wordR  = (safeCast msbr `iShiftL` 8) .| safeCast lsbr :: Uint16
-                    let valr =  safeCast (twosComplementCast wordR) * 4096
+                    let valr =  safeCast (twosComplementCast wordR) * 256
                     store (i2sRtpBuff ! ix ~> right) valr
                 store index $ index' + 4
         ret =<< freePbuf pbuff
 
 
-rtpBuffQueue :: KnownNat n => RTP n -> ElasticQueue n (Records n SampleStruct)
-rtpBuffQueue r@RTP{..} = rtpQueue
+getRtpSample :: KnownNat n => RTP n -> Ivory eff Sample
+getRtpSample RTP{..} = do
+    pop rtpQueue \buff i -> do
+        rtpSample <== buff ! i
+    pure rtpSample
