@@ -54,22 +54,15 @@ import           Support.Lwip.Memp
 import           Support.Lwip.Netif
 import           Support.Lwip.Pbuf
 import           Support.Lwip.Udp
+import           Feature.I2SPlay
 
 
 
-data Soundbox i j  = Soundbox
-    { i2sTrx        :: i 256 256
-    , i2sTx         :: j 256
-
-    , i2sQueue1     :: Q.Queue  512 (Records 512 SampleStruct)
-    , i2sQueue2     :: Q.Queue  512 (Records 512 SampleStruct)
-
-    , i2sSpdif      :: SPDIF 512
-
-    , i2sRtp        :: RTP 4480
-
-    , sampleTx1     :: Sample
-    , sampleTx2     :: Sample
+data Soundbox = Soundbox
+    { i2sTxCh1      :: I2SPlay 512
+    , i2sTxCh2      :: I2SPlay 512
+    , i2sSpdif      :: SPDIF   512
+    , i2sRtp        :: RTP     4480
 
     , i2sSampleMix  :: Sample
     }
@@ -88,7 +81,7 @@ mkSoundbox :: ( MonadState Context m
          -> (p -> m (i 256 256)) -> (p -> d -> m o)
          -> (p -> m (j 256)) -> (p -> d -> m o)
          -> (p -> m (ic 2)) -> (p -> d -> m o)
-         -> m (Soundbox i j)
+         -> m Soundbox
 mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
 
     src4392 <- S.mkSRC4392 i2c mute
@@ -104,8 +97,9 @@ mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
     i2sTrx      <- i2sTrx'      peripherals'
     i2sTx       <- i2sTx'       peripherals'
 
-    i2sQueue1      <- Q.queue (name <> "_i2s_1") =<< records_ (name <> "_i2s_buff_tx_1")
-    i2sQueue2      <- Q.queue (name <> "_i2s_2") =<< records_ (name <> "_i2s_buff_tx_2")
+
+    i2sTxCh1 <- mkI2SPlay (name <> "_transmit_ch1" ) i2sTx
+    i2sTxCh2 <- mkI2SPlay (name <> "_transmit_ch2") i2sTrx
 
     i2sSpdif <- mkSpdif i2sTrx
 
@@ -113,18 +107,11 @@ mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
 
     i2sSampleMix <- record (name <> "_sample_mix") [left .= izero, right .= izero]
 
-    sampleTx1    <- record (name <> "_sample_tx1") [left .= izero, right .= izero]
-    sampleTx2    <- record (name <> "_sample_tx2") [left .= izero, right .= izero]
 
-
-    let soundbox = Soundbox { i2sTrx
-                            , i2sTx
-                            , i2sQueue1
-                            , i2sQueue2
+    let soundbox = Soundbox { i2sTxCh1
+                            , i2sTxCh2
                             , i2sSpdif
                             , i2sRtp
-                            , sampleTx1
-                            , sampleTx2
                             , i2sSampleMix
                             }
 
@@ -147,43 +134,25 @@ mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
     addTask $ yeld "refill_buff_i2s" $ refillBuffI2S soundbox
 
 
-    addHandler $ HandleI2STX i2sTrx (transmitI2S soundbox)
-    addHandler $ HandleI2STX i2sTx (transmitI2S2 soundbox)
-
     pure soundbox
 
 
-refillBuffI2S :: Soundbox i j -> Ivory eff ()
+refillBuffI2S :: Soundbox -> Ivory eff ()
 refillBuffI2S s@Soundbox{..} = do
-    Q.push i2sQueue1 \buff1 i -> do
-        Q.push i2sQueue2 \buff2 j -> do
-
+    playI2S i2sTxCh1 \ch1 -> do
+        playI2S i2sTxCh2 \ch2 -> do
+            
             spdif <- getSpdifSample i2sSpdif
 
             rtp <- getRtpSample i2sRtp
 
             mix <- mixer s spdif rtp
 
-            buff1 ! toIx i <== mix
-            buff2 ! toIx j <== mix
-
-
-transmitI2S :: Soundbox i j -> Ivory eff Sample
-transmitI2S Soundbox {..} = do
-    Q.pop i2sQueue1 $ \ i2sBuff i -> do
-        sampleTx1 <== i2sBuff ! toIx i
-    pure sampleTx1
-
-
-transmitI2S2 :: Soundbox i j -> Ivory eff Sample
-transmitI2S2 Soundbox {..} = do
-    Q.pop i2sQueue2 $ \ i2sBuff i -> do
-        sampleTx2 <== i2sBuff ! toIx i
-    pure sampleTx2
+            ch1 <== mix
 
 
 
-mixer :: Soundbox i j -> Sample -> Sample -> Ivory eff Sample
+mixer :: Soundbox -> Sample -> Sample -> Ivory eff Sample
 mixer amp first second = do
     fl <- deref (first ~> left)
     fr <- deref (first ~> right)

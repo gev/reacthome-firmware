@@ -154,6 +154,7 @@ executable reacthome-firmware
     Feature.Sht21
     Feature.RTP
     Feature.SPDIF
+    Feature.I2SPlay
     Feature.Smart.Top
     Feature.Smart.Top.Buttons
     Feature.Smart.Top.LEDs
