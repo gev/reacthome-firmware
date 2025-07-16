@@ -141,7 +141,7 @@ refillBuffI2S :: Soundbox -> Ivory eff ()
 refillBuffI2S s@Soundbox{..} = do
     playI2S i2sTxCh1 \ch1 -> do
         playI2S i2sTxCh2 \ch2 -> do
-            
+
             spdif <- getSpdifSample i2sSpdif
 
             rtp <- getRtpSample i2sRtp
@@ -149,6 +149,7 @@ refillBuffI2S s@Soundbox{..} = do
             mix <- mixer s spdif rtp
 
             ch1 <== mix
+            ch2 <== mix
 
 
 
