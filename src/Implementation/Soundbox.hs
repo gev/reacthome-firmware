@@ -104,7 +104,7 @@ mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
 
     i2sSpdif <- mkSpdif i2sTrx
 
-    rtps  <- mapM (\i -> mkRTP enet (name <> "_rtp" <> show i))  [1..2]
+    rtps  <- mapM (\i -> mkRTP enet (name <> "_rtp" <> show i))  [1..8]
 
     i2sSampleMix  <- record (name <> "_sample_mix") [left .= izero, right .= izero]
 
