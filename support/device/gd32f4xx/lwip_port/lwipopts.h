@@ -55,7 +55,7 @@ OF SUCH DAMAGE.
                                                             is compiled. 4 byte alignment -> define MEM_ALIGNMENT 
                                                             to 4, 2 byte alignment -> define MEM_ALIGNMENT to 2 */
 
-#define MEM_SIZE                (20*1024)                /* the size of the heap memory, if the application will 
+#define MEM_SIZE                (40*1024)                /* the size of the heap memory, if the application will 
                                                             send a lot of data that needs to be copied, this should
                                                             be set high */
 
@@ -63,7 +63,7 @@ OF SUCH DAMAGE.
                                                             sends a lot of data out of ROM (or other static memory),
                                                             this should be set high */
 
-#define MEMP_NUM_UDP_PCB        6                        /* the number of UDP protocol control blocks, one
+#define MEMP_NUM_UDP_PCB        10                        /* the number of UDP protocol control blocks, one
                                                             per active UDP "connection" */
 
 #define MEMP_NUM_TCP_PCB        10                       /* the number of simulatenously active TCP connections */
