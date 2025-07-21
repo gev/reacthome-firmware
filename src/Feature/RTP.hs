@@ -1,8 +1,8 @@
+{-# LANGUAGE BlockArguments   #-}
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE NamedFieldPuns   #-}
 {-# LANGUAGE RecordWildCards  #-}
-{-# LANGUAGE BlockArguments #-}
 
 module Feature.RTP where
 
@@ -20,59 +20,63 @@ import           Interface.I2S
 import           Interface.LwipPort
 import           Ivory.Language
 import           Ivory.Stdlib
+import           Ivory.Support         (ExtSymbol (symbol))
 import           Support.Lwip.Ethernet
+import           Support.Lwip.Igmp
 import           Support.Lwip.IP_addr
 import           Support.Lwip.Mem
 import           Support.Lwip.Memp
 import           Support.Lwip.Netif
 import           Support.Lwip.Pbuf
 import           Support.Lwip.Udp
-import Ivory.Support (ExtSymbol(symbol))
 
 
 data RTP n = RTP {
-     name      :: String
-   , rtpQueue  :: ElasticQueue n (Records n SampleStruct)
-   , rtpSample :: Sample
+      name       :: String
+    , rtpIpGroup :: Record IP_ADDR_4_STRUCT
+    , rtpQueue   :: ElasticQueue n (Records n SampleStruct)
+    , rtpSample  :: Sample
 }
+
 
 mkRTP :: ( MonadState Context m
          , LwipPort e, KnownNat n, Enet e) =>
          e -> String -> m (RTP n)
 mkRTP enet name = do
+    
     rtpQueue  <- elastic (name <> "_rtp_queue") =<< records_ (name <> "_rtp_buff")
     rtpSample <- record  (name <> "_rtp_sample") [left .= izero, right .= izero]
+    rtpIpGroup <- record_ $ name <> "_rtp_group_ipaddr4"
 
-    let rtp = RTP {name, rtpQueue, rtpSample}
+    let rtp = RTP {name, rtpIpGroup, rtpQueue, rtpSample}
 
-    -- addProc $ statusCallback rtp
+    addModule inclIP_addr
+    addModule inclUdp
+    addModule inclIgmp
+
     addProc $ udpReceiveCallback rtp
 
 
     pure rtp
 
 
-    
--- statusCallback :: KnownNat n => RTP n -> Def (NetifStatusCallbackFn s)
--- statusCallback r@RTP{..} = do
---         upcb <- newUdp
---         when (upcb /=? nullPtr) $ do
---           err <- bindUdp upcb ipAddrAny port
---           when (err ==? 0) $
---             recvUdp upcb (procPtr $ udpReceiveCallback r) nullPtr
 
-createUDP :: KnownNat n => RTP n -> Uint16 -> Ivory eff ()
-createUDP r@RTP {..} port = do
+createUDP :: KnownNat n => RTP n -> NETIF s1 -> IP_ADDR_4 s -> Uint16 -> Ivory eff ()
+createUDP r@RTP {..} netif groupIP port = do
         upcb <- newUdp
         when (upcb /=? nullPtr) $ do
+          leaveIgmpGroupNetif netif rtpIpGroup
+          store (rtpIpGroup ~> addr) =<< deref (groupIP ~> addr)
           err <- bindUdp upcb ipAddrAny port
-          when (err ==? 0) $
+          when (err ==? 0) $ do
+            joinIgmpGroupNetif netif groupIP
             recvUdp upcb (procPtr $ udpReceiveCallback r) nullPtr
+
 
 
 udpReceiveCallback :: KnownNat n => RTP n -> Def (UdpRecvFn s1 s2 s3 s4)
 udpReceiveCallback r@RTP{..} =
-    proc (name <> "udp_receive_callback") $ \_ upcb pbuff addr port -> body $ do
+    proc (name <> "_udp_receive_callback") $ \_ upcb pbuff addr port -> body $ do
         size <- deref (pbuff ~> len)
         when (size ==? 1292) $ do
             index <- local $ ival 12

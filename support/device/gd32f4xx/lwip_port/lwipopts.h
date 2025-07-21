@@ -40,8 +40,6 @@ OF SUCH DAMAGE.
 
 #define LWIP_IPV4               1             
 
-#define LWIP_IGMP               1
-
 
 #define SYS_LIGHTWEIGHT_PROT    0                        /* SYS_LIGHTWEIGHT_PROT==1: if you want inter-task protection 
                                                             for certain critical regions during buffer allocation,
@@ -79,6 +77,11 @@ OF SUCH DAMAGE.
 /* Pbuf options */
 #define PBUF_POOL_SIZE          10                       /* the number of buffers in the pbuf pool */
 #define PBUF_POOL_BUFSIZE       1500                     /* the size of each pbuf in the pbuf pool */
+
+/* IGMP options */
+#define LWIP_IGMP               1
+
+#define MEMP_NUM_IGMP_GROUP     12
 
 /* TCP options */
 #define LWIP_TCP                0

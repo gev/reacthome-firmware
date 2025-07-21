@@ -53,6 +53,7 @@ import           Ivory.Support
 import           Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
 import           Support.Lwip.Etharp
 import           Support.Lwip.Ethernet
+import           Support.Lwip.Igmp
 import           Support.Lwip.IP_addr
 import           Support.Lwip.Mem
 import           Support.Lwip.Memp
@@ -67,7 +68,7 @@ data Soundbox = Soundbox
     , i2sTxCh2     ::  I2SPlay 512
     , i2sSpdif     ::  SPDIF   512
     , rtps         :: [RTP    4480]
-
+    -- , groupIp      :: Record IP_ADDR_4_STRUCT
     , i2sSampleMix :: Sample
     }
 
@@ -108,11 +109,13 @@ mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
 
     i2sSampleMix  <- record (name <> "_sample_mix") [left .= izero, right .= izero]
 
+    -- groupIp <- record_ $ name <> "_group_ipaddr4"
 
     let soundbox = Soundbox { i2sTxCh1
                             , i2sTxCh2
                             , i2sSpdif
                             , rtps
+                            -- , groupIp
                             , i2sSampleMix
                             }
 
@@ -139,13 +142,17 @@ mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
         createIpAddr4 ip4 172 16 2 2
         createIpAddr4 netmask 255 240 0 0
         createIpAddr4 gateway 172 16 0 1
+        store (netif ~> hwaddr_len) 6
+        arrayCopy (netif ~> hwaddr) (mac mcu) 0 6
 
         addNetif netif ip4 netmask gateway nullPtr (initLwipPortIf enet) inputEthernetPtr
         setNetifDefault netif
         setNetifStatusCallback netif (procPtr $ netifStatusCallback soundbox)
+
+        initIgmp
+        startIgmp netif
+
         setUpNetif netif
-        store (netif ~> hwaddr_len) 6
-        arrayCopy (netif ~> hwaddr) (mac mcu) 0 6
 
         set shutdownTrx
         set shutdownTx
@@ -167,8 +174,13 @@ netifStatusCallback :: Soundbox -> Def (NetifStatusCallbackFn s)
 netifStatusCallback Soundbox{..} = proc "netif_callback" $ \netif -> body $ do
      flags' <- deref $ netif ~> flags
      when (flags' .& netif_flag_up /=?  0) $ do
-        zipWithM_ createUDP rtps $ fromIntegral <$> [2000..]
-
+        let
+            make rtp index = do
+                let port = 2000 + fromIntegral index
+                groupIp <- local $ istruct [addr .= ival 0]
+                createIpAddr4 groupIp 239 1 1 $ fromIntegral index
+                createUDP rtp netif groupIp port
+        zipWithM_ make rtps [1..]
 
 
 refillBuffI2S :: Soundbox -> Ivory eff ()
