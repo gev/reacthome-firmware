@@ -137,6 +137,7 @@ data GD32F3x0 = GD32F3x0
     , out_pb_14 :: Output'
     , out_pb_15 :: Output'
 
+    , od_pa_5   :: OpenDrain'
     , od_pa_8   :: OpenDrain'
     , od_pa_15  :: OpenDrain'
 
@@ -267,6 +268,7 @@ gd32f3x0 = MCU $ mkPlatform G.systemClock makeMac inclGD32F3x0 GD32F3x0
     , out_pb_14 = mkOutput pb_14
     , out_pb_15 = mkOutput pb_15
 
+    , od_pa_5   = mkOpenDrain pa_5
     , od_pa_8   = mkOpenDrain pa_8
     , od_pa_15  = mkOpenDrain pa_15
 
