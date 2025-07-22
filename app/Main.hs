@@ -28,6 +28,7 @@ import           Formula.Smart.Top.TopA4TD
 import           Formula.Smart.Top.TopG6
 import           Formula.Soundbox
 import           Formula.Lanamp
+import           Formula.MixH 
 
 
 main :: IO ()
@@ -53,6 +54,7 @@ main = do
               , smartTopG4
               , smartTopG4D
               , smartTopG6
+              , mixH
               ]
     mapM_ gcc [ 
                 lanamp              
