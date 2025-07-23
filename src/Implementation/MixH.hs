@@ -78,6 +78,7 @@ mix transport' dinputs' relays' dimmers' ds18b20 etc = do
     dinputs      <- dinputs' True transport
     dimmers      <- dimmers' transport
     rules        <- mkRules transport
+    ds18b20      transport
     mcu          <- asks D.mcu
     shouldInit   <- asks D.shouldInit
     let mix       = Mix { relays

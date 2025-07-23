@@ -19,7 +19,7 @@ import           Transport.RS485.RBUS
 mixH :: Formula GD32F3x0
 mixH = Formula  { name            = "mixH"
                 , model           = deviceTypeMixH
-                , version         = (1, 0)
+                , version         = (3, 0)
                 , shouldInit      = true
                 , mcu             = gd32f330k8u6
                 , quartzFrequency =  8_000_000
