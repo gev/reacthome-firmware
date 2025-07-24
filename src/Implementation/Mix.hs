@@ -56,15 +56,17 @@ import           Util.CRC16
 
 
 data Mix ni no = forall f. Flash f => Mix
-    { relays     :: Relays       no
-    , dinputs    :: DInputs      ni
-    , rules      :: Rules     ni no
-    , ats        :: ATS
-    , indicator  :: Indicator ni no
-    , etc        :: f
-    , shouldInit :: Value IBool
-    , transmit   :: forall n. KnownNat n
-                 => Buffer n Uint8 -> forall s t. Ivory (ProcEffects s t) ()
+    { relays            :: Relays       no
+    , dinputs           :: DInputs      ni
+    , rules             :: Rules     ni no
+    , ats               :: ATS
+    , indicator         :: Indicator ni no
+    , etc               :: f
+    , shouldInit        :: Value IBool
+    , shouldSaveConfig  :: Value IBool
+    , saveCountdown     :: Value Uint8
+    , transmit          :: forall n. KnownNat n
+                        => Buffer n Uint8 -> forall s t. Ivory (ProcEffects s t) ()
     }
 
 
@@ -85,14 +87,16 @@ mix :: ( MonadState Context m
     -> (p -> f)
     -> m (Mix ni no)
 mix transport' dinputs' relays' indicator' etc = do
-    transport    <- transport'
-    relays       <- relays' transport
-    dinputs      <- dinputs' True transport
-    rules        <- mkRules transport
-    ats          <- mkATS transport
-    indicator    <- indicator' ats (getDInputs dinputs) (getRelays relays) transport
-    mcu          <- asks D.mcu
-    shouldInit   <- asks D.shouldInit
+    transport         <- transport'
+    relays            <- relays' transport
+    dinputs           <- dinputs' True transport
+    rules             <- mkRules transport
+    ats               <- mkATS transport
+    indicator         <- indicator' ats (getDInputs dinputs) (getRelays relays) transport
+    mcu               <- asks D.mcu
+    shouldInit        <- asks D.shouldInit
+    shouldSaveConfig  <- value "mix_should_save_config" false
+    saveCountdown     <- value "mix_save_save_countdown" 0
     let mix       = Mix { relays
                         , dinputs
                         , rules
@@ -100,13 +104,16 @@ mix transport' dinputs' relays' indicator' etc = do
                         , indicator
                         , etc = etc (peripherals mcu)
                         , shouldInit
+                        , shouldSaveConfig
+                        , saveCountdown
                         , transmit = T.transmitBuffer transport
                         }
 
     addInit "mix" $ load mix
 
-    addTask $ delay 10 "mix_manage" $ manage mix
-    addTask $ delay  1 "mix_sync"   $ sync   mix
+    addTask $ delay 10 "mix_manage"      $ manage    mix
+    addTask $ delay  1 "mix_sync"        $ sync      mix
+    addTask $ delay  1 "mix_save_config" $ saveTask  mix
 
     addSync "dinputs" $ forceSyncDInputs dinputs
     addSync "relays"  $ forceSyncRelays  relays
@@ -169,7 +176,7 @@ onRule mix@Mix{..} buff size = do
         run $ rulesOn rules
         fillPayload rules i
         transmit $ Ru.payload rules
-        save mix
+        store shouldSaveConfig true
 
 
 onMode :: (KnownNat l, KnownNat ni, KnownNat no)
@@ -179,7 +186,7 @@ onMode mix@Mix{..} buff size = do
         store (mode ats) =<< unpack buff 1
         manageLock mix
         resetError ats
-        save mix
+        store shouldSaveConfig true
 
 
 
@@ -192,6 +199,18 @@ onGetState Mix{..} = do
     when initialized $ do
         forceSyncRelays relays
 
+
+saveTask :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s t) ()
+saveTask mix@Mix{..} = do
+    shouldSaveConfig' <- deref shouldSaveConfig
+    when shouldSaveConfig' $ do
+        store saveCountdown 100
+        store shouldSaveConfig false
+    saveCountdown' <- deref saveCountdown
+    when (saveCountdown' >? 0) $ do
+          store saveCountdown (saveCountdown' - 1)
+    when (saveCountdown' ==? 1) $
+          save mix
 
 
 save :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s t) ()
