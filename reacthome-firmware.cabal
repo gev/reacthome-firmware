@@ -172,6 +172,7 @@ executable reacthome-firmware
     Formula.Echo
     Formula.Lanamp
     Formula.Mix6x12
+    Formula.MixH
     Formula.Relay12
     Formula.RsHub4
     Formula.Server
@@ -200,6 +201,7 @@ executable reacthome-firmware
     Implementation.Hub
     Implementation.Lanamp
     Implementation.Mix
+    Implementation.MixH
     Implementation.Relay
     Implementation.Smart.Bottom
     Implementation.Smart.TopA4P

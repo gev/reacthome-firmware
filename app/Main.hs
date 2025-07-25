@@ -28,6 +28,7 @@ import           Formula.Smart.Top.TopA4TD
 import           Formula.Smart.Top.TopG6
 import           Formula.Soundbox
 import           Formula.Lanamp
+import           Formula.MixH 
 
 
 main :: IO ()
@@ -42,6 +43,7 @@ main = do
               , doppler1
               , doppler5
               , mix6x12
+              , mixH
               , smartBottom1
               , smartBottom2
               , smartTopA4P
