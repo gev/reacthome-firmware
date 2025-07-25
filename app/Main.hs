@@ -43,6 +43,7 @@ main = do
               , doppler1
               , doppler5
               , mix6x12
+              , mixH
               , smartBottom1
               , smartBottom2
               , smartTopA4P
@@ -54,7 +55,6 @@ main = do
               , smartTopG4
               , smartTopG4D
               , smartTopG6
-              , mixH
               ]
     mapM_ gcc [ 
                 lanamp              
