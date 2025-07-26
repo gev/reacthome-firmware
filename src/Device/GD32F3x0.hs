@@ -29,6 +29,7 @@ import           Device.GD32F3x0.SysTick
 import           Device.GD32F3x0.Timer             (Timer, cfg_timer_0,
                                                     cfg_timer_1, cfg_timer_14,
                                                     cfg_timer_15, cfg_timer_2)
+import           Device.GD32F3x0.Touch
 import           Device.GD32F3x0.UART
 import           GHC.TypeNats
 import           Interface.GPIO.Port
@@ -63,6 +64,7 @@ type PWM'       = forall m.       MonadState Context m => Uint32 -> Uint32 -> m 
 type NeoPixel'  = forall m.       MonadState Context m => m NeoPixel
 type EXTI'      = forall m.       MonadState Context m => m EXTI
 type OneWire'   = forall m.       MonadState Context m => m OpenDrain -> m OneWire
+type Touch'     = forall m.       MonadState Context m => Uint16 -> m Touch
 
 
 data GD32F3x0 = GD32F3x0
@@ -182,6 +184,13 @@ data GD32F3x0 = GD32F3x0
     , adc_pa_7  :: ADC'
 
     , dac_pa_4  :: DAC'
+
+    , touch_pa15 :: Touch'
+    , touch_pb3  :: Touch'
+    , touch_pb4  :: Touch'
+    , touch_pb5  :: Touch'
+    , touch_pb7  :: Touch'
+    , touch_pb8  :: Touch'
 
     }
 
@@ -380,6 +389,55 @@ gd32f3x0 = MCU $ mkPlatform G.systemClock makeMac inclGD32F3x0 GD32F3x0
     , adc_pa_7 = mkADC (pa_7 analog) 7
 
     , dac_pa_4 = mkDAC (pa_4 analog)
+
+
+    , touch_pa15 = mkTouch cfg_timer_14  
+                          gpioa gpio_pin_15 
+                          rcu_gpioa                  
+                          exti4_15_irqn
+                          exti_source_gpioa
+                          exti_source_pin15
+                          exti_15
+
+    , touch_pb3 = mkTouch cfg_timer_14  
+                          gpiob gpio_pin_3 
+                          rcu_gpiob                   
+                          exti2_3_irqn
+                          exti_source_gpiob
+                          exti_source_pin3
+                          exti_3
+
+    , touch_pb4 = mkTouch cfg_timer_14  
+                          gpiob gpio_pin_4 
+                          rcu_gpiob                         
+                          exti4_15_irqn
+                          exti_source_gpiob
+                          exti_source_pin4
+                          exti_4
+
+    , touch_pb5 = mkTouch cfg_timer_14  
+                          gpiob gpio_pin_5 
+                          rcu_gpiob                         
+                          exti4_15_irqn
+                          exti_source_gpiob
+                          exti_source_pin5
+                          exti_5
+
+    , touch_pb7 = mkTouch cfg_timer_14  
+                          gpiob gpio_pin_7 
+                          rcu_gpiob                        
+                          exti4_15_irqn
+                          exti_source_gpiob
+                          exti_source_pin7
+                          exti_7
+
+    , touch_pb8 = mkTouch cfg_timer_14  
+                          gpiob gpio_pin_8 
+                          rcu_gpiob                         
+                          exti4_15_irqn
+                          exti_source_gpiob
+                          exti_source_pin8
+                          exti_8
 
     }
 
