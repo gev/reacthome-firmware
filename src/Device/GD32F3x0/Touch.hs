@@ -1,8 +1,10 @@
+{-# LANGUAGE DataKinds             #-}
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE MonoLocalBinds        #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE NumericUnderscores    #-}
+{-# LANGUAGE QuasiQuotes           #-}
 {-# LANGUAGE RecordWildCards       #-}
 
 module Device.GD32F3x0.Touch where
@@ -14,11 +16,11 @@ import           Core.Task
 import           Data.Value
 import           Device.GD32F3x0.EXTI
 import           Device.GD32F3x0.Timer
-import           Interface.Counter
-import qualified Interface.EXTI                 as I
-import           Interface.GPIO.Input
-import           Ivory.Language hiding (setBit)
-import           Ivory.Support         (symbol)
+import qualified Interface.Timer as I
+import qualified Interface.Touch                as I
+import           Ivory.Language                 hiding (setBit)
+import           Ivory.Stdlib                   (when)
+import           Ivory.Support                  (symbol)
 import           Support.Device.GD32F3x0.EXTI
 import           Support.Device.GD32F3x0.GPIO
 import           Support.Device.GD32F3x0.IRQ
@@ -26,28 +28,40 @@ import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.SYSCFG
 
-data Touch = Touch { port :: GPIO_PERIPH
-                   , pin  :: GPIO_PIN
-                   , timer     :: Timer
+
+data Touch = Touch { port    :: GPIO_PERIPH
+                   , pin       :: GPIO_PIN
                    , srcPort   :: EXTI_PORT
                    , srcPin    :: EXTI_PIN
                    , ex        :: EXTI_LINE
-                   , threshold :: Uint16
-                   , timeStamp :: Value Uint16
-                   , stateBtn  :: Value IBool
+                   , extiIRQ   :: IRQn
+                   , timer     :: Timer
+                   , timestamp :: Value Uint32
                    }
 
-mkTouch :: MonadState Context m
-        => (Uint32 -> Uint32 -> m Timer)
-        -> GPIO_PERIPH -> GPIO_PIN -> RCU_PERIPH
-        -> IRQn -> EXTI_PORT -> EXTI_PIN
-        -> EXTI_LINE -> Uint16 -> m Touch
-mkTouch timer' port pin rcuPin extiIRQ srcPort srcPin ex threshold = do
+-- type TouchStruct = "touch_struct"
 
-    timeStamp <- value ("touch_timestamp" <> symbol srcPort <> "_" <> symbol srcPin) 0
+-- [ivory|
+--     struct touch_struct
+--     { port      :: GPIO_PERIPH
+--     ; pin       :: GPIO_PIN
+--     ; srcPort   :: EXTI_PORT
+--     ; srcPin    :: EXTI_PIN
+--     ; ex        :: EXTI_LINE
+--     ; extiIRQ   :: IRQn
+--     }
+-- |]
+
+mkTouch :: (MonadState Context m)
+        => GPIO_PERIPH -> GPIO_PIN -> RCU_PERIPH
+        -> IRQn -> EXTI_PORT -> EXTI_PIN
+        -> EXTI_LINE -> Timer -> m Touch 
+mkTouch port pin rcuPin extiIRQ srcPort srcPin ex timer = do
+
+    timestamp <- value ("touch_timestamp" <> symbol srcPort <> "_" <> symbol srcPin) 0
+
     stateBtn  <- value ("touch_state_btn" <> symbol srcPort <> "_" <> symbol srcPin) false
     stateBtn  <- value ("touch_state_btn" <> symbol srcPort <> "_" <> symbol srcPin) false
-    timer     <- timer' 1_000_000 0xFF_FF
 
     addInit (symbol srcPort <> "_" <> symbol srcPin) $ do
 
@@ -61,11 +75,7 @@ mkTouch timer' port pin rcuPin extiIRQ srcPort srcPin ex threshold = do
         initExti                ex exti_interrupt exti_trig_rising
         clearExtiInterruptFlag  ex
 
-    let touch = Touch { port, pin, timer, srcPort, srcPin, ex, threshold, timeStamp, stateBtn }
-
-    addTask $ delay 1 ("touch_task" <> symbol srcPort <> "_" <> symbol srcPin) $ touchTask touch
-
-    addBody (makeIRQHandlerName extiIRQ) $ handleEXTI ex $ extiHandler touch
+    let touch = Touch { port, pin, srcPort, srcPin, ex, extiIRQ, timer, timestamp }
 
     pure touch
 
@@ -76,27 +86,30 @@ modePort gpio pin mode = do
     setMode gpio mode gpio_pupd_none pin
 
 
-touchTask :: Touch -> Ivory eff ()
-touchTask Touch{..} = do
-    count <- readCounter timer
-    modePort port pin gpio_mode_input
-    store timeStamp count
+instance Handler I.HandleTouch Touch where
+    addHandler (I.HandleTouch t@Touch{..} handle) = do
+        addBody (makeIRQHandlerName extiIRQ) (handleTouch t handle)
 
+handleTouch :: Touch -> Ivory eff () -> Ivory eff ()
+handleTouch Touch{..} handle = do
+    f <- getExtiInterruptFlag ex
+    when f $ do
+        clearExtiInterruptFlag ex
+        disableExtiInterrupt ex
+        store timestamp =<< I.getCounter timer
+        handle
 
-extiHandler :: Touch -> Ivory eff ()
-extiHandler Touch{..} = do
-    count <- readCounter timer
-    stamp <- deref timeStamp
+instance I.Touch Touch where
 
+    setModeInput Touch{..} =
+        modePort port pin gpio_mode_input
 
-    ifte_ (count - stamp >? threshold)
-          (store stateBtn true)
-          (store stateBtn false)
+    setModeOutput Touch{..} = do
+        modePort port pin gpio_mode_output
+        resetBit port pin
 
-    modePort port pin gpio_mode_output
-    resetBit port pin
+    enable Touch{..} =
+        enableExtiInterrupt ex
 
-
-
-instance Input Touch where
-    get Touch{..} = deref stateBtn
+    disable Touch{..} =
+        disableExtiInterrupt ex

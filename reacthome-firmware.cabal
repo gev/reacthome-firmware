@@ -129,12 +129,12 @@ executable reacthome-firmware
     Endpoint.DInputs
     Endpoint.DInputsRelaysRules
     Endpoint.Dimmers
+    Endpoint.DTouches
     Endpoint.Groups
     Endpoint.Relays
     Feature.ALED
     Feature.AOutputs
     Feature.DInputs
-    Feature.DInputsT
     Feature.DS18B20
     Feature.Dimmers
     Feature.Dimmers.AC
@@ -161,6 +161,7 @@ executable reacthome-firmware
     Feature.Smart.Top.Palette
     Feature.Smart.Top.PowerTouch
     Feature.Smart.Top.Vibro
+    Feature.Touches
     Formula.Blink330
     Formula.Blink450
     Formula.DI4
@@ -242,6 +243,7 @@ executable reacthome-firmware
     Interface.RS485
     Interface.SystemClock
     Interface.Timer
+    Interface.Touch
     Interface.UART
     Ivory.Support
     Ivory.Support.Device.GD32F3x0
