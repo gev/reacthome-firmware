@@ -129,7 +129,6 @@ executable reacthome-firmware
     Endpoint.DInputs
     Endpoint.DInputsRelaysRules
     Endpoint.Dimmers
-    Endpoint.DTouches
     Endpoint.Groups
     Endpoint.Relays
     Feature.ALED
@@ -191,6 +190,7 @@ executable reacthome-firmware
     Formula.Smart.Top.TopG4D
     Formula.Smart.Top.TopG6
     Formula.Smart.Top.TopG6I
+    Formula.Smart.Top.TopG6Test
     Formula.Soundbox
     Formula.UdpEcho450
     Implementation.Blink
@@ -217,6 +217,7 @@ executable reacthome-firmware
     Implementation.Smart.TopG4
     Implementation.Smart.TopG6
     Implementation.Smart.TopG6I
+    Implementation.Smart.TopG6Test
     Implementation.Smart.TopGD
     Implementation.Soundbox
     Implementation.UdpEcho

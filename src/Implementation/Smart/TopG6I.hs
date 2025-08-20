@@ -37,67 +37,80 @@ import           Interface.Flash
 import           Interface.MCU                (peripherals)
 import           Ivory.Language
 import           Ivory.Stdlib
-import qualified Feature.Touches as DT
+import qualified Feature.Touches as FT
 
 
 
 data Top n = Top
-    { touches :: DT.Touches n
-    -- , leds    :: LEDs       4 12
-    -- , buttons :: Buttons    n 4 12
-    -- , vibro   :: Vibro      n
-    -- , sht21   :: SHT21
+    { touches :: FT.Touches n
+    , leds    :: LEDs       4 12
+    , buttons :: Buttons    n 4 12
+    , vibro   :: Vibro      n
+    , sht21   :: SHT21
     }
 
 
 
-topG6I :: ( MonadState Context m
-         , MonadReader (D.Domain p c) m
-         , LazyTransport t
-         , KnownNat n
-         )
-      => m t
-      -> (t -> m (DT.Touches n))
-      -> m (Top n)
-topG6I transport' touches' = do
+topG6I ::  ( MonadState Context m
+           , MonadReader (D.Domain p c) m
+           , Display d, Handler (Render (Canvas1DSize 12)) d
+           , LazyTransport t
+           , Flash f
+           , KnownNat n
+           )
+           => m t
+           -> (t -> m (FT.Touches n))
+           -> (E.DInputs n -> t -> f-> m (Vibro n))
+           -> m PowerTouch
+           -> (t -> m SHT21)
+           -> (p -> m d)
+           -> (p -> f)
+           -> m (Top n)
+topG6I transport' touches' vibro' touch' sht21' display' etc' = do
     transport      <- transport'
-    -- shouldInit     <- asks D.shouldInit
+    shouldInit     <- asks D.shouldInit
     mcu            <- asks D.mcu
+    display        <- display' $ peripherals mcu
+    let etc         = etc' $ peripherals mcu
     touches        <- touches' transport
-    -- vibro          <- vibro' (DI.getDInputs dinputs) transport etc
-    -- buttons        <- mkButtons leds (DI.getDInputs dinputs) ledsPerButton ledsOfButton transport
-    -- let top         = Top { touches, leds, vibro, buttons, sht21 }
-    let top         = Top { touches }
+    vibro          <- vibro' (FT.getDInputs touches) transport etc
+    frameBuffer    <- values' "top_frame_buffer" 0
+    leds           <- mkLeds frameBuffer [10, 11, 0, 1, 8, 9, 2, 3, 7, 6, 5, 4] transport etc (replicate 12 true)
+    ledsPerButton  <- values "leds_per_button" [2, 2, 2, 2, 2, 2]
+    ledsOfButton   <- matrix "leds_of_button"  [[0,1,0,0], [2,3,0,0], [4,5,0,0], [6,7,0,0], [8,9,0,0], [10,11,0,0]]
+    buttons        <- mkButtons leds (FT.getDInputs touches) ledsPerButton ledsOfButton transport
+    sht21          <- sht21' transport
+    let top         = Top { touches, leds, vibro, buttons, sht21 }
 
-    -- addHandler $ Render display 30 frameBuffer $ do
-    --     updateLeds    leds
-    --     updateButtons buttons
-    --     render        leds
-    --     pure          true
+
+    addHandler $ Render display 30 frameBuffer $ do
+        updateLeds    leds
+        updateButtons buttons
+        render        leds
+        pure          true
 
     pure top
 
 
 
--- onGetState :: KnownNat n => Top n -> Ivory (ProcEffects s t) ()
--- onGetState Top{..} = do
---     forceSyncDInputs dinputs
---     sendVibro vibro
---     sendLEDs leds
-
+onGetState :: KnownNat n => Top n -> Ivory (ProcEffects s t) ()
+onGetState Top{..} = do
+    FT.forceSyncTouches touches
+    sendVibro vibro
+    sendLEDs leds
 
 
 instance KnownNat n => Controller (Top n) where
 
     handle t@Top{..} buff size = do
         action <- deref $ buff ! 0
-        cond_ []
---               , action ==? actionDim        ==> onDim            leds    buff size
---               , action ==? actionRGB        ==> onSetColor       leds    buff size
---               , action ==? actionImage      ==> onImage          leds    buff size
---               , action ==? actionBlink      ==> onBlink          leds    buff size
---               , action ==? actionPalette    ==> onPalette        leds    buff size
---               , action ==? actionVibro      ==> onVibro          vibro   buff size
---               , action ==? actionFindMe     ==> onFindMe         buttons buff size
-            --   , 
---               ]
+        cond_ [ action ==? actionDo         ==> onDo             leds    buff size
+              , action ==? actionDim        ==> onDim            leds    buff size
+              , action ==? actionRGB        ==> onSetColor       leds    buff size
+              , action ==? actionImage      ==> onImage          leds    buff size
+              , action ==? actionBlink      ==> onBlink          leds    buff size
+              , action ==? actionPalette    ==> onPalette        leds    buff size
+              , action ==? actionVibro      ==> onVibro          vibro   buff size
+              , action ==? actionFindMe     ==> onFindMe         buttons buff size
+              , action ==? actionGetState   ==> onGetState       t
+              ]

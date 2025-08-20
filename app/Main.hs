@@ -27,6 +27,7 @@ import           Formula.Smart.Top.TopG4D
 import           Formula.Smart.Top.TopA4TD
 import           Formula.Smart.Top.TopG6
 import           Formula.Smart.Top.TopG6I
+import           Formula.Smart.Top.TopG6Test
 import           Formula.Soundbox
 import           Formula.Lanamp
 import           Formula.MixH 
@@ -57,6 +58,7 @@ main = do
               -- , smartTopG4D
               , smartTopG6
               , smartTopG6I
+              , smartTopG6Test
               ]
     -- mapM_ gcc [ 
     --             lanamp              
