@@ -138,16 +138,15 @@ runMeasurement Touch{..} handle = do
         state <- deref stateMeasurement
 
         when (state ==? stateWaitStart) $ do
-            t <- I.readCounter timer
-            store timestamp1 t
             modePort port pin gpio_mode_input
             enableExtiInterrupt ex
             store stateMeasurement stateMeasuring
+            t <- I.readCounter timer
+            store timestamp1 t
 
         when (state ==? stateIsMeasured) $ do
             modePort port pin gpio_mode_output
             resetBit port pin
-            disableExtiInterrupt ex
 
             t1 <- deref timestamp1
             t2 <- deref timestamp2
@@ -164,9 +163,14 @@ runMeasurement Touch{..} handle = do
                 when (time' >? timeMax') $ store timeMax time'
 
                 let dt = time' - timeMin'
-                store debugVal dt
-                when (dt >? 25) $ store stateBtn true
-                when (dt <? 15) $ store stateBtn false
+                state <- deref stateBtn
+                -- store debugVal dt
+                when (dt >? 30) $ do
+                    store stateBtn true
+                    when (iNot state) $ store debugVal dt
+                when (dt <? 20) $ do 
+                    store stateBtn false
+                    when state $ store debugVal dt
 
 
 
@@ -180,8 +184,8 @@ runMeasurement Touch{..} handle = do
             --     )
 
 
-            handle
             store stateMeasurement stateWaitStart
+            handle
 
 
 average :: IFloat -> IFloat -> IFloat -> IFloat
