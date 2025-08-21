@@ -20,7 +20,7 @@ import           Device.GD32F3x0.Timer
 import qualified Interface.Counter              as I
 import qualified Interface.Touch                as I
 import           Ivory.Language                 hiding (setBit)
-import           Ivory.Stdlib                   (when, ifte)
+import           Ivory.Stdlib                   (ifte, when)
 import           Ivory.Support                  (symbol)
 import           Support.Device.GD32F3x0.EXTI
 import           Support.Device.GD32F3x0.GPIO
@@ -63,15 +63,17 @@ mkTouch port pin rcuPin extiIRQ srcPort srcPin ex = do
 
     timer <- cfg_timer_14 84_000_000 0xffff_ffff
 
-    timestamp1 <- value ("touch_timestamp1" <> symbol srcPort <> "_" <> symbol srcPin) 0
-    timestamp2 <- value ("touch_timestamp2" <> symbol srcPort <> "_" <> symbol srcPin) 0
-    timeMin    <- value ("touch_time_min" <> symbol srcPort <> "_" <> symbol srcPin) 0xffff
-    timeMax    <- value ("touch_time_max" <> symbol srcPort <> "_" <> symbol srcPin) 0
-    time      <- value ("touch_time" <> symbol srcPort <> "_" <> symbol srcPin) 0xffff
-    stateMeasurement  <- value ("touch_state_measurement" <> symbol srcPort <> "_" <> symbol srcPin) stateWaitStart
-    calculateBound    <- value ("touch_calculate_bound" <> symbol srcPort <> "_" <> symbol srcPin) false
-    stateBtn  <- value ("touch_state_btn" <> symbol srcPort <> "_" <> symbol srcPin) false
-    debugVal      <- value ("debug_val" <> symbol srcPort <> "_" <> symbol srcPin) 0
+    let name = symbol srcPort <> "_" <> symbol srcPin
+
+    timestamp1        <- value ("touch_timestamp1" <> name) 0
+    timestamp2        <- value ("touch_timestamp2" <> name) 0
+    timeMin           <- value ("touch_time_min" <> name) 0xffff
+    timeMax           <- value ("touch_time_max" <> name) 0
+    time              <- value ("touch_time" <> name) 0xffff
+    stateMeasurement  <- value ("touch_state_measurement" <> name) stateWaitStart
+    calculateBound    <- value ("touch_calculate_bound" <> name) false
+    stateBtn          <- value ("touch_state_btn" <> name) false
+    debugVal          <- value ("debug_val" <> name) 0
 
     addInit (symbol srcPort <> "_" <> symbol srcPin) $ do
 
@@ -89,7 +91,7 @@ mkTouch port pin rcuPin extiIRQ srcPort srcPin ex = do
     let touch = Touch { port, pin, srcPort, srcPin, ex, extiIRQ, timer, timestamp1, timestamp2, timeMin, timeMax, time, stateMeasurement, calculateBound, stateBtn, debugVal }
 
     addBody (makeIRQHandlerName extiIRQ) $ handleEXTI ex $ extiHandler touch
-    addTask $ delay 300 ("touch_run"<> symbol srcPort <> "_" <> symbol srcPin) $ startMeasurementMinMax touch
+    addTask $ delay 300 ("touch_run"<> name) $ startMeasurementMinMax touch
 
     pure touch
 
@@ -161,10 +163,10 @@ runMeasurement Touch{..} handle = do
                 when (time' <? timeMin') $ store timeMin time'
                 when (time' >? timeMax') $ store timeMax time'
 
-                let dt = time' - timeMin' 
+                let dt = time' - timeMin'
                 store debugVal dt
                 when (dt >? 25) $ store stateBtn true
-                when (dt <? 10) $ store stateBtn false
+                when (dt <? 15) $ store stateBtn false
 
 
 
@@ -176,8 +178,8 @@ runMeasurement Touch{..} handle = do
             --     (do store stateBtn false
             --         store debugVal =<< deref timeMin
             --     )
-            
-            
+
+
             handle
             store stateMeasurement stateWaitStart
 

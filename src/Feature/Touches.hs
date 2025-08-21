@@ -105,14 +105,17 @@ sendTimeTask touches@Touches{..} = do
             --       , time >? 255 ==> store (buf ! ix) 255
             --       , true ==> store (buf ! ix) (castDefault time)
             --       ]
-            -- ifte_ (time <? 255)
-            --     (store (buf ! ix) $ castDefault time)
-            --     (store (buf ! ix) 255)
 
-            state <- I.getStateBtn t
-            ifte_ state
-                (store (buf ! ix) 100)
-                (store (buf ! ix) 0)
+            time <- I.getTime t
+            ifte_ (time <? 255)
+                (store (buf ! ix) $ castDefault time)
+                (store (buf ! ix) 255)
+
+
+            -- state <- I.getStateBtn t
+            -- ifte_ state
+            --     (store (buf ! ix) 100)
+            --     (store (buf ! ix) 0)
 
     store (buf ! 0) actionDoppler1
 
