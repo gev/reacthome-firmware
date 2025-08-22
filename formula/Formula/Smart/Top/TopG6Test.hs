@@ -24,12 +24,13 @@ smartTopG6Test =  Formula { name        = "smart_top_g6test"
                       , quartzFrequency =  8_000_000
                       , systemFrequency = 84_000_000
                       , implementation  = topG6Test (rbus $ rs485 uart_1 out_pa_6 )
-                                                    (touches  $ touch_pb8  
-                                                              :> touch_pa15 
-                                                              :> touch_pb7  
-                                                              :> touch_pb3  
-                                                              :> touch_pb5  
-                                                              :> touch_pb4  
-                                                              :> Nil
+                                                    (touches 20 30  
+                                                          $  touch_pb8 
+                                                          :> touch_pa15
+                                                          :> touch_pb7 
+                                                          :> touch_pb3 
+                                                          :> touch_pb5 
+                                                          :> touch_pb4 
+                                                          :> Nil
                                                     )
                       }

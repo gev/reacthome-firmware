@@ -24,13 +24,14 @@ smartTopG6I =  Formula { name           = "smart_top_g6i"
                       , quartzFrequency =  8_000_000
                       , systemFrequency = 84_000_000
                       , implementation  = topG6I (rbusTop uart_1)
-                                                 (touches $ touch_pb8
-                                                          :> touch_pa15
-                                                          :> touch_pb7
-                                                          :> touch_pb3
-                                                          :> touch_pb5
-                                                          :> touch_pb4
-                                                          :> Nil
+                                                 (touches 20 30 
+                                                       $  touch_pb8
+                                                       :> touch_pa15
+                                                       :> touch_pb7
+                                                       :> touch_pb3
+                                                       :> touch_pb5
+                                                       :> touch_pb4
+                                                       :> Nil
                                                  )
                                                  (vibro out_pa_1)
                                                  (powerTouch out_pa_8)

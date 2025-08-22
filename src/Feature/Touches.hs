@@ -49,8 +49,6 @@ data Touches n = forall to. (I.Touch to) => Touches
     , getDInputs    :: DI.DInputs n
     , currentTouch  :: Value (Ix n)
     , indexTouch    :: Value Uint8
-    , timestamp     :: Value Uint16
-    , stateMasurent :: Value Uint8
     , buf           :: Buffer n Uint8
     , transmit      :: forall l. KnownNat l
                     => Buffer l Uint8 -> forall s. Ivory (ProcEffects s ()) ()
@@ -64,12 +62,10 @@ touches :: forall m n p c to t tr.
            , I.Touch to
            , KnownNat n
            )
-        => List n (p -> m to) -> tr -> m (Touches n)
-touches touches' transport = do
+        => Uint16 -> Uint16 -> List n (p -> Uint16 -> Uint16 -> m to) -> tr -> m (Touches n)
+touches tresholdLower tresholdUpper touches' transport  = do
     mcu            <- asks D.mcu
-    ts             <- traverse ($ peripherals mcu) touches'
-    timestamp      <- value "touch_timestamp" 0
-    stateMasurent  <- value "touch_ready" 0
+    ts             <- traverse (\touch -> touch (peripherals mcu) tresholdLower tresholdUpper) touches' 
     currentTouch   <- index "current_touches"
     indexTouch     <- index "index_touches"
     dinputs        <- DI.mkDinputs "touches"
@@ -80,18 +76,16 @@ touches touches' transport = do
                           , getDInputs = dinputs
                           , currentTouch
                           , indexTouch
-                          , timestamp
-                          , stateMasurent
                           , buf
                           , transmit = T.transmitBuffer transport
                           }
 
 
-    addTask $ delay 50 "sync"    $ sendTimeTask touches
+    -- addTask $ delay 50 "sync"    $ sendTimeTask touches
     addTask  $ yeld     "touches_run"    $ touchesRunTask touches
-    -- addTask  $ delay 10 "touches_manage" $ manageTouches touches
-    -- addTask  $ yeld     "touches_sync"   $ syncTouches   touches
-    -- addSync "touches" $ forceSyncTouches touches
+    addTask  $ delay 10 "touches_manage" $ manageTouches touches
+    addTask  $ yeld     "touches_sync"   $ syncTouches   touches
+    addSync "touches" $ forceSyncTouches touches
 
     pure touches
 
@@ -159,9 +153,9 @@ manageTouch :: I.Touch i
              => Record DI.DInputStruct
              -> i
              -> Ivory eff ()
-manageTouch di input = do
+manageTouch di touch = do
     state0 <- deref $ di ~> DI.state
-    state1 <- getStateBtn input
+    state1 <- getState touch
     when (state1 /=? state0) $ do
         store (di ~> DI.state    ) state1
         store (di ~> DI.synced   ) false
