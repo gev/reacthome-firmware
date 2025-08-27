@@ -68,6 +68,7 @@ data Soundbox = Soundbox
     , i2sTxCh2     ::  I2SPlay 512
     , i2sSpdif     ::  SPDIF   512
     , rtps         :: [RTP    4480]
+    , netif        ::  Record NETIF_STRUCT
     -- , groupIp      :: Record IP_ADDR_4_STRUCT
     , i2sSampleMix :: Sample
     }
@@ -87,14 +88,13 @@ mkSoundbox :: ( MonadState Context m
          -> (p -> m (j 256)) -> (p -> d -> m o)
          -> (p -> m (ic 2)) -> (p -> d -> m o)
          -> m Soundbox
-mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
+mkSoundbox enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
 
     src4392 <- S.mkSRC4392 i2c mute
 
     let name = "soudbox"
     mcu       <- asks D.mcu
     let peripherals' = peripherals mcu
-    enet        <- enet'        peripherals'
     shutdownTrx <- shutdownTrx' peripherals' $ pullNone peripherals'
     shutdownTx  <- shutdownTx'  peripherals' $ pullNone peripherals'
     i2sTrx      <- i2sTrx'      peripherals'
@@ -105,9 +105,11 @@ mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
 
     i2sSpdif <- mkSpdif i2sTrx
 
-    rtps  <- mapM (\i -> mkRTP enet (name <> "_rtp" <> show i))  [1..8]
+    rtps  <- mapM (\i -> mkRTP (name <> "_rtp" <> show i))  [1..8]
 
     i2sSampleMix  <- record (name <> "_sample_mix") [left .= izero, right .= izero]
+
+    netif <- mkNetif enet
 
     -- groupIp <- record_ $ name <> "_group_ipaddr4"
 
@@ -115,54 +117,18 @@ mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
                             , i2sTxCh2
                             , i2sSpdif
                             , rtps
+                            , netif
                             -- , groupIp
                             , i2sSampleMix
                             }
 
-    ip4       <- record_ $ name <> "_ipaddr4"
-    netmask   <- record_ $ name <> "_netmask"
-    gateway   <- record_ $ name <> "_gateway"
-    netif     <- record_ $ name <> "_netif"
 
-    addModule inclEthernet
-    addModule inclNetif
-    addModule inclUdp
-    addModule inclMem
-    addModule inclMemp
-    addModule inclIP_addr
-    addModule inclPbuf
-    addModule inclEtharp
 
-    addProc $ netifStatusCallback soundbox
+    addNetifOnUpCallback $ netifStatusCallback soundbox
 
     addInit "lanamp" $ do
-
-        initMem
-        initMemp
-        createIpAddr4 ip4 172 16 2 2
-        createIpAddr4 netmask 255 240 0 0
-        createIpAddr4 gateway 172 16 0 1
-        store (netif ~> hwaddr_len) 6
-        arrayCopy (netif ~> hwaddr) (mac mcu) 0 6
-
-        addNetif netif ip4 netmask gateway nullPtr (initLwipPortIf enet) inputEthernetPtr
-        setNetifDefault netif
-        setNetifStatusCallback netif (procPtr $ netifStatusCallback soundbox)
-
-        initIgmp
-        startIgmp netif
-
-        setUpNetif netif
-
         set shutdownTrx
         set shutdownTx
-
-    addTask $ delay 1000 "eth_arp" tmrEtharp
-
-    addTask $ yeld "udp_rx" $ do
-        reval <- rxFrameSize enet
-        when (reval >? 1) $
-            void $ inputLwipPortIf enet netif
 
     addTask $ yeld "refill_buff_i2s" $ refillBuffI2S soundbox
 
@@ -170,17 +136,15 @@ mkSoundbox enet' i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
     pure soundbox
 
 
-netifStatusCallback :: Soundbox -> Def (NetifStatusCallbackFn s)
-netifStatusCallback Soundbox{..} = proc "netif_callback" $ \netif -> body $ do
-     flags' <- deref $ netif ~> flags
-     when (flags' .& netif_flag_up /=?  0) $ do
-        let
-            make rtp index = do
-                let port = 2000 + fromIntegral index
-                groupIp <- local $ istruct [addr .= ival 0]
-                createIpAddr4 groupIp 239 1 1 $ fromIntegral index
-                createUDP rtp netif groupIp port
-        zipWithM_ make rtps [1..]
+netifStatusCallback :: Soundbox -> Ivory (ProcEffects s ()) ()
+netifStatusCallback Soundbox{..} = do
+    let make :: RTP 4480 -> Int -> Ivory (ProcEffects s ()) ()
+        make rtp index = do
+            let port = 2000 + fromIntegral index
+            groupIp <- local $ istruct [addr .= ival 0]
+            createIpAddr4 groupIp 239 1 1 $ fromIntegral index
+            createUDP rtp netif groupIp port
+    zipWithM_ make rtps [1..]
 
 
 refillBuffI2S :: Soundbox -> Ivory eff ()

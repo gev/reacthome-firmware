@@ -50,28 +50,27 @@ import           Transport.UDP.RBUS.Tx
 
 rbus :: (MonadState Context m, MonadReader (D.Domain p c) m, Enet e, LwipPort e, Controller c)
       => (p -> m e) -> m RBUS
-rbus enet' = do
+rbus enet = do
     mcu             <- asks D.mcu
     model           <- asks D.model
     version         <- asks D.version
     shouldInit      <- asks D.shouldInit
     let mac          = I.mac mcu
     implementation  <- asks D.implementation
-    enet            <- enet' $ peripherals mcu
-    netif           <- record_ "udp_netif"
-    upcb            <- value_  "udp_upcb"
-    serverIP        <- record_ "udp_server_ip"
-    serverPort      <- value   "udp_server_port" 2017
-    localIP         <- record_ "udp_local_ip"
-    netmask         <- record_ "udp_netmask"
-    broadcastIP     <- record_ "udp_broadcast_ip"
-    hasIP           <- value   "udp_has_ip" false
-    rxBuff          <- buffer  "udp_rx"
-    txBuff          <- buffer  "udp_tx"
-    discovery       <- buffer  "udp_discovery"
-    requestIP       <- buffer  "udp_request_ip"
-    requestInit     <- buffer  "udp_request_init"
-    shouldDiscovery <- value   "udp_should_discovery" false
+    upcb            <- value_  "udp_rbus_upcb"
+    netif           <- mkNetif enet
+    serverIP        <- record_ "udp_rbus_server_ip"
+    serverPort      <- value   "udp_rbus_server_port" 2017
+    localIP         <- record_ "udp_rbus_local_ip"
+    netmask         <- record_ "udp_rbus_netmask"
+    broadcastIP     <- record_ "udp_rbus_broadcast_ip"
+    hasIP           <- value   "udp_rbus_has_ip" false
+    rxBuff          <- buffer  "udp_rbus_rx"
+    txBuff          <- buffer  "udp_rbus_tx"
+    discovery       <- buffer  "udp_rbus_discovery"
+    requestIP       <- buffer  "udp_rbus_request_ip"
+    requestInit     <- buffer  "udp_rbus_request_init"
+    shouldDiscovery <- value   "udp_rbus_should_discovery" false
 
 
     {--
@@ -96,34 +95,15 @@ rbus enet' = do
                       , onMessage
                       }
 
-    addModule inclEthernet
-    addModule inclNetif
-    addModule inclUdp
-    addModule inclMem
-    addModule inclMemp
-    addModule inclIP_addr
-    addModule inclPbuf
-    addModule inclEtharp
-    addModule inclIgmp
-
-    addProc $ netifStatusCallback rbus
     addProc $ receiveCallback rbus
 
-    addInit "udp_init" $ do
-        initMem
-        initMemp
+    addNetifOnUpCallback $ netifStatusCallback rbus
+
+
+    addInit "udp_rbus_init" $ do
 
         createIpAddr4 serverIP    255 255 255 255
-        createIpAddr4 localIP     169 254  47  94
-        createIpAddr4 netmask     255 255   0   0
         createIpAddr4 broadcastIP 255 255 255 255
-
-        store (netif ~> hwaddr_len) 6
-
-        arrayMap $ \ix -> do
-            m <- deref (mac ! ix)
-            store (netif ~> hwaddr ! ix) m
-            -- store (txBuff ! toIx ix) m
 
         store (discovery   ! 0) 0xf0
         store (discovery   ! 1) =<< deref model
@@ -134,21 +114,7 @@ rbus enet' = do
 
         store (requestInit ! 0) 0xf2
 
-        addNetif netif localIP netmask ipAddrAny nullPtr (initLwipPortIf enet) inputEthernetPtr
-        setNetifDefault netif
-        setNetifStatusCallback netif $ procPtr $ netifStatusCallback rbus
-
-        initIgmp
-
-        startIgmp netif
-        setUpNetif netif
-
-    -- addHandler $ HandleEnet enet $ pure ()
-
-    addTask $ yeld        "udp_rx"        $ rxTask   enet   rbus
-    addTask $ yeld        "udp_discovery" $ discoveryTask   rbus
-    addTask $ delay 1_000 "tmr_arp"         tmrEtharp
-    addTask $ delay   100 "tmr_igmp"        tmrIgmp
+    addTask $ yeld        "udp_rbus_discovery" $ discoveryTask   rbus
     addTask $ delay 2_000 "request_init"  $ requestInitTask rbus
 
     pure rbus
@@ -176,10 +142,8 @@ requestInitTask rbus@RBUS{..} = do
 
 
 
-netifStatusCallback :: RBUS -> Def (NetifStatusCallbackFn s)
-netifStatusCallback rbus@RBUS{..} = proc "netif_callback" $ \netif -> body $ do
-     flags' <- deref $ netif ~> flags
-     when (flags' .& netif_flag_up /=?  0) $ do
+netifStatusCallback :: RBUS -> Ivory (ProcEffects s ()) ()
+netifStatusCallback rbus@RBUS {upcb} = do
         upcb' <- newUdp
         store upcb upcb'
         when (upcb' /=? nullPtr) $ do

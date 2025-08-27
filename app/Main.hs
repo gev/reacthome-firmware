@@ -55,6 +55,6 @@ main = do
     --           ]
     mapM_ gcc [               
                soundbox
-            --   , rsHub4
+              , rsHub4
               -- , server
               ]

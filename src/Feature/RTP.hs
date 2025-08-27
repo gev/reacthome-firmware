@@ -39,10 +39,9 @@ data RTP n = RTP {
 }
 
 
-mkRTP :: ( MonadState Context m
-         , LwipPort e, KnownNat n, Enet e) =>
-         e -> String -> m (RTP n)
-mkRTP enet name = do
+mkRTP :: ( MonadState Context m, KnownNat n) =>
+          String -> m (RTP n)
+mkRTP name = do
     
     rtpQueue  <- elastic (name <> "_rtp_queue") =<< records_ (name <> "_rtp_buff")
     rtpSample <- record  (name <> "_rtp_sample") [left .= izero, right .= izero]
@@ -87,12 +86,12 @@ udpReceiveCallback r@RTP{..} =
                     msbl <- getPbufAt pbuff index'
                     lsbl <- getPbufAt pbuff (index' + 1)
                     let wordL  = (safeCast msbl `iShiftL` 8) .| safeCast lsbl :: Uint16
-                    let vall = safeCast (twosComplementCast wordL) * 256
+                    let vall = safeCast (twosComplementCast wordL) * 2560
                     store (i2sRtpBuff ! ix ~> left) vall
                     msbr <- getPbufAt pbuff (index' + 2)
                     lsbr <- getPbufAt pbuff (index' + 3)
                     let wordR  = (safeCast msbr `iShiftL` 8) .| safeCast lsbr :: Uint16
-                    let valr =  safeCast (twosComplementCast wordR) * 256
+                    let valr =  safeCast (twosComplementCast wordR) * 2560
                     store (i2sRtpBuff ! ix ~> right) valr
                 store index $ index' + 4
         ret =<< freePbuf pbuff
