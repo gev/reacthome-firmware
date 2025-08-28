@@ -12,6 +12,7 @@ module Support.Lwip.Udp
     , UDP_PCB
     
     , newUdp
+    , removeUdp
     , bindUdp
     , sendUdp
     , connectUdp
@@ -54,6 +55,13 @@ udp_new :: Def ('[] :-> UDP_PCB s)
 udp_new = fun "udp_new"
 
 
+removeUdp :: UDP_PCB s1 -> Ivory eff ()
+removeUdp = call_ udp_remove
+
+udp_remove :: Def ('[UDP_PCB s] :-> ())
+udp_remove = fun "udp_remove"
+
+
 bindUdp :: UDP_PCB s1 -> IP_ADDR_4 s2 -> Uint16 -> Ivory eff ErrT
 bindUdp = call udp_bind
 
@@ -92,6 +100,7 @@ udp_recv = fun "udp_recv"
 inclUdp :: ModuleDef
 inclUdp = do
     incl udp_new
+    incl udp_remove
     incl udp_bind
     incl udp_send
     incl udp_connect

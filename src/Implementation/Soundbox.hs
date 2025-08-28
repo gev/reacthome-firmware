@@ -60,6 +60,12 @@ import           Support.Lwip.Memp
 import           Support.Lwip.Netif
 import           Support.Lwip.Pbuf
 import           Support.Lwip.Udp
+import qualified Core.Transport as T
+import Core.Actions
+import qualified GHC.Base as G
+import Data.ByteString (group)
+import Data.Fixed (MakeFrom(from))
+import Device.GD32F3x0.I2C (I2C(txBuff))
 
 
 
@@ -69,12 +75,15 @@ data Soundbox = Soundbox
     , i2sSpdif     ::  SPDIF   512
     , rtps         :: [RTP    4480]
     , netif        ::  Record NETIF_STRUCT
+    , txRtpBuff       ::  Buffer  9 Uint8
     -- , groupIp      :: Record IP_ADDR_4_STRUCT
     , i2sSampleMix :: Sample
+    , transmit    :: forall n s t. KnownNat n => Buffer n Uint8 -> Ivory (ProcEffects s t) ()
     }
 
 
 mkSoundbox :: ( MonadState Context m
+            , T.Transport t
             , MonadReader (Domain p c) m
             , Enet e, LwipPort e, Output o
             , Handler HandleI2STX  (i 256 256)
@@ -83,12 +92,14 @@ mkSoundbox :: ( MonadState Context m
             , I.I2C ic 2
             , Pull p d
             )
-         => (p -> m e)
+         => m t
+         -> (p -> m e)
          -> (p -> m (i 256 256)) -> (p -> d -> m o)
          -> (p -> m (j 256)) -> (p -> d -> m o)
          -> (p -> m (ic 2)) -> (p -> d -> m o)
          -> m Soundbox
-mkSoundbox enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
+mkSoundbox transport' enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
+    transport  <- transport'
 
     src4392 <- S.mkSRC4392 i2c mute
 
@@ -99,6 +110,8 @@ mkSoundbox enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
     shutdownTx  <- shutdownTx'  peripherals' $ pullNone peripherals'
     i2sTrx      <- i2sTrx'      peripherals'
     i2sTx       <- i2sTx'       peripherals'
+
+    txRtpBuff <- buffer (name <> "_tx_rtp_buff") 
 
     i2sTxCh1 <- mkI2SPlay (name <> "_transmit_ch1" ) i2sTx
     i2sTxCh2 <- mkI2SPlay (name <> "_transmit_ch2")  i2sTrx
@@ -118,8 +131,10 @@ mkSoundbox enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
                             , i2sSpdif
                             , rtps
                             , netif
+                            , txRtpBuff
                             -- , groupIp
                             , i2sSampleMix
+                            , transmit = T.transmitBuffer transport
                             }
 
 
@@ -138,13 +153,14 @@ mkSoundbox enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
 
 netifStatusCallback :: Soundbox -> Ivory (ProcEffects s ()) ()
 netifStatusCallback Soundbox{..} = do
-    let make :: RTP 4480 -> Int -> Ivory (ProcEffects s ()) ()
-        make rtp index = do
-            let port = 2000 + fromIntegral index
-            groupIp <- local $ istruct [addr .= ival 0]
-            createIpAddr4 groupIp 239 1 1 $ fromIntegral index
-            createUDP rtp netif groupIp port
-    zipWithM_ make rtps [1..]
+    pure ()
+    -- let make :: RTP 4480 -> Int -> Ivory (ProcEffects s ()) ()
+    --     make rtp index = do
+    --         let port = 2000 + fromIntegral index
+    --         groupIp <- local $ istruct [addr .= ival 0]
+    --         createIpAddr4 groupIp 239 1 1 $ fromIntegral index
+    --         createRtpUdp rtp netif groupIp port
+    -- zipWithM_ make rtps [1..]
 
 
 refillBuffI2S :: Soundbox -> Ivory eff ()
@@ -174,3 +190,41 @@ mixer amp spdif samples = do
             store (res ~> left)  (fl + sl)
             store (res ~> right) (fr + sr)
     pure res
+
+instance Controller Soundbox where
+    handle s@Soundbox{..} buff size = do
+        action <- unpack buff 0
+        cond_ [ action ==? actionRtp         ==> onRtp    s   buff size
+              ]
+
+-- type: ACTION_RTP, id, index, active, group, port
+onRtp Soundbox{..} buff size = do
+    when (size >=? 9) $ do
+            index <- deref $ buff ! 1
+            when (index >=? 1 .&& index <=? 8) $ do
+                active <- unpack buff 2
+                ip1 <- unpack buff 3
+                ip2 <- unpack buff 4
+                ip3 <- unpack buff 5
+                ip4 <- unpack buff 6
+                port <- unpackBE buff 7
+                pack txRtpBuff 0 actionRtp
+                pack txRtpBuff 1 index
+                pack txRtpBuff 2 active
+                pack txRtpBuff 3 ip1
+                pack txRtpBuff 4 ip2
+                pack txRtpBuff 5 ip3
+                pack txRtpBuff 6 ip4
+                packLE txRtpBuff 7 port
+                transmit txRtpBuff
+                let run rtp i = 
+                        when (index ==? fromIntegral i) $ do
+                            removeRtpUdp rtp netif
+                            when active $ createRtpUdp rtp netif ip1 ip2 ip3 ip4 port
+                zipWithM_ run rtps [1..]
+            
+
+
+
+
+
