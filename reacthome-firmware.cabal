@@ -130,6 +130,7 @@ executable reacthome-firmware
     Endpoint.Dimmers
     Endpoint.Groups
     Endpoint.Relays
+    Endpoint.StereoAMP
     Feature.ALED
     Feature.AOutputs
     Feature.DInputs

@@ -9,31 +9,40 @@
 {-# LANGUAGE NamedFieldPuns      #-}
 {-# LANGUAGE RankNTypes          #-}
 {-# LANGUAGE RecordWildCards     #-}
+{-# HLINT ignore "Use for_" #-}
 
 module Implementation.Soundbox where
 
 import           Control.Monad            (void, zipWithM_)
 import           Control.Monad.Reader     (MonadReader, asks)
 import           Control.Monad.State      (MonadState)
+import           Core.Actions
 import           Core.Context
 import           Core.Controller
 import           Core.Domain              as D
 import           Core.Handler
 import           Core.Task
+import qualified Core.Transport           as T
 import           Data.Buffer
+import           Data.ByteString          (group)
 import           Data.DoubleBuffer        (DoubleBuffer (num1))
 import           Data.ElasticQueue
+import           Data.Fixed               (MakeFrom (from))
 import qualified Data.Fixed               as F
-import           Data.Foldable            (forM_)
+import           Data.Foldable            (forM_, for_)
 import qualified Data.Queue               as Q
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
+import           Device.GD32F3x0.I2C      (I2C (txBuff))
 import           Device.GD32F4xx
+import           Endpoint.StereoAMP
 import           Feature.I2SPlay
 import           Feature.RTP
 import           Feature.SPDIF
 import qualified Feature.SRC4392          as S
+import           GHC.Arr                  (array)
+import qualified GHC.Base                 as G
 import           GHC.TypeNats
 import           Interface.ENET
 import           Interface.GPIO.Output
@@ -50,6 +59,7 @@ import           Ivory.Language.Uint
 import           Ivory.Stdlib
 import           Ivory.Stdlib.Control
 import           Ivory.Support
+import           Language.Haskell.TH      (safe)
 import           Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
 import           Support.Lwip.Etharp
 import           Support.Lwip.Ethernet
@@ -60,12 +70,8 @@ import           Support.Lwip.Memp
 import           Support.Lwip.Netif
 import           Support.Lwip.Pbuf
 import           Support.Lwip.Udp
-import qualified Core.Transport as T
-import Core.Actions
-import qualified GHC.Base as G
-import Data.ByteString (group)
-import Data.Fixed (MakeFrom(from))
-import Device.GD32F3x0.I2C (I2C(txBuff))
+import Control.Arrow (Arrow(arr))
+import Ivory.Language.Sint (Sint32(Sint32))
 
 
 
@@ -75,10 +81,14 @@ data Soundbox = Soundbox
     , i2sSpdif     ::  SPDIF   512
     , rtps         :: [RTP    4480]
     , netif        ::  Record NETIF_STRUCT
-    , txRtpBuff       ::  Buffer  9 Uint8
+    , txRtpBuff    ::  Buffer  9 Uint8
+    , lanampBuff   ::  Buffer  41 Uint8
     -- , groupIp      :: Record IP_ADDR_4_STRUCT
     , i2sSampleMix :: Sample
-    , transmit    :: forall n s t. KnownNat n => Buffer n Uint8 -> Ivory (ProcEffects s t) ()
+    , samples      :: Records 9 SampleStruct
+    , amps         :: Records 2 StereoAMPStruct
+    , shouldInit   :: Value IBool
+    , transmit     :: forall n s t. KnownNat n => Buffer n Uint8 -> Ivory (ProcEffects s t) ()
     }
 
 
@@ -105,24 +115,32 @@ mkSoundbox transport' enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
 
     let name = "soudbox"
     mcu       <- asks D.mcu
+    shouldInit       <- asks D.shouldInit
     let peripherals' = peripherals mcu
     shutdownTrx <- shutdownTrx' peripherals' $ pullNone peripherals'
     shutdownTx  <- shutdownTx'  peripherals' $ pullNone peripherals'
     i2sTrx      <- i2sTrx'      peripherals'
     i2sTx       <- i2sTx'       peripherals'
 
-    txRtpBuff <- buffer (name <> "_tx_rtp_buff") 
+    txRtpBuff <- buffer (name <> "_tx_rtp_buff")
+    lanampBuff <- buffer (name <> "_tx_lanamp_buff")
 
     i2sTxCh1 <- mkI2SPlay (name <> "_transmit_ch1" ) i2sTx
     i2sTxCh2 <- mkI2SPlay (name <> "_transmit_ch2")  i2sTrx
 
     i2sSpdif <- mkSpdif i2sTrx
 
+    samples <- records_ $ name <> "_samples"
+
     rtps  <- mapM (\i -> mkRTP (name <> "_rtp" <> show i))  [1..8]
 
     i2sSampleMix  <- record (name <> "_sample_mix") [left .= izero, right .= izero]
 
+
+
     netif <- mkNetif enet
+
+    amps <- records_ $ name <> "_amps"
 
     -- groupIp <- record_ $ name <> "_group_ipaddr4"
 
@@ -132,12 +150,17 @@ mkSoundbox transport' enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
                             , rtps
                             , netif
                             , txRtpBuff
+                            , lanampBuff
                             -- , groupIp
                             , i2sSampleMix
+                            , samples
+                            , amps
+                            , shouldInit
                             , transmit = T.transmitBuffer transport
                             }
 
-
+    addStruct (Proxy:: Proxy ZoneAMPStruct)
+    addStruct (Proxy:: Proxy StereoAMPStruct)
 
     addNetifOnUpCallback $ netifStatusCallback soundbox
 
@@ -162,69 +185,224 @@ netifStatusCallback Soundbox{..} = do
     --         createRtpUdp rtp netif groupIp port
     -- zipWithM_ make rtps [1..]
 
+-- refillBuffI2S :: Soundbox -> Ivory eff ()
+-- refillBuffI2S s@Soundbox{..} = do
+--     playI2S i2sTxCh1 \ch1 -> do
+--         playI2S i2sTxCh2 \ch2 -> do
 
-refillBuffI2S :: Soundbox -> Ivory eff ()
-refillBuffI2S s@Soundbox{..} = do
-    playI2S i2sTxCh1 \ch1 -> do
-        playI2S i2sTxCh2 \ch2 -> do
+--             rtpSamples <- mapM getRtpSample rtps
 
-            rtpSamples <- mapM getRtpSample rtps
+--             spdif <- getSpdifSample i2sSpdif
 
-            spdif <- getSpdifSample i2sSpdif
+--             mix <- mixer s spdif rtpSamples
 
-            mix <- mixer s spdif rtpSamples
-
-            ch1 <== mix
-            ch2 <== mix
+--             ch1 <== mix
+--             ch2 <== mix
 
 
-mixer :: Soundbox -> Sample -> [Sample] -> Ivory eff Sample
-mixer amp spdif samples = do
-    let res = i2sSampleMix amp
-    res <== spdif
-    forM_ samples \sample -> do
-            fl <- deref (res ~> left)
-            fr <- deref (res ~> right)
-            sl <- deref (sample ~> left)
-            sr <- deref (sample ~> right)
-            store (res ~> left)  (fl + sl)
-            store (res ~> right) (fr + sr)
-    pure res
+-- mixer :: Soundbox -> Sample -> [Sample] -> Ivory eff Sample
+-- mixer amp spdif samples = do
+--     let res = i2sSampleMix amp
+--     res <== spdif
+--     forM_ samples \sample -> do
+--             fl <- deref (res ~> left)
+--             fr <- deref (res ~> right)
+--             sl <- deref (sample ~> left)
+--             sr <- deref (sample ~> right)
+--             store (res ~> left)  (fl + sl)
+--             store (res ~> right) (fr + sr)
+--     pure res
+
+
+refillBuffI2S :: Soundbox -> Ivory (ProcEffects s ()) ()
+refillBuffI2S Soundbox{..} = do
+    playI2S i2sTxCh1 \amp0 -> do
+        playI2S i2sTxCh2 \amp1 -> do
+            sample <- getSpdifSample i2sSpdif
+            samples ! 0 <== sample
+            zipWithM_ run rtps [1..]
+            mix samples (amps ! 0) amp0
+            mix samples (amps ! 1) amp1
+    where
+        run rtp i = do
+            let ix = fromIntegral i
+            sample <- getRtpSample rtp
+            samples ! ix <== sample
+
+mix :: Records 9 SampleStruct -> Record StereoAMPStruct -> Sample -> Ivory (ProcEffects s ()) ()
+mix samples amp res = do
+    mode' <- deref $ amp ~> mode
+
+    cond_ [ mode' ==? 1 ==> mixLR samples amp res
+          , mode' ==? 2 ==> mixRL samples amp res
+          , mode' ==? 3 ==> mix11 samples amp res
+          ]
+
+mixLR :: Records 9 SampleStruct -> Record StereoAMPStruct -> Sample -> Ivory (ProcEffects s ()) ()
+mixLR src amp dst = do
+    dl <- local $ ival 0
+    dr <- local $ ival 0
+    let rules = amp ~> zone ! 0
+    arrayMap $ \ix -> do
+        isUsed' <- deref $ rules ~> isUsed ! ix
+        when isUsed' $ do
+            volume' <- deref $ rules ~> volume ! ix
+            sl <- safeCast <$> deref (src ! ix ~> left)
+            sr <- safeCast <$> deref (src ! ix ~> right)
+            dl' <- deref dl
+            dr' <- deref dr
+            store dl $ dl' + volume' * sl
+            store dr $ dr' + volume' * sr
+    dl' <- deref dl
+    dr' <- deref dr
+    store (dst ~> left)  $ castDefault (dl' / 9 * 255)
+    store (dst ~> right) $ castDefault (dr' / 9 * 255)
+
+mixRL :: Records 9 SampleStruct -> Record StereoAMPStruct -> Sample -> Ivory (ProcEffects s ()) ()
+mixRL src amp dst = do
+    dl <- local $ ival 0
+    dr <- local $ ival 0
+    let rules = amp ~> zone ! 0
+    arrayMap $ \ix -> do
+        isUsed' <- deref $ rules  ~> isUsed ! ix
+        when isUsed' $ do
+            volume' <- deref $ rules ~> volume ! ix
+            sl <- safeCast <$> deref (src ! ix ~> left)
+            sr <- safeCast <$> deref (src ! ix ~> right)
+            dl' <- deref dl
+            dr' <- deref dr
+            store dl $ dl' + volume' * sl
+            store dr $ dr' + volume' * sr
+    dl' <- deref dl
+    dr' <- deref dr
+    store (dst ~> right) $ castDefault (dl' / 9 * 255)
+    store (dst ~> left) $ castDefault (dr' / 9 * 255)
+
+mix11 :: Records 9 SampleStruct -> Record StereoAMPStruct -> Sample -> Ivory (ProcEffects s ()) ()
+mix11 src amp dst = do
+    dl <- local $ ival (0 :: IFloat)
+    dr <- local $ ival (0 :: IFloat)
+    let rules = amp ~> zone ! 0
+    arrayMap $ \ix -> do
+        isUsed' <- deref $ rules  ~> isUsed ! ix
+        when isUsed' $ do
+            volume' <- deref $ rules ~> volume ! ix
+            sl <- safeCast <$> deref (src ! ix ~> left)
+            sr <- safeCast <$> deref (src ! ix ~> right)
+            dl' <- deref dl
+            store dl $ dl' + volume' * (sl + sr) 
+    let rules = amp ~> zone ! 1
+    arrayMap $ \ix -> do
+        isUsed' <- deref $ rules  ~> isUsed ! ix
+        when isUsed' $ do
+            volume' <- deref $ rules ~> volume ! ix
+            sl <- safeCast <$> deref (src ! ix ~> left)
+            sr <- safeCast <$> deref (src ! ix ~> right)
+            dr' <- deref dr
+            store dr $ dr' + volume' * (sl + sr)
+    dl' <- deref dl
+    dr' <- deref dr
+    store (dst ~> left)  $ castDefault (dl' / 18 * 255)
+    store (dst ~> right) $ castDefault (dr' / 18 * 255)
 
 instance Controller Soundbox where
     handle s@Soundbox{..} buff size = do
         action <- unpack buff 0
         cond_ [ action ==? actionRtp         ==> onRtp    s   buff size
+              , action ==? actionLanamp      ==> onLanamp s   buff size
+              , action ==? actionInitialize  ==> onInit s   buff size
               ]
 
--- type: ACTION_RTP, id, index, active, group, port
+
+onInit Soundbox{..} buff size = do
+    when (size >=? 135) $ do
+
+        arrayMap $ \kx -> do
+            let base = 1 + 39 * fromIx kx
+            mode' <- deref $ buff ! toIx base
+            let amp = amps ! kx
+            arrayMap $ \ix -> do
+                let zone' = amp ~> zone ! ix
+                arrayMap $ \jx -> do
+                    let ux =  1 + base + 9 * fromIx ix + fromIx jx
+                    let vx = 19 + base + 9 * fromIx ix + fromIx jx
+                    isUsed' <- unpack buff $ toIx ux
+                    volume' <- deref (buff ! toIx vx)
+                    store (zone' ~> isUsed ! jx) isUsed'
+                    store (zone' ~> volume ! jx) $ safeCast volume' / 255
+                store (amp ~> mode) mode'
+
+        let run rtp i = do
+                let base = fromIntegral $ 79 + 7 * i :: Sint32
+                active  <- unpack buff   $ toIx base
+                ip1     <- unpack buff   $ toIx (base + 1)
+                ip2     <- unpack buff   $ toIx (base + 2)
+                ip3     <- unpack buff   $ toIx (base + 3)
+                ip4     <- unpack buff   $ toIx (base + 4)
+                port    <- unpackBE buff $ toIx (base + 5)
+                removeRtpUdp rtp netif
+                when active $ createRtpUdp rtp netif ip1 ip2 ip3 ip4 port
+        zipWithM_ run rtps [1..]
+
+        
+
+        store shouldInit false
+
+-- type: ACTION_RTP, index, active, group, port
 onRtp Soundbox{..} buff size = do
     when (size >=? 9) $ do
-            index <- deref $ buff ! 1
-            when (index >=? 1 .&& index <=? 8) $ do
-                active <- unpack buff 2
-                ip1 <- unpack buff 3
-                ip2 <- unpack buff 4
-                ip3 <- unpack buff 5
-                ip4 <- unpack buff 6
-                port <- unpackBE buff 7
-                pack txRtpBuff 0 actionRtp
-                pack txRtpBuff 1 index
-                pack txRtpBuff 2 active
-                pack txRtpBuff 3 ip1
-                pack txRtpBuff 4 ip2
-                pack txRtpBuff 5 ip3
-                pack txRtpBuff 6 ip4
-                packLE txRtpBuff 7 port
-                transmit txRtpBuff
-                let run rtp i = 
-                        when (index ==? fromIntegral i) $ do
-                            removeRtpUdp rtp netif
-                            when active $ createRtpUdp rtp netif ip1 ip2 ip3 ip4 port
-                zipWithM_ run rtps [1..]
-            
+        index <- deref $ buff ! 1
+        when (index >=? 1 .&& index <=? 8) $ do
+            active <- unpack buff 2
+            ip1 <- unpack buff 3
+            ip2 <- unpack buff 4
+            ip3 <- unpack buff 5
+            ip4 <- unpack buff 6
+            port <- unpackBE buff 7
+            pack txRtpBuff 0 actionRtp
+            pack txRtpBuff 1 index
+            pack txRtpBuff 2 active
+            pack txRtpBuff 3 ip1
+            pack txRtpBuff 4 ip2
+            pack txRtpBuff 5 ip3
+            pack txRtpBuff 6 ip4
+            packLE txRtpBuff 7 port
+            transmit txRtpBuff
+            let run rtp i =
+                    when (index ==? fromIntegral i) $ do
+                        removeRtpUdp rtp netif
+                        when active $ createRtpUdp rtp netif ip1 ip2 ip3 ip4 port
+            zipWithM_ run rtps [1..]
+
+
+
+onLanamp Soundbox{..} buff size = do
+    when (size >=? 41) $ do
+        index <- deref $ buff ! 1
+        when (index >=? 1 .&& index <=? 2) $ do
+            mode' <- deref $ buff ! 2
+            let amp = amps ! toIx (index - 1)
+            arrayMap $ \ix -> do
+                let zone' = amp ~> zone ! ix
+                arrayMap $ \jx -> do
+                    let ux =  5 + 9 * fromIx ix + fromIx jx
+                    let vx = 23 + 9 * fromIx ix + fromIx jx
+                    isUsed' <- unpack buff $ toIx ux
+                    volume' <- unpack buff $ toIx vx
+                    store (zone' ~> isUsed ! jx) isUsed'
+                    store (zone' ~> volume ! jx) $ safeCast volume' / 255
+                    pack lanampBuff (toIx ux) isUsed'
+                    store (lanampBuff ! toIx vx) volume'
+                store (amp ~> mode) mode'
+            store (lanampBuff ! 2) mode'
+            store (lanampBuff ! 1) index
+            store (lanampBuff ! 0) actionLanamp
+
+            transmit lanampBuff
 
 
 
 
 
+-- size 41
+-- lanamp:  ACTION_LANAMP index mode (2 byte volume??)  (active x 18) (volume x 18)

@@ -23,4 +23,3 @@ infix 4 <==
 (<==) dst src  = do
     store (dst ~> left) =<< deref (src ~> left)
     store (dst ~> right) =<< deref (src ~> right)
-
