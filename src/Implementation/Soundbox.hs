@@ -342,7 +342,7 @@ onInit Soundbox{..} buff size = do
                 port    <- unpackBE buff $ toIx (base + 5)
                 removeRtpUdp rtp netif
                 when active $ createRtpUdp rtp netif ip1 ip2 ip3 ip4 port
-        zipWithM_ run rtps [1..]
+        zipWithM_ run rtps [0..]
 
         
 
