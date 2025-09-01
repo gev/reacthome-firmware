@@ -26,6 +26,8 @@ import           Formula.Smart.Top.TopG4
 import           Formula.Smart.Top.TopG4D
 import           Formula.Smart.Top.TopA4TD
 import           Formula.Smart.Top.TopG6
+import           Formula.Smart.Top.TopG6I
+import           Formula.Smart.Top.TopG6Test
 import           Formula.Soundbox
 import           Formula.MixH 
 
@@ -54,8 +56,11 @@ main = do
               , smartTopG4
               , smartTopG4D
               , smartTopG6
+              , smartTopG6I
+              , smartTopG6Test
               ]
-    mapM_ gcc [ rsHub4
+    mapM_ gcc [ 
+              , rsHub4
               , server
-              , soundbox              
+              , soundbox
               ]

@@ -78,6 +78,7 @@ executable reacthome-firmware
     Device.GD32F3x0.SystemClock
     Device.GD32F3x0.Timer
     Device.GD32F3x0.UART
+    Device.GD32F3x0.Touch
     Device.GD32F4xx
     Device.GD32F4xx.Display.NeoPixel
     Device.GD32F4xx.ENET
@@ -162,6 +163,7 @@ executable reacthome-firmware
     Feature.Smart.Top.Palette
     Feature.Smart.Top.PowerTouch
     Feature.Smart.Top.Vibro
+    Feature.Touches
     Formula.Blink330
     Formula.Blink450
     Formula.DI4
@@ -189,6 +191,8 @@ executable reacthome-firmware
     Formula.Smart.Top.TopG4
     Formula.Smart.Top.TopG4D
     Formula.Smart.Top.TopG6
+    Formula.Smart.Top.TopG6I
+    Formula.Smart.Top.TopG6Test
     Formula.Soundbox
     Formula.UdpEcho450
     Implementation.Blink
@@ -213,6 +217,8 @@ executable reacthome-firmware
     Implementation.Smart.TopG2
     Implementation.Smart.TopG4
     Implementation.Smart.TopG6
+    Implementation.Smart.TopG6I
+    Implementation.Smart.TopG6Test
     Implementation.Smart.TopGD
     Implementation.Soundbox
     Implementation.UdpEcho
@@ -239,6 +245,7 @@ executable reacthome-firmware
     Interface.RS485
     Interface.SystemClock
     Interface.Timer
+    Interface.Touch
     Interface.UART
     Ivory.Support
     Ivory.Support.Device.GD32F3x0

@@ -49,6 +49,8 @@ module Support.Device.GD32F3x0.EXTI
     , initExti
     , getExtiInterruptFlag
     , clearExtiInterruptFlag
+    , disableExtiInterrupt
+    , enableExtiInterrupt
 
     , inclExti
     ) where
@@ -133,6 +135,19 @@ exti_interrupt_flag_clear :: Def ('[EXTI_LINE] :-> ())
 exti_interrupt_flag_clear = fun "exti_interrupt_flag_clear"
 
 
+disableExtiInterrupt :: EXTI_LINE -> Ivory eff ()
+disableExtiInterrupt = call_ exti_interrupt_disable
+
+exti_interrupt_disable :: Def ('[EXTI_LINE] :-> ())
+exti_interrupt_disable = fun "exti_interrupt_disable"
+
+
+enableExtiInterrupt :: EXTI_LINE -> Ivory eff ()
+enableExtiInterrupt = call_ exti_interrupt_enable
+
+exti_interrupt_enable :: Def ('[EXTI_LINE] :-> ())
+exti_interrupt_enable = fun "exti_interrupt_enable"
+
 
 inclExti :: ModuleDef
 inclExti = do
@@ -176,3 +191,5 @@ inclExti = do
     incl exti_init
     incl exti_interrupt_flag_get
     incl exti_interrupt_flag_clear
+    incl exti_interrupt_disable
+    incl exti_interrupt_enable

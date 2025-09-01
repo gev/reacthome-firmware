@@ -1,7 +1,7 @@
 r
 h
-loadbin dist/firmware/doppler5/doppler5-gd32f330k8u6-2.8.bin 0x8000000 
+loadbin dist/firmware/smart_top_g6i/smart_top_g6i-gd32f330k8u6-4.8.bin 0x8000000 
 g
-verifybin dist/firmware/doppler5/doppler5-gd32f330k8u6-2.8.bin 0x8000000
+verifybin dist/firmware/smart_top_g6i/smart_top_g6i-gd32f330k8u6-4.8.bin 0x8000000
 r
 q
