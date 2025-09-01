@@ -324,8 +324,8 @@ onInit Soundbox{..} buff size = do
             arrayMap $ \ix -> do
                 let zone' = amp ~> zone ! ix
                 arrayMap $ \jx -> do
-                    let ux =  1 + base + 9 * fromIx ix + fromIx jx
-                    let vx = 19 + base + 9 * fromIx ix + fromIx jx
+                    let ux =  3 + base + 9 * fromIx ix + fromIx jx
+                    let vx = 21 + base + 9 * fromIx ix + fromIx jx
                     isUsed' <- unpack buff $ toIx ux
                     volume' <- deref (buff ! toIx vx)
                     store (zone' ~> isUsed ! jx) isUsed'
