@@ -1,0 +1,1 @@
+JLinkExe ip 192.168.88.124 -Device GD32F330K8 -If SWD -Speed 1000 jlink/EraseMCU.jlink

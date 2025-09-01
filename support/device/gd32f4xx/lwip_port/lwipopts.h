@@ -95,7 +95,7 @@ OF SUCH DAMAGE.
 
 #define TCP_SND_BUF             (2*TCP_MSS)              /* TCP sender buffer space (bytes) */
 
-#define TCP_SND_QUEUELEN        ((6* TCP_SND_BUF)/TCP_MSS)   /* TCP sender buffer space (pbufs), this must be at least
+#define TCP_SND_QUEUELEN        ((6 * TCP_SND_BUF)/TCP_MSS)   /* TCP sender buffer space (pbufs), this must be at least
                                                             as much as (2 * TCP_SND_BUF/TCP_MSS) for things to work */
 
 #define TCP_WND                 (2*TCP_MSS)              /* TCP receive window */

@@ -8,7 +8,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 
-module Implementation.Mix where
+module Implementation.MixH where
 
 import           Control.Monad               (zipWithM_)
 import           Control.Monad.Reader        (MonadReader, asks)
@@ -19,54 +19,43 @@ import           Core.Controller
 import           Core.Domain                 as D
 import           Core.Task
 import           Core.Transport
-import qualified Core.Transport              as T
 import           Data.Buffer
-import           Data.Matrix
 import           Data.Serialize
 import           Data.Value
-import           Endpoint.ATS                as A
-import qualified Endpoint.DInputs            as DI
+import           Endpoint.Dimmers        as EDim (dimmers, initialize,
+                                                 syncDimmerGroup)
 import           Endpoint.DInputsRelaysRules as Ru
-import qualified Endpoint.Groups             as G
-import qualified Endpoint.Relays             as R
+import           Feature.Dimmers             as FDim  (Dimmers, forceSync, onDim, n, getDimmers)
 import           Feature.DInputs             as FDI (DInputs (DInputs, getDInputs, getInputs),
                                                      dinputs, forceSyncDInputs,
                                                      manageDInputs, syncDInputs)
-import           Feature.Mix.Indicator       as FI (Indicator, indicator,
-                                                    onFindMe)
+import           Feature.DS18B20             (DS18B20, ds18b20)
 import           Feature.Relays              as FR (Relays (Relays, getGroups, getRelays),
                                                     forceSyncRelays,
                                                     manageRelays, n, onDo,
-                                                    onGroup, onInit, relays,
-                                                    syncRelays)
-import           GHC.RTS.Flags               (DebugFlags (stable))
+                                                    onGroup, relays,
+                                                    syncRelays, initRelays, initGroups)
 import           GHC.TypeNats
-import           Interface.Display
 import           Interface.Flash             as F
-import           Interface.GPIO.Input
-import           Interface.GPIO.Output
-import           Interface.GPIO.Port
 import           Interface.MCU               as I
 import           Ivory.Language
 import           Ivory.Language.Proxy
 import           Ivory.Stdlib
-import           Prelude                     hiding (error)
 import           Util.CRC16
 
 
 
-data Mix ni no = forall f. Flash f => Mix
-    { relays            :: Relays       no
-    , dinputs           :: DInputs      ni
-    , rules             :: Rules     ni no
-    , ats               :: ATS
-    , indicator         :: Indicator ni no
-    , etc               :: f
-    , shouldInit        :: Value IBool
-    , shouldSaveConfig  :: Value IBool
+data Mix ni no nd = forall f. Flash f => Mix
+    { relays           :: Relays       no
+    , dinputs          :: DInputs      ni
+    , dimmers          :: Dimmers      nd
+    , rules            :: Rules     ni no
+    , etc              :: f
+    , shouldSaveConfig :: Value IBool
+    , shouldInit       :: Value IBool
     , saveCountdown     :: Value Uint8
-    , transmit          :: forall n. KnownNat n
-                        => Buffer n Uint8 -> forall s t. Ivory (ProcEffects s t) ()
+    , transmit         :: forall n. KnownNat n
+                       => Buffer n Uint8 -> forall s t. Ivory (ProcEffects s t) ()
     }
 
 
@@ -75,93 +64,88 @@ mix :: ( MonadState Context m
        , MonadReader (Domain p c) m
        , Flash f
        , Transport t
-       , KnownNat ni, KnownNat no, KnownNat (PayloadSize no)
+       , KnownNat ni, KnownNat no
+       , KnownNat nd, KnownNat (PayloadSize no)
        )
     => m t
     -> (Bool -> t -> m (DInputs ni))
     -> (t -> m (Relays no))
-    -> (ATS -> DI.DInputs ni
-    -> R.Relays no
-    -> t
-    -> m (Indicator ni no))
+    -> (t -> m (Dimmers nd))
+    -> (t -> m DS18B20)
     -> (p -> f)
-    -> m (Mix ni no)
-mix transport' dinputs' relays' indicator' etc = do
-    transport         <- transport'
-    relays            <- relays' transport
-    dinputs           <- dinputs' True transport
-    rules             <- mkRules transport
-    ats               <- mkATS transport
-    indicator         <- indicator' ats (getDInputs dinputs) (getRelays relays) transport
-    mcu               <- asks D.mcu
-    shouldInit        <- asks D.shouldInit
-    shouldSaveConfig  <- value "mix_should_save_config" false
+    -> m (Mix ni no nd)
+mix transport' dinputs' relays' dimmers' ds18b20 etc = do
+    transport          <- transport'
+    relays             <- relays' transport
+    dinputs            <- dinputs' True transport
+    dimmers            <- dimmers' transport
+    rules              <- mkRules transport
+    mcu                <- asks D.mcu
+    shouldInit         <- asks D.shouldInit
+    shouldSaveConfig   <- value "mix_should_save_config" false
     saveCountdown     <- value "mix_save_save_countdown" 0
+    ds18b20 transport
+
     let mix       = Mix { relays
                         , dinputs
+                        , dimmers
                         , rules
-                        , ats
-                        , indicator
                         , etc = etc (peripherals mcu)
-                        , shouldInit
                         , shouldSaveConfig
+                        , shouldInit
                         , saveCountdown
-                        , transmit = T.transmitBuffer transport
+                        , transmit = transmitBuffer transport
                         }
 
     addInit "mix" $ load mix
 
-    addTask $ delay 10 "mix_manage"      $ manage    mix
-    addTask $ delay  1 "mix_sync"        $ sync      mix
+    addTask $ delay 10 "mix_manage"  $ manage    mix
+    addTask $ delay  1 "mix_sync"    $ sync      mix
     addTask $ delay  1 "mix_save_config" $ saveTask  mix
 
     addSync "dinputs" $ forceSyncDInputs dinputs
     addSync "relays"  $ forceSyncRelays  relays
+    addSync "dimmers" $ FDim.forceSync   dimmers
     addSync "rules"   $ forceSyncRules   rules
-    addSync "ats"     $ forceSyncATS     ats
 
     pure mix
 
 
 
 manage :: (KnownNat ni, KnownNat no)
-       => Mix ni no -> Ivory ('Effects (Returns ()) r (Scope s)) ()
+       => Mix ni no nd -> Ivory ('Effects (Returns ()) r (Scope s)) ()
 manage Mix{..} = do
     manageDInputs  dinputs
     manageRules    rules (getDInputs dinputs) (getRelays relays) (getGroups relays)
-    manageATS      ats   (getDInputs dinputs) (getRelays relays)
     manageRelays   relays
 
 
 
-sync :: (KnownNat ni, KnownNat no, KnownNat (PayloadSize no))
-     => Mix ni no -> Ivory (ProcEffects s ()) ()
+sync :: (KnownNat ni, KnownNat no, KnownNat nd, KnownNat (PayloadSize no))
+     => Mix ni no nd -> Ivory (ProcEffects s ()) ()
 sync Mix{..} = do
     syncDInputs dinputs
     syncRelays  relays
     syncRules   rules
-    syncATS     ats
 
 
 
-instance (KnownNat ni, KnownNat no, KnownNat (PayloadSize no)) => Controller (Mix ni no) where
+instance (KnownNat ni, KnownNat no, KnownNat nd, KnownNat (PayloadSize no)) => Controller (Mix ni no nd) where
     handle  mix@Mix{..} buff size = do
         shouldInit' <- deref shouldInit
         action <- deref $ buff ! 0
         cond_ [ action ==? actionDo          .&& iNot shouldInit' ==> onDo       relays    buff size
               , action ==? actionGroup       .&& iNot shouldInit' ==> onGroup    relays    buff size
+              , action ==? actionDim         .&& iNot shouldInit' ==> onDim      dimmers   buff size
               , action ==? actionDiRelaySync .&& iNot shouldInit' ==> onRule     mix       buff size
-              , action ==? actionMix         .&& iNot shouldInit' ==> onMode     mix       buff size
-              , action ==? actionInitialize                       ==> onInit     relays    buff size
+              , action ==? actionInitialize                       ==> onInit     mix       buff size
               , action ==? actionGetState                         ==> onGetState mix
-              , action ==? actionFindMe                           ==> onFindMe   indicator buff size
-              , action ==? actionError                            ==> resetError ats
               ]
 
 
 
-onRule :: forall l ni no s t. (KnownNat l, KnownNat ni, KnownNat no, KnownNat (PayloadSize no))
-       => Mix ni no -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onRule :: forall l ni no nd s t. (KnownNat l, KnownNat ni, KnownNat no, KnownNat nd, KnownNat (PayloadSize no))
+       => Mix ni no nd -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onRule mix@Mix{..} buff size = do
     let relaysN  = fromIntegral $ natVal (aNat :: NatType no)
     let dinputsN = fromIntegral $ natVal (aNat :: NatType ni)
@@ -179,28 +163,17 @@ onRule mix@Mix{..} buff size = do
         store shouldSaveConfig true
 
 
-onMode :: (KnownNat l, KnownNat ni, KnownNat no)
-       => Mix ni no -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
-onMode mix@Mix{..} buff size = do
-    when (size ==? 2 ) $ do
-        store (mode ats) =<< unpack buff 1
-        manageLock mix
-        resetError ats
-        store shouldSaveConfig true
-
-
-
-onGetState :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory eff ()
+onGetState :: (KnownNat ni, KnownNat no, KnownNat nd) => Mix ni no nd -> Ivory eff ()
 onGetState Mix{..} = do
     forceSyncDInputs dinputs
     forceSyncRules rules
-    forceSyncATS ats
     initialized <- iNot <$> deref shouldInit
     when initialized $ do
         forceSyncRelays relays
+        FDim.forceSync dimmers
 
 
-saveTask :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s t) ()
+saveTask :: (KnownNat ni, KnownNat no) => Mix ni no nd -> Ivory (ProcEffects s t) ()
 saveTask mix@Mix{..} = do
     shouldSaveConfig' <- deref shouldSaveConfig
     when shouldSaveConfig' $ do
@@ -213,13 +186,10 @@ saveTask mix@Mix{..} = do
           save mix
 
 
-save :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s t) ()
+save :: (KnownNat ni, KnownNat no) => Mix ni no nd -> Ivory (ProcEffects s t) ()
 save Mix{..} = do
     erasePage etc 0
     crc   <- local $ istruct initCRC16
-    mode' <- deref (mode ats)
-    updateCRC16 crc mode'
-    F.write etc 0 $ safeCast mode'
     kx <- local $ ival 4
     let run rules = arrayMap $ \ix -> arrayMap $ \jx -> do
             kx' <- deref kx
@@ -235,12 +205,10 @@ save Mix{..} = do
 
 
 
-load :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s ()) ()
+load :: (KnownNat ni, KnownNat no) => Mix ni no nd -> Ivory (ProcEffects s ()) ()
 load mix@Mix{..} = do
     valid <- checkCRC mix
     when valid $ do
-        store (mode ats) . castDefault =<< F.read etc 0
-        manageLock mix
         kx <- local $ ival 4
         let run rules = arrayMap $ \ix -> arrayMap $ \jx -> do
                 kx' <- deref kx
@@ -250,7 +218,7 @@ load mix@Mix{..} = do
         run $ rulesOn rules
 
 
-checkCRC :: forall ni no s. (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s ()) IBool
+checkCRC :: forall ni no nd s. (KnownNat ni, KnownNat no) => Mix ni no nd -> Ivory (ProcEffects s ()) IBool
 checkCRC Mix{..} = do
     let relaysN  = fromIntegral $ natVal (aNat :: NatType no)
     let dinputsN = fromIntegral $ natVal (aNat :: NatType ni)
@@ -269,21 +237,28 @@ checkCRC Mix{..} = do
     pure $ lsb' ==? lsb'' .&& msb' ==? msb''
 
 
+onInit :: (KnownNat no, KnownNat nd, ANat l) =>  Mix ni no nd -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onInit m@Mix{..} buff size = do
+    
+    let relsSizeBuff = 1 + 5 * fromIntegral (FR.n relays) + 6 * fromIntegral (FR.n relays)
+    let dimsSizeBuff = FDim.n dimmers * 3
 
-manageLock Mix{..} = do
-    let r' = R.relays $ getRelays relays
-    mode' <- deref $ mode ats
-    arrayMap $ \ix -> store (r' ! ix ~> R.lock) false
-    cond_ [ mode' ==? mode_N1_G ==> do
-                store (r' ! 0 ~> R.lock) true
-                store (r' ! 4 ~> R.lock) true
-                store (r' ! 5 ~> R.lock) true
-          , mode' ==? mode_N2   ==> do
-                store (r' ! 0 ~> R.lock) true
-                store (r' ! 1 ~> R.lock) true
-          , mode' ==? mode_N2_G ==> do
-                store (r' ! 0 ~> R.lock) true
-                store (r' ! 1 ~> R.lock) true
-                store (r' ! 4 ~> R.lock) true
-                store (r' ! 5 ~> R.lock) true
-          ]
+    when (size >=? relsSizeBuff + dimsSizeBuff) $ do
+        offset <- local $ ival 1
+
+        initGroups relays buff offset
+        initRelays relays buff offset
+
+
+        let ds = EDim.dimmers (FDim.getDimmers dimmers)
+        arrayMap $ \ix -> do
+            offset' <- deref offset
+            let d = ds ! ix
+            group    <- unpack buff  offset'
+            mode     <- unpack buff (offset' + 1)
+            value    <- unpack buff (offset' + 2) :: Ivory eff Uint8
+            EDim.initialize d group mode (safeCast value / 255) 0
+            EDim.syncDimmerGroup ds d ix
+            store offset $ offset' + 3
+
+        store shouldInit false
