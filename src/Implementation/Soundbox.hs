@@ -325,7 +325,7 @@ onRtp Soundbox{..} buff size = do
             pack txRtpBuff 4 ip2
             pack txRtpBuff 5 ip3
             pack txRtpBuff 6 ip4
-            packLE txRtpBuff 7 port
+            packBE txRtpBuff 7 port
             transmit txRtpBuff
             let run rtp i =
                     when (index ==? fromIntegral i) $ do
