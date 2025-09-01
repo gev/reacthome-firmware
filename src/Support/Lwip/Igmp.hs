@@ -8,6 +8,7 @@ module Support.Lwip.Igmp
     , startIgmp
     , tmrIgmp
     , joinIgmpGroupNetif
+    , leaveIgmpGroupNetif
 
     , inclIgmp
     ) where
@@ -54,9 +55,17 @@ igmp_joingroup_netif :: Def ('[NETIF s, IP_ADDR_4 s1] :-> ErrT)
 igmp_joingroup_netif = fun "igmp_joingroup_netif"
 
 
+leaveIgmpGroupNetif :: NETIF s -> IP_ADDR_4 s1 -> Ivory eff ErrT
+leaveIgmpGroupNetif = call igmp_leavegroup_netif
+
+igmp_leavegroup_netif :: Def ('[NETIF s, IP_ADDR_4 s1] :-> ErrT)
+igmp_leavegroup_netif = fun "igmp_leavegroup_netif"
+
+
 inclIgmp :: ModuleDef
 inclIgmp = do
     incl igmp_init
     incl igmp_start
     incl igmp_tmr
     incl igmp_joingroup_netif
+    incl igmp_leavegroup_netif

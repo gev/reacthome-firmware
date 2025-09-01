@@ -131,6 +131,7 @@ executable reacthome-firmware
     Endpoint.Dimmers
     Endpoint.Groups
     Endpoint.Relays
+    Endpoint.StereoAMP
     Feature.ALED
     Feature.AOutputs
     Feature.DInputs
@@ -140,7 +141,6 @@ executable reacthome-firmware
     Feature.Dimmers.DC
     Feature.Dopplers
     Feature.Indicator
-    Feature.Lanamp
     Feature.Mix.Indicator
     Feature.RS485.RBUS
     Feature.RS485.RBUS.Data
@@ -154,6 +154,9 @@ executable reacthome-firmware
     Feature.SRC4392
     Feature.Scd40
     Feature.Sht21
+    Feature.RTP
+    Feature.SPDIF
+    Feature.I2SPlay
     Feature.Smart.Top
     Feature.Smart.Top.Buttons
     Feature.Smart.Top.LEDs
@@ -172,7 +175,6 @@ executable reacthome-firmware
     Formula.Doppler1
     Formula.Doppler5
     Formula.Echo
-    Formula.Lanamp
     Formula.Mix6x12
     Formula.MixH
     Formula.Relay12
@@ -203,7 +205,6 @@ executable reacthome-firmware
     Implementation.Dummy
     Implementation.Echo
     Implementation.Hub
-    Implementation.Lanamp
     Implementation.Mix
     Implementation.MixH
     Implementation.Relay

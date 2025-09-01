@@ -110,6 +110,7 @@ deviceTypeDim1AcRs      = 0xB6 :: Uint8
 
 deviceTypeServer        = 0xC0 :: Uint8
 deviceTypeRsHub4        = 0xC1 :: Uint8
+deviceTypeSoundbox      = 0xC2 :: Uint8
 
 
 
