@@ -112,7 +112,7 @@ mkSoundbox transport' enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
 
     src4392 <- S.mkSRC4392 i2c mute
 
-    let name = "soudbox"
+    let name = "soundbox"
     mcu       <- asks D.mcu
     shouldInit       <- asks D.shouldInit
     let peripherals' = peripherals mcu
