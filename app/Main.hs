@@ -59,8 +59,7 @@ main = do
               , smartTopG6I
               , smartTopG6Test
               ]
-    mapM_ gcc [ 
-              , rsHub4
+    mapM_ gcc [ rsHub4
               , server
               , soundbox
               ]
