@@ -83,7 +83,6 @@ data Soundbox = Soundbox
     , netif        ::  Record NETIF_STRUCT
     , txRtpBuff    ::  Buffer  9 Uint8
     , lanampBuff   ::  Buffer  41 Uint8
-    -- , groupIp      :: Record IP_ADDR_4_STRUCT
     , i2sSampleMix :: Sample
     , samples      :: Records 9 SampleStruct
     , amps         :: Records 2 StereoAMPStruct
@@ -136,13 +135,10 @@ mkSoundbox transport' enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
 
     i2sSampleMix  <- record (name <> "_sample_mix") [left .= izero, right .= izero]
 
-
-
     netif <- mkNetif enet
 
     amps <- records_ $ name <> "_amps"
 
-    -- groupIp <- record_ $ name <> "_group_ipaddr4"
 
     let soundbox = Soundbox { i2sTxCh1
                             , i2sTxCh2
@@ -151,7 +147,6 @@ mkSoundbox transport' enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
                             , netif
                             , txRtpBuff
                             , lanampBuff
-                            -- , groupIp
                             , i2sSampleMix
                             , samples
                             , amps
@@ -177,41 +172,7 @@ mkSoundbox transport' enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
 netifStatusCallback :: Soundbox -> Ivory (ProcEffects s ()) ()
 netifStatusCallback Soundbox{..} = do
     pure ()
-    -- let make :: RTP 4480 -> Int -> Ivory (ProcEffects s ()) ()
-    --     make rtp index = do
-    --         let port = 2000 + fromIntegral index
-    --         groupIp <- local $ istruct [addr .= ival 0]
-    --         createIpAddr4 groupIp 239 1 1 $ fromIntegral index
-    --         createRtpUdp rtp netif groupIp port
-    -- zipWithM_ make rtps [1..]
 
--- refillBuffI2S :: Soundbox -> Ivory eff ()
--- refillBuffI2S s@Soundbox{..} = do
---     playI2S i2sTxCh1 \ch1 -> do
---         playI2S i2sTxCh2 \ch2 -> do
-
---             rtpSamples <- mapM getRtpSample rtps
-
---             spdif <- getSpdifSample i2sSpdif
-
---             mix <- mixer s spdif rtpSamples
-
---             ch1 <== mix
---             ch2 <== mix
-
-
--- mixer :: Soundbox -> Sample -> [Sample] -> Ivory eff Sample
--- mixer amp spdif samples = do
---     let res = i2sSampleMix amp
---     res <== spdif
---     forM_ samples \sample -> do
---             fl <- deref (res ~> left)
---             fr <- deref (res ~> right)
---             sl <- deref (sample ~> left)
---             sr <- deref (sample ~> right)
---             store (res ~> left)  (fl + sl)
---             store (res ~> right) (fr + sr)
---     pure res
 
 
 refillBuffI2S :: Soundbox -> Ivory (ProcEffects s ()) ()
@@ -308,9 +269,9 @@ mix11 src amp dst = do
 instance Controller Soundbox where
     handle s@Soundbox{..} buff size = do
         action <- unpack buff 0
-        cond_ [ action ==? actionRtp         ==> onRtp    s   buff size
-              , action ==? actionLanamp      ==> onLanamp s   buff size
-              , action ==? actionInitialize  ==> onInit s   buff size
+        cond_ [ action ==? actionRtp         ==> onRtp     s  buff size
+              , action ==? actionLanamp      ==> onLanamp  s  buff size
+              , action ==? actionInitialize  ==> onInit    s  buff size
               ]
 
 
@@ -344,8 +305,6 @@ onInit Soundbox{..} buff size = do
                 when active $ createRtpUdp rtp netif ip1 ip2 ip3 ip4 port
         zipWithM_ run rtps [0..]
 
-        
-
         store shouldInit false
 
 -- type: ACTION_RTP, index, active, group, port
@@ -375,7 +334,8 @@ onRtp Soundbox{..} buff size = do
             zipWithM_ run rtps [1..]
 
 
-
+-- size 41
+-- lanamp:  ACTION_LANAMP index mode (2 byte volume??)  (active x 18) (volume x 18)
 onLanamp Soundbox{..} buff size = do
     when (size >=? 41) $ do
         index <- deref $ buff ! 1
@@ -400,9 +360,3 @@ onLanamp Soundbox{..} buff size = do
 
             transmit lanampBuff
 
-
-
-
-
--- size 41
--- lanamp:  ACTION_LANAMP index mode (2 byte volume??)  (active x 18) (volume x 18)
