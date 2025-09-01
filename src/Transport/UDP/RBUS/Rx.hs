@@ -21,12 +21,6 @@ import           Transport.UDP.RBUS.Tx
 
 
 
-rxTask :: (LwipPort e, Enet e) => e -> RBUS ->  Ivory (ProcEffects s ()) ()
-rxTask enet RBUS{..} = do
-    reval <- rxFrameSize enet
-    when (reval >? 1) $
-        void $ inputLwipPortIf enet netif
-
 
 receiveCallback :: RBUS -> Def (UdpRecvFn s1 s2 s3 s4)
 receiveCallback rbus@RBUS{..} = proc "udp_echo_callback" $ \_ upcb pbuff addr port -> body $ do

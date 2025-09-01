@@ -40,8 +40,6 @@ OF SUCH DAMAGE.
 
 #define LWIP_IPV4               1             
 
-#define LWIP_IGMP               1
-
 
 #define SYS_LIGHTWEIGHT_PROT    0                        /* SYS_LIGHTWEIGHT_PROT==1: if you want inter-task protection 
                                                             for certain critical regions during buffer allocation,
@@ -55,7 +53,7 @@ OF SUCH DAMAGE.
                                                             is compiled. 4 byte alignment -> define MEM_ALIGNMENT 
                                                             to 4, 2 byte alignment -> define MEM_ALIGNMENT to 2 */
 
-#define MEM_SIZE                (20*1024)                /* the size of the heap memory, if the application will 
+#define MEM_SIZE                (40*1024)                /* the size of the heap memory, if the application will 
                                                             send a lot of data that needs to be copied, this should
                                                             be set high */
 
@@ -63,7 +61,7 @@ OF SUCH DAMAGE.
                                                             sends a lot of data out of ROM (or other static memory),
                                                             this should be set high */
 
-#define MEMP_NUM_UDP_PCB        6                        /* the number of UDP protocol control blocks, one
+#define MEMP_NUM_UDP_PCB        10                        /* the number of UDP protocol control blocks, one
                                                             per active UDP "connection" */
 
 #define MEMP_NUM_TCP_PCB        10                       /* the number of simulatenously active TCP connections */
@@ -79,6 +77,11 @@ OF SUCH DAMAGE.
 /* Pbuf options */
 #define PBUF_POOL_SIZE          10                       /* the number of buffers in the pbuf pool */
 #define PBUF_POOL_BUFSIZE       1500                     /* the size of each pbuf in the pbuf pool */
+
+/* IGMP options */
+#define LWIP_IGMP               1
+
+#define MEMP_NUM_IGMP_GROUP     12
 
 /* TCP options */
 #define LWIP_TCP                0

@@ -264,6 +264,7 @@ data GD32F4xx = GD32F4xx
     , i2c_2     :: I2C'
 
     , i2s_tx_1  :: I2STX'
+    , i2s_tx_2  :: I2STX'
 
     , i2s_trx_1 :: I2STRX'
 
@@ -566,6 +567,15 @@ gd32f4xx = MCU $ mkPlatform G.systemClock makeMac inclGD32F4xx GD32F4xx
                          (pd_1  af_7)
                          (pc_7  af_5)
                          (pc_6  af_5)
+
+    , i2s_tx_2 = mkI2STX spi2 rcu_spi2
+                         rcu_dma0 dma0 dma_ch5
+                         dma_subperi0
+                         dma0_channel5_irqn
+                         (pb_5  af_6)
+                         (pa_15 af_6)
+                         (pb_3  af_6)
+                         (pb_10 af_6)
 
     , i2s_trx_1 = mkI2STRX spi1 rcu_spi1
                            rcu_dma0 dma0 dma_ch4
