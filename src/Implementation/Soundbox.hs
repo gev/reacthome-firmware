@@ -216,8 +216,8 @@ mixLR src amp dst = do
             store dr $ dr' + volume' * sr
     dl' <- deref dl
     dr' <- deref dr
-    store (dst ~> left)  $ castDefault (dl' / 9 * 255)
-    store (dst ~> right) $ castDefault (dr' / 9 * 255)
+    store (dst ~> left)  $ castDefault dl'
+    store (dst ~> right) $ castDefault dr'
 
 mixRL :: Records 9 SampleStruct -> Record StereoAMPStruct -> Sample -> Ivory (ProcEffects s ()) ()
 mixRL src amp dst = do
@@ -236,8 +236,8 @@ mixRL src amp dst = do
             store dr $ dr' + volume' * sr
     dl' <- deref dl
     dr' <- deref dr
-    store (dst ~> right) $ castDefault (dl' / 9 * 255)
-    store (dst ~> left) $ castDefault (dr' / 9 * 255)
+    store (dst ~> right) $ castDefault dl'
+    store (dst ~> left)  $ castDefault dr'
 
 mix11 :: Records 9 SampleStruct -> Record StereoAMPStruct -> Sample -> Ivory (ProcEffects s ()) ()
 mix11 src amp dst = do
@@ -263,8 +263,8 @@ mix11 src amp dst = do
             store dr $ dr' + volume' * (sl + sr)
     dl' <- deref dl
     dr' <- deref dr
-    store (dst ~> left)  $ castDefault (dl' / 18 * 255)
-    store (dst ~> right) $ castDefault (dr' / 18 * 255)
+    store (dst ~> left)  $ castDefault (dl' / 2)
+    store (dst ~> right) $ castDefault (dr' / 2)
 
 instance Controller Soundbox where
     handle s@Soundbox{..} buff size = do
@@ -277,8 +277,8 @@ instance Controller Soundbox where
 
 onInit Soundbox{..} buff size = do
     when (size >=? 135) $ do
-
         arrayMap $ \kx -> do
+            countUsed <- local (iarray [izeroval, izeroval]  :: Init ('Array 2 ('Stored IFloat)))
             let base = 1 + 39 * fromIx kx
             mode' <- deref $ buff ! toIx base
             let amp = amps ! kx
@@ -286,11 +286,19 @@ onInit Soundbox{..} buff size = do
                 let zone' = amp ~> zone ! ix
                 arrayMap $ \jx -> do
                     let ux =  3 + base + 9 * fromIx ix + fromIx jx
-                    let vx = 21 + base + 9 * fromIx ix + fromIx jx
                     isUsed' <- unpack buff $ toIx ux
-                    volume' <- deref (buff ! toIx vx)
                     store (zone' ~> isUsed ! jx) isUsed'
-                    store (zone' ~> volume ! jx) $ safeCast volume' / 255
+                    when isUsed' do
+                        n <- deref (countUsed ! ix)
+                        store (countUsed ! ix) (n + 1)
+                    pack lanampBuff (toIx ux) isUsed'
+                arrayMap $ \jx -> do
+                    let vx = 22 + 9 * fromIx ix + fromIx jx
+                    volume' <- unpack buff $ toIx vx
+                    nu <- deref (countUsed ! ix)
+                    when (nu /=? 0) do 
+                           store (zone' ~> volume ! jx) $ safeCast volume' / nu 
+                    store (lanampBuff ! toIx vx) volume'
                 store (amp ~> mode) mode'
 
         let run rtp i = do
@@ -337,6 +345,7 @@ onRtp Soundbox{..} buff size = do
 -- size 41
 -- lanamp:  ACTION_LANAMP index mode (2 byte volume??)  (active x 18) (volume x 18)
 onLanamp Soundbox{..} buff size = do
+    countUsed <- local (iarray [izeroval, izeroval]  :: Init ('Array 2 ('Stored IFloat)))
     when (size >=? 41) $ do
         index <- deref $ buff ! 1
         when (index >=? 1 .&& index <=? 2) $ do
@@ -346,12 +355,18 @@ onLanamp Soundbox{..} buff size = do
                 let zone' = amp ~> zone ! ix
                 arrayMap $ \jx -> do
                     let ux =  5 + 9 * fromIx ix + fromIx jx
-                    let vx = 23 + 9 * fromIx ix + fromIx jx
                     isUsed' <- unpack buff $ toIx ux
-                    volume' <- unpack buff $ toIx vx
                     store (zone' ~> isUsed ! jx) isUsed'
-                    store (zone' ~> volume ! jx) $ safeCast volume' / 255
+                    when isUsed' do
+                        n <- deref (countUsed ! ix)
+                        store (countUsed ! ix) (n + 1)
                     pack lanampBuff (toIx ux) isUsed'
+                arrayMap $ \jx -> do
+                    let vx = 23 + 9 * fromIx ix + fromIx jx
+                    volume' <- unpack buff $ toIx vx
+                    nu <- deref (countUsed ! ix)
+                    when (nu /=? 0) do 
+                           store (zone' ~> volume ! jx) $ safeCast volume' / nu 
                     store (lanampBuff ! toIx vx) volume'
                 store (amp ~> mode) mode'
             store (lanampBuff ! 2) mode'
