@@ -278,27 +278,26 @@ instance Controller Soundbox where
 onInit Soundbox{..} buff size = do
     when (size >=? 135) $ do
         arrayMap $ \kx -> do
-            countUsed <- local (iarray [izeroval, izeroval])
             let base = 1 + 39 * fromIx kx
             mode' <- deref $ buff ! toIx base
             let amp = amps ! kx
             arrayMap $ \ix -> do
+                countUsed <- local izeroval
                 let rules' = amp ~> rules ! ix
                 arrayMap $ \jx -> do
                     let ux =  3 + base + 9 * fromIx ix + fromIx jx
                     isUsed' <- unpack buff $ toIx ux
                     store (rules' ~> isUsed ! jx) isUsed'
                     when isUsed' do
-                        n <- deref (countUsed ! ix)
-                        store (countUsed ! ix) (n + 1)
+                        n <- deref countUsed
+                        store countUsed $ n + 1
                     pack lanampBuff (toIx ux) isUsed'
                 arrayMap $ \jx -> do
                     let vx = 22 + 9 * fromIx ix + fromIx jx
-                    volume' <- unpack buff $ toIx vx
-                    nu <- deref (countUsed ! ix)
+                    volume' <- deref $ buff ! toIx vx
+                    nu <- deref countUsed
                     when (nu /=? 0) do 
                            store (rules' ~> volume ! jx) $ safeCast volume' / nu 
-                    store (lanampBuff ! toIx vx) volume'
                 store (amp ~> mode) mode'
 
         let run rtp i = do
@@ -345,26 +344,26 @@ onRtp Soundbox{..} buff size = do
 -- size 41
 -- lanamp:  ACTION_LANAMP index mode (2 byte volume??)  (active x 18) (volume x 18)
 onLanamp Soundbox{..} buff size = do
-    countUsed <- local (iarray [izeroval, izeroval])
     when (size >=? 41) $ do
         index <- deref $ buff ! 1
         when (index >=? 1 .&& index <=? 2) $ do
             mode' <- deref $ buff ! 2
             let amp = amps ! toIx (index - 1)
             arrayMap $ \ix -> do
+                countUsed <- local izeroval
                 let rules' = amp ~> rules ! ix
                 arrayMap $ \jx -> do
                     let ux =  5 + 9 * fromIx ix + fromIx jx
                     isUsed' <- unpack buff $ toIx ux
                     store (rules' ~> isUsed ! jx) isUsed'
                     when isUsed' do
-                        n <- deref (countUsed ! ix)
-                        store (countUsed ! ix) (n + 1)
+                        n <- deref countUsed
+                        store countUsed $ n + 1
                     pack lanampBuff (toIx ux) isUsed'
                 arrayMap $ \jx -> do
                     let vx = 23 + 9 * fromIx ix + fromIx jx
                     volume' <- unpack buff $ toIx vx
-                    nu <- deref (countUsed ! ix)
+                    nu <- deref countUsed
                     when (nu /=? 0) do 
                            store (rules' ~> volume ! jx) $ safeCast volume' / nu 
                     store (lanampBuff ! toIx vx) volume'
