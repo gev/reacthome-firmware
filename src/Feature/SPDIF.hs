@@ -39,7 +39,11 @@ mkSpdif i2s = do
 receiveI2S :: KnownNat n => SPDIF n -> Sample -> Ivory eff ()
 receiveI2S SPDIF{..} sample =
     push i2sSpdifQueue $ \ i2sSpdifBuff i -> do
-        i2sSpdifBuff ! toIx i <== sample
+        l <- deref (sample ~> left) 
+        r <- deref (sample ~> right) 
+        store (i2sSpdifBuff ! toIx i ~> left)  $ l `iDiv` 256 
+        store (i2sSpdifBuff ! toIx i ~> right) $ r `iDiv` 256
+
 
 
 getSpdifSample :: KnownNat n => SPDIF n -> Ivory eff Sample

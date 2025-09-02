@@ -27,6 +27,7 @@ module Support.Device.GD32F4xx.SPI
 
     , I2S_FRAMEFORMAT
     , i2s_frameformat_dt16b_ch16b
+    , i2s_frameformat_dt24b_ch32b
     , i2s_frameformat_dt32b_ch32b
 
     , I2S_MCKOUT
@@ -89,6 +90,7 @@ newtype I2S_FRAMEFORMAT = I2S_FRAMEFORMAT Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 i2s_frameformat_dt16b_ch16b = I2S_FRAMEFORMAT $ ext "I2S_FRAMEFORMAT_DT16B_CH16B"
+i2s_frameformat_dt24b_ch32b = I2S_FRAMEFORMAT $ ext "I2S_FRAMEFORMAT_DT24B_CH32B"
 i2s_frameformat_dt32b_ch32b = I2S_FRAMEFORMAT $ ext "I2S_FRAMEFORMAT_DT32B_CH32B"
 
 
@@ -180,6 +182,7 @@ inclSPI = do
     inclSym i2s_audiosample_48k
 
     inclSym i2s_frameformat_dt16b_ch16b
+    inclSym i2s_frameformat_dt24b_ch32b
     inclSym i2s_frameformat_dt32b_ch32b
 
     inclSym i2s_mckout_enable
