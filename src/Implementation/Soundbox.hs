@@ -278,7 +278,7 @@ instance Controller Soundbox where
 onInit Soundbox{..} buff size = do
     when (size >=? 135) $ do
         arrayMap $ \kx -> do
-            countUsed <- local (iarray [izeroval, izeroval]  :: Init ('Array 2 ('Stored IFloat)))
+            countUsed <- local (iarray [izeroval, izeroval])
             let base = 1 + 39 * fromIx kx
             mode' <- deref $ buff ! toIx base
             let amp = amps ! kx
@@ -345,7 +345,7 @@ onRtp Soundbox{..} buff size = do
 -- size 41
 -- lanamp:  ACTION_LANAMP index mode (2 byte volume??)  (active x 18) (volume x 18)
 onLanamp Soundbox{..} buff size = do
-    countUsed <- local (iarray [izeroval, izeroval]  :: Init ('Array 2 ('Stored IFloat)))
+    countUsed <- local (iarray [izeroval, izeroval])
     when (size >=? 41) $ do
         index <- deref $ buff ! 1
         when (index >=? 1 .&& index <=? 2) $ do
@@ -374,4 +374,3 @@ onLanamp Soundbox{..} buff size = do
             store (lanampBuff ! 0) actionLanamp
 
             transmit lanampBuff
-
