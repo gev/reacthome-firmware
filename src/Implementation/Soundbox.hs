@@ -154,7 +154,7 @@ mkSoundbox transport' enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
                             , transmit = T.transmitBuffer transport
                             }
 
-    addStruct (Proxy:: Proxy ZoneAMPStruct)
+    addStruct (Proxy:: Proxy RulesAMPStruct)
     addStruct (Proxy:: Proxy StereoAMPStruct)
 
     addNetifOnUpCallback $ netifStatusCallback soundbox
@@ -203,11 +203,11 @@ mixLR :: Records 9 SampleStruct -> Record StereoAMPStruct -> Sample -> Ivory (Pr
 mixLR src amp dst = do
     dl <- local $ ival 0
     dr <- local $ ival 0
-    let rules = amp ~> zone ! 0
+    let rules' = amp ~> rules ! 0
     arrayMap $ \ix -> do
-        isUsed' <- deref $ rules ~> isUsed ! ix
+        isUsed' <- deref $ rules' ~> isUsed ! ix
         when isUsed' $ do
-            volume' <- deref $ rules ~> volume ! ix
+            volume' <- deref $ rules' ~> volume ! ix
             sl <- safeCast <$> deref (src ! ix ~> left)
             sr <- safeCast <$> deref (src ! ix ~> right)
             dl' <- deref dl
@@ -223,11 +223,11 @@ mixRL :: Records 9 SampleStruct -> Record StereoAMPStruct -> Sample -> Ivory (Pr
 mixRL src amp dst = do
     dl <- local $ ival 0
     dr <- local $ ival 0
-    let rules = amp ~> zone ! 0
+    let rules' = amp ~> rules ! 0
     arrayMap $ \ix -> do
-        isUsed' <- deref $ rules  ~> isUsed ! ix
+        isUsed' <- deref $ rules' ~> isUsed ! ix
         when isUsed' $ do
-            volume' <- deref $ rules ~> volume ! ix
+            volume' <- deref $ rules' ~> volume ! ix
             sl <- safeCast <$> deref (src ! ix ~> left)
             sr <- safeCast <$> deref (src ! ix ~> right)
             dl' <- deref dl
@@ -243,20 +243,20 @@ mix11 :: Records 9 SampleStruct -> Record StereoAMPStruct -> Sample -> Ivory (Pr
 mix11 src amp dst = do
     dl <- local $ ival (0 :: IFloat)
     dr <- local $ ival (0 :: IFloat)
-    let rules = amp ~> zone ! 0
+    let rules' = amp ~> rules ! 0
     arrayMap $ \ix -> do
-        isUsed' <- deref $ rules  ~> isUsed ! ix
+        isUsed' <- deref $ rules'  ~> isUsed ! ix
         when isUsed' $ do
-            volume' <- deref $ rules ~> volume ! ix
+            volume' <- deref $ rules' ~> volume ! ix
             sl <- safeCast <$> deref (src ! ix ~> left)
             sr <- safeCast <$> deref (src ! ix ~> right)
             dl' <- deref dl
             store dl $ dl' + volume' * (sl + sr) 
-    let rules = amp ~> zone ! 1
+    let rules' = amp ~> rules ! 1
     arrayMap $ \ix -> do
-        isUsed' <- deref $ rules  ~> isUsed ! ix
+        isUsed' <- deref $ rules' ~> isUsed ! ix
         when isUsed' $ do
-            volume' <- deref $ rules ~> volume ! ix
+            volume' <- deref $ rules' ~> volume ! ix
             sl <- safeCast <$> deref (src ! ix ~> left)
             sr <- safeCast <$> deref (src ! ix ~> right)
             dr' <- deref dr
@@ -283,11 +283,11 @@ onInit Soundbox{..} buff size = do
             mode' <- deref $ buff ! toIx base
             let amp = amps ! kx
             arrayMap $ \ix -> do
-                let zone' = amp ~> zone ! ix
+                let rules' = amp ~> rules ! ix
                 arrayMap $ \jx -> do
                     let ux =  3 + base + 9 * fromIx ix + fromIx jx
                     isUsed' <- unpack buff $ toIx ux
-                    store (zone' ~> isUsed ! jx) isUsed'
+                    store (rules' ~> isUsed ! jx) isUsed'
                     when isUsed' do
                         n <- deref (countUsed ! ix)
                         store (countUsed ! ix) (n + 1)
@@ -297,7 +297,7 @@ onInit Soundbox{..} buff size = do
                     volume' <- unpack buff $ toIx vx
                     nu <- deref (countUsed ! ix)
                     when (nu /=? 0) do 
-                           store (zone' ~> volume ! jx) $ safeCast volume' / nu 
+                           store (rules' ~> volume ! jx) $ safeCast volume' / nu 
                     store (lanampBuff ! toIx vx) volume'
                 store (amp ~> mode) mode'
 
@@ -352,11 +352,11 @@ onLanamp Soundbox{..} buff size = do
             mode' <- deref $ buff ! 2
             let amp = amps ! toIx (index - 1)
             arrayMap $ \ix -> do
-                let zone' = amp ~> zone ! ix
+                let rules' = amp ~> rules ! ix
                 arrayMap $ \jx -> do
                     let ux =  5 + 9 * fromIx ix + fromIx jx
                     isUsed' <- unpack buff $ toIx ux
-                    store (zone' ~> isUsed ! jx) isUsed'
+                    store (rules' ~> isUsed ! jx) isUsed'
                     when isUsed' do
                         n <- deref (countUsed ! ix)
                         store (countUsed ! ix) (n + 1)
@@ -366,7 +366,7 @@ onLanamp Soundbox{..} buff size = do
                     volume' <- unpack buff $ toIx vx
                     nu <- deref (countUsed ! ix)
                     when (nu /=? 0) do 
-                           store (zone' ~> volume ! jx) $ safeCast volume' / nu 
+                           store (rules' ~> volume ! jx) $ safeCast volume' / nu 
                     store (lanampBuff ! toIx vx) volume'
                 store (amp ~> mode) mode'
             store (lanampBuff ! 2) mode'
