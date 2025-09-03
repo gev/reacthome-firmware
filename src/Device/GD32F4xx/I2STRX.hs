@@ -175,11 +175,11 @@ prepareBuff prepare buff = do
         i' <- deref i
         when (i' >=? arrayLen buff) breakOut
         t <- prepare
-        store (buff ! toIx i') . swap16bit . twosComplementRep =<< deref (t ~> I.left)
-        store (buff ! toIx (i' + 1)) . swap16bit . twosComplementRep =<< deref (t ~> I.right)
+        store (buff ! toIx i') . convert =<< deref (t ~> I.left)
+        store (buff ! toIx (i' + 1)) . convert =<< deref (t ~> I.right)
         store i (i' + 2)
-    where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)
-
+    where 
+        convert = swap16bit . twosComplementRep
 
 
 instance KnownNat rn => Handler I.HandleI2SRX (I2STRX tn rn) where
@@ -205,8 +205,11 @@ processBuff i2s handle buff = do
     forever $ do
         i' <- deref i
         when (i' >=? arrayLen buff) breakOut
-        store (sample i2s ~> I.left) . twosComplementCast . swap16bit =<< deref (buff ! toIx i')
-        store (sample i2s ~> I.right) . twosComplementCast . swap16bit =<< deref (buff ! toIx (i' + 1))
+        store (sample i2s ~> I.left) . convert =<< deref (buff ! toIx i')
+        store (sample i2s ~> I.right) . convert =<< deref (buff ! toIx (i' + 1))
         store i (i' + 2)
         handle (sample i2s)
-    where swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)
+    where 
+        convert = twosComplementCast . swap16bit
+        
+swap16bit w = ( w `iShiftL` 16) .| ( w `iShiftR` 16)
