@@ -58,6 +58,7 @@ actionReady                   = 0xF1 :: Uint8
 actionInitialize              = 0xF2 :: Uint8
 actionInitialized             = 0xF3 :: Uint8
 actionGetState                = 0xF4 :: Uint8
+actionLog                     = 0xF9 :: Uint8
 actionFindMe                  = 0xFA :: Uint8
 actionBootload                = 0xFB :: Uint8
 actionMacAddress              = 0xFC :: Uint8

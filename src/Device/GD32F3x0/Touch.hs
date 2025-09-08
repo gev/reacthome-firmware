@@ -157,13 +157,13 @@ runMeasurement Touch{..} handle = do
                 state <- deref stateTouch
                 tresholdUp <- deref tresholdUpper
                 tresholdLow <- deref tresholdLower
-                -- store debugVal dt
+                store debugVal dt
                 when (dt >? safeCast tresholdUp) $ do
                     store stateTouch true
-                    when (iNot state) $ store debugVal dt
+                    -- when (iNot state) $ store debugVal dt
                 when (dt <? safeCast tresholdLow) $ do 
                     store stateTouch false
-                    when state $ store debugVal dt
+                    -- when state $ store debugVal dt
 
             store stateMeasurement stateWaitStart
             handle
