@@ -11,6 +11,7 @@
 {-# LANGUAGE NumericUnderscores  #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# OPTIONS_GHC -Wno-missing-fields #-}
+{-# LANGUAGE TypeApplications #-}
 
 module Feature.Touches where
 
@@ -49,7 +50,7 @@ data Touches n = forall to. (I.Touch to) => Touches
     , getDInputs    :: DI.DInputs n
     , currentTouch  :: Value (Ix n)
     , indexTouch    :: Value Uint8
-    , buf           :: Buffer 7 Uint8
+    , buf           :: Buffer 14 Uint8
     , transmit      :: forall l. KnownNat l
                     => Buffer l Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
@@ -81,7 +82,7 @@ touches tresholdLower tresholdUpper touches' transport  = do
                           }
 
 
-    addTask  $ delay 100 "sync"           $ sendTimeTask touches
+    addTask  $ delay 100 "touches_log"            $ sendTimeTask touches
     addTask  $ yeld      "touches_run"    $ touchesRunTask touches
     addTask  $ delay 10  "touches_manage" $ manageTouches touches
     addTask  $ yeld      "touches_sync"   $ syncTouches   touches
@@ -94,23 +95,10 @@ sendTimeTask touches@Touches{..} = do
     let n = length getTouches
     arrayMap $ \ix ->
         overSingleTouch touches ix \t -> do
-            -- time <- (128 +) <$> I.getTime t
-            -- cond_ [ time <? 0 ==> store (buf ! ix) 0
-            --       , time >? 255 ==> store (buf ! ix) 255
-            --       , true ==> store (buf ! ix) (castDefault time)
-            --       ]
-
             time <- I.getTime t
-            ifte_ (time <? 255)
-                (store (buf ! toIx (fromIx ix + 1)) $ castDefault time)
-                (store (buf ! toIx (fromIx ix + 1)) 255)
-
-            store (buf ! 0) actionDoppler1
-
-            -- state <- I.getStateBtn t
-            -- ifte_ state
-            --     (store (buf ! ix) 100)
-            --     (store (buf ! ix) 0)
+            packBE buf (toIx $ fromIx ix * 2 + 2) $ castDefault @Uint16 time
+    store (buf ! 0) actionError
+    store (buf ! 1) 1 -- type debug message
 
 
     transmit buf
