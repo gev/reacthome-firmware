@@ -42,7 +42,6 @@ data Touch = Touch { port             :: GPIO_PERIPH
                    , extiIRQ          :: IRQn
                    , timer            :: Timer
                    , stateMeasurement :: Value Uint8
-                   , calculateBound   :: Value IBool
                    , timestamp1       :: Value Uint16
                    , timestamp2       :: Value Uint16
                    , tresholdLower    :: Value Uint16
@@ -71,7 +70,6 @@ mkTouch port pin rcuPin extiIRQ srcPort srcPin ex tresholdLower' tresholdUpper' 
     timeMin           <- value ("touch_time_min" <> name) 0xffff
     time              <- value ("touch_time" <> name) 0xffff
     stateMeasurement  <- value ("touch_state_measurement" <> name) stateWaitStart
-    calculateBound    <- value ("touch_calculate_bound" <> name) false
     stateTouch        <- value ("touch_state_touch" <> name) false
     debugVal          <- value ("debug_val" <> name) 0
 
@@ -88,17 +86,27 @@ mkTouch port pin rcuPin extiIRQ srcPort srcPin ex tresholdLower' tresholdUpper' 
         clearExtiInterruptFlag  ex
         disableExtiInterrupt    ex
 
-    let touch = Touch { port, pin, srcPort, srcPin, ex, extiIRQ, timer, tresholdLower, tresholdUpper, timestamp1, timestamp2, timeMin, time, stateMeasurement, calculateBound, stateTouch, debugVal }
+    let touch = Touch { port            
+                      , pin             
+                      , srcPort         
+                      , srcPin          
+                      , ex              
+                      , extiIRQ         
+                      , timer           
+                      , stateMeasurement
+                      , timestamp1      
+                      , timestamp2      
+                      , tresholdLower   
+                      , tresholdUpper   
+                      , timeMin         
+                      , time            
+                      , stateTouch      
+                      , debugVal        
+                      }
 
     addBody (makeIRQHandlerName extiIRQ) $ handleEXTI ex $ extiHandler touch
-    addTask $ delay 300 ("touch_run"<> name) $ startMeasurementMinMax touch
 
     pure touch
-
-
-startMeasurementMinMax :: Touch -> Ivory eff ()
-startMeasurementMinMax Touch{..} = do
-    store calculateBound true
 
 
 modePort :: GPIO_PERIPH -> GPIO_PIN -> GPIO_MODE  -> Ivory eff ()
@@ -149,22 +157,20 @@ runMeasurement Touch{..} handle = do
                 store time $ average 0.01 previousTime $ safeCast newTime
 
                 time' <- deref time
-                calculateBound' <- deref calculateBound
-                when calculateBound' $ do
-                    timeMin' <- deref timeMin
-                    when (time' <? timeMin') $ store timeMin time'
+                timeMin' <- deref timeMin
+                when (time' <? timeMin') $ store timeMin time'
 
-                    let dt = time' - timeMin'
-                    state <- deref stateTouch
-                    tresholdUp <- deref tresholdUpper
-                    tresholdLow <- deref tresholdLower
-                    store debugVal dt
-                    when (dt >? safeCast tresholdUp) $ do
-                        store stateTouch true
-                        -- when (iNot state) $ store debugVal dt
-                    when (dt <? safeCast tresholdLow) $ do 
-                        store stateTouch false
-                        -- when state $ store debugVal dt
+                let dt = time' - timeMin'
+                state <- deref stateTouch
+                tresholdUp <- deref tresholdUpper
+                tresholdLow <- deref tresholdLower
+                store debugVal dt
+                when (dt >? safeCast tresholdUp) $ do
+                    store stateTouch true
+                    -- when (iNot state) $ store debugVal dt
+                when (dt <? safeCast tresholdLow) $ do 
+                    store stateTouch false
+                    -- when state $ store debugVal dt
 
             store stateMeasurement stateWaitStart
             handle
