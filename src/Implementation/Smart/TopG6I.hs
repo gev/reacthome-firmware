@@ -61,12 +61,11 @@ topG6I ::  ( MonadState Context m
            => m t
            -> (t -> m (FT.Touches n))
            -> (E.DInputs n -> t -> f-> m (Vibro n))
-           -> m PowerTouch
            -> (t -> m SHT21)
            -> (p -> m d)
            -> (p -> f)
            -> m (Top n)
-topG6I transport' touches' vibro' touch' sht21' display' etc' = do
+topG6I transport' touches' vibro' sht21' display' etc' = do
     transport      <- transport'
     shouldInit     <- asks D.shouldInit
     mcu            <- asks D.mcu
