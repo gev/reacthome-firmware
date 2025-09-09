@@ -186,7 +186,13 @@ data GD32F3x0 = GD32F3x0
 
     , dac_pa_4  :: DAC'
 
+    , touch_pa4  :: Touch'
+    , touch_pa5  :: Touch'
+    , touch_pa7  :: Touch'
     , touch_pa15 :: Touch'
+    , touch_pb0  :: Touch'
+    , touch_pb1  :: Touch'
+    , touch_pb2  :: Touch'
     , touch_pb3  :: Touch'
     , touch_pb4  :: Touch'
     , touch_pb5  :: Touch'
@@ -392,12 +398,54 @@ gd32f3x0 = MCU $ mkPlatform G.systemClock makeMac inclGD32F3x0 GD32F3x0
     , dac_pa_4 = mkDAC (pa_4 analog)
 
 
+    , touch_pa4 = mkTouch gpioa gpio_pin_4 
+                           rcu_gpioa                  
+                           exti4_15_irqn
+                           exti_source_gpioa
+                           exti_source_pin4
+                           exti_4
+
+    , touch_pa5 = mkTouch gpioa gpio_pin_5 
+                           rcu_gpioa                  
+                           exti4_15_irqn
+                           exti_source_gpioa
+                           exti_source_pin5
+                           exti_5
+
+    , touch_pa7 = mkTouch gpioa gpio_pin_7 
+                           rcu_gpioa                  
+                           exti4_15_irqn
+                           exti_source_gpioa
+                           exti_source_pin0
+                           exti_7
+
     , touch_pa15 = mkTouch gpioa gpio_pin_15 
                            rcu_gpioa                  
                            exti4_15_irqn
                            exti_source_gpioa
                            exti_source_pin15
                            exti_15
+
+    , touch_pb0 = mkTouch gpiob gpio_pin_0 
+                          rcu_gpiob                   
+                          exti0_1_irqn
+                          exti_source_gpiob
+                          exti_source_pin0
+                          exti_0
+
+    , touch_pb1 = mkTouch gpiob gpio_pin_1 
+                          rcu_gpiob                   
+                          exti0_1_irqn
+                          exti_source_gpiob
+                          exti_source_pin1
+                          exti_1
+
+    , touch_pb2 = mkTouch gpiob gpio_pin_2 
+                          rcu_gpiob                   
+                          exti2_3_irqn
+                          exti_source_gpiob
+                          exti_source_pin2
+                          exti_2
 
     , touch_pb3 = mkTouch gpiob gpio_pin_3 
                           rcu_gpiob                   
