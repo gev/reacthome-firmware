@@ -144,26 +144,27 @@ runMeasurement Touch{..} handle = do
             t1 <- deref timestamp1
             t2 <- deref timestamp2
             let newTime = t2 - t1
-            previousTime <- deref time
-            store time $ average 0.01 previousTime $ safeCast newTime
+            when (newTime >? 0) $ do
+                previousTime <- deref time
+                store time $ average 0.01 previousTime $ safeCast newTime
 
-            time' <- deref time
-            calculateBound' <- deref calculateBound
-            when calculateBound' $ do
-                timeMin' <- deref timeMin
-                when (time' <? timeMin') $ store timeMin time'
+                time' <- deref time
+                calculateBound' <- deref calculateBound
+                when calculateBound' $ do
+                    timeMin' <- deref timeMin
+                    when (time' <? timeMin') $ store timeMin time'
 
-                let dt = time' - timeMin'
-                state <- deref stateTouch
-                tresholdUp <- deref tresholdUpper
-                tresholdLow <- deref tresholdLower
-                store debugVal dt
-                when (dt >? safeCast tresholdUp) $ do
-                    store stateTouch true
-                    -- when (iNot state) $ store debugVal dt
-                when (dt <? safeCast tresholdLow) $ do 
-                    store stateTouch false
-                    -- when state $ store debugVal dt
+                    let dt = time' - timeMin'
+                    state <- deref stateTouch
+                    tresholdUp <- deref tresholdUpper
+                    tresholdLow <- deref tresholdLower
+                    store debugVal dt
+                    when (dt >? safeCast tresholdUp) $ do
+                        store stateTouch true
+                        -- when (iNot state) $ store debugVal dt
+                    when (dt <? safeCast tresholdLow) $ do 
+                        store stateTouch false
+                        -- when state $ store debugVal dt
 
             store stateMeasurement stateWaitStart
             handle
