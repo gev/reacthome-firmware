@@ -416,7 +416,7 @@ gd32f3x0 = MCU $ mkPlatform G.systemClock makeMac inclGD32F3x0 GD32F3x0
                            rcu_gpioa                  
                            exti4_15_irqn
                            exti_source_gpioa
-                           exti_source_pin0
+                           exti_source_pin7
                            exti_7
 
     , touch_pa15 = mkTouch gpioa gpio_pin_15 
