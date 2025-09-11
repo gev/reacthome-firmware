@@ -74,7 +74,7 @@ topAP transport' dinputs' sht21' display' etc' = do
     sht21       <- sht21' transport
     let top      = Top { dinputs, leds, buttons, sht21 }
 
-    addHandler $ Render display 30 frameBuffer $ do
+    addHandler $ Render display 30 frameBuffer (pure ()) (pure ()) $ do
         updateLeds    leds
         updateButtons buttons
         render        leds

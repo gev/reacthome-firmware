@@ -31,13 +31,13 @@ import           Data.Matrix
 import           Feature.Smart.Top.PowerTouch (PowerTouch)
 import           Feature.Smart.Top.Vibro      (Vibro, onInitVibro, onVibro,
                                                sendVibro, vibro)
+import qualified Feature.Touches              as FT
 import           GHC.TypeNats
 import           Interface.Display            (Display, Render (Render))
 import           Interface.Flash
 import           Interface.MCU                (peripherals)
 import           Ivory.Language
 import           Ivory.Stdlib
-import qualified Feature.Touches as FT
 
 
 
@@ -60,7 +60,7 @@ topG6I ::  ( MonadState Context m
            )
            => m t
            -> (t -> m (FT.Touches n))
-           -> (E.DInputs n -> t -> f-> m (Vibro n))
+           -> (E.DInputs n -> t -> f-> ((forall eff. Ivory eff ()) -> (forall eff. Ivory eff ()) -> m (Vibro n)))
            -> (t -> m SHT21)
            -> (p -> m d)
            -> (p -> f)
@@ -72,7 +72,7 @@ topG6I transport' touches' vibro' sht21' display' etc' = do
     display        <- display' $ peripherals mcu
     let etc         = etc' $ peripherals mcu
     touches        <- touches' transport
-    vibro          <- vibro' (FT.getDInputs touches) transport etc
+    vibro          <- vibro' (FT.getDInputs touches) transport etc (pure ()) (pure ())
     frameBuffer    <- values' "top_frame_buffer" 0
     leds           <- mkLeds frameBuffer [10, 11, 0, 1, 8, 9, 2, 3, 7, 6, 5, 4] transport etc (replicate 12 true)
     ledsPerButton  <- values "leds_per_button" [2, 2, 2, 2, 2, 2]
@@ -82,7 +82,7 @@ topG6I transport' touches' vibro' sht21' display' etc' = do
     let top         = Top { touches, leds, vibro, buttons, sht21 }
 
 
-    addHandler $ Render display 30 frameBuffer $ do
+    addHandler $ Render display 30 frameBuffer (pure ()) (pure ()) $ do
         updateLeds    leds
         updateButtons buttons
         render        leds

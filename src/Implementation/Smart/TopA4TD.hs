@@ -75,7 +75,7 @@ topA4TD :: ( MonadState Context m
         )
       => m t
       -> (Bool -> t -> m (DI.DInputs n))
-      -> (E.DInputs n -> t -> f-> m (Vibro n))
+      -> (E.DInputs n -> t -> f-> ((forall eff. Ivory eff ()) -> (forall eff. Ivory eff ()) -> m (Vibro n)))
       -> m PowerTouch
       -> (t -> m SHT21)
       -> (p -> m d)
@@ -91,14 +91,14 @@ topA4TD transport' dinputs' vibro' touch' sht21' display' etc' = do
 
     let etc       = etc' $ peripherals mcu
 
-    vibro        <- vibro' (DI.getDInputs dinputs) transport etc
+    vibro        <- vibro' (DI.getDInputs dinputs) transport etc (pure ()) (pure ())
 
     touch'
 
     leds         <- mkLeds frameBuffer [   0
                                         ,  5,  1
                                         ,  4,  2
-                                        ,  3    
+                                        ,  3
 
                                         ,  6
                                         ,  7
@@ -125,7 +125,7 @@ topA4TD transport' dinputs' vibro' touch' sht21' display' etc' = do
 
     let top       = Top { dinputs, leds, vibro, buttons, sht21 }
 
-    addHandler $ Render display 30 frameBuffer $ do
+    addHandler $ Render display 30 frameBuffer (pure ()) (pure ()) $ do
         updateLeds    leds
         updateButtons buttons
         render        leds

@@ -106,9 +106,9 @@ mkNeoPixelPWM timer' pwmChannel dmaRcu dmaPer dmaChannel dmaSubPer dmaIRQn selCh
 
 
 instance KnownNat n => Handler (Render n) NeoPixel where
-  addHandler (Render npx@NeoPixel{..} frameRate frame render) = do
+  addHandler (Render npx@NeoPixel{..} frameRate frame before after render) = do
 
-    addModule $ makeIRQHandler dmaIRQn $ handleDMA npx frame
+    addModule $ makeIRQHandler dmaIRQn $ handleDMA npx frame after
 
     addInit ("neopixel_init" <> symbol dmaChannel) $ do
         render
@@ -119,20 +119,24 @@ instance KnownNat n => Handler (Render n) NeoPixel where
                     ("neo_pixel_" <> show pwmPort) $ do
                         shouldUpdate <- render
                         when shouldUpdate $ do
+                            before
                             store offset 1
                             transmitFrameBuffer npx $ frame ! 0
 
 
 
-handleDMA :: KnownNat n => NeoPixel -> Values n Uint8 -> Ivory eff ()
-handleDMA npx@NeoPixel{..} frame = do
+handleDMA :: KnownNat n => NeoPixel -> Values n Uint8 -> Ivory eff () -> Ivory eff ()
+handleDMA npx@NeoPixel{..} frame after = do
     f <- getInterruptFlagDMA  dmaPer dmaChannel dma_int_flag_ftf
     when f $ do
         clearInterruptFlagDMA dmaPer dmaChannel dma_int_flag_ftf
         offset' <- deref offset
-        when (offset' <? arrayLen frame) $ do
-            transmitFrameBuffer npx $ frame ! toIx offset'
-            store offset $ offset' + 1
+        ifte_ (offset' <? arrayLen frame)
+             (do
+                transmitFrameBuffer npx $ frame ! toIx offset'
+                store offset $ offset' + 1
+             )
+             after
 
 
 
