@@ -51,6 +51,7 @@ data Touches n = forall to. (I.Touch to) => Touches
     , currentTouch  :: Value (Ix n)
     , indexTouch    :: Value Uint8
     , buf           :: Buffer 14 Uint8
+    , shouldRun  :: Value IBool
     , transmit      :: forall l. KnownNat l
                     => Buffer l Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
@@ -64,7 +65,7 @@ touches :: forall m n p c to t tr.
            , KnownNat n
            )
         => IFloat -> IFloat -> List n (p -> IFloat -> IFloat -> m to) -> tr -> Value IBool -> m (Touches n)
-touches thresholdLow thresholdHigh touches' transport shouldManage  = do
+touches thresholdLow thresholdHigh touches' transport shouldRun  = do
     mcu            <- asks D.mcu
     ts             <- traverse (\touch -> touch (peripherals mcu) thresholdLow thresholdHigh) touches'
     currentTouch   <- index "current_touches"
@@ -72,20 +73,19 @@ touches thresholdLow thresholdHigh touches' transport shouldManage  = do
     dinputs        <- DI.mkDinputs "touches"
     buf            <- buffer "touch_buffer"
 
-
     let touches = Touches { getTouches = ts
                           , getDInputs = dinputs
                           , currentTouch
                           , indexTouch
                           , buf
+                          , shouldRun
                           , transmit = T.transmitBuffer transport
                           }
 
-
-    addTask  $ delay 50 "touches_log"            $ sendTimeTask touches
+    addTask  $ delay 50  "touches_log"    $ sendTimeTask   touches
     addTask  $ yeld      "touches_run"    $ touchesRunTask touches
-    addTask  $ delay 10  "touches_manage" $ manageTouches touches
-    addTask  $ yeld      "touches_sync"   $ syncTouches   touches
+    addTask  $ delay 10  "touches_manage" $ manageTouches  touches
+    addTask  $ yeld      "touches_sync"   $ syncTouches    touches
     addSync "touches" $ forceSyncTouches touches
 
     pure touches
@@ -106,28 +106,36 @@ sendTimeTask touches@Touches{..} = do
 
 touchesRunTask :: KnownNat n => Touches n -> Ivory (ProcEffects s ()) ()
 touchesRunTask touches@Touches{..} = do
-    cur <- deref currentTouch
-    overSingleTouch touches cur \t -> I.run t (store currentTouch $ cur + 1)
+    shouldRun' <- deref shouldRun
+    ifte_ shouldRun'
+        (do
+            cur <- deref currentTouch
+            overSingleTouch touches cur \t -> I.run t (store currentTouch $ cur + 1)
+        )
+        (mapM_ I.reset getTouches)
 
 
 
 overSingleTouch :: KnownNat n => Touches n -> Ix n -> (forall to. I.Touch to => to -> Ivory eff ()) -> Ivory eff ()
-overSingleTouch Touches{..} current handle = zipWithM_ run getTouches ints
-        where run touch i = do
-                let ix = fromIntegral i
-                when (ix ==? current) $ do
-                    handle touch
+overSingleTouch Touches{..} current handle =
+    zipWithM_ run getTouches ints
+    where
+        run touch i = do
+            let ix = fromIntegral i
+            when (ix ==? current) $ do
+                handle touch
 
 
 
 forceSyncTouches :: KnownNat n => Touches n -> Ivory eff ()
-forceSyncTouches Touches{..} = do
+forceSyncTouches Touches{..} =
     arrayMap $ \ix -> store (( DI.dinputs getDInputs ! ix) ~> DI.synced) false
 
 
 
 manageTouches :: KnownNat n => Touches n -> Ivory eff ()
-manageTouches Touches{..} = zipWithM_ zip getTouches ints
+manageTouches Touches{..} =
+    zipWithM_ zip getTouches ints
     where
         zip :: I.Touch i => i -> Int -> Ivory eff ()
         zip touch i = do

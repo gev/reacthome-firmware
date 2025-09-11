@@ -78,7 +78,7 @@ mkTouch port pin rcuPin extiIRQ srcPort srcPin ex thresholdLow thresholdHigh = d
         modePort port pin gpio_mode_output
         resetBit port pin
 
-        enablePeriphClock       rcu_gpiob 
+        enablePeriphClock       rcu_gpiob
         modePort gpiob gpio_pin_6 gpio_mode_output
         resetBit gpiob gpio_pin_6 --internal
 
@@ -131,13 +131,10 @@ extiHandler Touch{..} = do
         disableExtiInterrupt ex
         store stateMeasurement stateIsMeasured
 
-
 instance I.Touch Touch where
-
-    getTime Touch{..} = deref debugVal
-
     run = runMeasurement
-
+    reset Touch{..} = store stateMeasurement stateWaitStart
+    getTime Touch{..} = deref debugVal
     getState Touch{..} = deref stateTouch
 
 
