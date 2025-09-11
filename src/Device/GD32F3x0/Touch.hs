@@ -78,13 +78,13 @@ mkTouch port pin rcuPin extiIRQ srcPort srcPin ex thresholdLow thresholdHigh = d
         modePort port pin gpio_mode_output
         resetBit port pin
 
-        enablePeriphClock       rcu_gpiob 
-        modePort gpiob gpio_pin_6 gpio_mode_output
-        resetBit gpiob gpio_pin_6 --internal
+        -- enablePeriphClock       rcu_gpiob 
+        -- modePort gpiob gpio_pin_6 gpio_mode_output
+        -- resetBit gpiob gpio_pin_6 --internal
 
-        enablePeriphClock       rcu_gpioa
-        modePort gpioa gpio_pin_8 gpio_mode_output
-        setBit gpioa gpio_pin_8 --external
+        -- enablePeriphClock       rcu_gpioa
+        -- modePort gpioa gpio_pin_8 gpio_mode_output
+        -- setBit gpioa gpio_pin_8 --external
 
         enablePeriphClock       rcu_cfgcmp
         enableIrqNvic           extiIRQ 0 0
