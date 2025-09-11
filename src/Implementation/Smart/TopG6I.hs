@@ -59,36 +59,40 @@ topG6I ::  ( MonadState Context m
            , KnownNat n
            )
            => m t
-           -> (t -> m (FT.Touches n))
+           -> (t -> Value IBool -> m (FT.Touches n))
            -> (E.DInputs n -> t -> f-> ((forall eff. Ivory eff ()) -> (forall eff. Ivory eff ()) -> m (Vibro n)))
            -> (t -> m SHT21)
            -> (p -> m d)
            -> (p -> f)
            -> m (Top n)
 topG6I transport' touches' vibro' sht21' display' etc' = do
-    transport      <- transport'
-    shouldInit     <- asks D.shouldInit
-    mcu            <- asks D.mcu
-    display        <- display' $ peripherals mcu
-    let etc         = etc' $ peripherals mcu
-    touches        <- touches' transport
-    vibro          <- vibro' (FT.getDInputs touches) transport etc (pure ()) (pure ())
-    frameBuffer    <- values' "top_frame_buffer" 0
-    leds           <- mkLeds frameBuffer [10, 11, 0, 1, 8, 9, 2, 3, 7, 6, 5, 4] transport etc (replicate 12 true)
-    ledsPerButton  <- values "leds_per_button" [2, 2, 2, 2, 2, 2]
-    ledsOfButton   <- matrix "leds_of_button"  [[0,1,0,0], [2,3,0,0], [4,5,0,0], [6,7,0,0], [8,9,0,0], [10,11,0,0]]
-    buttons        <- mkButtons leds (FT.getDInputs touches) ledsPerButton ledsOfButton transport
-    sht21          <- sht21' transport
-    let top         = Top { touches, leds, vibro, buttons, sht21 }
+    transport           <- transport'
+    shouldInit          <- asks D.shouldInit
+    mcu                 <- asks D.mcu
+    display             <- display' $ peripherals mcu
+    let etc              = etc' $ peripherals mcu
+    shouldManageTouches <- value "should_manage_touches" true
+    touches             <- touches' transport shouldManageTouches
+    frameBuffer         <- values' "top_frame_buffer" 0
+    leds                <- mkLeds frameBuffer [10, 11, 0, 1, 8, 9, 2, 3, 7, 6, 5, 4] transport etc (replicate 12 true)
+    ledsPerButton       <- values "leds_per_button" [2, 2, 2, 2, 2, 2]
+    ledsOfButton        <- matrix "leds_of_button"  [[0,1,0,0], [2,3,0,0], [4,5,0,0], [6,7,0,0], [8,9,0,0], [10,11,0,0]]
+    buttons             <- mkButtons leds (FT.getDInputs touches) ledsPerButton ledsOfButton transport
+    sht21               <- sht21' transport
 
 
-    addHandler $ Render display 30 frameBuffer (pure ()) (pure ()) $ do
+    let before  = store shouldManageTouches false
+    let after   = store shouldManageTouches true
+
+
+    vibro          <- vibro' (FT.getDInputs touches) transport etc before after
+    addHandler $ Render display 30 frameBuffer before after $ do
         updateLeds    leds
         updateButtons buttons
         render        leds
         pure          true
 
-    pure top
+    pure Top { touches, leds, vibro, buttons, sht21 }
 
 
 

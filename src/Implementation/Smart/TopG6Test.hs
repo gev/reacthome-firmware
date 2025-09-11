@@ -31,17 +31,17 @@ import           Data.Matrix
 import           Feature.Smart.Top.PowerTouch (PowerTouch)
 import           Feature.Smart.Top.Vibro      (Vibro, onInitVibro, onVibro,
                                                sendVibro, vibro)
+import qualified Feature.Touches              as FT
 import           GHC.TypeNats
 import           Interface.Display            (Display, Render (Render))
 import           Interface.Flash
 import           Interface.MCU                (peripherals)
 import           Ivory.Language
 import           Ivory.Stdlib
-import qualified Feature.Touches as FT
 
 
 
-data Top n = Top
+newtype Top n = Top
     { touches :: FT.Touches n
     }
 
@@ -53,14 +53,15 @@ topG6Test :: ( MonadState Context m
              , KnownNat n
              )
              => m t
-             -> (t -> m (FT.Touches n))
+             -> (t -> Value IBool -> m (FT.Touches n))
              -> m (Top n)
 topG6Test transport' touches' = do
-    transport      <- transport'
-    shouldInit     <- asks D.shouldInit
-    mcu            <- asks D.mcu
-    touches        <- touches' transport
-    let top         = Top { touches }
+    transport           <- transport'
+    shouldInit          <- asks D.shouldInit
+    mcu                 <- asks D.mcu
+    shouldManageTouches <- value_ "should_manage_touches"
+    touches             <- touches' transport shouldManageTouches
+    let top              = Top { touches }
 
     pure top
 
@@ -71,5 +72,5 @@ instance KnownNat n => Controller (Top n) where
 
     handle t@Top{..} buff size = do
         action <- deref $ buff ! 0
-        cond_ [ 
+        cond_ [
               ]

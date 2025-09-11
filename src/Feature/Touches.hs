@@ -11,7 +11,7 @@
 {-# LANGUAGE NumericUnderscores  #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# OPTIONS_GHC -Wno-missing-fields #-}
-{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TypeApplications    #-}
 
 module Feature.Touches where
 
@@ -30,7 +30,7 @@ import           Data.Index
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
-import qualified Endpoint.DInputs     as DI
+import qualified Endpoint.DInputs      as DI
 import           Foreign               (new)
 import           GHC.Arr               (array)
 import           GHC.TypeNats
@@ -63,10 +63,10 @@ touches :: forall m n p c to t tr.
            , I.Touch to
            , KnownNat n
            )
-        => IFloat -> IFloat -> List n (p -> IFloat -> IFloat -> m to) -> tr -> m (Touches n)
-touches thresholdLow thresholdHigh touches' transport  = do
+        => IFloat -> IFloat -> List n (p -> IFloat -> IFloat -> m to) -> tr -> Value IBool -> m (Touches n)
+touches thresholdLow thresholdHigh touches' transport shouldManage  = do
     mcu            <- asks D.mcu
-    ts             <- traverse (\touch -> touch (peripherals mcu) thresholdLow thresholdHigh) touches' 
+    ts             <- traverse (\touch -> touch (peripherals mcu) thresholdLow thresholdHigh) touches'
     currentTouch   <- index "current_touches"
     indexTouch     <- index "index_touches"
     dinputs        <- DI.mkDinputs "touches"
