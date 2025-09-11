@@ -65,7 +65,7 @@ type PWM'       = forall m.       MonadState Context m => Uint32 -> Uint32 -> m 
 type NeoPixel'  = forall m.       MonadState Context m => m NeoPixel
 type EXTI'      = forall m.       MonadState Context m => m EXTI
 type OneWire'   = forall m.       MonadState Context m => m OpenDrain -> m OneWire
-type Touch'     = forall m.       MonadState Context m => Uint16 -> Uint16 -> m Touch
+type Touch'     = forall m.       MonadState Context m => IFloat -> IFloat -> m Touch
 
 
 data GD32F3x0 = GD32F3x0
@@ -196,6 +196,7 @@ data GD32F3x0 = GD32F3x0
     , touch_pb3  :: Touch'
     , touch_pb4  :: Touch'
     , touch_pb5  :: Touch'
+    , touch_pb6  :: Touch'
     , touch_pb7  :: Touch'
     , touch_pb8  :: Touch'
 
@@ -467,6 +468,13 @@ gd32f3x0 = MCU $ mkPlatform G.systemClock makeMac inclGD32F3x0 GD32F3x0
                           exti_source_gpiob
                           exti_source_pin5
                           exti_5
+
+    , touch_pb6 = mkTouch gpiob gpio_pin_6 
+                          rcu_gpiob                        
+                          exti4_15_irqn
+                          exti_source_gpiob
+                          exti_source_pin6
+                          exti_6
 
     , touch_pb7 = mkTouch gpiob gpio_pin_7 
                           rcu_gpiob                        

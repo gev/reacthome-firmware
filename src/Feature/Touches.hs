@@ -63,10 +63,10 @@ touches :: forall m n p c to t tr.
            , I.Touch to
            , KnownNat n
            )
-        => Uint16 -> Uint16 -> List n (p -> Uint16 -> Uint16 -> m to) -> tr -> m (Touches n)
-touches tresholdLower tresholdUpper touches' transport  = do
+        => IFloat -> IFloat -> List n (p -> IFloat -> IFloat -> m to) -> tr -> m (Touches n)
+touches thresholdLow thresholdHigh touches' transport  = do
     mcu            <- asks D.mcu
-    ts             <- traverse (\touch -> touch (peripherals mcu) tresholdLower tresholdUpper) touches' 
+    ts             <- traverse (\touch -> touch (peripherals mcu) thresholdLow thresholdHigh) touches' 
     currentTouch   <- index "current_touches"
     indexTouch     <- index "index_touches"
     dinputs        <- DI.mkDinputs "touches"
@@ -82,7 +82,7 @@ touches tresholdLower tresholdUpper touches' transport  = do
                           }
 
 
-    addTask  $ delay 100 "touches_log"            $ sendTimeTask touches
+    addTask  $ delay 50 "touches_log"            $ sendTimeTask touches
     addTask  $ yeld      "touches_run"    $ touchesRunTask touches
     addTask  $ delay 10  "touches_manage" $ manageTouches touches
     addTask  $ yeld      "touches_sync"   $ syncTouches   touches
@@ -96,7 +96,7 @@ sendTimeTask touches@Touches{..} = do
     arrayMap $ \ix ->
         overSingleTouch touches ix \t -> do
             time <- I.getTime t
-            packBE buf (toIx $ fromIx ix * 2 + 2) $ castDefault @Uint16 time
+            packBE buf (toIx $ fromIx ix * 2 + 2) $ castDefault @Sint16 time
     store (buf ! 0) actionError
     store (buf ! 1) 1 -- type debug message
 
@@ -104,7 +104,7 @@ sendTimeTask touches@Touches{..} = do
     transmit buf
 
 
-touchesRunTask :: KnownNat n => Touches n -> Ivory eff ()
+touchesRunTask :: KnownNat n => Touches n -> Ivory (ProcEffects s ()) ()
 touchesRunTask touches@Touches{..} = do
     cur <- deref currentTouch
     overSingleTouch touches cur \t -> I.run t (store currentTouch $ cur + 1)
