@@ -31,9 +31,10 @@ import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.SYSCFG
 
 
-stateWaitStart   = 0
-stateMeasuring   = 1
-stateIsMeasured  = 2
+stateInactive    = 0
+stateWaitStart   = 1
+stateMeasuring   = 2
+stateIsMeasured  = 3
 
 data Touch = Touch { port             :: GPIO_PERIPH
                    , pin              :: GPIO_PIN
@@ -78,13 +79,13 @@ mkTouch port pin rcuPin extiIRQ srcPort srcPin ex thresholdLow thresholdHigh = d
         modePort port pin gpio_mode_output
         resetBit port pin
 
-        enablePeriphClock       rcu_gpiob
-        modePort gpiob gpio_pin_6 gpio_mode_output
-        resetBit gpiob gpio_pin_6 --internal
+        -- enablePeriphClock       rcu_gpiob
+        -- modePort gpiob gpio_pin_6 gpio_mode_output
+        -- resetBit gpiob gpio_pin_6 --internal
 
-        enablePeriphClock       rcu_gpioa
-        modePort gpioa gpio_pin_8 gpio_mode_output
-        setBit gpioa gpio_pin_8 --external
+        -- enablePeriphClock       rcu_gpioa
+        -- modePort gpioa gpio_pin_8 gpio_mode_output
+        -- setBit gpioa gpio_pin_8 --external
 
         enablePeriphClock       rcu_cfgcmp
         enableIrqNvic           extiIRQ 0 0
@@ -133,7 +134,7 @@ extiHandler Touch{..} = do
 
 instance I.Touch Touch where
     run = runMeasurement
-    reset Touch{..} = store stateMeasurement stateWaitStart
+    reset Touch{..} = store stateMeasurement stateInactive
     getTime Touch{..} = deref debugVal
     getState Touch{..} = deref stateTouch
 
@@ -143,6 +144,12 @@ runMeasurement Touch{..} handle = do
         -- toggleBit gpiob gpio_pin_6
 
         state <- deref stateMeasurement
+        when (state ==? stateInactive) $ do
+            store stateMeasurement stateWaitStart
+            disableExtiInterrupt ex
+            modePort port pin gpio_mode_output
+            resetBit port pin
+
         when (state ==? stateWaitStart) $ do
             -- modePort gpiob gpio_pin_6 gpio_mode_input
 

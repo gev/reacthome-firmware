@@ -24,7 +24,7 @@ smartTopG6I =  Formula { name           = "smart_top_g6i"
                       , quartzFrequency =  8_000_000
                       , systemFrequency = 84_000_000
                       , implementation  = topG6I (rbusTop uart_1)
-                                                 (touches 10 15 
+                                                 (touches 15 20 
                                                        $  touch_pa4
                                                        :> touch_pb2
                                                        :> touch_pa5
