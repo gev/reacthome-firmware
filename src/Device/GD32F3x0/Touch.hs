@@ -86,8 +86,6 @@ mkTouch port pin rcuPin extiIRQ srcPort srcPin ex thresholdLow thresholdHigh = d
                       , debugVal
                       }
 
-    -- addBody (makeIRQHandlerName extiIRQ) $ handleEXTI ex $ extiHandler touch
-
     addTask $ delay 10_000 ("reset_min" <> name) $ resetMin touch
 
     pure touch
