@@ -13,6 +13,7 @@ import           Data.Value
 import           GHC.TypeNats
 import           Ivory.Language
 import           Ivory.Language.Proxy
+import           Ivory.Stdlib
 import           Support.Cast
 
 
@@ -39,16 +40,28 @@ clearCanvas Canvas1D{..} =
 
 writePixel :: (KnownNat n, KnownNat (Canvas1DSize n))
            => Canvas1D n -> Ix n -> Ref s1 (Struct RGB)
-           -> Ivory ('Effects (Returns ()) r (Scope s2)) ()
-writePixel Canvas1D{..} ix pixel =
-    set 0 g >> set 1 r >> set 2 b
+           -> Ivory ('Effects (Returns ()) r (Scope s2)) IBool
+writePixel Canvas1D{..} ix pixel = do
+    isUpdatedR <- set 0 g
+    isUpdatedG <- set 1 r
+    isUpdatedB <- set 2 b
+    pure $ isUpdatedR .|| isUpdatedG .|| isUpdatedB
     where cast color = castFloatToUint8 . (255 *) =<< deref (pixel ~> color)
-          set j color = store (canvas ! toIx (3 * fromIx ix + j)) =<< cast color
+          set j color = do
+            let src = canvas ! toIx (3 * fromIx ix + j)
+            src' <- deref src
+            dst' <- cast color
+            store src dst'
+            pure $ src' /=? dst'
 
 
 
 writePixels :: (KnownNat n, KnownNat (Canvas1DSize n))
             => Canvas1D n -> Ref s1 (Array n (Struct RGB))
-            -> Ivory ('Effects (Returns ()) r (Scope s2)) ()
-writePixels canvas pixels =
-    arrayMap $ \ix -> writePixel canvas ix (pixels ! toIx ix)
+            -> Ivory ('Effects (Returns ()) r (Scope s2)) IBool
+writePixels canvas pixels = do
+    shouldUpdate <- local $ ival false
+    arrayMap $ \ix -> do
+        isUpdated <- writePixel canvas ix (pixels ! toIx ix)
+        when isUpdated $ store shouldUpdate true
+    deref shouldUpdate

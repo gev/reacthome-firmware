@@ -15,6 +15,7 @@
 
 module Feature.Touches where
 
+import           Control.Monad         (replicateM)
 import           Control.Monad.Reader  (MonadReader, asks)
 import           Control.Monad.State   (MonadState (get))
 import           Core.Actions
@@ -25,7 +26,7 @@ import           Core.Task
 import qualified Core.Transport        as T
 import           Data.Buffer
 import           Data.Data
-import           Data.Fixed
+import           Data.Fixed as F
 import           Data.Index
 import           Data.Record
 import           Data.Serialize
@@ -42,6 +43,7 @@ import qualified Interface.Touch       as I
 import           Ivory.Language
 import           Ivory.Language.Proxy
 import           Ivory.Stdlib
+import Support.Device.GD32F3x0.Timer (readCounter, timer14)
 
 
 
@@ -83,7 +85,7 @@ touches thresholdLow thresholdHigh touches' transport shouldRun  = do
                           }
 
     addTask  $ delay 50  "touches_log"    $ sendTimeTask   touches
-    addTask  $ yeld      "touches_run"    $ touchesRunTask touches
+    addTask  $ delay 1   "touches_run"    $ touchesRunTask touches
     addTask  $ delay 10  "touches_manage" $ manageTouches  touches
     addTask  $ yeld      "touches_sync"   $ syncTouches    touches
     addSync "touches" $ forceSyncTouches touches
@@ -95,7 +97,7 @@ sendTimeTask touches@Touches{..} = do
     let n = length getTouches
     arrayMap $ \ix ->
         overSingleTouch touches ix \t -> do
-            time <- I.getTime t
+            time <- I.getDebug t
             packBE buf (toIx $ fromIx ix * 2 + 2) $ castDefault @Sint16 time
     store (buf ! 0) actionError
     store (buf ! 1) 1 -- type debug message
@@ -106,13 +108,28 @@ sendTimeTask touches@Touches{..} = do
 
 touchesRunTask :: KnownNat n => Touches n -> Ivory (ProcEffects s ()) ()
 touchesRunTask touches@Touches{..} = do
-    shouldRun' <- deref shouldRun
-    ifte_ shouldRun'
-        (do
+    -- mapM_ I.start getTouches
+    -- forever $ do
+    --     isReady <- local $ ival true
+    --     let run touch = do
+    --             I.run touch 
+    --             isReady' <- deref isReady
+    --             store isReady . (isReady' .&&) =<< I.isReady touch
+    --     mapM_ run getTouches
+    --     isReady' <- deref isReady
+    --     when isReady' breakOut
+    -- mapM_ I.finish getTouches
+
+
+    -- shouldRun' <- deref shouldRun
+    -- ifte_ shouldRun'
+    --     (do
             cur <- deref currentTouch
-            overSingleTouch touches cur \t -> I.run t (store currentTouch $ cur + 1)
-        )
-        (mapM_ I.reset getTouches)
+            overSingleTouch touches cur I.run
+            store currentTouch $ cur + 1
+    --     )
+        -- (mapM_ I.reset getTouches)
+
 
 
 

@@ -210,7 +210,7 @@ renderPixel pixel i ATS{..} DInputs{dinputs} Relays{relays} = do
 
 
 
-render :: Indicator ni no -> Ivory (ProcEffects s ()) ()
+render :: Indicator ni no -> Ivory (ProcEffects s ()) IBool
 render Indicator{..} =
     writePixels canvas pixels
 

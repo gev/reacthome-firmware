@@ -87,10 +87,9 @@ topG6I transport' touches' vibro' sht21' display' etc' = do
 
     vibro          <- vibro' (FT.getDInputs touches) transport etc before after
     addHandler $ Render display 30 frameBuffer before after $ do
-        updateLeds    leds
+        updateLeds leds
         updateButtons buttons
-        render        leds
-        pure          true
+        render leds
 
     pure Top { touches, leds, vibro, buttons, sht21 }
 
