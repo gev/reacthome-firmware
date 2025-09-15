@@ -15,35 +15,35 @@
 
 module Feature.Touches where
 
-import           Control.Monad         (replicateM)
-import           Control.Monad.Reader  (MonadReader, asks)
-import           Control.Monad.State   (MonadState (get))
+import           Control.Monad                 (replicateM)
+import           Control.Monad.Reader          (MonadReader, asks)
+import           Control.Monad.State           (MonadState (get))
 import           Core.Actions
 import           Core.Context
-import qualified Core.Domain           as D
-import           Core.Handler          (addHandler)
+import qualified Core.Domain                   as D
+import           Core.Handler                  (addHandler)
 import           Core.Task
-import qualified Core.Transport        as T
+import qualified Core.Transport                as T
 import           Data.Buffer
 import           Data.Data
-import           Data.Fixed as F
+import           Data.Fixed                    as F
 import           Data.Index
 import           Data.Record
 import           Data.Serialize
 import           Data.Value
-import qualified Endpoint.DInputs      as DI
-import           Foreign               (new)
-import           GHC.Arr               (array)
+import qualified Endpoint.DInputs              as DI
+import           Foreign                       (new)
+import           GHC.Arr                       (array)
 import           GHC.TypeNats
-import           Interface.MCU         (MCU, peripherals, systemClock)
-import           Interface.SystemClock (SystemClock)
+import           Interface.MCU                 (MCU, peripherals, systemClock)
+import           Interface.SystemClock         (SystemClock)
 import           Interface.Timer
 import           Interface.Touch
-import qualified Interface.Touch       as I
+import qualified Interface.Touch               as I
 import           Ivory.Language
 import           Ivory.Language.Proxy
 import           Ivory.Stdlib
-import Support.Device.GD32F3x0.Timer (readCounter, timer14)
+import           Support.Device.GD32F3x0.Timer (readCounter, timer14)
 
 
 
@@ -53,7 +53,6 @@ data Touches n = forall to. (I.Touch to) => Touches
     , currentTouch  :: Value (Ix n)
     , indexTouch    :: Value Uint8
     , buf           :: Buffer 14 Uint8
-    , shouldRun  :: Value IBool
     , transmit      :: forall l. KnownNat l
                     => Buffer l Uint8 -> forall s. Ivory (ProcEffects s ()) ()
     }
@@ -66,8 +65,8 @@ touches :: forall m n p c to t tr.
            , I.Touch to
            , KnownNat n
            )
-        => IFloat -> IFloat -> List n (p -> IFloat -> IFloat -> m to) -> tr -> Value IBool -> m (Touches n)
-touches thresholdLow thresholdHigh touches' transport shouldRun  = do
+        => IFloat -> IFloat -> List n (p -> IFloat -> IFloat -> m to) -> tr -> m (Touches n)
+touches thresholdLow thresholdHigh touches' transport = do
     mcu            <- asks D.mcu
     ts             <- traverse (\touch -> touch (peripherals mcu) thresholdLow thresholdHigh) touches'
     currentTouch   <- index "current_touches"
@@ -80,7 +79,6 @@ touches thresholdLow thresholdHigh touches' transport shouldRun  = do
                           , currentTouch
                           , indexTouch
                           , buf
-                          , shouldRun
                           , transmit = T.transmitBuffer transport
                           }
 
@@ -108,29 +106,9 @@ sendTimeTask touches@Touches{..} = do
 
 touchesRunTask :: KnownNat n => Touches n -> Ivory (ProcEffects s ()) ()
 touchesRunTask touches@Touches{..} = do
-    -- mapM_ I.start getTouches
-    -- forever $ do
-    --     isReady <- local $ ival true
-    --     let run touch = do
-    --             I.run touch 
-    --             isReady' <- deref isReady
-    --             store isReady . (isReady' .&&) =<< I.isReady touch
-    --     mapM_ run getTouches
-    --     isReady' <- deref isReady
-    --     when isReady' breakOut
-    -- mapM_ I.finish getTouches
-
-
-    -- shouldRun' <- deref shouldRun
-    -- ifte_ shouldRun'
-    --     (do
-            cur <- deref currentTouch
-            overSingleTouch touches cur I.run
-            store currentTouch $ cur + 1
-    --     )
-        -- (mapM_ I.reset getTouches)
-
-
+    cur <- deref currentTouch
+    overSingleTouch touches cur I.run
+    store currentTouch $ cur + 1
 
 
 overSingleTouch :: KnownNat n => Touches n -> Ix n -> (forall to. I.Touch to => to -> Ivory eff ()) -> Ivory eff ()

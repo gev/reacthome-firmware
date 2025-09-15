@@ -61,7 +61,7 @@ topG2 :: ( MonadState Context m
          )
       => m t
       -> (Bool -> t -> m (DI.DInputs n))
-      -> (E.DInputs n -> t -> f-> ((forall eff. Ivory eff ()) -> (forall eff. Ivory eff ()) -> m (Vibro n)))
+      -> (E.DInputs n -> t -> f-> m (Vibro n))
       -> m PowerTouch
       -> (t -> m SHT21)
       -> (p -> m d)
@@ -74,7 +74,7 @@ topG2 transport' dinputs' vibro' touch' sht21' display' etc' = do
     display        <- display' $ peripherals mcu
     let etc         = etc' $ peripherals mcu
     dinputs        <- dinputs' True transport
-    vibro          <- vibro' (DI.getDInputs dinputs) transport etc (pure ()) (pure ())
+    vibro          <- vibro' (DI.getDInputs dinputs) transport etc
     touch'
     frameBuffer    <- values' "top_frame_buffer" 0
     leds           <- mkLeds frameBuffer [8, 9, 2, 3, 7, 6, 5, 4, 10, 11, 0, 1] transport etc (replicate 4 true <> replicate 8 false)
@@ -84,7 +84,7 @@ topG2 transport' dinputs' vibro' touch' sht21' display' etc' = do
     sht21          <- sht21' transport
     let top         = Top { dinputs, leds, vibro, buttons, sht21 }
 
-    addHandler $ Render display 30 frameBuffer (pure ()) (pure ()) $ do
+    addHandler $ Render display 30 frameBuffer $ do
         updateLeds leds
         updateButtons buttons
         render leds

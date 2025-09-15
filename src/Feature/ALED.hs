@@ -87,7 +87,7 @@ aled mkDisplay etc transport = do
 
     addInit "aled_load_config" $ loadConfig aled
 
-    addHandler $ Render display E.fps (E.subPixels getALED) (pure ()) (pure ()) $ update aled random
+    addHandler $ Render display E.fps (E.subPixels getALED) $ update aled random
 
     addTask $ delay       100 "save_config" $ saveConfig aled
     addTask $ delayPhase  40 35 "sync_state"  $ syncState  aled

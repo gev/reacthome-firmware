@@ -43,8 +43,6 @@ data Vibro n = forall o t f. (Output o, LazyTransport t, Flash f) => Vibro
     , transport   :: t
     , etc         :: f
     , synced      :: Value IBool
-    , before      :: forall eff. Ivory eff ()
-    , after       :: forall eff. Ivory eff ()
     }
 
 
@@ -57,8 +55,8 @@ vibro :: ( MonadState Context m
          , LazyTransport t
          , KnownNat n
          )
-      => (p -> d -> m o) -> DInputs n -> t -> f -> (forall eff. Ivory eff ()) -> (forall eff. Ivory eff ()) -> m (Vibro n)
-vibro output' getDInputs transport etc before after = do
+      => (p -> d -> m o) -> DInputs n -> t -> f -> m (Vibro n)
+vibro output' getDInputs transport etc = do
     mcu             <- asks D.mcu
     let clock        = systemClock mcu
     let peripherals' = peripherals mcu
@@ -73,7 +71,6 @@ vibro output' getDInputs transport etc before after = do
                       , volume, t, isVibrating, prevState
                       , transport, etc
                       , synced
-                      , before, after
                       }
 
     addTask $ yeld        "vibro"      $ vibroTask vibro
@@ -142,7 +139,6 @@ startVibrate :: Vibro n -> Ivory eff ()
 startVibrate Vibro{..} = do
     store isVibrating true
     store t =<< getSystemTime clock
-    before
     set output
 
 
@@ -151,7 +147,6 @@ stopVibrate :: Vibro n -> Ivory eff ()
 stopVibrate Vibro{..} = do
     store isVibrating false
     reset output
-    after
 
 
 

@@ -83,7 +83,7 @@ indicator mkDisplay hue transport = do
                               , transmit = T.transmitBuffer transport
                               }
 
-    addHandler $ Render display 25 frameBuffer (pure ()) (pure ()) $ do
+    addHandler $ Render display 25 frameBuffer $ do
         update indicator
         render indicator
         pure   true

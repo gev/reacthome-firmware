@@ -53,14 +53,13 @@ topG6Test :: ( MonadState Context m
              , KnownNat n
              )
              => m t
-             -> (t -> Value IBool -> m (FT.Touches n))
+             -> (t -> m (FT.Touches n))
              -> m (Top n)
 topG6Test transport' touches' = do
     transport           <- transport'
     shouldInit          <- asks D.shouldInit
     mcu                 <- asks D.mcu
-    shouldManageTouches <- value_ "should_manage_touches"
-    touches             <- touches' transport shouldManageTouches
+    touches             <- touches' transport
     let top              = Top { touches }
 
     pure top

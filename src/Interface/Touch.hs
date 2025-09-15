@@ -7,10 +7,6 @@ import           Core.Handler
 import           Ivory.Language
 
 class Touch t where
-    run         :: t -> Ivory (ProcEffects s ()) () 
-    reset       :: t -> Ivory eff ()
+    run         :: t -> Ivory (ProcEffects s ()) ()
     getDebug    :: t -> Ivory eff IFloat
     getState    :: t -> Ivory eff IBool
-    isReady     :: t -> Ivory eff IBool
-    start       :: t -> Ivory eff ()
-    finish      :: t -> Ivory eff ()
