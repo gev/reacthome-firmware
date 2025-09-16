@@ -10,3 +10,5 @@ class Touch t where
     run         :: t -> Ivory (ProcEffects s ()) ()
     getDebug    :: t -> Ivory eff IFloat
     getState    :: t -> Ivory eff IBool
+    reset       :: t -> Ivory eff ()
+    pause       :: t -> Ivory (ProcEffects s ()) ()

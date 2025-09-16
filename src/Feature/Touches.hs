@@ -15,7 +15,7 @@
 
 module Feature.Touches where
 
-import           Control.Monad                 (replicateM)
+import           Control.Monad                 (replicateM, replicateM_)
 import           Control.Monad.Reader          (MonadReader, asks)
 import           Control.Monad.State           (MonadState (get))
 import           Core.Actions
@@ -50,7 +50,6 @@ import           Support.Device.GD32F3x0.Timer (readCounter, timer14)
 data Touches n = forall to. (I.Touch to) => Touches
     { getTouches    :: List n to
     , getDInputs    :: DI.DInputs n
-    , currentTouch  :: Value (Ix n)
     , indexTouch    :: Value Uint8
     , buf           :: Buffer 14 Uint8
     , transmit      :: forall l. KnownNat l
@@ -69,23 +68,27 @@ touches :: forall m n p c to t tr.
 touches thresholdLow thresholdHigh touches' transport = do
     mcu            <- asks D.mcu
     ts             <- traverse (\touch -> touch (peripherals mcu) thresholdLow thresholdHigh) touches'
-    currentTouch   <- index "current_touches"
     indexTouch     <- index "index_touches"
     dinputs        <- DI.mkDinputs "touches"
     buf            <- buffer "touch_buffer"
 
     let touches = Touches { getTouches = ts
                           , getDInputs = dinputs
-                          , currentTouch
                           , indexTouch
                           , buf
                           , transmit = T.transmitBuffer transport
                           }
 
     addTask  $ delay 50  "touches_log"    $ sendTimeTask   touches
-    addTask  $ delay 1   "touches_run"    $ touchesRunTask touches
+    -- addTask  $ yeld      "touches_run"    $ touchesRunTask touches
+    -- addTask  $ yeld      "touches_run"  (I.run . F.head . F.tail . F.tail $ ts)
+
+    overSingleTouch touches $ \t i -> do
+        addTask (delay 1 ("touches_run_" <> show i) $ replicateM_ 10 (I.run t))
+
     addTask  $ delay 10  "touches_manage" $ manageTouches  touches
     addTask  $ yeld      "touches_sync"   $ syncTouches    touches
+
     addSync "touches" $ forceSyncTouches touches
 
     pure touches
@@ -93,10 +96,9 @@ touches thresholdLow thresholdHigh touches' transport = do
 sendTimeTask :: KnownNat n => Touches n -> Ivory (ProcEffects s ()) ()
 sendTimeTask touches@Touches{..} = do
     let n = length getTouches
-    arrayMap $ \ix ->
-        overSingleTouch touches ix \t -> do
-            time <- I.getDebug t
-            packBE buf (toIx $ fromIx ix * 2 + 2) $ castDefault @Sint16 time
+    overSingleTouch touches \t i -> do
+        time <- I.getDebug t
+        packBE buf (fromIntegral $ i * 2 + 2) $ castDefault @Sint16 time
     store (buf ! 0) actionError
     store (buf ! 1) 1 -- type debug message
 
@@ -106,19 +108,15 @@ sendTimeTask touches@Touches{..} = do
 
 touchesRunTask :: KnownNat n => Touches n -> Ivory (ProcEffects s ()) ()
 touchesRunTask touches@Touches{..} = do
-    cur <- deref currentTouch
-    overSingleTouch touches cur I.run
-    store currentTouch $ cur + 1
+    -- mapM_ I.run getTouches
+    -- mapM_ I.reset getTouches
+
+    I.run . F.head . F.tail . F.tail $ getTouches
 
 
-overSingleTouch :: KnownNat n => Touches n -> Ix n -> (forall to. I.Touch to => to -> Ivory eff ()) -> Ivory eff ()
-overSingleTouch Touches{..} current handle =
-    zipWithM_ run getTouches ints
-    where
-        run touch i = do
-            let ix = fromIntegral i
-            when (ix ==? current) $ do
-                handle touch
+overSingleTouch :: (KnownNat n, Monad m) => Touches n -> (forall to. I.Touch to => to -> Integer -> m ()) -> m ()
+overSingleTouch Touches{..} handle =
+    zipWithM_ handle getTouches ints
 
 
 
