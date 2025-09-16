@@ -121,20 +121,23 @@ runMeasurement t@Touch{..} = do
     modePort port pin gpio_mode_output
     resetBit port pin
 
-    let newTime = safeCast $ t2 - t1
-    previousTime <- deref time
-    store time (average 0.1 previousTime newTime)
-    time' <- deref time
+    let t = safeCast $ t2 - t1
     min'  <- deref timeMin
-    when (time' <? min') $ store timeMin time'
-    min'' <- deref timeMin
-    let dt = time' - min''
+    when (t <? min') $ store timeMin t
 
-    store debugVal dt
-    when (dt >? thresholdHigh) $ do
-        store stateTouch true
-    when (dt <? thresholdLow) $ do
-        store stateTouch false
+    min'' <- deref timeMin
+    let dt = t - min''
+    time' <- deref time
+    cond_ [ dt >? thresholdHigh ==> store time (average 0.1 time' 1)
+          , dt <? thresholdLow  ==> store time (average 0.1 time' 0)
+          ]
+
+    time'' <- deref time
+    cond_ [ time'' >? 0.7 ==> store stateTouch true
+          , time'' <? 0.3 ==> store stateTouch false
+          ]
+
+    store debugVal $ time'' * 100
 
 
 average :: IFloat -> IFloat -> IFloat -> IFloat
