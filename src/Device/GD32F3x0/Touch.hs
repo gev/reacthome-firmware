@@ -16,9 +16,11 @@ import           Control.Monad.State
 import           Core.Context
 import           Core.Handler
 import           Core.Task
+import           Data.ByteString                (index)
 import           Data.Value
 import           Device.GD32F3x0.EXTI
 import           Device.GD32F3x0.Timer
+import           Interface.Counter              (Counter (readCounter))
 import qualified Interface.Counter              as I
 import qualified Interface.Touch                as I
 import           Ivory.Language                 hiding (setBit)
@@ -32,8 +34,6 @@ import           Support.Device.GD32F3x0.IRQ
 import           Support.Device.GD32F3x0.Misc
 import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.SYSCFG
-import Data.ByteString (index)
-import Interface.Counter (Counter(readCounter))
 
 
 
@@ -47,8 +47,8 @@ data Touch = Touch { port          :: GPIO_PERIPH
                 --    , timeMin       :: Value IFloat
                    , time          :: Value IFloat
                    , delta         :: Value IFloat
-                   , moments       :: Values 5 IFloat
-                   , index         :: Value (Ix 5)
+                   , moments       :: Values 10 IFloat
+                   , index         :: Value (Ix 10)
                    , sum           :: Value IFloat
                    , stateTouch    :: Value IBool
                    , debugVal      :: Value IFloat
@@ -132,36 +132,38 @@ runMeasurement t@Touch{..} = do
     -- ix <- deref index
     -- store index $ ix + 1
 
-    modePort port pin gpio_mode_output
-    resetBit port pin
     disableIRQ
     -- wait t 16_800
-    modePort port pin gpio_mode_input
-    t1 <- I.readCounter timer
-    forever $ do
-        isMeasured <- getInputBit port pin
-        when isMeasured breakOut
-    t2 <- I.readCounter timer
+
+    min <- local $ ival 0xffff
+    max <- local $ ival 0
+    store sum 0
+    arrayMap $ \ix -> do
+        modePort port pin gpio_mode_output
+        resetBit port pin
+        modePort port pin gpio_mode_input
+        t1 <- I.readCounter timer
+        forever $ do
+            isMeasured <- getInputBit port pin
+            when isMeasured breakOut
+        t2 <- I.readCounter timer
+        let moment = safeCast $ t2 - t1
+        min' <- deref min
+        when (moment <? min') $ store min moment
+        max' <- deref max
+        when (moment >? max') $ store max moment
+        store (moments ! ix) moment
+        sum' <- deref sum
+        store sum $ sum' + moment
+
     enableIRQ
-    -- modePort port pin gpio_mode_output
-    -- resetBit port pin
-    -- forever $ do
-    --     t3 <- I.readCounter timer
-    --     when (t3 - t2 >? 420) breakOut
-    let next = safeCast $ t2 - t1
-    prev <- deref time
-    store time next
 
-    store debugVal next
+    min'' <- deref min
+    max'' <- deref max
+    sum'' <- deref sum
+    let m = (sum'' - min'' - max'') / (arrayLen moments - 2)
 
-    -- let moment = moments ! ix
-    -- last <- deref moment
-    -- s' <- deref sum
-    -- store sum $ s' + next - last
-    -- store moment next
-
-    -- s' <- deref sum
-    -- let m = s' / arrayLen moments
+    store debugVal m
 
     -- min <- local $ ival 0xffff
     -- max <- local $ ival 0
