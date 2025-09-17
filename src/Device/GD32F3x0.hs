@@ -65,7 +65,7 @@ type PWM'       = forall m.       MonadState Context m => Uint32 -> Uint32 -> m 
 type NeoPixel'  = forall m.       MonadState Context m => m NeoPixel
 type EXTI'      = forall m.       MonadState Context m => m EXTI
 type OneWire'   = forall m.       MonadState Context m => m OpenDrain -> m OneWire
-type Touch'     = forall m.       MonadState Context m => Uint32 -> IFloat -> IFloat -> m Touch
+type Touch'     = forall m.       MonadState Context m => IFloat -> m Touch
 
 
 data GD32F3x0 = GD32F3x0
