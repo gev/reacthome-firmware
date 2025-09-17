@@ -65,10 +65,16 @@ touches :: forall m n p c to t tr.
            , I.Touch to
            , KnownNat n
            )
-        => IFloat -> IFloat -> List n (p -> IFloat -> IFloat -> m to) -> tr -> m (Touches n)
+        => IFloat -> IFloat -> List n (p -> Uint32 -> IFloat -> IFloat -> m to) -> tr -> m (Touches n)
 touches thresholdLow thresholdHigh touches' transport = do
     mcu            <- asks D.mcu
-    ts             <- traverse (\touch -> touch (peripherals mcu) thresholdLow thresholdHigh) touches'
+    ts             <- zipWithM
+                        (
+                            \touch index ->
+                                touch (peripherals mcu)
+                                      (fromIntegral index)
+                                      thresholdLow thresholdHigh
+                        ) touches' ints
     currentTouch   <- value "current_touches" 0
     indexTouch     <- index "index_touches"
     dinputs        <- DI.mkDinputs "touches"
@@ -82,10 +88,10 @@ touches thresholdLow thresholdHigh touches' transport = do
                           , transmit = T.transmitBuffer transport
                           }
 
-    addTask  $ delay 50  "touches_log"    $ sendTimeTask   touches
+    addTask  $ delay 10  "touches_log"    $ sendTimeTask   touches
     -- addTask  $ delay 1   "touches_run"    $ touchesRunTask touches
-    -- addTask  $ delay 10  "touches_manage" $ manageTouches  touches
-    -- addTask  $ yeld      "touches_sync"   $ syncTouches    touches
+    addTask  $ delay 10  "touches_manage" $ manageTouches  touches
+    addTask  $ yeld      "touches_sync"   $ syncTouches    touches
 
     addSync "touches" $ forceSyncTouches touches
 
@@ -94,14 +100,20 @@ touches thresholdLow thresholdHigh touches' transport = do
 sendTimeTask :: KnownNat n => Touches n -> Ivory (ProcEffects s ()) ()
 sendTimeTask touches@Touches{..} = do
     let n = length getTouches
+    shouldSend <- local $ ival false
     overSingleTouch touches \t i -> do
-        time <- I.getDebug t
-        packBE buf (fromIntegral $ i * 2 + 2) $ castDefault @Sint16 time
-    store (buf ! 0) actionError
-    store (buf ! 1) 1 -- type debug message
+        let offset = fromIntegral $ i * 2 + 2
+        prev <- unpackBE buf offset
+        time <- castDefault @Sint16 <$> I.getDebug t
+        when (time /=? prev) $ do
+            packBE buf offset time
+            store shouldSend true
 
-
-    transmit buf
+    shouldSend' <- deref shouldSend
+    when shouldSend' $ do
+        store (buf ! 0) actionError
+        store (buf ! 1) 1 -- type debug message
+        transmit buf
 
 
 touchesRunTask :: KnownNat n => Touches n -> Ivory (ProcEffects s ()) ()

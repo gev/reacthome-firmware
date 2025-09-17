@@ -37,6 +37,7 @@ import           Interface.Mac                     (Mac)
 import           Interface.MCU
 import           Interface.OneWire
 import           Interface.SystemClock             (SystemClock, systemClock)
+import qualified Interface.Timer                   as I
 import           Ivory.Language
 import           Support.Device.GD32F3x0
 import           Support.Device.GD32F3x0.ADC
@@ -49,7 +50,6 @@ import           Support.Device.GD32F3x0.RCU       as R
 import           Support.Device.GD32F3x0.SYSCFG
 import           Support.Device.GD32F3x0.Timer
 import           Support.Device.GD32F3x0.USART
-import qualified Interface.Timer as I
 
 
 
@@ -65,126 +65,126 @@ type PWM'       = forall m.       MonadState Context m => Uint32 -> Uint32 -> m 
 type NeoPixel'  = forall m.       MonadState Context m => m NeoPixel
 type EXTI'      = forall m.       MonadState Context m => m EXTI
 type OneWire'   = forall m.       MonadState Context m => m OpenDrain -> m OneWire
-type Touch'     = forall m.       MonadState Context m => IFloat -> IFloat -> m Touch
+type Touch'     = forall m.       MonadState Context m => Uint32 -> IFloat -> IFloat -> m Touch
 
 
 data GD32F3x0 = GD32F3x0
-    { uart_0    :: UART'
-    , uart_1    :: UART'
+    { uart_0     :: UART'
+    , uart_1     :: UART'
 
-    , in_pa_0   :: Input'
-    , in_pa_1   :: Input'
-    , in_pa_2   :: Input'
-    , in_pa_3   :: Input'
-    , in_pa_4   :: Input'
-    , in_pa_5   :: Input'
-    , in_pa_6   :: Input'
-    , in_pa_7   :: Input'
-    , in_pa_8   :: Input'
-    , in_pa_9   :: Input'
-    , in_pa_10  :: Input'
-    , in_pa_11  :: Input'
-    , in_pa_12  :: Input'
-    , in_pa_13  :: Input'
-    , in_pa_14  :: Input'
-    , in_pa_15  :: Input'
+    , in_pa_0    :: Input'
+    , in_pa_1    :: Input'
+    , in_pa_2    :: Input'
+    , in_pa_3    :: Input'
+    , in_pa_4    :: Input'
+    , in_pa_5    :: Input'
+    , in_pa_6    :: Input'
+    , in_pa_7    :: Input'
+    , in_pa_8    :: Input'
+    , in_pa_9    :: Input'
+    , in_pa_10   :: Input'
+    , in_pa_11   :: Input'
+    , in_pa_12   :: Input'
+    , in_pa_13   :: Input'
+    , in_pa_14   :: Input'
+    , in_pa_15   :: Input'
 
-    , in_pb_0   :: Input'
-    , in_pb_1   :: Input'
-    , in_pb_2   :: Input'
-    , in_pb_3   :: Input'
-    , in_pb_4   :: Input'
-    , in_pb_5   :: Input'
-    , in_pb_6   :: Input'
-    , in_pb_7   :: Input'
-    , in_pb_8   :: Input'
-    , in_pb_9   :: Input'
-    , in_pb_10  :: Input'
-    , in_pb_11  :: Input'
-    , in_pb_12  :: Input'
-    , in_pb_13  :: Input'
-    , in_pb_14  :: Input'
-    , in_pb_15  :: Input'
+    , in_pb_0    :: Input'
+    , in_pb_1    :: Input'
+    , in_pb_2    :: Input'
+    , in_pb_3    :: Input'
+    , in_pb_4    :: Input'
+    , in_pb_5    :: Input'
+    , in_pb_6    :: Input'
+    , in_pb_7    :: Input'
+    , in_pb_8    :: Input'
+    , in_pb_9    :: Input'
+    , in_pb_10   :: Input'
+    , in_pb_11   :: Input'
+    , in_pb_12   :: Input'
+    , in_pb_13   :: Input'
+    , in_pb_14   :: Input'
+    , in_pb_15   :: Input'
 
-    , out_pa_0  :: Output'
-    , out_pa_1  :: Output'
-    , out_pa_2  :: Output'
-    , out_pa_3  :: Output'
-    , out_pa_4  :: Output'
-    , out_pa_5  :: Output'
-    , out_pa_6  :: Output'
-    , out_pa_7  :: Output'
-    , out_pa_8  :: Output'
-    , out_pa_9  :: Output'
-    , out_pa_10 :: Output'
-    , out_pa_11 :: Output'
-    , out_pa_12 :: Output'
-    , out_pa_13 :: Output'
-    , out_pa_14 :: Output'
-    , out_pa_15 :: Output'
+    , out_pa_0   :: Output'
+    , out_pa_1   :: Output'
+    , out_pa_2   :: Output'
+    , out_pa_3   :: Output'
+    , out_pa_4   :: Output'
+    , out_pa_5   :: Output'
+    , out_pa_6   :: Output'
+    , out_pa_7   :: Output'
+    , out_pa_8   :: Output'
+    , out_pa_9   :: Output'
+    , out_pa_10  :: Output'
+    , out_pa_11  :: Output'
+    , out_pa_12  :: Output'
+    , out_pa_13  :: Output'
+    , out_pa_14  :: Output'
+    , out_pa_15  :: Output'
 
-    , out_pb_0  :: Output'
-    , out_pb_1  :: Output'
-    , out_pb_2  :: Output'
-    , out_pb_3  :: Output'
-    , out_pb_4  :: Output'
-    , out_pb_5  :: Output'
-    , out_pb_6  :: Output'
-    , out_pb_7  :: Output'
-    , out_pb_8  :: Output'
-    , out_pb_9  :: Output'
-    , out_pb_10 :: Output'
-    , out_pb_11 :: Output'
-    , out_pb_12 :: Output'
-    , out_pb_13 :: Output'
-    , out_pb_14 :: Output'
-    , out_pb_15 :: Output'
+    , out_pb_0   :: Output'
+    , out_pb_1   :: Output'
+    , out_pb_2   :: Output'
+    , out_pb_3   :: Output'
+    , out_pb_4   :: Output'
+    , out_pb_5   :: Output'
+    , out_pb_6   :: Output'
+    , out_pb_7   :: Output'
+    , out_pb_8   :: Output'
+    , out_pb_9   :: Output'
+    , out_pb_10  :: Output'
+    , out_pb_11  :: Output'
+    , out_pb_12  :: Output'
+    , out_pb_13  :: Output'
+    , out_pb_14  :: Output'
+    , out_pb_15  :: Output'
 
-    , od_pa_5   :: OpenDrain'
-    , od_pa_8   :: OpenDrain'
-    , od_pa_15  :: OpenDrain'
+    , od_pa_5    :: OpenDrain'
+    , od_pa_8    :: OpenDrain'
+    , od_pa_15   :: OpenDrain'
 
-    , timer_0   :: Timer'
-    , timer_1   :: Timer'
-    , timer_2   :: Timer'
-    , timer_14  :: Timer'
-    , timer_15  :: Timer'
+    , timer_0    :: Timer'
+    , timer_1    :: Timer'
+    , timer_2    :: Timer'
+    , timer_14   :: Timer'
+    , timer_15   :: Timer'
 
-    , pwm_0     :: PWM'
-    , pwm_1     :: PWM'
-    , pwm_2     :: PWM'
-    , pwm_3     :: PWM'
-    , pwm_4     :: PWM'
-    , pwm_5     :: PWM'
-    , pwm_6     :: PWM'
-    , pwm_7     :: PWM'
-    , pwm_8     :: PWM'
-    , pwm_9     :: PWM'
-    , pwm_10    :: PWM'
-    , pwm_11    :: PWM'
+    , pwm_0      :: PWM'
+    , pwm_1      :: PWM'
+    , pwm_2      :: PWM'
+    , pwm_3      :: PWM'
+    , pwm_4      :: PWM'
+    , pwm_5      :: PWM'
+    , pwm_6      :: PWM'
+    , pwm_7      :: PWM'
+    , pwm_8      :: PWM'
+    , pwm_9      :: PWM'
+    , pwm_10     :: PWM'
+    , pwm_11     :: PWM'
 
-    , npx_pwm_0 :: NeoPixel'
-    , npx_pwm_1 :: NeoPixel'
-    , npx_pwm_3 :: NeoPixel'
+    , npx_pwm_0  :: NeoPixel'
+    , npx_pwm_1  :: NeoPixel'
+    , npx_pwm_3  :: NeoPixel'
 
-    , exti_pa_0 :: EXTI'
-    , exti_pa_5 :: EXTI'
-    , exti_pb_7 :: EXTI'
+    , exti_pa_0  :: EXTI'
+    , exti_pa_5  :: EXTI'
+    , exti_pb_7  :: EXTI'
 
-    , ow_0      :: OneWire'
-    , ow_1      :: OneWire'
+    , ow_0       :: OneWire'
+    , ow_1       :: OneWire'
 
-    , etc       :: PageAddr
+    , etc        :: PageAddr
 
-    , i2c_0     :: I2C'
+    , i2c_0      :: I2C'
 
-    , adc_pa_0  :: ADC'
-    , adc_pa_1  :: ADC'
-    , adc_pa_5  :: ADC'
-    , adc_pa_6  :: ADC'
-    , adc_pa_7  :: ADC'
+    , adc_pa_0   :: ADC'
+    , adc_pa_1   :: ADC'
+    , adc_pa_5   :: ADC'
+    , adc_pa_6   :: ADC'
+    , adc_pa_7   :: ADC'
 
-    , dac_pa_4  :: DAC'
+    , dac_pa_4   :: DAC'
 
     , touch_pa4  :: Touch'
     , touch_pa5  :: Touch'
@@ -399,19 +399,19 @@ gd32f3x0 = MCU $ mkPlatform G.systemClock makeMac inclGD32F3x0 GD32F3x0
     , dac_pa_4 = mkDAC (pa_4 analog)
 
 
-    , touch_pa4  = mkTouch gpioa gpio_pin_4  rcu_gpioa  
-    , touch_pa5  = mkTouch gpioa gpio_pin_5  rcu_gpioa  
-    , touch_pa7  = mkTouch gpioa gpio_pin_7  rcu_gpioa  
+    , touch_pa4  = mkTouch gpioa gpio_pin_4  rcu_gpioa
+    , touch_pa5  = mkTouch gpioa gpio_pin_5  rcu_gpioa
+    , touch_pa7  = mkTouch gpioa gpio_pin_7  rcu_gpioa
     , touch_pa15 = mkTouch gpioa gpio_pin_15 rcu_gpioa
-    , touch_pb0  = mkTouch gpiob gpio_pin_0  rcu_gpiob  
-    , touch_pb1  = mkTouch gpiob gpio_pin_1  rcu_gpiob  
-    , touch_pb2  = mkTouch gpiob gpio_pin_2  rcu_gpiob  
-    , touch_pb3  = mkTouch gpiob gpio_pin_3  rcu_gpiob  
-    , touch_pb4  = mkTouch gpiob gpio_pin_4  rcu_gpiob  
-    , touch_pb5  = mkTouch gpiob gpio_pin_5  rcu_gpiob  
-    , touch_pb6  = mkTouch gpiob gpio_pin_6  rcu_gpiob  
-    , touch_pb7  = mkTouch gpiob gpio_pin_7  rcu_gpiob  
-    , touch_pb8  = mkTouch gpiob gpio_pin_8  rcu_gpiob  
+    , touch_pb0  = mkTouch gpiob gpio_pin_0  rcu_gpiob
+    , touch_pb1  = mkTouch gpiob gpio_pin_1  rcu_gpiob
+    , touch_pb2  = mkTouch gpiob gpio_pin_2  rcu_gpiob
+    , touch_pb3  = mkTouch gpiob gpio_pin_3  rcu_gpiob
+    , touch_pb4  = mkTouch gpiob gpio_pin_4  rcu_gpiob
+    , touch_pb5  = mkTouch gpiob gpio_pin_5  rcu_gpiob
+    , touch_pb6  = mkTouch gpiob gpio_pin_6  rcu_gpiob
+    , touch_pb7  = mkTouch gpiob gpio_pin_7  rcu_gpiob
+    , touch_pb8  = mkTouch gpiob gpio_pin_8  rcu_gpiob
 
     }
 
