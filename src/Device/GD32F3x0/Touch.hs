@@ -101,7 +101,7 @@ resetBounds Touch{..} = do
     store max 0
 
 runMeasurement :: Touch -> Ivory (ProcEffects s ()) ()
-runMeasurement t@Touch{..} = do
+runMeasurement Touch{..} = do
     disableIRQ
     resetBit port pin
     modePort port pin gpio_mode_input
