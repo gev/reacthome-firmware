@@ -141,5 +141,5 @@ runMeasurement Touch{..} = do
 
 
 average :: IFloat -> IFloat -> IFloat -> IFloat
-average alpha a b = do
+average alpha a b =
     a * (1 - alpha) + b * alpha
