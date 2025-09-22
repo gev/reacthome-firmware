@@ -132,7 +132,7 @@ runMeasurement Touch{..} = do
     cond_ [ rising >? threshold ==> do
                 store stateTouch true
                 store debugVal rising
-          , falling >? threshold * 0.75 ==> do
+          , falling >? threshold * 0.6 ==> do
                 store stateTouch false
                 store debugVal (- falling)
           , true ==> store debugVal 0
