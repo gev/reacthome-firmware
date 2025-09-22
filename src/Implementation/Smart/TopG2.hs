@@ -85,10 +85,9 @@ topG2 transport' dinputs' vibro' touch' sht21' display' etc' = do
     let top         = Top { dinputs, leds, vibro, buttons, sht21 }
 
     addHandler $ Render display 30 frameBuffer $ do
-        updateLeds    leds
+        updateLeds leds
         updateButtons buttons
-        render        leds
-        pure          true
+        render leds
 
     pure top
 

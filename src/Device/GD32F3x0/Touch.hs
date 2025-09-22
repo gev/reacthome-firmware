@@ -6,22 +6,29 @@
 {-# LANGUAGE NamedFieldPuns        #-}
 {-# LANGUAGE NumericUnderscores    #-}
 {-# LANGUAGE QuasiQuotes           #-}
+{-# LANGUAGE RankNTypes            #-}
 {-# LANGUAGE RecordWildCards       #-}
 
 module Device.GD32F3x0.Touch where
 
+import           Control.Monad                  (replicateM_)
 import           Control.Monad.State
 import           Core.Context
 import           Core.Handler
 import           Core.Task
+import           Data.ByteString                (index)
 import           Data.Value
 import           Device.GD32F3x0.EXTI
 import           Device.GD32F3x0.Timer
-import qualified Interface.Counter              as I
+import           Interface.Counter              (Counter (readCounter))
+import qualified Interface.Timer                as I
 import qualified Interface.Touch                as I
 import           Ivory.Language                 hiding (setBit)
+import           Ivory.Language.Uint            (Uint32 (Uint32))
 import           Ivory.Stdlib                   (ifte, when)
+import           Ivory.Stdlib.Control
 import           Ivory.Support                  (symbol)
+import           Support.CMSIS.CoreCMFunc       (disableIRQ, enableIRQ)
 import           Support.Device.GD32F3x0.EXTI
 import           Support.Device.GD32F3x0.GPIO
 import           Support.Device.GD32F3x0.IRQ
@@ -30,145 +37,109 @@ import           Support.Device.GD32F3x0.RCU
 import           Support.Device.GD32F3x0.SYSCFG
 
 
-stateWaitStart   = 0
-stateMeasuring   = 1
-stateIsMeasured  = 2
 
-data Touch = Touch { port             :: GPIO_PERIPH
-                   , pin              :: GPIO_PIN
-                   , srcPort          :: EXTI_PORT
-                   , srcPin           :: EXTI_PIN
-                   , ex               :: EXTI_LINE
-                   , extiIRQ          :: IRQn
-                   , timer            :: Timer
-                   , stateMeasurement :: Value Uint8
-                   , calculateBound   :: Value IBool
-                   , timestamp1       :: Value Uint16
-                   , timestamp2       :: Value Uint16
-                   , tresholdLower    :: Value Uint16
-                   , tresholdUpper    :: Value Uint16
-                   , timeMin          :: Value IFloat
-                   , time             :: Value IFloat
-                   , stateTouch       :: Value IBool
-                   , debugVal         :: Value IFloat
+
+data Touch = Touch { port       :: GPIO_PERIPH
+                   , pin        :: GPIO_PIN
+                   , timer      :: Timer
+                   , threshold  :: IFloat
+                   , avg        :: Value IFloat
+                   , min        :: Value IFloat
+                   , max        :: Value IFloat
+                   , stateTouch :: Value IBool
+                   , debugVal   :: Value IFloat
                    }
 
 
 mkTouch :: (MonadState Context m)
-        => GPIO_PERIPH -> GPIO_PIN -> RCU_PERIPH
-        -> IRQn -> EXTI_PORT -> EXTI_PIN
-        -> EXTI_LINE -> Uint16 -> Uint16 -> m Touch
-mkTouch port pin rcuPin extiIRQ srcPort srcPin ex tresholdLower' tresholdUpper' = do
+        => GPIO_PERIPH -> GPIO_PIN -> RCU_PERIPH -> IFloat -> m Touch
+mkTouch port pin rcuPin threshold = do
+    timer      <- cfg_timer_14 84_000_000 0xffff_ffff
 
-    timer <- cfg_timer_14 84_000_000 0xffff_ffff
+    let name    = symbol port <> "_" <> symbol pin
 
-    let name = symbol srcPort <> "_" <> symbol srcPin
+    avg        <- value   ("touch_avg" <> name) 0
+    min        <- value   ("touch_min" <> name) 0xffff_ffff
+    max        <- value   ("touch_max" <> name) 0
+    stateTouch <- value   ("touch_state_touch" <> name) false
+    debugVal   <- value   ("debug_val" <> name) 0
 
-    tresholdLower     <- value ("touch_treshold_lower" <> name) tresholdLower'
-    tresholdUpper     <- value ("touch_treshold_upper" <> name) tresholdUpper'
-    timestamp1        <- value ("touch_timestamp1" <> name) 0
-    timestamp2        <- value ("touch_timestamp2" <> name) 0
-    timeMin           <- value ("touch_time_min" <> name) 0xffff
-    time              <- value ("touch_time" <> name) 0xffff
-    stateMeasurement  <- value ("touch_state_measurement" <> name) stateWaitStart
-    calculateBound    <- value ("touch_calculate_bound" <> name) false
-    stateTouch        <- value ("touch_state_touch" <> name) false
-    debugVal          <- value ("debug_val" <> name) 0
-
-    addInit (symbol srcPort <> "_" <> symbol srcPin) $ do
-
-        enablePeriphClock       rcuPin
-        resetBit port pin
+    addInit name $ do
+        enablePeriphClock rcuPin
         modePort port pin gpio_mode_output
+        resetBit port pin
 
-        enablePeriphClock       rcu_cfgcmp
-        enableIrqNvic           extiIRQ 0 0
-        configExtiLine          srcPort srcPin
-        initExti                ex exti_interrupt exti_trig_rising
-        clearExtiInterruptFlag  ex
-        disableExtiInterrupt    ex
+    let touch = Touch { port
+                      , pin
+                      , timer
+                      , threshold
+                      , avg
+                      , min
+                      , max
+                      , stateTouch
+                      , debugVal
+                      }
 
-    let touch = Touch { port, pin, srcPort, srcPin, ex, extiIRQ, timer, tresholdLower, tresholdUpper, timestamp1, timestamp2, timeMin, time, stateMeasurement, calculateBound, stateTouch, debugVal }
-
-    addBody (makeIRQHandlerName extiIRQ) $ handleEXTI ex $ extiHandler touch
-    addTask $ delay 300 ("touch_run"<> name) $ startMeasurementMinMax touch
+    addTask $ delay 1_000 ("touch_reset_bounds" <> name) $ resetBounds touch
+    addTask $ yeld ("touch_run" <> name) $ runMeasurement touch
 
     pure touch
-
-
-startMeasurementMinMax :: Touch -> Ivory eff ()
-startMeasurementMinMax Touch{..} = do
-    store calculateBound true
-
 
 modePort :: GPIO_PERIPH -> GPIO_PIN -> GPIO_MODE  -> Ivory eff ()
 modePort gpio pin mode = do
     setOutputOptions gpio gpio_otype_pp gpio_ospeed_50mhz pin
     setMode gpio mode gpio_pupd_none pin
 
-
-extiHandler :: Touch -> Ivory eff ()
-extiHandler Touch{..} = do
-    f <- getExtiInterruptFlag ex
-    when f $ do
-        clearExtiInterruptFlag ex
-        store timestamp2 =<< I.readCounter timer
-        disableExtiInterrupt ex
-        store stateMeasurement stateIsMeasured
-
-
 instance I.Touch Touch where
-
-    getTime Touch{..} = deref debugVal
-
-    run = runMeasurement
-
+    getDebug Touch{..} = deref debugVal
     getState Touch{..} = deref stateTouch
 
 
-runMeasurement :: Touch -> Ivory eff () -> Ivory eff ()
-runMeasurement Touch{..} handle = do
-        state <- deref stateMeasurement
+resetBounds :: Touch -> Ivory eff ()
+resetBounds Touch{..} = do
+    store min 0xffff_ffff
+    store max 0
 
-        when (state ==? stateWaitStart) $ do
-            modePort port pin gpio_mode_input
-            enableExtiInterrupt ex
-            store stateMeasurement stateMeasuring
-            t <- I.readCounter timer
-            store timestamp1 t
+runMeasurement :: Touch -> Ivory (ProcEffects s ()) ()
+runMeasurement Touch{..} = do
+    disableIRQ
+    resetBit port pin
+    modePort port pin gpio_mode_input
+    I.resetCounter timer
+    forever $ do
+        isMeasured <- getInputBit port pin
+        when isMeasured breakOut
+    moment <- safeCast <$> I.getCounter timer
+    modePort port pin gpio_mode_output
+    enableIRQ
+    setBit port pin
 
-        when (state ==? stateIsMeasured) $ do
-            modePort port pin gpio_mode_output
-            resetBit port pin
+    avg' <- deref avg
+    store avg $ average 0.01 avg' moment
+    avg'' <- deref avg
 
-            t1 <- deref timestamp1
-            t2 <- deref timestamp2
-            let newTime = t2 - t1
-            previousTime <- deref time
-            store time $ average 0.01 previousTime $ safeCast newTime
+    min' <- deref min
+    when (avg'' <? min') $ store min avg''
+    min'' <- deref min
 
-            time' <- deref time
-            calculateBound' <- deref calculateBound
-            when calculateBound' $ do
-                timeMin' <- deref timeMin
-                when (time' <? timeMin') $ store timeMin time'
+    max' <- deref max
+    when (avg'' >? max') $ store max avg''
+    max'' <- deref max
 
-                let dt = time' - timeMin'
-                state <- deref stateTouch
-                tresholdUp <- deref tresholdUpper
-                tresholdLow <- deref tresholdLower
-                -- store debugVal dt
-                when (dt >? safeCast tresholdUp) $ do
-                    store stateTouch true
-                    when (iNot state) $ store debugVal dt
-                when (dt <? safeCast tresholdLow) $ do 
-                    store stateTouch false
-                    when state $ store debugVal dt
+    let rising  = avg'' - min''
+    let falling = max'' - avg''
 
-            store stateMeasurement stateWaitStart
-            handle
+    cond_ [ rising >? threshold ==> do
+                store stateTouch true
+                store debugVal rising
+          , falling >? threshold * 0.6 ==> do
+                store stateTouch false
+                store debugVal (- falling)
+          , true ==> store debugVal 0
+          ]
+
 
 
 average :: IFloat -> IFloat -> IFloat -> IFloat
-average alpha a b = do
+average alpha a b =
     a * (1 - alpha) + b * alpha

@@ -1,9 +1,9 @@
-{-# LANGUAGE DataKinds           #-}
-{-# LANGUAGE FlexibleContexts    #-}
-{-# LANGUAGE GADTs               #-}
-{-# LANGUAGE NamedFieldPuns      #-}
-{-# LANGUAGE RankNTypes          #-}
-{-# LANGUAGE RecordWildCards     #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs            #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE RecordWildCards  #-}
 
 module Feature.Mix.Indicator where
 
@@ -210,7 +210,7 @@ renderPixel pixel i ATS{..} DInputs{dinputs} Relays{relays} = do
 
 
 
-render :: Indicator ni no -> Ivory (ProcEffects s ()) ()
+render :: Indicator ni no -> Ivory (ProcEffects s ()) IBool
 render Indicator{..} =
     writePixels canvas pixels
 

@@ -61,7 +61,7 @@ topA4T :: ( MonadState Context m
          )
       => m t
       -> (Bool -> t -> m (DI.DInputs n))
-      -> (E.DInputs n -> t -> f-> m (Vibro n))
+      -> (E.DInputs n -> t -> f -> m (Vibro n))
       -> m PowerTouch
       -> (t -> m SHT21)
       -> (p -> m d)
@@ -85,10 +85,9 @@ topA4T transport' dinputs' vibro' touch' sht21' display' etc' = do
     let top       = Top { dinputs, leds, vibro, buttons, sht21 }
 
     addHandler $ Render display 30 frameBuffer $ do
-        updateLeds    leds
+        updateLeds leds
         updateButtons buttons
-        render        leds
-        pure          true
+        render leds
 
     pure top
 

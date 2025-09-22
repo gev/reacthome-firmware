@@ -1,9 +1,9 @@
-{-# LANGUAGE DataKinds           #-}
-{-# LANGUAGE FlexibleContexts    #-}
-{-# LANGUAGE GADTs               #-}
-{-# LANGUAGE NamedFieldPuns      #-}
-{-# LANGUAGE RankNTypes          #-}
-{-# LANGUAGE RecordWildCards     #-}
+{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs            #-}
+{-# LANGUAGE NamedFieldPuns   #-}
+{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE RecordWildCards  #-}
 
 module Feature.Indicator where
 
@@ -133,7 +133,7 @@ update Indicator{..} = do
 
 
 
-render :: (KnownNat n, KnownNat (Canvas1DSize n)) => Indicator n -> Ivory (ProcEffects s ()) ()
+render :: (KnownNat n, KnownNat (Canvas1DSize n)) => Indicator n -> Ivory (ProcEffects s ()) IBool
 render Indicator{..} =
     writePixels canvas pixels
 

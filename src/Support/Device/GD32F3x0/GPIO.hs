@@ -57,6 +57,7 @@ module Support.Device.GD32F3x0.GPIO
     , setOutputOptions
     , setBit
     , resetBit
+    , toggleBit
     , setAF
     , getInputBit
     , getOutputBit
@@ -175,6 +176,13 @@ gpio_bit_reset :: Def ('[GPIO_PERIPH, GPIO_PIN] :-> ())
 gpio_bit_reset = fun "gpio_bit_reset"
 
 
+toggleBit :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff ()
+toggleBit = call_ gpio_bit_toggle
+
+gpio_bit_toggle :: Def ('[GPIO_PERIPH, GPIO_PIN] :-> ())
+gpio_bit_toggle = fun "gpio_bit_toggle"
+
+
 setAF :: GPIO_PERIPH -> GPIO_AF -> GPIO_PIN -> Ivory eff ()
 setAF = call_ gpio_af_set
 
@@ -243,5 +251,6 @@ inclGPIO = do
     incl gpio_af_set
     incl gpio_bit_reset
     incl gpio_bit_set
+    incl gpio_bit_toggle
     incl gpio_input_bit_get
     incl gpio_output_bit_get

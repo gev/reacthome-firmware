@@ -216,25 +216,27 @@ updateLeds LEDs{..} = do
         blinkPhase' <- deref blinkPhase
         palette'    <- deref palette
 
+        let pixel = pixels ! dx
+
         ifte_ (state' .&& image' .&& (iNot blink' .|| blink' .&& blinkPhase'))
               (do
                   value  <- deref $ colors ! palette' ! sx
                   let r'  = safeCast $ (value `iShiftR` 16) .& 0xff
                   let g'  = safeCast $ (value `iShiftR`  8) .& 0xff
                   let b'  = safeCast $ value .& 0xff
-                  store (pixels ! dx ~> r) $ r' / 255 * brightness'
-                  store (pixels ! dx ~> g) $ g' / 255 * brightness'
-                  store (pixels ! dx ~> b) $ b' / 255 * brightness'
+                  store (pixel ~> r) $ r' / 255 * brightness'
+                  store (pixel ~> g) $ g' / 255 * brightness'
+                  store (pixel ~> b) $ b' / 255 * brightness'
               )
               (do
-                  store (pixels ! dx ~> r) 0
-                  store (pixels ! dx ~> g) 0
-                  store (pixels ! dx ~> b) 0
+                  store (pixel ~> r) 0
+                  store (pixel ~> g) 0
+                  store (pixel ~> b) 0
               )
 
 
-render :: (KnownNat ln, KnownNat (Canvas1DSize ln) ) => LEDs pn ln -> Ivory (ProcEffects s ()) ()
-render LEDs{..} =
+render :: (KnownNat ln, KnownNat (Canvas1DSize ln) ) => LEDs pn ln -> Ivory (ProcEffects s ()) IBool
+render LEDs{..} = 
     writePixels canvas pixels
 
 

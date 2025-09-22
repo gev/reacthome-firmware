@@ -136,6 +136,7 @@ handleDMA npx@NeoPixel{..} frame = do
 
 
 
+
 transmitFrameBuffer :: NeoPixel -> Value Uint8 -> Ivory eff ()
 transmitFrameBuffer NeoPixel{..} value = do
     writeByte buff' =<< deref value
