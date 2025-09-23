@@ -345,3 +345,4 @@ executable reacthome-firmware
     RankNTypes
     RecordWildCards
     ScopedTypeVariables
+    TypeOperators

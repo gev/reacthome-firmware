@@ -1,5 +1,4 @@
 {-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE TypeOperators #-}
 
 module Protocol.OneWire.Master (
     OneWireMaster,

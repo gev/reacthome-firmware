@@ -1,6 +1,5 @@
 {-# HLINT ignore "Use for_" #-}
 {-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 module Util.CRC16 (

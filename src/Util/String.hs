@@ -1,5 +1,4 @@
 {-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE TypeOperators #-}
 
 module Util.String (
     inclString,

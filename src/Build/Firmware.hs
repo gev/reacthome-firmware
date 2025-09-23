@@ -1,4 +1,3 @@
-{-# LANGUAGE TypeOperators #-}
 
 module Build.Firmware where
 

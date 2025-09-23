@@ -1,6 +1,5 @@
 {-# HLINT ignore "Use camelCase" #-}
 {-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 module Support.Lwip.Udp (

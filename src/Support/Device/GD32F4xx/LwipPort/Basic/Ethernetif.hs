@@ -1,5 +1,4 @@
 {-# HLINT ignore "Use camelCase" #-}
-{-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 module Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif (

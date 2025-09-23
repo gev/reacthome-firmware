@@ -1,4 +1,3 @@
-{-# LANGUAGE TypeOperators #-}
 
 module Device.GD32F4xx.GPIO.Port where
 
