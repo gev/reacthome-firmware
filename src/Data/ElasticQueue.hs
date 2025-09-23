@@ -1,5 +1,3 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-
 module Data.ElasticQueue where
 
 import Control.Monad.State (MonadState)

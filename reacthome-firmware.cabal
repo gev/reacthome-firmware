@@ -344,3 +344,4 @@ executable reacthome-firmware
     NumericUnderscores
     RankNTypes
     RecordWildCards
+    ScopedTypeVariables

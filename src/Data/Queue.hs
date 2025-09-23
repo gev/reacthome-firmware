@@ -1,5 +1,3 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-
 module Data.Queue where
 
 import Control.Monad.State (MonadState)
