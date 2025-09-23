@@ -1,3 +1,11 @@
+{-# HLINT ignore "Use newtype instead of data" #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NumericUnderscores #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE TypeOperators #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
 module Interface.LwipPort where
 
 import Control.Monad (void)

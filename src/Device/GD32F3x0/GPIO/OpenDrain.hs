@@ -1,3 +1,6 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RecordWildCards #-}
+
 module Device.GD32F3x0.GPIO.OpenDrain where
 
 import Control.Monad.State

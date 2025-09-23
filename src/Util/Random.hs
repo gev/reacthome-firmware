@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleContexts #-}
+
 module Util.Random where
 
 import Control.Monad.State (MonadState)

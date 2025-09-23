@@ -1,3 +1,9 @@
+{-# LANGUAGE DataKinds #-}
+{-# HLINT ignore "Use camelCase" #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE TypeOperators #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
 module Support.Cast (
     castArrayUint8ToUint32,
     castArrayUint16ToUint32,

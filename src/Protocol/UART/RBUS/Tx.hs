@@ -1,3 +1,8 @@
+{-# LANGUAGE RankNTypes #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
+{-# HLINT ignore "Use for_" #-}
+
 module Protocol.UART.RBUS.Tx where
 
 import Data.Buffer

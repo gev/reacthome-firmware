@@ -1,3 +1,8 @@
+{-# HLINT ignore "Use camelCase" #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeOperators #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
 module Support.Lwip.Igmp (
     initIgmp,
     startIgmp,

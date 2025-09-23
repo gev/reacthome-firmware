@@ -1,3 +1,6 @@
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE RecordWildCards #-}
+
 module Protocol.RS485.RBUS.Master.Tx where
 
 import Data.Buffer

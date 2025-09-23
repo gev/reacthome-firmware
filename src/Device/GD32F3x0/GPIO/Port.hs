@@ -1,3 +1,8 @@
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TypeOperators #-}
+
 module Device.GD32F3x0.GPIO.Port where
 
 import Control.Monad.State (MonadState)
@@ -26,7 +31,6 @@ initPort p@Port{..} = addInit (show p) $ do
                 >> setAF gpio mode pin
         (AN mode) -> initMode mode gpio_otype_pp
   where
-    initMode :: GPIO_MODE -> GPIO_OTYPE -> Ivory (ProcEffects s ()) ()
     initMode mode otype = do
         setOutputOptions gpio otype gpio_ospeed_50mhz pin
         setMode gpio mode pupd pin

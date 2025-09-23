@@ -1,3 +1,9 @@
+{-# HLINT ignore "Use newtype instead of data" #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeOperators #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
 module Implementation.UdpEcho where
 
 import Control.Monad (void)

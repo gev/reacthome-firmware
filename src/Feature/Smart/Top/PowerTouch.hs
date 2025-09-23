@@ -1,3 +1,6 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE NumericUnderscores #-}
+
 module Feature.Smart.Top.PowerTouch where
 
 import Control.Monad.Reader (MonadReader, asks)

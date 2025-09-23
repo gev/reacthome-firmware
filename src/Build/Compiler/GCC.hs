@@ -1,3 +1,6 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RecordWildCards #-}
+
 module Build.Compiler.GCC where
 
 import Build.Compiler

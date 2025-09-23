@@ -1,3 +1,9 @@
+{-# HLINT ignore "Use camelCase" #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TypeOperators #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
 module Support.Lwip.Udp (
     UdpRecvFn,
     PtrUdpRecvFn,

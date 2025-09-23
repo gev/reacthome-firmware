@@ -1,3 +1,5 @@
+{-# LANGUAGE RecordWildCards #-}
+
 module Protocol.UART.RBUS.Rx (
     receive,
     reset,

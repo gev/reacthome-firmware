@@ -1,3 +1,6 @@
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs #-}
+
 module Core.Formula where
 
 import Control.Monad.Reader

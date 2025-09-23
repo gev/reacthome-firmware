@@ -1,3 +1,13 @@
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DeriveTraversable #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeOperators #-}
+
 module Data.Fixed where
 
 import Control.Monad (liftM2, void)
@@ -55,3 +65,21 @@ nats = fromEnum 1
 
 class MakeFrom n f t | f -> n, f -> t where
   from :: f -> List n t
+
+flip foldMap [2 .. 64] $ \i -> do
+  let
+    -- type part
+    t = varT $ mkName "t"
+    tupleTyCon = conT $ tupleTypeName i
+    tupleType = foldl appT tupleTyCon (replicate i t)
+    intLit = litT $ numTyLit $ fromIntegral i
+    -- body part
+    vars = map (\x -> mkName ("x" <> show x)) [1 .. i]
+    nil = conE 'Nil
+    cons x y = conE '(:>) `appE` x `appE` y
+    list = foldr (step . varE) nil vars
+    step head_ tail_ = head_ `cons` tail_
+  [d|
+    instance MakeFrom $intLit $tupleType $t where
+      from $(tupP $ map varP vars) = $(list)
+    |]

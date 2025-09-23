@@ -1,3 +1,11 @@
+{-# LANGUAGE DataKinds #-}
+{-# HLINT ignore "Use for_" #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TypeOperators #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
 module Util.CRC16 (
     CRC16,
     initCRC,

@@ -1,3 +1,10 @@
+{-# HLINT ignore "Use newtype instead of data" #-}
+{-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# OPTIONS_GHC -Wno-missing-fields #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
 module Device.GD32F3x0.DAC where
 
 import Control.Monad.State (MonadState)

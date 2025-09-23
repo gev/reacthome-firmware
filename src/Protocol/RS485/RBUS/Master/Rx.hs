@@ -1,3 +1,5 @@
+{-# LANGUAGE RecordWildCards #-}
+
 module Protocol.RS485.RBUS.Master.Rx (
     receive,
     reset,
