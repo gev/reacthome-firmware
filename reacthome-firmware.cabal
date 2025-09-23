@@ -335,4 +335,5 @@ executable reacthome-firmware
 
   default-language: Haskell2010
   default-extensions:
+    NamedFieldPuns
     NumericUnderscores

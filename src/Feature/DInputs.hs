@@ -3,7 +3,6 @@
 {-# LANGUAGE GADTs #-}
 {-# HLINT ignore "Use for_" #-}
 {-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
