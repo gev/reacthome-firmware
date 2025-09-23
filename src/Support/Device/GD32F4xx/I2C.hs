@@ -1,5 +1,3 @@
-{-# LANGUAGE MultiParamTypeClasses #-}
-
 module Support.Device.GD32F4xx.I2C (
     I2C_PERIPH,
     i2c0,
