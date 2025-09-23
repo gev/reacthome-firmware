@@ -102,7 +102,8 @@ transmit' action transform scd40@SCD40{..} = do
 receive :: SCD40 -> Uint8 -> Uint16 -> Ivory eff ()
 receive SCD40{..} value index = do
     store (rxBuff ! toIx index) value
-    when (index ==? 8) $ store isReady true
+    when (index ==? 8) do
+        store isReady true
 
 convert :: (IFloat -> IFloat) -> Ix 9 -> SCD40 -> Ivory eff ()
 convert calculate index SCD40{..} =

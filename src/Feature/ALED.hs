@@ -149,7 +149,8 @@ update ALED{..} random = do
             for (toIx segmentSize' :: Ix np) \pixelX -> do
                 let pixelX' = fromIx pixelX
                 x <- local $ ival pixelX'
-                when direction' $ store x (safeCast segmentSize' - pixelX' - 1)
+                when direction' do
+                    store x (safeCast segmentSize' - pixelX' - 1)
                 x' <- deref x
                 ifte_
                     (brightness' >? 0 .&& (safeCast x' >=? start'' .&& safeCast x' <? end'') /=? inverse')
@@ -208,14 +209,16 @@ update ALED{..} random = do
                                 , true ==> store p 0
                                 ]
                             p'' <- deref p
-                            when (p'' /=? p') $ store shouldUpdate true
+                            when (p'' /=? p') do
+                                store shouldUpdate true
                             store px $ px' + 1
                     do
                         for (toIx pixelSize' :: Ix np) \_ -> do
                             px' <- deref px
                             let p = E.subPixels getALED ! px'
                             p' <- deref p
-                            when (p' /=? 0) $ store shouldUpdate true
+                            when (p' /=? 0) do
+                                store shouldUpdate true
                             store p 0
                             store px $ px' + 1
             store sx $ sx' + 1
@@ -241,7 +244,8 @@ incrementTime animation = do
         timeEnd' <- deref $ animation ~> E.timeEnd
         dt' <- deref $ animation ~> E.dt
         let time'' = time' + dt'
-        when (time'' >=? 0 .&& loop') $ store (animation ~> E.inLoop) true
+        when (time'' >=? 0 .&& loop') do
+            store (animation ~> E.inLoop) true
         ifte_
             do
                 time'' >=? timeEnd'
@@ -585,7 +589,8 @@ onALedConfigGroup a@ALED{..} buff size = do
                 shift <- local . ival $ segmentNumber - segmentNumber'
                 shift' <- deref shift
                 let free = ns' - endSegment'
-                when (free <? shift') $ store n (segmentNumber' + free)
+                when (free <? shift') do
+                    store n (segmentNumber' + free)
                 segmentNumber <- deref n
                 when (segmentNumber >? segmentNumber') do
                     let shift = segmentNumber - segmentNumber'

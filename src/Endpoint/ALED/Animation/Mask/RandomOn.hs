@@ -19,7 +19,8 @@ renderRandomOn time pixel random animation = do
     let b = castDefault $ pixel .% 8
     let p = animation ~> params ! px
     startLoop' <- deref $ animation ~> startLoop
-    when startLoop' $ store p 0
+    when startLoop' do
+        store p 0
     p' <- deref p
     let isOff = (p' `iShiftR` b) .& 1
     ifte

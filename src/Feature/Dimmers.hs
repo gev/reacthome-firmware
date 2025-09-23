@@ -206,4 +206,5 @@ onGroup dimmers index buff size =
 
 onGetState ds@Dimmers{..} = do
     initialized <- iNot <$> deref shouldInit
-    when initialized $ forceSync ds
+    when initialized do
+        forceSync ds

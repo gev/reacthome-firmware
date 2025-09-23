@@ -190,7 +190,8 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
                                 hasVoltage'
                                 (delayTurnOn relay 5_000 timestamp)
                                 do
-                                    when (timestamp - ts >? 30_000) $ justTurnOff start timestamp
+                                    when (timestamp - ts >? 30_000) do
+                                        justTurnOff start timestamp
                                     justTurnOff relay timestamp
                         do
                             justTurnOff relay timestamp
@@ -218,11 +219,13 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
                         store attempt 0
                         store synced false
                     justTurnOff relay timestamp
-                    when (timestamp - ts >? 30_000) $ justTurnOff start timestamp
+                    when (timestamp - ts >? 30_000) do 
+                        justTurnOff start timestamp
                 ]
         do
             justTurnOff relay timestamp
-            when (timestamp - ts >? 30_000) $ justTurnOff start timestamp
+            when (timestamp - ts >? 30_000) do
+                justTurnOff start timestamp
 
 hasError :: ATS -> Ivory eff IBool
 hasError ATS{..} = do
@@ -291,7 +294,8 @@ resetError ATS{..} = do
 justTurnOn :: Record R.RelayStruct -> Uint32 -> Ivory eff ()
 justTurnOn relay timestamp = do
     isOn <- deref $ relay ~> R.state
-    when (iNot isOn) $ store (relay ~> R.timestamp) timestamp
+    when (iNot isOn) do
+        store (relay ~> R.timestamp) timestamp
     store (relay ~> R.state) true
     store (relay ~> R.delayOff) 0
     store (relay ~> R.delayOn) 0
@@ -302,13 +306,15 @@ delayTurnOn relay delay timestamp = do
     delayOn <- deref $ relay ~> R.delayOn
     when (iNot isOn) do
         store (relay ~> R.delayOn) delay
-        when (delayOn ==? 0) $ store (relay ~> R.timestamp) timestamp
+        when (delayOn ==? 0) do
+            store (relay ~> R.timestamp) timestamp
     store (relay ~> R.delayOff) 0
 
 justTurnOff :: Record R.RelayStruct -> Uint32 -> Ivory eff ()
 justTurnOff relay timestamp = do
     isOn <- deref $ relay ~> R.state
-    when isOn $ store (relay ~> R.timestamp) timestamp
+    when isOn do
+        store (relay ~> R.timestamp) timestamp
     store (relay ~> R.state) false
     store (relay ~> R.delayOff) 0
     store (relay ~> R.delayOn) 0
@@ -319,7 +325,8 @@ delayTurnOff relay delay timestamp = do
     delayOff <- deref $ relay ~> R.delayOff
     when isOn do
         store (relay ~> R.delayOff) delay
-        when (delayOff ==? 0) $ store (relay ~> R.timestamp) timestamp
+        when (delayOff ==? 0) do
+            store (relay ~> R.timestamp) timestamp
     store (relay ~> R.delayOn) 0
 
 syncATS :: ATS -> Ivory (ProcEffects s ()) ()

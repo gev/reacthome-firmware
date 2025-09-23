@@ -213,7 +213,8 @@ onGetState = mapM_ run
   where
     run r@RSM{..} = do
         shouldInit' <- deref shouldInit
-        when (iNot shouldInit') $ forceSyncRSM r
+        when (iNot shouldInit') do
+            forceSyncRSM r
 
 {-
     TODO: handle actions only when initialized

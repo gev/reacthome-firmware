@@ -67,14 +67,17 @@ push' ::
     Ivory eff () ->
     Ivory eff ()
 push' q@ElasticQueue{..} handleT handleF = do
-    flip (down' producerS) handleF do
-        x <- deref producerIx
-        store producerIx $ x + 1
-        handleT it x
-        up consumerS
-        s <- size q
-        when (s >=? half) do
-            store isReady true
+    down'
+        producerS
+        do
+            x <- deref producerIx
+            store producerIx $ x + 1
+            handleT it x
+            up consumerS
+            s <- size q
+            when (s >=? half) do
+                store isReady true
+        handleF
 
 pop ::
     (KnownNat n) =>
@@ -84,11 +87,15 @@ pop ::
 pop ElasticQueue{..} handle = do
     isReady' <- deref isReady
     when isReady' do
-        flip (down' consumerS) (store isReady false) do
-            x <- deref consumerIx
-            store consumerIx $ x + 1
-            handle it x
-            up producerS
+        down'
+            consumerS
+            do
+                x <- deref consumerIx
+                store consumerIx $ x + 1
+                handle it x
+                up producerS
+            do
+                store isReady false
 
 pop' ::
     (KnownNat n) =>
@@ -98,12 +105,19 @@ pop' ::
     Ivory eff ()
 pop' ElasticQueue{..} handleT handleF = do
     isReady' <- deref isReady
-    flip (ifte_ isReady') handleF do
-        flip (down' consumerS) (store isReady false >> handleF) do
-            x <- deref consumerIx
-            store consumerIx $ x + 1
-            handleT it x
-            up producerS
+    ifte_
+        isReady'
+        do
+            down'
+                consumerS
+                do
+                    x <- deref consumerIx
+                    store consumerIx $ x + 1
+                    handleT it x
+                    up producerS
+                do
+                    store isReady false >> handleF
+        handleF
 
 peek ::
     (KnownNat n) =>
@@ -113,9 +127,13 @@ peek ::
 peek ElasticQueue{..} handle = do
     isReady' <- deref isReady
     when isReady' do
-        flip (check' consumerS) (store isReady false) do
-            x <- deref consumerIx
-            handle it x
+        check'
+            consumerS
+            do
+                x <- deref consumerIx
+                handle it x
+            do
+                store isReady false
 
 peek' ::
     (KnownNat n) =>
@@ -125,10 +143,17 @@ peek' ::
     Ivory eff ()
 peek' ElasticQueue{..} handleT handleF = do
     isReady' <- deref isReady
-    flip (ifte_ isReady') handleF do
-        flip (check' consumerS) (store isReady false >> handleF) do
-            x <- deref consumerIx
-            handleT it x
+    ifte_
+        isReady'
+        do
+            check'
+                consumerS
+                do
+                    x <- deref consumerIx
+                    handleT it x
+                do
+                    store isReady false >> handleF
+        handleF
 
 size ::
     ElasticQueue n t ->
@@ -143,10 +168,14 @@ remove ::
 remove ElasticQueue{..} = do
     isReady' <- deref isReady
     when isReady' do
-        flip (down' consumerS) (store isReady false) do
-            x <- deref consumerIx
-            store consumerIx $ x + 1
-            up producerS
+        down'
+            consumerS
+            do
+                x <- deref consumerIx
+                store consumerIx $ x + 1
+                up producerS
+            do
+                store isReady false
 
 clear ::
     forall n t eff.

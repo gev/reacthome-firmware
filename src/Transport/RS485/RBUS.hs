@@ -57,7 +57,8 @@ rbus rs485 = do
     let dispatch = makeDispatcher implementation
 
     let onMessage buff n shouldHandle = do
-            when (n >? 0 .&& shouldHandle) $ dispatch buff n
+            when (n >? 0 .&& shouldHandle) do
+                dispatch buff n
             store shouldConfirm true
 
     syncs <- gets getSyncs

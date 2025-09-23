@@ -572,12 +572,17 @@ getCRC = proc "one_wire_get_crc" \buff -> body do
 
 popAction :: OneWireMaster -> (Uint8 -> Uint8 -> Uint8 -> Ivory eff ()) -> Ivory eff ()
 popAction OneWireMaster{..} run =
-    flip (pop' actionQ) (disableOneWire onewire) \actionB ix -> do
-        let a = actionB ! ix
-        action' <- deref (a ~> action_)
-        payload' <- deref (a ~> payload_)
-        index' <- deref (a ~> index_)
-        run action' payload' index'
+    pop'
+        actionQ
+        do
+            \actionB ix -> do
+                let a = actionB ! ix
+                action' <- deref (a ~> action_)
+                payload' <- deref (a ~> payload_)
+                index' <- deref (a ~> index_)
+                run action' payload' index'
+        do
+            disableOneWire onewire
 
 pushAction :: OneWireMaster -> Uint8 -> Uint8 -> Uint8 -> Ivory eff ()
 pushAction OneWireMaster{..} action' payload' index' =

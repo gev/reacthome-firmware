@@ -105,7 +105,8 @@ manageRules Rules{..} DInputs{..} relays groups =
                     , r ==? 1 ==> turnOnRelay' relays groups (toIx $ 1 + fromIx jx) 0
                     , r ==? 2 ==> do
                         changed <- iNot <$> deref (di ~> DI.synced)
-                        when changed $ toggleRelay relays groups (toIx $ 1 + fromIx jx)
+                        when changed do
+                            toggleRelay relays groups (toIx $ 1 + fromIx jx)
                     ]
         state' <- deref $ di ~> DI.state
         ifte_
@@ -120,7 +121,8 @@ syncRules ::
 syncRules r@Rules{..} = do
     synced' <- deref synced
     let n = arrayLen rulesOn
-    when (iNot synced') $ mapM_ sync [0 .. n - 1]
+    when (iNot synced') do
+        mapM_ sync [0 .. n - 1]
     store synced true
   where
     sync i = do

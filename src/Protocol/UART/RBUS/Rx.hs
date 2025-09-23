@@ -74,7 +74,8 @@ receiveMessageLsbCRC r@RBUS{..} v = do
 receiveMsbCRC :: RBUS n -> Uint8 -> Ivory eff ()
 receiveMsbCRC RBUS{..} v = do
     msb' <- deref $ crc ~> msb
-    when (msb' /=? v) $ store valid false
+    when (msb' /=? v) do
+        store valid false
     store phase waitingLsbCRC
 
 receiveLsbCRC :: RBUS n -> Ivory eff () -> Uint8 -> Ivory eff ()

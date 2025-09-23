@@ -305,7 +305,8 @@ onSetColor LEDs{..} buff size = do
             let r' = ln' - i'
             let s = (size - 2) `iDiv` 3
             n <- local . ival $ s
-            when (r' <? s) $ store n r'
+            when (r' <? s) do
+                store n r'
             n' <- deref n
             T.lazyTransmit transport (3 * n' + 3) \transmit -> do
                 transmit actionRGB
@@ -335,7 +336,8 @@ onImage LEDs{..} buff size = do
     let s' = ln' `iDiv` 8
     n <- local $ ival s'
     let r' = ln' .% 8
-    when (r' >? 0) $ store n (s' + 1)
+    when (r' >? 0) do
+        store n (s' + 1)
     n' <- deref n
     when ((size - 1) ==? n') do
         v <- local $ ival 0
@@ -364,7 +366,8 @@ onBlink LEDs{..} buff size = do
     let s' = ln' `iDiv` 8
     n <- local $ ival s'
     let r' = ln' .% 8
-    when (r' >? 0) $ store n (s' + 1)
+    when (r' >? 0) do
+        store n (s' + 1)
     n' <- deref n
     when ((size - 1) ==? n') do
         v <- local $ ival 0

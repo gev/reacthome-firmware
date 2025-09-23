@@ -57,5 +57,6 @@ writePixels canvas pixels = do
     shouldUpdate <- local $ ival false
     arrayMap \ix -> do
         isUpdated <- writePixel canvas ix (pixels ! toIx ix)
-        when isUpdated $ store shouldUpdate true
+        when isUpdated do
+            store shouldUpdate true
     deref shouldUpdate

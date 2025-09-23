@@ -180,7 +180,8 @@ receiveAddress p Master{..} v = do
 receiveMsbCRC :: Master n -> Uint8 -> Ivory eff ()
 receiveMsbCRC Master{..} v = do
     msb' <- deref $ crc ~> msb
-    when (msb' /=? v) $ store valid false
+    when (msb' /=? v) do
+        store valid false
     store phase waitingLsbCRC
 
 receiveLsbCRC :: Master n -> Ivory eff () -> Uint8 -> Ivory eff ()

@@ -140,14 +140,16 @@ sync :: Dopplers n -> Ivory (ProcEffects s t) ()
 sync Dopplers{..} = do
     shouldSync <- mapM shouldSyncDoppler doppler
     let shouldTransmit = foldr (.||) false shouldSync
-    when shouldTransmit $ T.lazyTransmit transport (1 + n) \transmit -> do
-        transmit actionDoppler1
-        mapM_ transmit =<< mapM deref (current <$> doppler)
+    when shouldTransmit do
+        T.lazyTransmit transport (1 + n) \transmit -> do
+            transmit actionDoppler1
+            mapM_ transmit =<< mapM deref (current <$> doppler)
     mapM_
         ( \Doppler{..} -> do
             count' <- deref count
             store count $ count' + 1
-            when (count' ==? 0) $ store current 0
+            when (count' ==? 0) do
+                store current 0
         )
         doppler
 
@@ -157,7 +159,8 @@ shouldSyncDoppler Doppler{..} = do
     current' <- deref current
     previous' <- deref previous
     let shouldSync = current' >? previous' .|| count' ==? 0
-    when shouldSync $ store previous current'
+    when shouldSync do
+        store previous current'
     pure shouldSync
 
 average :: IFloat -> IFloat -> IFloat -> IFloat

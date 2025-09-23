@@ -48,34 +48,35 @@ doTransmitMessage :: RBUS -> Ivory (ProcEffects s ()) ()
 doTransmitMessage r@RBUS{..} = do
     t0 <- deref txTimestamp
     t1 <- getSystemTime clock
-    when (t1 - t0 >? 1) $ peek msgQueue \Messages{..} i -> do
-        let ix = toIx i
-        offset <- deref $ msgOffset ! ix
-        address <- deref $ msgBuff ! toIx (offset + 1)
-        let ax = toIx address
-        let confirmed = msgConfirmed ! ax
-        confirmed' <- deref confirmed
-        store confirmed false
-        ifte_
-            confirmed'
-            do
-                remove msgQueue
-            do
-                ttl <- deref $ msgTTL ! ix
-                ifte_
-                    (ttl >? 0)
-                    do
-                        size <- deref $ msgSize ! ix
-                        RS.transmit rs \write ->
-                            for (toIx size) \dx -> do
-                                let sx = dx + toIx offset
-                                write . safeCast =<< deref (msgBuff ! sx)
-                        store (msgTTL ! ix) $ ttl - 1
-                        store txTimestamp t1
-                        store txLock true
-                        store (msgWaitingConfirm ! ax) true
-                    do
-                        remove msgQueue
+    when (t1 - t0 >? 1) do
+        peek msgQueue \Messages{..} i -> do
+            let ix = toIx i
+            offset <- deref $ msgOffset ! ix
+            address <- deref $ msgBuff ! toIx (offset + 1)
+            let ax = toIx address
+            let confirmed = msgConfirmed ! ax
+            confirmed' <- deref confirmed
+            store confirmed false
+            ifte_
+                confirmed'
+                do
+                    remove msgQueue
+                do
+                    ttl <- deref $ msgTTL ! ix
+                    ifte_
+                        (ttl >? 0)
+                        do
+                            size <- deref $ msgSize ! ix
+                            RS.transmit rs \write ->
+                                for (toIx size) \dx -> do
+                                    let sx = dx + toIx offset
+                                    write . safeCast =<< deref (msgBuff ! sx)
+                            store (msgTTL ! ix) $ ttl - 1
+                            store txTimestamp t1
+                            store txLock true
+                            store (msgWaitingConfirm ! ax) true
+                        do
+                            remove msgQueue
 
 doDiscovery :: RBUS -> Ivory (ProcEffects s ()) ()
 doDiscovery r@RBUS{..} = do

@@ -128,7 +128,8 @@ update Indicator{..} = do
                 let v' = safeCast phi' / 100
                 store (pixel ~> s) v'
                 store (pixel ~> v) $ y * v'
-                when (phi' ==? 100) $ store start false
+                when (phi' ==? 100) do
+                    store start false
             do
                 store (pixel ~> v) y
 

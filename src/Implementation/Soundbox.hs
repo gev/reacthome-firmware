@@ -302,7 +302,8 @@ onInit Soundbox{..} buff size = do
                 ip4 <- unpack buff $ toIx (base + 4)
                 port <- unpackBE buff $ toIx (base + 5)
                 removeRtpUdp rtp netif
-                when active $ createRtpUdp rtp netif ip1 ip2 ip3 ip4 port
+                when active do
+                    createRtpUdp rtp netif ip1 ip2 ip3 ip4 port
         zipWithM_ run rtps [0 ..]
 
         store shouldInit false
@@ -330,7 +331,8 @@ onRtp Soundbox{..} buff size = do
             let run rtp i =
                     when (index ==? fromIntegral i) do
                         removeRtpUdp rtp netif
-                        when active $ createRtpUdp rtp netif ip1 ip2 ip3 ip4 port
+                        when active do
+                            createRtpUdp rtp netif ip1 ip2 ip3 ip4 port
             zipWithM_ run rtps [1 ..]
 
 -- size 41

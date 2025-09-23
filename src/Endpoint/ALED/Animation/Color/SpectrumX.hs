@@ -20,7 +20,8 @@ renderSpectrumX time segmentSize pixel subpixel animation brightness = do
     max <- safeCast <$> deref (animation ~> params ! toIx (3 * subpixel + 2))
     t <- local $ ival time
     inverseDirection' <- deref $ animation ~> inverseDirection
-    when inverseDirection' $ store t (1 - time)
+    when inverseDirection' do
+        store t (1 - time)
     t' <- deref t
     let x = t' + safeCast pixel / safeCast segmentSize
     let i = castDefault $ 255 * x + safeCast phase' :: Sint32

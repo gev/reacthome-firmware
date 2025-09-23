@@ -107,7 +107,8 @@ transmit' action calculate sht21@SHT21{..} = do
 receive :: SHT21 -> Uint8 -> Uint16 -> Ivory eff ()
 receive SHT21{..} value index = do
     store (rxBuff ! toIx index) value
-    when (index ==? 1) $ store isReady true
+    when (index ==? 1) do
+        store isReady true
 
 convert :: IFloat -> IFloat -> IFloat -> IFloat
 convert a b x = (a + b * x / 65_536) * 100

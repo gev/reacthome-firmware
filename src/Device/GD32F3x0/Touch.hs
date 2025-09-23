@@ -111,11 +111,13 @@ runMeasurement Touch{..} = do
     avg'' <- deref avg
 
     min' <- deref min
-    when (avg'' <? min') $ store min avg''
+    when (avg'' <? min') do
+        store min avg''
     min'' <- deref min
 
     max' <- deref max
-    when (avg'' >? max') $ store max avg''
+    when (avg'' >? max') do
+        store max avg''
     max'' <- deref max
 
     let rising = avg'' - min''

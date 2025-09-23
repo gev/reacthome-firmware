@@ -129,14 +129,16 @@ manageRelays Relays{..} = do
         let ix = fromIntegral i
         let r = R.relays getRelays ! ix
         isOff <- iNot <$> deref (r ~> R.state)
-        when isOff $ manageState r output reset false
+        when isOff do
+            manageState r output reset false
 
     on :: (Output o) => o -> Int -> Ivory eff ()
     on output i = do
         let ix = fromIntegral i
         let r = R.relays getRelays ! ix
         isOn <- deref $ r ~> R.state
-        when isOn $ manageState r output set true
+        when isOn do
+            manageState r output set true
 
 manageState ::
     (Output o) =>
@@ -281,4 +283,5 @@ initRelays Relays{..} buff offset = do
 onGetState :: (KnownNat n) => Relays n -> Ivory eff ()
 onGetState rs@Relays{..} = do
     initialized <- iNot <$> deref shouldInit
-    when initialized $ forceSyncRelays rs
+    when initialized do
+        forceSyncRelays rs

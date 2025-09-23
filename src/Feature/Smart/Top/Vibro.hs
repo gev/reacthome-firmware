@@ -115,7 +115,8 @@ vibroTask v@Vibro{..} = do
             t0 <- deref t
             t1 <- getSystemTime clock
             volume' <- deref volume
-            when (t1 - t0 >? safeCast volume') $ stopVibrate v
+            when (t1 - t0 >? safeCast volume') do
+                stopVibrate v
         do
             shouldVibrate <- local $ ival false
             arrayMap \ix -> do
@@ -125,7 +126,8 @@ vibroTask v@Vibro{..} = do
                 store shouldVibrate $ shouldVibrate' .|| (state' .&& iNot prevState')
                 store (prevState ! toIx ix) state'
             shouldVibrate' <- deref shouldVibrate
-            when shouldVibrate' $ startVibrate v
+            when shouldVibrate' do
+                startVibrate v
 
 startVibrate :: Vibro n -> Ivory eff ()
 startVibrate Vibro{..} = do

@@ -117,7 +117,8 @@ turnOnRelay Relays{..} groups index = do
         delay' <- getGroupDelay relays groups group' timestamp'
         store (r ~> delayOn) delay'
         store (r ~> timestamp) timestamp'
-        when (delay' ==? 0) $ store (r ~> state) true
+        when (delay' ==? 0) do
+            store (r ~> state) true
     store (r ~> delayOff) =<< deref (r ~> defaultDelayOff)
 
 turnOnRelay' ::
@@ -140,7 +141,8 @@ turnOnRelay' Relays{..} groups index delayOff' = do
         delay' <- getGroupDelay relays groups group' timestamp'
         store (r ~> delayOn) delay'
         store (r ~> timestamp) timestamp'
-        when (delay' ==? 0) $ store (r ~> state) true
+        when (delay' ==? 0) do
+            store (r ~> state) true
     store (r ~> delayOff) delayOff'
 
 toggleRelay ::
@@ -197,7 +199,8 @@ getGroupDelay rs G.Groups{..} i ts = do
             when (iNot isOn .&& group' ==? i) do
                 dt <- (ts -) <$> deref (r ~> timestamp)
                 min' <- deref min
-                when (dt <? min') $ store min dt
+                when (dt <? min') do
+                    store min dt
     min' <- deref min
     ifte
         (delay' >? min')

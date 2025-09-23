@@ -323,7 +323,8 @@ onGetState = mapM_ run
   where
     run r@RBUS{..} = do
         shouldInit' <- deref shouldInit
-        when (iNot shouldInit') $ forceSyncRBUS r
+        when (iNot shouldInit') do
+            forceSyncRBUS r
 
 {-
     TODO: handle actions only when initialized
