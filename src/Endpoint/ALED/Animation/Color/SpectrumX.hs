@@ -1,19 +1,19 @@
 module Endpoint.ALED.Animation.Color.SpectrumX where
 
-import           Data.Record
-import           Endpoint.ALED.Animation.CosT
-import           Endpoint.ALED.Animation.Data
-import           Ivory.Language
-import           Ivory.Stdlib
+import Data.Record
+import Endpoint.ALED.Animation.CosT
+import Endpoint.ALED.Animation.Data
+import Ivory.Language
+import Ivory.Stdlib
 
-
-renderSpectrumX :: IFloat
-                -> Uint16
-                -> Sint32
-                -> Sint32
-                -> Record AnimationStruct
-                -> IFloat
-                -> Ivory (AllowBreak (ProcEffects s ())) IFloat
+renderSpectrumX ::
+    IFloat ->
+    Uint16 ->
+    Sint32 ->
+    Sint32 ->
+    Record AnimationStruct ->
+    IFloat ->
+    Ivory (AllowBreak (ProcEffects s ())) IFloat
 renderSpectrumX time segmentSize pixel subpixel animation brightness = do
     phase' <- deref $ animation ~> params ! toIx (3 * subpixel)
     min <- safeCast <$> deref (animation ~> params ! toIx (3 * subpixel + 1))

@@ -1,16 +1,14 @@
-{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Interface.EXTI where
 
-import           Core.Handler
-import           Ivory.Language
-
+import Core.Handler
+import Ivory.Language
 
 data HandleEXTI e = HandleEXTI
-    { exti  :: e
+    { exti :: e
     , handle :: forall eff. Ivory eff ()
     }
 
-
-class Handler HandleEXTI e => EXTI e
+class (Handler HandleEXTI e) => EXTI e

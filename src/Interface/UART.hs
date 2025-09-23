@@ -1,25 +1,23 @@
-{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE RankNTypes       #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Interface.UART where
 
-import           Core.Context
-import           Core.Handler
-import           Data.Buffer
-import           GHC.TypeNats
-import           Ivory.Language
-import           Ivory.Language.Module
-
+import Core.Context
+import Core.Handler
+import Data.Buffer
+import GHC.TypeNats
+import Ivory.Language
+import Ivory.Language.Module
 
 data HandleUART u = HandleUART
-    { uart       :: u
-    , onReceive  :: forall eff. Ivory eff ()
+    { uart :: u
+    , onReceive :: forall eff. Ivory eff ()
     , onTransmit :: forall eff. Ivory eff ()
-    , onDrain    :: forall eff. Maybe (Ivory eff ())
-    , onError    :: forall eff. Ivory eff ()
+    , onDrain :: forall eff. Maybe (Ivory eff ())
+    , onError :: forall eff. Ivory eff ()
     }
-
 
 data Parity
     = None
@@ -31,31 +29,34 @@ data WordLength
     | WL_9b
 
 data StopBit
-
     = SB_0_5b
     | SB_1b
     | SB_1_5b
     | SB_2b
 
-class Handler HandleUART u => UART u where
+class (Handler HandleUART u) => UART u where
+    configUART ::
+        u ->
+        Uint32 ->
+        WordLength ->
+        StopBit ->
+        Parity ->
+        Ivory eff ()
 
-    configUART :: u
-               -> Uint32
-               -> WordLength
-               -> StopBit
-               -> Parity
-               -> Ivory eff ()
+    clearRX ::
+        u ->
+        Ivory eff ()
 
-    clearRX    :: u
-               -> Ivory eff ()
+    receive ::
+        u ->
+        (Uint16 -> Ivory (ProcEffects s t) ()) ->
+        Ivory (ProcEffects s t) ()
 
-    receive    :: u
-               -> (Uint16 -> Ivory (ProcEffects s t) ())
-               -> Ivory (ProcEffects s t) ()
+    transmit ::
+        u ->
+        ((Uint16 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ()) ->
+        Ivory (ProcEffects s t) ()
 
-    transmit   :: u
-               -> ((Uint16 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ())
-               -> Ivory (ProcEffects s t) ()
-
-    enable     :: u
-               -> Ivory eff ()
+    enable ::
+        u ->
+        Ivory eff ()

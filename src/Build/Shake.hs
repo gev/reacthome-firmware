@@ -1,6 +1,5 @@
-module Build.Shake  where
-
+module Build.Shake where
 
 class Shake c where
-    hash  :: c -> String
+    hash :: c -> String
     shake :: c -> String -> IO ()

@@ -1,16 +1,15 @@
-{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Interface.ENET where
 
-import           Ivory.Language
-import           Core.Handler
-
+import Core.Handler
+import Ivory.Language
 
 data HandleEnet e = HandleEnet
-    { enet  :: e
+    { enet :: e
     , handle :: forall s. Ivory (ProcEffects s ()) ()
     }
 
-class Handler HandleEnet e => Enet e where
+class (Handler HandleEnet e) => Enet e where
     rxFrameSize :: e -> Ivory eff Uint32
