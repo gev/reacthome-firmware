@@ -171,9 +171,9 @@ executable reacthome-firmware
     Formula.Server
     Formula.Smart.Bottom.Bottom1
     Formula.Smart.Bottom.Bottom2
+    Formula.Smart.Top.TopA4P
     Formula.Smart.Top.TopA4T
     Formula.Smart.Top.TopA4TD
-    Formula.Smart.Top.TopA4p
     Formula.Smart.Top.TopA6P
     Formula.Smart.Top.TopA6T
     Formula.Smart.Top.TopG2
