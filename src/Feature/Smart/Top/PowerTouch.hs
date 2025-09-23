@@ -1,5 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-
 module Feature.Smart.Top.PowerTouch where
 
 import Control.Monad.Reader (MonadReader, asks)

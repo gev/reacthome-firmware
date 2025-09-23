@@ -1,5 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-
 module Implementation.Blink where
 
 import Control.Monad.Reader

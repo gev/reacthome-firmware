@@ -1,5 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-
 module Data.DoubleBuffer where
 
 import Control.Monad.State

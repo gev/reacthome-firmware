@@ -1,4 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GADTs #-}
 {-# HLINT ignore "Use for_" #-}
 {-# LANGUAGE KindSignatures #-}

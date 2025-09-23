@@ -1,4 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
 {-# HLINT ignore "Use for_" #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE RecordWildCards #-}

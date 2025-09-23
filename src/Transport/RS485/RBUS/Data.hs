@@ -1,5 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-
 module Transport.RS485.RBUS.Data where
 
 import Control.Monad.State (MonadState)

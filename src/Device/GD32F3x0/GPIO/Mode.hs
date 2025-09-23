@@ -1,5 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-
 module Device.GD32F3x0.GPIO.Mode where
 
 import Support.Device.GD32F3x0.GPIO

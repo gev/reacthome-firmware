@@ -1,5 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-
 module Data.Buffer where
 
 import Control.Monad.State
