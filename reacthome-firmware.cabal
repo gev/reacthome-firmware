@@ -340,6 +340,7 @@ executable reacthome-firmware
     DeriveTraversable
     FlexibleContexts
     FlexibleInstances
+    FunctionalDependencies
     GeneralizedNewtypeDeriving
     MultiParamTypeClasses
     NamedFieldPuns

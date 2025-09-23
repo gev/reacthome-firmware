@@ -1,4 +1,3 @@
-{-# LANGUAGE FunctionalDependencies #-}
 
 module Interface.GPIO.Port where
 
