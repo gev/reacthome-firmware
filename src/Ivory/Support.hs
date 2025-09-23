@@ -1,5 +1,3 @@
-{-# LANGUAGE ImpredicativeTypes #-}
-
 module Ivory.Support where
 
 import Ivory.Language
