@@ -86,6 +86,6 @@ lookupMac ::
     Ivory eff ()
 lookupMac MacTable{..} address run = do
     next' <- deref next
-    when (address <? next') $
+    when (address <? next') do
         run $
             table ! toIx address

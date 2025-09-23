@@ -57,7 +57,7 @@ mkNetif enet' = do
 
     let netifStatusCallback = proc "netif_callback" \netif -> body do
             flags' <- deref $ netif ~> flags
-            when (flags' .& netif_flag_up /=? 0) $
+            when (flags' .& netif_flag_up /=? 0) do
                 call_ netifOnUpCallback
 
     addProc netifStatusCallback
@@ -114,7 +114,7 @@ rxTask ::
     Ivory (ProcEffects s2 ()) ()
 rxTask enet netif = do
     reval <- rxFrameSize enet
-    when (reval >? 1) $
+    when (reval >? 1) do
         void $
             inputLwipPortIf enet netif
 

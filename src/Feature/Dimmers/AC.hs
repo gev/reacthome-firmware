@@ -138,7 +138,7 @@ manageDimmer pwm dimmer period = do
 manageNoCrossZero :: (KnownNat n) => Dimmers n -> CrossZero -> Ivory eff ()
 manageNoCrossZero Dimmers{..} CrossZero{..} = do
     isNoCrossZero' <- deref isNoCrossZero
-    when isNoCrossZero' $
+    when isNoCrossZero' do
         zipWithM_ zip getPWMs ints
   where
     zip :: (I.PWM p) => p -> Int -> Ivory eff ()

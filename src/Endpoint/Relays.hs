@@ -220,7 +220,7 @@ turnOffGroup rs ix g t =
                 isOn <- deref $ r ~> state
                 delayOn' <- deref $ r ~> delayOn
                 isLocked <- deref $ r ~> lock
-                when (iNot isLocked) $
+                when (iNot isLocked) do
                     cond_
                         [ isOn ==> do
                             store (r ~> state) false

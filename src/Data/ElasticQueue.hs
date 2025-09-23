@@ -56,7 +56,9 @@ push q@ElasticQueue{..} handle = do
         handle it x
         up consumerS
         s <- size q
-        when (s >=? half) $ store isReady true
+        when
+            (s >=? half)
+            do store isReady true
 
 push' ::
     (KnownNat n) =>
@@ -71,7 +73,8 @@ push' q@ElasticQueue{..} handleT handleF = do
         handleT it x
         up consumerS
         s <- size q
-        when (s >=? half) $ store isReady true
+        when (s >=? half) do
+            store isReady true
 
 pop ::
     (KnownNat n) =>

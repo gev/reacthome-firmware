@@ -158,7 +158,7 @@ onError :: DS18B20 -> Uint8 -> Ivory (ProcEffects s ()) ()
 onError DS18B20{..} error = do
     store (owErrB ! 1) error
     transmit owErrB
-    when (error ==? errorNoPresence .|| error ==? errorNotReady) $
+    when (error ==? errorNoPresence .|| error ==? errorNotReady) do
         store idNumber 0
 
 getCRC :: Def ('[Buffer 9 Uint8] :-> Uint8)

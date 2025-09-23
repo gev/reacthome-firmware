@@ -39,7 +39,7 @@ txTask r@RBUS{..} = do
 initTask :: RBUS -> Ivory (ProcEffects s ()) ()
 initTask r@RBUS{..} = do
     shouldInit' <- deref shouldInit
-    when shouldInit' $
+    when shouldInit' do
         toQueue r initBuff
 
 doTransmitMessage :: RBUS -> Ivory (ProcEffects s ()) ()
@@ -76,7 +76,7 @@ doDiscovery :: RBUS -> Ivory (ProcEffects s ()) ()
 doDiscovery r@RBUS{..} = do
     t0 <- deref txTimestamp
     t1 <- getSystemTime clock
-    when (t1 - t0 >? 1000) $
+    when (t1 - t0 >? 1000) do
         toRS transmitDiscovery r
 
 doConfirm :: RBUS -> Ivory (ProcEffects s ()) ()
@@ -90,7 +90,7 @@ doPing :: RBUS -> Ivory (ProcEffects s ()) ()
 doPing r@RBUS{..} = do
     t0 <- deref txTimestamp
     t1 <- getSystemTime clock
-    when (t1 - t0 >? 1000) $
+    when (t1 - t0 >? 1000) do
         toRS transmitPing r
 
 toRS ::

@@ -193,7 +193,7 @@ saveTask mix@Mix{..} = do
     saveCountdown' <- deref saveCountdown
     when (saveCountdown' >? 0) do
         store saveCountdown (saveCountdown' - 1)
-    when (saveCountdown' ==? 1) $
+    when (saveCountdown' ==? 1) do
         save mix
 
 save :: (KnownNat ni, KnownNat no) => Mix ni no nd -> Ivory (ProcEffects s t) ()

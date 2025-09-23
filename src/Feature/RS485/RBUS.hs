@@ -238,7 +238,7 @@ transmitRBUS list buff size = do
                                 store found false
                                 breakOut
                         found' <- deref found
-                        when found' $
+                        when found' do
                             toQueue r address buff 9 (size - 9)
         zipWithM_ run list $ fromIntegral <$> nats
 
@@ -305,7 +305,7 @@ configureRS485 RBUS{..} = do
             lineControl'
                 ==? lc
                 ==> I.configureRS485 rs baudrate' wl sb p
-    when (baudrate' >? 0) $
+    when (baudrate' >? 0) do
         cond_
             [ config 0 I.WL_8b I.SB_1b I.None
             , config 1 I.WL_8b I.SB_1b I.Even

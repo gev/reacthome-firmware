@@ -103,7 +103,7 @@ loadVibro Vibro{..} = do
     updateCRC16 crc volume'
     msb <- safeCast <$> deref (crc ~> msb)
     lsb <- safeCast <$> deref (crc ~> lsb)
-    when (msb ==? msb' .&& lsb ==? lsb') $
+    when (msb ==? msb' .&& lsb ==? lsb') do
         store volume volume'
 
 vibroTask :: (KnownNat n) => Vibro n -> Ivory (ProcEffects s t) ()

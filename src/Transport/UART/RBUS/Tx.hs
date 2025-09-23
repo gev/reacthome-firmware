@@ -32,7 +32,7 @@ txTask ::
     Ivory (ProcEffects s ()) ()
 txTask r@RBUS{..} = do
     txLock' <- deref txLock
-    when (iNot txLock') $
+    when (iNot txLock') do
         popConcurrently msgQueue \Messages{..} ix -> do
             offset <- deref $ msgOffset ! ix
             size <- deref $ msgSize ! ix

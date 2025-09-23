@@ -197,7 +197,7 @@ renderPixel pixel i ATS{..} DInputs{dinputs} Relays{relays} = do
         when (lineError' /=? errorNone) do
             t <- getSystemTime clock
             let t' = t ./ 500
-            when (t' .% 2 ==? 0) $
+            when (t' .% 2 ==? 0) do
                 store (pixel ~> v) 0
         ifte_
             hasVoltage'
@@ -219,7 +219,7 @@ renderPixel pixel i ATS{..} DInputs{dinputs} Relays{relays} = do
         when (lineError' /=? errorNone .|| generatorError /=? errorNone) do
             t <- getSystemTime clock
             let t' = t ./ 500
-            when (t' .% 2 ==? 0) $
+            when (t' .% 2 ==? 0) do
                 store (pixel ~> v) 0
         ifte_
             hasVoltage'

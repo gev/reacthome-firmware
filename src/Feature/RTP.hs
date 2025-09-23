@@ -71,7 +71,7 @@ removeRtpUdp :: (KnownNat n) => RTP n -> NETIF s1 -> Ivory eff ()
 removeRtpUdp RTP{..} netif = do
     leaveIgmpGroupNetif netif rtpIpGroup
     udpcb <- deref rtpUdpPcb
-    when (udpcb /=? nullPtr) $
+    when (udpcb /=? nullPtr) do
         removeUdp udpcb
 
 udpReceiveCallback :: (KnownNat n) => RTP n -> Def (UdpRecvFn s1 s2 s3 s4)

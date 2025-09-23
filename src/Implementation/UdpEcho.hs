@@ -76,12 +76,12 @@ udpEcho enet = do
 
     -- addHandler $ HandleEnet enet' do
     --     reval <- rxFrameSize enet'
-    --     when (reval >? 1) $
+    --     when (reval >? 1) do
     --         void $ inputLwipPortIf enet' netif
 
     addTask $ yeld "udp_rx" do
         reval <- rxFrameSize enet'
-        when (reval >? 1) $
+        when (reval >? 1) do
             void $
                 inputLwipPortIf enet' netif
 
@@ -94,7 +94,7 @@ netifStatusCallback = proc "netif_callback" \netif -> body do
         upcb <- newUdp
         when (upcb /=? nullPtr) do
             err <- bindUdp upcb ipAddrAny 2000
-            when (err ==? 0) $
+            when (err ==? 0) do
                 recvUdp upcb (procPtr udpEchoReceiveCallback) nullPtr
 
 udpEchoReceiveCallback :: Def (UdpRecvFn s1 s2 s3 s4)

@@ -59,7 +59,7 @@ top uart' pin' transportUp = do
             action <- deref $ buff ! 0
             ifte_
                 (action ==? actionFindMe)
-                ( when (size ==? 2) $
+                ( when (size ==? 2) do
                     lazyTransmit transportUp 2 \transmit -> do
                         transmit actionFindMe
                         transmit =<< deref (buff ! 1)
@@ -107,7 +107,7 @@ onFindMe ::
     Uint8 ->
     Ivory (ProcEffects s t) ()
 onFindMe Top{..} buff size =
-    when (size ==? 2) $
+    when (size ==? 2) do
         lazyTransmit transportDown 2 \transmit -> do
             transmit actionFindMe
             transmit =<< deref (buff ! 1)

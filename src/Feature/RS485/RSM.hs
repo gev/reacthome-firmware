@@ -195,7 +195,7 @@ configureRS485 RSM{..} = do
             lineControl'
                 ==? lc
                 ==> I.configureRS485 rs baudrate' wl sb p
-    when (baudrate' >? 0) $
+    when (baudrate' >? 0) do
         cond_
             [ config 0 I.WL_8b I.SB_1b I.None
             , config 1 I.WL_8b I.SB_1b I.Even

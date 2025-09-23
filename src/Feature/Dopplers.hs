@@ -103,7 +103,7 @@ measure Doppler{..} = do
     expectation' <- deref expectation
     let diff = abs $ a' - expectation'
 
-    when (diff <? range) $
+    when (diff <? range) do
         store expectation $
             average alpha expectation' a'
 
@@ -124,7 +124,7 @@ measure Doppler{..} = do
         ]
 
     let threshold = average gamma median1' level
-    when (diff <? threshold) $
+    when (diff <? threshold) do
         store median1 (average alpha median1' diff)
 
     let threshold' = average gamma' median1' level

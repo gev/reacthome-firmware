@@ -15,4 +15,5 @@ makeDispatcher ::
     forall s t.
     Ivory (ProcEffects s t) ()
 makeDispatcher controller buff n =
-    when (n >? 0) $ handle controller buff n
+    when (n >? 0) do
+        handle controller buff n

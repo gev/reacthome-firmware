@@ -21,7 +21,8 @@ pushConcurrently q@ElasticQueue{..} handle = do
         handle it x
         upConcurrently consumerS
         s <- size q
-        when (s >=? half) $ store isReady true
+        when (s >=? half) do
+            store isReady true
 
 pushConcurrently' :: (KnownNat n) => ElasticQueue n t -> (t -> Ix n -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
 pushConcurrently' q@ElasticQueue{..} handleT handleF = do
@@ -31,7 +32,8 @@ pushConcurrently' q@ElasticQueue{..} handleT handleF = do
         handleT it x
         upConcurrently consumerS
         s <- size q
-        when (s >=? half) $ store isReady true
+        when (s >=? half) do
+            store isReady true
 
 popConcurrently :: (KnownNat n) => ElasticQueue n t -> (t -> Ix n -> Ivory eff ()) -> Ivory eff ()
 popConcurrently ElasticQueue{..} handle = do
