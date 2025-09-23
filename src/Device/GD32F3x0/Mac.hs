@@ -1,5 +1,3 @@
-{-# LANGUAGE TypeApplications #-}
-
 module Device.GD32F3x0.Mac where
 
 import Data.Buffer

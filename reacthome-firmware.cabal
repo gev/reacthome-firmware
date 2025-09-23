@@ -350,4 +350,5 @@ executable reacthome-firmware
     RecordWildCards
     ScopedTypeVariables
     StandaloneDeriving
+    TypeApplications
     TypeOperators
