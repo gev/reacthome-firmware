@@ -1,24 +1,13 @@
 cabal-version: 3.6
 name: reacthome-firmware
 version: 0.1.0.0
--- A short (one-line) description of the package.
--- synopsis:
--- A longer description of the package.
--- description:
--- A URL where users can report bugs.
--- bug-reports:
--- The license under which the package is released.
--- license:
 author: Evgeny Gazdovsky
 maintainer: gazdovsky@gmail.com
--- A copyright notice.
--- copyright:
--- category:
 extra-source-files: CHANGELOG.md
 
 executable reacthome-firmware
   main-is: Main.hs
-  -- Modules included in this executable, other than Main.
+  -- cabal-gild: discover formula src
   other-modules:
     Build.Compiler
     Build.Compiler.GCC
@@ -77,8 +66,8 @@ executable reacthome-firmware
     Device.GD32F3x0.SysTick
     Device.GD32F3x0.SystemClock
     Device.GD32F3x0.Timer
-    Device.GD32F3x0.UART
     Device.GD32F3x0.Touch
+    Device.GD32F3x0.UART
     Device.GD32F4xx
     Device.GD32F4xx.Display.NeoPixel
     Device.GD32F4xx.ENET
@@ -140,6 +129,7 @@ executable reacthome-firmware
     Feature.Dimmers.AC
     Feature.Dimmers.DC
     Feature.Dopplers
+    Feature.I2SPlay
     Feature.Indicator
     Feature.Mix.Indicator
     Feature.RS485.RBUS
@@ -150,13 +140,12 @@ executable reacthome-firmware
     Feature.RS485.RSM.Data
     Feature.RS485.RSM.Rx
     Feature.RS485.RSM.Tx
+    Feature.RTP
     Feature.Relays
+    Feature.SPDIF
     Feature.SRC4392
     Feature.Scd40
     Feature.Sht21
-    Feature.RTP
-    Feature.SPDIF
-    Feature.I2SPlay
     Feature.Smart.Top
     Feature.Smart.Top.Buttons
     Feature.Smart.Top.LEDs
@@ -182,9 +171,9 @@ executable reacthome-firmware
     Formula.Server
     Formula.Smart.Bottom.Bottom1
     Formula.Smart.Bottom.Bottom2
-    Formula.Smart.Top.TopA4P
     Formula.Smart.Top.TopA4T
     Formula.Smart.Top.TopA4TD
+    Formula.Smart.Top.TopA4p
     Formula.Smart.Top.TopA6P
     Formula.Smart.Top.TopA6T
     Formula.Smart.Top.TopG2
@@ -210,9 +199,9 @@ executable reacthome-firmware
     Implementation.MixH
     Implementation.Relay
     Implementation.Smart.Bottom
-    Implementation.Smart.TopA4P
     Implementation.Smart.TopA4T
     Implementation.Smart.TopA4TD
+    Implementation.Smart.TopA4p
     Implementation.Smart.TopA6T
     Implementation.Smart.TopAP
     Implementation.Smart.TopG2
@@ -312,7 +301,6 @@ executable reacthome-firmware
     Support.Lwip.Udp
     Support.ReadAddr
     Support.Serialize
-    Test
     Transport.RS485.RBUS
     Transport.RS485.RBUS.Data
     Transport.RS485.RBUS.Rx
@@ -344,8 +332,6 @@ executable reacthome-firmware
     app
     formula
     src
-    test
 
-  -- LANGUAGE extensions used by modules in this package.
   -- other-extensions:
   default-language: Haskell2010
