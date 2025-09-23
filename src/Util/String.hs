@@ -1,5 +1,3 @@
-{-# LANGUAGE KindSignatures #-}
-
 module Util.String (
     inclString,
     memCmp,

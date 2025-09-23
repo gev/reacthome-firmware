@@ -1,5 +1,3 @@
-{-# LANGUAGE KindSignatures #-}
-
 module Device.GD32F4xx where
 
 import Control.Monad.State

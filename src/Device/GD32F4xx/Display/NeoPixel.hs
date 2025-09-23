@@ -1,5 +1,3 @@
-{-# LANGUAGE KindSignatures #-}
-
 module Device.GD32F4xx.Display.NeoPixel where
 
 import Control.Monad.State (MonadState)

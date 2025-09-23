@@ -1,5 +1,3 @@
-{-# LANGUAGE KindSignatures #-}
-
 module Data.Concurrent.Queue where
 
 import Data.Concurrent.Atomically
