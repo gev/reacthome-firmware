@@ -333,5 +333,25 @@ executable reacthome-firmware
     formula
     src
 
-  -- other-extensions:
   default-language: Haskell2010
+  default-extensions:
+    -- NoStarIsType
+    BlockArguments
+    DataKinds
+    DeriveTraversable
+    FlexibleContexts
+    FlexibleInstances
+    FunctionalDependencies
+    GADTs
+    GeneralizedNewtypeDeriving
+    MultiParamTypeClasses
+    NamedFieldPuns
+    NumericUnderscores
+    QuasiQuotes
+    RankNTypes
+    RecordWildCards
+    ScopedTypeVariables
+    StandaloneDeriving
+    TypeApplications
+    TypeOperators
+    UndecidableInstances

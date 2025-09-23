@@ -1,5 +1,3 @@
-{-# LANGUAGE FunctionalDependencies #-}
-
 module Interface.GPIO.Port where
 
 -- data Pull = PullUp

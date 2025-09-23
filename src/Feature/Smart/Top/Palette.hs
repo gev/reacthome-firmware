@@ -1,7 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE NamedFieldPuns #-}
-
 module Feature.Smart.Top.Palette where
 
 import Control.Monad.Reader (MonadReader)

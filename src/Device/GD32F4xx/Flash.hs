@@ -1,5 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
-
 module Device.GD32F4xx.Flash where
 
 import Interface.Flash

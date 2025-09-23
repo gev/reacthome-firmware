@@ -1,5 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
-
 module Protocol.RS485.RBUS.Slave.Rx (
     receive,
     reset,

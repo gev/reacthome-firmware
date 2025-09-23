@@ -1,6 +1,3 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE QuasiQuotes #-}
-
 module Endpoint.ALED.Animation.Data where
 
 import Data.ByteString (split)

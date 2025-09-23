@@ -1,7 +1,3 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NamedFieldPuns #-}
-
 module Transport.RS485.RBUS.Data where
 
 import Control.Monad.State (MonadState)

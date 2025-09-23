@@ -1,11 +1,3 @@
-{-# LANGUAGE DataKinds #-}
-{-# HLINT ignore "Use camelCase" #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE TypeOperators #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 module Support.Lwip.Netif (
     NETIF_FLAG,
     netif_flag_up,

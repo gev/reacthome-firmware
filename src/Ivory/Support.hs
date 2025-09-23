@@ -1,7 +1,3 @@
-{-# LANGUAGE ImpredicativeTypes #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE RecordWildCards #-}
-
 module Ivory.Support where
 
 import Ivory.Language
@@ -19,17 +15,17 @@ extFrom :: (IvoryExpr e) => HeaderFile -> Sym -> e
 extFrom = flip extern
 
 class (IvoryVar e) => ExtSymbol e where
-    symbol :: e -> Sym
-    symbol = sym . unwrapExpr
-      where
-        sym (ExpExtern (Extern{..})) = externSym
-        sym e =
-            error $
-                "Can't get a symbol of the expression: "
-                    <> show e
+  symbol :: e -> Sym
+  symbol = sym . unwrapExpr
+   where
+    sym (ExpExtern (Extern{..})) = externSym
+    sym e =
+      error $
+        "Can't get a symbol of the expression: "
+          <> show e
 
 (<+>) :: [I.InitStruct s] -> [I.InitStruct s] -> [I.InitStruct s]
 a <+> b = a <> filter (labels a) b
-  where
-    labels a i = label i `notElem` (label <$> a)
-    label (I.InitStruct [(l, _)]) = l
+ where
+  labels a i = label i `notElem` (label <$> a)
+  label (I.InitStruct [(l, _)]) = l

@@ -1,6 +1,3 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE NumericUnderscores #-}
-
 module Protocol.RS485.RBUS where
 
 import Data.Buffer
