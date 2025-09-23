@@ -76,7 +76,7 @@ fillPayload Rules{..} i = do
     store (payload ! 0) 0x03
     store (payload ! 1) $ i + 1
     kx <- local $ ival 2
-    let run rules = arrayMap $ \jx -> do
+    let run rules = arrayMap \jx -> do
             kx' <- deref kx
             store (payload ! kx') =<< deref (rules ! toIx i ! jx)
             store kx $ kx' + 1
@@ -94,11 +94,11 @@ manageRules ::
     Groups no ->
     Ivory ('Effects (Returns ()) r (Scope s)) ()
 manageRules Rules{..} DInputs{..} relays groups =
-    arrayMap $ \ix' -> do
+    arrayMap \ix' -> do
         let n = arrayLen dinputs
         let ix = fromIntegral n - ix' - 1 -- Need for priority di rule
         let di = dinputs ! ix
-        let run rules = arrayMap $ \jx -> do
+        let run rules = arrayMap \jx -> do
                 r <- deref (rules ! ix ! jx)
                 cond_
                     [ r ==? 0 ==> turnOffRelay relays (toIx $ 1 + fromIx jx)

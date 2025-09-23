@@ -1,4 +1,3 @@
-
 module Device.GD32F3x0.GPIO.Port where
 
 import Control.Monad.State (MonadState)
@@ -18,7 +17,7 @@ data Port = Port
     }
 
 initPort :: (MonadState Context m) => Port -> m (Def ('[] ':-> ()))
-initPort p@Port{..} = addInit (show p) $ do
+initPort p@Port{..} = addInit (show p) do
     enablePeriphClock rcu
     case mode of
         (MF mode otype) -> initMode mode otype

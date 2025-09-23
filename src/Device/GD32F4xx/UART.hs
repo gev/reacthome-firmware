@@ -1,4 +1,3 @@
-
 module Device.GD32F4xx.UART where
 
 import qualified Control.Monad as M
@@ -74,7 +73,7 @@ mkUART uart rcu uartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn rx' tx' = do
     G.initPort rx
     G.initPort tx
 
-    addInit (symbol uart) $ do
+    addInit (symbol uart) do
         store (dmaParams ~> periph_addr) =<< udata uart
         enablePeriphClock dmaRcu
         enableIrqNvic uartIRQ 0 0
@@ -116,8 +115,8 @@ handleDMA ::
     Ivory eff ()
 handleDMA dmaPer dmaCh uart onTransmit onDrain = do
     f <- getInterruptFlagDMA dmaPer dmaCh dma_int_flag_ftf
-    when f $ do
-        M.when (isJust onDrain) $ do
+    when f do
+        M.when (isJust onDrain) do
             enableInterrupt uart usart_int_tc
         onTransmit
         clearInterruptFlagDMA dmaPer dmaCh dma_int_flag_ftf
@@ -149,7 +148,7 @@ handleError UART{..} onError = do
   where
     clear i f = do
         i' <- getInterruptFlag uart i
-        when i' $ do
+        when i' do
             mapM_ (clearFlag uart) f
             clearInterruptFlag uart i
         pure i'
@@ -157,8 +156,8 @@ handleError UART{..} onError = do
 handleReceive :: (KnownNat rn) => UART rn tn -> Ivory eff () -> Ivory eff ()
 handleReceive UART{..} onReceive = do
     rbne <- getInterruptFlag uart usart_int_flag_rbne
-    when rbne $ do
-        push rxQueue $ \rxBuff ix -> do
+    when rbne do
+        push rxQueue \rxBuff ix -> do
             store (rxBuff ! ix) =<< S.receiveData uart
             onReceive
         clearInterruptFlag uart usart_int_flag_rbne
@@ -166,7 +165,7 @@ handleReceive UART{..} onReceive = do
 handleDrain :: USART_PERIPH -> Ivory eff () -> Ivory eff ()
 handleDrain uart onDrain = do
     tc <- getInterruptFlag uart usart_int_flag_tc
-    when tc $ do
+    when tc do
         disableInterrupt uart usart_int_tc
         onDrain
         clearInterruptFlag uart usart_int_flag_tc
@@ -188,12 +187,12 @@ instance (KnownNat rn, KnownNat tn) => I.UART (UART rn tn) where
     clearRX UART{..} = Q.clearConcurrently rxQueue
 
     receive UART{..} read =
-        popConcurrently rxQueue $ \rxBuff ix ->
+        popConcurrently rxQueue \rxBuff ix ->
             read =<< deref (rxBuff ! ix)
 
     transmit UART{..} write = do
         size <- local $ ival (0 :: Uint16)
-        write $ \value -> do
+        write \value -> do
             size' <- deref size
             store (txBuff ! toIx size') value
             store size $ size' + 1

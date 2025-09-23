@@ -83,7 +83,7 @@ transmitTemperature :: SCD40 -> Ivory (ProcEffects s ()) ()
 transmitTemperature = transmit' actionTemperature $ convert calculateTemperature 3
 
 transmitCO2 :: SCD40 -> Ivory (ProcEffects s ()) ()
-transmitCO2 = transmit' actionCO2 $ \SCD40{..} -> do
+transmitCO2 = transmit' actionCO2 \SCD40{..} -> do
     store (txBuff ! 1) =<< deref (rxBuff ! 1)
     store (txBuff ! 2) =<< deref (rxBuff ! 0)
 
@@ -94,7 +94,7 @@ transmit' ::
     Ivory (ProcEffects s t) ()
 transmit' action transform scd40@SCD40{..} = do
     isReady' <- deref isReady
-    when isReady' $ do
+    when isReady' do
         store (txBuff ! 0) action
         transform scd40
         transmit txBuff

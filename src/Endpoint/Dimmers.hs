@@ -1,4 +1,3 @@
-
 module Endpoint.Dimmers where
 
 import Control.Monad.State (MonadState)
@@ -93,12 +92,12 @@ on ::
     Dimmers n ->
     Uint8 ->
     Ivory eff ()
-on = runCheckMode $ \dimmer -> do
+on = runCheckMode \dimmer -> do
     store (dimmer ~> brightness) 1
     store (dimmer ~> value) 1
 
 off :: (KnownNat n) => Dimmers n -> Uint8 -> Ivory eff ()
-off = runCheckMode $ \dimmer -> do
+off = runCheckMode \dimmer -> do
     store (dimmer ~> brightness) 0
     store (dimmer ~> value) 0
 
@@ -109,7 +108,7 @@ fade ::
     Dimmers n ->
     Uint8 ->
     Ivory eff ()
-fade brightness' velocity' = runCheckMode $ \dimmer -> do
+fade brightness' velocity' = runCheckMode \dimmer -> do
     mode <- deref $ dimmer ~> mode
     ifte_
         (mode ==? 4)
@@ -136,7 +135,7 @@ setBrightness ::
     Dimmers n ->
     Uint8 ->
     Ivory eff ()
-setBrightness brightness' = runCheckMode $ \dimmer -> do
+setBrightness brightness' = runCheckMode \dimmer -> do
     mode <- deref $ dimmer ~> mode
     ifte_
         (mode ==? 4)
@@ -162,14 +161,14 @@ setMode ::
     Dimmers n ->
     Uint8 ->
     Ivory eff ()
-setMode mode' = runDimmer $ \dimmer -> do
+setMode mode' = runDimmer \dimmer -> do
     store (dimmer ~> mode) mode'
     store (dimmer ~> brightness) 0
     store (dimmer ~> value) 0
     store (dimmer ~> synced) false
 
 setGroup :: (KnownNat n) => Uint8 -> Dimmers n -> Uint8 -> Ivory eff ()
-setGroup group' = runDimmer $ \dimmer -> do
+setGroup group' = runDimmer \dimmer -> do
     store (dimmer ~> group) group'
     store (dimmer ~> synced) false
 
@@ -179,9 +178,9 @@ runCheckMode ::
     Dimmers n ->
     Uint8 ->
     Ivory eff ()
-runCheckMode run = runDimmer $ \dimmer -> do
+runCheckMode run = runDimmer \dimmer -> do
     mode' <- deref $ dimmer ~> mode
-    when (mode' /=? 0) $ do
+    when (mode' /=? 0) do
         run dimmer
         store (dimmer ~> synced) false
 
@@ -206,11 +205,11 @@ syncDimmerGroup ::
     Ivory eff ()
 syncDimmerGroup ds dimmer' ix' = do
     group' <- deref $ dimmer' ~> group
-    arrayMap $ \ix'' ->
-        when (ix'' /=? ix') $ do
+    arrayMap \ix'' ->
+        when (ix'' /=? ix') do
             let dimmer'' = ds ! ix''
             group'' <- deref $ dimmer'' ~> group
-            when (group'' ==? group') $ do
+            when (group'' ==? group') do
                 let sync ::
                         (IvoryStore a) =>
                         Label DimmerStruct (Stored a) ->

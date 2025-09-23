@@ -55,14 +55,14 @@ mkNetif enet' = do
     addModule inclEtharp
     addModule inclIgmp
 
-    let netifStatusCallback = proc "netif_callback" $ \netif -> body $ do
+    let netifStatusCallback = proc "netif_callback" \netif -> body do
             flags' <- deref $ netif ~> flags
             when (flags' .& netif_flag_up /=? 0) $
                 call_ netifOnUpCallback
 
     addProc netifStatusCallback
 
-    addInit "netif_init" $ do
+    addInit "netif_init" do
         initMem
         initMemp
 
@@ -71,7 +71,7 @@ mkNetif enet' = do
 
         store (netif ~> hwaddr_len) 6
 
-        arrayMap $ \ix -> do
+        arrayMap \ix -> do
             m <- deref (mac ! ix)
             store (netif ~> hwaddr ! ix) m
 

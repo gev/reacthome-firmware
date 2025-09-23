@@ -55,7 +55,7 @@ mkTouch port pin rcuPin threshold = do
     stateTouch <- value ("touch_state_touch" <> name) false
     debugVal <- value ("debug_val" <> name) 0
 
-    addInit name $ do
+    addInit name do
         enablePeriphClock rcuPin
         modePort port pin gpio_mode_output
         resetBit port pin
@@ -98,7 +98,7 @@ runMeasurement Touch{..} = do
     resetBit port pin
     modePort port pin gpio_mode_input
     I.resetCounter timer
-    forever $ do
+    forever do
         isMeasured <- getInputBit port pin
         when isMeasured breakOut
     moment <- safeCast <$> I.getCounter timer

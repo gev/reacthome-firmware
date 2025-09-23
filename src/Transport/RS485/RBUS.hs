@@ -1,4 +1,3 @@
-
 module Transport.RS485.RBUS where
 
 import Control.Monad.Reader (MonadReader, asks)
@@ -73,7 +72,7 @@ rbus rs485 = do
 
     let onConfirm = do
             waitingConfirm' <- deref waitingConfirm
-            when waitingConfirm' $ do
+            when waitingConfirm' do
                 store msgConfirmed true
                 store waitingConfirm false
 

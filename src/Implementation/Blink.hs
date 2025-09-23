@@ -28,7 +28,7 @@ blink out = do
       let peripherals' = peripherals mcu
       out' <- out peripherals' $ pullNone peripherals'
       state <- value (name <> "_state") false
-      addTask $ delay 1 name $ do
+      addTask $ delay 1 name do
             v <- deref state
             store state $ iNot v
             ifte_

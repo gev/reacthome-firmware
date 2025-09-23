@@ -1,4 +1,3 @@
-
 module Implementation.Smart.TopAP where
 
 import Control.Monad.Reader (MonadReader, asks)
@@ -116,7 +115,7 @@ topAP transport' dinputs' sht21' display' etc' = do
                 , sht21
                 }
 
-    addHandler $ Render display 30 frameBuffer $ do
+    addHandler $ Render display 30 frameBuffer do
         updateLeds leds
         updateButtons buttons
         render leds

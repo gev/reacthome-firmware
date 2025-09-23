@@ -50,7 +50,7 @@ mkI2C i2c rcu eventIrq errorIrq sda' scl' = do
     initPort sda
     initPort scl
 
-    addInit (symbol i2c) $ do
+    addInit (symbol i2c) do
         enablePeriphClock rcu
         configClockI2C i2c 400000 i2c_dtcy_2
         configModeAddrI2C i2c i2c_i2cmode_enable i2c_addformat_7bits 0
@@ -74,7 +74,7 @@ instance (KnownNat n) => I.I2C I2C n where
         startOnBusI2C i2c
 
     transmit I2C{..} addr buff = do
-        arrayMap $ \ix -> store (txBuff ! ix) =<< deref (buff ! ix)
+        arrayMap \ix -> store (txBuff ! ix) =<< deref (buff ! ix)
         store size $ arrayLen buff
         store address addr
         store mode true
@@ -116,7 +116,7 @@ handleTransmit I2C{..} = do
                 (clearInterruptFlagI2C i2c i2c_int_flag_addsend)
                 ( do
                     tbe <- getInterruptFlagI2C i2c i2c_int_flag_tbe
-                    when tbe $ do
+                    when tbe do
                         index' <- deref index
                         size' <- deref size
                         ifte_
@@ -152,14 +152,14 @@ handleReceive I2C{..} receive = do
                 addsend
                 ( do
                     size' <- deref size
-                    when (size' ==? 1) $ do
+                    when (size' ==? 1) do
                         configAckI2C i2c i2c_ack_disable
                     clearInterruptFlagI2C i2c i2c_int_flag_addsend
                 )
                 ( do
                     size' <- deref size
                     rbne <- getInterruptFlagI2C i2c i2c_int_flag_rbne
-                    when rbne $ do
+                    when rbne do
                         cond_
                             [ size' ==? 2 ==> configAckI2C i2c i2c_ack_disable
                             , size' ==? 1 ==> do

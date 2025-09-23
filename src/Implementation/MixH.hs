@@ -163,9 +163,9 @@ onRule mix@Mix{..} buff size = do
     let relaysN = fromIntegral $ natVal (aNat :: NatType no)
     let dinputsN = fromIntegral $ natVal (aNat :: NatType ni)
     i <- subtract 1 <$> deref (buff ! 1)
-    when (size ==? 2 + 2 * relaysN .&& i <? dinputsN) $ do
+    when (size ==? 2 + 2 * relaysN .&& i <? dinputsN) do
         kx <- local $ ival 2
-        let run rules = arrayMap $ \jx -> do
+        let run rules = arrayMap \jx -> do
                 kx' <- deref kx
                 store (rules ! toIx i ! jx) =<< unpack buff kx'
                 store kx $ kx' + 1
@@ -180,18 +180,18 @@ onGetState Mix{..} = do
     forceSyncDInputs dinputs
     forceSyncRules rules
     initialized <- iNot <$> deref shouldInit
-    when initialized $ do
+    when initialized do
         forceSyncRelays relays
         FDim.forceSync dimmers
 
 saveTask :: (KnownNat ni, KnownNat no) => Mix ni no nd -> Ivory (ProcEffects s t) ()
 saveTask mix@Mix{..} = do
     shouldSaveConfig' <- deref shouldSaveConfig
-    when shouldSaveConfig' $ do
+    when shouldSaveConfig' do
         store saveCountdown 100
         store shouldSaveConfig false
     saveCountdown' <- deref saveCountdown
-    when (saveCountdown' >? 0) $ do
+    when (saveCountdown' >? 0) do
         store saveCountdown (saveCountdown' - 1)
     when (saveCountdown' ==? 1) $
         save mix
@@ -201,7 +201,7 @@ save Mix{..} = do
     erasePage etc 0
     crc <- local $ istruct initCRC16
     kx <- local $ ival 4
-    let run rules = arrayMap $ \ix -> arrayMap $ \jx -> do
+    let run rules = arrayMap \ix -> arrayMap \jx -> do
             kx' <- deref kx
             v <- deref (rules ! ix ! jx)
             updateCRC16 crc v
@@ -216,9 +216,9 @@ save Mix{..} = do
 load :: (KnownNat ni, KnownNat no) => Mix ni no nd -> Ivory (ProcEffects s ()) ()
 load mix@Mix{..} = do
     valid <- checkCRC mix
-    when valid $ do
+    when valid do
         kx <- local $ ival 4
-        let run rules = arrayMap $ \ix -> arrayMap $ \jx -> do
+        let run rules = arrayMap \ix -> arrayMap \jx -> do
                 kx' <- deref kx
                 store (rules ! ix ! jx) . castDefault =<< F.read etc kx'
                 store kx $ kx' + 4
@@ -232,7 +232,7 @@ checkCRC Mix{..} = do
     crc <- local $ istruct initCRC16
     updateCRC16 crc . castDefault =<< F.read etc 0
     kx <- local $ ival 4
-    times (2 * dinputsN * relaysN :: Ix 256) $ \_ -> do
+    times (2 * dinputsN * relaysN :: Ix 256) \_ -> do
         kx' <- deref kx
         updateCRC16 crc . castDefault =<< F.read etc kx'
         store kx $ kx' + 4
@@ -248,14 +248,14 @@ onInit m@Mix{..} buff size = do
     let relsSizeBuff = 1 + 5 * fromIntegral (FR.n relays) + 6 * fromIntegral (FR.n relays)
     let dimsSizeBuff = FDim.n dimmers * 3
 
-    when (size >=? relsSizeBuff + dimsSizeBuff) $ do
+    when (size >=? relsSizeBuff + dimsSizeBuff) do
         offset <- local $ ival 1
 
         initGroups relays buff offset
         initRelays relays buff offset
 
         let ds = EDim.dimmers (FDim.getDimmers dimmers)
-        arrayMap $ \ix -> do
+        arrayMap \ix -> do
             offset' <- deref offset
             let d = ds ! ix
             group <- unpack buff offset'

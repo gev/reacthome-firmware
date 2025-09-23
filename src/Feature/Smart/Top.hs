@@ -60,13 +60,13 @@ top uart' pin' transportUp = do
             ifte_
                 (action ==? actionFindMe)
                 ( when (size ==? 2) $
-                    lazyTransmit transportUp 2 $ \transmit -> do
+                    lazyTransmit transportUp 2 \transmit -> do
                         transmit actionFindMe
                         transmit =<< deref (buff ! 1)
                 )
-                ( lazyTransmit transportUp (size + 1) $ \transmit -> do
+                ( lazyTransmit transportUp (size + 1) \transmit -> do
                     transmit actionSmartTop
-                    for (toIx size) $ \ix ->
+                    for (toIx size) \ix ->
                         transmit =<< deref (buff ! ix)
                 )
 
@@ -82,8 +82,8 @@ detect :: Top -> Ivory (ProcEffects s t) ()
 detect Top{..} = do
     state <- get pin
     isDetected' <- deref isDetected
-    when (isDetected' /=? state) $ do
-        lazyTransmit transportUp 2 $ \transmit -> do
+    when (isDetected' /=? state) do
+        lazyTransmit transportUp 2 \transmit -> do
             transmit actionSmartTopDetect
             transmit $ safeCast state
         store isDetected state
@@ -96,8 +96,8 @@ onMessage ::
     Ivory (ProcEffects s t) ()
 onMessage Top{..} buff size = do
     let size' = size - 1
-    lazyTransmit transportDown size' $ \transmit ->
-        upTo 1 (toIx size') $ \ix ->
+    lazyTransmit transportDown size' \transmit ->
+        upTo 1 (toIx size') \ix ->
             transmit =<< deref (buff ! ix)
 
 onFindMe ::
@@ -108,11 +108,11 @@ onFindMe ::
     Ivory (ProcEffects s t) ()
 onFindMe Top{..} buff size =
     when (size ==? 2) $
-        lazyTransmit transportDown 2 $ \transmit -> do
+        lazyTransmit transportDown 2 \transmit -> do
             transmit actionFindMe
             transmit =<< deref (buff ! 1)
 
 forceSyncTop :: Top -> Ivory (ProcEffects s t) ()
 forceSyncTop Top{..} =
-    lazyTransmit transportDown 1 $ \transmit ->
+    lazyTransmit transportDown 1 \transmit ->
         transmit actionGetState

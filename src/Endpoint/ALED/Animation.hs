@@ -123,7 +123,7 @@ getTime animation segment = do
      time' <- deref $ animation ~> time
      let phase = safeCast segment * phase'
      t <- local . ival $ time' - phase
-     when inLoop' $ do
+     when inLoop' do
           t' <- deref t
           store t $ t' - floorF t'
      deref t

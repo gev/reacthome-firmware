@@ -33,11 +33,11 @@ txTask ::
 txTask r@RBUS{..} = do
     txLock' <- deref txLock
     when (iNot txLock') $
-        popConcurrently msgQueue $ \Messages{..} ix -> do
+        popConcurrently msgQueue \Messages{..} ix -> do
             offset <- deref $ msgOffset ! ix
             size <- deref $ msgSize ! ix
-            U.transmit uart $ \write ->
-                for (toIx size) $ \dx -> do
+            U.transmit uart \write ->
+                for (toIx size) \dx -> do
                     let sx = dx + toIx offset
                     write . safeCast =<< deref (msgBuff ! sx)
             store txLock true
@@ -48,7 +48,7 @@ toQueue ::
     Buffer n Uint8 ->
     Ivory (ProcEffects s t) ()
 toQueue RBUS{..} buff =
-    push msgQueue $ \Messages{..} ix -> do
+    push msgQueue \Messages{..} ix -> do
         index <- deref msgIndex
         size <- run protocol (transmitMessage buff) msgBuff index
         store msgIndex $ index + safeCast size
@@ -62,7 +62,7 @@ toQueue' ::
     ((Uint8 -> forall eff. Ivory eff ()) -> forall eff. Ivory eff ()) ->
     Ivory (ProcEffects s t) ()
 toQueue' RBUS{..} size' transmit =
-    push msgQueue $ \Messages{..} ix -> do
+    push msgQueue \Messages{..} ix -> do
         index <- deref msgIndex
         size <- run protocol (transmitMessage' size' transmit) msgBuff index
         store msgIndex $ index + safeCast size

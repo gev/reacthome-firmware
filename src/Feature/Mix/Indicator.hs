@@ -100,7 +100,7 @@ indicator mkDisplay hue ats dinputs relays transport = do
                 , transmit = T.transmitBuffer transport
                 }
 
-    addHandler $ Render display 25 frameBuffer $ do
+    addHandler $ Render display 25 frameBuffer do
         update indicator
         render indicator
         pure true
@@ -116,7 +116,7 @@ update Indicator{..} = do
     pixel <- local . istruct $ hsv hue 1 maxValue
     start' <- deref start
 
-    arrayMap $ \ix -> do
+    arrayMap \ix -> do
         let i = fromIx ix
         let x = toIx (10 * i + phi')
         sin' <- deref $ addrOf sinT ! x
@@ -135,7 +135,7 @@ update Indicator{..} = do
         hsv'to'rgb pixel $ pixels ! ix
 
     findMe' <- deref findMe
-    when findMe' $ do
+    when findMe' do
         t' <- deref t
         store (pixel ~> v) 1
         store (pixel ~> s) 0.5
@@ -193,7 +193,7 @@ renderPixel pixel i ATS{..} DInputs{dinputs} Relays{relays} = do
         let h' = pixel ~> h
         hasVoltage' <- deref $ hasVoltage ~> DI.state
         lineError' <- deref $ error ! toIx i
-        when (lineError' /=? errorNone) $ do
+        when (lineError' /=? errorNone) do
             t <- getSystemTime clock
             let t' = t ./ 500
             when (t' .% 2 ==? 0) $
@@ -215,7 +215,7 @@ renderPixel pixel i ATS{..} DInputs{dinputs} Relays{relays} = do
         hasVoltage' <- deref $ hasVoltage ~> DI.state
         generatorError <- deref $ error ! 0
         lineError' <- deref $ error ! toIx i
-        when (lineError' /=? errorNone .|| generatorError /=? errorNone) $ do
+        when (lineError' /=? errorNone .|| generatorError /=? errorNone) do
             t <- getSystemTime clock
             let t' = t ./ 500
             when (t' .% 2 ==? 0) $
@@ -244,7 +244,7 @@ render Indicator{..} =
 
 onFindMe :: (KnownNat l) => Indicator ni no -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onFindMe Indicator{..} buff size =
-    when (size >=? 2) $ do
+    when (size >=? 2) do
         v <- unpack buff 1
         pack findMeMsg 1 v
         store findMe v

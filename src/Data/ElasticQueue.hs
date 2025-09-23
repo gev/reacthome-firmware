@@ -50,7 +50,7 @@ push ::
     (t -> Ix n -> Ivory eff ()) ->
     Ivory eff ()
 push q@ElasticQueue{..} handle = do
-    down producerS $ do
+    down producerS do
         x <- deref producerIx
         store producerIx $ x + 1
         handle it x
@@ -65,7 +65,7 @@ push' ::
     Ivory eff () ->
     Ivory eff ()
 push' q@ElasticQueue{..} handleT handleF = do
-    flip (down' producerS) handleF $ do
+    flip (down' producerS) handleF do
         x <- deref producerIx
         store producerIx $ x + 1
         handleT it x
@@ -80,8 +80,8 @@ pop ::
     Ivory eff ()
 pop ElasticQueue{..} handle = do
     isReady' <- deref isReady
-    when isReady' $ do
-        flip (down' consumerS) (store isReady false) $ do
+    when isReady' do
+        flip (down' consumerS) (store isReady false) do
             x <- deref consumerIx
             store consumerIx $ x + 1
             handle it x
@@ -95,8 +95,8 @@ pop' ::
     Ivory eff ()
 pop' ElasticQueue{..} handleT handleF = do
     isReady' <- deref isReady
-    flip (ifte_ isReady') handleF $ do
-        flip (down' consumerS) (store isReady false >> handleF) $ do
+    flip (ifte_ isReady') handleF do
+        flip (down' consumerS) (store isReady false >> handleF) do
             x <- deref consumerIx
             store consumerIx $ x + 1
             handleT it x
@@ -109,8 +109,8 @@ peek ::
     Ivory eff ()
 peek ElasticQueue{..} handle = do
     isReady' <- deref isReady
-    when isReady' $ do
-        flip (check' consumerS) (store isReady false) $ do
+    when isReady' do
+        flip (check' consumerS) (store isReady false) do
             x <- deref consumerIx
             handle it x
 
@@ -122,8 +122,8 @@ peek' ::
     Ivory eff ()
 peek' ElasticQueue{..} handleT handleF = do
     isReady' <- deref isReady
-    flip (ifte_ isReady') handleF $ do
-        flip (check' consumerS) (store isReady false >> handleF) $ do
+    flip (ifte_ isReady') handleF do
+        flip (check' consumerS) (store isReady false >> handleF) do
             x <- deref consumerIx
             handleT it x
 
@@ -139,8 +139,8 @@ remove ::
     Ivory eff ()
 remove ElasticQueue{..} = do
     isReady' <- deref isReady
-    when isReady' $ do
-        flip (down' consumerS) (store isReady false) $ do
+    when isReady' do
+        flip (down' consumerS) (store isReady false) do
             x <- deref consumerIx
             store consumerIx $ x + 1
             up producerS

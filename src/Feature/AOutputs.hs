@@ -84,16 +84,16 @@ manage AOutputs{..} = zipWithM_ zip getDACs ints
 
 forceSync :: (KnownNat n) => AOutputs n -> Ivory eff ()
 forceSync AOutputs{..} =
-    arrayMap $ \ix -> store (E.aoutputs getAOutputs ! ix ~> E.synced) false
+    arrayMap \ix -> store (E.aoutputs getAOutputs ! ix ~> E.synced) false
 
 sync :: (KnownNat n) => AOutputs n -> Ivory (ProcEffects s ()) ()
 sync AOutputs{..} = do
     shouldInit' <- deref shouldInit
-    when (iNot shouldInit') $ do
+    when (iNot shouldInit') do
         i <- deref current
         let d = E.aoutputs getAOutputs ! toIx i
         synced' <- deref $ d ~> E.synced
-        when (iNot synced') $ do
+        when (iNot synced') do
             msg <- E.message getAOutputs (i .% n)
             transmit msg
             store (d ~> E.synced) true
@@ -106,10 +106,10 @@ onInit ::
     Uint8 ->
     Ivory (ProcEffects s t) ()
 onInit AOutputs{..} buff size =
-    when (size >=? 1 + n) $ do
+    when (size >=? 1 + n) do
         offset <- local $ ival 1
         let aos = E.aoutputs getAOutputs
-        arrayMap $ \ix -> do
+        arrayMap \ix -> do
             offset' <- deref offset
             let ao = aos ! ix
             v <- unpack buff offset' :: Ivory eff Uint8
@@ -124,11 +124,11 @@ onDim ::
     Uint8 ->
     Ivory eff ()
 onDim AOutputs{..} buff size = do
-    when (size >=? 3) $ do
+    when (size >=? 3) do
         shouldInit' <- deref shouldInit
-        when (iNot shouldInit') $ do
+        when (iNot shouldInit') do
             index <- deref $ buff ! 1
-            when (index >=? 1 .&& index <=? n) $ do
+            when (index >=? 1 .&& index <=? n) do
                 let index' = index - 1
                 action <- deref $ buff ! 2
                 cond_
@@ -145,11 +145,11 @@ onDo ::
     Uint8 ->
     Ivory eff ()
 onDo AOutputs{..} buff size = do
-    when (size >=? 3) $ do
+    when (size >=? 3) do
         shouldInit' <- deref shouldInit
-        when (iNot shouldInit') $ do
+        when (iNot shouldInit') do
             index <- deref $ buff ! 1
-            when (index >=? 1 .&& index <=? n) $ do
+            when (index >=? 1 .&& index <=? n) do
                 let index' = index - 1
                 value' <- deref $ buff ! 2
                 ifte_
@@ -171,6 +171,6 @@ onSet ::
     Uint8 ->
     Ivory eff ()
 onSet aoutputs' index buff size =
-    when (size >=? 4) $ do
+    when (size >=? 4) do
         value <- unpack buff 3 :: Ivory eff Uint8
         E.set aoutputs' index (safeCast value / 255)

@@ -9,6 +9,6 @@ class Counter t where
     usDelay :: t -> Uint16 -> Ivory (ProcEffects s ()) ()
     usDelay t d = do
         start <- readCounter t
-        forever $ do
+        forever do
             current <- readCounter t
             when (current - start >=? d) breakOut

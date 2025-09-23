@@ -104,12 +104,12 @@ sendTimeTask touches@Touches{..} = do
         let offset = fromIntegral $ i * 2 + 2
         prev <- unpackBE buf offset
         time <- castDefault @Sint16 <$> I.getDebug t
-        when (time /=? prev) $ do
+        when (time /=? prev) do
             packBE buf offset time
             store shouldSend true
 
     shouldSend' <- deref shouldSend
-    when shouldSend' $ do
+    when shouldSend' do
         store (buf ! 0) actionError
         store (buf ! 1) 1 -- type debug message
         transmit buf
@@ -124,7 +124,7 @@ overSingleTouch Touches{..} handle =
 
 forceSyncTouches :: (KnownNat n) => Touches n -> Ivory eff ()
 forceSyncTouches Touches{..} =
-    arrayMap $ \ix -> store ((DI.dinputs getDInputs ! ix) ~> DI.synced) false
+    arrayMap \ix -> store ((DI.dinputs getDInputs ! ix) ~> DI.synced) false
 
 manageTouches :: (KnownNat n) => Touches n -> Ivory eff ()
 manageTouches Touches{..} =
@@ -144,7 +144,7 @@ manageTouch ::
 manageTouch di touch = do
     state0 <- deref $ di ~> DI.state
     state1 <- getState touch
-    when (state1 /=? state0) $ do
+    when (state1 /=? state0) do
         store (di ~> DI.state) state1
         store (di ~> DI.synced) false
 
@@ -166,7 +166,7 @@ syncTouch Touches{..} i = do
     let n = fromIntegral $ length getTouches
     let di = DI.dinputs getDInputs ! toIx i
     synced <- deref $ di ~> DI.synced
-    when (iNot synced) $ do
+    when (iNot synced) do
         msg <- DI.message getDInputs (i .% n)
         transmit msg
         store (di ~> DI.synced) true

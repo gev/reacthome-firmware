@@ -41,5 +41,5 @@ data HandleI2STX i = HandleI2STX
 -- handle :: (Buffer n Uint32 -> Ivory eff ()) -> Ivory eff ()
 
 -- handle buff' = do
---     arrayMap $ \i -> do
+--     arrayMap \i -> do
 --         store (buff' ! i) =<< deref (buff ! i)

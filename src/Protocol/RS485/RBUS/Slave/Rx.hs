@@ -1,4 +1,3 @@
-
 module Protocol.RS485.RBUS.Slave.Rx (
     receive,
     reset,
@@ -80,7 +79,7 @@ receiveDiscoveryAddress Slave{..} v = do
     store phase waitingMsbCRC
 
 receiveDiscoveryLsbCRC :: Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receiveDiscoveryLsbCRC s@Slave{..} = receiveLsbCRC s $ do
+receiveDiscoveryLsbCRC s@Slave{..} = receiveLsbCRC s do
     store address =<< deref tmp
     call_ initConf
     call_ initPing
@@ -152,7 +151,7 @@ receiveMessageData Slave{..} v = do
         (store phase waitingMsbCRC)
 
 receiveMessageLsbCRC :: Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receiveMessageLsbCRC s@Slave{..} = receiveLsbCRC s $ do
+receiveMessageLsbCRC s@Slave{..} = receiveLsbCRC s do
     tmp' <- safeCast <$> deref tmp
     size' <- deref size
     tidRx' <- deref tidRx

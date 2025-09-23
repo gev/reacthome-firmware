@@ -87,14 +87,14 @@ rbus' transport rs485 index = do
     payload <- buffer (name <> "_payload")
 
     let onMessage mac address buff n shouldHandle = do
-            when shouldHandle $ do
-                T.lazyTransmit transport (9 + n) $ \transmit -> do
+            when shouldHandle do
+                T.lazyTransmit transport (9 + n) \transmit -> do
                     transmit 0xa1
-                    arrayMap $ \ix ->
+                    arrayMap \ix ->
                         transmit =<< deref (mac ! ix)
                     transmit $ fromIntegral index
                     transmit address
-                    for (toIx n) $ \ix ->
+                    for (toIx n) \ix ->
                         transmit =<< deref (buff ! ix)
             store confirmAddress address
             store shouldConfirm true
@@ -102,14 +102,14 @@ rbus' transport rs485 index = do
     let onConfirm address' = do
             let ax = toIx address'
             waitingConfirm' <- deref $ msgWaitingConfirm ! ax
-            when waitingConfirm' $ do
+            when waitingConfirm' do
                 store (msgConfirmed ! ax) true
                 store (msgWaitingConfirm ! ax) false
 
     let onPing mac address model version = do
-            T.lazyTransmit transport 13 $ \transmit -> do
+            T.lazyTransmit transport 13 \transmit -> do
                 transmit 0xa1
-                arrayMap $ \ix ->
+                arrayMap \ix ->
                     transmit =<< deref (mac ! ix)
                 transmit $ fromIntegral index
                 transmit address
@@ -181,7 +181,7 @@ syncTask :: RBUS -> Ivory (ProcEffects s ()) ()
 syncTask r@RBUS{..} = do
     shouldInit' <- deref shouldInit
     synced' <- deref synced
-    when (iNot shouldInit' .&& iNot synced') $ do
+    when (iNot shouldInit' .&& iNot synced') do
         T.transmitBuffer transport =<< message r
         store synced true
 
@@ -201,11 +201,11 @@ setMode ::
     Uint8 ->
     Ivory eff ()
 setMode list buff size = do
-    when (size ==? 8) $ do
+    when (size ==? 8) do
         port <- deref $ buff ! 1
         let run r@RBUS{..} p = do
                 shouldInit' <- deref shouldInit
-                when (iNot shouldInit' .&& p ==? port) $ do
+                when (iNot shouldInit' .&& p ==? port) do
                     store mode =<< unpack buff 2
                     store baudrate =<< unpackLE buff 3
                     store lineControl =<< unpack buff 7
@@ -220,21 +220,21 @@ transmitRBUS ::
     Uint8 ->
     Ivory (ProcEffects s t) ()
 transmitRBUS list buff size = do
-    when (size >? 9) $ do
+    when (size >? 9) do
         port <- deref $ buff ! 7
         let run r@RBUS{..} p = do
                 shouldInit' <- deref shouldInit
                 mode' <- deref mode
-                when (iNot shouldInit' .&& mode' ==? modeRBUS .&& p ==? port) $ do
+                when (iNot shouldInit' .&& mode' ==? modeRBUS .&& p ==? port) do
                     address <- deref $ buff ! 8
                     let macTable = P.table protocol
-                    lookupMac macTable address $ \rec -> do
+                    lookupMac macTable address \rec -> do
                         found <- local $ ival true
                         let mac' = rec ~> T.mac
-                        arrayMap $ \ix -> do
+                        arrayMap \ix -> do
                             m1 <- deref $ mac' ! ix
                             m2 <- deref $ buff ! toIx (1 + fromIx ix)
-                            when (m1 /=? m2) $ do
+                            when (m1 /=? m2) do
                                 store found false
                                 breakOut
                         found' <- deref found
@@ -249,15 +249,15 @@ transmitRB485 ::
     Uint8 ->
     Ivory (ProcEffects s t) ()
 transmitRB485 list buff size = do
-    when (size >? 2) $ do
+    when (size >? 2) do
         port <- deref $ buff ! 1
         let run r@RBUS{..} p = do
                 shouldInit' <- deref shouldInit
                 mode' <- deref mode
-                when (iNot shouldInit' .&& mode' ==? modeRS485 .&& p ==? port) $ do
+                when (iNot shouldInit' .&& mode' ==? modeRS485 .&& p ==? port) do
                     let size' = size - 2
-                    RS.transmit rs $ \write ->
-                        for (toIx size') $ \ix ->
+                    RS.transmit rs \write ->
+                        for (toIx size') \ix ->
                             write . safeCast =<< deref (buff ! (ix + 2))
                     store txLock true
         zipWithM_ run list $ fromIntegral <$> nats
@@ -269,7 +269,7 @@ initialize ::
     Uint8 ->
     Ivory (ProcEffects s t) ()
 initialize list buff size =
-    when (size ==? 25) $ do
+    when (size ==? 25) do
         let run r@RBUS{..} offset = do
                 store mode =<< unpack buff offset
                 store baudrate =<< unpackLE buff (offset + 1)

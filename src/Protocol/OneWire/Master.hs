@@ -206,7 +206,7 @@ taskOneWire =
 
 handleReady :: OneWireMaster -> Ivory eff ()
 handleReady m =
-    popAction m $ \action' payload' index' -> do
+    popAction m \action' payload' index' -> do
         store (action m) action'
         store (payload m) payload'
         store (index m) index'
@@ -264,8 +264,8 @@ handleError OneWireMaster{..} = do
 
 recovery :: OneWireMaster -> Ivory (ProcEffects s ()) ()
 recovery m@OneWireMaster{..} =
-    popAction m $ \action' payload' index' ->
-        when (action' ==? actionReset .|| action' ==? actionSearch) $ do
+    popAction m \action' payload' index' ->
+        when (action' ==? actionReset .|| action' ==? actionSearch) do
             store action action'
             runAction m
 
@@ -293,7 +293,7 @@ initReadAction OneWireMaster{..} = do
 
 initSearchAction :: OneWireMaster -> Ivory eff ()
 initSearchAction OneWireMaster{..} = do
-    arrayMap $ \ix -> store (savedROM ! ix) 0
+    arrayMap \ix -> store (savedROM ! ix) 0
     store countROM 0
     store lastDiscrepancy 0
     store lastFamilyDiscrepancy 0
@@ -446,7 +446,7 @@ doRead nextState OneWireMaster{..} = do
             store time $ time' + 1
         , time' ==? timeReadSlot ==> do
             count' <- deref count
-            when (count' ==? 8) $ do
+            when (count' ==? 8) do
                 store state nextState
             store time 0
         , true ==> store time (time' + 1)
@@ -507,9 +507,9 @@ getSearchDirection OneWireMaster{..} = do
                         (store searchDirection $ rom' .& romByteMask' >? 0)
                         (store searchDirection $ idBitNumber' ==? lastDiscrepancy')
                     searchDirection' <- deref searchDirection
-                    when (iNot searchDirection') $ do
+                    when (iNot searchDirection') do
                         store lastZero idBitNumber'
-                        when (idBitNumber' <? 9) $ do
+                        when (idBitNumber' <? 9) do
                             store lastFamilyDiscrepancy idBitNumber'
                 )
             searchDirection' <- deref searchDirection
@@ -535,7 +535,7 @@ checkDevices OneWireMaster{..} = do
     store idBitNumber $ idBitNumber' + 1
     store romByteMask $ romByteMask' `iShiftL` 1
     romByteMask'' <- deref romByteMask
-    when (romByteMask'' ==? 0) $ do
+    when (romByteMask'' ==? 0) do
         store romByteNumber $ romByteNumber' + 1
         store romByteMask 1
     romByteNumber'' <- deref romByteNumber
@@ -543,7 +543,7 @@ checkDevices OneWireMaster{..} = do
         (romByteNumber'' ==? 8)
         ( do
             idBitNumber'' <- deref idBitNumber
-            when (idBitNumber'' >? 64) $ do
+            when (idBitNumber'' >? 64) do
                 lastZero' <- deref lastZero
                 store lastDiscrepancy lastZero'
                 when (lastZero' ==? 0) $ store lastDeviceFlag true
@@ -561,16 +561,16 @@ checkDevices OneWireMaster{..} = do
         (store state stateReadIdBit)
 
 getCRC :: Def ('[Buffer 8 Uint8] :-> Uint8)
-getCRC = proc "one_wire_get_crc" $ \buff -> body $ do
+getCRC = proc "one_wire_get_crc" \buff -> body do
     crc <- local $ ival 0
-    arrayMap $ \ix -> do
+    arrayMap \ix -> do
         inbyte <- local . ival =<< deref (buff ! ix)
-        times (8 :: Ix 9) . const $ do
+        times (8 :: Ix 9) \_ -> do
             crc' <- deref crc
             inbyte' <- deref inbyte
             let mix = (crc' .^ inbyte') .& 0x01
             store crc $ crc' `iShiftR` 1
-            when (mix /=? 0) $ do
+            when (mix /=? 0) do
                 crc'' <- deref crc
                 store crc $ crc'' .^ 0x8c
             store inbyte $ inbyte' `iShiftR` 1
@@ -578,7 +578,7 @@ getCRC = proc "one_wire_get_crc" $ \buff -> body $ do
 
 popAction :: OneWireMaster -> (Uint8 -> Uint8 -> Uint8 -> Ivory eff ()) -> Ivory eff ()
 popAction OneWireMaster{..} run =
-    flip (pop' actionQ) (disableOneWire onewire) $ \actionB ix -> do
+    flip (pop' actionQ) (disableOneWire onewire) \actionB ix -> do
         let a = actionB ! ix
         action' <- deref (a ~> action_)
         payload' <- deref (a ~> payload_)
@@ -587,7 +587,7 @@ popAction OneWireMaster{..} run =
 
 pushAction :: OneWireMaster -> Uint8 -> Uint8 -> Uint8 -> Ivory eff ()
 pushAction OneWireMaster{..} action' payload' index' =
-    push actionQ $ \actionB ix -> do
+    push actionQ \actionB ix -> do
         let a = actionB ! ix
         store (a ~> action_) action'
         store (a ~> payload_) payload'

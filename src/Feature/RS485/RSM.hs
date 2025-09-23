@@ -117,7 +117,7 @@ syncTask :: RSM -> Ivory (ProcEffects s ()) ()
 syncTask r@RSM{..} = do
     shouldInit' <- deref shouldInit
     synced' <- deref synced
-    when (iNot shouldInit' .&& iNot synced') $ do
+    when (iNot shouldInit' .&& iNot synced') do
         T.transmitBuffer transport =<< message r
         store synced true
 
@@ -136,11 +136,11 @@ setMode ::
     Uint8 ->
     Ivory eff ()
 setMode list buff size = do
-    when (size ==? 8) $ do
+    when (size ==? 8) do
         port <- deref $ buff ! 1
         let run r@RSM{..} p = do
                 shouldInit' <- deref shouldInit
-                when (iNot shouldInit' .&& p ==? port) $ do
+                when (iNot shouldInit' .&& p ==? port) do
                     store baudrate =<< unpackLE buff 3
                     store lineControl =<< unpack buff 7
                     configureMode r
@@ -154,14 +154,14 @@ transmitRS485 ::
     Uint8 ->
     Ivory (ProcEffects s t) ()
 transmitRS485 list buff size = do
-    when (size >? 2) $ do
+    when (size >? 2) do
         port <- deref $ buff ! 1
         let run r@RSM{..} p = do
                 shouldInit' <- deref shouldInit
-                when (iNot shouldInit' .&& p ==? port) $ do
+                when (iNot shouldInit' .&& p ==? port) do
                     let size' = size - 2
-                    RS.transmit rs $ \write ->
-                        for (toIx size') $ \ix ->
+                    RS.transmit rs \write ->
+                        for (toIx size') \ix ->
                             write . safeCast =<< deref (buff ! (ix + 2))
                     store txLock true
         zipWithM_ run list $ fromIntegral <$> nats
@@ -173,7 +173,7 @@ initialize ::
     Uint8 ->
     Ivory (ProcEffects s t) ()
 initialize list buff size =
-    when (size ==? 25) $ do
+    when (size ==? 25) do
         let run r@RSM{..} offset = do
                 store baudrate =<< unpackLE buff (offset + 1)
                 store lineControl =<< unpack buff (offset + 5)

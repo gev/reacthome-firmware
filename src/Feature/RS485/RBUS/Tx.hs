@@ -33,7 +33,7 @@ txTask r@RBUS{..} = do
     mode' <- deref mode
     rxLock' <- deref rxLock
     txLock' <- deref txLock
-    when (mode' ==? modeRBUS .&& iNot rxLock' .&& iNot txLock') $ do
+    when (mode' ==? modeRBUS .&& iNot rxLock' .&& iNot txLock') do
         shouldDiscovery' <- deref shouldDiscovery
         shouldConfirm' <- deref shouldConfirm
         shouldPing' <- deref shouldPing
@@ -48,7 +48,7 @@ doTransmitMessage :: RBUS -> Ivory (ProcEffects s ()) ()
 doTransmitMessage r@RBUS{..} = do
     t0 <- deref txTimestamp
     t1 <- getSystemTime clock
-    when (t1 - t0 >? 1) $ peek msgQueue $ \Messages{..} i -> do
+    when (t1 - t0 >? 1) $ peek msgQueue \Messages{..} i -> do
         let ix = toIx i
         offset <- deref $ msgOffset ! ix
         address <- deref $ msgBuff ! toIx (offset + 1)
@@ -67,8 +67,8 @@ doTransmitMessage r@RBUS{..} = do
                     (ttl >? 0)
                     ( do
                         size <- deref $ msgSize ! ix
-                        RS.transmit rs $ \write ->
-                            for (toIx size) $ \dx -> do
+                        RS.transmit rs \write ->
+                            for (toIx size) \dx -> do
                                 let sx = dx + toIx offset
                                 write . safeCast =<< deref (msgBuff ! sx)
                         store (msgTTL ! ix) $ ttl - 1
@@ -95,7 +95,7 @@ doPing :: RBUS -> Ivory (ProcEffects s ()) ()
 doPing r@RBUS{..} = do
     t0 <- deref txTimestamp
     t1 <- getSystemTime clock
-    when (t1 - t0 >? 5000) $ do
+    when (t1 - t0 >? 5000) do
         address' <- deref pingAddress
         toRS (transmitPing address') r
         store txTimestamp t1
@@ -105,7 +105,7 @@ toRS ::
     RBUS ->
     Ivory (ProcEffects s ()) ()
 toRS transmit r@RBUS{..} = do
-    RS.transmit rs $ \write -> transmit protocol (write . safeCast)
+    RS.transmit rs \write -> transmit protocol (write . safeCast)
     store txLock true
 
 {--
@@ -119,7 +119,7 @@ toQueue ::
     Ix l ->
     Uint8 ->
     Ivory (ProcEffects s t) ()
-toQueue RBUS{..} address buff offset size = push msgQueue $ \Messages{..} i -> do
+toQueue RBUS{..} address buff offset size = push msgQueue \Messages{..} i -> do
     index <- deref msgIndex
     size' <- run protocol (transmitMessage address buff offset size) msgBuff index
     store msgIndex $ index + safeCast size'

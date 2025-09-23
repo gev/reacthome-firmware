@@ -1,4 +1,3 @@
-
 module Device.GD32F4xx.ENET where
 
 import qualified Control.Monad
@@ -45,7 +44,7 @@ mkENET ethRmiiRefClk ethRmiiMdio ethRmiiMdc ethRmiiCrsDv ethRmiiRxd0 ethRmiiRxd1
 
     addModule inclEthernetif
 
-    addInit "enet_" $ do
+    addInit "enet_" do
         -- setVectorTableNvic nvic_vecttab_flash 0
         -- setPriorityGroup nvic_prigroup_pre2_sub2
         -- enableIrqNvic enetIRQ 0 0
@@ -60,7 +59,7 @@ mkENET ethRmiiRefClk ethRmiiMdio ethRmiiMdc ethRmiiCrsDv ethRmiiRxd0 ethRmiiRxd1
         resetSoftwareENET
         initENET enet_100m_fullduplex enet_no_autochecksum enet_broadcast_frames_pass
         enableEnetFilterFeature enet_multicast_filter_pass
-    -- when isReady $ do
+    -- when isReady do
     --     enableInterruptENET enet_dma_int_nie
     --     enableInterruptENET enet_dma_int_rie
 

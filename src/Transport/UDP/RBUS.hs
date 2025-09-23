@@ -101,7 +101,7 @@ rbus enet = do
 
     addNetifOnUpCallback $ netifStatusCallback rbus
 
-    addInit "udp_rbus_init" $ do
+    addInit "udp_rbus_init" do
         createIpAddr4 serverIP 255 255 255 255
         createIpAddr4 broadcastIP 255 255 255 255
 
@@ -122,7 +122,7 @@ rbus enet = do
 discoveryTask :: RBUS -> Ivory (ProcEffects s t) ()
 discoveryTask rbus@RBUS{..} = do
     shouldDiscovery' <- deref shouldDiscovery
-    when shouldDiscovery' $ do
+    when shouldDiscovery' do
         hasIP' <- deref hasIP
         ifte_
             hasIP'
@@ -141,9 +141,9 @@ netifStatusCallback :: RBUS -> Ivory (ProcEffects s ()) ()
 netifStatusCallback rbus@RBUS{upcb} = do
     upcb' <- newUdp
     store upcb upcb'
-    when (upcb' /=? nullPtr) $ do
+    when (upcb' /=? nullPtr) do
         err <- bindUdp upcb' ipAddrAny 2017
-        when (err ==? 0) $ do
+        when (err ==? 0) do
             recvUdp upcb' (procPtr $ receiveCallback rbus) nullPtr
 
 instance Transport RBUS where

@@ -18,7 +18,7 @@ renderFade time subpixel value animation brightness = do
     dt' <- deref $ animation ~> dt
     let b' = safeCast b * brightness
     let b'' = castDefault b' :: Uint8
-    when (castDefault value /=? b'') $ do
+    when (castDefault value /=? b'') do
         loop' <- deref $ animation ~> animationLoop
         ifte_
             loop'

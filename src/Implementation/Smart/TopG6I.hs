@@ -1,4 +1,3 @@
-
 module Implementation.Smart.TopG6I where
 
 import Control.Monad.Reader (MonadReader, asks)
@@ -120,15 +119,15 @@ topG6I transport' touches' vibro' sht21' display' etc' = do
             transport
             etc
 
-    addHandler
-        $ Render
+    addHandler $
+        Render
             display
             30
             frameBuffer
-        $ do
-            updateLeds leds
-            updateButtons buttons
-            render leds
+            do
+                updateLeds leds
+                updateButtons buttons
+                render leds
 
     pure Top{touches, leds, vibro, buttons, sht21}
 

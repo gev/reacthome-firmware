@@ -96,7 +96,7 @@ searchDevices DS18B20{..} onewire = do
 measureTemperature :: DS18B20 -> OneWireMaster -> Ivory eff ()
 measureTemperature DS18B20{..} onewire = do
     idNumber' <- deref idNumber
-    when (idNumber' >? 0) $ do
+    when (idNumber' >? 0) do
         reset onewire
         skipROM onewire
         write onewire 0x44
@@ -106,14 +106,14 @@ measureTemperature DS18B20{..} onewire = do
 getTemperature :: DS18B20 -> OneWireMaster -> Ivory eff ()
 getTemperature DS18B20{..} onewire = do
     shouldRead' <- deref shouldRead
-    when shouldRead' $ do
+    when shouldRead' do
         idNumber' <- deref idNumber
         idIndex' <- deref idIndex
         let ix = toIx idIndex'
         reset onewire
         matchROM onewire
         let id = idList ! ix
-        arrayMap $ \ix -> write onewire =<< deref (id ! ix)
+        arrayMap \ix -> write onewire =<< deref (id ! ix)
         write onewire 0xbe
         for (9 :: Ix 10) $ read onewire (cast ix) . cast
         ifte_
@@ -130,7 +130,7 @@ cast = castDefault . fromIx
 onData :: DS18B20 -> Uint8 -> Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
 onData DS18B20{..} i index v = do
     store (rxB ! toIx index) v
-    when (index ==? 8) $ do
+    when (index ==? 8) do
         crc <- call getCRC rxB
         let id = idList ! toIx i
         ifte_
@@ -150,10 +150,10 @@ onData DS18B20{..} i index v = do
 onDiscovery :: DS18B20 -> Uint8 -> Buffer 8 Uint8 -> Ivory (ProcEffects s ()) ()
 onDiscovery DS18B20{..} _ id = do
     t <- deref (id ! 0)
-    when (t ==? 0x28) $ do
+    when (t ==? 0x28) do
         idNumber' <- deref idNumber
         let id' = idList ! toIx idNumber'
-        arrayMap $ \ix -> store (id' ! ix) =<< deref (id ! ix)
+        arrayMap \ix -> store (id' ! ix) =<< deref (id ! ix)
         store idNumber $ idNumber' + 1
 
 onError :: DS18B20 -> Uint8 -> Ivory (ProcEffects s ()) ()
@@ -164,16 +164,16 @@ onError DS18B20{..} error = do
         store idNumber 0
 
 getCRC :: Def ('[Buffer 9 Uint8] :-> Uint8)
-getCRC = proc "ds18b20_get_crc" $ \buff -> body $ do
+getCRC = proc "ds18b20_get_crc" \buff -> body do
     crc <- local $ ival 0
-    arrayMap $ \ix -> do
+    arrayMap \ix -> do
         inbyte <- local . ival =<< deref (buff ! ix)
-        times (8 :: Ix 9) . const $ do
+        times (8 :: Ix 9) \_ -> do
             crc' <- deref crc
             inbyte' <- deref inbyte
             let mix = (crc' .^ inbyte') .& 0x01
             store crc $ crc' `iShiftR` 1
-            when (mix /=? 0) $ do
+            when (mix /=? 0) do
                 crc'' <- deref crc
                 store crc $ crc'' .^ 0x8c
             store inbyte $ inbyte' `iShiftR` 1

@@ -17,7 +17,7 @@ renderRandomT ::
 renderRandomT time subpixel value random animation brightness = do
     let ix = toIx subpixel + 8
     startLoop' <- deref $ animation ~> startLoop
-    when startLoop' $ do
+    when startLoop' do
         min <- safeCast <$> deref (animation ~> params ! toIx (2 * subpixel))
         max <- safeCast <$> deref (animation ~> params ! toIx (2 * subpixel + 1))
         r <- safeCast <$> next random
@@ -26,7 +26,7 @@ renderRandomT time subpixel value random animation brightness = do
     v <- local $ ival value
     b <- deref $ animation ~> params ! ix
     dt <- deref $ animation ~> dt
-    when (castDefault value /=? b) $ do
+    when (castDefault value /=? b) do
         let rest = 1 - time
         ifte_
             (rest >=? dt)

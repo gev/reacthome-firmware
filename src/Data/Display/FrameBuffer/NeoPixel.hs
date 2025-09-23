@@ -52,5 +52,5 @@ writeByte ::
     Uint8 ->
     Ivory eff ()
 writeByte FrameBufferNeoPixel{..} value =
-    arrayMap $ \ix ->
+    arrayMap \ix ->
         store (buff ! toIx ix) =<< deref (matrix ! toIx value ! ix)

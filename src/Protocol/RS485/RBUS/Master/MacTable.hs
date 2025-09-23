@@ -54,10 +54,10 @@ insertMac ::
 insertMac MacTable{..} mac' model' version' run = do
     address <- local $ ival 255
     next' <- deref next
-    for (toIx next') $ \ix -> do
+    for (toIx next') \ix -> do
         let cmp = 0
         cmp <- memCmp mac' $ table ! ix ~> mac
-        when (cmp ==? 0) $ do
+        when (cmp ==? 0) do
             store address $ safeCast ix
             breakOut
     address' <- deref address

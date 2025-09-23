@@ -140,7 +140,7 @@ sync :: Dopplers n -> Ivory (ProcEffects s t) ()
 sync Dopplers{..} = do
     shouldSync <- mapM shouldSyncDoppler doppler
     let shouldTransmit = foldr (.||) false shouldSync
-    when shouldTransmit $ T.lazyTransmit transport (1 + n) $ \transmit -> do
+    when shouldTransmit $ T.lazyTransmit transport (1 + n) \transmit -> do
         transmit actionDoppler1
         mapM_ transmit =<< mapM deref (current <$> doppler)
     mapM_

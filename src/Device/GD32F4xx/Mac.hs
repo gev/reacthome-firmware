@@ -14,7 +14,7 @@ makeMac buff = do
     n1 <- readAddr64 0x1FFF7A20 0x1FFF7A10
     n2 <- readAddr64 0x1FFF7A14 0x1FFF7A18
     n <- local . ival $ n1 .^ n2
-    arrayMap $ \ix -> do
+    arrayMap \ix -> do
         n' <- deref n
         store (buff ! ix) (castDefault $ n' .& 0xFF)
         store n $ n' `iShiftR` 8

@@ -1,4 +1,3 @@
-
 module Endpoint.Relays where
 
 import Control.Monad.Reader (MonadReader, asks)
@@ -93,7 +92,7 @@ turnOffRelay Relays{..} index = do
     let r = relays ! ix
     isLocked <- deref $ r ~> lock
     shouldOff <- deref $ r ~> state
-    when (iNot isLocked .&& shouldOff) $ do
+    when (iNot isLocked .&& shouldOff) do
         store (r ~> state) false
         store (r ~> delayOn) 0
         store (r ~> delayOff) 0
@@ -111,7 +110,7 @@ turnOnRelay Relays{..} groups index = do
     isLocked <- deref $ r ~> lock
     delayOn' <- deref $ r ~> delayOn
     isOn <- deref $ r ~> state
-    when (iNot isLocked .&& iNot isOn .&& delayOn' ==? 0) $ do
+    when (iNot isLocked .&& iNot isOn .&& delayOn' ==? 0) do
         timestamp' <- getSystemTime clock
         group' <- deref $ r ~> group
         turnOffGroup relays ix group' timestamp'
@@ -134,7 +133,7 @@ turnOnRelay' Relays{..} groups index delayOff' = do
     isLocked <- deref $ r ~> lock
     delayOn' <- deref $ r ~> delayOn
     isOn <- deref $ r ~> state
-    when (iNot isLocked .&& iNot isOn .&& delayOn' ==? 0) $ do
+    when (iNot isLocked .&& iNot isOn .&& delayOn' ==? 0) do
         timestamp' <- getSystemTime clock
         group' <- deref $ r ~> group
         turnOffGroup relays ix group' timestamp'
@@ -189,13 +188,13 @@ getGroupDelay ::
 getGroupDelay rs G.Groups{..} i ts = do
     delay' <- deref $ groups ! toIx (i - 1) ~> G.delay
     min <- local $ ival delay'
-    arrayMap $ \jx -> do
+    arrayMap \jx -> do
         let r = rs ! jx
         isLocked <- deref $ r ~> lock
-        when (iNot isLocked) $ do
+        when (iNot isLocked) do
             isOn <- deref $ r ~> state
             group' <- deref $ r ~> group
-            when (iNot isOn .&& group' ==? i) $ do
+            when (iNot isOn .&& group' ==? i) do
                 dt <- (ts -) <$> deref (r ~> timestamp)
                 min' <- deref min
                 when (dt <? min') $ store min dt
@@ -213,11 +212,11 @@ turnOffGroup ::
     Uint32 ->
     Ivory ('Effects (Returns t) b (Scope s)) ()
 turnOffGroup rs ix g t =
-    arrayMap $ \jx -> do
-        when (jx /=? ix) $ do
+    arrayMap \jx -> do
+        when (jx /=? ix) do
             let r = rs ! jx
             group <- deref $ r ~> group
-            when (group ==? g) $ do
+            when (group ==? g) do
                 isOn <- deref $ r ~> state
                 delayOn' <- deref $ r ~> delayOn
                 isLocked <- deref $ r ~> lock

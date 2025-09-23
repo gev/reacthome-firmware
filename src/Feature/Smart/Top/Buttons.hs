@@ -83,10 +83,10 @@ updateButtons Buttons{..} = do
             store t $ t' + 1
         )
 
-    arrayMap $ \ix -> do
+    arrayMap \ix -> do
         state' <- deref $ dinputs getDInputs ! ix ~> state
         leds' <- deref $ leds'per'button ! ix
-        for leds' $ \kx -> do
+        for leds' \kx -> do
             sx <- deref $ leds'of'button ! ix ! kx
             dx <- deref $ order leds ! sx
             ifte_
@@ -109,12 +109,12 @@ onFindMe ::
     Uint8 ->
     Ivory (ProcEffects s t) ()
 onFindMe Buttons{..} buff size =
-    when (size ==? 2) $ do
+    when (size ==? 2) do
         v <- unpack buff 1
         store findMe v
         store t 0
         store start true
-        lazyTransmit transport 2 $ \transmit -> do
+        lazyTransmit transport 2 \transmit -> do
             transmit actionFindMe
             transmit $ safeCast v
 

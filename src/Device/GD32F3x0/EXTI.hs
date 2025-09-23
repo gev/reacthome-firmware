@@ -28,7 +28,7 @@ data EXTI = EXTI
 mkEXTI :: (MonadState Context m) => (Mode -> GPIO_PUPD -> Port) -> IRQn -> EXTI_PORT -> EXTI_PIN -> EXTI_LINE -> m EXTI
 mkEXTI input extiIRQ srcPort srcPin ex = do
     port <- mkInput input gpio_pupd_none
-    addInit (symbol srcPort <> "_" <> symbol srcPin) $ do
+    addInit (symbol srcPort <> "_" <> symbol srcPin) do
         enablePeriphClock rcu_cfgcmp
         enableIrqNvic extiIRQ 0 0
         configExtiLine srcPort srcPin
@@ -43,7 +43,7 @@ instance Handler I.HandleEXTI EXTI where
 handleEXTI :: EXTI_LINE -> Ivory eff () -> Ivory eff ()
 handleEXTI ex handle = do
     f <- getExtiInterruptFlag ex
-    when f $ do
+    when f do
         handle
         clearExtiInterruptFlag ex
 

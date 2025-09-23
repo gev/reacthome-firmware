@@ -77,7 +77,7 @@ mkI2STX spi rcuSpi rcuDma dmaPer dmaCh dmaSubPer dmaIRQn txPin wsPin sckPin mclk
 
     let i2stx = I2STX{..}
 
-    addInit (symbol spi) $ do
+    addInit (symbol spi) do
         enablePeriphClock rcuDma
         enablePeriphClock rcuSpi
         deinitDMA dmaPer dmaCh
@@ -103,7 +103,7 @@ instance (KnownNat n) => Handler I.HandleI2STX (I2STX n) where
             makeIRQHandler
                 (dmaIRQn i2s)
                 (handleDMA i2s)
-        addTask $ yeld "i2s_prepare_buffer" $ do
+        addTask $ yeld "i2s_prepare_buffer" do
             selectHandlerBuff
                 (txBuff i2s)
                 (prepareBuff handle)
@@ -113,7 +113,7 @@ handleDMA ::
     I2STX n ->
     Ivory (ProcEffects s ()) ()
 handleDMA i2s = do
-    handleI2S (dmaPer i2s) (dmaCh i2s) dma_int_flag_ftf $ do
+    handleI2S (dmaPer i2s) (dmaCh i2s) dma_int_flag_ftf do
         transmitBuff i2s (txBuff i2s)
 
 transmitBuff ::
@@ -139,7 +139,7 @@ prepareBuff ::
     Ivory (ProcEffects s ()) ()
 prepareBuff prepare buff = do
     i <- local $ ival (0 :: Uint16)
-    forever $ do
+    forever do
         i' <- deref i
         when (i' >=? arrayLen buff) breakOut
         t <- prepare

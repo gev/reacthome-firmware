@@ -126,14 +126,14 @@ syncLEDs ::
     Ivory (ProcEffects s t) ()
 syncLEDs LEDs{..} = do
     pageOffset <- local $ ival 1024
-    arrayMap $ \px -> do
+    arrayMap \px -> do
         synced' <- deref $ synced ! px
         pageOffset' <- deref pageOffset
-        when (iNot synced') $ do
+        when (iNot synced') do
             erasePage etc pageOffset'
             crc <- local $ istruct initCRC16
             colorOffset <- local $ ival 0
-            arrayMap $ \cx -> do
+            arrayMap \cx -> do
                 value <- deref $ colors ! px ! cx
                 let r' = castDefault $ (value `iShiftR` 16) .& 0xff
                 let g' = castDefault $ (value `iShiftR` 8) .& 0xff
@@ -152,7 +152,7 @@ syncLEDs LEDs{..} = do
         store pageOffset $ pageOffset' + 1024
 
     synced_' <- deref synced_
-    when (iNot synced_') $ do
+    when (iNot synced_') do
         pageOffset' <- deref pageOffset
         erasePage etc pageOffset'
         crc <- local $ istruct initCRC16
@@ -172,11 +172,11 @@ loadLeds ::
     Ivory (ProcEffects s t) ()
 loadLeds LEDs{..} = do
     pageOffset <- local $ ival 1024
-    arrayMap $ \px -> do
+    arrayMap \px -> do
         crc <- local $ istruct initCRC16
         pageOffset' <- deref pageOffset
         colorOffset <- local $ ival 0
-        arrayMap $ \cx -> do
+        arrayMap \cx -> do
             colorOffset' <- deref colorOffset
             value <- F.read etc $ pageOffset' + colorOffset'
             store (colors ! px ! cx) value
@@ -193,8 +193,8 @@ loadLeds LEDs{..} = do
         lsb' <- F.read etc (offset + 4)
         msb'' <- safeCast <$> deref (crc ~> msb)
         lsb'' <- safeCast <$> deref (crc ~> lsb)
-        when (msb' /=? msb'' .|| lsb' /=? lsb'') $ do
-            arrayMap $ \cx -> store (colors ! px ! cx) 0x77_77_77
+        when (msb' /=? msb'' .|| lsb' /=? lsb'') do
+            arrayMap \cx -> store (colors ! px ! cx) 0x77_77_77
         store pageOffset $ pageOffset' + 1024
 
     pageOffset' <- deref pageOffset
@@ -207,14 +207,14 @@ loadLeds LEDs{..} = do
     updateCRC16 crc state'
     msb'' <- safeCast <$> deref (crc ~> msb)
     lsb'' <- safeCast <$> deref (crc ~> lsb)
-    when (msb' ==? msb'' .&& lsb' ==? lsb'') $ do
+    when (msb' ==? msb'' .&& lsb' ==? lsb'') do
         store brightness $ safeCast brightness' / 255
         store state $ state' ==? 1
 
 updateLeds :: (KnownNat pn, KnownNat ln) => LEDs pn ln -> Ivory (ProcEffects s ()) ()
 updateLeds LEDs{..} = do
     brightness' <- deref brightness
-    arrayMap $ \sx -> do
+    arrayMap \sx -> do
         dx <- deref $ order ! sx
         state' <- deref state
         image' <- deref $ image ! sx
@@ -252,8 +252,8 @@ onDo ::
     Uint8 ->
     Ivory (ProcEffects s t) ()
 onDo LEDs{..} buff size =
-    when (size ==? 2) $ do
-        lazyTransmit transport 2 $ \transmit -> do
+    when (size ==? 2) do
+        lazyTransmit transport 2 \transmit -> do
             v <- deref $ buff ! 1
             store state $ v ==? 1
             transmit actionDo
@@ -267,23 +267,23 @@ onDim ::
     Uint8 ->
     Ivory (ProcEffects s t) ()
 onDim LEDs{..} buff size =
-    when (size ==? 2) $ do
+    when (size ==? 2) do
         brightness' <- deref $ buff ! 1
         ifte_
             (brightness' ==? 0)
             ( do
                 store state false
-                lazyTransmit transport 2 $ \transmit -> do
+                lazyTransmit transport 2 \transmit -> do
                     transmit actionDo
                     transmit 0
                 store brightness $ 1 / 255
-                lazyTransmit transport 2 $ \transmit -> do
+                lazyTransmit transport 2 \transmit -> do
                     transmit actionDim
                     transmit 1
             )
             ( do
                 store brightness $ safeCast brightness' / 255
-                lazyTransmit transport 2 $ \transmit -> do
+                lazyTransmit transport 2 \transmit -> do
                     transmit actionDim
                     transmit brightness'
             )
@@ -299,10 +299,10 @@ onSetColor ::
 onSetColor LEDs{..} buff size = do
     let ln' = fromIntegral $ fromTypeNat (aNat :: NatType ln)
     let pn' = fromIntegral $ fromTypeNat (aNat :: NatType pn)
-    when (size >=? 6 .&& (size - 3) .% 3 ==? 0) $ do
+    when (size >=? 6 .&& (size - 3) .% 3 ==? 0) do
         p <- deref $ buff ! 1
         i <- deref $ buff ! 2
-        when (p >=? 1 .&& p <=? pn' .&& i >=? 1 .&& i <=? ln') $ do
+        when (p >=? 1 .&& p <=? pn' .&& i >=? 1 .&& i <=? ln') do
             let p' = toIx $ p - 1
             let i' = i - 1
             let r' = ln' - i'
@@ -310,11 +310,11 @@ onSetColor LEDs{..} buff size = do
             n <- local . ival $ s
             when (r' <? s) $ store n r'
             n' <- deref n
-            T.lazyTransmit transport (3 * n' + 3) $ \transmit -> do
+            T.lazyTransmit transport (3 * n' + 3) \transmit -> do
                 transmit actionRGB
                 transmit p
                 transmit i
-                for (toIx n') $ \ix -> do
+                for (toIx n') \ix -> do
                     let dx = toIx i' + ix
                     r' <- deref $ buff ! toIx (3 * fromIx ix + 3)
                     g' <- deref $ buff ! toIx (3 * fromIx ix + 4)
@@ -340,13 +340,13 @@ onImage LEDs{..} buff size = do
     let r' = ln' .% 8
     when (r' >? 0) $ store n (s' + 1)
     n' <- deref n
-    when ((size - 1) ==? n') $ do
+    when ((size - 1) ==? n') do
         v <- local $ ival 0
-        T.lazyTransmit transport (n' + 1) $ \transmit -> do
+        T.lazyTransmit transport (n' + 1) \transmit -> do
             transmit actionImage
-            arrayMap $ \dx -> do
+            arrayMap \dx -> do
                 let d = fromIx dx
-                when (d .% 8 ==? 0) $ do
+                when (d .% 8 ==? 0) do
                     let sx = toIx $ 1 + d `iDiv` 8
                     store v =<< deref (buff ! sx)
                     transmit =<< deref v
@@ -369,13 +369,13 @@ onBlink LEDs{..} buff size = do
     let r' = ln' .% 8
     when (r' >? 0) $ store n (s' + 1)
     n' <- deref n
-    when ((size - 1) ==? n') $ do
+    when ((size - 1) ==? n') do
         v <- local $ ival 0
-        T.lazyTransmit transport (n' + 1) $ \transmit -> do
+        T.lazyTransmit transport (n' + 1) \transmit -> do
             transmit actionBlink
-            arrayMap $ \dx -> do
+            arrayMap \dx -> do
                 let d = fromIx dx
-                when (d .% 8 ==? 0) $ do
+                when (d .% 8 ==? 0) do
                     let sx = toIx $ 1 + d `iDiv` 8
                     store v =<< deref (buff ! sx)
                     transmit =<< deref v
@@ -392,12 +392,12 @@ onPalette ::
     Uint8 ->
     Ivory (ProcEffects s t) ()
 onPalette LEDs{..} buffer size =
-    when (size ==? 2) $ do
+    when (size ==? 2) do
         palette' <- unpack buffer 1
         let palettes = fromIntegral $ fromTypeNat (aNat :: NatType pn)
-        when (palette' >=? 1 .&& palette' <=? palettes) $ do
+        when (palette' >=? 1 .&& palette' <=? palettes) do
             store palette . toIx $ palette' - 1
-            lazyTransmit transport 2 $ \transmit -> do
+            lazyTransmit transport 2 \transmit -> do
                 transmit actionPalette
                 transmit palette'
 
@@ -405,10 +405,10 @@ sendLEDs :: (KnownNat pn) => LEDs pn ln -> Ivory (ProcEffects s t) ()
 sendLEDs LEDs{..} = do
     store ix 0
     store shouldSend true
-    lazyTransmit transport 2 $ \transmit -> do
+    lazyTransmit transport 2 \transmit -> do
         transmit actionDim
         transmit . castDefault . (* 255) =<< deref brightness
-    lazyTransmit transport 2 $ \transmit -> do
+    lazyTransmit transport 2 \transmit -> do
         transmit actionDo
         transmit . safeCast =<< deref state
 
@@ -421,15 +421,15 @@ sendPalette LEDs{..} = do
     let ln' = fromIntegral $ fromTypeNat (aNat :: NatType ln)
     let pn' = fromIntegral $ fromTypeNat (aNat :: NatType pn)
     shouldSend' <- deref shouldSend
-    when shouldSend' $ do
+    when shouldSend' do
         let n = 3 * ln' + 3
         ix' <- deref ix
         let i' = fromIx ix'
-        lazyTransmit transport n $ \transmit -> do
+        lazyTransmit transport n \transmit -> do
             transmit actionRGB
             transmit . castDefault $ i' + 1
             transmit 1
-            arrayMap $ \cx -> do
+            arrayMap \cx -> do
                 value <- deref (colors ! ix' ! cx)
                 let r' = castDefault $ (value `iShiftR` 16) .& 0xff
                 let g' = castDefault $ (value `iShiftR` 8) .& 0xff

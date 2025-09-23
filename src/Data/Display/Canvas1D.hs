@@ -26,7 +26,7 @@ clearCanvas ::
     Canvas1D n ->
     Ivory (ProcEffects s ()) ()
 clearCanvas Canvas1D{..} =
-    arrayMap $ \ix -> store (canvas ! ix) 0
+    arrayMap \ix -> store (canvas ! ix) 0
 
 writePixel ::
     (KnownNat n, KnownNat (Canvas1DSize n)) =>
@@ -55,7 +55,7 @@ writePixels ::
     Ivory ('Effects (Returns ()) r (Scope s2)) IBool
 writePixels canvas pixels = do
     shouldUpdate <- local $ ival false
-    arrayMap $ \ix -> do
+    arrayMap \ix -> do
         isUpdated <- writePixel canvas ix (pixels ! toIx ix)
         when isUpdated $ store shouldUpdate true
     deref shouldUpdate

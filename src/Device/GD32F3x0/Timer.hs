@@ -67,7 +67,7 @@ mkTimer ::
     Init (Struct TIMER_PARAM_STRUCT) ->
     m Timer
 mkTimer timer rcu irq param = do
-    addInit (symbol timer) $ do
+    addInit (symbol timer) do
         enablePeriphClock rcu
         deinitTimer timer
         initTimer timer =<< local param
@@ -90,7 +90,7 @@ instance Handler I.HandleTimer Timer where
         handleIRQ' :: Ivory eff ()
         handleIRQ' = do
             flag <- getTimerInterruptFlag timer timer_int_flag_up
-            when flag $ do
+            when flag do
                 handle
                 clearTimerInterruptFlag timer timer_int_flag_up
 

@@ -60,7 +60,7 @@ udpEcho enet = do
 
     -- addProc sysNow
 
-    addInit "udp_echo" $ do
+    addInit "udp_echo" do
         initMem
         initMemp
         createIpAddr4 ip4 192 168 88 9
@@ -74,12 +74,12 @@ udpEcho enet = do
         setNetifStatusCallback netif (procPtr netifStatusCallback)
         setUpNetif netif
 
-    -- addHandler $ HandleEnet enet' $ do
+    -- addHandler $ HandleEnet enet' do
     --     reval <- rxFrameSize enet'
     --     when (reval >? 1) $
     --         void $ inputLwipPortIf enet' netif
 
-    addTask $ yeld "udp_rx" $ do
+    addTask $ yeld "udp_rx" do
         reval <- rxFrameSize enet'
         when (reval >? 1) $
             void $
@@ -88,17 +88,17 @@ udpEcho enet = do
     addTask $ delay 1000 "eth_arp" tmrEtharp
 
 netifStatusCallback :: Def (NetifStatusCallbackFn s)
-netifStatusCallback = proc "netif_callback" $ \netif -> body $ do
+netifStatusCallback = proc "netif_callback" \netif -> body do
     flags' <- deref $ netif ~> flags
-    when (flags' .& netif_flag_up /=? 0) $ do
+    when (flags' .& netif_flag_up /=? 0) do
         upcb <- newUdp
-        when (upcb /=? nullPtr) $ do
+        when (upcb /=? nullPtr) do
             err <- bindUdp upcb ipAddrAny 2000
             when (err ==? 0) $
                 recvUdp upcb (procPtr udpEchoReceiveCallback) nullPtr
 
 udpEchoReceiveCallback :: Def (UdpRecvFn s1 s2 s3 s4)
-udpEchoReceiveCallback = proc "udp_echo_callback" $ \_ upcb p addr port -> body $ do
+udpEchoReceiveCallback = proc "udp_echo_callback" \_ upcb p addr port -> body do
     connectUdp upcb addr port
     sendUdp upcb p
     disconnectUdp upcb

@@ -60,9 +60,9 @@ createRtpUdp :: (KnownNat n) => RTP n -> NETIF s1 -> Uint8 -> Uint8 -> Uint8 -> 
 createRtpUdp r@RTP{..} netif ip1 ip2 ip3 ip4 port = do
     upcb <- newUdp
     store rtpUdpPcb upcb
-    when (upcb /=? nullPtr) $ do
+    when (upcb /=? nullPtr) do
         err <- bindUdp upcb ipAddrAny port
-        when (err ==? 0) $ do
+        when (err ==? 0) do
             createIpAddr4 rtpIpGroup ip1 ip2 ip3 ip4
             joinIgmpGroupNetif netif rtpIpGroup
             recvUdp upcb (procPtr $ udpReceiveCallback r) nullPtr
@@ -76,14 +76,14 @@ removeRtpUdp RTP{..} netif = do
 
 udpReceiveCallback :: (KnownNat n) => RTP n -> Def (UdpRecvFn s1 s2 s3 s4)
 udpReceiveCallback r@RTP{..} =
-    proc (name <> "_udp_receive_callback") $ \_ upcb pbuff addr port -> body $ do
+    proc (name <> "_udp_receive_callback") \_ upcb pbuff addr port -> body do
         size <- deref (pbuff ~> len)
-        when (size ==? 1292) $ do
+        when (size ==? 1292) do
             index <- local $ ival 12
-            forever $ do
+            forever do
                 index' <- deref index
                 when (index' >=? size) breakOut
-                push rtpQueue $ \i2sRtpBuff ix -> do
+                push rtpQueue \i2sRtpBuff ix -> do
                     msbl <- getPbufAt pbuff index'
                     lsbl <- getPbufAt pbuff (index' + 1)
                     let wordL = (safeCast msbl `iShiftL` 8) .| safeCast lsbl :: Uint16

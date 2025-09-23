@@ -78,7 +78,7 @@ slave id mac model version onMessage onConfirm onDiscovery onReceive = do
         valid <- value (name <> "_valid") true
         tmp <- value (name <> "_tmp") 0
 
-        addInit (name <> "_disc_tx") $ do
+        addInit (name <> "_disc_tx") do
                 store (buffDisc ! 0) $ discovery txPreamble
                 arrayCopy buffDisc mac 1 $ arrayLen mac
                 store (buffDisc ! 7) =<< deref model
@@ -86,12 +86,12 @@ slave id mac model version onMessage onConfirm onDiscovery onReceive = do
                 store (buffDisc ! 9) =<< deref (version ~> minor)
                 calcCRC16 buffDisc
 
-        initConf <- addInit (name <> "_conf_tx") $ do
+        initConf <- addInit (name <> "_conf_tx") do
                 store (buffConf ! 0) $ confirm txPreamble
                 store (buffConf ! 1) =<< deref address
                 calcCRC16 buffConf
 
-        initPing <- addInit (name <> "_ping_tx") $ do
+        initPing <- addInit (name <> "_ping_tx") do
                 store (buffPing ! 0) $ ping txPreamble
                 store (buffPing ! 1) =<< deref address
                 calcCRC16 buffPing

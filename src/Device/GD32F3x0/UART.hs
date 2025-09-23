@@ -60,7 +60,7 @@ mkUART uart rcu uartIRQ rx' tx' = do
     initPort rx
     initPort tx
 
-    addInit (symbol uart) $ do
+    addInit (symbol uart) do
         enableIrqNvic uartIRQ 0 0
         enablePeriphClock rcu
 
@@ -96,7 +96,7 @@ handleUART u@UART{..} onReceive onTransmit onDrain onError = do
 handleTransmit :: (KnownNat tn) => UART rn tn -> Ivory eff () -> Maybe (Ivory eff ()) -> Ivory eff ()
 handleTransmit UART{..} onTransmit onDrain = do
     tbe <- getInterruptFlag uart usart_int_flag_tbe
-    when tbe $ do
+    when tbe do
         index' <- deref index
         size' <- deref size
         ifte_
@@ -107,7 +107,7 @@ handleTransmit UART{..} onTransmit onDrain = do
             )
             ( do
                 disableInterrupt uart usart_int_tbe
-                M.when (isJust onDrain) $ do
+                M.when (isJust onDrain) do
                     enableInterrupt uart usart_int_tc
                 onTransmit
             )
@@ -128,7 +128,7 @@ handleError UART{..} onError = do
   where
     clear i f = do
         i' <- getInterruptFlag uart i
-        when i' $ do
+        when i' do
             clearFlag uart f
             clearInterruptFlag uart i
         pure i'
@@ -136,8 +136,8 @@ handleError UART{..} onError = do
 handleReceive :: (KnownNat rn) => UART rn tn -> Ivory eff () -> Ivory eff ()
 handleReceive UART{..} onReceive = do
     rbne <- getInterruptFlag uart usart_int_flag_rbne
-    when rbne $ do
-        push rxQueue $ \rxBuff ix -> do
+    when rbne do
+        push rxQueue \rxBuff ix -> do
             store (rxBuff ! ix) =<< S.receiveData uart
             onReceive
         clearInterruptFlag uart usart_int_flag_rbne
@@ -145,7 +145,7 @@ handleReceive UART{..} onReceive = do
 handleDrain :: USART_PERIPH -> Ivory eff () -> Ivory eff ()
 handleDrain uart onDrain = do
     tc <- getInterruptFlag uart usart_int_flag_tc
-    when tc $ do
+    when tc do
         disableInterrupt uart usart_int_tc
         onDrain
         clearInterruptFlag uart usart_int_flag_tc
@@ -167,12 +167,12 @@ instance (KnownNat rn, KnownNat tn) => I.UART (UART rn tn) where
     clearRX UART{..} = Q.clearConcurrently rxQueue
 
     receive UART{..} read =
-        popConcurrently rxQueue $ \rxBuff ix ->
+        popConcurrently rxQueue \rxBuff ix ->
             read =<< deref (rxBuff ! ix)
 
     transmit UART{..} write = do
         store size 0
-        write $ \value -> do
+        write \value -> do
             size' <- deref size
             store (txBuff ! toIx size') value
             store size $ size' + 1

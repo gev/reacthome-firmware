@@ -1,4 +1,3 @@
-
 module Implementation.Hub where
 
 import Control.Monad.Reader (MonadReader, asks)
@@ -101,7 +100,7 @@ onInit Hub{..} buff size = do
     let s = 1 + (6 * fromIntegral (length rbus))
     let dim' = n dimmers * 3
     let ng' = 10
-    when (size ==? s + dim' + ng') $ do
+    when (size ==? s + dim' + ng') do
         let run r@RBUS{..} offset = do
                 store mode =<< unpack buff offset
                 store baudrate =<< unpackLE buff (offset + 1)
@@ -112,7 +111,7 @@ onInit Hub{..} buff size = do
         offset <- local $ ival $ toIx s
 
         let ds = Dim.dimmers $ getDimmers dimmers
-        arrayMap $ \ix -> do
+        arrayMap \ix -> do
             offset' <- deref offset
             let d = ds ! ix
             group <- unpack buff offset'
@@ -122,7 +121,7 @@ onInit Hub{..} buff size = do
             syncDimmerGroup ds d ix
             store offset $ offset' + 3
 
-        arrayMap $ \ix -> do
+        arrayMap \ix -> do
             offset' <- deref offset
             let group = E.groups (getALED aled) ! ix
             brightness <- deref $ buff ! offset'
@@ -134,6 +133,6 @@ onInit Hub{..} buff size = do
 onGetState Hub{..} = do
     forceSyncDInputs dinputs
     initialized <- iNot <$> deref shouldInit
-    when initialized $ do
+    when initialized do
         forceSync dimmers
         forceSyncRBUS' rbus

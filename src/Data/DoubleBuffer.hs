@@ -44,7 +44,7 @@ selectHandlerBuff ::
 selectHandlerBuff doubleBuff callback = do
     num1' <- deref $ num1 doubleBuff
     num0' <- deref $ num0 doubleBuff
-    when (num1' /=? num0') $ do
+    when (num1' /=? num0') do
         ifte_
             (num1' ==? 0)
             (callback (buff0 doubleBuff))

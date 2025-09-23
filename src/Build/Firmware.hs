@@ -1,4 +1,3 @@
-
 module Build.Firmware where
 
 import Build.Shake
@@ -45,7 +44,7 @@ cook Formula{..} = do
   init = proc "init" $ body $ mapM_ call_ inits
 
   main :: Def ('[] :-> Sint32)
-  main = proc "main" $ body $ do
+  main = proc "main" $ body do
     call_ init
     call_ loop
     ret 0

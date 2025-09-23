@@ -21,6 +21,6 @@ dataExchangeDmaI2S definition spiPer dmaParams dmaPer dmaCh intDma buff = do
 handleI2S :: DMA_PERIPH -> DMA_CHANNEL -> DMA_INT_FLAG -> Ivory (ProcEffects s ()) () -> Ivory (ProcEffects s ()) ()
 handleI2S dmaPer dmaCh intFlag callBack = do
     f <- getInterruptFlagDMA dmaPer dmaCh intFlag
-    S.when f $ do
+    S.when f do
         clearInterruptFlagDMA dmaPer dmaCh intFlag
         callBack

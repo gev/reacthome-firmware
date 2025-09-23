@@ -1,4 +1,3 @@
-
 module Build.Compiler.GCC where
 
 import Build.Compiler
@@ -41,10 +40,10 @@ instance Shake GCC where
         let dist = "dist"
         let build = "build" </> path </> hash c
 
-        shakeArgs shakeOptions{shakeFiles = build} $ do
+        shakeArgs shakeOptions{shakeFiles = build} do
             want $ target dist name ["hex", "bin"]
 
-            phony "clean" $ do
+            phony "clean" do
                 putInfo $ "Cleaning files in " <> build
                 removeFilesAfter build ["//*"]
 

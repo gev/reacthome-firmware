@@ -99,7 +99,7 @@ transmit' ::
     Ivory (ProcEffects s t) ()
 transmit' action calculate sht21@SHT21{..} = do
     isReady' <- deref isReady
-    when isReady' $ do
+    when isReady' do
         store (txBuff ! 0) action
         packLE txBuff 1 . coerce calculate =<< unpackBE rxBuff 0
         transmit txBuff

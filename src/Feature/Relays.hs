@@ -90,12 +90,12 @@ relays outs transport = do
 
 forceSyncRelays :: (KnownNat n) => Relays n -> Ivory eff ()
 forceSyncRelays Relays{..} = do
-    arrayMap $ \ix -> store (R.relays getRelays ! ix ~> R.synced) false
-    arrayMap $ \ix -> store (G.groups getGroups ! ix ~> G.synced) false
+    arrayMap \ix -> store (R.relays getRelays ! ix ~> R.synced) false
+    arrayMap \ix -> store (G.groups getGroups ! ix ~> G.synced) false
 
 manageRelays :: (KnownNat n) => Relays n -> Ivory eff ()
 manageRelays Relays{..} = do
-    arrayMap $ \ix -> do
+    arrayMap \ix -> do
         let r = R.relays getRelays ! ix
         isOn <- deref $ r ~> R.state
         delayOn <- deref $ r ~> R.delayOn
@@ -153,7 +153,7 @@ manageState ::
     Ivory eff ()
 manageState r o setOut state = do
     state' <- get o
-    when (state' /=? state) $ do
+    when (state' /=? state) do
         store (r ~> R.synced) false
         setOut o
 
@@ -163,7 +163,7 @@ syncRelays ::
     Ivory (ProcEffects s ()) ()
 syncRelays rs@Relays{..} = do
     shouldInit' <- deref shouldInit
-    when (iNot shouldInit') $ do
+    when (iNot shouldInit') do
         i <- deref current
         syncRelays' rs i
         syncGroups' rs i
@@ -177,7 +177,7 @@ syncRelays' ::
 syncRelays' Relays{..} i = do
     let r = R.relays getRelays ! toIx i
     synced <- deref $ r ~> R.synced
-    when (iNot synced) $ do
+    when (iNot synced) do
         msg <- R.message getRelays (i .% fromIntegral n)
         transmit msg
         store (r ~> R.synced) true
@@ -190,7 +190,7 @@ syncGroups' ::
 syncGroups' Relays{..} i = do
     let g = G.groups getGroups ! toIx i
     synced <- deref $ g ~> G.synced
-    when (iNot synced) $ do
+    when (iNot synced) do
         msg <- G.message getGroups (i .% fromIntegral n)
         transmit msg
         store (g ~> G.synced) true
@@ -202,10 +202,10 @@ onDo ::
     Uint8 ->
     Ivory (ProcEffects s t) ()
 onDo relays@Relays{..} buff size =
-    when (size >=? 3) $ do
+    when (size >=? 3) do
         index <- deref $ buff ! 1
         initialized <- iNot <$> deref shouldInit
-        when (initialized .&& index >=? 1 .&& index <=? fromIntegral n) $ do
+        when (initialized .&& index >=? 1 .&& index <=? fromIntegral n) do
             action <- deref $ buff ! 2
             cond_
                 [ action ==? 0 ==> R.turnOffRelay getRelays (toIx index)
@@ -225,10 +225,10 @@ onGroup ::
     Uint8 ->
     Ivory eff ()
 onGroup Relays{..} buff size =
-    when (size >=? 7) $ do
+    when (size >=? 7) do
         index <- deref $ buff ! 1
         initialized <- iNot <$> deref shouldInit
-        when (initialized .&& index >=? 1 .&& index <=? fromIntegral n) $ do
+        when (initialized .&& index >=? 1 .&& index <=? fromIntegral n) do
             let g = G.groups getGroups ! toIx (index - 1)
             store (g ~> G.enabled) =<< unpack buff 2
             store (g ~> G.delay) =<< unpackLE buff 3
@@ -244,7 +244,7 @@ onInit ::
     Uint8 ->
     Ivory (ProcEffects s t) ()
 onInit rs@Relays{..} buff size =
-    when (size >=? 1 + 5 * fromIntegral n + 6 * fromIntegral n) $ do
+    when (size >=? 1 + 5 * fromIntegral n + 6 * fromIntegral n) do
         offset <- local $ ival 1
         initGroups rs buff offset
         initRelays rs buff offset
@@ -257,7 +257,7 @@ initGroups ::
     Ref s (Stored (Ix l)) ->
     Ivory eff ()
 initGroups Relays{..} buff offset =
-    arrayMap $ \ix -> do
+    arrayMap \ix -> do
         offset' <- deref offset
         let g = G.groups getGroups ! ix
         store (g ~> G.enabled) =<< unpack buff offset'
@@ -272,11 +272,11 @@ initRelays ::
     Ivory eff ()
 initRelays Relays{..} buff offset = do
     timestamp' <- getSystemTime clock
-    arrayMap $ \ix -> do
+    arrayMap \ix -> do
         offset' <- deref offset
         let r = R.relays getRelays ! ix
         isLocked <- deref $ r ~> R.lock
-        when (iNot isLocked) $ do
+        when (iNot isLocked) do
             store (r ~> R.state) =<< unpack buff offset'
             store (r ~> R.delayOff) =<< unpackLE buff (offset' + 2)
         store (r ~> R.group) =<< unpack buff (offset' + 1)

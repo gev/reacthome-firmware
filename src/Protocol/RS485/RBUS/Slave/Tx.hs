@@ -26,7 +26,7 @@ transmitMessage payload Slave{..} transmit = do
     transmit' id
     store tidTx $ id + 1
     transmit' $ arrayLen payload
-    arrayMap $ \ix -> transmit' =<< deref (payload ! ix)
+    arrayMap \ix -> transmit' =<< deref (payload ! ix)
     transmit =<< deref (crc ~> msb)
     transmit =<< deref (crc ~> lsb)
 
@@ -73,4 +73,4 @@ transmit ::
     (Uint8 -> Ivory (AllowBreak eff) ()) ->
     Ivory eff ()
 transmit buff transmit =
-    arrayMap $ \ix -> transmit =<< deref (buff ! ix)
+    arrayMap \ix -> transmit =<< deref (buff ! ix)

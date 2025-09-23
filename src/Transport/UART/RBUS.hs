@@ -1,4 +1,3 @@
-
 module Transport.UART.RBUS where
 
 import Control.Monad.Reader (MonadReader, asks)
@@ -156,7 +155,7 @@ mkRbus name uart speed onMessage = do
 
 initialize RBUS{..} = do
     store (discoveryBuff ! 0) actionDiscovery
-    arrayMap $ \ix -> do
+    arrayMap \ix -> do
         let jx = toIx $ 1 + fromIx ix
         store (discoveryBuff ! jx) =<< deref (mac ! ix)
     store (discoveryBuff ! 7) =<< deref model

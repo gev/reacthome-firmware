@@ -25,7 +25,7 @@ txTask :: RBUS -> Ivory (ProcEffects s ()) ()
 txTask r@RBUS{..} = do
     rxLock' <- deref rxLock
     txLock' <- deref txLock
-    when (iNot rxLock' .&& iNot txLock') $ do
+    when (iNot rxLock' .&& iNot txLock') do
         hasAddress' <- hasAddress protocol
         ifte_
             hasAddress'
@@ -46,7 +46,7 @@ doTransmitMessage :: RBUS -> Ivory (ProcEffects s ()) ()
 doTransmitMessage r@RBUS{..} = do
     t0 <- deref txTimestamp
     t1 <- getSystemTime clock
-    when (t1 - t0 >? 1) $ peek msgQueue $ \Messages{..} ix -> do
+    when (t1 - t0 >? 1) $ peek msgQueue \Messages{..} ix -> do
         ttl <- deref $ msgTTL ! ix
         ifte_
             (ttl >? 0)
@@ -62,8 +62,8 @@ doTransmitMessage r@RBUS{..} = do
                     )
                     ( do
                         size <- deref $ msgSize ! ix
-                        RS.transmit rs $ \write ->
-                            for (toIx size) $ \dx -> do
+                        RS.transmit rs \write ->
+                            for (toIx size) \dx -> do
                                 let sx = dx + toIx offset
                                 write . safeCast =<< deref (msgBuff ! sx)
                         store (msgTTL ! ix) $ ttl - 1
@@ -84,7 +84,7 @@ doDiscovery r@RBUS{..} = do
 doConfirm :: RBUS -> Ivory (ProcEffects s ()) ()
 doConfirm r@RBUS{..} = do
     shouldConfirm' <- deref shouldConfirm
-    when shouldConfirm' $ do
+    when shouldConfirm' do
         store shouldConfirm false
         toRS transmitConfirm r
 
@@ -100,7 +100,7 @@ toRS ::
     RBUS ->
     Ivory (ProcEffects s ()) ()
 toRS transmit r@RBUS{..} = do
-    RS.transmit rs $ \write -> transmit protocol (write . safeCast)
+    RS.transmit rs \write -> transmit protocol (write . safeCast)
     store txTimestamp =<< getSystemTime clock
     store txLock true
 
@@ -110,8 +110,8 @@ toRS transmit r@RBUS{..} = do
 toQueue :: (KnownNat l) => RBUS -> Buffer l Uint8 -> Ivory (ProcEffects s t) ()
 toQueue RBUS{..} buff = do
     hasAddress' <- hasAddress protocol
-    when hasAddress' $ do
-        push msgQueue $ \Messages{..} ix -> do
+    when hasAddress' do
+        push msgQueue \Messages{..} ix -> do
             index <- deref msgIndex
             size <- run protocol (transmitMessage buff) msgBuff index
             store msgIndex $ index + safeCast size
@@ -126,8 +126,8 @@ toQueue' ::
     Ivory (ProcEffects s t) ()
 toQueue' RBUS{..} size' transmit = do
     hasAddress' <- hasAddress protocol
-    when hasAddress' $ do
-        push msgQueue $ \Messages{..} ix -> do
+    when hasAddress' do
+        push msgQueue \Messages{..} ix -> do
             index <- deref msgIndex
             size <- run protocol (transmitMessage' size' transmit) msgBuff index
             store msgIndex $ index + safeCast size

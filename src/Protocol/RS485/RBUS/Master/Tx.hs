@@ -1,4 +1,3 @@
-
 module Protocol.RS485.RBUS.Master.Tx where
 
 import Data.Buffer
@@ -21,7 +20,7 @@ transmitMessage ::
     (Uint8 -> forall eff. Ivory eff ()) ->
     Ivory (ProcEffects s t) ()
 transmitMessage address' payload' offset' size' Master{..} =
-    run $ \transmit -> do
+    run \transmit -> do
         transmit $ message txPreamble
         transmit address'
         let tidTx' = tidTx ! toIx address'
@@ -29,7 +28,7 @@ transmitMessage address' payload' offset' size' Master{..} =
         transmit id
         store tidTx' $ id + 1
         transmit size'
-        for (toIx size') $ \ix ->
+        for (toIx size') \ix ->
             transmit
                 =<< deref (payload' ! (offset' + ix))
 
@@ -39,9 +38,9 @@ transmitDiscovery ::
     (Uint8 -> forall eff. Ivory eff ()) ->
     Ivory (ProcEffects s t) ()
 transmitDiscovery address' Master{..} =
-    run $ \transmit -> lookupMac table address' $ \rec -> do
+    run \transmit -> lookupMac table address' \rec -> do
         transmit $ discovery txPreamble
-        arrayMap $ \ix ->
+        arrayMap \ix ->
             transmit
                 =<< deref (rec ~> T.mac ! ix)
         transmit address'
@@ -52,7 +51,7 @@ transmitPing ::
     (Uint8 -> forall eff. Ivory eff ()) ->
     Ivory (ProcEffects s t) ()
 transmitPing address' m =
-    run $ \transmit -> do
+    run \transmit -> do
         transmit $ ping txPreamble
         transmit address'
 
@@ -62,7 +61,7 @@ transmitConfirm ::
     (Uint8 -> forall eff. Ivory eff ()) ->
     Ivory (ProcEffects s t) ()
 transmitConfirm address' m =
-    run $ \transmit -> do
+    run \transmit -> do
         transmit $ confirm txPreamble
         transmit address'
 
@@ -72,6 +71,6 @@ run ::
     Ivory (ProcEffects s t) ()
 run tx transmit = do
     crc <- local $ istruct initCRC16
-    tx $ \v -> updateCRC16 crc v >> transmit v
+    tx \v -> updateCRC16 crc v >> transmit v
     transmit =<< deref (crc ~> msb)
     transmit =<< deref (crc ~> lsb)

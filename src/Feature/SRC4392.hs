@@ -60,12 +60,12 @@ mkSRC4392 i2c' mute' = do
     addInit "src4392_init" $ set mute
     addTask $ delay 10 "src4392_init" $ initSrc4392 src4392
 
-    addHandler $ I.HandleI2C i2c $ \_ _ -> pure ()
+    addHandler $ I.HandleI2C i2c \_ _ -> pure ()
 
     pure src4392
 
 initSrc4392 SRC4392{..} = do
     count' <- deref count
-    flip (ifte_ (count' <? arrayLen config)) (reset mute) $ do
+    flip (ifte_ (count' <? arrayLen config)) (reset mute) do
         I.transmit i2c address $ config ! toIx count'
         store count $ count' + 1

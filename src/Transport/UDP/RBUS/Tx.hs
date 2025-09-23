@@ -1,4 +1,3 @@
-
 module Transport.UDP.RBUS.Tx where
 
 import Data.Buffer
@@ -33,7 +32,7 @@ transmit' ::
 transmit' ip RBUS{..} buff = do
     upcb' <- deref upcb
     err <- connectUdp upcb' ip =<< deref serverPort
-    when (err ==? 0) $ do
+    when (err ==? 0) do
         hbuff <- allocPbufReference (toCArray mac) 6 pbuf_ref
         tbuff <- allocPbufReference (toCArray buff) (arrayLen buff) pbuf_ref
         chainPbuf hbuff tbuff
@@ -54,7 +53,7 @@ lazyTransmit' ::
 lazyTransmit' RBUS{..} _ transmit = do
     upcb' <- deref upcb
     err <- connectUdp upcb' serverIP =<< deref serverPort
-    when (err ==? 0) $ do
+    when (err ==? 0) do
         len <- run transmit txBuff
         hbuff <- allocPbufReference (toCArray mac) 6 pbuf_ref
         tbuff <- allocPbufReference (toCArray txBuff) len pbuf_ref

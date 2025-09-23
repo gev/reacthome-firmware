@@ -1,4 +1,3 @@
-
 module Feature.SPDIF where
 
 import Control.Monad.State
@@ -41,7 +40,7 @@ mkSpdif i2s = do
 
 receiveI2S :: (KnownNat n) => SPDIF n -> Sample -> Ivory eff ()
 receiveI2S SPDIF{..} sample =
-    push i2sSpdifQueue $ \i2sSpdifBuff i -> do
+    push i2sSpdifQueue \i2sSpdifBuff i -> do
         l <- deref (sample ~> left)
         r <- deref (sample ~> right)
         store (i2sSpdifBuff ! toIx i ~> left) $ l `iDiv` 256
@@ -49,6 +48,6 @@ receiveI2S SPDIF{..} sample =
 
 getSpdifSample :: (KnownNat n) => SPDIF n -> Ivory eff Sample
 getSpdifSample SPDIF{..} = do
-    pop i2sSpdifQueue $ \buff i -> do
+    pop i2sSpdifQueue \buff i -> do
         i2sSpdifSample <== buff ! toIx i
     pure i2sSpdifSample

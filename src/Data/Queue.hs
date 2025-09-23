@@ -39,7 +39,7 @@ queue id it = do
 
 push :: (KnownNat n) => Queue n t -> (t -> Ix n -> Ivory eff ()) -> Ivory eff ()
 push Queue{..} handle =
-    down producerS $ do
+    down producerS do
         x <- deref producerIx
         store producerIx $ x + 1
         handle it x
@@ -52,7 +52,7 @@ push' ::
     Ivory eff () ->
     Ivory eff ()
 push' Queue{..} handle =
-    down' producerS $ do
+    down' producerS do
         x <- deref producerIx
         store producerIx $ x + 1
         handle it x
@@ -64,7 +64,7 @@ pop ::
     (t -> Ix n -> Ivory eff ()) ->
     Ivory eff ()
 pop Queue{..} handle =
-    down consumerS $ do
+    down consumerS do
         x <- deref consumerIx
         store consumerIx $ x + 1
         handle it x
@@ -77,7 +77,7 @@ pop' ::
     Ivory eff () ->
     Ivory eff ()
 pop' Queue{..} handle =
-    down' consumerS $ do
+    down' consumerS do
         x <- deref consumerIx
         store consumerIx $ x + 1
         handle it x
@@ -89,7 +89,7 @@ peek ::
     (t -> Ix n -> Ivory eff ()) ->
     Ivory eff ()
 peek Queue{..} handle =
-    check consumerS $ do
+    check consumerS do
         x <- deref consumerIx
         handle it x
 
@@ -100,7 +100,7 @@ peek' ::
     Ivory eff () ->
     Ivory eff ()
 peek' Queue{..} handle =
-    check' consumerS $ do
+    check' consumerS do
         x <- deref consumerIx
         handle it x
 
@@ -113,7 +113,7 @@ remove ::
     Queue n t ->
     Ivory eff ()
 remove Queue{..} =
-    down consumerS $ do
+    down consumerS do
         x <- deref consumerIx
         store consumerIx $ x + 1
         up producerS

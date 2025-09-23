@@ -1,4 +1,3 @@
-
 module Implementation.Smart.TopG4 where
 
 import Control.Monad.Reader (MonadReader, asks)
@@ -127,15 +126,15 @@ topG4 transport' dinputs' vibro' touch' sht21' display' etc' = do
                 , sht21
                 }
 
-    addHandler
-        $ Render
+    addHandler $
+        Render
             display
             30
             frameBuffer
-        $ do
-            updateLeds leds
-            updateButtons buttons
-            render leds
+            do
+                updateLeds leds
+                updateButtons buttons
+                render leds
 
     pure top
 

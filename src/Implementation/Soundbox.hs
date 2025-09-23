@@ -155,7 +155,7 @@ mkSoundbox transport' enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
 
     addNetifOnUpCallback $ netifStatusCallback soundbox
 
-    addInit "lanamp" $ do
+    addInit "lanamp" do
         set shutdownTrx
         set shutdownTx
 
@@ -197,9 +197,9 @@ mixLR src amp dst = do
     dl <- local $ ival 0
     dr <- local $ ival 0
     let rules' = amp ~> rules ! 0
-    arrayMap $ \ix -> do
+    arrayMap \ix -> do
         isUsed' <- deref $ rules' ~> isUsed ! ix
-        when isUsed' $ do
+        when isUsed' do
             volume' <- deref $ rules' ~> volume ! ix
             sl <- safeCast <$> deref (src ! ix ~> left)
             sr <- safeCast <$> deref (src ! ix ~> right)
@@ -217,9 +217,9 @@ mixRL src amp dst = do
     dl <- local $ ival 0
     dr <- local $ ival 0
     let rules' = amp ~> rules ! 0
-    arrayMap $ \ix -> do
+    arrayMap \ix -> do
         isUsed' <- deref $ rules' ~> isUsed ! ix
-        when isUsed' $ do
+        when isUsed' do
             volume' <- deref $ rules' ~> volume ! ix
             sl <- safeCast <$> deref (src ! ix ~> left)
             sr <- safeCast <$> deref (src ! ix ~> right)
@@ -237,18 +237,18 @@ mix11 src amp dst = do
     dl <- local $ ival (0 :: IFloat)
     dr <- local $ ival (0 :: IFloat)
     let rules' = amp ~> rules ! 0
-    arrayMap $ \ix -> do
+    arrayMap \ix -> do
         isUsed' <- deref $ rules' ~> isUsed ! ix
-        when isUsed' $ do
+        when isUsed' do
             volume' <- deref $ rules' ~> volume ! ix
             sl <- safeCast <$> deref (src ! ix ~> left)
             sr <- safeCast <$> deref (src ! ix ~> right)
             dl' <- deref dl
             store dl $ dl' + volume' * (sl + sr)
     let rules' = amp ~> rules ! 1
-    arrayMap $ \ix -> do
+    arrayMap \ix -> do
         isUsed' <- deref $ rules' ~> isUsed ! ix
-        when isUsed' $ do
+        when isUsed' do
             volume' <- deref $ rules' ~> volume ! ix
             sl <- safeCast <$> deref (src ! ix ~> left)
             sr <- safeCast <$> deref (src ! ix ~> right)
@@ -269,15 +269,15 @@ instance Controller Soundbox where
             ]
 
 onInit Soundbox{..} buff size = do
-    when (size >=? 135) $ do
-        arrayMap $ \kx -> do
+    when (size >=? 135) do
+        arrayMap \kx -> do
             let base = 1 + 39 * fromIx kx
             mode' <- deref $ buff ! toIx base
             let amp = amps ! kx
-            arrayMap $ \ix -> do
+            arrayMap \ix -> do
                 countUsed <- local izeroval
                 let rules' = amp ~> rules ! ix
-                arrayMap $ \jx -> do
+                arrayMap \jx -> do
                     let ux = 3 + base + 9 * fromIx ix + fromIx jx
                     isUsed' <- unpack buff $ toIx ux
                     store (rules' ~> isUsed ! jx) isUsed'
@@ -285,7 +285,7 @@ onInit Soundbox{..} buff size = do
                         n <- deref countUsed
                         store countUsed $ n + 1
                     pack lanampBuff (toIx ux) isUsed'
-                arrayMap $ \jx -> do
+                arrayMap \jx -> do
                     let vx = 22 + 9 * fromIx ix + fromIx jx
                     volume' <- deref $ buff ! toIx vx
                     nu <- deref countUsed
@@ -309,9 +309,9 @@ onInit Soundbox{..} buff size = do
 
 -- type: ACTION_RTP, index, active, group, port
 onRtp Soundbox{..} buff size = do
-    when (size >=? 9) $ do
+    when (size >=? 9) do
         index <- deref $ buff ! 1
-        when (index >=? 1 .&& index <=? 8) $ do
+        when (index >=? 1 .&& index <=? 8) do
             active <- unpack buff 2
             ip1 <- unpack buff 3
             ip2 <- unpack buff 4
@@ -328,7 +328,7 @@ onRtp Soundbox{..} buff size = do
             packBE txRtpBuff 7 port
             transmit txRtpBuff
             let run rtp i =
-                    when (index ==? fromIntegral i) $ do
+                    when (index ==? fromIntegral i) do
                         removeRtpUdp rtp netif
                         when active $ createRtpUdp rtp netif ip1 ip2 ip3 ip4 port
             zipWithM_ run rtps [1 ..]
@@ -336,15 +336,15 @@ onRtp Soundbox{..} buff size = do
 -- size 41
 -- lanamp:  ACTION_LANAMP index mode (2 byte volume??)  (active x 18) (volume x 18)
 onLanamp Soundbox{..} buff size = do
-    when (size >=? 41) $ do
+    when (size >=? 41) do
         index <- deref $ buff ! 1
-        when (index >=? 1 .&& index <=? 2) $ do
+        when (index >=? 1 .&& index <=? 2) do
             mode' <- deref $ buff ! 2
             let amp = amps ! toIx (index - 1)
-            arrayMap $ \ix -> do
+            arrayMap \ix -> do
                 countUsed <- local izeroval
                 let rules' = amp ~> rules ! ix
-                arrayMap $ \jx -> do
+                arrayMap \jx -> do
                     let ux = 5 + 9 * fromIx ix + fromIx jx
                     isUsed' <- unpack buff $ toIx ux
                     store (rules' ~> isUsed ! jx) isUsed'
@@ -352,7 +352,7 @@ onLanamp Soundbox{..} buff size = do
                         n <- deref countUsed
                         store countUsed $ n + 1
                     pack lanampBuff (toIx ux) isUsed'
-                arrayMap $ \jx -> do
+                arrayMap \jx -> do
                     let vx = 23 + 9 * fromIx ix + fromIx jx
                     volume' <- unpack buff $ toIx vx
                     nu <- deref countUsed

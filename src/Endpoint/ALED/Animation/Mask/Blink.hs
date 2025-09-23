@@ -11,6 +11,6 @@ renderBlink ::
     IFloat ->
     Record AnimationStruct ->
     Ivory (AllowBreak (ProcEffects s ())) IFloat
-renderBlink time = const $ do
+renderBlink time = const do
     let i = castDefault $ 256 * time :: Sint32
     deref $ addrOf cosT ! toIx i

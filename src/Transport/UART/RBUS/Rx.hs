@@ -1,4 +1,3 @@
-
 module Transport.UART.RBUS.Rx where
 
 import Interface.SystemClock
@@ -29,7 +28,7 @@ resetTask :: RBUS q l -> Ivory eff ()
 resetTask RBUS{..} = do
     t0 <- deref rxTimestamp
     t1 <- getSystemTime clock
-    when (t1 - t0 >? 1) $ do
+    when (t1 - t0 >? 1) do
         I.clearRX uart
         reset protocol
         store rxTimestamp t1

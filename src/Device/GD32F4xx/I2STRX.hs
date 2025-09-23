@@ -132,7 +132,7 @@ mkI2STRX
 
         let i2strx = I2STRX{..}
 
-        addInit (symbol spi) $ do
+        addInit (symbol spi) do
             enablePeriphClock rcuDmaTx
             enablePeriphClock rcuSpiTx
             deinitDMA dmaPerTx dmaChTx
@@ -166,14 +166,14 @@ instance
             makeIRQHandler
                 (dmaIRQnTx i2s)
                 (handleDMATx i2s)
-        addTask $ yeld "i2s_prepare_tx_buffer" $ do
+        addTask $ yeld "i2s_prepare_tx_buffer" do
             selectHandlerBuff
                 (txBuff i2s)
                 (prepareBuff handle)
 
 handleDMATx :: (KnownNat tn) => I2STRX tn rn -> Ivory (ProcEffects s ()) ()
 handleDMATx i2s = do
-    handleI2S (dmaPerTx i2s) (dmaChTx i2s) dma_int_flag_ftf $ do
+    handleI2S (dmaPerTx i2s) (dmaChTx i2s) dma_int_flag_ftf do
         transmitBuff i2s (txBuff i2s)
 
 transmitBuff ::
@@ -199,7 +199,7 @@ prepareBuff ::
     Ivory (ProcEffects s ()) ()
 prepareBuff prepare buff = do
     i <- local $ ival (0 :: Uint16)
-    forever $ do
+    forever do
         i' <- deref i
         when (i' >=? arrayLen buff) breakOut
         t <- prepare
@@ -215,7 +215,7 @@ instance (KnownNat rn) => Handler I.HandleI2SRX (I2STRX tn rn) where
             makeIRQHandler
                 (dmaIRQnRx i2s)
                 (handleDMARx i2s)
-        addTask $ yeld "i2s_process_rx_buffer" $ do
+        addTask $ yeld "i2s_process_rx_buffer" do
             selectHandlerBuff
                 (rxBuff i2s)
                 (processBuff i2s handle)
@@ -225,7 +225,7 @@ handleDMARx ::
     I2STRX tn rn ->
     Ivory (ProcEffects s ()) ()
 handleDMARx i2s = do
-    handleI2S (dmaPerRx i2s) (dmaChRx i2s) dma_int_flag_ftf $ do
+    handleI2S (dmaPerRx i2s) (dmaChRx i2s) dma_int_flag_ftf do
         receiveBuff i2s (rxBuff i2s)
 
 receiveBuff ::
@@ -252,7 +252,7 @@ processBuff ::
     Ivory (ProcEffects s ()) ()
 processBuff i2s handle buff = do
     i <- local $ ival (0 :: Uint16)
-    forever $ do
+    forever do
         i' <- deref i
         when (i' >=? arrayLen buff) breakOut
         store (sample i2s ~> I.left) . convert =<< deref (buff ! toIx i')

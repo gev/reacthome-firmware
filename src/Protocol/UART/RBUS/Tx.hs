@@ -21,7 +21,7 @@ transmitMessage payload transmit = do
     let transmit' v = updateCRC16 crc v >> transmit v
     transmit' $ message preamble
     transmit' $ arrayLen payload
-    arrayMap $ \ix -> transmit' =<< deref (payload ! ix)
+    arrayMap \ix -> transmit' =<< deref (payload ! ix)
     transmit =<< deref (crc ~> msb)
     transmit =<< deref (crc ~> lsb)
 

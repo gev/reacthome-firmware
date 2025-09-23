@@ -32,7 +32,7 @@ down ::
     Ivory eff ()
 down (Semaphore s) run = do
     v <- deref s
-    when (v >? 0) $ do
+    when (v >? 0) do
         store s $ v - 1
         run
 

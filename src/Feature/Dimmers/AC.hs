@@ -114,7 +114,7 @@ manage :: (KnownNat n) => Dimmers n -> CrossZero -> Ivory eff ()
 manage Dimmers{..} CrossZero{..} = do
     isCrossZero' <- deref isCrossZero
     isNoCrossZero' <- deref isNoCrossZero
-    when (iNot isNoCrossZero' .&& isCrossZero') $ do
+    when (iNot isNoCrossZero' .&& isCrossZero') do
         zipWithM_ zip getPWMs ints
         store isCrossZero false
   where

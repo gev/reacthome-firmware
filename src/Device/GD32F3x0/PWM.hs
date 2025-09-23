@@ -36,7 +36,7 @@ mkPWM timer' pwmChannel port' frequency period = do
 
     initPort port
 
-    addInit (show port <> "_pwm") $ do
+    addInit (show port <> "_pwm") do
         let t = timer pwmTimer
         initChannelOcTimer t pwmChannel =<< local (istruct timerOcDefaultParam)
         configChannelOutputPulseValue t pwmChannel 0

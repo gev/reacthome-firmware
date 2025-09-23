@@ -45,7 +45,7 @@ instance I.ADC ADC where
     getAnalog ADC{..} = do
         configRegularChannelADC 0 channel adc_sampletime_55point5
         enableSoftwareTriggerADC adc_regular_channel
-        forever $ do
+        forever do
             flag <- getFlagADC adc_flag_eoc
             when flag breakOut
         clearFlagADC adc_flag_eoc

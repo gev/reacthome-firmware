@@ -71,16 +71,16 @@ mkDimmers pwms period transport = do
 
 forceSync :: (KnownNat n) => Dimmers n -> Ivory eff ()
 forceSync Dimmers{..} =
-    arrayMap $ \ix -> store (D.dimmers getDimmers ! ix ~> D.synced) false
+    arrayMap \ix -> store (D.dimmers getDimmers ! ix ~> D.synced) false
 
 sync :: (KnownNat n) => Dimmers n -> Ivory (ProcEffects s ()) ()
 sync Dimmers{..} = do
     shouldInit' <- deref shouldInit
-    when (iNot shouldInit') $ do
+    when (iNot shouldInit') do
         i <- deref current
         let d = D.dimmers getDimmers ! toIx i
         synced' <- deref $ d ~> D.synced
-        when (iNot synced') $ do
+        when (iNot synced') do
             msg <- D.message getDimmers (i .% n)
             transmit msg
             store (d ~> D.synced) true
@@ -93,11 +93,11 @@ onDo ::
     Uint8 ->
     Ivory eff ()
 onDo Dimmers{..} buff size = do
-    when (size >=? 3) $ do
+    when (size >=? 3) do
         shouldInit' <- deref shouldInit
-        when (iNot shouldInit') $ do
+        when (iNot shouldInit') do
             index <- deref $ buff ! 1
-            when (index >=? 1 .&& index <=? n) $ do
+            when (index >=? 1 .&& index <=? n) do
                 let index' = index - 1
                 value' <- deref $ buff ! 2
                 ifte_
@@ -112,11 +112,11 @@ onDim ::
     Uint8 ->
     Ivory eff ()
 onDim Dimmers{..} buff size = do
-    when (size >=? 3) $ do
+    when (size >=? 3) do
         shouldInit' <- deref shouldInit
-        when (iNot shouldInit') $ do
+        when (iNot shouldInit') do
             index <- deref $ buff ! 1
-            when (index >=? 1 .&& index <=? n) $ do
+            when (index >=? 1 .&& index <=? n) do
                 let index' = index - 1
                 action <- deref $ buff ! 2
                 cond_
@@ -135,10 +135,10 @@ onInit ::
     Uint8 ->
     Ivory (ProcEffects s t) ()
 onInit Dimmers{..} buff size =
-    when (size >=? 1 + n * 3) $ do
+    when (size >=? 1 + n * 3) do
         offset <- local $ ival 1
         let ds = D.dimmers getDimmers
-        arrayMap $ \ix -> do
+        arrayMap \ix -> do
             offset' <- deref offset
             let d = ds ! ix
             group <- unpack buff offset'
@@ -163,7 +163,7 @@ onSet ::
     Uint8 ->
     Ivory eff ()
 onSet dimmers index buff size =
-    when (size >=? 4) $ do
+    when (size >=? 4) do
         brightness <- unpack buff 3 :: Ivory eff Uint8
         D.setBrightness (safeCast brightness / 255) dimmers index
 
@@ -175,7 +175,7 @@ onFade ::
     Uint8 ->
     Ivory eff ()
 onFade dimmers index buff size =
-    when (size >=? 5) $ do
+    when (size >=? 5) do
         value <- unpack buff 3 :: Ivory eff Uint8
         velocity <- unpack buff 4 :: Ivory eff Uint8
         D.fade (safeCast value / 255) (safeCast velocity / 255) dimmers index
@@ -188,7 +188,7 @@ onMode ::
     Uint8 ->
     Ivory eff ()
 onMode dimmers index buff size =
-    when (size >=? 4) $ do
+    when (size >=? 4) do
         mode <- unpack buff 3
         D.setMode mode dimmers index
 
@@ -200,7 +200,7 @@ onGroup ::
     Uint8 ->
     Ivory eff ()
 onGroup dimmers index buff size =
-    when (size >=? 4) $ do
+    when (size >=? 4) do
         group <- unpack buff 3
         D.setGroup group dimmers index
 

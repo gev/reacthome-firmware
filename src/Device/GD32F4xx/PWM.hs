@@ -1,4 +1,3 @@
-
 module Device.GD32F4xx.PWM where
 
 import Control.Monad.State
@@ -37,7 +36,7 @@ mkPWM timer' pwmChannel port' frequency period = do
     let port = port' gpio_pupd_none
 
     initPort port
-    addInit (show port <> "_pwm") $ do
+    addInit (show port <> "_pwm") do
         let t = timer pwmTimer
         initChannelOcTimer t pwmChannel =<< local (istruct timerOcDefaultParam)
         configChannelOutputPulseValue t pwmChannel 0

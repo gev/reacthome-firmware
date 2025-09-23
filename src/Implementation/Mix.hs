@@ -180,9 +180,9 @@ onRule mix@Mix{..} buff size = do
     let relaysN = fromIntegral $ natVal (aNat :: NatType no)
     let dinputsN = fromIntegral $ natVal (aNat :: NatType ni)
     i <- subtract 1 <$> deref (buff ! 1)
-    when (size ==? 2 + 2 * relaysN .&& i <? dinputsN) $ do
+    when (size ==? 2 + 2 * relaysN .&& i <? dinputsN) do
         kx <- local $ ival 2
-        let run rules = arrayMap $ \jx -> do
+        let run rules = arrayMap \jx -> do
                 kx' <- deref kx
                 store (rules ! toIx i ! jx) =<< unpack buff kx'
                 store kx $ kx' + 1
@@ -199,7 +199,7 @@ onMode ::
     Uint8 ->
     Ivory (ProcEffects s t) ()
 onMode mix@Mix{..} buff size = do
-    when (size ==? 2) $ do
+    when (size ==? 2) do
         store (mode ats) =<< unpack buff 1
         manageLock mix
         resetError ats
@@ -211,17 +211,17 @@ onGetState Mix{..} = do
     forceSyncRules rules
     forceSyncATS ats
     initialized <- iNot <$> deref shouldInit
-    when initialized $ do
+    when initialized do
         forceSyncRelays relays
 
 saveTask :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s t) ()
 saveTask mix@Mix{..} = do
     shouldSaveConfig' <- deref shouldSaveConfig
-    when shouldSaveConfig' $ do
+    when shouldSaveConfig' do
         store saveCountdown 100
         store shouldSaveConfig false
     saveCountdown' <- deref saveCountdown
-    when (saveCountdown' >? 0) $ do
+    when (saveCountdown' >? 0) do
         store saveCountdown (saveCountdown' - 1)
     when (saveCountdown' ==? 1) $
         save mix
@@ -234,7 +234,7 @@ save Mix{..} = do
     updateCRC16 crc mode'
     F.write etc 0 $ safeCast mode'
     kx <- local $ ival 4
-    let run rules = arrayMap $ \ix -> arrayMap $ \jx -> do
+    let run rules = arrayMap \ix -> arrayMap \jx -> do
             kx' <- deref kx
             v <- deref (rules ! ix ! jx)
             updateCRC16 crc v
@@ -249,11 +249,11 @@ save Mix{..} = do
 load :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s ()) ()
 load mix@Mix{..} = do
     valid <- checkCRC mix
-    when valid $ do
+    when valid do
         store (mode ats) . castDefault =<< F.read etc 0
         manageLock mix
         kx <- local $ ival 4
-        let run rules = arrayMap $ \ix -> arrayMap $ \jx -> do
+        let run rules = arrayMap \ix -> arrayMap \jx -> do
                 kx' <- deref kx
                 store (rules ! ix ! jx) . castDefault =<< F.read etc kx'
                 store kx $ kx' + 4
@@ -267,7 +267,7 @@ checkCRC Mix{..} = do
     crc <- local $ istruct initCRC16
     updateCRC16 crc . castDefault =<< F.read etc 0
     kx <- local $ ival 4
-    times (2 * dinputsN * relaysN :: Ix 256) $ \_ -> do
+    times (2 * dinputsN * relaysN :: Ix 256) \_ -> do
         kx' <- deref kx
         updateCRC16 crc . castDefault =<< F.read etc kx'
         store kx $ kx' + 4
@@ -281,7 +281,7 @@ checkCRC Mix{..} = do
 manageLock Mix{..} = do
     let r' = R.relays $ getRelays relays
     mode' <- deref $ mode ats
-    arrayMap $ \ix -> store (r' ! ix ~> R.lock) false
+    arrayMap \ix -> store (r' ! ix ~> R.lock) false
     cond_
         [ mode' ==? mode_N1_G ==> do
             store (r' ! 0 ~> R.lock) true

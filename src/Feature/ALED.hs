@@ -114,7 +114,7 @@ update ALED{..} random = do
     sx <- local (ival 0)
     px <- local (ival 0)
     shouldUpdate <- local $ ival false
-    arrayMap $ \gx -> do
+    arrayMap \gx -> do
         tx <- local (ival 0)
 
         let colorAnimation = E.colorAnimations getALED ! gx
@@ -137,7 +137,7 @@ update ALED{..} random = do
 
         state <- local $ ival false
 
-        for (toIx segmentNumber' :: Ix ns) $ \segmentX -> do
+        for (toIx segmentNumber' :: Ix ns) \segmentX -> do
             sx' <- deref sx
             let segment = E.segments getALED ! sx'
             segmentSize' <- deref $ segment ~> E.segmentSize
@@ -146,7 +146,7 @@ update ALED{..} random = do
             store tx $ tx' + safeCast segmentSize'
             let start'' = start' * safeCast segmentSize'
             let end'' = end' * safeCast segmentSize'
-            for (toIx segmentSize' :: Ix np) $ \pixelX -> do
+            for (toIx segmentSize' :: Ix np) \pixelX -> do
                 let pixelX' = fromIx pixelX
                 x <- local $ ival pixelX'
                 when direction' $ store x (safeCast segmentSize' - pixelX' - 1)
@@ -171,7 +171,7 @@ update ALED{..} random = do
                                     groupSize'
                                     (x' + tx')
                                 )
-                        for (toIx pixelSize' :: Ix np) $ \subpixelX -> do
+                        for (toIx pixelSize' :: Ix np) \subpixelX -> do
                             px' <- deref px
                             let p = E.subPixels getALED ! px'
                             p' <- safeCast <$> deref p
@@ -211,7 +211,7 @@ update ALED{..} random = do
                             when (p'' /=? p') $ store shouldUpdate true
                             store px $ px' + 1
                     )
-                    ( for (toIx pixelSize' :: Ix np) . const $ do
+                    ( for (toIx pixelSize' :: Ix np) \_ -> do
                         px' <- deref px
                         let p = E.subPixels getALED ! px'
                         p' <- deref p
@@ -222,13 +222,13 @@ update ALED{..} random = do
             store sx $ sx' + 1
         state' <- deref $ group ~> E.groupState
         state'' <- deref state
-        when (state' /=? state'') $ do
+        when (state' /=? state'') do
             store (group ~> E.stateChanged) true
             store (group ~> E.groupState) state''
         incrementTime colorAnimation
         incrementTime maskAnimation
     px' <- deref px
-    upTo px' (np' - 1) $ \ix ->
+    upTo px' (np' - 1) \ix ->
         store (E.subPixels getALED ! ix) 0
 
     deref shouldUpdate
@@ -236,7 +236,7 @@ update ALED{..} random = do
 incrementTime :: Record E.AnimationStruct -> Ivory eff ()
 incrementTime animation = do
     animationState' <- deref $ animation ~> E.animationState
-    when animationState' $ do
+    when animationState' do
         loop' <- deref $ animation ~> E.animationLoop
         time' <- deref $ animation ~> E.time
         timeEnd' <- deref $ animation ~> E.timeEnd
@@ -289,9 +289,9 @@ testAnimation ::
     Ivory (ProcEffects s t) ()
 testAnimation animation inverseDirection ALED{..} buff size = do
     let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
-    when (size ==? 2) $ do
+    when (size ==? 2) do
         i <- deref $ buff ! 1
-        when (i >=? 1 .&& i <=? ng') $ do
+        when (i >=? 1 .&& i <=? ng') do
             let ix = toIx $ i - 1
 
             let clip = E.clips getALED ! ix
@@ -382,9 +382,9 @@ onALedAnimationPlay ::
     Ivory (ProcEffects s r) ()
 onALedAnimationPlay animations groups transport buff size = do
     let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
-    when (size >=? 8 .&& size <=? 20) $ do
+    when (size >=? 8 .&& size <=? 20) do
         i <- deref $ buff ! 1
-        when (i >=? 1 .&& i <=? ng') $ do
+        when (i >=? 1 .&& i <=? ng') do
             let ix = toIx $ i - 1
 
             let animation = animations ! ix
@@ -399,9 +399,9 @@ onALedAnimationPlay animations groups transport buff size = do
             let n = size - 8
             let params = animation ~> E.params
 
-            arrayMap $ \ix -> store (params ! ix) 0
+            arrayMap \ix -> store (params ! ix) 0
 
-            arrayMap $ \ix ->
+            arrayMap \ix ->
                 ifte_
                     (fromIx ix <? safeCast n)
                     (store (params ! ix) =<< deref (buff ! toIx (fromIx ix + 8)))
@@ -434,7 +434,7 @@ onALedAnimationPlay animations groups transport buff size = do
             store (animation ~> E.inLoop) false
             store (animation ~> E.startLoop) true
 
-            when (loop ==? 0 .|| kind' /=? kind) $ do
+            when (loop ==? 0 .|| kind' /=? kind) do
                 segmentNumber' <- deref $ (groups ! ix) ~> E.segmentNumber
                 let additionalTime = phase' * (safeCast segmentNumber' - 1)
                 cond_
@@ -449,7 +449,7 @@ onALedAnimationPlay animations groups transport buff size = do
                         store (animation ~> E.timeEnd) 1
                     ]
 
-            lazyTransmit transport 20 $ \transmit -> do
+            lazyTransmit transport 20 \transmit -> do
                 transmit =<< deref (buff ! 0)
                 transmit i
                 transmit kind
@@ -458,7 +458,7 @@ onALedAnimationPlay animations groups transport buff size = do
                 transmit split
                 transmit loop
                 transmit inverseDirection
-                arrayMap $ \ix -> transmit =<< deref (params ! ix)
+                arrayMap \ix -> transmit =<< deref (params ! ix)
 
 onALedAnimationStop ::
     forall n ng s r t.
@@ -470,13 +470,13 @@ onALedAnimationStop ::
     Ivory (ProcEffects s r) ()
 onALedAnimationStop animations transport buff size = do
     let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
-    when (size ==? 2) $ do
+    when (size ==? 2) do
         i <- deref $ buff ! 1
-        when (i >=? 1 .&& i <=? ng') $ do
+        when (i >=? 1 .&& i <=? ng') do
             let ix = toIx $ i - 1
             store (animations ! ix ~> E.animationState) false
-            lazyTransmit transport size $ \transmit -> do
-                for (toIx size) $ \ix -> transmit =<< deref (buff ! ix)
+            lazyTransmit transport size \transmit -> do
+                for (toIx size) \ix -> transmit =<< deref (buff ! ix)
 
 onALedBrightness ::
     forall n ng ns np s t.
@@ -487,13 +487,13 @@ onALedBrightness ::
     Ivory (ProcEffects s t) ()
 onALedBrightness ALED{..} buff size = do
     let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
-    when (size ==? 3) $ do
+    when (size ==? 3) do
         i <- deref $ buff ! 1
-        when (i >=? 1 .&& i <=? ng') $ do
+        when (i >=? 1 .&& i <=? ng') do
             let ix = toIx $ i - 1
             brightness <- deref $ buff ! 2
             store (E.groups getALED ! ix ~> E.brightness) $ safeCast brightness / 255
-            lazyTransmit transport size $ \transmit -> do
+            lazyTransmit transport size \transmit -> do
                 transmit actionALedBrightness
                 transmit i
                 transmit brightness
@@ -507,9 +507,9 @@ onALedClip ::
     Ivory (ProcEffects s t) ()
 onALedClip ALED{..} buff size = do
     let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
-    when (size ==? 5) $ do
+    when (size ==? 5) do
         i <- deref $ buff ! 1
-        when (i >=? 1 .&& i <=? ng') $ do
+        when (i >=? 1 .&& i <=? ng') do
             let ix = toIx $ i - 1
             let clip = E.clips getALED ! ix
             start <- deref $ buff ! 2
@@ -521,7 +521,7 @@ onALedClip ALED{..} buff size = do
                 (inverse ==? 0)
                 (store (clip ~> E.inverse) false)
                 (store (clip ~> E.inverse) true)
-            lazyTransmit transport 5 $ \transmit -> do
+            lazyTransmit transport 5 \transmit -> do
                 transmit actionALedClip
                 transmit i
                 transmit start
@@ -539,10 +539,10 @@ onALedConfigGroup a@ALED{..} buff size = do
     let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
     let ns' = fromIntegral $ fromTypeNat (aNat :: NatType ns)
 
-    when (size >=? 4) $ do
+    when (size >=? 4) do
         i <- deref $ buff ! 1
 
-        when (i >=? 1 .&& i <=? ng') $ do
+        when (i >=? 1 .&& i <=? ng') do
             let index = i - 1
 
             n <- local $ ival 0
@@ -562,7 +562,7 @@ onALedConfigGroup a@ALED{..} buff size = do
 
             endSegment <- local $ ival 0
             startSegment <- local $ ival 0
-            arrayMap $ \ix -> do
+            arrayMap \ix -> do
                 endSegment' <- deref endSegment
                 when (ix <=? ix') $ store startSegment endSegment'
                 segmentNumber' <- deref $ E.groups getALED ! ix ~> E.segmentNumber
@@ -573,23 +573,23 @@ onALedConfigGroup a@ALED{..} buff size = do
             segmentNumber <- deref n
             segmentNumber' <- deref $ group ~> E.segmentNumber
 
-            when (segmentNumber <? segmentNumber') $ do
+            when (segmentNumber <? segmentNumber') do
                 let shift = segmentNumber' - segmentNumber
-                upTo (toIx $ startSegment' + segmentNumber) (toIx $ ns' - shift - 1) $ \ix -> do
+                upTo (toIx $ startSegment' + segmentNumber) (toIx $ ns' - shift - 1) \ix -> do
                     let to = E.segments getALED ! ix
                     let from = E.segments getALED ! (ix + toIx shift)
                     store (to ~> E.direction) =<< deref (from ~> E.direction)
                     store (to ~> E.segmentSize) =<< deref (from ~> E.segmentSize)
 
-            when (segmentNumber >? segmentNumber') $ do
+            when (segmentNumber >? segmentNumber') do
                 shift <- local . ival $ segmentNumber - segmentNumber'
                 shift' <- deref shift
                 let free = ns' - endSegment'
                 when (free <? shift') $ store n (segmentNumber' + free)
                 segmentNumber <- deref n
-                when (segmentNumber >? segmentNumber') $ do
+                when (segmentNumber >? segmentNumber') do
                     let shift = segmentNumber - segmentNumber'
-                    downTo (toIx $ ns' - shift - 1) (toIx $ startSegment' + segmentNumber') $ \ix -> do
+                    downTo (toIx $ ns' - shift - 1) (toIx $ startSegment' + segmentNumber') \ix -> do
                         let from = E.segments getALED ! ix
                         let to = E.segments getALED ! (ix + toIx shift)
                         store (to ~> E.direction) =<< deref (from ~> E.direction)
@@ -600,7 +600,7 @@ onALedConfigGroup a@ALED{..} buff size = do
 
             jx <- local $ ival 4
             store (group ~> E.groupSize) 0
-            upTo (toIx startSegment') (toIx (startSegment' + segmentNumber) - 1) $ \ix -> do
+            upTo (toIx startSegment') (toIx (startSegment' + segmentNumber) - 1) \ix -> do
                 let segment = E.segments getALED ! ix
                 jx' <- deref jx
                 direction <- deref $ buff ! jx'
@@ -616,8 +616,8 @@ onALedConfigGroup a@ALED{..} buff size = do
 
             store shouldSaveConfig true
 
-            lazyTransmit transport size $ \transmit ->
-                for (toIx size) $ \ix ->
+            lazyTransmit transport size \transmit ->
+                for (toIx size) \ix ->
                     ifte_
                         (ix ==? 3)
                         (transmit segmentNumber)
@@ -634,12 +634,12 @@ transmitNextGroup ALED{..} = do
     let group = E.groups getALED ! gx
     segmentNumber' <- deref $ group ~> E.segmentNumber
     let size = 4 + 2 * segmentNumber'
-    lazyTransmit transport size $ \transmit -> do
+    lazyTransmit transport size \transmit -> do
         transmit actionALedConfigGroup
         transmit $ 1 + groupIndex'
         transmit =<< deref (group ~> E.colors)
         transmit segmentNumber'
-        for (toIx segmentNumber' :: Ix ns) $ \ix -> do
+        for (toIx segmentNumber' :: Ix ns) \ix -> do
             sx <- deref segmentIndex
             let segment = E.segments getALED ! sx
             direction' <- deref $ segment ~> E.direction
@@ -661,8 +661,8 @@ syncState a@ALED{..} = do
     ix <- deref stateIndex
     let group = E.groups getALED ! ix
     stateChanged' <- deref $ group ~> E.stateChanged
-    when stateChanged' $ do
-        lazyTransmit transport 2 $ \transmit -> do
+    when stateChanged' do
+        lazyTransmit transport 2 \transmit -> do
             state' <- deref $ group ~> E.groupState
             ifte_
                 state'
@@ -679,7 +679,7 @@ syncGroups ::
     Ivory (ProcEffects s t) ()
 syncGroups a@ALED{..} = do
     shouldSyncGroups' <- deref shouldSyncGroups
-    when shouldSyncGroups' $ do
+    when shouldSyncGroups' do
         let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
         groupIndex' <- deref groupIndex
         ifte_
@@ -695,7 +695,7 @@ forceSyncAled ALED{..} = do
     store groupIndex 0
     store segmentIndex 0
     store shouldSyncGroups true
-    arrayMap $ \ix ->
+    arrayMap \ix ->
         store (E.groups getALED ! ix ~> E.stateChanged) true
     store stateIndex 0
 
@@ -708,8 +708,8 @@ onInitialize ::
     Ivory (ProcEffects s t) ()
 onInitialize ALED{..} buff size = do
     let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
-    when (size ==? 1 + ng') $ do
-        arrayMap $ \ix -> do
+    when (size ==? 1 + ng') do
+        arrayMap \ix -> do
             let group = E.groups getALED ! ix
             brightness <- deref $ buff ! toIx (fromIx ix + 1)
             store (group ~> E.brightness) $ safeCast brightness / 255
@@ -722,7 +722,7 @@ saveConfig ::
 saveConfig ALED{..} = do
     shouldSaveConfig' <- deref shouldSaveConfig
 
-    when shouldSaveConfig' $ do
+    when shouldSaveConfig' do
         erasePage etc 0
         offset <- local $ ival 8
         crc <- local $ istruct initCRC16
@@ -733,13 +733,13 @@ saveConfig ALED{..} = do
                 write etc offset' $ safeCast v
                 store offset $ offset' + 4
 
-        arrayMap $ \ix -> do
+        arrayMap \ix -> do
             let segment = E.segments getALED ! ix
             save =<< deref (segment ~> E.segmentSize)
             direction <- deref $ segment ~> E.direction
             ifte_ direction (save 1) (save 0)
 
-        arrayMap $ \ix -> do
+        arrayMap \ix -> do
             let group = E.groups getALED ! ix
             save =<< deref (group ~> E.colors)
             save =<< deref (group ~> E.pixelSize)
@@ -766,13 +766,13 @@ loadConfig ALED{..} = do
             updateCRC16 crc . castDefault =<< F.read etc offset'
             store offset $ offset' + 4
 
-    arrayMap $ \(_ :: Ix ng) -> calc >> calc >> calc
-    arrayMap $ \(_ :: Ix ns) -> calc >> calc
+    arrayMap \(_ :: Ix ng) -> calc >> calc >> calc
+    arrayMap \(_ :: Ix ns) -> calc >> calc
 
     msb' <- deref $ crc ~> msb
     lsb' <- deref $ crc ~> lsb
 
-    when (msb'' ==? safeCast msb' .&& lsb'' ==? safeCast lsb') $ do
+    when (msb'' ==? safeCast msb' .&& lsb'' ==? safeCast lsb') do
         store offset 8
 
         let load :: (SafeCast x Uint32, IvoryOrd x, Bounded x, Default x) => Ivory eff x
@@ -781,7 +781,7 @@ loadConfig ALED{..} = do
                 store offset $ offset' + 4
                 castDefault <$> F.read etc offset'
 
-        arrayMap $ \ix -> do
+        arrayMap \ix -> do
             let segment = E.segments getALED ! ix
             store (segment ~> E.segmentSize) =<< load
             direction :: Uint8 <- load
@@ -791,14 +791,14 @@ loadConfig ALED{..} = do
                 (store (segment ~> E.direction) true)
 
         jx <- local $ ival 0
-        arrayMap $ \ix -> do
+        arrayMap \ix -> do
             let group = E.groups getALED ! ix
             store (group ~> E.colors) =<< load
             store (group ~> E.pixelSize) =<< load
             segmentNumber' <- load
             store (group ~> E.segmentNumber) segmentNumber'
             store (group ~> E.groupSize) 0
-            for (toIx segmentNumber' :: Ix ns) $ \_ -> do
+            for (toIx segmentNumber' :: Ix ns) \_ -> do
                 jx' <- deref jx
                 segmentSize' <- deref $ E.segments getALED ! jx' ~> E.segmentSize
                 groupSize' <- deref $ group ~> E.groupSize

@@ -93,7 +93,7 @@ indicator mkDisplay hue transport = do
                 , transmit = T.transmitBuffer transport
                 }
 
-    addHandler $ Render display 25 frameBuffer $ do
+    addHandler $ Render display 25 frameBuffer do
         update indicator
         render indicator
         pure true
@@ -106,7 +106,7 @@ update Indicator{..} = do
     pixel <- local . istruct $ hsv hue 1 maxValue
     start' <- deref start
 
-    arrayMap $ \ix -> do
+    arrayMap \ix -> do
         let x = toIx (10 * fromIx ix + phi')
         sin' <- deref $ addrOf sinT ! x
         y <- assign $ maxValue * (0.2 + 0.8 * sin')
@@ -123,7 +123,7 @@ update Indicator{..} = do
         hsv'to'rgb pixel $ pixels ! ix
 
     findMe' <- deref findMe
-    when findMe' $ do
+    when findMe' do
         t' <- deref t
         store (pixel ~> v) 1
         store (pixel ~> s) 0.5
@@ -148,7 +148,7 @@ render Indicator{..} =
 
 onFindMe :: (KnownNat l) => Indicator n -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onFindMe Indicator{..} buff size =
-    when (size >=? 2) $ do
+    when (size >=? 2) do
         v <- unpack buff 1
         pack findMeMsg 1 v
         store findMe v

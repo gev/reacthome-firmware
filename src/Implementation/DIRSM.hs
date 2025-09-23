@@ -1,4 +1,3 @@
-
 module Implementation.DIRSM where
 
 import Control.Monad.Reader (MonadReader, asks)
@@ -74,7 +73,7 @@ onInit ::
     Ivory (ProcEffects s t) ()
 onInit DIRSM{..} buff size = do
     let s = 1 + (5 * fromIntegral (length rsm))
-    when (size ==? s + n aoutputs) $ do
+    when (size ==? s + n aoutputs) do
         let run r@RSM{..} offset = do
                 store baudrate =<< unpackLE buff offset
                 store lineControl =<< unpack buff (offset + 4)
@@ -83,7 +82,7 @@ onInit DIRSM{..} buff size = do
 
         offset <- local $ ival $ toIx s
         let aos = A.aoutputs $ getAOutputs aoutputs
-        arrayMap $ \ix -> do
+        arrayMap \ix -> do
             offset' <- deref offset
             let ao = aos ! ix
             value <- deref $ buff ! offset'

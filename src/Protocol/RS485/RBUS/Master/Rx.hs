@@ -1,4 +1,3 @@
-
 module Protocol.RS485.RBUS.Master.Rx (
     receive,
     reset,
@@ -101,9 +100,9 @@ receivePing =
         ]
 
 receivePingLsbCRC :: Master n -> Uint8 -> Ivory (ProcEffects s ()) ()
-receivePingLsbCRC m@Master{..} = receiveLsbCRC m $ do
+receivePingLsbCRC m@Master{..} = receiveLsbCRC m do
     address' <- deref address
-    lookupMac table address' $ \rec ->
+    lookupMac table address' \rec ->
         onPing (rec ~> T.mac) address' (rec ~> T.model) (rec ~> T.version)
 
 receiveConfirm :: (KnownNat n) => Master n -> Uint8 -> Ivory (ProcEffects s ()) ()
@@ -116,7 +115,7 @@ receiveConfirm =
         ]
 
 receiveConfirmLsbCRC :: Master n -> Uint8 -> Ivory eff ()
-receiveConfirmLsbCRC m@Master{..} = receiveLsbCRC m $ do
+receiveConfirmLsbCRC m@Master{..} = receiveLsbCRC m do
     address' <- deref address
     onConfirm address'
 
@@ -168,7 +167,7 @@ receiveMessageLsbCRC m@Master{..} v = do
     id <- deref tidRx'
     let complete = do
             store tidRx' $ safeCast tmp'
-            lookupMac table address' $ \rec ->
+            lookupMac table address' \rec ->
                 onMessage (rec ~> T.mac) address' buff size' $ id /=? safeCast tmp'
     receiveLsbCRC m complete v
 

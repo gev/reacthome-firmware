@@ -13,7 +13,7 @@ pushConcurrently ::
     (t -> Ix n -> Ivory eff ()) ->
     Ivory eff ()
 pushConcurrently Queue{..} handle =
-    downConcurrently producerS $ do
+    downConcurrently producerS do
         x <- deref producerIx
         store producerIx $ x + 1
         handle it x
@@ -26,7 +26,7 @@ pushConcurrently' ::
     Ivory eff () ->
     Ivory eff ()
 pushConcurrently' Queue{..} handle =
-    downConcurrently' producerS $ do
+    downConcurrently' producerS do
         x <- deref producerIx
         store producerIx $ x + 1
         handle it x
@@ -38,7 +38,7 @@ popConcurrently ::
     (t -> Ix n -> Ivory eff ()) ->
     Ivory eff ()
 popConcurrently Queue{..} handle =
-    downConcurrently consumerS $ do
+    downConcurrently consumerS do
         x <- deref consumerIx
         store consumerIx $ x + 1
         handle it x
@@ -51,7 +51,7 @@ popConcurrently' ::
     Ivory eff () ->
     Ivory eff ()
 popConcurrently' Queue{..} handle =
-    downConcurrently' consumerS $ do
+    downConcurrently' consumerS do
         x <- deref consumerIx
         store consumerIx $ x + 1
         handle it x
@@ -62,7 +62,7 @@ removeConcurrently ::
     Queue n t ->
     Ivory eff ()
 removeConcurrently Queue{..} =
-    downConcurrently consumerS $ do
+    downConcurrently consumerS do
         x <- deref consumerIx
         store consumerIx $ x + 1
         up producerS

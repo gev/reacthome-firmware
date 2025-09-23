@@ -51,7 +51,7 @@ updateCRC16 :: Ref s ('Struct CRC16) -> Uint8 -> Ivory eff ()
 updateCRC16 = call_ crc_16_update
 
 crc_16_update :: Def ('[Ref s ('Struct CRC16), Uint8] ':-> ())
-crc_16_update = proc "crc_16_update" $ \c v -> body $ do
+crc_16_update = proc "crc_16_update" \c v -> body do
     msb' <- deref $ c ~> msb
     lsb' <- deref $ c ~> lsb
     let ix = toIx $ msb' .^ v
@@ -64,7 +64,7 @@ digestCRC16 :: Ref s ('Struct CRC16) -> Ivory eff Uint16
 digestCRC16 = call crc_16_digest
 
 crc_16_digest :: Def ('[Ref s ('Struct CRC16)] ':-> Uint16)
-crc_16_digest = proc "crc_16_digest" $ \d -> body $ do
+crc_16_digest = proc "crc_16_digest" \d -> body do
     m <- deref $ d ~> msb
     l <- deref $ d ~> lsb
     ret $ safeCast m `iShiftL` 8 .| safeCast l
@@ -615,6 +615,6 @@ calcCRC16 buff = do
     let s_2 = toIx $ size - 2
     let s_1 = toIx $ size - 1
     crc <- local $ istruct initCRC16
-    for s_2 $ \ix -> updateCRC16 crc =<< deref (buff ! ix)
+    for s_2 \ix -> updateCRC16 crc =<< deref (buff ! ix)
     store (buff ! s_2) =<< deref (crc ~> msb)
     store (buff ! s_1) =<< deref (crc ~> lsb)

@@ -80,7 +80,7 @@ dinputs inputs zero' transport = do
 
 forceSyncDInputs :: (KnownNat n) => DInputs n -> Ivory eff ()
 forceSyncDInputs DInputs{..} = do
-    arrayMap $ \ix -> store ((DI.dinputs getDInputs ! ix) ~> DI.synced) false
+    arrayMap \ix -> store ((DI.dinputs getDInputs ! ix) ~> DI.synced) false
 
 manageDInputs :: (KnownNat n) => DInputs n -> Ivory eff ()
 manageDInputs DInputs{..} = zipWithM_ zip getInputs ints
@@ -101,7 +101,7 @@ manageDInput ::
 manageDInput zero di input t = do
     state0 <- deref $ di ~> DI.state
     state1 <- (/=? zero) <$> get input
-    when (state1 /=? state0) $ do
+    when (state1 /=? state0) do
         store (di ~> DI.state) state1
         store (di ~> DI.timestamp) t
         store (di ~> DI.synced) false
@@ -117,7 +117,7 @@ syncDInput DInputs{..} i = do
     let n = fromIntegral $ length getInputs
     let di = DI.dinputs getDInputs ! toIx i
     synced <- deref $ di ~> DI.synced
-    when (iNot synced) $ do
+    when (iNot synced) do
         msg <- DI.message getDInputs (i .% n)
         transmit msg
         store (di ~> DI.synced) true

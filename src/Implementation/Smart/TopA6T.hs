@@ -1,4 +1,3 @@
-
 module Implementation.Smart.TopA6T where
 
 import Control.Monad.Reader (MonadReader, asks)
@@ -129,7 +128,7 @@ topA6T transport' dinputs' vibro' touch' sht21' display' etc' = do
                 , sht21
                 }
 
-    addHandler $ Render display 30 frameBuffer $ do
+    addHandler $ Render display 30 frameBuffer do
         updateLeds leds
         updateButtons buttons
         render leds

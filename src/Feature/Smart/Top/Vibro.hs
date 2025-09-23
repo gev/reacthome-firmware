@@ -84,7 +84,7 @@ vibro output' getDInputs transport etc = do
 syncVibro :: Vibro n -> Ivory (ProcEffects s t) ()
 syncVibro Vibro{..} = do
     synced' <- deref synced
-    when (iNot synced') $ do
+    when (iNot synced') do
         erasePage etc 0
         crc <- local $ istruct initCRC16
         volume' <- deref volume
@@ -119,7 +119,7 @@ vibroTask v@Vibro{..} = do
         )
         ( do
             shouldVibrate <- local $ ival false
-            arrayMap $ \ix -> do
+            arrayMap \ix -> do
                 shouldVibrate' <- deref shouldVibrate
                 state' <- deref $ dinputs getDInputs ! ix ~> state
                 prevState' <- deref $ prevState ! toIx ix
@@ -147,12 +147,12 @@ onVibro ::
     Uint8 ->
     Ivory (ProcEffects s t) ()
 onVibro v@Vibro{..} buffer size =
-    when (size ==? 2) $ do
+    when (size ==? 2) do
         volume' <- unpack buffer 1
         store volume volume'
         store synced false
         startVibrate v
-        lazyTransmit transport 2 $ \transmit -> do
+        lazyTransmit transport 2 \transmit -> do
             transmit actionVibro
             transmit volume'
 
@@ -173,6 +173,6 @@ onInitVibro v@Vibro{..} buffer size = do
         )
 
 sendVibro Vibro{..} = do
-    lazyTransmit transport 2 $ \transmit -> do
+    lazyTransmit transport 2 \transmit -> do
         transmit actionVibro
         transmit =<< deref volume

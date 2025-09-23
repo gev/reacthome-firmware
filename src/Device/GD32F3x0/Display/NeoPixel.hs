@@ -67,7 +67,7 @@ mkNeoPixelPWM timer' pwmChannel dmaChannel dmaIRQn chxcv pwmPort' = do
 
     initPort pwmPort
 
-    addInit (show pwmPort <> "_pwm") $ do
+    addInit (show pwmPort <> "_pwm") do
         enablePeriphClock rcu_dma
         let t = timer pwmTimer
         store (dmaParams ~> periph_addr) =<< chxcv t
@@ -88,28 +88,28 @@ instance (KnownNat n) => Handler (Render n) NeoPixel where
     addHandler (Render npx@NeoPixel{..} frameRate frame render) = do
         addBody (makeIRQHandlerName dmaIRQn) $ handleDMA npx frame
 
-        addInit ("neopixel_init" <> symbol dmaChannel) $ do
+        addInit ("neopixel_init" <> symbol dmaChannel) do
             render
             store offset 1
             transmitFrameBuffer npx $ frame ! 0
 
-        addTask
-            $ delay
+        addTask $
+            delay
                 (1000 `iDiv` frameRate)
                 ("neo_pixel_" <> show pwmPort)
-            $ do
-                shouldUpdate <- render
-                when shouldUpdate $ do
-                    store offset 1
-                    transmitFrameBuffer npx $ frame ! 0
+                do
+                    shouldUpdate <- render
+                    when shouldUpdate do
+                        store offset 1
+                        transmitFrameBuffer npx $ frame ! 0
 
 handleDMA :: (KnownNat n) => NeoPixel -> Values n Uint8 -> Ivory eff ()
 handleDMA npx@NeoPixel{..} frame = do
     f <- getInterruptFlagDMA dmaChannel dma_int_flag_ftf
-    when f $ do
+    when f do
         clearInterruptFlagDMA dmaChannel dma_int_flag_g
         offset' <- deref offset
-        when (offset' <? arrayLen frame) $ do
+        when (offset' <? arrayLen frame) do
             transmitFrameBuffer npx $ frame ! toIx offset'
             store offset $ offset' + 1
 

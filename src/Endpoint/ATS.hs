@@ -1,4 +1,3 @@
-
 module Endpoint.ATS where
 
 import Control.Monad.Reader (MonadReader, asks)
@@ -145,7 +144,7 @@ manageLine n a@ATS{..} hasVoltage isRelayOn relay = do
                 )
                 ( do
                     justTurnOff relay timestamp
-                    when (n ==? source') $ do
+                    when (n ==? source') do
                         store source srcNone
                         store synced false
                 )
@@ -185,9 +184,9 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
                         isStarted'
                         ( do
                             isOn <- deref $ relay ~> R.state
-                            when isOn $ do
+                            when isOn do
                                 store (start ~> R.timestamp) timestamp
-                                when (attempt' /=? 0 .&& timestamp - tr >? 60_000) $ do
+                                when (attempt' /=? 0 .&& timestamp - tr >? 60_000) do
                                     store attempt 0
                                     store synced false
                             ifte_
@@ -201,7 +200,7 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
                         ( do
                             justTurnOff relay timestamp
                             error' <- deref $ error ! 0
-                            when (error' ==? errorNone) $ do
+                            when (error' ==? errorNone) do
                                 t <- deref $ start ~> R.timestamp
                                 when (timestamp - t >? 10_000) $
                                     cond_
@@ -221,7 +220,7 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
                 , true ==> do
                     attempt' <- deref attempt
                     error' <- deref $ error ! 0
-                    when (error' ==? errorNone .&& attempt' /=? 0 .&& iNot isStarted' .&& timestamp - ts >? 60_000) $ do
+                    when (error' ==? errorNone .&& attempt' /=? 0 .&& iNot isStarted' .&& timestamp - ts >? 60_000) do
                         store attempt 0
                         store synced false
                     justTurnOff relay timestamp
@@ -250,7 +249,7 @@ detectError n ATS{..} hasVoltage isRelayOn relay = do
     delayOn' <- deref $ relay ~> R.delayOn
     delayOff' <- deref $ relay ~> R.delayOff
     error' <- deref $ error ! toIx n
-    when (error' ==? errorNone .&& delayOn' ==? 0 .&& delayOff' ==? 0) $ do
+    when (error' ==? errorNone .&& delayOn' ==? 0 .&& delayOff' ==? 0) do
         t1 <- deref $ hasVoltage ~> DI.timestamp
         t2 <- deref $ isRelayOn ~> DI.timestamp
         t3 <- deref $ relay ~> R.timestamp
@@ -260,7 +259,7 @@ detectError n ATS{..} hasVoltage isRelayOn relay = do
         let dt3 = t - t3
         dt <- ifte (dt1 <? dt2) (pure dt1) (pure dt2)
         dt <- ifte (dt <? dt3) (pure dt) (pure dt3)
-        when (dt >? 1_000) $ do
+        when (dt >? 1_000) do
             hasVoltage' <- deref $ hasVoltage ~> DI.state
             isRelayOn' <- deref $ isRelayOn ~> DI.state
             relayState' <- deref $ relay ~> R.state
@@ -283,7 +282,7 @@ manageError ::
 manageError a@ATS{..} di = do
     isPressed <- deref $ di ~> DI.state
     shouldReset <- deref reset
-    when (iNot isPressed .&& shouldReset) $ do
+    when (iNot isPressed .&& shouldReset) do
         resetError a
     store reset isPressed
 
@@ -309,7 +308,7 @@ delayTurnOn :: Record R.RelayStruct -> Uint32 -> Uint32 -> Ivory eff ()
 delayTurnOn relay delay timestamp = do
     isOn <- deref $ relay ~> R.state
     delayOn <- deref $ relay ~> R.delayOn
-    when (iNot isOn) $ do
+    when (iNot isOn) do
         store (relay ~> R.delayOn) delay
         when (delayOn ==? 0) $ store (relay ~> R.timestamp) timestamp
     store (relay ~> R.delayOff) 0
@@ -326,7 +325,7 @@ delayTurnOff :: Record R.RelayStruct -> Uint32 -> Uint32 -> Ivory eff ()
 delayTurnOff relay delay timestamp = do
     isOn <- deref $ relay ~> R.state
     delayOff <- deref $ relay ~> R.delayOff
-    when isOn $ do
+    when isOn do
         store (relay ~> R.delayOff) delay
         when (delayOff ==? 0) $ store (relay ~> R.timestamp) timestamp
     store (relay ~> R.delayOn) 0
@@ -334,6 +333,6 @@ delayTurnOff relay delay timestamp = do
 syncATS :: ATS -> Ivory (ProcEffects s ()) ()
 syncATS ats = do
     synced' <- deref $ synced ats
-    when (iNot synced') $ do
+    when (iNot synced') do
         transmit ats =<< message ats
         store (synced ats) true

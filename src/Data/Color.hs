@@ -1,4 +1,3 @@
-
 module Data.Color where
 
 import Ivory.Language

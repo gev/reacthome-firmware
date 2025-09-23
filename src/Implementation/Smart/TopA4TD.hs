@@ -1,4 +1,3 @@
-
 module Implementation.Smart.TopA4TD where
 
 import Control.Monad.Reader (MonadReader, asks)
@@ -209,15 +208,15 @@ topA4TD transport' dinputs' vibro' touch' sht21' display' etc' = do
                 , sht21
                 }
 
-    addHandler
-        $ Render
+    addHandler $
+        Render
             display
             30
             frameBuffer
-        $ do
-            updateLeds leds
-            updateButtons buttons
-            render leds
+            do
+                updateLeds leds
+                updateButtons buttons
+                render leds
 
     pure top
 
