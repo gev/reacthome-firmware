@@ -17,15 +17,15 @@ type RulesAMPStruct = "rules_amp_struct"
 
 [ivory|
     struct rules_amp_struct
-    { isUsed   :: Array 9 (Stored IBool)
-    ; volume   :: Array 9 (Stored IFloat)
+    { isUsed :: Array 9 (Stored IBool)
+    ; volume :: Array 9 (Stored IFloat)
     }
 |]
 
 [ivory|
     struct stereo_amp_struct
     { rules :: Array 2 (Struct rules_amp_struct)
-    ; mode  :: Uint8
+    ; mode :: Uint8
     }
 |]
 

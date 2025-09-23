@@ -21,8 +21,8 @@ type GroupStruct = "group_struct"
 [ivory|
     struct group_struct
     { enabled :: IBool
-    ; delay   :: Uint32
-    ; synced  :: IBool
+    ; delay :: Uint32
+    ; synced :: IBool
     }
 |]
 

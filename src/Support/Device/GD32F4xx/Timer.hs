@@ -105,11 +105,11 @@ type TIMER_PARAM s = Ref s (Struct TIMER_PARAM_STRUCT)
 
 [ivory|
     struct timer_parameter_struct
-        { prescaler       :: Stored Uint16
-        ; alignedmode     :: Stored TIMER_ALIGNE_MODE
+        { prescaler :: Stored Uint16
+        ; alignedmode :: Stored TIMER_ALIGNE_MODE
         ; counterdirection :: Stored TIMER_COUNTER_DIRECTION
-        ; clockdivision   :: Stored TIMER_CLOCK_DIVISION
-        ; period          :: Stored Uint32
+        ; clockdivision :: Stored TIMER_CLOCK_DIVISION
+        ; period :: Stored Uint32
         ; repetitioncounter :: Stored Uint8
         }
 |]
@@ -133,12 +133,12 @@ type TIMER_OC_PARAM s = Ref s (Struct TIMER_OC_PARAM_STRUCT)
 
 [ivory|
     struct timer_oc_parameter_struct
-        { outputstate     :: Stored TIMER_CHANNEL_STATE
-        ; outputnstate    :: Stored TIMER_COMPL_CHANNEL_STATE
-        ; ocpolarity      :: Stored TIMER_CHANNEL_POLARITY
-        ; ocnpolarity     :: Stored TIMER_COMPL_CHANNEL_POLARITY
-        ; ocidlestate     :: Stored TIMER_CHANNEL_IDLE_STATE
-        ; ocnidlestate    :: Stored TIMER_COMPL_CHANNEL_IDLE_STATE
+        { outputstate :: Stored TIMER_CHANNEL_STATE
+        ; outputnstate :: Stored TIMER_COMPL_CHANNEL_STATE
+        ; ocpolarity :: Stored TIMER_CHANNEL_POLARITY
+        ; ocnpolarity :: Stored TIMER_COMPL_CHANNEL_POLARITY
+        ; ocidlestate :: Stored TIMER_CHANNEL_IDLE_STATE
+        ; ocnidlestate :: Stored TIMER_COMPL_CHANNEL_IDLE_STATE
         }
 |]
 

@@ -83,9 +83,9 @@ type DMA_PARAM s = Ref s (Struct DMA_PARAM_STRUCT)
         ; memory_addr :: Stored Uint32
         ; memory_width :: Stored DMA_MEMORY_WIDTH
         ; memory_inc :: Stored DMA_MEMORY_INC
-        ; direction  :: Stored DMA_DIRECTION
-        ; number     :: Stored Uint16
-        ; priority   :: Stored DMA_PRIORITY
+        ; direction :: Stored DMA_DIRECTION
+        ; number :: Stored Uint16
+        ; priority :: Stored DMA_PRIORITY
         }
 |]
 

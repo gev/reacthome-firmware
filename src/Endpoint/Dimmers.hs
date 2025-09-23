@@ -23,13 +23,13 @@ type DimmerStruct = "dimmer_struct"
 
 [ivory|
     struct dimmer_struct
-    { mode     :: Uint8
+    { mode :: Uint8
     ; brightness :: IFloat
     ; velocity :: IFloat
-    ; group    :: Uint8
-    ; value    :: IFloat
-    ; delta    :: IFloat
-    ; synced   :: IBool
+    ; group :: Uint8
+    ; value :: IFloat
+    ; delta :: IFloat
+    ; synced :: IBool
     }
 |]
 

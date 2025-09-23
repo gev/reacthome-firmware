@@ -65,8 +65,8 @@ type NETIF s = Ref s (Struct NETIF_STRUCT)
 
 [ivory|
     struct netif
-        { flags    :: Stored NETIF_FLAG
-        ; hwaddr   :: Array 6 (Stored Uint8)
+        { flags :: Stored NETIF_FLAG
+        ; hwaddr :: Array 6 (Stored Uint8)
         ; hwaddr_len :: Stored Uint8
         }
 |]

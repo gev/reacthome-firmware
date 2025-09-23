@@ -93,15 +93,15 @@ type DMA_SINGLE_PARAM s = Ref s (Struct DMA_SINGLE_PARAM_STRUCT)
 
 [ivory|
     struct dma_single_data_parameter_struct
-        { periph_addr       :: Stored Uint32
-        ; periph_inc        :: Stored DMA_PERIPH_INC
-        ; memory0_addr      :: Stored Uint32
-        ; memory_inc        :: Stored DMA_MEMORY_INC
+        { periph_addr :: Stored Uint32
+        ; periph_inc :: Stored DMA_PERIPH_INC
+        ; memory0_addr :: Stored Uint32
+        ; memory_inc :: Stored DMA_MEMORY_INC
         ; periph_memory_width :: Stored DMA_PERIPH_WIDTH
-        ; circular_mode     :: Stored DMA_CIRCULAR_MODE
-        ; direction         :: Stored DMA_DIRECTION
-        ; number            :: Stored Uint32
-        ; priority          :: Stored DMA_PRIORITY
+        ; circular_mode :: Stored DMA_CIRCULAR_MODE
+        ; direction :: Stored DMA_DIRECTION
+        ; number :: Stored Uint32
+        ; priority :: Stored DMA_PRIORITY
         }
 |]
 

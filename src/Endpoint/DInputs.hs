@@ -20,9 +20,9 @@ type DInputStruct = "dinput_struct"
 
 [ivory|
     struct dinput_struct
-    { state         :: IBool
-    ; timestamp     :: Uint32
-    ; synced        :: IBool
+    { state :: IBool
+    ; timestamp :: Uint32
+    ; synced :: IBool
     }
 |]
 

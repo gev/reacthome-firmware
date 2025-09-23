@@ -29,14 +29,14 @@ type RelayStruct = "relay_struct"
 
 [ivory|
     struct relay_struct
-    { state         :: IBool
+    { state :: IBool
     ; defaultDelayOff :: Uint32
-    ; delayOff      :: Uint32
-    ; delayOn       :: Uint32
-    ; timestamp     :: Uint32
-    ; group         :: Uint8
-    ; synced        :: IBool
-    ; lock          :: IBool
+    ; delayOff :: Uint32
+    ; delayOn :: Uint32
+    ; timestamp :: Uint32
+    ; group :: Uint8
+    ; synced :: IBool
+    ; lock :: IBool
     }
 |]
 

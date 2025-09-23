@@ -104,11 +104,11 @@ type TIMER_PARAM s = Ref s (Struct TIMER_PARAM_STRUCT)
 
 [ivory|
     struct timer_parameter_struct
-        { prescaler       :: Stored Uint16
-        ; alignedmode     :: Stored TIMER_ALIGNE_MODE
+        { prescaler :: Stored Uint16
+        ; alignedmode :: Stored TIMER_ALIGNE_MODE
         ; counterdirection :: Stored TIMER_COUNTER_DIRECTION
-        ; clockdivision   :: Stored TIMER_CLOCK_DIVISION
-        ; period          :: Stored Uint32
+        ; clockdivision :: Stored TIMER_CLOCK_DIVISION
+        ; period :: Stored Uint32
         ; repetitioncounter :: Stored Uint8
         }
 |]

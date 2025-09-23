@@ -30,7 +30,7 @@ type MacTableRecords n = Records n MacTableRecordStruct
 [ivory|
     struct mac_table_record
     { address :: Stored Uint8
-    ; mac   :: Array 6 (Stored Uint8)
+    ; mac :: Array 6 (Stored Uint8)
     ; model :: Uint8
     ; version :: Struct version_struct
     }
