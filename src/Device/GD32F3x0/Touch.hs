@@ -1,5 +1,3 @@
-{-# LANGUAGE MonoLocalBinds #-}
-
 module Device.GD32F3x0.Touch where
 
 import Control.Monad (replicateM_)
