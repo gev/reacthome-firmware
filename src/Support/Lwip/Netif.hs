@@ -1,5 +1,4 @@
 {-# HLINT ignore "Use camelCase" #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 module Support.Lwip.Netif (

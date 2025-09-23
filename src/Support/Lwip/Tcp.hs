@@ -1,4 +1,3 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# HLINT ignore "Use camelCase" #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 

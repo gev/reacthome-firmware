@@ -1,4 +1,3 @@
-
 module Protocol.OneWire.Master (
     OneWireMaster,
     mkOneWireMaster,

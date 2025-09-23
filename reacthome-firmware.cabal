@@ -339,6 +339,7 @@ executable reacthome-firmware
     DataKinds
     FlexibleContexts
     FlexibleInstances
+    GeneralizedNewtypeDeriving
     MultiParamTypeClasses
     NamedFieldPuns
     NumericUnderscores

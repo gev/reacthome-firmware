@@ -1,4 +1,3 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Support.Device.GD32F3x0.I2C (
     I2C_PERIPH,

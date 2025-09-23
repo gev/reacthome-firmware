@@ -1,5 +1,4 @@
 {-# LANGUAGE DataKinds                  #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE TypeOperators              #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
