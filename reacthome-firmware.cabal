@@ -337,6 +337,7 @@ executable reacthome-firmware
   default-extensions:
     BlockArguments
     DataKinds
+    DeriveTraversable
     FlexibleContexts
     FlexibleInstances
     GeneralizedNewtypeDeriving
