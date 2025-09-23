@@ -1,5 +1,4 @@
 {-# HLINT ignore "Use newtype instead of data" #-}
-{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE GADTs #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
