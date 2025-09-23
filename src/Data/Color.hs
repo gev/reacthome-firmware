@@ -1,4 +1,3 @@
-{-# LANGUAGE QuasiQuotes #-}
 
 module Data.Color where
 

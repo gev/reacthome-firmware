@@ -1,5 +1,4 @@
 {-# LANGUAGE MonoLocalBinds #-}
-{-# LANGUAGE QuasiQuotes #-}
 
 module Device.GD32F3x0.Touch where
 

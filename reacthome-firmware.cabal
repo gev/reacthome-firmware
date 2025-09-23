@@ -342,6 +342,7 @@ executable reacthome-firmware
     MultiParamTypeClasses
     NamedFieldPuns
     NumericUnderscores
+    QuasiQuotes
     RankNTypes
     RecordWildCards
     ScopedTypeVariables
