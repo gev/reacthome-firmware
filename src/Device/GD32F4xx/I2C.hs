@@ -102,61 +102,54 @@ handleTransmit I2C{..} = do
     sbsend <- getInterruptFlagI2C i2c i2c_int_flag_sbsend
     ifte_
         sbsend
-        ( do
+        do
             {-
                 Should clear i2c_int_flag_sbsend?
             -}
             address' <- safeCast <$> deref address
             addressingMasterI2C i2c address' i2c_transmitter
-        )
-        ( do
+        do
             addsend <- getInterruptFlagI2C i2c i2c_int_flag_addsend
             ifte_
                 addsend
                 (clearInterruptFlagI2C i2c i2c_int_flag_addsend)
-                ( do
+                do
                     tbe <- getInterruptFlagI2C i2c i2c_int_flag_tbe
                     when tbe do
                         index' <- deref index
                         size' <- deref size
                         ifte_
                             (safeCast index' <? size')
-                            ( do
+                            do
                                 transmitDataI2C i2c =<< deref (txBuff ! toIx index')
                                 store index $ index' + 1
-                            )
-                            ( do
+                            do
                                 stopOnBusI2C i2c
                                 disableInterruptI2C i2c i2c_int_err
                                 disableInterruptI2C i2c i2c_int_buf
                                 disableInterruptI2C i2c i2c_int_ev
-                            )
-                )
-        )
 
 handleReceive :: I2C n -> (Uint8 -> Uint16 -> Ivory eff a) -> Ivory eff ()
 handleReceive I2C{..} receive = do
     sbsend <- getInterruptFlagI2C i2c i2c_int_flag_sbsend
     ifte_
         sbsend
-        ( do
+        do
             {-
                 Should clear i2c_int_flag_sbsend?
             -}
             address' <- safeCast <$> deref address
             addressingMasterI2C i2c address' i2c_receiver
-        )
-        ( do
+        do
             addsend <- getInterruptFlagI2C i2c i2c_int_flag_addsend
             ifte_
                 addsend
-                ( do
+                do
                     size' <- deref size
                     when (size' ==? 1) do
                         configAckI2C i2c i2c_ack_disable
                     clearInterruptFlagI2C i2c i2c_int_flag_addsend
-                )
-                ( do
+                do
                     size' <- deref size
                     rbne <- getInterruptFlagI2C i2c i2c_int_flag_rbne
                     when rbne do
@@ -178,8 +171,6 @@ handleReceive I2C{..} receive = do
                         store index $ index' + 1
 
                         clearInterruptFlagI2C i2c i2c_int_flag_rbne
-                )
-        )
 
 handleError :: I2C n -> Ivory eff ()
 handleError I2C{..} = do

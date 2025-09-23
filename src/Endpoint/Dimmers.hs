@@ -112,22 +112,19 @@ fade brightness' velocity' = runCheckMode \dimmer -> do
     mode <- deref $ dimmer ~> mode
     ifte_
         (mode ==? 4)
-        ( ifte_
-            (brightness' ==? 0)
-            ( do
-                store (dimmer ~> brightness) 0
-                store (dimmer ~> value) 0
-            )
-            ( do
-                store (dimmer ~> brightness) 1
-                store (dimmer ~> value) 1
-            )
-        )
-        ( do
+        do
+            ifte_
+                (brightness' ==? 0)
+                do
+                    store (dimmer ~> brightness) 0
+                    store (dimmer ~> value) 0
+                do
+                    store (dimmer ~> brightness) 1
+                    store (dimmer ~> value) 1
+        do
             store (dimmer ~> brightness) brightness'
             store (dimmer ~> velocity) velocity'
             store (dimmer ~> delta) $ 0.0001 / (1.02 - velocity')
-        )
 
 setBrightness ::
     (KnownNat n) =>
@@ -139,21 +136,18 @@ setBrightness brightness' = runCheckMode \dimmer -> do
     mode <- deref $ dimmer ~> mode
     ifte_
         (mode ==? 4)
-        ( ifte_
-            (brightness' ==? 0)
-            ( do
-                store (dimmer ~> brightness) 0
-                store (dimmer ~> value) 0
-            )
-            ( do
-                store (dimmer ~> brightness) 1
-                store (dimmer ~> value) 1
-            )
-        )
-        ( do
+        do
+            ifte_
+                (brightness' ==? 0)
+                do
+                    store (dimmer ~> brightness) 0
+                    store (dimmer ~> value) 0
+                do
+                    store (dimmer ~> brightness) 1
+                    store (dimmer ~> value) 1
+        do
             store (dimmer ~> brightness) brightness'
             store (dimmer ~> value) $ safeCast brightness'
-        )
 
 setMode ::
     (KnownNat n) =>

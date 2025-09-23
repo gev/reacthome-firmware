@@ -217,8 +217,9 @@ handleSearchNext OneWireMaster{..} = do
     lastDeviceFlag' <- deref lastDeviceFlag
     ifte_
         lastDeviceFlag'
-        (store state stateReady)
-        ( do
+        do
+            store state stateReady
+        do
             store idBitNumber 1
             store lastZero 0
             store romByteNumber 0
@@ -226,7 +227,6 @@ handleSearchNext OneWireMaster{..} = do
             store searchResult false
             store count 0
             store state stateReset
-        )
 
 handleReadResult :: OneWireMaster -> Ivory (ProcEffects s ()) ()
 handleReadResult OneWireMaster{..} = do
@@ -241,21 +241,19 @@ handleSearchResult OneWireMaster{..} = do
     crc <- call getCRC savedROM
     ifte_
         (crc ==? 0)
-        ( do
+        do
             onDiscovery countROM' savedROM
             n <- deref payload
             ifte_
                 (countROM' ==? n)
-                (store state stateReady)
-                ( do
+                do
+                    store state stateReady
+                do
                     store countROM $ countROM' + 1
                     store state stateSearchNext
-                )
-        )
-        ( do
+        do
             store error errorCRC
             store state stateError
-        )
 
 handleError :: OneWireMaster -> Ivory (ProcEffects s ()) ()
 handleError OneWireMaster{..} = do
@@ -374,11 +372,11 @@ waitPresence OneWireMaster{..} = do
             hasPresence <- iNot <$> getState onewire
             ifte_
                 hasPresence
-                (store state stateWaitReady)
-                ( do
+                do
+                    store state stateWaitReady
+                do
                     store error errorNoPresence
                     store state stateError
-                )
         , true ==> store time (time' + 1)
         ]
 
@@ -390,15 +388,14 @@ waitReady nextState OneWireMaster{..} = do
             hasPresence <- getState onewire
             ifte_
                 hasPresence
-                ( do
+                do
                     store time 0
                     store state nextState
-                )
-                ( do
+                do
                     store error errorNotReady
                     store state stateError
-                )
-        , true ==> store time (time' + 1)
+        , true
+            ==> store time (time' + 1)
         ]
 
 doWrite :: Uint8 -> OneWireMaster -> Ivory eff ()
@@ -410,7 +407,7 @@ doWrite nextState OneWireMaster{..} = do
             count' <- deref count
             ifte_
                 (count' <? 8)
-                ( do
+                do
                     pullDown onewire
                     tmp' <- deref tmp
                     let bit = (tmp' `iShiftR` count') .& 1
@@ -420,8 +417,7 @@ doWrite nextState OneWireMaster{..} = do
                         (store width timeWrite0)
                     store count $ count' + 1
                     store time 1
-                )
-                (store state nextState)
+                do store state nextState
         , time' ==? width' ==> pullUp onewire >> store time (time' + 1)
         , time' ==? timeWriteSlot ==> store time 0
         , true ==> store time (time' + 1)
@@ -491,7 +487,7 @@ getSearchDirection OneWireMaster{..} = do
     ifte_
         (idBit' .&& cmpIdBit')
         (store state stateReady)
-        ( do
+        do
             idBitNumber' <- deref idBitNumber
             romByteMask' <- deref romByteMask
             romByteNumber' <- deref romByteNumber
@@ -500,7 +496,7 @@ getSearchDirection OneWireMaster{..} = do
             ifte_
                 (idBit' /=? cmpIdBit')
                 (store searchDirection idBit')
-                ( do
+                do
                     lastDiscrepancy' <- deref lastDiscrepancy
                     ifte_
                         (idBitNumber' <? lastDiscrepancy')
@@ -511,21 +507,17 @@ getSearchDirection OneWireMaster{..} = do
                         store lastZero idBitNumber'
                         when (idBitNumber' <? 9) do
                             store lastFamilyDiscrepancy idBitNumber'
-                )
             searchDirection' <- deref searchDirection
             rom' <- deref rom
             ifte_
                 searchDirection'
-                ( do
+                do
                     store rom $ rom' .| romByteMask'
                     store width timeWrite1
-                )
-                ( do
+                do
                     store rom $ rom' .& iComplement romByteMask'
                     store width timeWrite0
-                )
             store state stateWriteBit
-        )
 
 checkDevices :: OneWireMaster -> Ivory eff ()
 checkDevices OneWireMaster{..} = do
@@ -541,7 +533,7 @@ checkDevices OneWireMaster{..} = do
     romByteNumber'' <- deref romByteNumber
     ifte_
         (romByteNumber'' ==? 8)
-        ( do
+        do
             idBitNumber'' <- deref idBitNumber
             when (idBitNumber'' >? 64) do
                 lastZero' <- deref lastZero
@@ -552,12 +544,11 @@ checkDevices OneWireMaster{..} = do
             rom' <- deref (savedROM ! 0)
             ifte_
                 (searchResult' .&& rom' /=? 0)
-                (store state stateSearchResult)
-                ( do
+                do
+                    store state stateSearchResult
+                do
                     store error errorCRC
                     store state stateError
-                )
-        )
         (store state stateReadIdBit)
 
 getCRC :: Def ('[Buffer 8 Uint8] :-> Uint8)

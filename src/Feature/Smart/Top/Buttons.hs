@@ -69,19 +69,16 @@ updateButtons Buttons{..} = do
     pixel' <- local . istruct $ rgb 0 0 0
     pixel'' <- local . istruct $ rgb 1 1 1
     start' <- deref start
-    when
-        start'
-        ( do
-            t' <- deref t
-            v <- deref $ addrOf sinT ! toIx t'
-            pixel <- local . istruct $ hsv v v v
-            hsv'to'rgb pixel pixel'
-            findMe' <- deref findMe
-            when
-                (t' ==? 120 .&& iNot findMe')
-                (store start false)
-            store t $ t' + 1
-        )
+    when start' do
+        t' <- deref t
+        v <- deref $ addrOf sinT ! toIx t'
+        pixel <- local . istruct $ hsv v v v
+        hsv'to'rgb pixel pixel'
+        findMe' <- deref findMe
+        when
+            (t' ==? 120 .&& iNot findMe')
+            (store start false)
+        store t $ t' + 1
 
     arrayMap \ix -> do
         state' <- deref $ dinputs getDInputs ! ix ~> state

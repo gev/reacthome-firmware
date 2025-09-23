@@ -16,17 +16,15 @@ renderSlideOn time segmentSize pixel animation = do
     inverse <- deref $ animation ~> inverseDirection
     ifte
         inverse
-        ( do
+        do
             let x = castDefault $ (1 - time) * safeCast segmentSize
             ifte
                 (pixel >=? x)
-                (pure 1)
-                (pure 0)
-        )
-        ( do
+                do pure 1
+                do pure 0
+        do
             let x = castDefault $ time * safeCast segmentSize
             ifte
                 (pixel <=? x)
-                (pure 1)
-                (pure 0)
-        )
+                do pure 1
+                do pure 0

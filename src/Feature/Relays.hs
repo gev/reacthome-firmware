@@ -107,24 +107,18 @@ manageRelays Relays{..} = do
             [ iNot isOn
                 .&& delayOn
                 >? 0
-                ==> when
-                    (dt >? delayOn)
-                    ( do
-                        store (r ~> R.state) true
-                        store (r ~> R.delayOn) 0
-                        store (r ~> R.timestamp) t1
-                    )
+                ==> when (dt >? delayOn) do
+                    store (r ~> R.state) true
+                    store (r ~> R.delayOn) 0
+                    store (r ~> R.timestamp) t1
             , isOn
                 .&& delayOff
                 >? 0
-                ==> when
-                    (dt >? delayOff)
-                    ( do
-                        store (r ~> R.state) false
-                        store (r ~> R.delayOn) 0
-                        store (r ~> R.delayOff) 0
-                        store (r ~> R.timestamp) t1
-                    )
+                ==> when (dt >? delayOff) do
+                    store (r ~> R.state) false
+                    store (r ~> R.delayOn) 0
+                    store (r ~> R.delayOff) 0
+                    store (r ~> R.timestamp) t1
             ]
 
     zipWithM_ off getOutputs ints

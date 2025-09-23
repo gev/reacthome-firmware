@@ -112,14 +112,13 @@ update Indicator{..} = do
         y <- assign $ maxValue * (0.2 + 0.8 * sin')
         ifte_
             start'
-            ( do
+            do
                 let v' = safeCast phi' / 100
                 store (pixel ~> s) v'
                 store (pixel ~> v) $ y * v'
                 when (phi' ==? 100) $ store start false
-            )
-            ( store (pixel ~> v) y
-            )
+            do
+                store (pixel ~> v) y
         hsv'to'rgb pixel $ pixels ! ix
 
     findMe' <- deref findMe

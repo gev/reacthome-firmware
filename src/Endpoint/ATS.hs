@@ -128,12 +128,12 @@ manageLine n a@ATS{..} hasVoltage isRelayOn relay = do
     noError <- iNot <$> hasError a
     ifte_
         noError
-        ( do
+        do
             hasVoltage' <- deref $ hasVoltage ~> DI.state
             source' <- deref source
             ifte_
                 hasVoltage'
-                ( do
+                do
                     cond_
                         [ n <? source' ==> do
                             delayTurnOn relay 1_000 timestamp
@@ -141,14 +141,11 @@ manageLine n a@ATS{..} hasVoltage isRelayOn relay = do
                             store synced false
                         , n >? source' ==> justTurnOff relay timestamp
                         ]
-                )
-                ( do
+                do
                     justTurnOff relay timestamp
                     when (n ==? source') do
                         store source srcNone
                         store synced false
-                )
-        )
         (justTurnOff relay timestamp)
 
 manageGenerator ::
@@ -167,7 +164,7 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
     tr <- deref $ relay ~> R.timestamp
     ifte_
         noError
-        ( do
+        do
             hasVoltage' <- deref $ hasVoltage ~> DI.state
             isStarted' <- deref $ start ~> R.state
             attempt' <- deref attempt
@@ -182,7 +179,7 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
                 , n ==? source' ==> do
                     ifte_
                         isStarted'
-                        ( do
+                        do
                             isOn <- deref $ relay ~> R.state
                             when isOn do
                                 store (start ~> R.timestamp) timestamp
@@ -192,12 +189,10 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
                             ifte_
                                 hasVoltage'
                                 (delayTurnOn relay 5_000 timestamp)
-                                ( do
+                                do
                                     when (timestamp - ts >? 30_000) $ justTurnOff start timestamp
                                     justTurnOff relay timestamp
-                                )
-                        )
-                        ( do
+                        do
                             justTurnOff relay timestamp
                             error' <- deref $ error ! 0
                             when (error' ==? errorNone) do
@@ -216,7 +211,6 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
                                             store (error ! 0) errorGenerator
                                             store synced false
                                         ]
-                        )
                 , true ==> do
                     attempt' <- deref attempt
                     error' <- deref $ error ! 0
@@ -226,11 +220,9 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
                     justTurnOff relay timestamp
                     when (timestamp - ts >? 30_000) $ justTurnOff start timestamp
                 ]
-        )
-        ( do
+        do
             justTurnOff relay timestamp
             when (timestamp - ts >? 30_000) $ justTurnOff start timestamp
-        )
 
 hasError :: ATS -> Ivory eff IBool
 hasError ATS{..} = do

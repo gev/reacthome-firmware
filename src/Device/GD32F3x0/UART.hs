@@ -101,16 +101,14 @@ handleTransmit UART{..} onTransmit onDrain = do
         size' <- deref size
         ifte_
             (safeCast index' <? size')
-            ( do
+            do
                 transmitData uart =<< deref (txBuff ! toIx index')
                 store index $ index' + 1
-            )
-            ( do
+            do
                 disableInterrupt uart usart_int_tbe
                 M.when (isJust onDrain) do
                     enableInterrupt uart usart_int_tc
                 onTransmit
-            )
         clearInterruptFlag uart usart_int_flag_tbe
 
 handleError :: (KnownNat rn) => UART rn tn -> Ivory eff () -> Ivory eff ()

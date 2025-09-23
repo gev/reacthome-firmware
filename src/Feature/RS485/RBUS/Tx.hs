@@ -58,14 +58,13 @@ doTransmitMessage r@RBUS{..} = do
         store confirmed false
         ifte_
             confirmed'
-            ( do
+            do
                 remove msgQueue
-            )
-            ( do
+            do
                 ttl <- deref $ msgTTL ! ix
                 ifte_
                     (ttl >? 0)
-                    ( do
+                    do
                         size <- deref $ msgSize ! ix
                         RS.transmit rs \write ->
                             for (toIx size) \dx -> do
@@ -75,9 +74,8 @@ doTransmitMessage r@RBUS{..} = do
                         store txTimestamp t1
                         store txLock true
                         store (msgWaitingConfirm ! ax) true
-                    )
-                    (remove msgQueue)
-            )
+                    do
+                        remove msgQueue
 
 doDiscovery :: RBUS -> Ivory (ProcEffects s ()) ()
 doDiscovery r@RBUS{..} = do

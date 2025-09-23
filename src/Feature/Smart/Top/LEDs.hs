@@ -226,7 +226,7 @@ updateLeds LEDs{..} = do
 
         ifte_
             (state' .&& image' .&& (iNot blink' .|| blink' .&& blinkPhase'))
-            ( do
+            do
                 value <- deref $ colors ! palette' ! sx
                 let r' = safeCast $ (value `iShiftR` 16) .& 0xff
                 let g' = safeCast $ (value `iShiftR` 8) .& 0xff
@@ -234,12 +234,10 @@ updateLeds LEDs{..} = do
                 store (pixel ~> r) $ r' / 255 * brightness'
                 store (pixel ~> g) $ g' / 255 * brightness'
                 store (pixel ~> b) $ b' / 255 * brightness'
-            )
-            ( do
+            do
                 store (pixel ~> r) 0
                 store (pixel ~> g) 0
                 store (pixel ~> b) 0
-            )
 
 render :: (KnownNat ln, KnownNat (Canvas1DSize ln)) => LEDs pn ln -> Ivory (ProcEffects s ()) IBool
 render LEDs{..} =
@@ -271,7 +269,7 @@ onDim LEDs{..} buff size =
         brightness' <- deref $ buff ! 1
         ifte_
             (brightness' ==? 0)
-            ( do
+            do
                 store state false
                 lazyTransmit transport 2 \transmit -> do
                     transmit actionDo
@@ -280,13 +278,11 @@ onDim LEDs{..} buff size =
                 lazyTransmit transport 2 \transmit -> do
                     transmit actionDim
                     transmit 1
-            )
-            ( do
+            do
                 store brightness $ safeCast brightness' / 255
                 lazyTransmit transport 2 \transmit -> do
                     transmit actionDim
                     transmit brightness'
-            )
         store synced_ false
 
 onSetColor ::

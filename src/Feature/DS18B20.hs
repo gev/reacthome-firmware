@@ -135,17 +135,15 @@ onData DS18B20{..} i index v = do
         let id = idList ! toIx i
         ifte_
             (crc ==? 0)
-            ( do
+            do
                 arrayCopy txB id 1 8
                 raw <- unpackLE rxB 0
                 let t = (25 * raw) `iDiv` 4 :: Sint16
                 packLE txB 9 t
                 transmit txB
-            )
-            ( do
+            do
                 arrayCopy dsErrB id 1 8
                 transmit dsErrB
-            )
 
 onDiscovery :: DS18B20 -> Uint8 -> Buffer 8 Uint8 -> Ivory (ProcEffects s ()) ()
 onDiscovery DS18B20{..} _ id = do

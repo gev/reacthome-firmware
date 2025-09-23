@@ -121,16 +121,17 @@ update Indicator{..} = do
         let x = toIx (10 * i + phi')
         sin' <- deref $ addrOf sinT ! x
         y <- assign $ maxValue * (0.2 + 0.8 * sin')
+
         ifte_
             start'
-            ( do
+            do
                 let v' = safeCast phi' / 100
                 store (pixel ~> s) v'
                 store (pixel ~> v) $ y * v'
                 when (phi' ==? 100) $ store start false
-            )
-            ( store (pixel ~> v) y
-            )
+            do
+                store (pixel ~> v) y
+
         renderPixel pixel i ats dinputs relays
         hsv'to'rgb pixel $ pixels ! ix
 
@@ -200,15 +201,15 @@ renderPixel pixel i ATS{..} DInputs{dinputs} Relays{relays} = do
                 store (pixel ~> v) 0
         ifte_
             hasVoltage'
-            ( do
+            do
                 source' <- deref source
                 isOn <- deref $ relay ~> R.state
                 ifte_
                     (isOn .&& source' ==? i)
                     (store h' 120)
                     (store h' 60)
-            )
-            (store h' 0)
+            do
+                store h' 0
 
     renderGenerator i hasVoltage relay start = do
         let h' = pixel ~> h
@@ -222,21 +223,19 @@ renderPixel pixel i ATS{..} DInputs{dinputs} Relays{relays} = do
                 store (pixel ~> v) 0
         ifte_
             hasVoltage'
-            ( do
+            do
                 source' <- deref source
                 isOn <- deref $ relay ~> R.state
                 ifte_
                     (isOn .&& source' ==? i)
                     (store h' 120)
                     (store h' 60)
-            )
-            ( do
+            do
                 isOn <- deref $ start ~> R.state
                 ifte_
                     (isOn .|| generatorError /=? errorNone)
                     (store h' 240)
                     (store h' 0)
-            )
 
 render :: Indicator ni no -> Ivory (ProcEffects s ()) IBool
 render Indicator{..} =

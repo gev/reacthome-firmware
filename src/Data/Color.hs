@@ -54,44 +54,38 @@ hsv'to'rgb hsv rgb = do
     cond_
         [ h'i
             ==? 0
-            ==> ( do
-                    store (rgb ~> r) v'
-                    store (rgb ~> g) v'inc
-                    store (rgb ~> b) v'min
-                )
+            ==> do
+                store (rgb ~> r) v'
+                store (rgb ~> g) v'inc
+                store (rgb ~> b) v'min
         , h'i
             ==? 1
-            ==> ( do
-                    store (rgb ~> r) v'dec
-                    store (rgb ~> g) v'
-                    store (rgb ~> b) v'min
-                )
+            ==> do
+                store (rgb ~> r) v'dec
+                store (rgb ~> g) v'
+                store (rgb ~> b) v'min
         , h'i
             ==? 2
-            ==> ( do
-                    store (rgb ~> r) v'min
-                    store (rgb ~> g) v'
-                    store (rgb ~> b) v'inc
-                )
+            ==> do
+                store (rgb ~> r) v'min
+                store (rgb ~> g) v'
+                store (rgb ~> b) v'inc
         , h'i
             ==? 3
-            ==> ( do
-                    store (rgb ~> r) v'min
-                    store (rgb ~> g) v'dec
-                    store (rgb ~> b) v'
-                )
+            ==> do
+                store (rgb ~> r) v'min
+                store (rgb ~> g) v'dec
+                store (rgb ~> b) v'
         , h'i
             ==? 4
-            ==> ( do
-                    store (rgb ~> r) v'inc
-                    store (rgb ~> g) v'min
-                    store (rgb ~> b) v'
-                )
+            ==> do
+                store (rgb ~> r) v'inc
+                store (rgb ~> g) v'min
+                store (rgb ~> b) v'
         , h'i
             ==? 5
-            ==> ( do
-                    store (rgb ~> r) v'
-                    store (rgb ~> g) v'min
-                    store (rgb ~> b) v'dec
-                )
+            ==> do
+                store (rgb ~> r) v'
+                store (rgb ~> g) v'min
+                store (rgb ~> b) v'dec
         ]

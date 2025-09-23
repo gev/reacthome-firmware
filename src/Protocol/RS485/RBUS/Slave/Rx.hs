@@ -192,11 +192,11 @@ skipMsg s@Slave{..} v = do
     phase' <- deref phase
     ifte_
         (phase' >? 1)
-        (store phase $ phase' - 1)
-        ( do
+        do
+            store phase $ phase' - 1
+        do
             store state skippingAll
             store phase $ v + 2
-        )
 
 reset :: Slave n -> Ivory eff ()
 reset Slave{..} = store state readyToReceive

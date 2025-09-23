@@ -153,7 +153,7 @@ update ALED{..} random = do
                 x' <- deref x
                 ifte_
                     (brightness' >? 0 .&& (safeCast x' >=? start'' .&& safeCast x' <? end'') /=? inverse')
-                    ( do
+                    do
                         m' <-
                             ifte
                                 maskAnimationSplit'
@@ -210,15 +210,14 @@ update ALED{..} random = do
                             p'' <- deref p
                             when (p'' /=? p') $ store shouldUpdate true
                             store px $ px' + 1
-                    )
-                    ( for (toIx pixelSize' :: Ix np) \_ -> do
-                        px' <- deref px
-                        let p = E.subPixels getALED ! px'
-                        p' <- deref p
-                        when (p' /=? 0) $ store shouldUpdate true
-                        store p 0
-                        store px $ px' + 1
-                    )
+                    do
+                        for (toIx pixelSize' :: Ix np) \_ -> do
+                            px' <- deref px
+                            let p = E.subPixels getALED ! px'
+                            p' <- deref p
+                            when (p' /=? 0) $ store shouldUpdate true
+                            store p 0
+                            store px $ px' + 1
             store sx $ sx' + 1
         state' <- deref $ group ~> E.groupState
         state'' <- deref state
@@ -244,21 +243,21 @@ incrementTime animation = do
         let time'' = time' + dt'
         when (time'' >=? 0 .&& loop') $ store (animation ~> E.inLoop) true
         ifte_
-            (time'' >=? timeEnd')
-            ( ifte_
-                loop'
-                ( do
-                    store (animation ~> E.time) 0
-                    store (animation ~> E.timeEnd) 1
-                    store (animation ~> E.inLoop) true
-                    store (animation ~> E.startLoop) true
-                )
-                (store (animation ~> E.animationState) false)
-            )
-            ( do
+            do
+                time'' >=? timeEnd'
+            do
+                ifte_
+                    loop'
+                    do
+                        store (animation ~> E.time) 0
+                        store (animation ~> E.timeEnd) 1
+                        store (animation ~> E.inLoop) true
+                        store (animation ~> E.startLoop) true
+                    do
+                        store (animation ~> E.animationState) false
+            do
                 store (animation ~> E.time) time''
                 store (animation ~> E.startLoop) false
-            )
 
 onALedOn ::
     forall n ng ns np s t.

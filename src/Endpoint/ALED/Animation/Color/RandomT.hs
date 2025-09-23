@@ -30,9 +30,9 @@ renderRandomT time subpixel value random animation brightness = do
         let rest = 1 - time
         ifte_
             (rest >=? dt)
-            ( do
+            do
                 let delta = (safeCast b - value) * dt / rest
                 store v $ value + delta
-            )
-            (store v $ safeCast b)
+            do
+                store v $ safeCast b
     deref v

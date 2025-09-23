@@ -29,12 +29,12 @@ txTask r@RBUS{..} = do
         hasAddress' <- hasAddress protocol
         ifte_
             hasAddress'
-            ( do
+            do
                 doConfirm r
                 doTransmitMessage r
                 doPing r
-            )
-            (doDiscovery r)
+            do
+                doDiscovery r
 
 initTask :: RBUS -> Ivory (ProcEffects s ()) ()
 initTask r@RBUS{..} = do
@@ -50,17 +50,16 @@ doTransmitMessage r@RBUS{..} = do
         ttl <- deref $ msgTTL ! ix
         ifte_
             (ttl >? 0)
-            ( do
+            do
                 offset <- deref $ msgOffset ! ix
                 size <- deref $ msgSize ! ix
                 confirmed' <- deref msgConfirmed
                 ifte_
                     confirmed'
-                    ( do
+                    do
                         store msgConfirmed false
                         remove msgQueue
-                    )
-                    ( do
+                    do
                         size <- deref $ msgSize ! ix
                         RS.transmit rs \write ->
                             for (toIx size) \dx -> do
@@ -70,9 +69,8 @@ doTransmitMessage r@RBUS{..} = do
                         store waitingConfirm true
                         store txTimestamp t1
                         store txLock true
-                    )
-            )
-            (remove msgQueue)
+            do
+                remove msgQueue
 
 doDiscovery :: RBUS -> Ivory (ProcEffects s ()) ()
 doDiscovery r@RBUS{..} = do

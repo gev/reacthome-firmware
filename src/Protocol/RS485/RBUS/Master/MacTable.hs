@@ -63,7 +63,7 @@ insertMac MacTable{..} mac' model' version' run = do
     address' <- deref address
     ifte_
         (address' ==? 255)
-        ( do
+        do
             let address' = next'
             let rec' = table ! toIx address'
             memCpy (rec' ~> mac) mac'
@@ -72,14 +72,12 @@ insertMac MacTable{..} mac' model' version' run = do
             store (rec' ~> version ~> minor) =<< deref (version' ~> minor)
             store next $ next' + 1
             run mac' address' model' version'
-        )
-        ( do
+        do
             let rec' = table ! toIx address'
             store (rec' ~> model) =<< deref model'
             store (rec' ~> version ~> major) =<< deref (version' ~> major)
             store (rec' ~> version ~> minor) =<< deref (version' ~> minor)
             run mac' address' model' version'
-        )
 
 lookupMac ::
     MacTable ->

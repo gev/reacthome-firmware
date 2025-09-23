@@ -19,10 +19,10 @@ renderRandomX subpixel value random animation brightness = do
     (* brightness)
         <$> ifte
             (safeCast i / 255 <=? dt' * safeCast fps)
-            ( do
+            do
                 min <- safeCast <$> deref (animation ~> params ! toIx (2 * subpixel))
                 max <- safeCast <$> deref (animation ~> params ! toIx (2 * subpixel + 1))
                 r <- safeCast <$> next random
                 pure $ brightness * (r * (max - min) / 255 + min)
-            )
-            (pure value)
+            do
+                pure value

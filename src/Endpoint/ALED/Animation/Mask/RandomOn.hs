@@ -24,15 +24,15 @@ renderRandomOn time pixel random animation = do
     let isOff = (p' `iShiftR` b) .& 1
     ifte
         (isOff ==? 0)
-        ( do
+        do
             dt' <- deref $ animation ~> dt
             t <- next random
             ifte
                 (safeCast t / 255 <? time + dt')
-                ( do
+                do
                     store p $ p' .| (1 `iShiftL` b)
                     pure 255
-                )
-                (pure 0)
-        )
-        (pure 1)
+                do
+                    pure 0
+        do
+            pure 1

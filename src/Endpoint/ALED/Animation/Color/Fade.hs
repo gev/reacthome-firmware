@@ -23,14 +23,13 @@ renderFade time subpixel value animation brightness = do
         ifte_
             loop'
             (store v b')
-            ( do
+            do
                 let rest = 1 - time
                 ifte_
                     (rest >=? dt')
-                    ( do
+                    do
                         let delta = (b' - value) * dt' / rest
                         store v $ value + delta
-                    )
-                    (store v b')
-            )
+                    do
+                        store v b'
     deref v

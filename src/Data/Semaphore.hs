@@ -46,10 +46,9 @@ down' (Semaphore s) runT runF = do
     v <- deref s
     ifte_
         (v >? 0)
-        ( do
+        do
             store s $ v - 1
             runT
-        )
         runF
 
 check ::

@@ -111,13 +111,12 @@ vibroTask v@Vibro{..} = do
     isVibrating' <- deref isVibrating
     ifte_
         isVibrating'
-        ( do
+        do
             t0 <- deref t
             t1 <- getSystemTime clock
             volume' <- deref volume
             when (t1 - t0 >? safeCast volume') $ stopVibrate v
-        )
-        ( do
+        do
             shouldVibrate <- local $ ival false
             arrayMap \ix -> do
                 shouldVibrate' <- deref shouldVibrate
@@ -127,7 +126,6 @@ vibroTask v@Vibro{..} = do
                 store (prevState ! toIx ix) state'
             shouldVibrate' <- deref shouldVibrate
             when shouldVibrate' $ startVibrate v
-        )
 
 startVibrate :: Vibro n -> Ivory eff ()
 startVibrate Vibro{..} = do
@@ -165,12 +163,11 @@ onInitVibro ::
 onInitVibro v@Vibro{..} buffer size = do
     ifte
         (size >=? 2)
-        ( do
+        do
             store volume =<< deref (buffer ! 1)
             pure true
-        )
-        ( pure false
-        )
+        do
+            pure false
 
 sendVibro Vibro{..} = do
     lazyTransmit transport 2 \transmit -> do
