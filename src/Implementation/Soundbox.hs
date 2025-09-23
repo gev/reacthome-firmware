@@ -1,5 +1,4 @@
 {-# HLINT ignore "Use newtype instead of data" #-}
-{-# LANGUAGE GADTs #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 {-# HLINT ignore "Use for_" #-}

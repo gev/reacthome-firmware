@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Feature.Smart.Top where
 
 import Control.Monad.Reader (MonadReader, asks)
@@ -22,15 +20,15 @@ import Ivory.Stdlib
 import Transport.UART.RBUS
 import Transport.UART.RBUS.Data
 
-data Top where
-    Top ::
-        (Input i, LazyTransport t) =>
-        { pin :: i
-        , isDetected :: Value IBool
-        , transportUp :: t
-        , transportDown :: RBUS 32 512
-        } ->
-        Top
+data Top
+    = forall i t.
+      (Input i, LazyTransport t) =>
+    Top
+    { pin :: i
+    , isDetected :: Value IBool
+    , transportUp :: t
+    , transportDown :: RBUS 32 512
+    }
 
 top ::
     ( MonadState Context m

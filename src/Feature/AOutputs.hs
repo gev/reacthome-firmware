@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Feature.AOutputs where
 
 import Control.Monad.Reader (MonadReader, asks)

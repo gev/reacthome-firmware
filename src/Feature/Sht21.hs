@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Feature.Sht21 where
 
 import Control.Monad.Reader (MonadReader, asks)

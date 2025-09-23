@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Device.GD32F4xx.Timer where
 
 import Control.Monad.State (MonadState)

@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Interface.Display where
 
 import Control.Monad.State

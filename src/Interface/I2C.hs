@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Interface.I2C where
 
 import Core.Handler

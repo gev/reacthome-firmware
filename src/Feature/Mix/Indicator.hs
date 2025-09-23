@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Feature.Mix.Indicator where
 
 import Control.Monad.Reader (MonadReader, asks)

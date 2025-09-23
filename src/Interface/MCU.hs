@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Interface.MCU where
 
 import Control.Monad.State

@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Feature.Smart.Top.Vibro where
 
 import Control.Monad.Reader (MonadReader, asks)

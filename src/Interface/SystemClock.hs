@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Interface.SystemClock where
 
 import Control.Monad.State
@@ -10,13 +8,10 @@ import Interface.Counter (Counter (readCounter))
 import Interface.Timer (HandleTimer (HandleTimer), Timer)
 import Ivory.Language
 
-data SystemClock where
-    SystemClock ::
-        (Timer t) =>
-        { timer :: t
-        , time :: Value Uint32
-        } ->
-        SystemClock
+data SystemClock = forall t. (Timer t) => SystemClock
+    { timer :: t
+    , time :: Value Uint32
+    }
 
 systemClock ::
     (MonadState Context m, Timer t) =>

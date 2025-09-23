@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Feature.Smart.Top.Buttons where
 
 import Control.Monad.State (MonadState)

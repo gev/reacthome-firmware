@@ -1,4 +1,3 @@
-{-# LANGUAGE GADTs #-}
 {-# LANGUAGE NoStarIsType #-}
 
 module Endpoint.DInputsRelaysRules where

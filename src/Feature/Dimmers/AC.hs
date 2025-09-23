@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Feature.Dimmers.AC where
 
 import Control.Monad (void)

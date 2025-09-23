@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Interface.RS485 (
     module Interface.RS485,
     WordLength (..),
@@ -21,13 +19,13 @@ import Interface.UART as U
 import Ivory.Language
 import Ivory.Support
 
-data RS485 rn tn where
-    RS485 ::
-        (UART (u rn tn), Output o, KnownNat rn, KnownNat tn) =>
-        { uart :: u rn tn
-        , rede :: o
-        } ->
-        RS485 rn tn
+data RS485 rn tn
+    = forall u o.
+      (UART (u rn tn), Output o, KnownNat rn, KnownNat tn) =>
+    RS485
+    { uart :: u rn tn
+    , rede :: o
+    }
 
 data HandleRS485 r = HandleRS485
     { re :: r

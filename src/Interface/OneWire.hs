@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Interface.OneWire where
 
 import Control.Monad.State (MonadState)
@@ -9,25 +7,22 @@ import qualified Interface.GPIO.OpenDrain as OD
 import qualified Interface.Timer as T
 import Ivory.Language
 
-data OneWire where
-  OneWire ::
-    (OD.OpenDrain od, T.Timer t) =>
+data OneWire = forall od t. (OD.OpenDrain od, T.Timer t) => OneWire
     { port :: od
     , timer :: t
-    } ->
-    OneWire
+    }
 
 mkOneWire ::
-  (MonadState Context m, OD.OpenDrain od, T.Timer t) =>
-  (Uint32 -> Uint32 -> m t) ->
-  m od ->
-  m OneWire
+    (MonadState Context m, OD.OpenDrain od, T.Timer t) =>
+    (Uint32 -> Uint32 -> m t) ->
+    m od ->
+    m OneWire
 mkOneWire cfg od = do
-  port <- od
-  timer <- cfg 1_000_000 10
-  let onewire = OneWire{port, timer}
-  addInit "onewire" $ initOneWire onewire
-  pure onewire
+    port <- od
+    timer <- cfg 1_000_000 10
+    let onewire = OneWire{port, timer}
+    addInit "onewire" $ initOneWire onewire
+    pure onewire
 
 initOneWire :: OneWire -> Ivory eff ()
 initOneWire OneWire{..} = OD.set port
@@ -49,5 +44,5 @@ disableOneWire OneWire{..} = T.disableInterrupt timer
 
 handleTimer :: (MonadState Context m) => OneWire -> (forall eff. Ivory eff ()) -> m ()
 handleTimer OneWire{..} handler =
-  addHandler $
-    T.HandleTimer timer handler
+    addHandler $
+        T.HandleTimer timer handler

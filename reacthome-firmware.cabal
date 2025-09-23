@@ -338,6 +338,7 @@ executable reacthome-firmware
     BlockArguments
     DataKinds
     DeriveTraversable
+    ExistentialQuantification
     FlexibleContexts
     FlexibleInstances
     FunctionalDependencies

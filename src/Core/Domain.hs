@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Core.Domain where
 
 import Control.Monad.State
@@ -18,16 +16,14 @@ import Support.ReadAddr
 import Support.Serialize
 import Util.String
 
-data Domain p i where
-       Domain ::
-              { model :: Value Uint8
-              , version :: V.Version
-              , mcu :: I.Platform p
-              , mustInit :: IBool
-              , shouldInit :: Value IBool
-              , implementation :: i
-              } ->
-              Domain p i
+data Domain p i = Domain
+       { model :: Value Uint8
+       , version :: V.Version
+       , mcu :: I.Platform p
+       , mustInit :: IBool
+       , shouldInit :: Value IBool
+       , implementation :: i
+       }
 
 domain ::
        (MonadState Context m) =>

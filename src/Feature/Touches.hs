@@ -1,5 +1,4 @@
 {-# HLINT ignore "Use for_" #-}
-{-# LANGUAGE GADTs #-}
 {-# OPTIONS_GHC -Wno-missing-fields #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 

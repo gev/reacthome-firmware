@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Feature.Scd40 where
 
 import Control.Monad.Reader (MonadReader, asks)

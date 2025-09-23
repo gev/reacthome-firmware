@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Feature.Dimmers where
 
 import Control.Monad.Reader (MonadReader, asks)

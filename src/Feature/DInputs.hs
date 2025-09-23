@@ -1,4 +1,3 @@
-{-# LANGUAGE GADTs #-}
 {-# HLINT ignore "Use for_" #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 

@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Feature.SRC4392 where
 
 import Control.Monad.Reader (MonadReader, asks)

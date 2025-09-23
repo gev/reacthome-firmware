@@ -1,5 +1,3 @@
-{-# LANGUAGE GADTs #-}
-
 module Transport.UART.RBUS.Data where
 
 import Control.Monad.State (MonadState)
@@ -16,25 +14,25 @@ import Interface.UART
 import Ivory.Language
 import qualified Protocol.UART.RBUS as U
 
-data RBUS q l where
-    RBUS ::
-        (UART (u rn tn), KnownNat rn, KnownNat tn) =>
-        { name :: String
-        , speed :: Uint32
-        , model :: Value Uint8
-        , version :: Version
-        , mac :: Mac
-        , clock :: SystemClock
-        , uart :: u rn tn
-        , protocol :: U.RBUS 255
-        , msgQueue :: Queue q (Messages q)
-        , msgBuff :: Buffer l Uint8
-        , msgIndex :: Value Uint16
-        , discoveryBuff :: Buffer 10 Uint8
-        , txLock :: Value IBool
-        , rxTimestamp :: Value Uint32
-        } ->
-        RBUS q l
+data RBUS q l
+    = forall u rn tn.
+      (UART (u rn tn), KnownNat rn, KnownNat tn) =>
+    RBUS
+    { name :: String
+    , speed :: Uint32
+    , model :: Value Uint8
+    , version :: Version
+    , mac :: Mac
+    , clock :: SystemClock
+    , uart :: u rn tn
+    , protocol :: U.RBUS 255
+    , msgQueue :: Queue q (Messages q)
+    , msgBuff :: Buffer l Uint8
+    , msgIndex :: Value Uint16
+    , discoveryBuff :: Buffer 10 Uint8
+    , txLock :: Value IBool
+    , rxTimestamp :: Value Uint32
+    }
 
 data Messages n = Messages
     { msgOffset :: Buffer n Uint16
