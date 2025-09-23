@@ -1,31 +1,29 @@
-{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE RankNTypes       #-}
-{-# LANGUAGE RecordWildCards  #-}
+{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
 {-# HLINT ignore "Use for_" #-}
 
 module Transport.RS485.RBUS.Tx where
 
-import           Data.Buffer
-import           Data.Queue
-import           GHC.TypeNats
-import qualified Interface.RS485              as RS
-import           Interface.SystemClock
-import           Ivory.Language
-import           Ivory.Stdlib
-import           Protocol.RS485.RBUS          (messageTTL)
-import           Protocol.RS485.RBUS.Slave
-import           Protocol.RS485.RBUS.Slave.Tx
-import           Transport.RS485.RBUS.Data
-
-
+import Data.Buffer
+import Data.Queue
+import GHC.TypeNats
+import qualified Interface.RS485 as RS
+import Interface.SystemClock
+import Ivory.Language
+import Ivory.Stdlib
+import Protocol.RS485.RBUS (messageTTL)
+import Protocol.RS485.RBUS.Slave
+import Protocol.RS485.RBUS.Slave.Tx
+import Transport.RS485.RBUS.Data
 
 txHandle :: RBUS -> Ivory eff ()
 txHandle RBUS{..} = do
     store rxLock false
     store txLock false
-
 
 txTask :: RBUS -> Ivory (ProcEffects s ()) ()
 txTask r@RBUS{..} = do
@@ -33,15 +31,14 @@ txTask r@RBUS{..} = do
     txLock' <- deref txLock
     when (iNot rxLock' .&& iNot txLock') $ do
         hasAddress' <- hasAddress protocol
-        ifte_ hasAddress'
-            (do
+        ifte_
+            hasAddress'
+            ( do
                 doConfirm r
                 doTransmitMessage r
                 doPing r
             )
             (doDiscovery r)
-
-
 
 initTask :: RBUS -> Ivory (ProcEffects s ()) ()
 initTask r@RBUS{..} = do
@@ -49,25 +46,26 @@ initTask r@RBUS{..} = do
     when shouldInit' $
         toQueue r initBuff
 
-
-
 doTransmitMessage :: RBUS -> Ivory (ProcEffects s ()) ()
 doTransmitMessage r@RBUS{..} = do
     t0 <- deref txTimestamp
     t1 <- getSystemTime clock
     when (t1 - t0 >? 1) $ peek msgQueue $ \Messages{..} ix -> do
         ttl <- deref $ msgTTL ! ix
-        ifte_ (ttl >? 0)
-            (do offset <- deref $ msgOffset ! ix
-                size   <- deref $ msgSize ! ix
-                confirmed'    <- deref msgConfirmed
-                ifte_ confirmed'
-                    (do
+        ifte_
+            (ttl >? 0)
+            ( do
+                offset <- deref $ msgOffset ! ix
+                size <- deref $ msgSize ! ix
+                confirmed' <- deref msgConfirmed
+                ifte_
+                    confirmed'
+                    ( do
                         store msgConfirmed false
                         remove msgQueue
                     )
-                    (do
-                        size  <- deref $ msgSize ! ix
+                    ( do
+                        size <- deref $ msgSize ! ix
                         RS.transmit rs $ \write ->
                             for (toIx size) $ \dx -> do
                                 let sx = dx + toIx offset
@@ -80,15 +78,12 @@ doTransmitMessage r@RBUS{..} = do
             )
             (remove msgQueue)
 
-
-
 doDiscovery :: RBUS -> Ivory (ProcEffects s ()) ()
 doDiscovery r@RBUS{..} = do
     t0 <- deref txTimestamp
     t1 <- getSystemTime clock
     when (t1 - t0 >? 1000) $
         toRS transmitDiscovery r
-
 
 doConfirm :: RBUS -> Ivory (ProcEffects s ()) ()
 doConfirm r@RBUS{..} = do
@@ -97,7 +92,6 @@ doConfirm r@RBUS{..} = do
         store shouldConfirm false
         toRS transmitConfirm r
 
-
 doPing :: RBUS -> Ivory (ProcEffects s ()) ()
 doPing r@RBUS{..} = do
     t0 <- deref txTimestamp
@@ -105,59 +99,55 @@ doPing r@RBUS{..} = do
     when (t1 - t0 >? 1000) $
         toRS transmitPing r
 
-
-
-toRS :: (Slave 255 -> (Uint8 -> Ivory eff ()) -> Ivory (ProcEffects s ()) ())
-     -> RBUS
-     -> Ivory (ProcEffects s ()) ()
+toRS ::
+    (Slave 255 -> (Uint8 -> Ivory eff ()) -> Ivory (ProcEffects s ()) ()) ->
+    RBUS ->
+    Ivory (ProcEffects s ()) ()
 toRS transmit r@RBUS{..} = do
     RS.transmit rs $ \write -> transmit protocol (write . safeCast)
     store txTimestamp =<< getSystemTime clock
     store txLock true
 
-
 {--
     TODO: potential message overwriting in the msgBuff
 --}
-toQueue :: KnownNat l => RBUS -> Buffer l Uint8 -> Ivory (ProcEffects s t) ()
+toQueue :: (KnownNat l) => RBUS -> Buffer l Uint8 -> Ivory (ProcEffects s t) ()
 toQueue RBUS{..} buff = do
     hasAddress' <- hasAddress protocol
     when hasAddress' $ do
         push msgQueue $ \Messages{..} ix -> do
             index <- deref msgIndex
-            size  <- run protocol (transmitMessage buff) msgBuff index
+            size <- run protocol (transmitMessage buff) msgBuff index
             store msgIndex $ index + safeCast size
             store (msgOffset ! ix) index
-            store (msgSize   ! ix) size
-            store (msgTTL    ! ix) messageTTL
+            store (msgSize ! ix) size
+            store (msgTTL ! ix) messageTTL
 
-
-
-toQueue' :: RBUS
-         -> Uint8
-         -> ((Uint8 -> forall eff. Ivory eff ()) -> forall eff. Ivory eff ())
-         -> Ivory (ProcEffects s t) ()
+toQueue' ::
+    RBUS ->
+    Uint8 ->
+    ((Uint8 -> forall eff. Ivory eff ()) -> forall eff. Ivory eff ()) ->
+    Ivory (ProcEffects s t) ()
 toQueue' RBUS{..} size' transmit = do
     hasAddress' <- hasAddress protocol
     when hasAddress' $ do
-        push msgQueue $ \ Messages{..} ix -> do
+        push msgQueue $ \Messages{..} ix -> do
             index <- deref msgIndex
-            size  <- run protocol (transmitMessage' size' transmit) msgBuff index
+            size <- run protocol (transmitMessage' size' transmit) msgBuff index
             store msgIndex $ index + safeCast size
             store (msgOffset ! ix) index
-            store (msgSize   ! ix) size
-            store (msgTTL    ! ix) messageTTL
+            store (msgSize ! ix) size
+            store (msgTTL ! ix) messageTTL
 
-
-
-run :: (KnownNat l, SafeCast Uint8 v, IvoryStore v)
-    => Slave 255
-    -> (Slave 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ())
-    -> Buffer l v
-    -> Uint16
-    -> Ivory (ProcEffects s t) Uint8
+run ::
+    (KnownNat l, SafeCast Uint8 v, IvoryStore v) =>
+    Slave 255 ->
+    (Slave 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s t) ()) ->
+    Buffer l v ->
+    Uint16 ->
+    Ivory (ProcEffects s t) Uint8
 run protocol transmit buff offset = do
-    size  <- local $ ival 0
+    size <- local $ ival 0
     let go :: Uint8 -> Ivory eff ()
         go v = do
             i <- deref size

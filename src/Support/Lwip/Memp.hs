@@ -1,33 +1,26 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# LANGUAGE DataKinds #-}
 {-# HLINT ignore "Use camelCase" #-}
 {-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE DataKinds #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
-module Support.Lwip.Memp
-    ( initMemp
+module Support.Lwip.Memp (
+    initMemp,
+    inclMemp,
+) where
 
-    , inclMemp
-    ) where
+import Ivory.Language
+import Ivory.Language.Proc
+import Ivory.Language.Syntax
+import Ivory.Support
 
-import           Ivory.Language
-import           Ivory.Support
-import           Ivory.Language.Proc
-import           Ivory.Language.Syntax
-
-
-
-fun :: ProcType f => Sym -> Def f
+fun :: (ProcType f) => Sym -> Def f
 fun = funFrom "lwip/memp.h"
 
-
-
-initMemp ::  Ivory eff ()
+initMemp :: Ivory eff ()
 initMemp = call_ memp_init
 
 memp_init :: Def ('[] :-> ())
 memp_init = fun "memp_init"
-
-
 
 inclMemp :: ModuleDef
 inclMemp = do

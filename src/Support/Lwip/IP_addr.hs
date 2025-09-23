@@ -1,31 +1,26 @@
-{-# LANGUAGE DataKinds     #-}
-{-# LANGUAGE QuasiQuotes   #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
 {-# HLINT ignore "Use camelCase" #-}
 
-module Support.Lwip.IP_addr
-    ( IP_ADDR_4_STRUCT
-    , IP_ADDR_4
-    , addr
+module Support.Lwip.IP_addr (
+    IP_ADDR_4_STRUCT,
+    IP_ADDR_4,
+    addr,
+    ipAddrAny,
+    createIpAddr4,
+    inclIP_addr,
+) where
 
-    , ipAddrAny
-    , createIpAddr4
+import Ivory.Language
+import Ivory.Language.Proc (ProcType)
+import Ivory.Language.Syntax (Sym)
+import Ivory.Support
 
-    , inclIP_addr
-    ) where
-
-
-import           Ivory.Language
-import           Ivory.Language.Proc   (ProcType)
-import           Ivory.Language.Syntax (Sym)
-import           Ivory.Support
-
-
-fun :: ProcType f => Sym -> Def f
+fun :: (ProcType f) => Sym -> Def f
 fun = funFrom "lwip/ip_addr.h"
-
-
 
 type IP_ADDR_4_STRUCT = "ip4_addr"
 type IP_ADDR_4 s = Ref s (Struct IP_ADDR_4_STRUCT)
@@ -35,22 +30,17 @@ type IP_ADDR_4 s = Ref s (Struct IP_ADDR_4_STRUCT)
         { addr :: Stored Uint32 }
 |]
 
-
-
 ipAddrAny :: IP_ADDR_4 Global
 ipAddrAny = addrOf ip_addr_any
 
 ip_addr_any :: MemArea (Struct IP_ADDR_4_STRUCT)
-ip_addr_any = area "ip4_addr_any" $ Just $ istruct [ addr .= ival 0 ]
-
-
+ip_addr_any = area "ip4_addr_any" $ Just $ istruct [addr .= ival 0]
 
 createIpAddr4 :: IP_ADDR_4 s -> Uint8 -> Uint8 -> Uint8 -> Uint8 -> Ivory eff ()
 createIpAddr4 = call_ ip_addr4
 
 ip_addr4 :: Def ('[IP_ADDR_4 s, Uint8, Uint8, Uint8, Uint8] :-> ())
 ip_addr4 = fun "IP_ADDR4"
-
 
 inclIP_addr :: ModuleDef
 inclIP_addr = do

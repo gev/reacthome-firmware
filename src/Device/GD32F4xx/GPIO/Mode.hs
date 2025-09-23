@@ -1,17 +1,13 @@
-{-# LANGUAGE DataKinds        #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 
-module Device.GD32F4xx.GPIO.Mode  where
+module Device.GD32F4xx.GPIO.Mode where
 
-import           Support.Device.GD32F4xx.GPIO
-
-
+import Support.Device.GD32F4xx.GPIO
 
 data Mode
     = MF GPIO_MODE GPIO_OTYPE
     | AF GPIO_AF
-
-
 
 input :: Mode
 input = MF gpio_mode_input gpio_otype_pp
@@ -21,8 +17,6 @@ output = MF gpio_mode_output gpio_otype_pp
 
 openDrain :: Mode
 openDrain = MF gpio_mode_output gpio_otype_od
-
-
 
 af_0 :: Mode
 af_0 = AF gpio_af_0
