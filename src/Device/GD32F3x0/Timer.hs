@@ -1,5 +1,3 @@
-{-# LANGUAGE ExistentialQuantification #-}
-
 module Device.GD32F3x0.Timer where
 
 import Control.Monad.State (MonadState)
