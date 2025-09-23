@@ -348,4 +348,5 @@ executable reacthome-firmware
     RankNTypes
     RecordWildCards
     ScopedTypeVariables
+    StandaloneDeriving
     TypeOperators
