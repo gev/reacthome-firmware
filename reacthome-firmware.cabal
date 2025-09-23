@@ -337,6 +337,7 @@ executable reacthome-firmware
   default-extensions:
     DataKinds
     FlexibleContexts
+    FlexibleInstances
     MultiParamTypeClasses
     NamedFieldPuns
     NumericUnderscores

@@ -1,5 +1,3 @@
-{-# LANGUAGE FlexibleInstances #-}
-
 module Data.Semaphore where
 
 import Control.Monad.State (MonadState)

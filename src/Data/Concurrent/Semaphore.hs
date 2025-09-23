@@ -1,5 +1,3 @@
-{-# LANGUAGE FlexibleInstances #-}
-
 module Data.Concurrent.Semaphore where
 
 import Data.Concurrent.Atomically
