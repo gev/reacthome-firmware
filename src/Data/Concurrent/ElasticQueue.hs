@@ -13,7 +13,11 @@ import Ivory.Language.Array
 import Ivory.Language.Proxy
 import Ivory.Stdlib
 
-pushConcurrently :: (KnownNat n) => ElasticQueue n t -> (t -> Ix n -> Ivory eff ()) -> Ivory eff ()
+pushConcurrently ::
+    (KnownNat n) =>
+    ElasticQueue n t ->
+    (t -> Ix n -> Ivory eff ()) ->
+    Ivory eff ()
 pushConcurrently q@ElasticQueue{..} handle = do
     downConcurrently producerS do
         x <- deref producerIx
@@ -24,7 +28,12 @@ pushConcurrently q@ElasticQueue{..} handle = do
         when (s >=? half) do
             store isReady true
 
-pushConcurrently' :: (KnownNat n) => ElasticQueue n t -> (t -> Ix n -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+pushConcurrently' ::
+    (KnownNat n) =>
+    ElasticQueue n t ->
+    (t -> Ix n -> Ivory eff ()) ->
+    Ivory eff () ->
+    Ivory eff ()
 pushConcurrently' q@ElasticQueue{..} handleT handleF = do
     flip (downConcurrently' producerS) handleF do
         x <- deref producerIx
@@ -35,7 +44,11 @@ pushConcurrently' q@ElasticQueue{..} handleT handleF = do
         when (s >=? half) do
             store isReady true
 
-popConcurrently :: (KnownNat n) => ElasticQueue n t -> (t -> Ix n -> Ivory eff ()) -> Ivory eff ()
+popConcurrently ::
+    (KnownNat n) =>
+    ElasticQueue n t ->
+    (t -> Ix n -> Ivory eff ()) ->
+    Ivory eff ()
 popConcurrently ElasticQueue{..} handle = do
     isReady' <- deref isReady
     when isReady' do
@@ -45,7 +58,15 @@ popConcurrently ElasticQueue{..} handle = do
             handle it x
             upConcurrently producerS
 
-popConcurrently' :: (KnownNat n) => ElasticQueue n t -> (t -> Ix n -> Ivory eff ()) -> Ivory eff () -> Ivory eff ()
+popConcurrently' ::
+    (KnownNat n) =>
+    ElasticQueue n t ->
+    ( t ->
+      Ix n ->
+      Ivory eff ()
+    ) ->
+    Ivory eff () ->
+    Ivory eff ()
 popConcurrently' ElasticQueue{..} handleT handleF = do
     isReady' <- deref isReady
     flip (ifte_ isReady') handleF do
@@ -55,7 +76,10 @@ popConcurrently' ElasticQueue{..} handleT handleF = do
             handleT it x
             upConcurrently producerS
 
-remove :: (KnownNat n) => ElasticQueue n t -> Ivory eff ()
+remove ::
+    (KnownNat n) =>
+    ElasticQueue n t ->
+    Ivory eff ()
 remove ElasticQueue{..} = do
     isReady' <- deref isReady
     when isReady' do
@@ -64,7 +88,11 @@ remove ElasticQueue{..} = do
             store consumerIx $ x + 1
             upConcurrently producerS
 
-clearConcurrently :: forall n t eff. (KnownNat n) => ElasticQueue n t -> Ivory eff ()
+clearConcurrently ::
+    forall n t eff.
+    (KnownNat n) =>
+    ElasticQueue n t ->
+    Ivory eff ()
 clearConcurrently ElasticQueue{..} = do
     store consumerIx 0
     store producerIx 0

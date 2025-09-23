@@ -94,8 +94,8 @@ handleEvent i2c receive = do
     mode' <- deref $ mode i2c
     ifte_
         mode'
-        (handleTransmit i2c)
-        (handleReceive i2c receive)
+        do handleTransmit i2c
+        do handleReceive i2c receive
 
 handleTransmit :: (KnownNat n) => I2C n -> Ivory eff ()
 handleTransmit I2C{..} = do

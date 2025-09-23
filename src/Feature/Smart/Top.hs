@@ -59,16 +59,16 @@ top uart' pin' transportUp = do
             action <- deref $ buff ! 0
             ifte_
                 (action ==? actionFindMe)
-                ( when (size ==? 2) do
-                    lazyTransmit transportUp 2 \transmit -> do
-                        transmit actionFindMe
-                        transmit =<< deref (buff ! 1)
-                )
-                ( lazyTransmit transportUp (size + 1) \transmit -> do
-                    transmit actionSmartTop
-                    for (toIx size) \ix ->
-                        transmit =<< deref (buff ! ix)
-                )
+                do
+                    when (size ==? 2) do
+                        lazyTransmit transportUp 2 \transmit -> do
+                            transmit actionFindMe
+                            transmit =<< deref (buff ! 1)
+                do
+                    lazyTransmit transportUp (size + 1) \transmit -> do
+                        transmit actionSmartTop
+                        for (toIx size) \ix ->
+                            transmit =<< deref (buff ! ix)
 
     transportDown <- mkRbus "transport_uart_rbus" uart 115_200 onMessage'
 

@@ -126,8 +126,8 @@ discoveryTask rbus@RBUS{..} = do
         hasIP' <- deref hasIP
         ifte_
             hasIP'
-            (transmit rbus discovery)
-            (broadcast rbus requestIP)
+            do transmit rbus discovery
+            do broadcast rbus requestIP
         store shouldDiscovery false
 
 requestInitTask :: RBUS -> Ivory (ProcEffects s t) ()

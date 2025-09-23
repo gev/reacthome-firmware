@@ -135,8 +135,8 @@ receiveMessageSize Slave{..} v = do
     updateCRC16 crc v
     ifte_
         (v ==? 0)
-        (store phase waitingMsbCRC)
-        (store phase waitingData)
+        do store phase waitingMsbCRC
+        do store phase waitingData
 
 receiveMessageData :: (KnownNat n) => Slave n -> Uint8 -> Ivory eff ()
 receiveMessageData Slave{..} v = do
@@ -146,9 +146,8 @@ receiveMessageData Slave{..} v = do
     updateCRC16 crc v
     s <- deref size
     i <- deref offset
-    when
-        (i ==? s)
-        (store phase waitingMsbCRC)
+    when (i ==? s) do
+        store phase waitingMsbCRC
 
 receiveMessageLsbCRC :: Slave n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receiveMessageLsbCRC s@Slave{..} = receiveLsbCRC s do
@@ -162,13 +161,15 @@ receiveAddress :: Uint8 -> Slave n -> Uint8 -> Ivory eff ()
 receiveAddress p Slave{..} v = do
     a <- deref address
     updateCRC16 crc v
-    when (v /=? a .&& v /=? broadcastAddress) $ store valid false
+    when (v /=? a .&& v /=? broadcastAddress) do
+        store valid false
     store phase p
 
 receiveMsbCRC :: Slave n -> Uint8 -> Ivory eff ()
 receiveMsbCRC Slave{..} v = do
     msb' <- deref $ crc ~> msb
-    when (msb' /=? v) $ store valid false
+    when (msb' /=? v) do
+        store valid false
     store phase waitingLsbCRC
 
 receiveLsbCRC :: Slave n -> Ivory eff () -> Uint8 -> Ivory eff ()
@@ -184,8 +185,8 @@ skipAll s@Slave{..} _ = do
     phase' <- deref phase
     ifte_
         (phase' >? 1)
-        (store phase $ phase' - 1)
-        (reset s)
+        do store phase $ phase' - 1
+        do reset s
 
 skipMsg :: Slave n -> Uint8 -> Ivory eff ()
 skipMsg s@Slave{..} v = do

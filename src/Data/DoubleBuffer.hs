@@ -32,8 +32,8 @@ selectDmaBuff doubleBuff callback = do
     num0' <- deref $ num0 doubleBuff
     ifte_
         (num0' ==? 0)
-        (callback (buff1 doubleBuff))
-        (callback (buff0 doubleBuff))
+        do callback (buff1 doubleBuff)
+        do callback (buff0 doubleBuff)
     store (num0 doubleBuff) $ 1 - num0'
 
 selectHandlerBuff ::
@@ -47,8 +47,8 @@ selectHandlerBuff doubleBuff callback = do
     when (num1' /=? num0') do
         ifte_
             (num1' ==? 0)
-            (callback (buff0 doubleBuff))
-            (callback (buff1 doubleBuff))
+            do callback (buff0 doubleBuff)
+            do callback (buff1 doubleBuff)
         store (num1 doubleBuff) num0'
 
 lengthDoubleArray ::

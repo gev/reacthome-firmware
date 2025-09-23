@@ -100,7 +100,10 @@ indicator mkDisplay hue transport = do
 
     pure indicator
 
-update :: (KnownNat n) => Indicator n -> Ivory (ProcEffects s ()) ()
+update ::
+    (KnownNat n) =>
+    Indicator n ->
+    Ivory (ProcEffects s ()) ()
 update Indicator{..} = do
     phi' <- deref phi
     pixel <- local . istruct $ hsv hue 1 maxValue
@@ -141,11 +144,19 @@ update Indicator{..} = do
     dphi' <- deref dphi
     store phi (phi' + dphi')
 
-render :: (KnownNat n, KnownNat (Canvas1DSize n)) => Indicator n -> Ivory (ProcEffects s ()) IBool
+render ::
+    (KnownNat n, KnownNat (Canvas1DSize n)) =>
+    Indicator n ->
+    Ivory (ProcEffects s ()) IBool
 render Indicator{..} =
     writePixels canvas pixels
 
-onFindMe :: (KnownNat l) => Indicator n -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onFindMe ::
+    (KnownNat l) =>
+    Indicator n ->
+    Buffer l Uint8 ->
+    Uint8 ->
+    Ivory (ProcEffects s t) ()
 onFindMe Indicator{..} buff size =
     when (size >=? 2) do
         v <- unpack buff 1
@@ -154,6 +165,9 @@ onFindMe Indicator{..} buff size =
         transmit findMeMsg
 
 sinT :: ConstMemArea (Array 200 (Stored IFloat))
-sinT = constArea "indicator_sin_table" $ iarray $ ival . ifloat . f . fromIntegral <$> [-50 .. 149]
+sinT =
+    constArea "indicator_sin_table" $
+        iarray $
+            ival . ifloat . f . fromIntegral <$> [-50 .. 149]
   where
     f i = (1 + sin (pi * i / 100)) / 2

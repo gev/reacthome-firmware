@@ -155,8 +155,8 @@ toggleRelay rs@Relays{..} groups index = do
     state' <- deref $ r ~> state
     ifte_
         state'
-        (turnOffRelay rs index)
-        (turnOnRelay rs groups index)
+        do turnOffRelay rs index
+        do turnOnRelay rs groups index
 
 setRelayDelayOff :: (KnownNat n) => Relays n -> Uint8 -> Uint32 -> Ivory eff ()
 setRelayDelayOff Relays{..} index delay = do
@@ -201,8 +201,8 @@ getGroupDelay rs G.Groups{..} i ts = do
     min' <- deref min
     ifte
         (delay' >? min')
-        (pure $ delay' - min')
-        (pure 0)
+        do pure $ delay' - min'
+        do pure 0
 
 turnOffGroup ::
     (KnownNat n) =>

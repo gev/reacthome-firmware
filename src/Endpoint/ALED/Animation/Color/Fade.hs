@@ -22,7 +22,8 @@ renderFade time subpixel value animation brightness = do
         loop' <- deref $ animation ~> animationLoop
         ifte_
             loop'
-            (store v b')
+            do
+                store v b'
             do
                 let rest = 1 - time
                 ifte_

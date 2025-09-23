@@ -102,8 +102,8 @@ onDo Dimmers{..} buff size = do
                 value' <- deref $ buff ! 2
                 ifte_
                     (value' ==? 0)
-                    (onOff getDimmers index')
-                    (onOn getDimmers index')
+                    do onOff getDimmers index'
+                    do onOn getDimmers index'
 
 onDim ::
     (KnownNat n, KnownNat l) =>

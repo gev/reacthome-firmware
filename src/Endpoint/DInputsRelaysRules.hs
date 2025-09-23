@@ -110,8 +110,8 @@ manageRules Rules{..} DInputs{..} relays groups =
         state' <- deref $ di ~> DI.state
         ifte_
             state'
-            (run rulesOn)
-            (run rulesOff)
+            do run rulesOn
+            do run rulesOff
 
 syncRules ::
     (KnownNat ni, KnownNat no, KnownNat (PayloadSize no)) =>

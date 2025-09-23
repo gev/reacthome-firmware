@@ -226,14 +226,14 @@ calculateValue dimmer = do
             let newValue = value' + delta'
             ifte_
                 (newValue >? brightness')
-                (store (dimmer ~> value) brightness')
-                (store (dimmer ~> value) newValue)
+                do store (dimmer ~> value) brightness'
+                do store (dimmer ~> value) newValue
         , value' >? brightness' ==> do
             let newValue = value' - delta'
             ifte_
                 (newValue <? brightness')
-                (store (dimmer ~> value) brightness')
-                (store (dimmer ~> value) newValue)
+                do store (dimmer ~> value) brightness'
+                do store (dimmer ~> value) newValue
         ]
 
 copyLabel ::

@@ -25,5 +25,5 @@ renderSlideInOut' time segmentSize pixel animation = do
     (/ (safeCast d + 1)) . safeCast
         <$> ifte
             (pixel ==? x .|| pixel ==? x')
-            (deref $ animation ~> params ! 1)
-            (deref $ animation ~> params ! 0)
+            do deref $ animation ~> params ! 1
+            do deref $ animation ~> params ! 0

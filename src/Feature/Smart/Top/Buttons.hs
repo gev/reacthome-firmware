@@ -88,11 +88,11 @@ updateButtons Buttons{..} = do
             dx <- deref $ order leds ! sx
             ifte_
                 state'
-                (run (pixels leds ! dx) pixel'')
-                ( when
-                    start'
-                    (run (pixels leds ! dx) pixel')
-                )
+                do
+                    run (pixels leds ! dx) pixel''
+                do
+                    when start' do
+                        run (pixels leds ! dx) pixel'
   where
     run dst src = do
         store (dst ~> r) =<< deref (src ~> r)

@@ -1,4 +1,3 @@
-
 module Protocol.UART.RBUS.Rx (
     receive,
     reset,
@@ -52,8 +51,8 @@ receiveMessageSize RBUS{..} v = do
     updateCRC16 crc v
     ifte_
         (v ==? 0)
-        (store phase waitingMsbCRC)
-        (store phase waitingData)
+        do store phase waitingMsbCRC
+        do store phase waitingData
 
 receiveMessageData :: (KnownNat n) => RBUS n -> Uint8 -> Ivory eff ()
 receiveMessageData RBUS{..} v = do
@@ -63,9 +62,8 @@ receiveMessageData RBUS{..} v = do
     updateCRC16 crc v
     s <- deref size
     i <- deref offset
-    when
-        (i ==? s)
-        (store phase waitingMsbCRC)
+    when (i ==? s) do
+        store phase waitingMsbCRC
 
 receiveMessageLsbCRC :: RBUS n -> Uint8 -> Ivory (ProcEffects s ()) ()
 receiveMessageLsbCRC r@RBUS{..} v = do

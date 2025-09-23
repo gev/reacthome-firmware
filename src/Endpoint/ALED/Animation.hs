@@ -52,16 +52,17 @@ renderColor brightness random animation segment segmentSize pixel pixelSize subp
             let (-->) p r = kind' ==? p ==> r animation brightness
             ifte
                 (time' <? 0 .|| time' >? 1)
-                (pure value)
-                ( cond
-                    [ 0x00 --> renderFade time' subpixel value
-                    , 0x10 --> renderSpectrumT time' subpixel
-                    , 0x11 --> renderSpectrumX time' segmentSize pixel subpixel
-                    , 0x20 --> renderRandomT time' subpixel value random
-                    , 0x21 --> renderRandomX subpixel value random
-                    , true ==> pure value
-                    ]
-                )
+                do
+                    pure value
+                do
+                    cond
+                        [ 0x00 --> renderFade time' subpixel value
+                        , 0x10 --> renderSpectrumT time' subpixel
+                        , 0x11 --> renderSpectrumX time' segmentSize pixel subpixel
+                        , 0x20 --> renderRandomT time' subpixel value random
+                        , 0x21 --> renderRandomX subpixel value random
+                        , true ==> pure value
+                        ]
         do
             pure value
 

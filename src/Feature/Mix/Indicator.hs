@@ -206,8 +206,8 @@ renderPixel pixel i ATS{..} DInputs{dinputs} Relays{relays} = do
                 isOn <- deref $ relay ~> R.state
                 ifte_
                     (isOn .&& source' ==? i)
-                    (store h' 120)
-                    (store h' 60)
+                    do store h' 120
+                    do store h' 60
             do
                 store h' 0
 
@@ -228,14 +228,14 @@ renderPixel pixel i ATS{..} DInputs{dinputs} Relays{relays} = do
                 isOn <- deref $ relay ~> R.state
                 ifte_
                     (isOn .&& source' ==? i)
-                    (store h' 120)
-                    (store h' 60)
+                    do store h' 120
+                    do store h' 60
             do
                 isOn <- deref $ start ~> R.state
                 ifte_
                     (isOn .|| generatorError /=? errorNone)
-                    (store h' 240)
-                    (store h' 0)
+                    do store h' 240
+                    do store h' 0
 
 render :: Indicator ni no -> Ivory (ProcEffects s ()) IBool
 render Indicator{..} =

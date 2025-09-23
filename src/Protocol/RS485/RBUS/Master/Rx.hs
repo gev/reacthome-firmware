@@ -143,8 +143,8 @@ receiveMessageSize Master{..} v = do
     updateCRC16 crc v
     ifte_
         (v ==? 0)
-        (store phase waitingMsbCRC)
-        (store phase waitingData)
+        do store phase waitingMsbCRC
+        do store phase waitingData
 
 receiveMessageData :: (KnownNat n) => Master n -> Uint8 -> Ivory eff ()
 receiveMessageData Master{..} v = do

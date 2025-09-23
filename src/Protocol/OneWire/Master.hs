@@ -486,7 +486,8 @@ getSearchDirection OneWireMaster{..} = do
     cmpIdBit' <- deref cmpIdBit
     ifte_
         (idBit' .&& cmpIdBit')
-        (store state stateReady)
+        do
+            store state stateReady
         do
             idBitNumber' <- deref idBitNumber
             romByteMask' <- deref romByteMask
@@ -495,13 +496,14 @@ getSearchDirection OneWireMaster{..} = do
             rom' <- deref rom
             ifte_
                 (idBit' /=? cmpIdBit')
-                (store searchDirection idBit')
+                do
+                    store searchDirection idBit'
                 do
                     lastDiscrepancy' <- deref lastDiscrepancy
                     ifte_
                         (idBitNumber' <? lastDiscrepancy')
-                        (store searchDirection $ rom' .& romByteMask' >? 0)
-                        (store searchDirection $ idBitNumber' ==? lastDiscrepancy')
+                        do store searchDirection $ rom' .& romByteMask' >? 0
+                        do store searchDirection $ idBitNumber' ==? lastDiscrepancy'
                     searchDirection' <- deref searchDirection
                     when (iNot searchDirection') do
                         store lastZero idBitNumber'
@@ -538,7 +540,8 @@ checkDevices OneWireMaster{..} = do
             when (idBitNumber'' >? 64) do
                 lastZero' <- deref lastZero
                 store lastDiscrepancy lastZero'
-                when (lastZero' ==? 0) $ store lastDeviceFlag true
+                when (lastZero' ==? 0) do
+                    store lastDeviceFlag true
                 store searchResult true
             searchResult' <- deref searchResult
             rom' <- deref (savedROM ! 0)

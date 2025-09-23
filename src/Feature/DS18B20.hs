@@ -118,8 +118,8 @@ getTemperature DS18B20{..} onewire = do
         for (9 :: Ix 10) $ read onewire (cast ix) . cast
         ifte_
             (idIndex' <? idNumber')
-            (store idIndex $ idIndex' + 1)
-            (store shouldRead false)
+            do store idIndex $ idIndex' + 1
+            do store shouldRead false
 
 {-
     TODO: Move cast to a separate utility module

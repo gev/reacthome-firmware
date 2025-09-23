@@ -154,8 +154,8 @@ onDo AOutputs{..} buff size = do
                 value' <- deref $ buff ! 2
                 ifte_
                     (value' ==? 0)
-                    (onOff getAOutputs index')
-                    (onOn getAOutputs index')
+                    do onOff getAOutputs index'
+                    do onOn getAOutputs index'
 
 onOn :: (KnownNat n) => E.AOutputs n -> Uint8 -> Ivory eff ()
 onOn = E.on

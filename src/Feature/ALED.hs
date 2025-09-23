@@ -157,20 +157,20 @@ update ALED{..} random = do
                         m' <-
                             ifte
                                 maskAnimationSplit'
-                                ( E.renderMask
-                                    random
-                                    maskAnimation
-                                    (fromIx segmentX)
-                                    (safeCast segmentSize')
-                                    x'
-                                )
-                                ( E.renderMask
-                                    random
-                                    maskAnimation
-                                    0
-                                    groupSize'
-                                    (x' + tx')
-                                )
+                                do
+                                    E.renderMask
+                                        random
+                                        maskAnimation
+                                        (fromIx segmentX)
+                                        (safeCast segmentSize')
+                                        x'
+                                do
+                                    E.renderMask
+                                        random
+                                        maskAnimation
+                                        0
+                                        groupSize'
+                                        (x' + tx')
                         for (toIx pixelSize' :: Ix np) \subpixelX -> do
                             px' <- deref px
                             let p = E.subPixels getALED ! px'
@@ -178,28 +178,28 @@ update ALED{..} random = do
                             c' <-
                                 ifte
                                     colorAnimationSplit'
-                                    ( E.renderColor
-                                        brightness'
-                                        random
-                                        colorAnimation
-                                        (fromIx segmentX)
-                                        (safeCast segmentSize')
-                                        x'
-                                        pixelSize'
-                                        (fromIx subpixelX)
-                                        p'
-                                    )
-                                    ( E.renderColor
-                                        brightness'
-                                        random
-                                        colorAnimation
-                                        0
-                                        groupSize'
-                                        (x' + tx')
-                                        pixelSize'
-                                        (fromIx subpixelX)
-                                        p'
-                                    )
+                                    do
+                                        E.renderColor
+                                            brightness'
+                                            random
+                                            colorAnimation
+                                            (fromIx segmentX)
+                                            (safeCast segmentSize')
+                                            x'
+                                            pixelSize'
+                                            (fromIx subpixelX)
+                                            p'
+                                    do
+                                        E.renderColor
+                                            brightness'
+                                            random
+                                            colorAnimation
+                                            0
+                                            groupSize'
+                                            (x' + tx')
+                                            pixelSize'
+                                            (fromIx subpixelX)
+                                            p'
                             let v' = c' * m'
                             p' <- deref p
                             cond_
@@ -403,8 +403,8 @@ onALedAnimationPlay animations groups transport buff size = do
             arrayMap \ix ->
                 ifte_
                     (fromIx ix <? safeCast n)
-                    (store (params ! ix) =<< deref (buff ! toIx (fromIx ix + 8)))
-                    (store (params ! ix) 0)
+                    do store (params ! ix) =<< deref (buff ! toIx (fromIx ix + 8))
+                    do store (params ! ix) 0
 
             kind' <- deref $ animation ~> E.kind
             store (animation ~> E.kind) kind
@@ -419,16 +419,16 @@ onALedAnimationPlay animations groups transport buff size = do
 
             ifte_
                 (split ==? 0)
-                (store (animation ~> E.split) false)
-                (store (animation ~> E.split) true)
+                do store (animation ~> E.split) false
+                do store (animation ~> E.split) true
             ifte_
                 (loop ==? 0)
-                (store (animation ~> E.animationLoop) false)
-                (store (animation ~> E.animationLoop) true)
+                do store (animation ~> E.animationLoop) false
+                do store (animation ~> E.animationLoop) true
             ifte_
                 (inverseDirection ==? 0)
-                (store (animation ~> E.inverseDirection) false)
-                (store (animation ~> E.inverseDirection) true)
+                do store (animation ~> E.inverseDirection) false
+                do store (animation ~> E.inverseDirection) true
 
             store (animation ~> E.inLoop) false
             store (animation ~> E.startLoop) true
@@ -518,8 +518,8 @@ onALedClip ALED{..} buff size = do
             store (clip ~> E.end) $ safeCast end / 255
             ifte_
                 (inverse ==? 0)
-                (store (clip ~> E.inverse) false)
-                (store (clip ~> E.inverse) true)
+                do store (clip ~> E.inverse) false
+                do store (clip ~> E.inverse) true
             lazyTransmit transport 5 \transmit -> do
                 transmit actionALedClip
                 transmit i
@@ -563,7 +563,8 @@ onALedConfigGroup a@ALED{..} buff size = do
             startSegment <- local $ ival 0
             arrayMap \ix -> do
                 endSegment' <- deref endSegment
-                when (ix <=? ix') $ store startSegment endSegment'
+                when (ix <=? ix') do
+                    store startSegment endSegment'
                 segmentNumber' <- deref $ E.groups getALED ! ix ~> E.segmentNumber
                 store endSegment $ endSegment' + segmentNumber'
             startSegment' <- deref startSegment
@@ -605,8 +606,8 @@ onALedConfigGroup a@ALED{..} buff size = do
                 direction <- deref $ buff ! jx'
                 ifte_
                     (direction ==? 0)
-                    (store (segment ~> E.direction) false)
-                    (store (segment ~> E.direction) true)
+                    do store (segment ~> E.direction) false
+                    do store (segment ~> E.direction) true
                 segmentSize' <- deref $ buff ! (jx' + 1)
                 store (segment ~> E.segmentSize) segmentSize'
                 groupSize' <- deref $ group ~> E.groupSize
@@ -619,8 +620,8 @@ onALedConfigGroup a@ALED{..} buff size = do
                 for (toIx size) \ix ->
                     ifte_
                         (ix ==? 3)
-                        (transmit segmentNumber)
-                        (transmit =<< deref (buff ! ix))
+                        do transmit segmentNumber
+                        do transmit =<< deref (buff ! ix)
 
 transmitNextGroup ::
     forall n ng ns np s t.
@@ -645,8 +646,8 @@ transmitNextGroup ALED{..} = do
             segmentSize' <- deref $ segment ~> E.segmentSize
             ifte_
                 direction'
-                (transmit 1)
-                (transmit 0)
+                do transmit 1
+                do transmit 0
             transmit segmentSize'
             store segmentIndex $ sx + 1
     store groupIndex $ groupIndex' + 1
@@ -665,8 +666,8 @@ syncState a@ALED{..} = do
             state' <- deref $ group ~> E.groupState
             ifte_
                 state'
-                (transmit actionALedOn)
-                (transmit actionALedOff)
+                do transmit actionALedOn
+                do transmit actionALedOff
             transmit . castDefault $ 1 + fromIx ix
         store (group ~> E.stateChanged) false
     store stateIndex $ ix + 1
@@ -683,8 +684,8 @@ syncGroups a@ALED{..} = do
         groupIndex' <- deref groupIndex
         ifte_
             (groupIndex' <? ng')
-            (transmitNextGroup a)
-            (store shouldSyncGroups false)
+            do transmitNextGroup a
+            do store shouldSyncGroups false
 
 forceSyncAled ::
     (KnownNat ng, KnownNat ns) =>
@@ -736,7 +737,10 @@ saveConfig ALED{..} = do
             let segment = E.segments getALED ! ix
             save =<< deref (segment ~> E.segmentSize)
             direction <- deref $ segment ~> E.direction
-            ifte_ direction (save 1) (save 0)
+            ifte_
+                direction
+                do save 1
+                do save 0
 
         arrayMap \ix -> do
             let group = E.groups getALED ! ix
@@ -786,8 +790,8 @@ loadConfig ALED{..} = do
             direction :: Uint8 <- load
             ifte_
                 (direction ==? 0)
-                (store (segment ~> E.direction) false)
-                (store (segment ~> E.direction) true)
+                do store (segment ~> E.direction) false
+                do store (segment ~> E.direction) true
 
         jx <- local $ ival 0
         arrayMap \ix -> do

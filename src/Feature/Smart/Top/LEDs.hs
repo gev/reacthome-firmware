@@ -225,7 +225,8 @@ updateLeds LEDs{..} = do
         let pixel = pixels ! dx
 
         ifte_
-            (state' .&& image' .&& (iNot blink' .|| blink' .&& blinkPhase'))
+            do
+                state' .&& image' .&& (iNot blink' .|| blink' .&& blinkPhase')
             do
                 value <- deref $ colors ! palette' ! sx
                 let r' = safeCast $ (value `iShiftR` 16) .& 0xff
@@ -435,5 +436,5 @@ sendPalette LEDs{..} = do
                 transmit b'
         ifte_
             (i' <? pn' - 1)
-            (store ix $ ix' + 1)
-            (store shouldSend false)
+            do store ix $ ix' + 1
+            do store shouldSend false
