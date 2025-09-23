@@ -1,5 +1,4 @@
 {-# LANGUAGE GADTs #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module Feature.Sht21 where
 

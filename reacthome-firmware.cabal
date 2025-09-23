@@ -335,6 +335,7 @@ executable reacthome-firmware
 
   default-language: Haskell2010
   default-extensions:
+    BlockArguments
     DataKinds
     FlexibleContexts
     FlexibleInstances
@@ -342,3 +343,4 @@ executable reacthome-firmware
     NamedFieldPuns
     NumericUnderscores
     RankNTypes
+    RecordWildCards

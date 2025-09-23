@@ -1,4 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
 
 module Transport.UART.RBUS.Rx where
 

@@ -1,5 +1,4 @@
 {-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module Device.GD32F4xx.Display.NeoPixel where
 

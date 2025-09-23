@@ -1,4 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
 
 module Implementation.Smart.TopG4 where
 

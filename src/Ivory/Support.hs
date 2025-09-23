@@ -1,5 +1,4 @@
 {-# LANGUAGE ImpredicativeTypes #-}
-{-# LANGUAGE RecordWildCards #-}
 
 module Ivory.Support where
 

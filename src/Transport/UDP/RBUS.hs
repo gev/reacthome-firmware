@@ -1,5 +1,4 @@
 {-# HLINT ignore "Use for_" #-}
-{-# LANGUAGE RecordWildCards #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 module Transport.UDP.RBUS where

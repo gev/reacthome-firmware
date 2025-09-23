@@ -1,5 +1,4 @@
 {-# HLINT ignore "Use newtype instead of data" #-}
-{-# LANGUAGE BlockArguments #-}
 {-# OPTIONS_GHC -Wno-missing-fields #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 

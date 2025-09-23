@@ -1,4 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
 
 module Transport.RS485.RBUS.Rx where
 

@@ -1,5 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
-
 module Device.GD32F3x0.GPIO.Input where
 
 import Control.Monad.State

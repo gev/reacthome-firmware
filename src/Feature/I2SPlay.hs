@@ -1,6 +1,3 @@
-{-# LANGUAGE BlockArguments #-}
-{-# LANGUAGE RecordWildCards #-}
-
 module Feature.I2SPlay where
 
 import Control.Monad.State

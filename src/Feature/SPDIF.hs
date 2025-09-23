@@ -1,4 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
 
 module Feature.SPDIF where
 

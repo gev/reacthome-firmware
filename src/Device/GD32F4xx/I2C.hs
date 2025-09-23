@@ -1,5 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
-
 module Device.GD32F4xx.I2C where
 
 import Control.Monad.State (MonadState)
