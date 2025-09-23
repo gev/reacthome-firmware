@@ -1,5 +1,3 @@
-{-# LANGUAGE DataKinds #-}
-
 module Endpoint.ALED.Animation.CosT where
 
 import Ivory.Language

@@ -1,4 +1,3 @@
-{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# HLINT ignore "Use camelCase" #-}
 {-# LANGUAGE TypeOperators #-}

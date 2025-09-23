@@ -1,6 +1,5 @@
 {-# HLINT ignore "Use for_" #-}
 {-# LANGUAGE BlockArguments #-}
-{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE KindSignatures #-}

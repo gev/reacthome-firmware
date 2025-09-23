@@ -1,4 +1,3 @@
-{-# LANGUAGE DataKinds #-}
 {-# HLINT ignore "Use for_" #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}

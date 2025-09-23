@@ -1,4 +1,3 @@
-{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE RankNTypes #-}
 
 module Transport.UDP.RBUS.Data where

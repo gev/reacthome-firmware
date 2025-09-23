@@ -1,5 +1,4 @@
 {-# HLINT ignore "Use newtype instead of data" #-}
-{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TypeOperators #-}

@@ -1,4 +1,3 @@
-{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Implementation.Dimmer where

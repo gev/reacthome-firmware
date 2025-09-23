@@ -1,4 +1,3 @@
-{-# LANGUAGE DataKinds #-}
 {-# HLINT ignore "Use camelCase" #-}
 {-# LANGUAGE TypeOperators #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
