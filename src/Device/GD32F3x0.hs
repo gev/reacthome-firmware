@@ -1,5 +1,4 @@
 {-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE RankNTypes #-}
 
 module Device.GD32F3x0 where
 

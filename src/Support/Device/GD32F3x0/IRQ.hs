@@ -1,5 +1,4 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE RankNTypes #-}
 
 module Support.Device.GD32F3x0.IRQ (
     IRQn,

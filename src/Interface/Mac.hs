@@ -1,5 +1,3 @@
-{-# LANGUAGE RankNTypes #-}
-
 module Interface.Mac where
 
 import Control.Monad.State

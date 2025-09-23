@@ -1,4 +1,3 @@
-{-# LANGUAGE RankNTypes #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 module Interface.I2STX where

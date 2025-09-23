@@ -1,5 +1,3 @@
-{-# LANGUAGE RankNTypes #-}
-
 module Core.Dispatcher where
 
 import Core.Controller

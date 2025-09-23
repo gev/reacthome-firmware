@@ -1,5 +1,3 @@
-{-# LANGUAGE RankNTypes #-}
-
 module Interface.Timer where
 
 import Core.Context

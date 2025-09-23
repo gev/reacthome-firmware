@@ -1,5 +1,3 @@
-{-# LANGUAGE RankNTypes #-}
-
 module Transport.UDP.RBUS.Data where
 
 import Data.Buffer

@@ -341,3 +341,4 @@ executable reacthome-firmware
     MultiParamTypeClasses
     NamedFieldPuns
     NumericUnderscores
+    RankNTypes

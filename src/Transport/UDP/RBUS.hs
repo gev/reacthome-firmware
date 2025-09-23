@@ -1,5 +1,4 @@
 {-# HLINT ignore "Use for_" #-}
-{-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
