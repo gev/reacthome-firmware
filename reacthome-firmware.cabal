@@ -199,9 +199,9 @@ executable reacthome-firmware
     Implementation.MixH
     Implementation.Relay
     Implementation.Smart.Bottom
+    Implementation.Smart.TopA4P
     Implementation.Smart.TopA4T
     Implementation.Smart.TopA4TD
-    Implementation.Smart.TopA4p
     Implementation.Smart.TopA6T
     Implementation.Smart.TopAP
     Implementation.Smart.TopG2
