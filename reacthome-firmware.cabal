@@ -335,5 +335,7 @@ executable reacthome-firmware
 
   default-language: Haskell2010
   default-extensions:
+    DataKinds
+    MultiParamTypeClasses
     NamedFieldPuns
     NumericUnderscores

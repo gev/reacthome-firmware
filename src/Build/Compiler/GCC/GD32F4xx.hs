@@ -1,5 +1,3 @@
-{-# LANGUAGE MultiParamTypeClasses #-}
-
 module Build.Compiler.GCC.GD32F4xx where
 
 import Build.Compiler
