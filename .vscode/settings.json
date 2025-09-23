@@ -1,5 +1,5 @@
 {
-  "haskell.formattingProvider": "stylish-haskell",
+  "haskell.formattingProvider": "fourmolu",
   "editor.formatOnType": false,
   "C_Cpp.formatting": "disabled",
   "C_Cpp.autoAddFileAssociations": false,
