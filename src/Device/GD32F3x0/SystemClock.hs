@@ -1,6 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE NumericUnderscores #-}
-
 module Device.GD32F3x0.SystemClock where
 
 import Control.Monad.State

@@ -1,6 +1,3 @@
-{-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE RecordWildCards #-}
-
 module Transport.UDP.RBUS.Tx where
 
 import Data.Buffer

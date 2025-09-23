@@ -1,8 +1,3 @@
-{-# LANGUAGE DataKinds #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
-{-# HLINT ignore "Use camelCase" #-}
-
 module Support.Device.GD32F3x0.System (
     system_core_clock,
     inclSystem,

@@ -1,5 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
-
 module Transport.RS485.RBUS.Rx where
 
 import qualified Interface.RS485 as I

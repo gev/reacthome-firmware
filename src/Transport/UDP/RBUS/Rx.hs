@@ -1,8 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
-{-# HLINT ignore "Use for_" #-}
-
 module Transport.UDP.RBUS.Rx where
 
 import Control.Monad (void)

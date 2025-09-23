@@ -1,5 +1,3 @@
-{-# LANGUAGE RecordWildCards #-}
-
 module Transport.UART.RBUS.Rx where
 
 import Interface.SystemClock

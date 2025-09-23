@@ -1,73 +1,66 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE MultiParamTypeClasses      #-}
-{-# LANGUAGE RankNTypes                 #-}
+module Support.Device.GD32F4xx.IRQ (
+    IRQn,
+    timer1_irqn,
+    timer2_irqn,
+    timer3_irqn,
+    timer6_irqn,
+    timer7_irqn,
+    usart0_irqn,
+    usart1_irqn,
+    usart2_irqn,
+    usart5_irqn,
+    uart3_irqn,
+    uart4_irqn,
+    uart6_irqn,
+    uart7_irqn,
+    dma0_channel0_irqn,
+    dma0_channel1_irqn,
+    dma0_channel2_irqn,
+    dma0_channel3_irqn,
+    dma0_channel4_irqn,
+    dma0_channel5_irqn,
+    dma0_channel6_irqn,
+    dma0_channel7_irqn,
+    dma1_channel0_irqn,
+    dma1_channel1_irqn,
+    dma1_channel2_irqn,
+    dma1_channel3_irqn,
+    dma1_channel4_irqn,
+    dma1_channel5_irqn,
+    dma1_channel6_irqn,
+    dma1_channel7_irqn,
+    enet_irqn,
+    i2c0_ev_irqn,
+    i2c1_ev_irqn,
+    i2c2_ev_irqn,
+    i2c0_er_irqn,
+    i2c1_er_irqn,
+    i2c2_er_irqn,
+    makeIRQHandler,
+    inclIRQ,
+) where
 
-module Support.Device.GD32F4xx.IRQ
-    ( IRQn
-    , timer1_irqn
-    , timer2_irqn
-    , timer3_irqn
-    , timer6_irqn
-    , timer7_irqn
-    , usart0_irqn
-    , usart1_irqn
-    , usart2_irqn
-    , usart5_irqn
-    , uart3_irqn
-    , uart4_irqn
-    , uart6_irqn
-    , uart7_irqn
-    , dma0_channel0_irqn
-    , dma0_channel1_irqn
-    , dma0_channel2_irqn
-    , dma0_channel3_irqn
-    , dma0_channel4_irqn
-    , dma0_channel5_irqn
-    , dma0_channel6_irqn
-    , dma0_channel7_irqn
-    , dma1_channel0_irqn
-    , dma1_channel1_irqn
-    , dma1_channel2_irqn
-    , dma1_channel3_irqn
-    , dma1_channel4_irqn
-    , dma1_channel5_irqn
-    , dma1_channel6_irqn
-    , dma1_channel7_irqn
-    , enet_irqn
-    , i2c0_ev_irqn
-    , i2c1_ev_irqn
-    , i2c2_ev_irqn
-    , i2c0_er_irqn
-    , i2c1_er_irqn
-    , i2c2_er_irqn
-
-    , makeIRQHandler
-
-    , inclIRQ
-    ) where
-
-import           Ivory.Language
-import           Ivory.Support
-import           Ivory.Support.Device.GD32F4xx
-
+import Ivory.Language
+import Ivory.Support
+import Ivory.Support.Device.GD32F4xx
 
 newtype IRQn = IRQn Uint8
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 instance ExtSymbol IRQn
 
-timer1_irqn        = IRQn $ ext "TIMER1_IRQn"
-timer2_irqn        = IRQn $ ext "TIMER2_IRQn"
-timer3_irqn        = IRQn $ ext "TIMER3_IRQn"
-timer6_irqn        = IRQn $ ext "TIMER6_IRQn"
-timer7_irqn        = IRQn $ ext "TIMER7_IRQn"
-usart0_irqn        = IRQn $ ext "USART0_IRQn"
-usart1_irqn        = IRQn $ ext "USART1_IRQn"
-usart2_irqn        = IRQn $ ext "USART2_IRQn"
-usart5_irqn        = IRQn $ ext "USART5_IRQn"
-uart3_irqn         = IRQn $ ext "UART3_IRQn"
-uart4_irqn         = IRQn $ ext "UART4_IRQn"
-uart6_irqn         = IRQn $ ext "UART6_IRQn"
-uart7_irqn         = IRQn $ ext "UART7_IRQn"
+timer1_irqn = IRQn $ ext "TIMER1_IRQn"
+timer2_irqn = IRQn $ ext "TIMER2_IRQn"
+timer3_irqn = IRQn $ ext "TIMER3_IRQn"
+timer6_irqn = IRQn $ ext "TIMER6_IRQn"
+timer7_irqn = IRQn $ ext "TIMER7_IRQn"
+usart0_irqn = IRQn $ ext "USART0_IRQn"
+usart1_irqn = IRQn $ ext "USART1_IRQn"
+usart2_irqn = IRQn $ ext "USART2_IRQn"
+usart5_irqn = IRQn $ ext "USART5_IRQn"
+uart3_irqn = IRQn $ ext "UART3_IRQn"
+uart4_irqn = IRQn $ ext "UART4_IRQn"
+uart6_irqn = IRQn $ ext "UART6_IRQn"
+uart7_irqn = IRQn $ ext "UART7_IRQn"
 dma0_channel0_irqn = IRQn $ ext "DMA0_Channel0_IRQn"
 dma0_channel1_irqn = IRQn $ ext "DMA0_Channel1_IRQn"
 dma0_channel2_irqn = IRQn $ ext "DMA0_Channel2_IRQn"
@@ -84,14 +77,13 @@ dma1_channel4_irqn = IRQn $ ext "DMA1_Channel4_IRQn"
 dma1_channel5_irqn = IRQn $ ext "DMA1_Channel5_IRQn"
 dma1_channel6_irqn = IRQn $ ext "DMA1_Channel6_IRQn"
 dma1_channel7_irqn = IRQn $ ext "DMA1_Channel7_IRQn"
-enet_irqn          = IRQn $ ext "ENET_IRQn" 
-i2c0_ev_irqn       = IRQn $ ext "I2C0_EV_IRQn"
-i2c1_ev_irqn       = IRQn $ ext "I2C1_EV_IRQn"
-i2c2_ev_irqn       = IRQn $ ext "I2C2_EV_IRQn"
-i2c0_er_irqn       = IRQn $ ext "I2C0_ER_IRQn"
-i2c1_er_irqn       = IRQn $ ext "I2C1_ER_IRQn"
-i2c2_er_irqn       = IRQn $ ext "I2C2_ER_IRQn"
-
+enet_irqn = IRQn $ ext "ENET_IRQn"
+i2c0_ev_irqn = IRQn $ ext "I2C0_EV_IRQn"
+i2c1_ev_irqn = IRQn $ ext "I2C1_EV_IRQn"
+i2c2_ev_irqn = IRQn $ ext "I2C2_EV_IRQn"
+i2c0_er_irqn = IRQn $ ext "I2C0_ER_IRQn"
+i2c1_er_irqn = IRQn $ ext "I2C1_ER_IRQn"
+i2c2_er_irqn = IRQn $ ext "I2C2_ER_IRQn"
 
 inclIRQ :: ModuleDef
 inclIRQ = do
@@ -125,15 +117,15 @@ inclIRQ = do
     inclSym dma1_channel6_irqn
     inclSym dma1_channel7_irqn
     inclSym enet_irqn
-    inclSym i2c0_ev_irqn 
-    inclSym i2c1_ev_irqn 
-    inclSym i2c2_ev_irqn 
-    inclSym i2c0_er_irqn 
-    inclSym i2c1_er_irqn 
-    inclSym i2c2_er_irqn 
+    inclSym i2c0_ev_irqn
+    inclSym i2c1_ev_irqn
+    inclSym i2c2_ev_irqn
+    inclSym i2c0_er_irqn
+    inclSym i2c1_er_irqn
+    inclSym i2c2_er_irqn
 
-
-makeIRQHandler :: IRQn
-               -> (forall s. Ivory (ProcEffects s ()) ())
-               -> ModuleDef
+makeIRQHandler ::
+    IRQn ->
+    (forall s. Ivory (ProcEffects s ()) ()) ->
+    ModuleDef
 makeIRQHandler t b = incl $ proc ((init . symbol) t <> "Handler") $ body b

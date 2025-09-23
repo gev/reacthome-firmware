@@ -1,5 +1,3 @@
-{-# LANGUAGE DataKinds #-}
-
 module Core.FSM where
 
 import Ivory.Language

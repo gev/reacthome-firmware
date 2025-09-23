@@ -1,6 +1,3 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE FlexibleContexts #-}
-
 module Device.GD32F4xx.GPIO.Mode where
 
 import Support.Device.GD32F4xx.GPIO

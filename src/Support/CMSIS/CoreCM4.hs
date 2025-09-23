@@ -1,6 +1,3 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE TypeOperators #-}
-
 module Support.CMSIS.CoreCM4 (
     sysTickConfig,
     nop,

@@ -1,9 +1,3 @@
-{-# HLINT ignore "Use camelCase" #-}
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE TypeOperators #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 module Support.Device.GD32F3x0.ADC (
     SPECIAL_FUNCTION_ADC,
     adc_continuous_mode,
