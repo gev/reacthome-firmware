@@ -6,16 +6,16 @@ module Feature.DInputs where
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Context
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Core.Task
-import qualified Core.Transport as T
+import Core.Transport qualified as T
 import Data.Buffer
 import Data.Fixed
 import Data.Index
 import Data.Record
 import Data.Serialize
 import Data.Value
-import qualified Endpoint.DInputs as DI
+import Endpoint.DInputs qualified as DI
 import GHC.TypeNats
 import Interface.GPIO.Input
 import Interface.GPIO.Port

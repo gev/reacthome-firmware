@@ -4,7 +4,7 @@ import Data.Buffer
 import Data.Record
 import GHC.TypeLits
 import Ivory.Language
-import qualified Ivory.Stdlib as S
+import Ivory.Stdlib qualified as S
 import Support.Cast
 import Support.Device.GD32F4xx.DMA
 import Support.Device.GD32F4xx.IRQ

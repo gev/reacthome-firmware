@@ -9,10 +9,10 @@ import Data.Concurrent.Queue
 import Data.Queue
 import GHC.TypeNats
 import Interface.SystemClock
-import qualified Interface.UART as U
+import Interface.UART qualified as U
 import Ivory.Language
 import Ivory.Stdlib
-import qualified Protocol.UART.RBUS as U
+import Protocol.UART.RBUS qualified as U
 import Protocol.UART.RBUS.Tx
 import Transport.UART.RBUS.Data
 import Transport.UDP.RBUS

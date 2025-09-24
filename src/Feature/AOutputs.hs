@@ -4,18 +4,18 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Core.Task
-import qualified Core.Transport as T
+import Core.Transport qualified as T
 import Data.Buffer
 import Data.Fixed
 import Data.Index
 import Data.Record
 import Data.Serialize
 import Data.Value hiding (value)
-import qualified Endpoint.AOutputs as E
+import Endpoint.AOutputs qualified as E
 import GHC.TypeNats
-import qualified Interface.DAC as I
+import Interface.DAC qualified as I
 import Interface.MCU
 import Ivory.Language
 import Ivory.Stdlib

@@ -354,3 +354,4 @@ executable reacthome-firmware
     StandaloneDeriving
     TypeApplications
     TypeOperators
+    ImportQualifiedPost

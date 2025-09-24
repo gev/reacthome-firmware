@@ -4,7 +4,7 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Core.Task
 import Core.Transport as T
 import Data.Buffer
@@ -13,11 +13,11 @@ import Data.Index
 import Data.Record
 import Data.Serialize
 import Data.Value
-import qualified Endpoint.Dimmers as Dim
+import Endpoint.Dimmers qualified as Dim
 import Feature.Dimmers
 import GHC.TypeNats
 import Interface.MCU
-import qualified Interface.PWM as I
+import Interface.PWM qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 import Support.Cast

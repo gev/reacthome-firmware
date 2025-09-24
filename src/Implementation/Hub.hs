@@ -3,12 +3,12 @@ module Implementation.Hub where
 import Control.Monad.Reader (MonadReader, asks)
 import Core.Actions
 import Core.Controller (Controller, handle)
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Data.Buffer
 import Data.Fixed
 import Data.Serialize
 import Data.Value
-import qualified Endpoint.ALED as E
+import Endpoint.ALED qualified as E
 import Endpoint.Dimmers as Dim (
     dimmers,
     initialize,

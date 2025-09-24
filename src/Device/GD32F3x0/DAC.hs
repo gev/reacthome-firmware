@@ -9,7 +9,7 @@ import Core.Context
 import Data.Buffer
 import Data.Record
 import Device.GD32F3x0.GPIO.Port
-import qualified Interface.DAC as I
+import Interface.DAC qualified as I
 import Ivory.Language
 import Support.Device.GD32F3x0.DAC
 import Support.Device.GD32F3x0.GPIO hiding (mode, rcu)

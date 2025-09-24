@@ -7,7 +7,7 @@ module Feature.RS485.RBUS.Rx where
 import Core.Domain (Domain (shouldInit))
 import Core.Transport
 import Feature.RS485.RBUS.Data
-import qualified Interface.RS485 as I
+import Interface.RS485 qualified as I
 import Interface.SystemClock
 import Ivory.Language
 import Ivory.Stdlib

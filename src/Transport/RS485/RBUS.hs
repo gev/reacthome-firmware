@@ -5,7 +5,7 @@ import Control.Monad.State (MonadState, gets)
 import Core.Context
 import Core.Controller
 import Core.Dispatcher
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Core.Handler
 import Core.Task
 import Core.Transport

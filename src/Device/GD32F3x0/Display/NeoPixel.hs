@@ -12,7 +12,7 @@ import Device.GD32F3x0.GPIO.Port
 import Device.GD32F3x0.Timer
 import GHC.TypeNats
 import Interface.Display
-import qualified Interface.Timer as I
+import Interface.Timer qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 import Ivory.Support

@@ -4,7 +4,7 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Core.Task (delay, yeld)
 import Core.Transport
 import Data.Buffer

@@ -3,12 +3,12 @@ module Core.Domain where
 import Control.Monad.State
 import Core.Context
 import Core.Transport
-import qualified Core.Version as V
+import Core.Version qualified as V
 import Data.Buffer
 import Data.Record
 import Data.Value
-import qualified Interface.MCU as I
-import qualified Interface.Mac as M
+import Interface.MCU qualified as I
+import Interface.Mac qualified as M
 import Interface.SystemClock
 import Ivory.Language
 import Support.Cast

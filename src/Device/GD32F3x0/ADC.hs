@@ -9,7 +9,7 @@ import Core.Context
 import Data.Buffer
 import Data.Record
 import Device.GD32F3x0.GPIO.Port
-import qualified Interface.ADC as I
+import Interface.ADC qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 import Support.Cast

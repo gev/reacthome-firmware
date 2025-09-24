@@ -8,9 +8,9 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Core.Task
-import qualified Core.Transport as T
+import Core.Transport qualified as T
 import Data.Buffer
 import Data.Fixed
 import Data.Foldable
@@ -19,9 +19,9 @@ import Data.Record
 import Data.Serialize
 import Data.Value
 import Endpoint.Groups (Groups (groups))
-import qualified Endpoint.Groups as G
+import Endpoint.Groups qualified as G
 import Endpoint.Relays (delayOn)
-import qualified Endpoint.Relays as R
+import Endpoint.Relays qualified as R
 import Feature.RS485.RBUS (initialize)
 import GHC.TypeNats
 import Interface.GPIO.Output

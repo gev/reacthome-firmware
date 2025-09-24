@@ -1,6 +1,6 @@
 module Transport.RS485.RBUS.Rx where
 
-import qualified Interface.RS485 as I
+import Interface.RS485 qualified as I
 import Interface.SystemClock
 import Ivory.Language
 import Ivory.Stdlib

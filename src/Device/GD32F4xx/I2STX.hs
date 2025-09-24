@@ -10,11 +10,11 @@ import Data.Buffer
 import Data.DoubleBuffer
 import Data.Record
 import Data.Value
-import qualified Device.GD32F4xx.GPIO.Port as G
+import Device.GD32F4xx.GPIO.Port qualified as G
 import Device.GD32F4xx.I2S
 import GHC.TypeLits
-import qualified Interface.I2S as I
-import qualified Interface.I2STX as I
+import Interface.I2S qualified as I
+import Interface.I2STX qualified as I
 import Ivory.Language
 import Ivory.Stdlib as S
 import Ivory.Support

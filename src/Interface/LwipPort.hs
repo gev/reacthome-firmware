@@ -8,14 +8,14 @@ import Control.Monad.Reader.Class
 import Control.Monad.State.Class
 import Core.Context
 import Core.Controller
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Core.Handler
 import Core.Task
 import Data.Record
 import Data.Value
 import Interface.ENET
 import Interface.MCU
-import qualified Interface.MCU as I
+import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 import Support.Lwip.Err

@@ -4,14 +4,14 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Core.Handler
 import Core.Task
 import Core.Transport
 import Data.Buffer
 import Data.Serialize
 import Data.Value
-import qualified Interface.I2C as I
+import Interface.I2C qualified as I
 import Interface.MCU
 import Ivory.Language
 import Ivory.Stdlib

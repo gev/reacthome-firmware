@@ -11,16 +11,16 @@ import Core.Controller
 import Core.Domain as D
 import Core.Task
 import Core.Transport
-import qualified Core.Transport as T
+import Core.Transport qualified as T
 import Data.Buffer
 import Data.Matrix
 import Data.Serialize
 import Data.Value
 import Endpoint.ATS as A
-import qualified Endpoint.DInputs as DI
+import Endpoint.DInputs qualified as DI
 import Endpoint.DInputsRelaysRules as Ru
-import qualified Endpoint.Groups as G
-import qualified Endpoint.Relays as R
+import Endpoint.Groups qualified as G
+import Endpoint.Relays qualified as R
 import Feature.DInputs as FDI (
     DInputs (DInputs, getDInputs, getInputs),
     dinputs,

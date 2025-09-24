@@ -10,7 +10,7 @@ import Data.Queue
 import Feature.RS485.RSM.Data
 import GHC.TypeNats
 import Interface.Mac
-import qualified Interface.RS485 as RS
+import Interface.RS485 qualified as RS
 import Interface.SystemClock
 import Ivory.Language
 import Ivory.Stdlib

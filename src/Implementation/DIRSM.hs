@@ -3,12 +3,12 @@ module Implementation.DIRSM where
 import Control.Monad.Reader (MonadReader, asks)
 import Core.Actions
 import Core.Controller
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Data.Buffer
 import Data.Fixed (List, fromList, zipWithM_)
 import Data.Serialize
 import Data.Value
-import qualified Endpoint.AOutputs as A
+import Endpoint.AOutputs qualified as A
 import Feature.AOutputs (
     AOutputs (getAOutputs),
     forceSync,

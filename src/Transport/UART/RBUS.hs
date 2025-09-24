@@ -6,7 +6,7 @@ import Core.Actions
 import Core.Context
 import Core.Controller
 import Core.Dispatcher
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Core.Handler
 import Core.Task
 import Core.Transport
@@ -15,10 +15,10 @@ import Data.Buffer
 import Data.Queue
 import Data.Value
 import GHC.TypeNats
-import qualified Interface.MCU as I
+import Interface.MCU qualified as I
 import Interface.UART
 import Ivory.Language
-import qualified Protocol.UART.RBUS as U
+import Protocol.UART.RBUS qualified as U
 import Transport.UART.RBUS.Data
 import Transport.UART.RBUS.Rx
 import Transport.UART.RBUS.Tx

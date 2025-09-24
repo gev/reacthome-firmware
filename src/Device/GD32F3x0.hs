@@ -34,7 +34,7 @@ import Interface.MCU
 import Interface.Mac (Mac)
 import Interface.OneWire
 import Interface.SystemClock (SystemClock, systemClock)
-import qualified Interface.Timer as I
+import Interface.Timer qualified as I
 import Ivory.Language
 import Support.Device.GD32F3x0
 import Support.Device.GD32F3x0.ADC

@@ -10,8 +10,8 @@ import Data.Value
 import Device.GD32F3x0.EXTI
 import Device.GD32F3x0.Timer
 import Interface.Counter (Counter (readCounter))
-import qualified Interface.Timer as I
-import qualified Interface.Touch as I
+import Interface.Timer qualified as I
+import Interface.Touch qualified as I
 import Ivory.Language hiding (setBit)
 import Ivory.Language.Uint (Uint32 (Uint32))
 import Ivory.Stdlib (ifte, when)

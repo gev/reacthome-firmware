@@ -3,7 +3,7 @@ module Feature.Smart.Top.Palette where
 import Control.Monad.Reader (MonadReader)
 import Control.Monad.State (MonadState)
 import Core.Context
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Data.Color
 import Data.Matrix
 import Data.Value

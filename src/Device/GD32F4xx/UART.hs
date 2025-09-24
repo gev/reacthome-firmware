@@ -1,6 +1,6 @@
 module Device.GD32F4xx.UART where
 
-import qualified Control.Monad as M
+import Control.Monad qualified as M
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Handler
@@ -10,10 +10,10 @@ import Data.Foldable
 import Data.Maybe
 import Data.Queue as Q
 import Data.Record
-import qualified Device.GD32F4xx.GPIO.Port as G
+import Device.GD32F4xx.GPIO.Port qualified as G
 import GHC.TypeNats
 import Interface.UART (HandleUART (onDrain))
-import qualified Interface.UART as I
+import Interface.UART qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 import Ivory.Support

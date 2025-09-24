@@ -3,8 +3,8 @@ module Interface.OneWire where
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Handler
-import qualified Interface.GPIO.OpenDrain as OD
-import qualified Interface.Timer as T
+import Interface.GPIO.OpenDrain qualified as OD
+import Interface.Timer qualified as T
 import Ivory.Language
 
 data OneWire = forall od t. (OD.OpenDrain od, T.Timer t) => OneWire

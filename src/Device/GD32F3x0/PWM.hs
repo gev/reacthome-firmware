@@ -5,8 +5,8 @@ import Core.Context
 import Core.Handler
 import Device.GD32F3x0.GPIO.Port
 import Device.GD32F3x0.Timer
-import qualified Interface.PWM as I
-import qualified Interface.Timer as I
+import Interface.PWM qualified as I
+import Interface.Timer qualified as I
 import Ivory.Language
 import Support.Device.GD32F3x0.GPIO
 import Support.Device.GD32F3x0.System

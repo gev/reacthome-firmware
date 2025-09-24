@@ -4,12 +4,12 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Data.Buffer
 import Data.Record
 import Data.Serialize
 import Endpoint.Groups (Groups (groups))
-import qualified Endpoint.Groups as G
+import Endpoint.Groups qualified as G
 import GHC.TypeNats
 import Interface.MCU
 import Interface.SystemClock (SystemClock, getSystemTime)

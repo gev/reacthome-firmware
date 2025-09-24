@@ -7,7 +7,7 @@ module Transport.RS485.RBUS.Tx where
 import Data.Buffer
 import Data.Queue
 import GHC.TypeNats
-import qualified Interface.RS485 as RS
+import Interface.RS485 qualified as RS
 import Interface.SystemClock
 import Ivory.Language
 import Ivory.Stdlib

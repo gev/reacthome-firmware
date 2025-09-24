@@ -5,7 +5,7 @@ import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
 import Core.Controller
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Core.Handler
 import Core.Task
 import Core.Transport
@@ -39,7 +39,7 @@ import Feature.Smart.Top.Vibro (
     sendVibro,
     vibro,
  )
-import qualified Feature.Touches as FT
+import Feature.Touches qualified as FT
 import GHC.TypeNats
 import Interface.Display (Display, Render (Render))
 import Interface.Flash

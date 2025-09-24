@@ -4,7 +4,7 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState (state))
 import Core.Actions
 import Core.Context
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Core.Task
 import Core.Transport
 import Data.Buffer
@@ -14,7 +14,7 @@ import GHC.TypeNats
 import Interface.GPIO.Input
 import Interface.GPIO.Port
 import Interface.MCU
-import qualified Interface.UART as I
+import Interface.UART qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 import Transport.UART.RBUS

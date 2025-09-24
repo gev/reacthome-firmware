@@ -5,7 +5,7 @@ import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Domain as D
 import Core.Handler
-import qualified Core.Transport as T
+import Core.Transport qualified as T
 import Data.Buffer
 import Data.Color
 import Data.Display.Canvas1D

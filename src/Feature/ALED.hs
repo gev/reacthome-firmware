@@ -15,9 +15,9 @@ import Core.Transport (LazyTransport (lazyTransmit))
 import Data.Buffer
 import Data.Record
 import Data.Value
-import qualified Endpoint.ALED as E
-import qualified Endpoint.ALED.Animation as E
-import qualified Endpoint.ALED.Animation.Data as E
+import Endpoint.ALED qualified as E
+import Endpoint.ALED.Animation qualified as E
+import Endpoint.ALED.Animation.Data qualified as E
 import GHC.TypeNats
 import Interface.Display (Display, Render (Render))
 import Interface.Flash as F

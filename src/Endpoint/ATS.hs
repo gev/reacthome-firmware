@@ -5,14 +5,14 @@ import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
 import Core.Domain (Domain (mcu))
-import qualified Core.Domain as D
-import qualified Core.Transport as T
+import Core.Domain qualified as D
+import Core.Transport qualified as T
 import Data.Buffer
 import Data.Record
 import Data.Value
-import qualified Endpoint.DInputs as DI
+import Endpoint.DInputs qualified as DI
 import Endpoint.Relays (delayOn)
-import qualified Endpoint.Relays as R
+import Endpoint.Relays qualified as R
 import GHC.TypeNats
 import Interface.MCU
 import Interface.SystemClock (SystemClock, getSystemTime)
@@ -219,7 +219,7 @@ manageGenerator n a@ATS{..} hasVoltage isRelayOn relay start = do
                         store attempt 0
                         store synced false
                     justTurnOff relay timestamp
-                    when (timestamp - ts >? 30_000) do 
+                    when (timestamp - ts >? 30_000) do
                         justTurnOff start timestamp
                 ]
         do

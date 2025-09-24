@@ -7,7 +7,7 @@ import Data.Buffer
 import Data.Value
 import Device.GD32F3x0.GPIO.Port hiding (mode, rcu)
 import GHC.TypeNats
-import qualified Interface.I2C as I
+import Interface.I2C qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 import Ivory.Support

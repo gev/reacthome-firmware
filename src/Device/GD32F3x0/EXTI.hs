@@ -6,7 +6,7 @@ import Core.Handler
 import Device.GD32F3x0.GPIO.Input
 import Device.GD32F3x0.GPIO.Mode
 import Device.GD32F3x0.GPIO.Port
-import qualified Interface.EXTI as I
+import Interface.EXTI qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 import Ivory.Support

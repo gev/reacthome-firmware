@@ -15,15 +15,15 @@ import Core.Controller
 import Core.Domain as D
 import Core.Handler
 import Core.Task
-import qualified Core.Transport as T
+import Core.Transport qualified as T
 import Data.Buffer
 import Data.ByteString (group)
 import Data.DoubleBuffer (DoubleBuffer (num1))
 import Data.ElasticQueue
 import Data.Fixed (MakeFrom (from))
-import qualified Data.Fixed as F
+import Data.Fixed qualified as F
 import Data.Foldable (forM_, for_)
-import qualified Data.Queue as Q
+import Data.Queue qualified as Q
 import Data.Record
 import Data.Serialize
 import Data.Value
@@ -33,14 +33,14 @@ import Endpoint.StereoAMP
 import Feature.I2SPlay
 import Feature.RTP
 import Feature.SPDIF
-import qualified Feature.SRC4392 as S
+import Feature.SRC4392 qualified as S
 import GHC.Arr (array)
-import qualified GHC.Base as G
+import GHC.Base qualified as G
 import GHC.TypeNats
 import Interface.ENET
 import Interface.GPIO.Output
 import Interface.GPIO.Port
-import qualified Interface.I2C as I
+import Interface.I2C qualified as I
 import Interface.I2S
 import Interface.I2SRX
 import Interface.I2STX

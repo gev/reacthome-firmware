@@ -3,7 +3,7 @@ module Feature.SRC4392 where
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Context
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Core.Handler
 import Core.Task
 import Data.Buffer
@@ -11,7 +11,7 @@ import Data.Matrix
 import Data.Value
 import Interface.GPIO.Output
 import Interface.GPIO.Port
-import qualified Interface.I2C as I
+import Interface.I2C qualified as I
 import Interface.MCU
 import Ivory.Language
 import Ivory.Stdlib

@@ -3,7 +3,7 @@ module Feature.Smart.Top.PowerTouch where
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Context
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Core.Task (delay)
 import Interface.GPIO.Output (Output, reset, set)
 import Interface.GPIO.Port (Pull, pullNone)

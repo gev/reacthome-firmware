@@ -4,7 +4,7 @@
 
 module Device.GD32F3x0.UART where
 
-import qualified Control.Monad as M
+import Control.Monad qualified as M
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Handler
@@ -17,7 +17,7 @@ import Data.Record
 import Data.Value
 import Device.GD32F3x0.GPIO.Port
 import GHC.TypeNats
-import qualified Interface.UART as I
+import Interface.UART qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 import Ivory.Support

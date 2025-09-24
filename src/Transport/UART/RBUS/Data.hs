@@ -12,7 +12,7 @@ import Interface.Mac
 import Interface.SystemClock
 import Interface.UART
 import Ivory.Language
-import qualified Protocol.UART.RBUS as U
+import Protocol.UART.RBUS qualified as U
 
 data RBUS q l
     = forall u rn tn.

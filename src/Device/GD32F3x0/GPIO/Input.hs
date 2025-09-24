@@ -4,7 +4,7 @@ import Control.Monad.State
 import Core.Context
 import Device.GD32F3x0.GPIO.Mode
 import Device.GD32F3x0.GPIO.Port
-import qualified Interface.GPIO.Input as I
+import Interface.GPIO.Input qualified as I
 import Ivory.Language
 import Support.Device.GD32F3x0.GPIO as S
 

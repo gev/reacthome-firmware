@@ -1,4 +1,3 @@
-
 module Implementation.Echo where
 
 import Control.Monad.Reader
@@ -6,9 +5,9 @@ import Control.Monad.State
 import Core.Context
 import Core.Controller
 import Core.Domain
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Core.Task
-import qualified Core.Transport as T
+import Core.Transport qualified as T
 import Data.Buffer
 import Data.Value
 import GHC.TypeNats

@@ -9,10 +9,10 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState (get))
 import Core.Actions
 import Core.Context
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Core.Handler (addHandler)
 import Core.Task
-import qualified Core.Transport as T
+import Core.Transport qualified as T
 import Data.Buffer
 import Data.Data
 import Data.Fixed as F
@@ -20,7 +20,7 @@ import Data.Index
 import Data.Record
 import Data.Serialize
 import Data.Value
-import qualified Endpoint.DInputs as DI
+import Endpoint.DInputs qualified as DI
 import Foreign (new)
 import GHC.Arr (array)
 import GHC.TypeNats
@@ -28,7 +28,7 @@ import Interface.MCU (MCU, peripherals, systemClock)
 import Interface.SystemClock (SystemClock)
 import Interface.Timer
 import Interface.Touch
-import qualified Interface.Touch as I
+import Interface.Touch qualified as I
 import Ivory.Language
 import Ivory.Language.Proxy
 import Ivory.Stdlib

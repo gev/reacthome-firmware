@@ -8,7 +8,7 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Core.Handler
 import Core.Task
 import Core.Transport as T
@@ -24,8 +24,8 @@ import Feature.RS485.RSM.Tx
 import GHC.TypeNats
 import Interface.MCU
 import Interface.RS485 (RS485)
-import qualified Interface.RS485 as I
-import qualified Interface.RS485 as RS
+import Interface.RS485 qualified as I
+import Interface.RS485 qualified as RS
 import Interface.SystemClock (SystemClock)
 import Ivory.Language
 import Ivory.Stdlib

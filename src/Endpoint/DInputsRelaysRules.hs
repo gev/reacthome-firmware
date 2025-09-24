@@ -5,8 +5,8 @@ module Endpoint.DInputsRelaysRules where
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Context
-import qualified Core.Domain as D
-import qualified Core.Transport as T
+import Core.Domain qualified as D
+import Core.Transport qualified as T
 import Data.Buffer
 import Data.Matrix
 import Data.Value

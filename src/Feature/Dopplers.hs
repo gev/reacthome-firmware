@@ -8,14 +8,14 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Core.Task
-import qualified Core.Transport as T
+import Core.Transport qualified as T
 import Data.Buffer
 import Data.Data (cast)
 import Data.Fixed
 import Data.Value
-import qualified Interface.ADC as I
+import Interface.ADC qualified as I
 import Interface.MCU
 import Ivory.Language
 import Ivory.Language.Float (IFloat (IFloat))

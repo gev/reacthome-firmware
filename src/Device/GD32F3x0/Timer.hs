@@ -3,8 +3,8 @@ module Device.GD32F3x0.Timer where
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Handler
-import qualified Interface.Counter as I
-import qualified Interface.Timer as I
+import Interface.Counter qualified as I
+import Interface.Timer qualified as I
 import Ivory.Language
 import Ivory.Language.Module
 import Ivory.Stdlib

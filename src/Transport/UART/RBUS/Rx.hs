@@ -1,7 +1,7 @@
 module Transport.UART.RBUS.Rx where
 
 import Interface.SystemClock
-import qualified Interface.UART as I
+import Interface.UART qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 import Protocol.UART.RBUS.Rx

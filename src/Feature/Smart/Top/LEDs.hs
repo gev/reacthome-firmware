@@ -13,7 +13,7 @@ import Core.FSM (transit)
 import Core.Handler
 import Core.Task (delay)
 import Core.Transport (LazyTransport (lazyTransmit))
-import qualified Core.Transport as T
+import Core.Transport qualified as T
 import Data.Buffer
 import Data.ByteString (index)
 import Data.Color
@@ -30,7 +30,7 @@ import Feature.Scd40 (SCD40 (transmit, txBuff))
 import GHC.Arr (array)
 import GHC.TypeNats
 import Interface.Display (Display)
-import qualified Interface.Display as I
+import Interface.Display qualified as I
 import Interface.Flash as F
 import Interface.MCU
 import Interface.SystemClock (getSystemTime)
