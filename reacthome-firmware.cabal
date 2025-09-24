@@ -343,6 +343,7 @@ executable reacthome-firmware
     FlexibleInstances
     FunctionalDependencies
     GeneralizedNewtypeDeriving
+    ImportQualifiedPost
     KindSignatures
     MultiParamTypeClasses
     NamedFieldPuns
@@ -354,4 +355,3 @@ executable reacthome-firmware
     StandaloneDeriving
     TypeApplications
     TypeOperators
-    ImportQualifiedPost
