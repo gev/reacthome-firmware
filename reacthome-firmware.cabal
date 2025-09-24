@@ -347,6 +347,7 @@ executable reacthome-firmware
     KindSignatures
     MultiParamTypeClasses
     NamedFieldPuns
+    NoStarIsType
     NumericUnderscores
     QuasiQuotes
     RankNTypes
