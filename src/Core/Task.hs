@@ -1,4 +1,3 @@
-
 module Core.Task where
 
 import Ivory.Language
@@ -33,7 +32,11 @@ delayPhase ::
      String ->
      (forall s. Ivory (ProcEffects s ()) ()) ->
      Task
-delayPhase interval phase = task . Just $ Period interval phase
+delayPhase interval phase =
+     task . Just $
+          Period
+               interval
+               phase
 
 delay ::
      Uint32 ->
