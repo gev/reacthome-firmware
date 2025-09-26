@@ -23,7 +23,7 @@ import           Ivory.Language
 data DumbLEDs n = forall d. Display d => DumbLEDs
                  { display :: d
                  , canvas  :: Canvas1D n
-                 , pixels  :: Records  n  RGB
+                 , pixels  :: Records  n RGB
                  }
 
 
@@ -35,9 +35,9 @@ mkDumbLEDs ::( MonadState Context m
 mkDumbLEDs display' = do
     mcu          <- asks D.mcu
     display      <- display' $ peripherals mcu
-    frameBuffer  <- values'     "dumb_leds_frame_buffer" 0
+    frameBuffer  <- values'    "dumb_leds_frame_buffer" 0
     let canvas   = mkCanvas1D  frameBuffer
-    pixels       <- records_    "dumb_leds_pixels"
+    pixels       <- records_   "dumb_leds_pixels"
 
     addStruct   (Proxy :: Proxy RGB)
     addStruct   (Proxy :: Proxy HSV)
