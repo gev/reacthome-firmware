@@ -23,11 +23,12 @@ import           Ivory.Stdlib          (when)
 
 
 data LeakLEDs n = forall d. Display d => LeakLEDs
-                 { display :: d
-                 , canvas  :: Canvas1D n
-                 , pixels  :: Records  n RGB
-                 , start   :: Value IBool
-                 , t       :: Value Sint32
+                 { display     :: d
+                 , canvas      :: Canvas1D n
+                 , pixels      :: Records  n RGB
+                 , start       :: Value IBool
+                 , t           :: Value Sint32
+                 , stateLeak   :: Value IBool
                  }
 
 
@@ -43,6 +44,7 @@ mkLeakLEDs display' = do
     let canvas   = mkCanvas1D  frameBuffer
     pixels       <- records_   "leak_leds_pixels"
     start        <- value      "start_leds" true
+    stateLeak    <- value      "state_leak_leds" false
     t            <- value      "anima_time" 0
 
     addStruct   (Proxy :: Proxy RGB)
@@ -50,7 +52,7 @@ mkLeakLEDs display' = do
 
     addConstArea sinT
 
-    let leakLEDs = LeakLEDs { display, canvas, pixels, start, t}
+    let leakLEDs = LeakLEDs { display, canvas, pixels, start, t, stateLeak}
 
     addHandler $ Render display 25 frameBuffer $ do
         startAnim leakLEDs
@@ -73,18 +75,32 @@ setAllColorsHSV LeakLEDs{..} h s v = do
         hsv'to'rgb pixel $ pixels ! ix
 
 
-startAnim :: KnownNat n => LeakLEDs n  -> Ivory (ProcEffects s ()) ()
-startAnim d@LeakLEDs{..} = do
+startAnim :: KnownNat n => LeakLEDs n -> Ivory (ProcEffects s ()) ()
+startAnim l@LeakLEDs{..} = do
     start' <- deref start
     when start' $ do
         t' <- deref t
         v  <- deref $ addrOf sinT ! toIx t'
-        setAllColorsHSV d 120 v v
+        setAllColorsHSV l 120 v v
         when (t' ==? 120)
              (store start false)
         store t $ t' + 1
+        stateLeak' <- deref stateLeak
+        when stateLeak' $ hasLeakLED l
 
 
 sinT :: ConstMemArea (Array 120 (Stored IFloat))
 sinT = constArea "led_sin_table" $ iarray $ ival . ifloat . f . fromIntegral <$> [0..119]
     where f i = sin (pi * i / 120)
+
+
+hasLeakLED :: KnownNat n => LeakLEDs n  -> Ivory (ProcEffects s ()) ()
+hasLeakLED l@LeakLEDs{..} = do
+    store stateLeak true 
+    setAllColorsHSV l 0 1 1
+
+hasntLeakLED :: KnownNat n => LeakLEDs n  -> Ivory (ProcEffects s ()) ()
+hasntLeakLED l@LeakLEDs{..} = do
+    store stateLeak false
+    setAllColorsHSV l 0 0 0
+

@@ -86,10 +86,10 @@ taskLeak l@Leak{..} = do
 hasLeak :: Leak -> Ivory (ProcEffects s ()) ()
 hasLeak Leak{..} = do
     set out
-    setAllColorsHSV leds 0 1 1
+    hasLeakLED leds
 
 
 hasntLeak :: Leak -> Ivory (ProcEffects s ()) ()
 hasntLeak Leak{..} = do
     reset out
-    setAllColorsHSV leds 0 0 0
+    hasntLeakLED leds
