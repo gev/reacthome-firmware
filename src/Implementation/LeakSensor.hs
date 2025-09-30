@@ -28,7 +28,7 @@ import           Ivory.Stdlib
 
 voltage = 3.3
 thresholdHighVoltage = 2
-thresholLowVoltage = thresholdHighVoltage - 0.1
+thresholdLowVoltage = thresholdHighVoltage - 0.1
 
 
 data Leak = forall o a. (Output o, ADC a) => Leak
@@ -79,7 +79,7 @@ taskLeak :: Leak  -> Ivory (ProcEffects s ()) ()
 taskLeak l@Leak{..} = do
     a <- getReduced sensor
     let v = a * voltage
-    when (v <? thresholLowVoltage) (hasLeak l)
+    when (v <? thresholdLowVoltage) (hasLeak l)
     when (v >? thresholdHighVoltage) (hasntLeak l)
 
 
