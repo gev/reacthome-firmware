@@ -140,7 +140,7 @@ executable reacthome-firmware
     Feature.Dimmers.AC
     Feature.Dimmers.DC
     Feature.Dopplers
-    Feature.DumbLEDs
+    Feature.LeakLEDs
     Feature.Indicator
     Feature.Mix.Indicator
     Feature.RS485.RBUS

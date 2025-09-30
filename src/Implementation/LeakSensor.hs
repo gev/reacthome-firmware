@@ -17,7 +17,7 @@ import           Data.Color
 import           Data.Display.Canvas1D
 import           Data.Record
 import           Data.Value
-import           Feature.DumbLEDs
+import           Feature.LeakLEDs
 import           Interface.ADC
 import           Interface.Display
 import           Interface.GPIO.Output
@@ -35,7 +35,7 @@ data Leak = forall o a. (Output o, ADC a) => Leak
             { sensor      :: a
             , powerSensor :: o
             , out         :: o
-            , leds        :: DumbLEDs 4
+            , leds        :: LeakLEDs 4
             }
 
 leakSensor :: (MonadState Context m,
@@ -53,16 +53,16 @@ leakSensor sensor' powerSensor' out' display' = do
     sensor            <- sensor' peripherals'
     powerSensor       <- powerSensor' peripherals' $ pullNone peripherals'
     out               <- out' peripherals' $ pullNone peripherals'
-    leds              <- mkDumbLEDs display'
+    leds              <- mkLeakLEDs display'
 
     let leak = Leak {sensor, powerSensor, out, leds}
 
     addInit name $ hasntLeak leak
 
 
-    addTask $ delayPhase 250 1 (name <> "_turn_on_sensor") $ taskTurnOnSensor leak 
+    addTask $ delayPhase 250 1 (name <> "_turn_on_sensor") $ taskTurnOnSensor leak
     addTask $ delayPhase 250 2 name $ taskLeak leak
-    addTask $ delayPhase 250 3 (name <> "_turn_off_sensor") $ taskTurnOffSensor leak 
+    addTask $ delayPhase 250 3 (name <> "_turn_off_sensor") $ taskTurnOffSensor leak
 
     pure leak
 
@@ -83,8 +83,6 @@ taskLeak l@Leak{..} = do
     when (v >? thresholdHighVoltage) (hasntLeak l)
 
 
-
-
 hasLeak :: Leak -> Ivory (ProcEffects s ()) ()
 hasLeak Leak{..} = do
     set out
@@ -94,4 +92,4 @@ hasLeak Leak{..} = do
 hasntLeak :: Leak -> Ivory (ProcEffects s ()) ()
 hasntLeak Leak{..} = do
     reset out
-    setAllColorsHSV leds 120 1 0.05
+    setAllColorsHSV leds 0 0 0
