@@ -1,5 +1,4 @@
 {-# HLINT ignore "Use for_" #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 module Feature.DInputs where
 
@@ -13,16 +12,13 @@ import Data.Buffer
 import Data.Fixed
 import Data.Index
 import Data.Record
-import Data.Serialize
-import Data.Value
 import Endpoint.DInputs qualified as DI
 import GHC.TypeNats
 import Interface.GPIO.Input
 import Interface.GPIO.Port
-import Interface.MCU (MCU, peripherals, systemClock)
+import Interface.MCU (peripherals, systemClock)
 import Interface.SystemClock (SystemClock, getSystemTime)
 import Ivory.Language
-import Ivory.Language.Proxy
 import Ivory.Stdlib
 
 data DInputs n = forall i. (Input i) => DInputs

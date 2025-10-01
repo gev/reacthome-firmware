@@ -2,11 +2,9 @@ module Feature.Indicator where
 
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
-import Core.Actions
 import Core.Context
 import Core.Domain as D
 import Core.Handler
-import Core.Task
 import Core.Transport qualified as T
 import Data.Buffer
 import Data.Color
@@ -14,15 +12,11 @@ import Data.Display.Canvas1D
 import Data.Record
 import Data.Serialize
 import Data.Value
-import Feature.RS485.RBUS.Data (RBUS (clock))
 import GHC.TypeNats
-import Interface.Counter
 import Interface.Display (Display, Render (Render))
 import Interface.MCU
-import Interface.Mac
 import Ivory.Language
 import Ivory.Stdlib
-import Support.Cast
 
 data Indicator n = forall d. (Display d) => Indicator
     { display :: d

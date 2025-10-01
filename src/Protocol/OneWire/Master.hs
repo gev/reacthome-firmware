@@ -20,8 +20,6 @@ import Data.Buffer
 import Data.Queue
 import Data.Record
 import Data.Value
-import Feature.RS485.RBUS.Tx (run)
-import GHC.TypeNats
 import Interface.OneWire
 import Ivory.Language
 import Ivory.Stdlib

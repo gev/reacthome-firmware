@@ -6,10 +6,8 @@ import Core.Handler
 import Interface.Counter qualified as I
 import Interface.Timer qualified as I
 import Ivory.Language
-import Ivory.Language.Module
 import Ivory.Stdlib
 import Ivory.Support
-import Support.Device.GD32F3x0
 import Support.Device.GD32F3x0.IRQ
 import Support.Device.GD32F3x0.Misc
 import Support.Device.GD32F3x0.RCU

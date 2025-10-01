@@ -2,7 +2,6 @@
 
 module Implementation.Mix where
 
-import Control.Monad (zipWithM_)
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Actions
@@ -13,44 +12,36 @@ import Core.Task
 import Core.Transport
 import Core.Transport qualified as T
 import Data.Buffer
-import Data.Matrix
 import Data.Serialize
 import Data.Value
 import Endpoint.ATS as A
 import Endpoint.DInputs qualified as DI
 import Endpoint.DInputsRelaysRules as Ru
-import Endpoint.Groups qualified as G
 import Endpoint.Relays qualified as R
-import Feature.DInputs as FDI (
-    DInputs (DInputs, getDInputs, getInputs),
-    dinputs,
+import Feature.DInputs (
+    DInputs,
     forceSyncDInputs,
+    getDInputs,
     manageDInputs,
     syncDInputs,
  )
-import Feature.Mix.Indicator as FI (
+import Feature.Mix.Indicator (
     Indicator,
-    indicator,
     onFindMe,
  )
-import Feature.Relays as FR (
-    Relays (Relays, getGroups, getRelays),
+import Feature.Relays (
+    Relays,
     forceSyncRelays,
+    getGroups,
+    getRelays,
     manageRelays,
-    n,
     onDo,
     onGroup,
     onInit,
-    relays,
     syncRelays,
  )
-import GHC.RTS.Flags (DebugFlags (stable))
 import GHC.TypeNats
-import Interface.Display
 import Interface.Flash as F
-import Interface.GPIO.Input
-import Interface.GPIO.Output
-import Interface.GPIO.Port
 import Interface.MCU as I
 import Ivory.Language
 import Ivory.Language.Proxy
@@ -176,7 +167,7 @@ onRule ::
     Buffer l Uint8 ->
     Uint8 ->
     Ivory (ProcEffects s t) ()
-onRule mix@Mix{..} buff size = do
+onRule Mix{..} buff size = do
     let relaysN = fromIntegral $ natVal (aNat :: NatType no)
     let dinputsN = fromIntegral $ natVal (aNat :: NatType ni)
     i <- subtract 1 <$> deref (buff ! 1)

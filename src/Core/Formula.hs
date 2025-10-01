@@ -6,7 +6,6 @@ import Core.Context
 import Core.Domain
 import Interface.MCU
 import Ivory.Language
-import Ivory.Language.Module
 
 data Formula p = forall i. Formula
     { name :: String

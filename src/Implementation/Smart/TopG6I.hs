@@ -7,13 +7,10 @@ import Core.Context
 import Core.Controller
 import Core.Domain qualified as D
 import Core.Handler
-import Core.Task
 import Core.Transport
-import Data.Buffer
 import Data.Display.Canvas1D (Canvas1DSize)
 import Data.Value
 import Endpoint.DInputs as E (DInputs)
-import Feature.RS485.RBUS.Data (RBUS (shouldConfirm))
 import Feature.Sht21 (SHT21)
 import Feature.Smart.Top.Buttons
 import Feature.Smart.Top.LEDs (
@@ -31,13 +28,10 @@ import Feature.Smart.Top.LEDs (
  )
 
 import Data.Matrix
-import Feature.Smart.Top.PowerTouch (PowerTouch)
 import Feature.Smart.Top.Vibro (
     Vibro,
-    onInitVibro,
     onVibro,
     sendVibro,
-    vibro,
  )
 import Feature.Touches qualified as FT
 import GHC.TypeNats
@@ -73,7 +67,6 @@ topG6I ::
     m (Top n)
 topG6I transport' touches' vibro' sht21' display' etc' = do
     transport <- transport'
-    shouldInit <- asks D.shouldInit
     mcu <- asks D.mcu
     display <- display' $ peripherals mcu
     let etc = etc' $ peripherals mcu

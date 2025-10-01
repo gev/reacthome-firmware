@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use for_" #-}
 
 module Feature.RS485.RSM where
@@ -12,10 +10,8 @@ import Core.Domain qualified as D
 import Core.Handler
 import Core.Task
 import Core.Transport as T
-import Core.Version
 import Data.Buffer
 import Data.Fixed
-import Data.Queue as Q
 import Data.Serialize
 import Data.Value
 import Feature.RS485.RSM.Data
@@ -23,10 +19,8 @@ import Feature.RS485.RSM.Rx
 import Feature.RS485.RSM.Tx
 import GHC.TypeNats
 import Interface.MCU
-import Interface.RS485 (RS485)
 import Interface.RS485 qualified as I
 import Interface.RS485 qualified as RS
-import Interface.SystemClock (SystemClock)
 import Ivory.Language
 import Ivory.Stdlib
 

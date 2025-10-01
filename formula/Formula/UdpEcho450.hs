@@ -6,7 +6,6 @@ import Core.Formula
 import Device.GD32F4xx
 import Implementation.UdpEcho (udpEcho)
 import Ivory.Language
-import Transport.UART.RBUS
 
 udpEcho450 :: Formula GD32F4xx
 udpEcho450 =

@@ -1,15 +1,7 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 module Interface.I2STX where
 
-import Core.Context
-import Core.Handler
-import Data.Buffer
-import Data.Record
-import GHC.TypeNats
 import Interface.I2S
 import Ivory.Language
-import Ivory.Language.Module
 
 data HandleI2STX i = HandleI2STX
   { i2s :: i

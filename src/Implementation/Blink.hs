@@ -3,15 +3,12 @@ module Implementation.Blink where
 import Control.Monad.Reader
 import Control.Monad.State
 import Core.Context
-import Core.Controller
 import Core.Domain
-import Core.Handler (Handler (addHandler))
 import Core.Task
 import Data.Value
 import Interface.GPIO.Output
 import Interface.GPIO.Port
 import Interface.MCU
-import Interface.Timer (HandleTimer (..), Timer)
 import Ivory.Language
 
 blink ::

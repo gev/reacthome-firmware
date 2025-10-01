@@ -1,19 +1,14 @@
 module Feature.Dimmers.AC where
 
-import Control.Monad (void)
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
-import Core.Actions
 import Core.Context
 import Core.Domain qualified as D
 import Core.Handler
 import Core.Task
 import Core.Transport as T
-import Data.Buffer
 import Data.Fixed
-import Data.Index
 import Data.Record
-import Data.Serialize
 import Data.Value
 import Endpoint.Dimmers qualified as Dim
 import Feature.Dimmers
@@ -99,10 +94,9 @@ detectCrossZeroError Dimmers{..} CrossZero{..} = do
     store countCrossZero 0
 
 calculate :: (KnownNat n) => Dimmers n -> Ivory eff ()
-calculate Dimmers{..} = zipWithM_ zip getPWMs nats
+calculate Dimmers{..} = mapM_ run nats
   where
-    zip :: (I.PWM p) => p -> Int -> Ivory eff ()
-    zip pwm i = do
+    run i = do
         let ix = fromIntegral i
         let d = Dim.dimmers getDimmers ! ix
         calculateDimmer d

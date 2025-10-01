@@ -7,7 +7,6 @@ import Ivory.Language
 import Ivory.Stdlib qualified as S
 import Support.Cast
 import Support.Device.GD32F4xx.DMA
-import Support.Device.GD32F4xx.IRQ
 import Support.Device.GD32F4xx.SPI
 
 dataExchangeDmaI2S :: (KnownNat n) => SPI_DMA_DEFINITION -> SPI_PERIPH -> Record DMA_SINGLE_PARAM_STRUCT -> DMA_PERIPH -> DMA_CHANNEL -> DMA_INT -> Buffer n Uint32 -> Ivory (ProcEffects s ()) ()

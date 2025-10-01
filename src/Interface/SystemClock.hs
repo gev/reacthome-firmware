@@ -4,7 +4,6 @@ import Control.Monad.State
 import Core.Context
 import Core.Handler (Handler (addHandler))
 import Data.Value
-import Interface.Counter (Counter (readCounter))
 import Interface.Timer (HandleTimer (HandleTimer), Timer)
 import Ivory.Language
 

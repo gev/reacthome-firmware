@@ -22,7 +22,6 @@ import Support.Device.GD32F4xx.GPIO
 import Support.Device.GD32F4xx.IRQ
 import Support.Device.GD32F4xx.Misc
 import Support.Device.GD32F4xx.RCU
-import Support.Device.GD32F4xx.System
 import Support.Device.GD32F4xx.Timer
 
 pwmPeriod :: (Num a) => a

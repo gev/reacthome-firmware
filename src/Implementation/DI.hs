@@ -1,23 +1,10 @@
-
 module Implementation.DI where
 
-import Control.Monad
-import Control.Monad.Reader (MonadReader, asks)
-import Control.Monad.State (MonadState)
 import Core.Actions
-import Core.Context
 import Core.Controller
-import Core.Domain
-import Core.Task
-import Core.Transport
-import Data.Value
-import Feature.ALED
 import Feature.DInputs (DInputs, forceSyncDInputs)
 import Feature.DS18B20
 import GHC.TypeNats
-import Interface.GPIO.Output
-import Interface.GPIO.Port
-import Interface.MCU (peripherals)
 import Ivory.Language
 import Ivory.Stdlib
 
@@ -36,7 +23,7 @@ di transport' dinputs' ds18b20 = do
     pure DI{dinputs}
 
 instance (KnownNat n) => Controller (DI n) where
-    handle d@DI{..} buff size = do
+    handle DI{..} buff _ = do
         action <- deref $ buff ! 0
         cond_
             [ action

@@ -1,41 +1,26 @@
 {-# HLINT ignore "Use for_" #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 module Transport.UDP.RBUS where
 
-import Control.Monad (void)
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Controller
 import Core.Dispatcher
-import Core.Domain (Domain (implementation))
 import Core.Domain qualified as D
-import Core.Handler
 import Core.Task
 import Core.Transport
 import Core.Version
 import Data.Buffer
-import Data.Queue
 import Data.Record
 import Data.Value
 import Interface.ENET
 import Interface.LwipPort
 import Interface.MCU as I
-import Interface.SystemClock (getSystemTime)
 import Ivory.Language
 import Ivory.Stdlib
-import Ivory.Stdlib.Control
-import Support.Lwip.Etharp
-import Support.Lwip.Ethernet
 import Support.Lwip.IP_addr
-import Support.Lwip.Igmp
-import Support.Lwip.Mem
-import Support.Lwip.Memp
-import Support.Lwip.Netif
-import Support.Lwip.Pbuf
 import Support.Lwip.Udp
-import Transport.RS485.RBUS.Tx (initTask)
 import Transport.UDP.RBUS.Data
 import Transport.UDP.RBUS.Rx
 import Transport.UDP.RBUS.Tx

@@ -2,7 +2,7 @@
 
 module Endpoint.DInputsRelaysRules where
 
-import Control.Monad.Reader (MonadReader, asks)
+import Control.Monad.Reader (MonadReader)
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Domain qualified as D
@@ -53,7 +53,6 @@ mkRules ::
     t ->
     m (Rules ni no)
 mkRules transport = do
-    mcu <- asks D.mcu
     rulesOn <- matrix' "dinputs_relays_rules_matrix_on" 0xff
     rulesOff <- matrix' "dinputs_relays_rules_matrix_off" 0xff
     payload <- values_ "dinputs_relays_rules_message"

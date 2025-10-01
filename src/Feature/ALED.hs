@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use for_" #-}
 
 module Feature.ALED where
@@ -29,6 +27,7 @@ import Util.CRC16
 import Util.Random
 
 dt = 1 / safeCast E.fps :: IFloat
+dt :: IFloat
 
 data ALED ng ns np
     = forall d f t.
@@ -126,7 +125,6 @@ update ALED{..} random = do
         groupSize' <- deref $ group ~> E.groupSize
         segmentNumber' <- deref $ group ~> E.segmentNumber
         brightness' <- deref $ group ~> E.brightness
-        state' <- deref $ group ~> E.groupState
 
         start' <- deref $ clip ~> E.start
         end' <- deref $ clip ~> E.end
@@ -538,7 +536,7 @@ onALedConfigGroup ::
     Buffer n Uint8 ->
     Uint8 ->
     Ivory (ProcEffects s t) ()
-onALedConfigGroup a@ALED{..} buff size = do
+onALedConfigGroup ALED{..} buff size = do
     let ng' = fromIntegral $ fromTypeNat (aNat :: NatType ng)
     let ns' = fromIntegral $ fromTypeNat (aNat :: NatType ns)
 
@@ -629,7 +627,7 @@ onALedConfigGroup a@ALED{..} buff size = do
                         do transmit =<< deref (buff ! ix)
 
 transmitNextGroup ::
-    forall n ng ns np s t.
+    forall ng ns np s t.
     (KnownNat ng, KnownNat ns) =>
     ALED ng ns np ->
     Ivory (ProcEffects s t) ()
@@ -644,7 +642,7 @@ transmitNextGroup ALED{..} = do
         transmit $ 1 + groupIndex'
         transmit =<< deref (group ~> E.colors)
         transmit segmentNumber'
-        for (toIx segmentNumber' :: Ix ns) \ix -> do
+        for (toIx segmentNumber' :: Ix ns) \_ -> do
             sx <- deref segmentIndex
             let segment = E.segments getALED ! sx
             direction' <- deref $ segment ~> E.direction
@@ -658,11 +656,11 @@ transmitNextGroup ALED{..} = do
     store groupIndex $ groupIndex' + 1
 
 syncState ::
-    forall n ng ns np s t.
+    forall ng ns np s t.
     (KnownNat ng) =>
     ALED ng ns np ->
     Ivory (ProcEffects s t) ()
-syncState a@ALED{..} = do
+syncState ALED{..} = do
     ix <- deref stateIndex
     let group = E.groups getALED ! ix
     stateChanged' <- deref $ group ~> E.stateChanged
@@ -678,7 +676,7 @@ syncState a@ALED{..} = do
     store stateIndex $ ix + 1
 
 syncGroups ::
-    forall n ng ns np s t.
+    forall ng ns np s t.
     (KnownNat ng, KnownNat ns) =>
     ALED ng ns np ->
     Ivory (ProcEffects s t) ()

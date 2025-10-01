@@ -1,4 +1,3 @@
-
 module Implementation.Doppler where
 
 import Core.Actions
@@ -30,7 +29,7 @@ doppler transport' dopplers' dinputs' aled' = do
     aled <- aled' transport
     pure Doppler{dopplers, dinputs, aled}
 
-onGetState Doppler{..} buff size = do
+onGetState Doppler{..} _ _ = do
     forceSyncDInputs dinputs
     forceSyncAled aled
 

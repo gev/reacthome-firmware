@@ -2,14 +2,9 @@ module Core.Domain where
 
 import Control.Monad.State
 import Core.Context
-import Core.Transport
 import Core.Version qualified as V
-import Data.Buffer
-import Data.Record
 import Data.Value
 import Interface.MCU qualified as I
-import Interface.Mac qualified as M
-import Interface.SystemClock
 import Ivory.Language
 import Support.Cast
 import Support.ReadAddr

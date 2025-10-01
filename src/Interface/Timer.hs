@@ -1,9 +1,7 @@
 module Interface.Timer where
 
-import Core.Context
 import Core.Handler
 import Ivory.Language
-import Ivory.Stdlib
 
 data HandleTimer t = HandleTimer
     { timer :: t

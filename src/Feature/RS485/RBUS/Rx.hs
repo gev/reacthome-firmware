@@ -1,10 +1,7 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use for_" #-}
 
 module Feature.RS485.RBUS.Rx where
 
-import Core.Domain (Domain (shouldInit))
 import Core.Transport
 import Feature.RS485.RBUS.Data
 import Interface.RS485 qualified as I

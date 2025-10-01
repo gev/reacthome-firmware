@@ -1,7 +1,5 @@
-
 module Interface.Touch where
 
-import Core.Handler
 import Ivory.Language
 
 class Touch t where

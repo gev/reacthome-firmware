@@ -9,7 +9,6 @@ import Interface.PWM qualified as I
 import Interface.Timer qualified as I
 import Ivory.Language
 import Support.Device.GD32F4xx.GPIO (GPIO_PUPD, gpio_pupd_none)
-import Support.Device.GD32F4xx.System
 import Support.Device.GD32F4xx.Timer
 
 {--

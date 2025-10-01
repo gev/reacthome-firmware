@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use camelCase" #-}
 
 module Support.ReadAddr (
@@ -8,7 +6,6 @@ module Support.ReadAddr (
 ) where
 
 import Ivory.Language
-import Ivory.Language.Module
 
 inclReadAddr :: ModuleDef
 inclReadAddr = incl read_addr_32u

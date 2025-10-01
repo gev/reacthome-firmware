@@ -2,7 +2,6 @@ module Feature.AOutputs where
 
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
-import Core.Actions
 import Core.Context
 import Core.Domain qualified as D
 import Core.Task
@@ -10,7 +9,6 @@ import Core.Transport qualified as T
 import Data.Buffer
 import Data.Fixed
 import Data.Index
-import Data.Record
 import Data.Serialize
 import Data.Value hiding (value)
 import Endpoint.AOutputs qualified as E
@@ -19,7 +17,6 @@ import Interface.DAC qualified as I
 import Interface.MCU
 import Ivory.Language
 import Ivory.Stdlib
-import Support.Cast
 
 data AOutputs n
     = forall a.
@@ -113,7 +110,7 @@ onInit AOutputs{..} buff size =
             offset' <- deref offset
             let ao = aos ! ix
             v <- unpack buff offset' :: Ivory eff Uint8
-            store (E.aoutputs getAOutputs ! ix ~> E.value) (safeCast v / 255)
+            store (ao ~> E.value) (safeCast v / 255)
             store offset $ offset' + 1
         store shouldInit false
 

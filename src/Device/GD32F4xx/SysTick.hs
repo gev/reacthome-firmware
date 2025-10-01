@@ -1,4 +1,3 @@
-
 module Device.GD32F4xx.SysTick where
 
 import Control.Monad.State
@@ -6,7 +5,6 @@ import Core.Context
 import Core.Handler
 import Interface.Timer
 import Ivory.Language
-import Ivory.Language.Module
 import Support.CMSIS.CoreCM4
 
 newtype SysTick = SysTick Uint32
@@ -17,7 +15,7 @@ sysTick freq = do
     pure $ SysTick freq
 
 instance Handler HandleTimer SysTick where
-    addHandler (HandleTimer{timer = (SysTick ticks), handle}) = do
+    addHandler (HandleTimer{..}) = do
         addProc handleIRQ'
       where
         handleIRQ' :: Def ('[] :-> ())

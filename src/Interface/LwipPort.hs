@@ -1,18 +1,12 @@
-{-# HLINT ignore "Use newtype instead of data" #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 module Interface.LwipPort where
 
 import Control.Monad (void)
 import Control.Monad.Reader.Class
 import Control.Monad.State.Class
 import Core.Context
-import Core.Controller
 import Core.Domain qualified as D
-import Core.Handler
 import Core.Task
 import Data.Record
-import Data.Value
 import Interface.ENET
 import Interface.MCU
 import Interface.MCU qualified as I

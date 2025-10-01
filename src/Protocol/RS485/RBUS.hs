@@ -1,10 +1,6 @@
 module Protocol.RS485.RBUS where
 
-import Data.Buffer
-import Data.Record
-import Data.Value (Value)
 import Ivory.Language
-import Ivory.Stdlib
 
 data Preamble = Preamble
     { discovery :: Uint8

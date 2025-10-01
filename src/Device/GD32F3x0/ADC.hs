@@ -1,21 +1,13 @@
-{-# HLINT ignore "Use newtype instead of data" #-}
-{-# OPTIONS_GHC -Wno-missing-fields #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 module Device.GD32F3x0.ADC where
 
 import Control.Monad.State (MonadState)
 import Core.Context
-import Data.Buffer
-import Data.Record
 import Device.GD32F3x0.GPIO.Port
 import Interface.ADC qualified as I
 import Ivory.Language
 import Ivory.Stdlib
-import Support.Cast
 import Support.Device.GD32F3x0.ADC
-import Support.Device.GD32F3x0.DMA
-import Support.Device.GD32F3x0.GPIO hiding (mode, rcu)
+import Support.Device.GD32F3x0.GPIO (GPIO_PUPD, gpio_pupd_none)
 import Support.Device.GD32F3x0.RCU
 
 newtype ADC = ADC {channel :: Uint8}

@@ -7,7 +7,6 @@ import Data.Buffer
 import Data.Queue
 import Data.Value
 import GHC.TypeNats
-import Interface.MCU
 import Interface.Mac
 import Interface.SystemClock
 import Interface.UART

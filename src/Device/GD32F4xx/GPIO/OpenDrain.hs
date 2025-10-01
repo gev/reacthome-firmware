@@ -5,7 +5,6 @@ import Core.Context
 import Device.GD32F4xx.GPIO.Mode
 import Device.GD32F4xx.GPIO.Port
 import Interface.GPIO.OpenDrain qualified as I
-import Ivory.Language.Module
 import Support.Device.GD32F4xx.GPIO as S
 
 newtype OpenDrain = OpenDrain {getOpenDrain :: Port}

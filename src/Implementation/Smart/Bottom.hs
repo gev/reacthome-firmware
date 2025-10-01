@@ -1,4 +1,3 @@
-
 module Implementation.Smart.Bottom where
 
 import Core.Actions
@@ -7,7 +6,6 @@ import Feature.ALED
 import Feature.DInputs
 import Feature.DS18B20
 import Feature.Scd40
-import Feature.Sht21
 import Feature.Smart.Top
 import GHC.TypeNats
 import Ivory.Language
@@ -61,7 +59,7 @@ bottom2 transport top dinputs ds18b20 scd40 aled' = do
         ds18b20
         aled'
 
-onGetState Bottom{..} buff size = do
+onGetState Bottom{..} _ _ = do
     forceSyncDInputs dinputs
     forceSyncTop top
     forceSyncAled aled

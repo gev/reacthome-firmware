@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use for_" #-}
 
 module Feature.DS18B20 (
@@ -18,12 +16,10 @@ import Data.Matrix
 import Data.Serialize
 import Data.Value
 import GHC.TypeNats
-import Interface.Flash (Flash (address))
 import Interface.GPIO.OpenDrain (OpenDrain)
 import Interface.MCU (peripherals)
 import Interface.OneWire
 import Ivory.Language
-import Ivory.Language.Uint (Uint16 (Uint16))
 import Ivory.Stdlib
 import Protocol.OneWire.Master
 import Prelude hiding (read)

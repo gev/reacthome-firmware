@@ -10,14 +10,12 @@ import Control.Monad.State
 import Core.Context
 import Core.Domain as D
 import Core.Handler
-import Data.Buffer
 import GHC.TypeNats
 import Interface.GPIO.Output
 import Interface.GPIO.Port
 import Interface.MCU
 import Interface.UART as U
 import Ivory.Language
-import Ivory.Support
 
 data RS485 rn tn
     = forall u o.

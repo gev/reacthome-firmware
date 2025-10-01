@@ -1,15 +1,12 @@
 module Transport.UDP.RBUS.Data where
 
 import Data.Buffer
-import Data.Queue
 import Data.Record
 import Data.Value
-import Feature.RS485.RBUS.Data (RBUS (shouldDiscovery))
 import Interface.Mac
 import Ivory.Language
 import Support.Lwip.IP_addr
 import Support.Lwip.Netif
-import Support.Lwip.Pbuf
 import Support.Lwip.Udp
 
 data RBUS = RBUS

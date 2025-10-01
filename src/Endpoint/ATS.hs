@@ -4,20 +4,18 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
-import Core.Domain (Domain (mcu))
+import Core.Domain (Domain)
 import Core.Domain qualified as D
 import Core.Transport qualified as T
 import Data.Buffer
 import Data.Record
 import Data.Value
 import Endpoint.DInputs qualified as DI
-import Endpoint.Relays (delayOn)
 import Endpoint.Relays qualified as R
 import GHC.TypeNats
 import Interface.MCU
 import Interface.SystemClock (SystemClock, getSystemTime)
 import Ivory.Language
-import Ivory.Language.Uint (Uint8 (Uint8))
 import Ivory.Stdlib
 
 modeNone = 0x00 :: Uint8

@@ -7,7 +7,6 @@ module Util.String (
 import GHC.TypeNats
 import Ivory.Language
 import Ivory.Language.Array
-import Ivory.Language.CArray
 import Ivory.Language.Proxy
 
 inclString :: ModuleDef

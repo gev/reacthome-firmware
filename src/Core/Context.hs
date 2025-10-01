@@ -1,12 +1,10 @@
-
 module Core.Context where
 
 import Control.Monad.State
 import Core.Task
 import Data.List
-import GHC.TypeNats
 import Ivory.Language
-import Ivory.Language.Module
+import Prelude hiding (id)
 
 data Context = Context
     { getModule :: ModuleDef

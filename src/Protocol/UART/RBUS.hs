@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use for_" #-}
 
 module Protocol.UART.RBUS where
@@ -11,7 +9,6 @@ import Data.Record
 import Data.Value
 import GHC.TypeNats
 import Ivory.Language
-import Ivory.Stdlib
 import Util.CRC16
 
 newtype Preamble = Preamble

@@ -1,5 +1,4 @@
 {-# HLINT ignore "Use for_" #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 module Util.CRC16 (
     CRC16,
@@ -19,8 +18,6 @@ import Data.Buffer
 import Data.Record
 import GHC.TypeNats
 import Ivory.Language
-import Ivory.Language.Module
-import Ivory.Language.Syntax (Struct)
 
 type CRC16 = "crc16_struct"
 

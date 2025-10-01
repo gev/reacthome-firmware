@@ -1,11 +1,9 @@
 module Endpoint.ALED.Animation.Mask.Blink where
 
 import Data.Record
-import Endpoint.ALED
 import Endpoint.ALED.Animation.CosT
 import Endpoint.ALED.Animation.Data
 import Ivory.Language
-import Ivory.Stdlib
 
 renderBlink ::
     IFloat ->

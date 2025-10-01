@@ -4,7 +4,6 @@ import Control.Monad.Reader (MonadReader)
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Domain qualified as D
-import Data.Color
 import Data.Matrix
 import Data.Value
 import GHC.TypeNats

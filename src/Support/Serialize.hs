@@ -1,12 +1,8 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use camelCase" #-}
 
 module Support.Serialize where
 
-import GHC.TypeNats
 import Ivory.Language
-import Ivory.Language.Module
 
 inclSerialize :: ModuleDef
 inclSerialize = do

@@ -4,7 +4,6 @@ module Formula.Server where
 
 import Core.Formula
 import Core.Models
-import Data.Color
 import Data.Fixed
 import Device.GD32F4xx
 import Feature.ALED (aled)

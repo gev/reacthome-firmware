@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use for_" #-}
 
 module Transport.UART.RBUS.Tx where
@@ -8,14 +6,12 @@ import Data.Buffer
 import Data.Concurrent.Queue
 import Data.Queue
 import GHC.TypeNats
-import Interface.SystemClock
 import Interface.UART qualified as U
 import Ivory.Language
 import Ivory.Stdlib
 import Protocol.UART.RBUS qualified as U
 import Protocol.UART.RBUS.Tx
 import Transport.UART.RBUS.Data
-import Transport.UDP.RBUS
 
 discoveryTask ::
     (KnownNat q, KnownNat l) =>
@@ -30,7 +26,7 @@ txTask ::
     (KnownNat q, KnownNat l) =>
     RBUS q l ->
     Ivory (ProcEffects s ()) ()
-txTask r@RBUS{..} = do
+txTask RBUS{..} = do
     txLock' <- deref txLock
     when (iNot txLock') do
         popConcurrently msgQueue \Messages{..} ix -> do
@@ -76,7 +72,7 @@ run ::
     Buffer n Uint8 ->
     Uint16 ->
     Ivory (ProcEffects s t) Uint8
-run protocol transmit buff offset = do
+run _ transmit buff offset = do
     size <- local $ ival 0
     let go :: Uint8 -> Ivory eff ()
         go v = do

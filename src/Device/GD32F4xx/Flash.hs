@@ -2,7 +2,6 @@ module Device.GD32F4xx.Flash where
 
 import Interface.Flash
 import Ivory.Language
-import Support.CMSIS.CoreCMFunc
 import Support.Cast
 import Support.Device.GD32F4xx.FMC
 

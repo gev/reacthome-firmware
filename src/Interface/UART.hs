@@ -1,12 +1,7 @@
-
 module Interface.UART where
 
-import Core.Context
 import Core.Handler
-import Data.Buffer
-import GHC.TypeNats
 import Ivory.Language
-import Ivory.Language.Module
 
 data HandleUART u = HandleUART
     { uart :: u

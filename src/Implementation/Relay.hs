@@ -1,7 +1,5 @@
-
 module Implementation.Relay where
 
-import Control.Applicative
 import Core.Actions
 import Core.Controller
 import Data.Serialize

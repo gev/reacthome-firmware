@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use camelCase" #-}
 
 module Support.CMSIS.CoreCMFunc (
@@ -8,7 +6,6 @@ module Support.CMSIS.CoreCMFunc (
     inclCoreCMFunc,
 ) where
 
-import Control.Monad
 import Ivory.Language
 import Ivory.Language.Proc
 import Ivory.Language.Syntax

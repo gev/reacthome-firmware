@@ -2,9 +2,7 @@ module Protocol.RS485.RBUS.Master.Tx where
 
 import Data.Buffer
 import GHC.TypeNats
-import Interface.Mac
 import Ivory.Language
-import Ivory.Language.Array (IxRep)
 import Protocol.RS485.RBUS
 import Protocol.RS485.RBUS.Master
 import Protocol.RS485.RBUS.Master.MacTable as T

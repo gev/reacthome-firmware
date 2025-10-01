@@ -1,10 +1,8 @@
 module Endpoint.ALED.Animation.Mask.FadeOff where
 
 import Data.Record
-import Endpoint.ALED
 import Endpoint.ALED.Animation.Data
 import Ivory.Language
-import Ivory.Stdlib
 
 renderFadeOff ::
     IFloat ->

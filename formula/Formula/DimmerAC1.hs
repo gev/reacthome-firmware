@@ -7,7 +7,6 @@ import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
 import Feature.Dimmers.AC
-import Feature.Indicator
 import Implementation.Dimmer (dimmer)
 import Interface.RS485
 import Ivory.Language

@@ -1,13 +1,5 @@
-
 module Endpoint.StereoAMP where
 
-import Control.Monad.State
-import Core.Actions
-import Core.Context
-import Data.Buffer
-import Data.Record
-import Data.Serialize
-import GHC.TypeNats
 import Ivory.Language
 
 type StereoAMPStruct = "stereo_amp_struct"

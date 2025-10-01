@@ -1,9 +1,6 @@
 module Endpoint.ALED.Animation where
 
-import Core.Context
-import Data.Buffer
 import Data.Record
-import Data.Value
 import Endpoint.ALED.Animation.Color.Fade
 import Endpoint.ALED.Animation.Color.RandomT
 import Endpoint.ALED.Animation.Color.RandomX
@@ -26,7 +23,6 @@ import Endpoint.ALED.Animation.Mask.SlideOff
 import Endpoint.ALED.Animation.Mask.SlideOffInOut
 import Endpoint.ALED.Animation.Mask.SlideOn
 import Endpoint.ALED.Animation.Mask.SlideOnInOut
-import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
 import Util.Random
@@ -42,7 +38,7 @@ renderColor ::
     Sint32 ->
     IFloat ->
     Ivory (AllowBreak (ProcEffects s ())) IFloat
-renderColor brightness random animation segment segmentSize pixel pixelSize subpixel value = do
+renderColor brightness random animation segment segmentSize pixel _ subpixel value = do
     animationState' <- deref $ animation ~> animationState
     ifte
         animationState'
@@ -118,7 +114,6 @@ getTime ::
     Sint32 ->
     Ivory (AllowBreak (ProcEffects s ())) IFloat
 getTime animation segment = do
-    inverseDirection' <- deref $ animation ~> inverseDirection
     inLoop' <- deref $ animation ~> inLoop
     phase' <- deref $ animation ~> phase
     time' <- deref $ animation ~> time

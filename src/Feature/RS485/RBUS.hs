@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use for_" #-}
 
 module Feature.RS485.RBUS where
@@ -54,8 +52,6 @@ rbus' ::
     Int ->
     m RBUS
 rbus' transport rs485 index = do
-    rs <- rs485
-
     mcu <- asks D.mcu
     shouldInit <- asks D.shouldInit
 
@@ -251,7 +247,7 @@ transmitRB485 ::
 transmitRB485 list buff size = do
     when (size >? 2) do
         port <- deref $ buff ! 1
-        let run r@RBUS{..} p = do
+        let run RBUS{..} p = do
                 shouldInit' <- deref shouldInit
                 mode' <- deref mode
                 when (iNot shouldInit' .&& mode' ==? modeRS485 .&& p ==? port) do

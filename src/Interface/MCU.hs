@@ -3,12 +3,9 @@ module Interface.MCU where
 import Control.Monad.State
 import Core.Context
 import Data.Buffer
-import Data.Value
-import Interface.Flash
 import Interface.Mac
 import Interface.SystemClock (SystemClock)
 import Ivory.Language
-import Ivory.Language.Module
 
 data Platform p = Platform
     { systemClock :: SystemClock

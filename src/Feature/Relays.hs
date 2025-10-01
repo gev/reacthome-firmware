@@ -1,32 +1,25 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use for_" #-}
 
 module Feature.Relays where
 
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
-import Core.Actions
 import Core.Context
 import Core.Domain qualified as D
 import Core.Task
 import Core.Transport qualified as T
 import Data.Buffer
 import Data.Fixed
-import Data.Foldable
 import Data.Index
 import Data.Record
 import Data.Serialize
 import Data.Value
-import Endpoint.Groups (Groups (groups))
 import Endpoint.Groups qualified as G
-import Endpoint.Relays (delayOn)
 import Endpoint.Relays qualified as R
-import Feature.RS485.RBUS (initialize)
 import GHC.TypeNats
 import Interface.GPIO.Output
 import Interface.GPIO.Port
-import Interface.MCU (MCU, peripherals, systemClock)
+import Interface.MCU (peripherals, systemClock)
 import Interface.SystemClock (SystemClock, getSystemTime)
 import Ivory.Language
 import Ivory.Stdlib
@@ -197,7 +190,7 @@ onDo ::
     Buffer l Uint8 ->
     Uint8 ->
     Ivory (ProcEffects s t) ()
-onDo relays@Relays{..} buff size =
+onDo Relays{..} buff size =
     when (size >=? 3) do
         index <- deref $ buff ! 1
         initialized <- iNot <$> deref shouldInit

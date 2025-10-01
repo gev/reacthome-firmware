@@ -1,5 +1,4 @@
 {-# HLINT ignore "Use camelCase" #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 module Support.Lwip.Mem (
     initMem,

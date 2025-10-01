@@ -2,7 +2,6 @@
 module Interface.Flash where
 
 import Ivory.Language
-import Ivory.Language.Module
 
 newtype Addr = Addr {getAddr :: Uint32}
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar, Num)

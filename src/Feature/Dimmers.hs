@@ -2,7 +2,6 @@ module Feature.Dimmers where
 
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
-import Core.Actions
 import Core.Context
 import Core.Domain qualified as D
 import Core.Task
@@ -10,7 +9,6 @@ import Core.Transport qualified as T
 import Data.Buffer
 import Data.Fixed
 import Data.Index
-import Data.Record
 import Data.Serialize
 import Data.Value
 import Endpoint.Dimmers qualified as D
@@ -19,7 +17,6 @@ import Interface.MCU
 import Interface.PWM qualified as I
 import Ivory.Language
 import Ivory.Stdlib
-import Support.Cast
 
 data Dimmers n = forall p. (I.PWM p) => Dimmers
     { n :: Uint8

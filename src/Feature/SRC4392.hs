@@ -6,7 +6,6 @@ import Core.Context
 import Core.Domain qualified as D
 import Core.Handler
 import Core.Task
-import Data.Buffer
 import Data.Matrix
 import Data.Value
 import Interface.GPIO.Output
@@ -14,7 +13,6 @@ import Interface.GPIO.Port
 import Interface.I2C qualified as I
 import Interface.MCU
 import Ivory.Language
-import Ivory.Stdlib
 
 data SRC4392 = forall i o. (I.I2C i 2, Output o) => SRC4392
     { i2c :: i 2

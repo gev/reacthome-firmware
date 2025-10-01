@@ -6,9 +6,7 @@ import Data.Index
 import Data.Semaphore
 import GHC.TypeNats
 import Ivory.Language
-import Ivory.Language.Array
 import Ivory.Language.Proxy
-import Ivory.Stdlib
 
 {--
     TODO: Make polymorph?

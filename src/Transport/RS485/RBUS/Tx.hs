@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use for_" #-}
 
 module Transport.RS485.RBUS.Tx where
@@ -43,7 +41,7 @@ initTask r@RBUS{..} = do
         toQueue r initBuff
 
 doTransmitMessage :: RBUS -> Ivory (ProcEffects s ()) ()
-doTransmitMessage r@RBUS{..} = do
+doTransmitMessage RBUS{..} = do
     t0 <- deref txTimestamp
     t1 <- getSystemTime clock
     when (t1 - t0 >? 1) do
@@ -53,7 +51,6 @@ doTransmitMessage r@RBUS{..} = do
                 (ttl >? 0)
                 do
                     offset <- deref $ msgOffset ! ix
-                    size <- deref $ msgSize ! ix
                     confirmed' <- deref msgConfirmed
                     ifte_
                         confirmed'
@@ -98,7 +95,7 @@ toRS ::
     (Slave 255 -> (Uint8 -> Ivory eff ()) -> Ivory (ProcEffects s ()) ()) ->
     RBUS ->
     Ivory (ProcEffects s ()) ()
-toRS transmit r@RBUS{..} = do
+toRS transmit RBUS{..} = do
     RS.transmit rs \write -> transmit protocol (write . safeCast)
     store txTimestamp =<< getSystemTime clock
     store txLock true

@@ -2,7 +2,6 @@
 
 module Implementation.MixH where
 
-import Control.Monad (zipWithM_)
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Actions
@@ -15,30 +14,27 @@ import Data.Buffer
 import Data.Serialize
 import Data.Value
 import Endpoint.DInputsRelaysRules as Ru
-import Endpoint.Dimmers as EDim (
-    dimmers,
-    initialize,
-    syncDimmerGroup,
- )
-import Feature.DInputs as FDI (
-    DInputs (DInputs, getDInputs, getInputs),
-    dinputs,
+import Endpoint.Dimmers qualified as EDim
+import Feature.DInputs (
+    DInputs,
     forceSyncDInputs,
+    getDInputs,
     manageDInputs,
     syncDInputs,
  )
-import Feature.DS18B20 (DS18B20, ds18b20)
+import Feature.DS18B20 (DS18B20)
 import Feature.Dimmers as FDim (Dimmers, forceSync, getDimmers, n, onDim)
 import Feature.Relays as FR (
-    Relays (Relays, getGroups, getRelays),
+    Relays,
     forceSyncRelays,
+    getGroups,
+    getRelays,
     initGroups,
     initRelays,
     manageRelays,
     n,
     onDo,
     onGroup,
-    relays,
     syncRelays,
  )
 import GHC.TypeNats
@@ -116,7 +112,7 @@ mix transport' dinputs' relays' dimmers' ds18b20 etc = do
 
     addSync "dinputs" $ forceSyncDInputs dinputs
     addSync "relays" $ forceSyncRelays relays
-    addSync "dimmers" $ FDim.forceSync dimmers
+    addSync "dimmers" $ forceSync dimmers
     addSync "rules" $ forceSyncRules rules
 
     pure mix
@@ -159,7 +155,7 @@ onRule ::
     Buffer l Uint8 ->
     Uint8 ->
     Ivory (ProcEffects s t) ()
-onRule mix@Mix{..} buff size = do
+onRule Mix{..} buff size = do
     let relaysN = fromIntegral $ natVal (aNat :: NatType no)
     let dinputsN = fromIntegral $ natVal (aNat :: NatType ni)
     i <- subtract 1 <$> deref (buff ! 1)
@@ -182,7 +178,7 @@ onGetState Mix{..} = do
     initialized <- iNot <$> deref shouldInit
     when initialized do
         forceSyncRelays relays
-        FDim.forceSync dimmers
+        forceSync dimmers
 
 saveTask :: (KnownNat ni, KnownNat no) => Mix ni no nd -> Ivory (ProcEffects s t) ()
 saveTask mix@Mix{..} = do
@@ -244,7 +240,7 @@ checkCRC Mix{..} = do
     pure $ lsb' ==? lsb'' .&& msb' ==? msb''
 
 onInit :: (KnownNat no, KnownNat nd, ANat l) => Mix ni no nd -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
-onInit m@Mix{..} buff size = do
+onInit Mix{..} buff size = do
     let relsSizeBuff = 1 + 5 * fromIntegral (FR.n relays) + 6 * fromIntegral (FR.n relays)
     let dimsSizeBuff = FDim.n dimmers * 3
 

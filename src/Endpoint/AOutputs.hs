@@ -1,4 +1,3 @@
-
 module Endpoint.AOutputs where
 
 import Control.Monad.State (MonadState)
@@ -9,8 +8,6 @@ import Data.Record
 import Data.Serialize
 import GHC.TypeNats
 import Ivory.Language
-import Ivory.Language.Proxy (NatType, aNat)
-import Ivory.Stdlib
 import Support.Cast
 
 type AOutputStruct = "aoutput_struct"

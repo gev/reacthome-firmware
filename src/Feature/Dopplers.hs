@@ -3,7 +3,6 @@ module Feature.Dopplers (
     dopplers,
 ) where
 
-import Control.Monad ((<=<))
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Actions
@@ -11,14 +10,11 @@ import Core.Context
 import Core.Domain qualified as D
 import Core.Task
 import Core.Transport qualified as T
-import Data.Buffer
-import Data.Data (cast)
 import Data.Fixed
 import Data.Value
 import Interface.ADC qualified as I
 import Interface.MCU
 import Ivory.Language
-import Ivory.Language.Float (IFloat (IFloat))
 import Ivory.Stdlib
 
 data Doppler a = Doppler
@@ -47,7 +43,6 @@ dopplers ::
     t ->
     m (Dopplers n)
 dopplers analogInput transport = do
-    mcu <- asks D.mcu
     doppler <- zipWithM (mkDoppler transport) analogInput nats
 
     let dopplers =
@@ -168,8 +163,6 @@ average alpha a b = a * (1 - alpha) + b * alpha
 
 iMax :: (IvoryOrd a) => a -> a -> a
 iMax a b = (a >? b) ? (a, b)
-
-sub = (-)
 
 type N = 5
 

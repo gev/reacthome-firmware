@@ -1,5 +1,4 @@
 {-# HLINT ignore "Use camelCase" #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 module Support.Device.GD32F3x0.FMC (
     FMC_FLAG,
@@ -15,7 +14,6 @@ module Support.Device.GD32F3x0.FMC (
 ) where
 
 import Ivory.Language
-import Ivory.Support
 import Ivory.Support.Device.GD32F3x0
 
 newtype FMC_FLAG = FMC_FLAG Uint32

@@ -2,13 +2,10 @@
 
 module Data.Display.Canvas1D where
 
-import Control.Monad.State
-import Core.Context
 import Data.Color
 import Data.Value
 import GHC.TypeNats
 import Ivory.Language
-import Ivory.Language.Proxy
 import Ivory.Stdlib
 import Support.Cast
 

@@ -11,7 +11,6 @@ import Data.Buffer
 import Data.Serialize (unpack)
 import Data.Value
 import Endpoint.DInputs (DInputs (dinputs), state)
-import Feature.Relays (Relays (shouldInit))
 import GHC.TypeNats
 import Interface.Flash as F
 import Interface.GPIO.Output (Output, reset, set)
@@ -162,7 +161,7 @@ onInitVibro ::
     Buffer l Uint8 ->
     Uint8 ->
     Ivory (ProcEffects s t) IBool
-onInitVibro v@Vibro{..} buffer size = do
+onInitVibro Vibro{..} buffer size = do
     ifte
         (size >=? 2)
         do

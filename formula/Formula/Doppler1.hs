@@ -2,15 +2,11 @@
 
 module Formula.Doppler1 where
 
-import Control.Monad.Reader (MonadReader)
-import Control.Monad.State (MonadState)
-import Core.Context
-import Core.Domain (Domain)
 import Core.Formula
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
-import Feature.ALED (ALED, aled)
+import Feature.ALED (aled)
 import Feature.DInputs
 import Feature.Dopplers
 import Implementation.Doppler (doppler)

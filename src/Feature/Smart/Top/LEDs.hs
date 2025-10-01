@@ -1,43 +1,27 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use for_" #-}
 
 module Feature.Smart.Top.LEDs where
 
-import Control.Monad.Reader (MonadReader, asks)
+import Control.Monad.Reader (MonadReader)
 import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
 import Core.Domain as D
-import Core.FSM (transit)
-import Core.Handler
 import Core.Task (delay)
 import Core.Transport (LazyTransport (lazyTransmit))
 import Core.Transport qualified as T
 import Data.Buffer
-import Data.ByteString (index)
 import Data.Color
 import Data.Display.Canvas1D
 import Data.Matrix
 import Data.Record
 import Data.Serialize
 import Data.Value
-import Endpoint.DInputs as DI
-import Endpoint.Dimmers (brightness)
-import Feature.Dimmers (onOff)
-import Feature.RS485.RBUS (rbus')
-import Feature.Scd40 (SCD40 (transmit, txBuff))
-import GHC.Arr (array)
 import GHC.TypeNats
-import Interface.Display (Display)
-import Interface.Display qualified as I
 import Interface.Flash as F
-import Interface.MCU
-import Interface.SystemClock (getSystemTime)
 import Ivory.Language
 import Ivory.Language.Proxy
 import Ivory.Stdlib
-import Transport.UDP.RBUS.Tx (lazyTransmit')
 import Util.CRC16
 
 data LEDs pn ln = forall f t. (T.LazyTransport t, Flash f) => LEDs

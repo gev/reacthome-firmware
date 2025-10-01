@@ -7,11 +7,9 @@ import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
 import Feature.Sht21 (sht21)
-import Feature.Smart.Top.PowerTouch (powerTouch)
 import Feature.Smart.Top.Vibro (vibro)
 import Feature.Touches (touches)
 import Implementation.Smart.TopG6I (topG6I)
-import Interface.RS485
 import Ivory.Language
 import Transport.UART.RBUS
 

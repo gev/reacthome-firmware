@@ -1,15 +1,9 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use for_" #-}
 
 module Transport.UDP.RBUS.Rx where
 
-import Control.Monad (void)
 import Core.Actions
-import Data.Queue
 import Data.Serialize
-import Interface.ENET
-import Interface.LwipPort
 import Ivory.Language
 import Ivory.Stdlib
 import Support.Lwip.IP_addr
@@ -17,11 +11,10 @@ import Support.Lwip.Netif
 import Support.Lwip.Pbuf
 import Support.Lwip.Udp
 import Transport.UDP.RBUS.Data
-import Transport.UDP.RBUS.Tx
 
 receiveCallback :: RBUS -> Def (UdpRecvFn s1 s2 s3 s4)
 receiveCallback rbus@RBUS{..} =
-    proc "udp_echo_callback" \_ upcb pbuff addr port -> body do
+    proc "udp_echo_callback" \_ _ pbuff _ _ -> body do
         size <- castDefault <$> deref (pbuff ~> tot_len)
         when (size >? 0 .&& size <=? arrayLen rxBuff) do
             for (toIx size) \ix ->
@@ -39,7 +32,7 @@ receive rbus@RBUS{..} len = do
         ]
 
 handleDiscovery :: RBUS -> Uint8 -> Ivory (ProcEffects s t) ()
-handleDiscovery rbus@RBUS{..} size =
+handleDiscovery RBUS{..} size =
     when (size ==? 7) do
         ip1 <- unpack rxBuff 1
         ip2 <- unpack rxBuff 2
@@ -50,7 +43,7 @@ handleDiscovery rbus@RBUS{..} size =
         store shouldDiscovery true
 
 handleAddress :: RBUS -> Uint8 -> Ivory (ProcEffects s t) ()
-handleAddress rbus@RBUS{..} size =
+handleAddress RBUS{..} size =
     when (size ==? 15) do
         isValid <- local $ ival true
         arrayMap \ix -> do

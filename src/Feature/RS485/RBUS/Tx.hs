@@ -1,20 +1,16 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use for_" #-}
 
 module Feature.RS485.RBUS.Tx where
 
-import Control.Monad (zipWithM_)
 import Data.Buffer
 import Data.Queue
 import Feature.RS485.RBUS.Data
 import GHC.TypeNats
-import Interface.Mac
 import Interface.RS485 qualified as RS
 import Interface.SystemClock
 import Ivory.Language
 import Ivory.Stdlib
-import Protocol.RS485.RBUS (broadcastAddress, messageTTL)
+import Protocol.RS485.RBUS (messageTTL)
 import Protocol.RS485.RBUS.Master as P
 import Protocol.RS485.RBUS.Master.Tx (
     transmitConfirm,
@@ -45,7 +41,7 @@ txTask r@RBUS{..} = do
             ]
 
 doTransmitMessage :: RBUS -> Ivory (ProcEffects s ()) ()
-doTransmitMessage r@RBUS{..} = do
+doTransmitMessage RBUS{..} = do
     t0 <- deref txTimestamp
     t1 <- getSystemTime clock
     when (t1 - t0 >? 1) do
@@ -103,7 +99,7 @@ toRS ::
     (Master 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) ()) ->
     RBUS ->
     Ivory (ProcEffects s ()) ()
-toRS transmit r@RBUS{..} = do
+toRS transmit RBUS{..} = do
     RS.transmit rs \write -> transmit protocol (write . safeCast)
     store txLock true
 

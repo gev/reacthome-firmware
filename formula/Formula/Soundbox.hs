@@ -4,11 +4,10 @@ module Formula.Soundbox where
 
 import Core.Formula
 import Core.Models
-import Data.Fixed
 import Device.GD32F4xx
 import Implementation.Soundbox (mkSoundbox)
 import Ivory.Language
-import qualified Transport.UDP.RBUS as U
+import Transport.UDP.RBUS qualified as U
 
 soundbox :: Formula GD32F4xx
 soundbox =

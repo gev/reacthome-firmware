@@ -1,5 +1,4 @@
 {-# HLINT ignore "Use camelCase" #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 module Support.Cast (
     castArrayUint8ToUint32,
@@ -14,7 +13,6 @@ module Support.Cast (
 ) where
 
 import Ivory.Language
-import Ivory.Language.Module
 
 inclCast :: ModuleDef
 inclCast = do

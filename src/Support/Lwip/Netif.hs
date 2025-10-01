@@ -1,5 +1,4 @@
 {-# HLINT ignore "Use camelCase" #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 module Support.Lwip.Netif (
     NETIF_FLAG,
@@ -24,8 +23,7 @@ module Support.Lwip.Netif (
 ) where
 
 import Ivory.Language
-import Ivory.Language.Pointer
-import Ivory.Language.Proc (ProcPtr, ProcType)
+import Ivory.Language.Proc (ProcType)
 import Ivory.Language.Syntax (Sym)
 import Ivory.Support
 import Support.Lwip.Err

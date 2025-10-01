@@ -1,17 +1,12 @@
 module Data.Display.FrameBuffer.NeoPixel where
 
-import Control.Applicative (Const (Const))
 import Control.Monad.State (MonadState)
 import Core.Context
 import Data.Bits
 import Data.Buffer
 import Data.Functor
 import Data.Value
-import GHC.TypeNats
 import Ivory.Language
-import Ivory.Language.MemArea (ConstMemArea (ConstMemArea))
-import Ivory.Language.Proc
-import Ivory.Language.Proxy
 
 data FrameBufferNeoPixel t = FrameBufferNeoPixel
     { matrix :: ConstRef Global (Array 256 (Array 8 (Stored t)))

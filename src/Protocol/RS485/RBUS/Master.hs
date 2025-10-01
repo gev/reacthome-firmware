@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use for_" #-}
 
 module Protocol.RS485.RBUS.Master where
@@ -8,8 +6,6 @@ import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Version (
     Version,
-    major,
-    minor,
     version_,
  )
 import Data.Buffer
@@ -18,7 +14,6 @@ import Data.Value
 import GHC.TypeNats
 import Interface.Mac
 import Ivory.Language
-import Ivory.Stdlib
 import Protocol.RS485.RBUS
 import Protocol.RS485.RBUS.Master.MacTable (MacTable, macTable)
 import Util.CRC16

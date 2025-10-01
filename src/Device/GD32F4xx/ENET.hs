@@ -1,18 +1,15 @@
 module Device.GD32F4xx.ENET where
 
-import Control.Monad qualified
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Handler
 import Device.GD32F4xx.GPIO.Port qualified as G
 import Interface.ENET as I
 import Interface.LwipPort
-import Ivory.Stdlib
 import Support.Device.GD32F4xx.ENET
 import Support.Device.GD32F4xx.GPIO
 import Support.Device.GD32F4xx.IRQ
 import Support.Device.GD32F4xx.LwipPort.Basic.Ethernetif
-import Support.Device.GD32F4xx.Misc
 import Support.Device.GD32F4xx.RCU
 import Support.Device.GD32F4xx.SYSCFG
 

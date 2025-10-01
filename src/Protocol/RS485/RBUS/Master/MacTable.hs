@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use for_" #-}
 
 module Protocol.RS485.RBUS.Master.MacTable where
@@ -9,11 +7,8 @@ import Core.Context
 import Core.Version (Version, major, minor)
 import Data.Record
 import Data.Value
-import GHC.TypeNats
 import Interface.Mac (Mac)
 import Ivory.Language
-import Ivory.Language.Pointer
-import Ivory.Language.Proc
 import Ivory.Stdlib
 import Util.String
 
@@ -49,13 +44,12 @@ insertMac ::
     Mac ->
     Value Uint8 ->
     Version ->
-    (forall s. Mac -> Uint8 -> Value Uint8 -> Version -> forall s. Ivory (ProcEffects s ()) ()) ->
+    (Mac -> Uint8 -> Value Uint8 -> Version -> forall s. Ivory (ProcEffects s ()) ()) ->
     Ivory (ProcEffects s ()) ()
 insertMac MacTable{..} mac' model' version' run = do
     address <- local $ ival 255
     next' <- deref next
     for (toIx next') \ix -> do
-        let cmp = 0
         cmp <- memCmp mac' $ table ! ix ~> mac
         when (cmp ==? 0) do
             store address $ safeCast ix

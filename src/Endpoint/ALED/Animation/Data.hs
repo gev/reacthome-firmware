@@ -1,7 +1,5 @@
-
 module Endpoint.ALED.Animation.Data where
 
-import Data.ByteString (split)
 import Ivory.Language
 
 fps = 25 :: Uint32

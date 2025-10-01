@@ -4,7 +4,6 @@ import Core.Controller
 import Data.Buffer
 import GHC.TypeNats
 import Ivory.Language
-import Ivory.Language.Array
 import Ivory.Stdlib
 
 makeDispatcher ::

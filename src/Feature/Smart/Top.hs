@@ -1,7 +1,7 @@
 module Feature.Smart.Top where
 
 import Control.Monad.Reader (MonadReader, asks)
-import Control.Monad.State (MonadState (state))
+import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
 import Core.Domain qualified as D
@@ -9,7 +9,6 @@ import Core.Task
 import Core.Transport
 import Data.Buffer
 import Data.Value
-import Feature.Dimmers (forceSync)
 import GHC.TypeNats
 import Interface.GPIO.Input
 import Interface.GPIO.Port

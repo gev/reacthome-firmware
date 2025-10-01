@@ -5,14 +5,12 @@ import Control.Monad.State
 import Core.Context
 import Core.Controller
 import Core.Domain
-import Core.Domain qualified as D
 import Core.Task
 import Core.Transport qualified as T
 import Data.Buffer
 import Data.Value
 import GHC.TypeNats
 import Ivory.Language
-import Ivory.Stdlib
 
 data Echo = Echo
     { buff :: Buffer 10 Uint8
@@ -41,4 +39,4 @@ echoTask :: Echo -> Task
 echoTask Echo{..} = delay 100 "echo_tx" $ transmit buff
 
 instance Controller Echo where
-    handle Echo{..} request n = transmit request
+    handle Echo{..} request _ = transmit request

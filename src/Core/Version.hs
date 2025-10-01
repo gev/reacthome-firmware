@@ -1,10 +1,8 @@
-
 module Core.Version where
 
 import Control.Monad.State
 import Core.Context
 import Data.Record
-import GHC.TypeNats
 import Ivory.Language
 
 type VersionStruct = "version_struct"

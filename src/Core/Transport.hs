@@ -1,7 +1,5 @@
 module Core.Transport where
 
-import Core.Context
-import Core.Task
 import Data.Buffer
 import GHC.TypeNats
 import Ivory.Language

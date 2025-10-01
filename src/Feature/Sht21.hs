@@ -97,7 +97,7 @@ transmit' ::
     (IFloat -> IFloat) ->
     SHT21 ->
     Ivory (ProcEffects s t) ()
-transmit' action calculate sht21@SHT21{..} = do
+transmit' action calculate SHT21{..} = do
     isReady' <- deref isReady
     when isReady' do
         store (txBuff ! 0) action

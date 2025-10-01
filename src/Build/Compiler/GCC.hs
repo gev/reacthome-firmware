@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-unused-imports #-}
+
 module Build.Compiler.GCC where
 
 import Build.Compiler
@@ -12,7 +14,6 @@ import Data.String
 import Development.Shake
 import Development.Shake.FilePath
 import Development.Shake.Util
-import Interface.MCU
 
 gcc :: (Compiler GCC p) => Formula p -> IO ()
 gcc = mkGCC >>= build
@@ -27,7 +28,7 @@ oc :: String
 oc = "arm-none-eabi-objcopy"
 
 target :: FilePath -> FilePath -> [String] -> [FilePath]
-target build name xs = [build <> "/firmware" </> name <.> x | x <- xs]
+target build' name xs = [build' <> "/firmware" </> name <.> x | x <- xs]
 
 source :: FilePath -> FilePath
 source = dropDirectory1 . dropDirectory1 . dropDirectory1 . dropExtension
@@ -38,38 +39,38 @@ instance Shake GCC where
 
     shake c@GCC{..} name = do
         let dist = "dist"
-        let build = "build" </> path </> hash c
+        let build' = "build" </> path </> hash c
 
-        shakeArgs shakeOptions{shakeFiles = build} do
+        shakeArgs shakeOptions{shakeFiles = build'} do
             want $ target dist name ["hex", "bin"]
 
             phony "clean" do
-                putInfo $ "Cleaning files in " <> build
-                removeFilesAfter build ["//*"]
+                putInfo $ "Cleaning files in " <> build'
+                removeFilesAfter build' ["//*"]
 
             dist
                 <> "//*.bin" %> \out -> do
-                    let elf = build </> dropDirectory1 out -<.> "elf"
+                    let elf = build' </> dropDirectory1 out -<.> "elf"
                     need [elf]
                     cmd_ oc "-O binary" elf out
 
             dist
                 <> "//*.hex" %> \out -> do
-                    let elf = build </> dropDirectory1 out -<.> "elf"
+                    let elf = build' </> dropDirectory1 out -<.> "elf"
                     need [elf]
                     cmd_ oc "-O ihex" elf out
 
-            build
+            build'
                 <> "//*.elf" %> \out -> do
                     let go lib = do
                             ss <- getDirectoryFiles lib ["//*.c", "//*.s"]
-                            pure [build </> lib </> s <.> "o" | s <- ss]
+                            pure [build' </> lib </> s <.> "o" | s <- ss]
                     os' <- concat <$> mapM go libs
                     let os = out -<.> "c" <.> "o" : os'
                     need os
                     cmd_ cc ldflags ld os "-lc" "-o" out
 
-            build
+            build'
                 <> "//*.c.o" %> \out -> do
                     let m = out -<.> "m"
                     let a = out -<.> "asm"
@@ -77,6 +78,6 @@ instance Shake GCC where
                     cmd_ cc cflags defs incs "-c" (source out) "-o" out "-MMD -MF" m
                     neededMakefileDependencies m
 
-            build
+            build'
                 <> "//*.s.o" %> \out ->
                     cmd_ cc cflags defs incs "-c" (source out) "-o" out

@@ -129,9 +129,9 @@ executable reacthome-firmware
     Feature.Dimmers.AC
     Feature.Dimmers.DC
     Feature.Dopplers
-    Feature.LeakLEDs
     Feature.I2SPlay
     Feature.Indicator
+    Feature.LeakLEDs
     Feature.Mix.Indicator
     Feature.RS485.RBUS
     Feature.RS485.RBUS.Data
@@ -359,3 +359,14 @@ executable reacthome-firmware
     StandaloneDeriving
     TypeApplications
     TypeOperators
+
+  ghc-options:
+    -O2
+    -threaded
+    -Wall
+    -Wno-missing-signatures
+    -Wno-name-shadowing
+    -Wno-orphans
+    -Wno-unrecognised-pragmas
+    -Wno-unused-do-bind
+    -Wno-type-defaults

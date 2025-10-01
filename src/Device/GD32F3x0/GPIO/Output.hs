@@ -5,7 +5,6 @@ import Core.Context
 import Device.GD32F3x0.GPIO.Mode
 import Device.GD32F3x0.GPIO.Port
 import Interface.GPIO.Output qualified as I
-import Ivory.Language.Module
 import Support.Device.GD32F3x0.GPIO as S
 
 newtype Output = Output {getOutput :: Port}

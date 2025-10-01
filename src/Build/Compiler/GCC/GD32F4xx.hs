@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-unused-matches #-}
+
 module Build.Compiler.GCC.GD32F4xx where
 
 import Build.Compiler

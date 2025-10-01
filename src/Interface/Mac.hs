@@ -3,9 +3,7 @@ module Interface.Mac where
 import Control.Monad.State
 import Core.Context
 import Data.Value
-import GHC.TypeNats
 import Ivory.Language
-import Ivory.Language.Module
 
 type Mac = Values 6 Uint8
 

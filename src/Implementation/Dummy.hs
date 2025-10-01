@@ -1,8 +1,6 @@
 module Implementation.Dummy where
 
-import Core.Context
 import Core.Controller
-import Core.Domain
 
 data Dummy = Dummy
 

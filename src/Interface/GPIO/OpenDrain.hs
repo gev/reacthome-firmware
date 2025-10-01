@@ -8,7 +8,5 @@ module Interface.GPIO.OpenDrain (
 ) where
 
 import Interface.GPIO.Output
-import Ivory.Language
-import Ivory.Language.Module
 
 class (Output a) => OpenDrain a

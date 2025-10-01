@@ -1,29 +1,18 @@
 module Device.GD32F3x0.Touch where
 
-import Control.Monad (replicateM_)
 import Control.Monad.State
 import Core.Context
-import Core.Handler
 import Core.Task
-import Data.ByteString (index)
 import Data.Value
-import Device.GD32F3x0.EXTI
 import Device.GD32F3x0.Timer
-import Interface.Counter (Counter (readCounter))
 import Interface.Timer qualified as I
 import Interface.Touch qualified as I
 import Ivory.Language hiding (setBit)
-import Ivory.Language.Uint (Uint32 (Uint32))
-import Ivory.Stdlib (ifte, when)
 import Ivory.Stdlib.Control
 import Ivory.Support (symbol)
 import Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
-import Support.Device.GD32F3x0.EXTI
 import Support.Device.GD32F3x0.GPIO
-import Support.Device.GD32F3x0.IRQ
-import Support.Device.GD32F3x0.Misc
 import Support.Device.GD32F3x0.RCU
-import Support.Device.GD32F3x0.SYSCFG
 
 data Touch = Touch
     { port :: GPIO_PERIPH

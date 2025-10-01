@@ -1,11 +1,10 @@
 {-# LANGUAGE GADTs #-}
+{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
 
 module Data.Fixed where
 
 import Control.Monad (liftM2, void)
-import Data.Proxy
 import GHC.TypeNats
-import Language.Haskell.TH
 import Prelude hiding (fromEnum, toEnum, zipWith)
 
 infixr 5 :>

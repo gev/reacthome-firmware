@@ -1,26 +1,17 @@
-{-# HLINT ignore "Use newtype instead of data" #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 module Implementation.UdpEcho where
 
 import Control.Monad (void)
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Context
-import Core.Controller
 import Core.Domain as D
-import Core.Handler
 import Core.Task
 import Data.Record
-import Data.Value
-import Device.GD32F4xx
 import Interface.ENET
 import Interface.LwipPort
 import Interface.MCU
-import Interface.SystemClock (getSystemTime)
 import Ivory.Language
 import Ivory.Stdlib
-import Ivory.Stdlib.Control
 import Support.Lwip.Etharp
 import Support.Lwip.Ethernet
 import Support.Lwip.IP_addr

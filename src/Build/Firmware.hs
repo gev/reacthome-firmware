@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-unused-local-binds #-}
+
 module Build.Firmware where
 
 import Build.Shake
@@ -8,17 +10,16 @@ import Core.Domain
 import Core.Formula
 import Core.Scheduler
 import Data.Bifunctor
-import Data.List
+import Data.List (nub)
 import Interface.MCU as I
 import Ivory.Compile.C.CmdlineFrontend
 import Ivory.Language
-import Ivory.Language.Module
 
 cook :: Formula p -> ModuleDef
 cook Formula{..} = do
   inclModule
   mapM_ incl multiBodyFunctions
-  incl init
+  incl initialize
   incl loop
   incl main
  where
@@ -36,16 +37,16 @@ cook Formula{..} = do
   multiBodyFunctions = mkMultiBodyFunction <$> bodyNames
 
   mkMultiBodyFunction :: String -> Def ('[] :-> ())
-  mkMultiBodyFunction name = proc name $ body $ mapM_ snd $ filter (\(id, _) -> id == name) bodies
+  mkMultiBodyFunction name' = proc name' $ body $ mapM_ snd $ filter (\(id', _) -> id' == name') bodies
 
   loop = mkLoop (systemClock mcu') tasks
 
-  init :: Def ('[] :-> ())
-  init = proc "init" $ body $ mapM_ call_ inits
+  initialize :: Def ('[] :-> ())
+  initialize = proc "init" $ body $ mapM_ call_ inits
 
   main :: Def ('[] :-> Sint32)
   main = proc "main" $ body do
-    call_ init
+    call_ initialize
     call_ loop
     ret 0
 

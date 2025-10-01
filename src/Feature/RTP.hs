@@ -2,24 +2,15 @@ module Feature.RTP where
 
 import Control.Monad.State
 import Core.Context
-import Core.Task
 import Data.ElasticQueue
-import Data.Functor (void)
 import Data.Record
 import Data.Value
 import GHC.TypeNats
-import Interface.ENET
 import Interface.I2S
-import Interface.LwipPort
 import Ivory.Language
-import Ivory.Language.Pointer (Pointer (getPointer))
 import Ivory.Stdlib
-import Ivory.Support (ExtSymbol (symbol))
-import Support.Lwip.Ethernet
 import Support.Lwip.IP_addr
 import Support.Lwip.Igmp
-import Support.Lwip.Mem
-import Support.Lwip.Memp
 import Support.Lwip.Netif
 import Support.Lwip.Pbuf
 import Support.Lwip.Udp
@@ -75,8 +66,8 @@ removeRtpUdp RTP{..} netif = do
         removeUdp udpcb
 
 udpReceiveCallback :: (KnownNat n) => RTP n -> Def (UdpRecvFn s1 s2 s3 s4)
-udpReceiveCallback r@RTP{..} =
-    proc (name <> "_udp_receive_callback") \_ upcb pbuff addr port -> body do
+udpReceiveCallback RTP{..} =
+    proc (name <> "_udp_receive_callback") \_ _ pbuff _ _ -> body do
         size <- deref (pbuff ~> len)
         when (size ==? 1292) do
             index <- local $ ival 12

@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use for_" #-}
 
 module Protocol.UART.RBUS.Tx where
@@ -7,7 +5,6 @@ module Protocol.UART.RBUS.Tx where
 import Data.Buffer
 import GHC.TypeNats
 import Ivory.Language
-import Ivory.Stdlib
 import Protocol.UART.RBUS
 import Util.CRC16
 

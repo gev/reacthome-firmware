@@ -1,8 +1,6 @@
 module Device.GD32F4xx.Mac where
 
 import Data.Buffer
-import Data.Serialize
-import Interface.Mac
 import Ivory.Language
 import Support.ReadAddr
 

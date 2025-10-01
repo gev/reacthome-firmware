@@ -1,23 +1,11 @@
-
 module Implementation.DILA where
 
-import Control.Monad
-import Control.Monad.Reader (MonadReader, asks)
-import Control.Monad.State (MonadState)
 import Core.Actions
-import Core.Context
 import Core.Controller
-import Core.Domain
-import Core.Task
-import Core.Transport
-import Data.Value
 import Feature.ALED
 import Feature.DInputs (DInputs, forceSyncDInputs)
 import Feature.DS18B20
 import GHC.TypeNats
-import Interface.GPIO.Output
-import Interface.GPIO.Port
-import Interface.MCU (peripherals)
 import Ivory.Language
 import Ivory.Stdlib
 
@@ -26,7 +14,13 @@ data DILA n = DILA
     , aled :: ALED 10 100 2040
     }
 
-dila :: (Monad m) => m t -> (Bool -> t -> m (DInputs n)) -> (t -> m DS18B20) -> (t -> m (ALED 10 100 2040)) -> m (DILA n)
+dila ::
+    (Monad m) =>
+    m t ->
+    (Bool -> t -> m (DInputs n)) ->
+    (t -> m DS18B20) ->
+    (t -> m (ALED 10 100 2040)) ->
+    m (DILA n)
 dila transport' dinputs' ds18b20 aled' = do
     transport <- transport'
     ds18b20 transport
@@ -34,7 +28,7 @@ dila transport' dinputs' ds18b20 aled' = do
     aled <- aled' transport
     pure DILA{dinputs, aled}
 
-onGetState DILA{..} buff size = do
+onGetState DILA{..} _ _ = do
     forceSyncDInputs dinputs
     forceSyncAled aled
 

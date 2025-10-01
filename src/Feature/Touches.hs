@@ -1,38 +1,27 @@
 {-# HLINT ignore "Use for_" #-}
-{-# OPTIONS_GHC -Wno-missing-fields #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 module Feature.Touches where
 
-import Control.Monad (replicateM, replicateM_)
 import Control.Monad.Reader (MonadReader, asks)
-import Control.Monad.State (MonadState (get))
+import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
 import Core.Domain qualified as D
-import Core.Handler (addHandler)
 import Core.Task
 import Core.Transport qualified as T
 import Data.Buffer
-import Data.Data
 import Data.Fixed as F
 import Data.Index
 import Data.Record
 import Data.Serialize
 import Data.Value
 import Endpoint.DInputs qualified as DI
-import Foreign (new)
-import GHC.Arr (array)
 import GHC.TypeNats
-import Interface.MCU (MCU, peripherals, systemClock)
-import Interface.SystemClock (SystemClock)
-import Interface.Timer
+import Interface.MCU (peripherals)
 import Interface.Touch
 import Interface.Touch qualified as I
 import Ivory.Language
-import Ivory.Language.Proxy
 import Ivory.Stdlib
-import Support.Device.GD32F3x0.Timer (readCounter, timer14)
 
 data Touches n = forall to. (I.Touch to) => Touches
     { getTouches :: List n to
@@ -49,7 +38,7 @@ data Touches n = forall to. (I.Touch to) => Touches
     }
 
 touches ::
-    forall m n p c to t tr.
+    forall m n p c to tr.
     ( MonadState Context m
     , MonadReader (D.Domain p c) m
     , T.Transport tr
@@ -98,7 +87,6 @@ sendTimeTask ::
     Touches n ->
     Ivory (ProcEffects s ()) ()
 sendTimeTask touches@Touches{..} = do
-    let n = length getTouches
     shouldSend <- local $ ival false
     overSingleTouch touches \t i -> do
         let offset = fromIntegral $ i * 2 + 2

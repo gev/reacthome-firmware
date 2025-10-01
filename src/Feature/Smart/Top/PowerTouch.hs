@@ -7,7 +7,7 @@ import Core.Domain qualified as D
 import Core.Task (delay)
 import Interface.GPIO.Output (Output, reset, set)
 import Interface.GPIO.Port (Pull, pullNone)
-import Interface.MCU (peripherals, systemClock)
+import Interface.MCU (peripherals)
 
 data PowerTouch = PowerTouch
 

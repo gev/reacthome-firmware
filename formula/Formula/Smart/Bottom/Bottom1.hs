@@ -6,10 +6,9 @@ import Core.Formula
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
-import Feature.ALED (ALED, aled)
+import Feature.ALED (aled)
 import Feature.DInputs
 import Feature.DS18B20
-import Feature.Sht21
 import Feature.Smart.Top
 import Implementation.Smart.Bottom (bottom1)
 import Interface.RS485

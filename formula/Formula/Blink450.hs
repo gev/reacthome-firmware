@@ -6,7 +6,6 @@ import Core.Formula
 import Device.GD32F4xx
 import Implementation.Blink (blink)
 import Ivory.Language
-import Transport.UART.RBUS
 
 blink450 :: Formula GD32F4xx
 blink450 =

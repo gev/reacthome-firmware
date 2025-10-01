@@ -12,12 +12,10 @@ import Data.Queue as Q
 import Data.Record
 import Device.GD32F4xx.GPIO.Port qualified as G
 import GHC.TypeNats
-import Interface.UART (HandleUART (onDrain))
 import Interface.UART qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 import Ivory.Support
-import Ivory.Support.Device.GD32F4xx
 import Support.Cast
 import Support.Device.GD32F4xx.DMA
 import Support.Device.GD32F4xx.GPIO

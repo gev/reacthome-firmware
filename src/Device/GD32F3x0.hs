@@ -2,7 +2,6 @@ module Device.GD32F3x0 where
 
 import Control.Monad.State
 import Core.Context
-import Data.Display.FrameBuffer.NeoPixel
 import Device.GD32F3x0.ADC
 import Device.GD32F3x0.DAC
 import Device.GD32F3x0.Display.NeoPixel
@@ -16,7 +15,6 @@ import Device.GD32F3x0.GPIO.Output
 import Device.GD32F3x0.I2C
 import Device.GD32F3x0.Mac (makeMac)
 import Device.GD32F3x0.PWM
-import Device.GD32F3x0.SysTick
 import Device.GD32F3x0.SystemClock as G
 import Device.GD32F3x0.Timer (
     Timer,
@@ -31,13 +29,9 @@ import Device.GD32F3x0.UART
 import GHC.TypeNats
 import Interface.GPIO.Port
 import Interface.MCU
-import Interface.Mac (Mac)
 import Interface.OneWire
-import Interface.SystemClock (SystemClock, systemClock)
-import Interface.Timer qualified as I
 import Ivory.Language
 import Support.Device.GD32F3x0
-import Support.Device.GD32F3x0.ADC
 import Support.Device.GD32F3x0.DMA
 import Support.Device.GD32F3x0.EXTI
 import Support.Device.GD32F3x0.GPIO

@@ -5,7 +5,6 @@ import Core.Task
 import Data.List
 import Data.Maybe
 import Interface.SystemClock
-import Interface.Timer
 import Ivory.Language
 import Ivory.Stdlib
 

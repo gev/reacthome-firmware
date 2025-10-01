@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-missing-fields #-}
-
 module Device.GD32F4xx.I2STX where
 
 import Control.Monad.State (MonadState)
@@ -9,7 +7,6 @@ import Core.Task
 import Data.Buffer
 import Data.DoubleBuffer
 import Data.Record
-import Data.Value
 import Device.GD32F4xx.GPIO.Port qualified as G
 import Device.GD32F4xx.I2S
 import GHC.TypeLits
@@ -18,8 +15,6 @@ import Interface.I2STX qualified as I
 import Ivory.Language
 import Ivory.Stdlib as S
 import Ivory.Support
-import Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
-import Support.Cast
 import Support.Device.GD32F4xx.DMA
 import Support.Device.GD32F4xx.GPIO
 import Support.Device.GD32F4xx.IRQ

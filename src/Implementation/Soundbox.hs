@@ -1,12 +1,8 @@
-{-# HLINT ignore "Use newtype instead of data" #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use for_" #-}
 
 module Implementation.Soundbox where
 
-import Control.Arrow (Arrow (arr))
-import Control.Monad (void, zipWithM_)
+import Control.Monad (zipWithM_)
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Actions
@@ -17,25 +13,14 @@ import Core.Handler
 import Core.Task
 import Core.Transport qualified as T
 import Data.Buffer
-import Data.ByteString (group)
-import Data.DoubleBuffer (DoubleBuffer (num1))
-import Data.ElasticQueue
-import Data.Fixed (MakeFrom (from))
-import Data.Fixed qualified as F
-import Data.Foldable (forM_, for_)
-import Data.Queue qualified as Q
 import Data.Record
 import Data.Serialize
 import Data.Value
-import Device.GD32F3x0.I2C (I2C (txBuff))
-import Device.GD32F4xx
 import Endpoint.StereoAMP
 import Feature.I2SPlay
 import Feature.RTP
 import Feature.SPDIF
 import Feature.SRC4392 qualified as S
-import GHC.Arr (array)
-import GHC.Base qualified as G
 import GHC.TypeNats
 import Interface.ENET
 import Interface.GPIO.Output
@@ -46,24 +31,9 @@ import Interface.I2SRX
 import Interface.I2STX
 import Interface.LwipPort
 import Interface.MCU
-import Interface.SystemClock (getSystemTime)
 import Ivory.Language
-import Ivory.Language.Sint (Sint32 (Sint32))
-import Ivory.Language.Uint
 import Ivory.Stdlib
-import Ivory.Stdlib.Control
-import Ivory.Support
-import Language.Haskell.TH (safe)
-import Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
-import Support.Lwip.Etharp
-import Support.Lwip.Ethernet
-import Support.Lwip.IP_addr
-import Support.Lwip.Igmp
-import Support.Lwip.Mem
-import Support.Lwip.Memp
 import Support.Lwip.Netif
-import Support.Lwip.Pbuf
-import Support.Lwip.Udp
 
 data Soundbox = Soundbox
     { i2sTxCh1 :: I2SPlay 512
@@ -103,10 +73,10 @@ mkSoundbox ::
     (p -> d -> m o) ->
     m Soundbox
 mkSoundbox transport' enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
+    S.mkSRC4392 i2c mute
+    
     transport <- transport'
-
-    src4392 <- S.mkSRC4392 i2c mute
-
+    
     let name = "soundbox"
     mcu <- asks D.mcu
     shouldInit <- asks D.shouldInit
@@ -260,7 +230,7 @@ mix11 src amp dst = do
     store (dst ~> right) $ castDefault (dr' / 2)
 
 instance Controller Soundbox where
-    handle s@Soundbox{..} buff size = do
+    handle s buff size = do
         action <- unpack buff 0
         cond_
             [ action ==? actionRtp ==> onRtp s buff size

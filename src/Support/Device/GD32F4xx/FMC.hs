@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use camelCase" #-}
 
 module Support.Device.GD32F4xx.FMC (
@@ -38,7 +36,6 @@ module Support.Device.GD32F4xx.FMC (
 ) where
 
 import Ivory.Language
-import Ivory.Support
 import Ivory.Support.Device.GD32F4xx
 
 newtype FMC_SECTOR = FMC_SECTOR Uint32

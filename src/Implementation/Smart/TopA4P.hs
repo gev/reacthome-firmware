@@ -5,20 +5,16 @@ import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
 import Core.Controller
-import qualified Core.Domain as D
+import Core.Domain qualified as D
 import Core.Handler
-import Core.Task
 import Core.Transport
-import Data.Buffer
 import Data.Display.Canvas1D (Canvas1DSize)
 import Data.Matrix
 import Data.Value
-import Endpoint.DInputs as E (DInputs)
 import Feature.DInputs as DI (
     DInputs (getDInputs),
     forceSyncDInputs,
  )
-import Feature.RS485.RBUS.Data (RBUS (shouldConfirm))
 import Feature.Sht21 (SHT21)
 import Feature.Smart.Top.Buttons
 import Feature.Smart.Top.LEDs (
@@ -66,7 +62,6 @@ topA4P ::
     m (Top n)
 topA4P transport' dinputs' sht21' display' etc' = do
     transport <- transport'
-    shouldInit <- asks D.shouldInit
     mcu <- asks D.mcu
     display <- display' $ peripherals mcu
     let etc = etc' $ peripherals mcu

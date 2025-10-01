@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-
 {-# HLINT ignore "Use for_" #-}
 
 module Device.GD32F3x0.UART where
@@ -8,12 +6,10 @@ import Control.Monad qualified as M
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Handler
-import Core.Task
 import Data.Buffer
 import Data.Concurrent.Queue as Q
 import Data.Maybe
 import Data.Queue as Q
-import Data.Record
 import Data.Value
 import Device.GD32F3x0.GPIO.Port
 import GHC.TypeNats
@@ -21,9 +17,6 @@ import Interface.UART qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 import Ivory.Support
-import Ivory.Support.Device.GD32F3x0
-import Support.Cast
-import Support.Device.GD32F3x0
 import Support.Device.GD32F3x0.GPIO
 import Support.Device.GD32F3x0.IRQ
 import Support.Device.GD32F3x0.Misc
