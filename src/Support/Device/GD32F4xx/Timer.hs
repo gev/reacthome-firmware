@@ -324,12 +324,6 @@ configChannelOutputShadow = call_ timer_channel_output_shadow_config
 timer_channel_output_shadow_config :: Def ('[TIMER_PERIPH, TIMER_CHANNEL, TIMER_COMPARE_SHADOW] :-> ())
 timer_channel_output_shadow_config = fun "timer_channel_output_shadow_config"
 
-enableAutoReloadShadow :: TIMER_PERIPH -> Ivory eff ()
-enableAutoReloadShadow = call_ timer_auto_reload_shadow_enable
-
-timer_auto_reload_shadow_enable :: Def ('[TIMER_PERIPH] :-> ())
-timer_auto_reload_shadow_enable = fun "timer_auto_reload_shadow_enable"
-
 initChannelOcTimer :: TIMER_PERIPH -> TIMER_CHANNEL -> TIMER_OC_PARAM s -> Ivory eff ()
 initChannelOcTimer = call_ timer_channel_output_config
 
@@ -427,7 +421,6 @@ inclTimer = do
     incl timer_channel_output_pulse_value_config
     incl timer_channel_output_mode_config
     incl timer_channel_output_shadow_config
-    incl timer_auto_reload_shadow_enable
     incl timer_channel_output_config
     incl timer_dma_enable
     incl timer_ch0cv

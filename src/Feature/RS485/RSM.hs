@@ -46,8 +46,6 @@ rsm' ::
     Int ->
     m RSM
 rsm' transport rs485 index = do
-    rs <- rs485
-
     mcu <- asks D.mcu
     shouldInit <- asks D.shouldInit
 
@@ -65,8 +63,6 @@ rsm' transport rs485 index = do
     txTimestamp <- value (name <> "_timestamp_tx") 0
     synced <- value (name <> "_synced") false
     payload <- buffer (name <> "_payload")
-
-    let onReceive = store rxLock false
 
     let rsm =
             RSM
@@ -150,7 +146,7 @@ transmitRS485 ::
 transmitRS485 list buff size = do
     when (size >? 2) do
         port <- deref $ buff ! 1
-        let run r@RSM{..} p = do
+        let run RSM{..} p = do
                 shouldInit' <- deref shouldInit
                 when (iNot shouldInit' .&& p ==? port) do
                     let size' = size - 2

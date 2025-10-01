@@ -28,7 +28,6 @@ import Formula.Smart.Top.TopG4D
 import Formula.Smart.Top.TopG6
 import Formula.Smart.Top.TopG6I
 import Formula.Smart.Top.TopG6IT
-import Formula.Smart.Top.TopG6Test
 import Formula.Soundbox
 
 main :: IO ()
@@ -60,7 +59,6 @@ main = do
         , smartTopG6
         , smartTopG6I
         , smartTopG6IT
-        , smartTopG6Test
         ]
     mapM_
         gcc

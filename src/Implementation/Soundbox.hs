@@ -74,9 +74,9 @@ mkSoundbox ::
     m Soundbox
 mkSoundbox transport' enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
     S.mkSRC4392 i2c mute
-    
+
     transport <- transport'
-    
+
     let name = "soundbox"
     mcu <- asks D.mcu
     shouldInit <- asks D.shouldInit
@@ -123,8 +123,6 @@ mkSoundbox transport' enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
     addStruct (Proxy :: Proxy RulesAMPStruct)
     addStruct (Proxy :: Proxy StereoAMPStruct)
 
-    addNetifOnUpCallback $ netifStatusCallback soundbox
-
     addInit "lanamp" do
         set shutdownTrx
         set shutdownTx
@@ -132,10 +130,6 @@ mkSoundbox transport' enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
     addTask $ yeld "refill_buff_i2s" $ refillBuffI2S soundbox
 
     pure soundbox
-
-netifStatusCallback :: Soundbox -> Ivory (ProcEffects s ()) ()
-netifStatusCallback Soundbox{..} = do
-    pure ()
 
 refillBuffI2S :: Soundbox -> Ivory (ProcEffects s ()) ()
 refillBuffI2S Soundbox{..} = do

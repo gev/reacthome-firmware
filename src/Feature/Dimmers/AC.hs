@@ -66,7 +66,7 @@ dimmersAC pwms exti transport = do
 
     addHandler $ HandleEXTI e $ detectCrossZero dimmers crossZero
 
-    addTask $ delay 1_000 "dimmers_cross_zero_error" $ detectCrossZeroError dimmers crossZero
+    addTask $ delay 1_000 "dimmers_cross_zero_error" $ detectCrossZeroError crossZero
     addTask $ delay 10 "dimmers_manage_no_cross_zero" $ manageNoCrossZero dimmers crossZero
     addTask $ delay 1 "dimmers_calculate" $ calculate dimmers
     addTask $ yeld "dimmers_manage" $ manage dimmers crossZero
@@ -87,17 +87,15 @@ detectCrossZero Dimmers{..} CrossZero{..} = do
     TODO: Send a cross Zero error to the server
 -}
 
-detectCrossZeroError :: Dimmers n -> CrossZero -> Ivory eff ()
-detectCrossZeroError Dimmers{..} CrossZero{..} = do
+detectCrossZeroError :: CrossZero -> Ivory eff ()
+detectCrossZeroError CrossZero{..} = do
     countCrossZero' <- deref countCrossZero
     store isNoCrossZero $ countCrossZero' <? 75
     store countCrossZero 0
 
 calculate :: (KnownNat n) => Dimmers n -> Ivory eff ()
-calculate Dimmers{..} = mapM_ run nats
-  where
-    run i = do
-        let ix = fromIntegral i
+calculate Dimmers{..} =
+    arrayMap \ix -> do
         let d = Dim.dimmers getDimmers ! ix
         calculateDimmer d
 

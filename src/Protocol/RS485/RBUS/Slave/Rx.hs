@@ -189,7 +189,7 @@ skipAll s@Slave{..} _ = do
         do reset s
 
 skipMsg :: Slave n -> Uint8 -> Ivory eff ()
-skipMsg s@Slave{..} v = do
+skipMsg Slave{..} v = do
     phase' <- deref phase
     ifte_
         (phase' >? 1)

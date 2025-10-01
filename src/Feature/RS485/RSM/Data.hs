@@ -2,7 +2,6 @@ module Feature.RS485.RSM.Data where
 
 import Core.Transport
 import Data.Buffer
-import Data.Queue
 import Data.Value
 import Interface.RS485
 import Interface.SystemClock

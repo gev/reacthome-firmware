@@ -260,7 +260,7 @@ handleError OneWireMaster{..} = do
 
 recovery :: OneWireMaster -> Ivory (ProcEffects s ()) ()
 recovery m@OneWireMaster{..} =
-    popAction m \action' payload' index' ->
+    popAction m \action' _ _ ->
         when (action' ==? actionReset .|| action' ==? actionSearch) do
             store action action'
             runAction m
@@ -276,7 +276,7 @@ runAction =
         ]
 
 initWriteAction :: OneWireMaster -> Ivory eff ()
-initWriteAction m@OneWireMaster{..} = do
+initWriteAction OneWireMaster{..} = do
     store tmp =<< deref payload
     store count 0
     store state stateWrite

@@ -72,7 +72,7 @@ master id onMessage onConfirm onDiscovery onPing onReceive = do
     crc <- makeCRC16 (name <> "_crc")
     valid <- value (name <> "_valid") true
     tmp <- value (name <> "_tmp") 0
-    table <- macTable (name <> "_mac_table") 1
+    table <- macTable (name <> "_mac_table")
     let master =
             Master
                 { mac

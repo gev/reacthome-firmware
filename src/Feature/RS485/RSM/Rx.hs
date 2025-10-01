@@ -2,7 +2,6 @@
 
 module Feature.RS485.RSM.Rx where
 
-import Core.Domain (Domain (shouldInit))
 import Core.Transport
 import Feature.RS485.RSM.Data
 import Interface.RS485 qualified as I

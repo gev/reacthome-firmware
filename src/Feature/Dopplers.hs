@@ -43,7 +43,7 @@ dopplers ::
     t ->
     m (Dopplers n)
 dopplers analogInput transport = do
-    doppler <- zipWithM (mkDoppler transport) analogInput nats
+    doppler <- zipWithM mkDoppler analogInput nats
 
     let dopplers =
             Dopplers
@@ -60,14 +60,12 @@ dopplers analogInput transport = do
 mkDoppler ::
     ( MonadState Context m
     , MonadReader (D.Domain p c) m
-    , T.LazyTransport t
     , I.ADC a
     ) =>
-    t ->
     (p -> m a) ->
     Int ->
     m (Doppler a)
-mkDoppler transport analogInput index = do
+mkDoppler analogInput index = do
     let name = "doppler_" <> show index <> "_"
     mcu <- asks D.mcu
     adc <- analogInput $ peripherals mcu

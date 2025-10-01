@@ -50,14 +50,6 @@ newtype CHANNEL_GROUP_ADC = CHANNEL_GROUP_ADC Uint32
 
 adc_regular_channel = CHANNEL_GROUP_ADC $ ext "ADC_REGULAR_CHANNEL"
 
-newtype CHANNEL_ADC = CHANNEL_ADC Uint8
-    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
-
-adc_channel_1 = CHANNEL_ADC $ ext "ADC_CHANNEL_1"
-adc_channel_2 = CHANNEL_ADC $ ext "ADC_CHANNEL_2"
-adc_channel_3 = CHANNEL_ADC $ ext "ADC_CHANNEL_3"
-adc_channel_4 = CHANNEL_ADC $ ext "ADC_CHANNEL_4"
-
 newtype SAMPLE_TIME_ADC = SAMPLE_TIME_ADC Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 

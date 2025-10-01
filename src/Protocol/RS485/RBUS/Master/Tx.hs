@@ -48,7 +48,7 @@ transmitPing ::
     Master n ->
     (Uint8 -> forall eff. Ivory eff ()) ->
     Ivory (ProcEffects s t) ()
-transmitPing address' m =
+transmitPing address' _ =
     run \transmit -> do
         transmit $ ping txPreamble
         transmit address'
@@ -58,7 +58,7 @@ transmitConfirm ::
     Master n ->
     (Uint8 -> forall eff. Ivory eff ()) ->
     Ivory (ProcEffects s t) ()
-transmitConfirm address' m =
+transmitConfirm address' _ =
     run \transmit -> do
         transmit $ confirm txPreamble
         transmit address'

@@ -14,13 +14,12 @@ newtype ADC = ADC {channel :: Uint8}
 
 mkADC :: (MonadState Context m) => (GPIO_PUPD -> Port) -> Uint8 -> m ADC
 mkADC mkPin channel = do
-    let adc = ADC{channel}
-    addInit "adc" $ initADC adc
+    addInit "adc" initADC
     initPort (mkPin gpio_pupd_none)
-    pure adc
+    pure ADC{channel}
 
-initADC :: ADC -> Ivory eff ()
-initADC ADC{..} = do
+initADC :: Ivory eff ()
+initADC = do
     enablePeriphClock rcu_adc
     configClockADC rcu_adcck_apb2_div2
     configDataAlignmentADC adc_dataalign_right
@@ -29,7 +28,6 @@ initADC ADC{..} = do
     configExternalTriggerADC adc_regular_channel true
     enableADC
     enableCalibrationADC
-    enableSoftwareTriggerADC adc_regular_channel
 
 instance I.ADC ADC where
     getResolution = const 12

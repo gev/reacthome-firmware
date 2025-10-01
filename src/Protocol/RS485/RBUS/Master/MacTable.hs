@@ -31,8 +31,8 @@ data MacTable = MacTable
     , table :: Records 255 MacTableRecordStruct
     }
 
-macTable :: (MonadState Context m) => String -> Int -> m MacTable
-macTable id ports = do
+macTable :: (MonadState Context m) => String -> m MacTable
+macTable id = do
     let name = id <> "_table"
     next <- value (name <> "_next") 0
     table <- records_ (name <> "_mac")
