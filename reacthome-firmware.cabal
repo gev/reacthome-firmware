@@ -361,7 +361,7 @@ executable reacthome-firmware
     TypeOperators
 
   ghc-options:
-    -O2
+    -O1
     -threaded
     -Wall
     -Wno-missing-signatures
