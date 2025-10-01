@@ -1,12 +1,8 @@
-{-# LANGUAGE DataKinds   #-}
-{-# LANGUAGE QuasiQuotes #-}
-
 module Data.Color where
 
-import           Ivory.Language
-import           Ivory.Stdlib
-import           Support.Cast
-
+import Ivory.Language
+import Ivory.Stdlib
+import Support.Cast
 
 type RGB = "RGB"
 
@@ -25,7 +21,6 @@ rgb r' g' b' =
     , b .= ival b'
     ]
 
-
 type HSV = "HSV"
 
 [ivory|
@@ -43,41 +38,54 @@ hsv h' s' v' =
     , v .= ival v'
     ]
 
-
-hsv'to'rgb :: Ref s1 (Struct HSV)
-           -> Ref s2 (Struct RGB)
-           -> Ivory eff ()
+hsv'to'rgb ::
+    Ref s1 (Struct HSV) ->
+    Ref s2 (Struct RGB) ->
+    Ivory eff ()
 hsv'to'rgb hsv rgb = do
-    h'    <- castFloatToUint16 =<< deref (hsv ~> h)
-    s'    <- deref  $ hsv ~> s
-    v'    <- deref  $ hsv ~> v
-    h'i   <- assign $ (h' `iDiv` 60) .% 6
+    h' <- castFloatToUint16 =<< deref (hsv ~> h)
+    s' <- deref $ hsv ~> s
+    v' <- deref $ hsv ~> v
+    h'i <- assign $ (h' `iDiv` 60) .% 6
     v'min <- assign $ (1 - s') * v'
-    a'    <- assign $ (v' - v'min) * safeCast (h' .% 60) / 60
+    a' <- assign $ (v' - v'min) * safeCast (h' .% 60) / 60
     v'inc <- assign $ v'min + a'
-    v'dec <- assign $ v'    - a'
-    cond_ [ h'i ==? 0 ==> (do store (rgb ~> r) v'
-                              store (rgb ~> g) v'inc
-                              store (rgb ~> b) v'min
-                          )
-          , h'i ==? 1 ==> (do store (rgb ~> r) v'dec
-                              store (rgb ~> g) v'
-                              store (rgb ~> b) v'min
-                          )
-          , h'i ==? 2 ==> (do store (rgb ~> r) v'min
-                              store (rgb ~> g) v'
-                              store (rgb ~> b) v'inc
-                          )
-          , h'i ==? 3 ==> (do store (rgb ~> r) v'min
-                              store (rgb ~> g) v'dec
-                              store (rgb ~> b) v'
-                          )
-          , h'i ==? 4 ==> (do store (rgb ~> r) v'inc
-                              store (rgb ~> g) v'min
-                              store (rgb ~> b) v'
-                          )
-          , h'i ==? 5 ==> (do store (rgb ~> r) v'
-                              store (rgb ~> g) v'min
-                              store (rgb ~> b) v'dec
-                          )
-          ]
+    v'dec <- assign $ v' - a'
+    cond_
+        [ h'i
+            ==? 0
+            ==> do
+                store (rgb ~> r) v'
+                store (rgb ~> g) v'inc
+                store (rgb ~> b) v'min
+        , h'i
+            ==? 1
+            ==> do
+                store (rgb ~> r) v'dec
+                store (rgb ~> g) v'
+                store (rgb ~> b) v'min
+        , h'i
+            ==? 2
+            ==> do
+                store (rgb ~> r) v'min
+                store (rgb ~> g) v'
+                store (rgb ~> b) v'inc
+        , h'i
+            ==? 3
+            ==> do
+                store (rgb ~> r) v'min
+                store (rgb ~> g) v'dec
+                store (rgb ~> b) v'
+        , h'i
+            ==? 4
+            ==> do
+                store (rgb ~> r) v'inc
+                store (rgb ~> g) v'min
+                store (rgb ~> b) v'
+        , h'i
+            ==? 5
+            ==> do
+                store (rgb ~> r) v'
+                store (rgb ~> g) v'min
+                store (rgb ~> b) v'dec
+        ]

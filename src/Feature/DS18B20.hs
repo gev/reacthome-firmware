@@ -1,127 +1,125 @@
-{-# LANGUAGE DataKinds          #-}
-{-# LANGUAGE FlexibleContexts   #-}
-{-# LANGUAGE GADTs              #-}
-{-# LANGUAGE NamedFieldPuns     #-}
-{-# LANGUAGE NumericUnderscores #-}
-{-# LANGUAGE RankNTypes         #-}
-{-# LANGUAGE RecordWildCards    #-}
-{-# LANGUAGE TypeOperators      #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
 {-# HLINT ignore "Use for_" #-}
 
-module Feature.DS18B20
-    ( DS18B20
-    , ds18b20
-    ) where
+module Feature.DS18B20 (
+    DS18B20,
+    ds18b20,
+) where
 
-import           Control.Monad.Reader     (MonadReader, asks)
-import           Control.Monad.State      (MonadState)
-import           Core.Context
-import qualified Core.Domain              as D
-import           Core.Task
-import qualified Core.Transport           as T
-import           Data.Buffer
-import           Data.Matrix
-import           Data.Serialize
-import           Data.Value
-import           GHC.TypeNats
-import           Interface.Flash          (Flash (address))
-import           Interface.GPIO.OpenDrain (OpenDrain)
-import           Interface.MCU            (peripherals)
-import           Interface.OneWire
-import           Ivory.Language
-import           Ivory.Language.Uint      (Uint16 (Uint16))
-import           Ivory.Stdlib
-import           Prelude                  hiding (read)
-import           Protocol.OneWire.Master
-
-
+import Control.Monad.Reader (MonadReader, asks)
+import Control.Monad.State (MonadState)
+import Core.Context
+import Core.Domain qualified as D
+import Core.Task
+import Core.Transport qualified as T
+import Data.Buffer
+import Data.Matrix
+import Data.Serialize
+import Data.Value
+import GHC.TypeNats
+import Interface.Flash (Flash (address))
+import Interface.GPIO.OpenDrain (OpenDrain)
+import Interface.MCU (peripherals)
+import Interface.OneWire
+import Ivory.Language
+import Ivory.Language.Uint (Uint16 (Uint16))
+import Ivory.Stdlib
+import Protocol.OneWire.Master
+import Prelude hiding (read)
 
 data DS18B20 = DS18B20
-    { rxB        :: Values    9 Uint8
-    , txB        :: Buffer   11 Uint8
-    , dsErrB     :: Buffer    9 Uint8
-    , owErrB     :: Buffer    2 Uint8
-    , idNumber   :: Value       Uint8
-    , idIndex    :: Value       Uint8
-    , shouldRead :: Value       IBool
-    , idList     :: Matrix 64 8 Uint8
-    , transmit   :: forall n. KnownNat n
-                 => Buffer n Uint8 -> forall s. Ivory (ProcEffects s ()) ()
+    { rxB :: Values 9 Uint8
+    , txB :: Buffer 11 Uint8
+    , dsErrB :: Buffer 9 Uint8
+    , owErrB :: Buffer 2 Uint8
+    , idNumber :: Value Uint8
+    , idIndex :: Value Uint8
+    , shouldRead :: Value IBool
+    , idList :: Matrix 64 8 Uint8
+    , transmit ::
+        forall n.
+        (KnownNat n) =>
+        Buffer n Uint8 ->
+        forall s.
+        Ivory (ProcEffects s ()) ()
     }
 
-
-ds18b20 :: (MonadState Context m, MonadReader (D.Domain p c) m, T.Transport t, OpenDrain od)
-          => (p -> m od -> m OneWire) -> (p -> m od) -> t -> m DS18B20
+ds18b20 ::
+    (MonadState Context m, MonadReader (D.Domain p c) m, T.Transport t, OpenDrain od) =>
+    (p -> m od -> m OneWire) ->
+    (p -> m od) ->
+    t ->
+    m DS18B20
 ds18b20 ow od transport = do
-    let name   = "ds18b20"
-    mcu        <- asks $ peripherals . D.mcu
-    rxB        <- buffer  (name <> "_rx_buffer"      )
-    txB        <- values  (name <> "_tx_buffer"      ) [0xc6, 0,0,0,0,0,0,0,0, 0,0]
-    dsErrB     <- values  (name <> "_ds_error_buffer") [0xc6, 0,0,0,0,0,0,0,0]
-    owErrB     <- values  (name <> "_ow_error_buffer") [0xc6, 0]
-    idNumber   <- value   (name <> "_id_number"      ) 0
-    idIndex    <- value   (name <> "_id_index"       ) 0
-    shouldRead <- value   (name <> "_should_read"    ) false
-    idList     <- matrix_ (name <> "_id_list"        )
+    let name = "ds18b20"
+    mcu <- asks $ peripherals . D.mcu
+    rxB <- buffer (name <> "_rx_buffer")
+    txB <- values (name <> "_tx_buffer") [0xc6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    dsErrB <- values (name <> "_ds_error_buffer") [0xc6, 0, 0, 0, 0, 0, 0, 0, 0]
+    owErrB <- values (name <> "_ow_error_buffer") [0xc6, 0]
+    idNumber <- value (name <> "_id_number") 0
+    idIndex <- value (name <> "_id_index") 0
+    shouldRead <- value (name <> "_should_read") false
+    idList <- matrix_ (name <> "_id_list")
 
-    onewire   <- ow mcu $ od mcu
+    onewire <- ow mcu $ od mcu
 
-    let ds     = DS18B20 { rxB
-                         , txB
-                         , dsErrB
-                         , owErrB
-                         , idNumber, idIndex, shouldRead
-                         , idList
-                         , transmit = T.transmitBuffer transport
-                         }
+    let ds =
+            DS18B20
+                { rxB
+                , txB
+                , dsErrB
+                , owErrB
+                , idNumber
+                , idIndex
+                , shouldRead
+                , idList
+                , transmit = T.transmitBuffer transport
+                }
 
-    master    <- mkOneWireMaster onewire (onData ds) (onDiscovery ds) (onError ds)
+    master <- mkOneWireMaster onewire (onData ds) (onDiscovery ds) (onError ds)
 
     addProc getCRC
 
-    addTask $ delay      15_000       (name <> "_search"             ) $ searchDevices      ds master
+    addTask $ delay 15_000 (name <> "_search") $ searchDevices ds master
     addTask $ delayPhase 15_000 6_000 (name <> "_measure_temperature") $ measureTemperature ds master
-    addTask $ delay         100       (name <> "_get_temperature"    ) $ getTemperature     ds master
+    addTask $ delay 100 (name <> "_get_temperature") $ getTemperature ds master
 
     pure ds
 
-
-
 searchDevices :: DS18B20 -> OneWireMaster -> Ivory eff ()
 searchDevices DS18B20{..} onewire = do
-    store  idNumber 0
+    store idNumber 0
     search onewire 256
-
-
 
 measureTemperature :: DS18B20 -> OneWireMaster -> Ivory eff ()
 measureTemperature DS18B20{..} onewire = do
     idNumber' <- deref idNumber
-    when (idNumber' >? 0) $ do
-        reset    onewire
-        skipROM  onewire
-        write    onewire 0x44
-        store    idIndex 0
-        store    shouldRead true
-
+    when (idNumber' >? 0) do
+        reset onewire
+        skipROM onewire
+        write onewire 0x44
+        store idIndex 0
+        store shouldRead true
 
 getTemperature :: DS18B20 -> OneWireMaster -> Ivory eff ()
 getTemperature DS18B20{..} onewire = do
     shouldRead' <- deref shouldRead
-    when shouldRead' $ do
+    when shouldRead' do
         idNumber' <- deref idNumber
-        idIndex'  <- deref idIndex
+        idIndex' <- deref idIndex
         let ix = toIx idIndex'
-        reset    onewire
+        reset onewire
         matchROM onewire
         let id = idList ! ix
-        arrayMap $ \ix -> write onewire =<< deref (id ! ix)
+        arrayMap \ix -> write onewire =<< deref (id ! ix)
         write onewire 0xbe
         for (9 :: Ix 10) $ read onewire (cast ix) . cast
-        ifte_ (idIndex' <? idNumber')
-              (store idIndex $ idIndex' + 1)
-              (store shouldRead false)
+        ifte_
+            (idIndex' <? idNumber')
+            do store idIndex $ idIndex' + 1
+            do store shouldRead false
 
 {-
     TODO: Move cast to a separate utility module
@@ -129,60 +127,51 @@ getTemperature DS18B20{..} onewire = do
 cast :: (KnownNat n, SafeCast t Sint32, Default t, Bounded t, IvoryOrd t) => Ix n -> t
 cast = castDefault . fromIx
 
-
-
 onData :: DS18B20 -> Uint8 -> Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()
 onData DS18B20{..} i index v = do
     store (rxB ! toIx index) v
-    when (index ==? 8) $ do
-        crc  <- call getCRC rxB
+    when (index ==? 8) do
+        crc <- call getCRC rxB
         let id = idList ! toIx i
-        ifte_ (crc ==? 0)
-              (do
-                    arrayCopy txB id 1 8
-                    raw <- unpackLE rxB 0
-                    let t = (25 * raw) `iDiv` 4 :: Sint16
-                    packLE txB 9 t
-                    transmit txB
-
-              )
-              (do
-                    arrayCopy dsErrB id 1 8
-                    transmit dsErrB
-              )
-
-
+        ifte_
+            (crc ==? 0)
+            do
+                arrayCopy txB id 1 8
+                raw <- unpackLE rxB 0
+                let t = (25 * raw) `iDiv` 4 :: Sint16
+                packLE txB 9 t
+                transmit txB
+            do
+                arrayCopy dsErrB id 1 8
+                transmit dsErrB
 
 onDiscovery :: DS18B20 -> Uint8 -> Buffer 8 Uint8 -> Ivory (ProcEffects s ()) ()
 onDiscovery DS18B20{..} _ id = do
     t <- deref (id ! 0)
-    when (t ==? 0x28) $ do
+    when (t ==? 0x28) do
         idNumber' <- deref idNumber
-        let id'  = idList ! toIx idNumber'
-        arrayMap $ \ix -> store (id' ! ix) =<< deref (id ! ix)
+        let id' = idList ! toIx idNumber'
+        arrayMap \ix -> store (id' ! ix) =<< deref (id ! ix)
         store idNumber $ idNumber' + 1
-
-
 
 onError :: DS18B20 -> Uint8 -> Ivory (ProcEffects s ()) ()
 onError DS18B20{..} error = do
     store (owErrB ! 1) error
     transmit owErrB
-    when (error ==? errorNoPresence .|| error ==? errorNotReady) $
+    when (error ==? errorNoPresence .|| error ==? errorNotReady) do
         store idNumber 0
 
-
 getCRC :: Def ('[Buffer 9 Uint8] :-> Uint8)
-getCRC = proc "ds18b20_get_crc" $ \buff -> body $ do
+getCRC = proc "ds18b20_get_crc" \buff -> body do
     crc <- local $ ival 0
-    arrayMap $ \ix -> do
+    arrayMap \ix -> do
         inbyte <- local . ival =<< deref (buff ! ix)
-        times (8 :: Ix 9) . const $ do
+        times (8 :: Ix 9) \_ -> do
             crc' <- deref crc
             inbyte' <- deref inbyte
             let mix = (crc' .^ inbyte') .& 0x01
             store crc $ crc' `iShiftR` 1
-            when (mix /=? 0) $ do
+            when (mix /=? 0) do
                 crc'' <- deref crc
                 store crc $ crc'' .^ 0x8c
             store inbyte $ inbyte' `iShiftR` 1

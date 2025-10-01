@@ -1,8 +1,7 @@
 module Interface.PWM where
 
-import           Interface.Timer
-import           Ivory.Language
-
+import Interface.Timer
+import Ivory.Language
 
 data ModePMW
     = HIGH
@@ -10,7 +9,6 @@ data ModePMW
     | FORCE_HIGH
     | FORCE_LOW
 
-
-class Timer p => PWM p where
-    setMode  :: p -> ModePMW -> Ivory eff ()
-    setDuty  :: p -> Uint16 -> Ivory eff ()
+class (Timer p) => PWM p where
+    setMode :: p -> ModePMW -> Ivory eff ()
+    setDuty :: p -> Uint16 -> Ivory eff ()

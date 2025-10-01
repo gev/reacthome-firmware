@@ -1,35 +1,35 @@
-{-# LANGUAGE RankNTypes #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
 {-# HLINT ignore "Use for_" #-}
 
 module Protocol.UART.RBUS.Tx where
 
-import           Data.Buffer
-import           GHC.TypeNats
-import           Ivory.Language
-import           Ivory.Stdlib
-import           Protocol.UART.RBUS
-import           Util.CRC16
+import Data.Buffer
+import GHC.TypeNats
+import Ivory.Language
+import Ivory.Stdlib
+import Protocol.UART.RBUS
+import Util.CRC16
 
-
-transmitMessage :: KnownNat l
-                => Buffer l Uint8
-                -> (Uint8 -> forall eff. Ivory eff ())
-                -> Ivory (ProcEffects s t) ()
+transmitMessage ::
+    (KnownNat l) =>
+    Buffer l Uint8 ->
+    (Uint8 -> forall eff. Ivory eff ()) ->
+    Ivory (ProcEffects s t) ()
 transmitMessage payload transmit = do
     crc <- local $ istruct initCRC16
     let transmit' v = updateCRC16 crc v >> transmit v
     transmit' $ message preamble
     transmit' $ arrayLen payload
-    arrayMap  $ \ix -> transmit' =<< deref (payload ! ix)
+    arrayMap \ix -> transmit' =<< deref (payload ! ix)
     transmit =<< deref (crc ~> msb)
     transmit =<< deref (crc ~> lsb)
 
-
-transmitMessage' :: Uint8 
-                 -> ((Uint8 -> forall eff. Ivory eff ()) -> forall eff. Ivory eff ())
-                 -> (Uint8 -> forall eff. Ivory eff ())
-                 -> Ivory (ProcEffects s t) ()
+transmitMessage' ::
+    Uint8 ->
+    ((Uint8 -> forall eff. Ivory eff ()) -> forall eff. Ivory eff ()) ->
+    (Uint8 -> forall eff. Ivory eff ()) ->
+    Ivory (ProcEffects s t) ()
 transmitMessage' size run transmit = do
     crc <- local $ istruct initCRC16
     let transmit' v = updateCRC16 crc v >> transmit v

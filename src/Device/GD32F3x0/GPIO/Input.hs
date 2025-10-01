@@ -1,26 +1,20 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE RecordWildCards  #-}
-
 module Device.GD32F3x0.GPIO.Input where
 
-import           Control.Monad.State
-import           Core.Context
-import           Device.GD32F3x0.GPIO.Mode
-import           Device.GD32F3x0.GPIO.Port
-import qualified Interface.GPIO.Input         as I
-import           Ivory.Language
-import           Support.Device.GD32F3x0.GPIO as S
-
+import Control.Monad.State
+import Core.Context
+import Device.GD32F3x0.GPIO.Mode
+import Device.GD32F3x0.GPIO.Port
+import Interface.GPIO.Input qualified as I
+import Ivory.Language
+import Support.Device.GD32F3x0.GPIO as S
 
 newtype Input = Input {getInput :: Port}
 
-
-mkInput :: MonadState Context m => (Mode -> GPIO_PUPD -> Port) -> GPIO_PUPD -> m Input
+mkInput :: (MonadState Context m) => (Mode -> GPIO_PUPD -> Port) -> GPIO_PUPD -> m Input
 mkInput p pupd = do
     let port = p input pupd
     initPort port
     pure $ Input port
-
 
 instance I.Input Input where
     get (Input Port{..}) = S.getInputBit gpio pin

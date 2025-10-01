@@ -1,6 +1,6 @@
 {-# LANGUAGE NumericUnderscores #-}
 
-module Formula.Smart.Top.TopG4 where
+module Formula.Smart.Top.TopA4P where
 
 import Core.Formula
 import Core.Models
@@ -8,35 +8,31 @@ import Data.Fixed
 import Device.GD32F3x0
 import Feature.DInputs (dinputs)
 import Feature.Sht21 (sht21)
-import Feature.Smart.Top.PowerTouch (powerTouch)
-import Feature.Smart.Top.Vibro (vibro)
-import Implementation.Smart.TopG4 (topG4)
+import Implementation.Smart.TopA4P (topA4P)
 import Ivory.Language
 import Transport.UART.RBUS
 
-smartTopG4 :: Formula GD32F3x0
-smartTopG4 =
+smartTopA4P :: Formula GD32F3x0
+smartTopA4P =
     Formula
-        { name = "smart_top_g4"
-        , model = deviceTypeSmartTopG4
+        { name = "smart_top_a4p"
+        , model = deviceTypeSmartTopA4P
         , version = (4, 8)
         , shouldInit = false
         , mcu = gd32f330k8u6
         , quartzFrequency = 8_000_000
         , systemFrequency = 84_000_000
         , implementation =
-            topG4
-                (rbusTop uart_1)
+            topA4P
+                (rbusTop uart_0)
                 ( dinputs $
-                    in_pb_8
-                        :> in_pa_15
-                        :> in_pb_5
-                        :> in_pb_4
+                    in_pa_4
+                        :> in_pb_2
+                        :> in_pa_5
+                        :> in_pb_1
                         :> Nil
                 )
-                (vibro out_pa_1)
-                (powerTouch out_pa_8)
                 (sht21 i2c_0)
-                npx_pwm_1
+                npx_pwm_0
                 etc
         }

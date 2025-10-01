@@ -1,23 +1,19 @@
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use newtype instead of data" #-}
-{-# LANGUAGE BlockArguments   #-}
-{-# LANGUAGE DataKinds        #-}
-{-# LANGUAGE FlexibleContexts #-}
 {-# OPTIONS_GHC -Wno-missing-fields #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 module Device.GD32F3x0.DAC where
 
-import           Control.Monad.State          (MonadState)
-import           Core.Context
-import           Data.Buffer
-import           Data.Record
-import           Device.GD32F3x0.GPIO.Port
-import qualified Interface.DAC                as I
-import           Ivory.Language
-import           Support.Device.GD32F3x0.DAC
-import           Support.Device.GD32F3x0.GPIO hiding (mode, rcu)
-import           Support.Device.GD32F3x0.RCU
-
+import Control.Monad.State (MonadState)
+import Core.Context
+import Data.Buffer
+import Data.Record
+import Device.GD32F3x0.GPIO.Port
+import Interface.DAC qualified as I
+import Ivory.Language
+import Support.Device.GD32F3x0.DAC
+import Support.Device.GD32F3x0.GPIO hiding (mode, rcu)
+import Support.Device.GD32F3x0.RCU
 
 data DAC = DAC {}
 
@@ -28,22 +24,19 @@ mkDAC mkPin = do
     initPort (mkPin gpio_pupd_none)
     pure dac
 
-
 initDAC :: DAC -> Ivory eff ()
-initDAC DAC{}  = do
+initDAC DAC{} = do
     enablePeriphClock rcu_dac
     deinitDAC
     disableTriggerDAC
     configWaveModeDAC dac_wave_disable
     enableDAC
 
-
-setData :: DAC -> Uint16 ->  Ivory eff ()
+setData :: DAC -> Uint16 -> Ivory eff ()
 setData DAC{} d = do
     enableOutputBufferDAC
     setDataDAC dac_align_12b_r d
     disableOutputBufferDAC
-
 
 instance I.DAC DAC where
     getResolution = const 12

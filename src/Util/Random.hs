@@ -1,13 +1,9 @@
-{-# LANGUAGE FlexibleContexts #-}
-
 module Util.Random where
 
-import           Control.Monad.State (MonadState)
-import           Core.Context
-import           Data.Value
-import           Ivory.Language
-
-
+import Control.Monad.State (MonadState)
+import Core.Context
+import Data.Value
+import Ivory.Language
 
 data Random t = Random
     { x :: Value t
@@ -16,10 +12,11 @@ data Random t = Random
     , a :: Value t
     }
 
-
-
-mkRandom :: (MonadState Context m, IvoryZeroVal t, IvoryInit t, Num t)
-         => String -> t -> m (Random t)
+mkRandom ::
+    (MonadState Context m, IvoryZeroVal t, IvoryInit t, Num t) =>
+    String ->
+    t ->
+    m (Random t)
 mkRandom id seed = do
     let name = "random_" <> id
     x <- value (name <> "_x") 0
@@ -28,13 +25,9 @@ mkRandom id seed = do
     a <- value (name <> "_a") seed
     pure $ Random x y z a
 
-
-
-type RandomUin8  = Random Uint8
+type RandomUin8 = Random Uint8
 type RandomUin16 = Random Uint16
 type RandomUin32 = Random Uint32
-
-
 
 class (IvoryBits t, IvoryStore t) => Randomize t where
     shift :: t
@@ -52,8 +45,6 @@ class (IvoryBits t, IvoryStore t) => Randomize t where
         let r' = a' .^ t' .^ (a' `iShiftR` 1) .^ (t' `iShiftL` 1)
         store a r'
         pure r'
-
-
 
 instance Randomize Uint8 where
     shift = 4

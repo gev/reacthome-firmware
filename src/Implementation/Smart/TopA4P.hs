@@ -1,16 +1,17 @@
-module Implementation.Smart.TopG6 where
+module Implementation.Smart.TopA4P where
 
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
 import Core.Controller
-import Core.Domain qualified as D
+import qualified Core.Domain as D
 import Core.Handler
 import Core.Task
 import Core.Transport
 import Data.Buffer
 import Data.Display.Canvas1D (Canvas1DSize)
+import Data.Matrix
 import Data.Value
 import Endpoint.DInputs as E (DInputs)
 import Feature.DInputs as DI (
@@ -33,16 +34,6 @@ import Feature.Smart.Top.LEDs (
     sendLEDs,
     updateLeds,
  )
-
-import Data.Matrix
-import Feature.Smart.Top.PowerTouch (PowerTouch)
-import Feature.Smart.Top.Vibro (
-    Vibro,
-    onInitVibro,
-    onVibro,
-    sendVibro,
-    vibro,
- )
 import GHC.TypeNats
 import Interface.Display (Display, Render (Render))
 import Interface.Flash
@@ -52,62 +43,58 @@ import Ivory.Stdlib
 
 data Top n = Top
     { dinputs :: DI.DInputs n
-    , leds :: LEDs 4 12
-    , buttons :: Buttons n 4 12
-    , vibro :: Vibro n
+    , leds :: LEDs 4 n
+    , buttons :: Buttons n 4 n
     , sht21 :: SHT21
     }
 
-topG6 ::
+topA4P ::
     ( MonadState Context m
     , MonadReader (D.Domain p c) m
     , Display d
-    , Handler (Render (Canvas1DSize 12)) d
+    , Handler (Render (Canvas1DSize n)) d
     , LazyTransport t
     , Flash f
     , KnownNat n
+    , KnownNat (Canvas1DSize n)
     ) =>
     m t ->
     (Bool -> t -> m (DI.DInputs n)) ->
-    (E.DInputs n -> t -> f -> m (Vibro n)) ->
-    m PowerTouch ->
     (t -> m SHT21) ->
     (p -> m d) ->
     (p -> f) ->
     m (Top n)
-topG6 transport' dinputs' vibro' touch' sht21' display' etc' = do
+topA4P transport' dinputs' sht21' display' etc' = do
     transport <- transport'
     shouldInit <- asks D.shouldInit
     mcu <- asks D.mcu
     display <- display' $ peripherals mcu
     let etc = etc' $ peripherals mcu
-    dinputs <- dinputs' True transport
-    vibro <- vibro' (DI.getDInputs dinputs) transport etc
-    touch'
+    dinputs <- dinputs' False transport
     frameBuffer <- values' "top_frame_buffer" 0
 
     leds <-
         mkLeds
             frameBuffer
-            [10, 11, 0, 1, 8, 9, 2, 3, 7, 6, 5, 4]
+            [0, 3, 1, 2]
             transport
             etc
-            (replicate 12 true)
+            (replicate 4 true)
+
     ledsPerButton <-
         values
             "leds_per_button"
-            [2, 2, 2, 2, 2, 2]
+            [1, 1, 1, 1]
 
     ledsOfButton <-
         matrix
             "leds_of_button"
-            [ [0, 1, 0, 0]
-            , [2, 3, 0, 0]
-            , [4, 5, 0, 0]
-            , [6, 7, 0, 0]
-            , [8, 9, 0, 0]
-            , [10, 11, 0, 0]
+            [ [0, 0, 0, 0]
+            , [1, 0, 0, 0]
+            , [2, 0, 0, 0]
+            , [3, 0, 0, 0]
             ]
+
     buttons <-
         mkButtons
             leds
@@ -118,7 +105,13 @@ topG6 transport' dinputs' vibro' touch' sht21' display' etc' = do
 
     sht21 <- sht21' transport
 
-    let top = Top{dinputs, leds, vibro, buttons, sht21}
+    let top =
+            Top
+                { dinputs
+                , leds
+                , buttons
+                , sht21
+                }
 
     addHandler $
         Render
@@ -135,7 +128,6 @@ topG6 transport' dinputs' vibro' touch' sht21' display' etc' = do
 onGetState :: (KnownNat n) => Top n -> Ivory (ProcEffects s t) ()
 onGetState Top{..} = do
     forceSyncDInputs dinputs
-    sendVibro vibro
     sendLEDs leds
 
 instance (KnownNat n) => Controller (Top n) where
@@ -148,7 +140,6 @@ instance (KnownNat n) => Controller (Top n) where
             , action ==? actionImage ==> onImage leds buff size
             , action ==? actionBlink ==> onBlink leds buff size
             , action ==? actionPalette ==> onPalette leds buff size
-            , action ==? actionVibro ==> onVibro vibro buff size
             , action ==? actionFindMe ==> onFindMe buttons buff size
             , action ==? actionGetState ==> onGetState t
             ]
