@@ -129,6 +129,7 @@ executable reacthome-firmware
     Feature.Dimmers.AC
     Feature.Dimmers.DC
     Feature.Dopplers
+    Feature.LeakLEDs
     Feature.I2SPlay
     Feature.Indicator
     Feature.Mix.Indicator
@@ -164,6 +165,7 @@ executable reacthome-firmware
     Formula.Doppler1
     Formula.Doppler5
     Formula.Echo
+    Formula.LeakSensor
     Formula.Mix6x12
     Formula.MixH
     Formula.Relay12
@@ -195,6 +197,7 @@ executable reacthome-firmware
     Implementation.Dummy
     Implementation.Echo
     Implementation.Hub
+    Implementation.LeakSensor
     Implementation.Mix
     Implementation.MixH
     Implementation.Relay
