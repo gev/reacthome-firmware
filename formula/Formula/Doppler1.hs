@@ -19,7 +19,7 @@ doppler1 =
     Formula
         { name = "doppler1"
         , model = deviceTypeDoppler1Di4
-        , version = (2, 8)
+        , version = (2, 9)
         , shouldInit = true
         , mcu = gd32f330k8u6
         , quartzFrequency = 8_000_000

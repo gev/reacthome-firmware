@@ -19,7 +19,7 @@ mix6x12 =
     Formula
         { name = "mix6x12"
         , model = deviceTypeMix6x12Rs
-        , version = (3, 8)
+        , version = (3, 9)
         , shouldInit = true
         , mcu = gd32f330k8u6
         , quartzFrequency = 8_000_000

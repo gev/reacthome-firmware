@@ -14,7 +14,7 @@ soundbox =
     Formula
         { name = "soundbox"
         , model = deviceTypeSoundbox
-        , version = (1, 0)
+        , version = (1, 1)
         , shouldInit = true
         , mcu = gd32f450vit6
         , quartzFrequency = 24_000_000

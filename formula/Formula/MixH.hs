@@ -20,7 +20,7 @@ mixH =
         Formula
                 { name = "mixH"
                 , model = deviceTypeMixH
-                , version = (3, 0)
+                , version = (3, 1)
                 , shouldInit = true
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000

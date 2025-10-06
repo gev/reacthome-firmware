@@ -22,7 +22,7 @@ rsHub4 =
     Formula
         { name = "rs_hub4"
         , model = deviceTypeRsHub4
-        , version = (5, 13)
+        , version = (5, 14)
         , shouldInit = true
         , mcu = gd32f450vgt6
         , quartzFrequency = 25_000_000

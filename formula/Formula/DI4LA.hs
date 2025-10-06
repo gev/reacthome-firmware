@@ -21,7 +21,7 @@ di4la =
     Formula
         { name = "di4la"
         , model = deviceTypeDi4La
-        , version = (1, 8)
+        , version = (1, 9)
         , shouldInit = true
         , mcu = gd32f330k8u6
         , quartzFrequency = 8_000_000

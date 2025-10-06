@@ -20,7 +20,7 @@ smartBottom1 =
     Formula
         { name = "smart_bottom_1"
         , model = deviceTypeSmartBottom1
-        , version = (4, 9)
+        , version = (4, 10)
         , shouldInit = true
         , mcu = gd32f330k8u6
         , quartzFrequency = 8_000_000
