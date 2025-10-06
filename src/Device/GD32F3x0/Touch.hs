@@ -112,6 +112,8 @@ runMeasurement Touch{..} = do
     let rising = avg'' - min''
     let falling = max'' - avg''
 
+    -- store debugVal rising
+
     cond_
         [ rising >? threshold ==> do
             store stateTouch true

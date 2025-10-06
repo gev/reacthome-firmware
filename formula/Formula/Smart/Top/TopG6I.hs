@@ -26,13 +26,13 @@ smartTopG6I =
             , implementation =
                   topG6I
                         (rbusTop uart_1)
-                        ( touches 20 $
-                              touch_pa4
-                                    :> touch_pb2
-                                    :> touch_pa5
+                        ( touches 15 $
+                              touch_pa0
                                     :> touch_pb1
-                                    :> touch_pa7
+                                    :> touch_pa1
                                     :> touch_pb0
+                                    :> touch_pa6
+                                    :> touch_pa7
                                     :> Nil
                         )
                         (vibro out_pb_5)

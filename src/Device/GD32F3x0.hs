@@ -159,8 +159,11 @@ data GD32F3x0 = GD32F3x0
     , adc_pa_6 :: ADC'
     , adc_pa_7 :: ADC'
     , dac_pa_4 :: DAC'
+    , touch_pa0 :: Touch'
+    , touch_pa1 :: Touch'
     , touch_pa4 :: Touch'
     , touch_pa5 :: Touch'
+    , touch_pa6 :: Touch'
     , touch_pa7 :: Touch'
     , touch_pa15 :: Touch'
     , touch_pb0 :: Touch'
@@ -390,8 +393,11 @@ gd32f3x0 =
                 , adc_pa_6 = mkADC (pa_6 analog) 6
                 , adc_pa_7 = mkADC (pa_7 analog) 7
                 , dac_pa_4 = mkDAC (pa_4 analog)
+                , touch_pa0 = mkTouch gpioa gpio_pin_0 rcu_gpioa
+                , touch_pa1 = mkTouch gpioa gpio_pin_1 rcu_gpioa
                 , touch_pa4 = mkTouch gpioa gpio_pin_4 rcu_gpioa
                 , touch_pa5 = mkTouch gpioa gpio_pin_5 rcu_gpioa
+                , touch_pa6 = mkTouch gpioa gpio_pin_6 rcu_gpioa
                 , touch_pa7 = mkTouch gpioa gpio_pin_7 rcu_gpioa
                 , touch_pa15 = mkTouch gpioa gpio_pin_15 rcu_gpioa
                 , touch_pb0 = mkTouch gpiob gpio_pin_0 rcu_gpiob
