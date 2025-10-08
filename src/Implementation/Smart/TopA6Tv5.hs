@@ -76,10 +76,10 @@ topA6Tv5 transport' touches' vibro' sht21' display' etc' = do
     leds <-
         mkLeds
             frameBuffer
-            [0, 4, 1, 2, 3]
+            [1, 6, 2, 0, 5, 3, 4]
             transport
             etc
-            (replicate 5 true)
+            (replicate 7 true)
 
     ledsPerButton <-
         values
