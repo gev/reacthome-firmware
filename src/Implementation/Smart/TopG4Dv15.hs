@@ -27,7 +27,6 @@ import Feature.Smart.Top.LEDs (
     sendLEDs,
     updateLeds,
  )
-import Feature.Smart.Top.PowerTouch (PowerTouch)
 import Feature.Smart.Top.Vibro (
     Vibro,
     onVibro,
