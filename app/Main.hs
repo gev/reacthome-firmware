@@ -18,9 +18,10 @@ import Formula.Server
 import Formula.Smart.Bottom.Bottom1
 import Formula.Smart.Bottom.Bottom2
 import Formula.Smart.Top.TopA4P
-import Formula.Smart.Top.TopA4Tv5
 import Formula.Smart.Top.TopA4T
 import Formula.Smart.Top.TopA4TD
+import Formula.Smart.Top.TopA4TDv5
+import Formula.Smart.Top.TopA4Tv5
 import Formula.Smart.Top.TopA6P
 import Formula.Smart.Top.TopA6T
 import Formula.Smart.Top.TopA6Tv5
@@ -38,37 +39,39 @@ main = do
     mapM_
         gcc
         [ di4
-        -- , di4la
-        -- , di4rsm
-        -- , relay12
-        -- , dimmerDC12
-        -- , dimmerAC12
-        -- , dimmerAC1
-        -- , doppler1
-        -- , doppler5
-        -- , leakSensor
-        -- , mix6x12
-        -- , mixH
-        -- , smartBottom1
-        -- , smartBottom2
-        -- , smartTopA4P
-        -- , smartTopA4T
-        , smartTopA4Tv5
-        -- , smartTopA4TD
-        -- , smartTopA6P
-        -- , smartTopA6T
-        , smartTopA6Tv5
-        -- , smartTopG2
-        -- , smartTopG4
-        -- , smartTopG4D
-        , smartTopG4Dv15
-        -- , smartTopG6
-        , smartTopG6I
-        -- , smartTopG6IT
+        , -- , di4la
+          -- , di4rsm
+          -- , relay12
+          -- , dimmerDC12
+          -- , dimmerAC12
+          -- , dimmerAC1
+          -- , doppler1
+          -- , doppler5
+          -- , leakSensor
+          -- , mix6x12
+          -- , mixH
+          -- , smartBottom1
+          -- , smartBottom2
+          -- , smartTopA4P
+          -- , smartTopA4T
+          smartTopA4Tv5
+        , -- , smartTopA4TD
+          smartTopA4TDv5
+        , -- , smartTopA6P
+          -- , smartTopA6T
+          smartTopA6Tv5
+        , -- , smartTopG2
+          -- , smartTopG4
+          -- , smartTopG4D
+          smartTopG4Dv15
+        , -- , smartTopG6
+          smartTopG6I
+          -- , smartTopG6IT
         ]
-    -- mapM_
-    --     gcc
-    --     [ rsHub4
-    --     , server
-    --     , soundbox
-    --     ]
+
+-- mapM_
+--     gcc
+--     [ rsHub4
+--     , server
+--     , soundbox
+--     ]
