@@ -63,7 +63,7 @@ mkTouch port pin rcuPin threshold = do
                 }
 
     addTask $ delay 1_000 ("touch_reset_bounds" <> name) $ resetBounds touch
-    addTask $ yeld ("touch_run" <> name) $ runMeasurement touch
+    -- addTask $ yeld ("touch_run" <> name) $ runMeasurement touch
 
     pure touch
 
