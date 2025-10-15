@@ -26,47 +26,51 @@ import Formula.Smart.Top.TopA6P
 import Formula.Smart.Top.TopA6T
 import Formula.Smart.Top.TopA6Tv5
 import Formula.Smart.Top.TopG2
+import Formula.Smart.Top.TopG2v9
 import Formula.Smart.Top.TopG4
 import Formula.Smart.Top.TopG4D
 import Formula.Smart.Top.TopG4Dv15
+import Formula.Smart.Top.TopG4v9
 import Formula.Smart.Top.TopG6
 import Formula.Smart.Top.TopG6v9
 import Formula.Soundbox
 
 main :: IO ()
 main = do
-    mapM_
-        gcc
-        [ di4
-        , -- , di4la
-          -- , di4rsm
-          -- , relay12
-          -- , dimmerDC12
-          -- , dimmerAC12
-          -- , dimmerAC1
-          -- , doppler1
-          -- , doppler5
-          -- , leakSensor
-          -- , mix6x12
-          -- , mixH
-          -- , smartBottom1
-          -- , smartBottom2
-          -- , smartTopA4P
-          -- , smartTopA4T
-          smartTopA4Tv5
-        , -- , smartTopA4TD
-          smartTopA4TDv5
-        , -- , smartTopA6P
-          -- , smartTopA6T
-          smartTopA6Tv5
-        , -- , smartTopG2
-          -- , smartTopG4
-          -- , smartTopG4D
-          smartTopG4Dv15
-        , -- , smartTopG6
-          smartTopG6v9
-          -- , smartTopG6IT
-        ]
+  mapM_
+    gcc
+    [ di4
+    , -- , di4la
+      -- , di4rsm
+      -- , relay12
+      -- , dimmerDC12
+      -- , dimmerAC12
+      -- , dimmerAC1
+      -- , doppler1
+      -- , doppler5
+      -- , leakSensor
+      -- , mix6x12
+      -- , mixH
+      -- , smartBottom1
+      -- , smartBottom2
+      -- , smartTopA4P
+      -- , smartTopA4T
+      smartTopA4Tv5
+    , -- , smartTopA4TD
+      smartTopA4TDv5
+    , -- , smartTopA6P
+      -- , smartTopA6T
+      smartTopA6Tv5
+    , -- , smartTopG2
+      -- , smartTopG4
+      -- , smartTopG4D
+      smartTopG4Dv15
+    , -- , smartTopG6
+      smartTopG2v9
+    , smartTopG4v9
+    , smartTopG6v9
+    -- , smartTopG6IT
+    ]
 
 -- mapM_
 --     gcc
