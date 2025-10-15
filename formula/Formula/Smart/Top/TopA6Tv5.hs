@@ -17,7 +17,7 @@ smartTopA6Tv5 :: Formula GD32F3x0
 smartTopA6Tv5 =
     Formula
         { name = "smart_top_a6t_v5"
-        , model = deviceTypeSmartTopA4T
+        , model = deviceTypeSmartTopA6T
         , version = (4, 8)
         , shouldInit = false
         , mcu = gd32f330k8u6
@@ -26,7 +26,7 @@ smartTopA6Tv5 =
         , implementation =
             topA6Tv5
                 (rbusTop uart_1)
-                ( touches 50 $
+                ( touches 200 $
                     touch_pa0
                         :> touch_pb1
                         :> touch_pa1
