@@ -1,4 +1,4 @@
-module Implementation.Smart.TopG6I where
+module Implementation.Smart.TopG6v9 where
 
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
@@ -49,7 +49,7 @@ data Top n = Top
     , sht21 :: SHT21
     }
 
-topG6I ::
+topG6v9 ::
     ( MonadState Context m
     , MonadReader (D.Domain p c) m
     , Display d
@@ -65,7 +65,7 @@ topG6I ::
     (p -> m d) ->
     (p -> f) ->
     m (Top n)
-topG6I transport' touches' vibro' sht21' display' etc' = do
+topG6v9 transport' touches' vibro' sht21' display' etc' = do
     transport <- transport'
     mcu <- asks D.mcu
     display <- display' $ peripherals mcu

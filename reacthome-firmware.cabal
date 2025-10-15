@@ -186,9 +186,7 @@ executable reacthome-firmware
     Formula.Smart.Top.TopG4D
     Formula.Smart.Top.TopG4Dv15
     Formula.Smart.Top.TopG6
-    Formula.Smart.Top.TopG6I
-    Formula.Smart.Top.TopG6IT
-    Formula.Smart.Top.TopG6Test
+    Formula.Smart.Top.TopG6v9
     Formula.Soundbox
     Formula.UdpEcho450
     Implementation.Blink
@@ -217,8 +215,7 @@ executable reacthome-firmware
     Implementation.Smart.TopG2
     Implementation.Smart.TopG4
     Implementation.Smart.TopG6
-    Implementation.Smart.TopG6I
-    Implementation.Smart.TopG6Test
+    Implementation.Smart.TopG6v9
     Implementation.Smart.TopG4Dv15
     Implementation.Smart.TopGD
     Implementation.Soundbox

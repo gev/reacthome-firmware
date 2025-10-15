@@ -30,8 +30,7 @@ import Formula.Smart.Top.TopG4
 import Formula.Smart.Top.TopG4D
 import Formula.Smart.Top.TopG4Dv15
 import Formula.Smart.Top.TopG6
-import Formula.Smart.Top.TopG6I
-import Formula.Smart.Top.TopG6IT
+import Formula.Smart.Top.TopG6v9
 import Formula.Soundbox
 
 main :: IO ()
@@ -65,7 +64,7 @@ main = do
           -- , smartTopG4D
           smartTopG4Dv15
         , -- , smartTopG6
-          smartTopG6I
+          smartTopG6v9
           -- , smartTopG6IT
         ]
 
