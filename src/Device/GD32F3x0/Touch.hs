@@ -23,6 +23,7 @@ data Touch = Touch
     , min :: Value IFloat
     , max :: Value IFloat
     , stateTouch :: Value IBool
+    , start :: Value IBool
     , debugVal :: Value IFloat
     }
 
@@ -42,6 +43,7 @@ mkTouch port pin rcuPin threshold = do
     min <- value ("touch_min" <> name) 0xffff_ffff
     max <- value ("touch_max" <> name) 0
     stateTouch <- value ("touch_state_touch" <> name) false
+    start <- value ("touch_start" <> name) false
     debugVal <- value ("debug_val" <> name) 0
 
     addInit name do
@@ -59,13 +61,18 @@ mkTouch port pin rcuPin threshold = do
                 , min
                 , max
                 , stateTouch
+                , start
                 , debugVal
                 }
 
     addTask $ delay 1_000 ("touch_reset_bounds" <> name) $ resetBounds touch
-    -- addTask $ yeld ("touch_run" <> name) $ runMeasurement touch
+    addTask $ delay 1_000 ("touch_start" <> name) $ touchStart touch
+    addTask $ yeld ("touch_run" <> name) $ runMeasurement touch
 
     pure touch
+
+touchStart :: Touch -> Ivory eff ()
+touchStart Touch {..} = store start true
 
 modePort :: GPIO_PERIPH -> GPIO_PIN -> GPIO_MODE -> Ivory eff ()
 modePort gpio pin mode = do
@@ -88,8 +95,9 @@ runMeasurement Touch{..} = do
     modePort port pin gpio_mode_input
     I.resetCounter timer
     forever do
+        count <- I.getCounter timer
         isMeasured <- getInputBit port pin
-        when isMeasured breakOut
+        when (isMeasured .|| (count >? 2000)) breakOut
     moment <- safeCast <$> I.getCounter timer
     modePort port pin gpio_mode_output
     enableIRQ
@@ -112,18 +120,21 @@ runMeasurement Touch{..} = do
     let rising = avg'' - min''
     let falling = max'' - avg''
 
+    -- store debugVal avg''
     -- store debugVal rising
 
-    cond_
-        [ rising >? threshold ==> do
-            store stateTouch true
-            store debugVal rising
-        , falling >? threshold
-            * 0.6 ==> do
-                store stateTouch false
-                store debugVal (-falling)
-        , true ==> store debugVal 0
-        ]
+    start' <- deref start
+    when start' do
+        cond_
+            [ rising >? threshold ==> do
+                store stateTouch true
+                store debugVal rising
+            , falling >? threshold
+                * 0.6 ==> do
+                    store stateTouch false
+                    store debugVal (-falling)
+            , true ==> store debugVal 0
+            ]
 
 average :: IFloat -> IFloat -> IFloat -> IFloat
 average alpha a b =
