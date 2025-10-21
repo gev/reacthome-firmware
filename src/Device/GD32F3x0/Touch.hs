@@ -91,17 +91,16 @@ resetBounds Touch{..} = do
 runMeasurement :: Touch -> Ivory (ProcEffects s ()) ()
 runMeasurement Touch{..} = do
     disableIRQ
-    resetBit port pin
+    -- resetBit port pin
     modePort port pin gpio_mode_input
     I.resetCounter timer
     forever do
-        count <- I.getCounter timer
         isMeasured <- getInputBit port pin
-        when (isMeasured .|| (count >? 2000)) breakOut
+        when isMeasured breakOut
     moment <- safeCast <$> I.getCounter timer
-    modePort port pin gpio_mode_output
     enableIRQ
-    setBit port pin
+    modePort port pin gpio_mode_output
+    resetBit port pin
 
     avg' <- deref avg
     store avg $ average 0.01 avg' moment
