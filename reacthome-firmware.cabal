@@ -188,6 +188,7 @@ executable reacthome-firmware
     Formula.Smart.Top.TopG4Dv15
     Formula.Smart.Top.TopG4v9
     Formula.Smart.Top.TopG6
+    Formula.Smart.Top.TopG6v7
     Formula.Smart.Top.TopG6v9
     Formula.Soundbox
     Formula.UdpEcho450
