@@ -26,7 +26,7 @@ smartTopA4TDv5 =
         , implementation =
             topA4TDv5
                 (rbusTop uart_1)
-                ( touches 200 $
+                ( touches 150 200 $
                     touch_pa6
                         :> touch_pb1
                         :> touch_pa7

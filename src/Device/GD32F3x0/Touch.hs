@@ -18,10 +18,11 @@ data Touch = Touch
     { port :: GPIO_PERIPH
     , pin :: GPIO_PIN
     , timer :: Timer
-    , threshold :: IFloat
+    , bottom :: IFloat
+    , top :: IFloat
     , avg :: Value IFloat
     , min :: Value IFloat
-    , max :: Value IFloat
+    , min_ :: Value IFloat
     , stateTouch :: Value IBool
     , start :: Value IBool
     , debugVal :: Value IFloat
@@ -33,15 +34,16 @@ mkTouch ::
     GPIO_PIN ->
     RCU_PERIPH ->
     IFloat ->
+    IFloat ->
     m Touch
-mkTouch port pin rcuPin threshold = do
+mkTouch port pin rcuPin bottom top = do
     timer <- cfg_timer_14 84_000_000 0xffff_ffff
 
     let name = symbol port <> "_" <> symbol pin
 
     avg <- value ("touch_avg" <> name) 0
     min <- value ("touch_min" <> name) 0xffff_ffff
-    max <- value ("touch_max" <> name) 0
+    min_ <- value ("touch_min_" <> name) 0
     stateTouch <- value ("touch_state_touch" <> name) false
     start <- value ("touch_start" <> name) false
     debugVal <- value ("debug_val" <> name) 0
@@ -56,10 +58,11 @@ mkTouch port pin rcuPin threshold = do
                 { port
                 , pin
                 , timer
-                , threshold
+                , top
+                , bottom
                 , avg
                 , min
-                , max
+                , min_
                 , stateTouch
                 , start
                 , debugVal
@@ -72,7 +75,7 @@ mkTouch port pin rcuPin threshold = do
     pure touch
 
 touchStart :: Touch -> Ivory eff ()
-touchStart Touch {..} = store start true
+touchStart Touch{..} = store start true
 
 modePort :: GPIO_PERIPH -> GPIO_PIN -> GPIO_MODE -> Ivory eff ()
 modePort gpio pin mode = do
@@ -84,9 +87,8 @@ instance I.Touch Touch where
     getState Touch{..} = deref stateTouch
 
 resetBounds :: Touch -> Ivory eff ()
-resetBounds Touch{..} = do
+resetBounds Touch{..} = 
     store min 0xffff_ffff
-    store max 0
 
 runMeasurement :: Touch -> Ivory (ProcEffects s ()) ()
 runMeasurement Touch{..} = do
@@ -111,13 +113,10 @@ runMeasurement Touch{..} = do
         store min avg''
     min'' <- deref min
 
-    max' <- deref max
-    when (avg'' >? max') do
-        store max avg''
-    max'' <- deref max
 
     let rising = avg'' - min''
-    let falling = max'' - avg''
+    min_' <- deref min_
+    let falling = avg'' - min_' 
 
     -- store debugVal avg''
     -- store debugVal rising
@@ -125,13 +124,13 @@ runMeasurement Touch{..} = do
     start' <- deref start
     when start' do
         cond_
-            [ rising >? threshold ==> do
+            [ rising >? top ==> do
                 store stateTouch true
                 store debugVal rising
-            , falling >? threshold
-                * 0.6 ==> do
-                    store stateTouch false
-                    store debugVal (-falling)
+                store min_ min''
+            , falling <? bottom ==> do
+                store stateTouch false
+                store debugVal (-falling)
             , true ==> store debugVal 0
             ]
 

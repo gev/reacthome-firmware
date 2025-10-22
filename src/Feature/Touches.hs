@@ -48,17 +48,19 @@ touches ::
     , KnownNat n, KnownNat (LogBuffSize n)
     ) =>
     IFloat ->
-    List n (p -> IFloat -> m to) ->
+    IFloat ->
+    List n (p -> IFloat -> IFloat -> m to) ->
     tr ->
     m (Touches n)
-touches threshold touches' transport = do
+touches bottom top touches' transport = do
     mcu <- asks D.mcu
     ts <-
         mapM
             ( \touch ->
                 touch
                     (peripherals mcu)
-                    threshold
+                    bottom
+                    top
             )
             touches'
     currentTouch <- value "current_touches" 0
