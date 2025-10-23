@@ -26,7 +26,7 @@ smartTopG2v9 =
             , implementation =
                   topG2v9
                         (rbusTop uart_1)
-                        ( touches 15 16.5 $
+                        ( touches 5 16.5 $
                               touch_pa1
                                     :> touch_pb0
                                     :> Nil

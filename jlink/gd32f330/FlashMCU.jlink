@@ -1,7 +1,7 @@
 r
 h
-loadbin dist/firmware/smart_top_a6t_v5/smart_top_a6t_v5-gd32f330k8u6-4.8.bin 0x8000000
+loadbin dist/firmware/smart_top_g6_v9/smart_top_g6_v9-gd32f330k8u6-4.8.bin 0x8000000
 g
-verifybin dist/firmware/smart_top_a6t_v5/smart_top_a6t_v5-gd32f330k8u6-4.8.bin 0x8000000
+verifybin dist/firmware/smart_top_g6_v9/smart_top_g6_v9-gd32f330k8u6-4.8.bin 0x8000000
 r
 q

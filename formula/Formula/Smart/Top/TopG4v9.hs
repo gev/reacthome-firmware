@@ -26,7 +26,7 @@ smartTopG4v9 =
             , implementation =
                   topG4v9
                         (rbusTop uart_1)
-                        ( touches 15 16.5 $
+                        ( touches 5 16.5 $
                               touch_pa0
                                     :> touch_pb1
                                     :> touch_pa6
