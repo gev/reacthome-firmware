@@ -19,10 +19,12 @@ data Touch = Touch
     , pin :: GPIO_PIN
     , timer :: Timer
     , bottom :: IFloat
+    , diff :: Value IFloat
     , top :: IFloat
     , avg :: Value IFloat
-    , min :: Value IFloat
-    , min_ :: Value IFloat
+    , avg_ :: Value IFloat
+    , sum :: Value IFloat
+    , ix :: Value Uint16
     , stateTouch :: Value IBool
     , start :: Value IBool
     , debugVal :: Value IFloat
@@ -41,9 +43,11 @@ mkTouch port pin rcuPin bottom top = do
 
     let name = symbol port <> "_" <> symbol pin
 
+    diff <- value ("touch_diff" <> name) 0
     avg <- value ("touch_avg" <> name) 0
-    min <- value ("touch_min" <> name) 0xffff_ffff
-    min_ <- value ("touch_min_" <> name) 0
+    avg_ <- value ("touch_avg_" <> name) 0
+    sum <- value ("touch_sum" <> name) 0
+    ix <- value ("touch_ix" <> name) 0
     stateTouch <- value ("touch_state_touch" <> name) false
     start <- value ("touch_start" <> name) false
     debugVal <- value ("debug_val" <> name) 0
@@ -60,16 +64,18 @@ mkTouch port pin rcuPin bottom top = do
                 , timer
                 , top
                 , bottom
+                , diff
                 , avg
-                , min
-                , min_
+                , avg_
+                , sum
+                , ix
                 , stateTouch
                 , start
                 , debugVal
                 }
 
-    addTask $ delay 1_000 ("touch_reset_bounds" <> name) $ resetBounds touch
-    addTask $ delay 1_000 ("touch_start" <> name) $ touchStart touch
+    -- addTask $ delay 1_000 ("touch_reset_bounds" <> name) $ resetAvg touch
+    addTask $ delay 5_000 ("touch_start" <> name) $ touchStart touch
     addTask $ yeld ("touch_run" <> name) $ runMeasurement touch
 
     pure touch
@@ -86,9 +92,9 @@ instance I.Touch Touch where
     getDebug Touch{..} = deref debugVal
     getState Touch{..} = deref stateTouch
 
-resetBounds :: Touch -> Ivory eff ()
-resetBounds Touch{..} = 
-    store min 0xffff_ffff
+resetAvg :: Touch -> Ivory eff ()
+resetAvg Touch{..} = do
+    store avg =<< deref avg_
 
 runMeasurement :: Touch -> Ivory (ProcEffects s ()) ()
 runMeasurement Touch{..} = do
@@ -105,34 +111,42 @@ runMeasurement Touch{..} = do
     resetBit port pin
 
     avg' <- deref avg
-    store avg $ average 0.01 avg' moment
-    avg'' <- deref avg
-
-    min' <- deref min
-    when (avg'' <? min') do
-        store min avg''
-    min'' <- deref min
-
-
-    let rising = avg'' - min''
-    min_' <- deref min_
-    let falling = avg'' - min_' 
-
-    -- store debugVal avg''
-    -- store debugVal rising
+    store avg $ average 0.001 avg' moment
 
     start' <- deref start
-    when start' do
-        cond_
-            [ rising >? top ==> do
-                store stateTouch true
-                store debugVal rising
-                store min_ min''
-            , falling <? bottom ==> do
-                store stateTouch false
-                store debugVal (-falling)
-            , true ==> store debugVal 0
-            ]
+    when
+        start'
+        do
+            sum' <- deref sum
+            store sum $ sum' + moment
+
+            ix' <- deref ix
+            store ix $ ix' + 1
+
+            when (ix' ==? 300) do
+                store ix 0
+
+                value <- (/ 300) <$> deref sum
+                store sum 0
+
+                stateTouch' <- deref stateTouch
+
+                let diff' = abs $ value - avg'
+                when (diff' >? top .&& iNot stateTouch') do
+                    store stateTouch true
+                    store avg_ avg'
+                    store diff diff'
+                    store debugVal diff'
+
+                avg_' <- deref avg_
+                let diff_' = abs $ value - avg_'
+                bottom' <- (* 0.75) <$> deref diff
+                when (diff_' <? bottom' .&& stateTouch') do
+                    store stateTouch false
+                    store avg avg_'
+                    store debugVal (-diff_')
+
+                store debugVal bottom'
 
 average :: IFloat -> IFloat -> IFloat -> IFloat
 average alpha a b =

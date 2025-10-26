@@ -78,7 +78,7 @@ touches bottom top touches' transport = do
                 , transmit = T.transmitBuffer transport
                 }
 
-    -- addTask $ delay 50 "touches_log" $ sendTimeTask touches
+    addTask $ delay 50 "touches_log" $ sendTimeTask touches
     addTask $ delay 10 "touches_manage" $ manageTouches touches
     addTask $ yeld "touches_sync" $ syncTouches touches
 
