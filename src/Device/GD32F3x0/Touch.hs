@@ -119,36 +119,77 @@ runMeasurement Touch{..} = do
     ix'' <- deref ix
 
     when (ix'' ==? 0) do
-        value <- (/ arrayLen moments) <$> deref sum
-        store sum 0
+        -- value <- (/ arrayLen moments) <$> deref sum
+        -- store sum 0
 
-        store variance 0
-        arrayMap \i -> do
-            v <- safeCast <$> deref (moments ! i)
-            variance' <- deref variance
-            let dv = v - value
-            store variance $ abs dv + variance'
+        -- store variance 0
+        -- arrayMap \i -> do
+        --     v <- safeCast <$> deref (moments ! i)
+        --     variance' <- deref variance
+        --     let dv = v - value
+        --     store variance $ abs dv + variance'
 
-        -- stateTouch' <- deref stateTouch
+        -- -- stateTouch' <- deref stateTouch
 
-        variance' <- (/ arrayLen moments) <$> deref variance
-        max' <- deref max
-        when (variance' >? max') do
-            store max variance'
+        -- variance' <- (/ arrayLen moments) <$> deref variance
+        -- max' <- deref max
+        -- when (variance' >? max') do
+        --     store max variance'
 
-        max'' <- deref max
+        -- max'' <- deref max
 
-        let variance'' = variance' / max''
+        -- let variance'' = variance' / max''
 
-        start' <- deref start
-        when
-            start'
-            do
-                when (variance'' >? 0.6) do
-                    store stateTouch true
-                when (variance'' <? 0.4) do
-                    store stateTouch false
-                store debugVal (variance'' * 1000)
+        let n = arrayLen moments `div` 2
+        let nx = fromIntegral n
+
+        sumX <- local izero
+        sumY <- local izero
+
+        for nx \kx -> do
+            valY <- safeCast <$> deref (moments ! kx)
+            valX <- safeCast <$> deref (moments ! (kx + nx))
+            sumX' <- deref sumX
+            sumY' <- deref sumY
+            store sumX $ sumX' + valX
+            store sumX $ sumY' + valY
+
+        avgX <- (/ fromIntegral n) <$> deref sumX
+        avgY <- (/ fromIntegral n) <$> deref sumY
+
+        varX <- local izero
+        varY <- local izero
+        cov <- local izero
+
+        for nx \kx -> do
+            valX <- safeCast <$> deref (moments ! kx)
+            valY <- safeCast <$> deref (moments ! (kx + nx))
+            varX' <- deref varX
+            varY' <- deref varY
+            cov' <- deref cov
+            let dx = valX - avgX
+            let dy = valY - avgY
+            store varX $ varX' + dx * dx
+            store varY $ varY' + dy * dy
+            store cov $ cov' + dx * dy
+
+        varX' <- deref varX
+        varY' <- deref varY
+        cov' <- deref cov
+
+        let kor = cov' / sqrt (varX' * varY')
+
+        store debugVal (kor * 1000)
+
+-- start' <- deref start
+-- when
+--     start'
+--     do
+--         when (variance'' >? 0.6) do
+--             store stateTouch true
+--         when (variance'' <? 0.4) do
+--             store stateTouch false
+--         store debugVal (variance'' * 1000)
 
 average :: IFloat -> IFloat -> IFloat -> IFloat
 average alpha a b =
