@@ -1,3 +1,4 @@
+{-# HLINT ignore "Use for_" #-}
 module Device.GD32F3x0.Touch where
 
 import Control.Monad.State
@@ -14,14 +15,17 @@ import Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
 import Support.Device.GD32F3x0.GPIO
 import Support.Device.GD32F3x0.RCU
 
+type Samples = 300
+
 data Touch = Touch
     { port :: GPIO_PERIPH
     , pin :: GPIO_PIN
     , timer :: Timer
     , threshold :: IFloat
-    , avg :: Value IFloat
-    , min :: Value IFloat
-    , max :: Value IFloat
+    , sum :: Value IFloat
+    , ix :: Value (Ix Samples)
+    , buffMoments :: Values Samples Uint16
+    , variance :: Value IFloat
     , stateTouch :: Value IBool
     , start :: Value IBool
     , debugVal :: Value IFloat
@@ -39,9 +43,10 @@ mkTouch port pin rcuPin threshold = do
 
     let name = symbol port <> "_" <> symbol pin
 
-    avg <- value ("touch_avg" <> name) 0
-    min <- value ("touch_min" <> name) 0xffff_ffff
-    max <- value ("touch_max" <> name) 0
+    sum <- value ("touch_sum" <> name) 0
+    variance <- value ("touch_variance" <> name) 0
+    ix <- value ("touch_ix" <> name) 0
+    buffMoments <- values_ ("touch_moments" <> name)
     stateTouch <- value ("touch_state_touch" <> name) false
     start <- value ("touch_start" <> name) false
     debugVal <- value ("debug_val" <> name) 0
@@ -57,22 +62,22 @@ mkTouch port pin rcuPin threshold = do
                 , pin
                 , timer
                 , threshold
-                , avg
-                , min
-                , max
+                , sum
+                , ix
+                , variance
+                , buffMoments
                 , stateTouch
                 , start
                 , debugVal
                 }
 
-    addTask $ delay 1_000 ("touch_reset_bounds" <> name) $ resetBounds touch
-    addTask $ delay 1_000 ("touch_start" <> name) $ touchStart touch
+    addTask $ delay 5_000 ("touch_start" <> name) $ touchStart touch
     addTask $ yeld ("touch_run" <> name) $ runMeasurement touch
 
     pure touch
 
 touchStart :: Touch -> Ivory eff ()
-touchStart Touch {..} = store start true
+touchStart Touch{..} = store start true
 
 modePort :: GPIO_PERIPH -> GPIO_PIN -> GPIO_MODE -> Ivory eff ()
 modePort gpio pin mode = do
@@ -83,57 +88,71 @@ instance I.Touch Touch where
     getDebug Touch{..} = deref debugVal
     getState Touch{..} = deref stateTouch
 
-resetBounds :: Touch -> Ivory eff ()
-resetBounds Touch{..} = do
-    store min 0xffff_ffff
-    store max 0
-
 runMeasurement :: Touch -> Ivory (ProcEffects s ()) ()
 runMeasurement Touch{..} = do
     disableIRQ
-    -- resetBit port pin
     modePort port pin gpio_mode_input
     I.resetCounter timer
     forever do
         isMeasured <- getInputBit port pin
         when isMeasured breakOut
-    moment <- safeCast <$> I.getCounter timer
+    moment <- castDefault <$> I.getCounter timer
     enableIRQ
     modePort port pin gpio_mode_output
     resetBit port pin
 
-    avg' <- deref avg
-    store avg $ average 0.01 avg' moment
-    avg'' <- deref avg
-
-    min' <- deref min
-    when (avg'' <? min') do
-        store min avg''
-    min'' <- deref min
-
-    max' <- deref max
-    when (avg'' >? max') do
-        store max avg''
-    max'' <- deref max
-
-    let rising = avg'' - min''
-    let falling = max'' - avg''
-
-    -- store debugVal avg''
-    -- store debugVal rising
-
     start' <- deref start
-    when start' do
-        cond_
-            [ rising >? threshold ==> do
-                store stateTouch true
-                store debugVal rising
-            , falling >? threshold
-                * 0.6 ==> do
-                    store stateTouch false
-                    store debugVal (-falling)
-            , true ==> store debugVal 0
-            ]
+    when
+        start'
+        do
+            ix' <- deref ix
+            store (buffMoments ! ix') moment
+
+            sum' <- deref sum
+            store sum $ sum' + safeCast moment
+
+            store ix $ ix' + 1
+            ix'' <- deref ix
+
+            when (ix'' ==? 0) do
+                -- value <- (/ arrayLen buffMoments) <$> deref sum
+                store sum 0
+
+                let l = arrayLen buffMoments `div` 2 :: Int
+                let lx = fromIntegral l
+
+                x_ <- local $ ival (0 :: IFloat)
+                y_ <- local $ ival (0 :: IFloat)
+                for lx \i -> do
+                    x <- safeCast <$> deref (buffMoments ! i)
+                    y <- safeCast <$> deref (buffMoments ! (i + lx))
+                    x_' <- deref x_
+                    y_' <- deref y_
+                    store x_ $ x_' + x
+                    store y_ $ y_' + y
+
+                x_' <- (/ fromIntegral l) <$> deref x_
+                y_' <- (/ fromIntegral l) <$> deref y_
+
+                store variance 0
+                for lx \i -> do
+                    x <- safeCast <$> deref (buffMoments ! i)
+                    y <- safeCast <$> deref (buffMoments ! (i + lx))
+                    variance' <- deref variance
+                    let dx = x - x_'
+                    let dy = y - y_'
+                    store variance $ dx * dy + variance'
+
+
+                variance'' <- sqrt <$> deref variance
+                ifte_ (variance'' >? 5) 
+                    do
+                        store debugVal variance''
+                        store stateTouch . iNot =<< deref stateTouch
+                    do 
+                        store debugVal 0
+                        -- store stateTouch false
+
 
 average :: IFloat -> IFloat -> IFloat -> IFloat
 average alpha a b =
