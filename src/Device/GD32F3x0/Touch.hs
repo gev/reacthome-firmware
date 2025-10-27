@@ -23,6 +23,8 @@ data Touch = Touch
     , timer :: Timer
     , threshold :: IFloat
     , sum :: Value IFloat
+    , max :: Value IFloat
+    , min :: Value IFloat
     , ix :: Value (Ix Samples)
     , buffMoments :: Values Samples Uint16
     , variance :: Value IFloat
@@ -44,6 +46,8 @@ mkTouch port pin rcuPin threshold = do
     let name = symbol port <> "_" <> symbol pin
 
     sum <- value ("touch_sum" <> name) 0
+    max <- value ("touch_max" <> name) 0
+    min <- value ("touch_min" <> name) 0xffff_ffff
     variance <- value ("touch_variance" <> name) 0
     ix <- value ("touch_ix" <> name) 0
     buffMoments <- values_ ("touch_moments" <> name)
@@ -63,6 +67,8 @@ mkTouch port pin rcuPin threshold = do
                 , timer
                 , threshold
                 , sum
+                , max
+                , min
                 , ix
                 , variance
                 , buffMoments
@@ -108,51 +114,45 @@ runMeasurement Touch{..} = do
             ix' <- deref ix
             store (buffMoments ! ix') moment
 
+            let moment' = safeCast moment
+
             sum' <- deref sum
-            store sum $ sum' + safeCast moment
+            store sum $ sum' + moment'
+
 
             store ix $ ix' + 1
             ix'' <- deref ix
 
             when (ix'' ==? 0) do
-                -- value <- (/ arrayLen buffMoments) <$> deref sum
+                value <- (/ arrayLen buffMoments) <$> deref sum
                 store sum 0
 
-                let l = arrayLen buffMoments `div` 2 :: Int
-                let lx = fromIntegral l
-
-                x_ <- local $ ival (0 :: IFloat)
-                y_ <- local $ ival (0 :: IFloat)
-                for lx \i -> do
-                    x <- safeCast <$> deref (buffMoments ! i)
-                    y <- safeCast <$> deref (buffMoments ! (i + lx))
-                    x_' <- deref x_
-                    y_' <- deref y_
-                    store x_ $ x_' + x
-                    store y_ $ y_' + y
-
-                x_' <- (/ fromIntegral l) <$> deref x_
-                y_' <- (/ fromIntegral l) <$> deref y_
+                max' <- deref max
 
                 store variance 0
-                for lx \i -> do
-                    x <- safeCast <$> deref (buffMoments ! i)
-                    y <- safeCast <$> deref (buffMoments ! (i + lx))
+                arrayMap \i -> do
+                    v <- safeCast <$> deref (buffMoments ! i)
                     variance' <- deref variance
-                    let dx = x - x_'
-                    let dy = y - y_'
-                    store variance $ dx * dy + variance'
+                    let dv = v - value 
+                    store variance $ abs dv + variance'
 
 
-                variance'' <- sqrt <$> deref variance
-                ifte_ (variance'' >? 5) 
-                    do
-                        store debugVal variance''
-                        store stateTouch . iNot =<< deref stateTouch
-                    do 
-                        store debugVal 0
-                        -- store stateTouch false
+                -- stateTouch' <- deref stateTouch
 
+                variance' <- (/ arrayLen buffMoments) <$> deref variance
+                max' <- deref max
+                when (variance' >? max') do
+                    store max variance'
+
+                max'' <- deref max
+
+                let variance'' = variance' / max''
+
+                when (variance'' >? 0.6) do
+                    store stateTouch true
+                when (variance'' <? 0.4) do
+                    store stateTouch false
+                store debugVal (variance'' * 1000)
 
 average :: IFloat -> IFloat -> IFloat -> IFloat
 average alpha a b =
