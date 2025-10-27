@@ -15,7 +15,7 @@ import Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
 import Support.Device.GD32F3x0.GPIO
 import Support.Device.GD32F3x0.RCU
 
-type Samples = 300
+type Samples = 10
 
 data Touch = Touch
     { port :: GPIO_PERIPH
@@ -23,8 +23,6 @@ data Touch = Touch
     , timer :: Timer
     , threshold :: IFloat
     , sum :: Value IFloat
-    , max :: Value IFloat
-    , min :: Value IFloat
     , ix :: Value (Ix Samples)
     , moments :: Values Samples Uint16
     , variance :: Value IFloat
@@ -46,8 +44,6 @@ mkTouch port pin rcuPin threshold = do
     let name = symbol port <> "_" <> symbol pin
 
     sum <- value ("touch_sum" <> name) 0
-    max <- value ("touch_max" <> name) 0
-    min <- value ("touch_min" <> name) 0xffff_ffff
     variance <- value ("touch_variance" <> name) 0
     ix <- value ("touch_ix" <> name) 0
     moments <- values_ ("touch_moments" <> name)
@@ -67,8 +63,6 @@ mkTouch port pin rcuPin threshold = do
                 , timer
                 , threshold
                 , sum
-                , max
-                , min
                 , ix
                 , variance
                 , moments
@@ -119,77 +113,37 @@ runMeasurement Touch{..} = do
     ix'' <- deref ix
 
     when (ix'' ==? 0) do
-        -- value <- (/ arrayLen moments) <$> deref sum
-        -- store sum 0
+        let n = arrayLen moments
 
-        -- store variance 0
-        -- arrayMap \i -> do
-        --     v <- safeCast <$> deref (moments ! i)
-        --     variance' <- deref variance
-        --     let dv = v - value
-        --     store variance $ abs dv + variance'
+        avg <- (/ n) <$> deref sum
 
-        -- -- stateTouch' <- deref stateTouch
+        store sum 0
 
-        -- variance' <- (/ arrayLen moments) <$> deref variance
-        -- max' <- deref max
-        -- when (variance' >? max') do
-        --     store max variance'
+        var <- local izero
 
-        -- max'' <- deref max
+        arrayMap \kx -> do
+            val <- safeCast <$> deref (moments ! kx)
+            var' <- deref var
+            let d = val - avg
+            store var $ var' + (d * d)
 
-        -- let variance'' = variance' / max''
+        var' <- (/ n) <$> deref var
+        variance' <- deref variance
+        store variance $ average 0.1 variance' var' 
+        variance'' <- deref variance
 
-        let n = arrayLen moments `div` 2
-        let nx = fromIntegral n
+        store debugVal $ variance'' * 10
 
-        sumX <- local izero
-        sumY <- local izero
-
-        for nx \kx -> do
-            valY <- safeCast <$> deref (moments ! kx)
-            valX <- safeCast <$> deref (moments ! (kx + nx))
-            sumX' <- deref sumX
-            sumY' <- deref sumY
-            store sumX $ sumX' + valX
-            store sumX $ sumY' + valY
-
-        avgX <- (/ fromIntegral n) <$> deref sumX
-        avgY <- (/ fromIntegral n) <$> deref sumY
-
-        varX <- local izero
-        varY <- local izero
-        cov <- local izero
-
-        for nx \kx -> do
-            valX <- safeCast <$> deref (moments ! kx)
-            valY <- safeCast <$> deref (moments ! (kx + nx))
-            varX' <- deref varX
-            varY' <- deref varY
-            cov' <- deref cov
-            let dx = valX - avgX
-            let dy = valY - avgY
-            store varX $ varX' + dx * dx
-            store varY $ varY' + dy * dy
-            store cov $ cov' + dx * dy
-
-        varX' <- deref varX
-        varY' <- deref varY
-        cov' <- deref cov
-
-        let kor = cov' / sqrt (varX' * varY')
-
-        store debugVal (kor * 1000)
-
--- start' <- deref start
--- when
---     start'
---     do
---         when (variance'' >? 0.6) do
---             store stateTouch true
---         when (variance'' <? 0.4) do
---             store stateTouch false
---         store debugVal (variance'' * 1000)
+        -- start' <- deref start
+        -- when
+        --     start'
+        --     do
+        --         when (variance'' >? 140) do
+        --             store stateTouch true
+        --             store debugVal var'
+        --         when (variance'' <? 80) do
+        --             store stateTouch false
+        --             store debugVal (-var')
 
 average :: IFloat -> IFloat -> IFloat -> IFloat
 average alpha a b =
