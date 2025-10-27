@@ -26,7 +26,7 @@ data Touch = Touch
     , max :: Value IFloat
     , min :: Value IFloat
     , ix :: Value (Ix Samples)
-    , buffMoments :: Values Samples Uint16
+    , moments :: Values Samples Uint16
     , variance :: Value IFloat
     , stateTouch :: Value IBool
     , start :: Value IBool
@@ -50,7 +50,7 @@ mkTouch port pin rcuPin threshold = do
     min <- value ("touch_min" <> name) 0xffff_ffff
     variance <- value ("touch_variance" <> name) 0
     ix <- value ("touch_ix" <> name) 0
-    buffMoments <- values_ ("touch_moments" <> name)
+    moments <- values_ ("touch_moments" <> name)
     stateTouch <- value ("touch_state_touch" <> name) false
     start <- value ("touch_start" <> name) false
     debugVal <- value ("debug_val" <> name) 0
@@ -71,7 +71,7 @@ mkTouch port pin rcuPin threshold = do
                 , min
                 , ix
                 , variance
-                , buffMoments
+                , moments
                 , stateTouch
                 , start
                 , debugVal
@@ -107,47 +107,43 @@ runMeasurement Touch{..} = do
     modePort port pin gpio_mode_output
     resetBit port pin
 
-    start' <- deref start
-    when
-        start'
-        do
-            ix' <- deref ix
-            store (buffMoments ! ix') moment
+    ix' <- deref ix
+    store (moments ! ix') moment
 
-            let moment' = safeCast moment
+    let moment' = safeCast moment
 
-            sum' <- deref sum
-            store sum $ sum' + moment'
+    sum' <- deref sum
+    store sum $ sum' + moment'
 
+    store ix $ ix' + 1
+    ix'' <- deref ix
 
-            store ix $ ix' + 1
-            ix'' <- deref ix
+    when (ix'' ==? 0) do
+        value <- (/ arrayLen moments) <$> deref sum
+        store sum 0
 
-            when (ix'' ==? 0) do
-                value <- (/ arrayLen buffMoments) <$> deref sum
-                store sum 0
+        store variance 0
+        arrayMap \i -> do
+            v <- safeCast <$> deref (moments ! i)
+            variance' <- deref variance
+            let dv = v - value
+            store variance $ abs dv + variance'
 
-                max' <- deref max
+        -- stateTouch' <- deref stateTouch
 
-                store variance 0
-                arrayMap \i -> do
-                    v <- safeCast <$> deref (buffMoments ! i)
-                    variance' <- deref variance
-                    let dv = v - value 
-                    store variance $ abs dv + variance'
+        variance' <- (/ arrayLen moments) <$> deref variance
+        max' <- deref max
+        when (variance' >? max') do
+            store max variance'
 
+        max'' <- deref max
 
-                -- stateTouch' <- deref stateTouch
+        let variance'' = variance' / max''
 
-                variance' <- (/ arrayLen buffMoments) <$> deref variance
-                max' <- deref max
-                when (variance' >? max') do
-                    store max variance'
-
-                max'' <- deref max
-
-                let variance'' = variance' / max''
-
+        start' <- deref start
+        when
+            start'
+            do
                 when (variance'' >? 0.6) do
                     store stateTouch true
                 when (variance'' <? 0.4) do
