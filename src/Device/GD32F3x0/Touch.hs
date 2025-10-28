@@ -23,6 +23,7 @@ data Touch = Touch
     , timer :: Timer
     , threshold :: IFloat
     , sum :: Value IFloat
+    , avg :: Value IFloat
     , ix :: Value (Ix Samples)
     , moments :: Values Samples Uint16
     , variance :: Value IFloat
@@ -44,6 +45,7 @@ mkTouch port pin rcuPin threshold = do
     let name = symbol port <> "_" <> symbol pin
 
     sum <- value ("touch_sum" <> name) 0
+    avg <- value ("touch_avg" <> name) 0xffff_ffff
     variance <- value ("touch_variance" <> name) 0
     ix <- value ("touch_ix" <> name) 0
     moments <- values_ ("touch_moments" <> name)
@@ -63,6 +65,7 @@ mkTouch port pin rcuPin threshold = do
                 , timer
                 , threshold
                 , sum
+                , avg
                 , ix
                 , variance
                 , moments
@@ -101,49 +104,54 @@ runMeasurement Touch{..} = do
     modePort port pin gpio_mode_output
     resetBit port pin
 
-    ix' <- deref ix
-    store (moments ! ix') moment
+    start' <- deref start
+    ifte_
+        start'
+        do
+            ix' <- deref ix
+            store (moments ! ix') moment
 
-    let moment' = safeCast moment
+            let moment' = safeCast moment
+            sum' <- deref sum
+            store sum $ sum' + moment'
 
-    sum' <- deref sum
-    store sum $ sum' + moment'
+            store ix $ ix' + 1
+            ix'' <- deref ix
 
-    store ix $ ix' + 1
-    ix'' <- deref ix
+            when (ix'' ==? 0) do
+                let n = arrayLen moments
+                avg' <- deref avg
+                var <- local izero
 
-    when (ix'' ==? 0) do
-        let n = arrayLen moments
+                arrayMap \kx -> do
+                    val <- safeCast <$> deref (moments ! kx)
+                    var' <- deref var
+                    let d = val - avg'
+                    store var $ var' + (d * d)
 
-        avg <- (/ n) <$> deref sum
+                var' <- (/ avg') . (/ n) <$> deref var
+                variance' <- deref variance
+                store variance $ average 0.1 variance' var'
+                variance'' <- deref variance
 
-        store sum 0
+                store debugVal $ variance'' * 100
 
-        var <- local izero
+                when (variance'' >? 0.6) do
+                    store stateTouch true
+                    store debugVal $ variance'' * 100
+                when (variance'' <? 0.25) do
+                    store stateTouch false
+                    store debugVal $ (-variance'') * 100
+                when (variance'' <? 0.2) do
+                    avg' <- deref avg
+                    val <- (/ n) <$> deref sum
+                    store avg $ average 0.001 avg' val
+                store sum 0
 
-        arrayMap \kx -> do
-            val <- safeCast <$> deref (moments ! kx)
-            var' <- deref var
-            let d = val - avg
-            store var $ var' + (d * d)
+        do
+            avg' <- deref avg
+            store avg $ average 0.01 avg' $ safeCast moment
 
-        var' <- (/ n) <$> deref var
-        variance' <- deref variance
-        store variance $ average 0.1 variance' var' 
-        variance'' <- deref variance
-
-        store debugVal $ variance'' * 10
-
-        -- start' <- deref start
-        -- when
-        --     start'
-        --     do
-        --         when (variance'' >? 140) do
-        --             store stateTouch true
-        --             store debugVal var'
-        --         when (variance'' <? 80) do
-        --             store stateTouch false
-        --             store debugVal (-var')
 
 average :: IFloat -> IFloat -> IFloat -> IFloat
 average alpha a b =
