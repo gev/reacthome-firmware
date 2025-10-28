@@ -29,6 +29,7 @@ data Touch = Touch
     , variance :: Value IFloat
     , stateTouch :: Value IBool
     , start :: Value IBool
+    , ready :: Value IBool
     , debugVal :: Value IFloat
     }
 
@@ -51,6 +52,7 @@ mkTouch port pin rcuPin threshold = do
     moments <- values_ ("touch_moments" <> name)
     stateTouch <- value ("touch_state_touch" <> name) false
     start <- value ("touch_start" <> name) false
+    ready <- value ("touch_ready" <> name) false
     debugVal <- value ("debug_val" <> name) 0
 
     addInit name do
@@ -71,6 +73,7 @@ mkTouch port pin rcuPin threshold = do
                 , moments
                 , stateTouch
                 , start
+                , ready
                 , debugVal
                 }
 
@@ -136,22 +139,23 @@ runMeasurement Touch{..} = do
 
                 store debugVal $ variance'' * 100
 
-                when (variance'' >? 0.6) do
+                ready' <- deref ready
+
+                when (ready' .&& variance'' >? 0.6) do
                     store stateTouch true
                     store debugVal $ variance'' * 100
                 when (variance'' <? 0.25) do
+                    store ready true
                     store stateTouch false
                     store debugVal $ (-variance'') * 100
-                when (variance'' <? 0.2) do
+                when (iNot ready' .|| variance'' <? 0.2) do
                     avg' <- deref avg
                     val <- (/ n) <$> deref sum
                     store avg $ average 0.001 avg' val
                 store sum 0
-
         do
             avg' <- deref avg
             store avg $ average 0.01 avg' $ safeCast moment
-
 
 average :: IFloat -> IFloat -> IFloat -> IFloat
 average alpha a b =
