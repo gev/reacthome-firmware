@@ -45,7 +45,7 @@ mkTouch port pin rcuPin threshold = do
     let name = symbol port <> "_" <> symbol pin
 
     sum <- value ("touch_sum" <> name) 0
-    avg <- value ("touch_avg" <> name) 0xffff_ffff
+    avg <- value ("touch_avg" <> name) 0
     variance <- value ("touch_variance" <> name) 0
     ix <- value ("touch_ix" <> name) 0
     moments <- values_ ("touch_moments" <> name)
