@@ -24,6 +24,8 @@ data Touch = Touch
     , threshold :: IFloat
     , sum :: Value IFloat
     , avg :: Value IFloat
+    , var0 :: Value IFloat
+    , var1 :: Value IFloat
     , ix :: Value (Ix Samples)
     , moments :: Values Samples Uint16
     , variance :: Value IFloat
@@ -47,6 +49,8 @@ mkTouch port pin rcuPin threshold = do
 
     sum <- value ("touch_sum" <> name) 0
     avg <- value ("touch_avg" <> name) 0
+    var0 <- value ("touch_var0" <> name) 0
+    var1 <- value ("touch_var1" <> name) 0
     variance <- value ("touch_variance" <> name) 0
     ix <- value ("touch_ix" <> name) 0
     moments <- values_ ("touch_moments" <> name)
@@ -68,6 +72,8 @@ mkTouch port pin rcuPin threshold = do
                 , threshold
                 , sum
                 , avg
+                , var0
+                , var1
                 , ix
                 , variance
                 , moments
@@ -126,11 +132,21 @@ runMeasurement Touch{..} = do
                 avg' <- deref avg
                 var <- local izero
 
+                avg_ <- (/ n) <$> deref sum
+                store sum 0
+
+                var_ <- local izero
+
                 arrayMap \kx -> do
                     val <- safeCast <$> deref (moments ! kx)
+
                     var' <- deref var
                     let d = val - avg'
                     store var $ var' + (d * d)
+
+                    var_' <- deref var_
+                    let d_ = val - avg_
+                    store var_ $ var_' + (d_ * d_)
 
                 var' <- (/ avg') . (/ n) <$> deref var
                 variance' <- deref variance
@@ -139,20 +155,29 @@ runMeasurement Touch{..} = do
 
                 store debugVal $ variance'' * 100
 
-                ready' <- deref ready
-
-                when (ready' .&& variance'' >? 0.6) do
-                    store stateTouch true
+                when (variance'' >? 0.6) do
+                    ready' <- deref ready
+                    when ready' do
+                        store stateTouch true
+                    store var1 =<< deref var_
                     store debugVal $ variance'' * 100
+
                 when (variance'' <? 0.25) do
                     store ready true
                     store stateTouch false
+                    store var0 =<< deref var_
                     store debugVal $ (-variance'') * 100
+
+                var0' <- deref var0
+                var1' <- deref var1
+
+                when (var0' >? 0 .&& var1' >? 0 .&& var1' / var0' >? 1.5) do
+                    store ready true
+
+                ready' <- deref ready
                 when (iNot ready' .|| variance'' <? 0.2) do
                     avg' <- deref avg
-                    val <- (/ n) <$> deref sum
-                    store avg $ average 0.001 avg' val
-                store sum 0
+                    store avg $ average 0.001 avg' avg_
         do
             avg' <- deref avg
             store avg $ average 0.01 avg' $ safeCast moment
