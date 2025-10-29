@@ -31,7 +31,7 @@ data Touch = Touch
     , variance :: Value IFloat
     , stateTouch :: Value IBool
     , start :: Value IBool
-    , ready :: Value IBool
+    , shouldCalibrate :: Value IBool
     , debugVal :: Value IFloat
     }
 
@@ -56,7 +56,7 @@ mkTouch port pin rcuPin threshold = do
     moments <- values_ ("touch_moments" <> name)
     stateTouch <- value ("touch_state_touch" <> name) false
     start <- value ("touch_start" <> name) false
-    ready <- value ("touch_ready" <> name) false
+    shouldCalibrate <- value ("touch_should_calibrate" <> name) true
     debugVal <- value ("debug_val" <> name) 0
 
     addInit name do
@@ -79,7 +79,7 @@ mkTouch port pin rcuPin threshold = do
                 , moments
                 , stateTouch
                 , start
-                , ready
+                , shouldCalibrate
                 , debugVal
                 }
 
@@ -156,9 +156,7 @@ runMeasurement Touch{..} = do
                 var_' <- (/ avg_) <$> deref var_
 
                 when (variance'' >? 0.6) do
-                    ready' <- deref ready
-                    when ready' do
-                        store stateTouch true
+                    store stateTouch true
                     var1' <- deref var1
                     store var1 $ average 0.1 var1' var_'
                     store debugVal $ 100 * variance''
@@ -174,21 +172,21 @@ runMeasurement Touch{..} = do
                 ifte_
                     (var0' >? 0 .&& var1' >? 0 .&& var1' / var0' >? 1.5)
                     do
-                        store ready true
+                        store shouldCalibrate false
                     do
-                        store ready false
+                        store shouldCalibrate true
                         store var0 0
                         store var1 0
 
                 avg' <- deref avg
-                ready' <- deref ready
+                shouldCalibrate' <- deref shouldCalibrate
                 ifte_
-                    ready'
+                    shouldCalibrate'
+                    do
+                        store avg $ average 0.001 avg' avg_
                     do
                         when (variance'' <? 0.3) do
                             store avg $ average 0.001 avg' avg_
-                    do
-                        store avg $ average 0.001 avg' avg_
         do
             avg' <- deref avg
             store avg $ average 0.01 avg' $ safeCast moment
