@@ -171,19 +171,14 @@ runMeasurement Touch{..} = do
 
                 var0' <- deref var0
                 var1' <- deref var1
-                when
-                    (var0' >? 0 .&& var1' >? 0)
+                ifte_
+                    (var0' >? 0 .&& var1' >? 0 .&& var1' / var0' >? 1.5)
                     do
-                        ifte_
-                            (var1' / var0' >? 1.5)
-                            do
-                                store ready true
-                            do
-                                store ready false
-                                stateTouch' <- deref stateTouch
-                                when (stateTouch' .&& var0' / var1' >? 1.5) do
-                                    store var1 0
-                                    store var0 0
+                        store ready true
+                    do
+                        store ready false
+                        store var0 0
+                        store var1 0
 
                 avg' <- deref avg
                 ready' <- deref ready
