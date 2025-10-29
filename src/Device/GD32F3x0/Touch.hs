@@ -171,8 +171,8 @@ runMeasurement Touch{..} = do
                 var0' <- deref var0
                 var1' <- deref var1
 
-                when (var0' >? 0 .&& var1' >? 0 .&& var1' / var0' >? 1.5) do
-                    store ready true
+                store ready $
+                    var0' >? 0 .&& var1' >? 0 .&& var1' / var0' >? 1.5
 
                 ready' <- deref ready
                 when (iNot ready' .|| variance'' <? 0.2) do
