@@ -172,36 +172,27 @@ runMeasurement Touch{..} = do
                     store var0 $ average 0.1 var0' var_'
                     store debugVal $ (-100) * variance''
 
-                stateTouch' <- deref stateTouch
                 ready' <- deref ready
                 when (iNot ready') do
                     var0' <- deref var0
                     var1' <- deref var1
-                    ifte_ (iNot stateTouch' .&& var0' >? 0 .&& var1' ==? 0)
+                    when (var0' >? 0 .&& var1' >? 0)
                         do
-                            store ready true
-                        do
-                            when (var0' >? 0 .&& var1' >? 0) do
-                                store var0 0
+                            when (var1' / var0' >? 1.5) do
+                                store ready true
+                            shouldRecalebrate' <- deref shouldRecalebrate
+                            stateTouch' <- deref stateTouch
+                            when (stateTouch' .&& shouldRecalebrate' .&& var0' / var1' >? 1.5) do
                                 store var1 0
-                                -- when (var1' / var0' >? 1.5) do
-                                --     store ready true
-                                -- shouldRecalebrate' <- deref shouldRecalebrate
-                                -- when (shouldRecalebrate' .&& var0' / var1' >? 1.5) do
-                                --     store var1 var0'
-                                --     store var0 0
-                                --     store shouldRecalebrate false
-
-                -- var0' <- deref var0
-                -- var1' <- deref var1
-                -- store ready $ (var0' >? 0 .&& var1' ==? 0) .|| (var0' >? 0 .&& var1' >? 0 .&& var1' / var0' >? 1.5)
+                                store var0 0
+                                store shouldRecalebrate false
 
                 avg' <- deref avg
                 ready' <- deref ready
                 ifte_
                     ready'
                     do
-                        when (variance'' <? 0.1) do
+                        when (variance'' <? 0.3) do
                             store avg $ average 0.001 avg' avg_
                     do
                         store avg $ average 0.001 avg' avg_
