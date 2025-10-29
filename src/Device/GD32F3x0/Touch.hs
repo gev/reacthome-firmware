@@ -84,12 +84,32 @@ mkTouch port pin rcuPin threshold = do
                 }
 
     addTask $ delay 5_000 ("touch_start" <> name) $ touchStart touch
+    addTask $ delay 1000 ("touch_check_calibration" <> name) $ checkCalibration touch
     addTask $ yeld ("touch_run" <> name) $ runMeasurement touch
 
     pure touch
 
 touchStart :: Touch -> Ivory eff ()
-touchStart Touch{..} = store start true
+touchStart Touch{..} =
+    store start true
+
+checkCalibration :: Touch -> Ivory eff ()
+checkCalibration Touch{..} = do
+    var0' <- deref var0
+    var1' <- deref var1
+    when (var0' >? 0 .&& var1' >? 0) do
+        when (var1' / var0' >? 1.5) do
+            store shouldCalibrate false
+        when (var0' / var1' >? 1.5) do
+            store shouldCalibrate true
+            store var0 0
+            store var1 1
+
+    shouldCalibrate' <- deref shouldCalibrate
+    ifte_
+        shouldCalibrate'
+        do store debugVal 100
+        do store debugVal 0
 
 modePort :: GPIO_PERIPH -> GPIO_PIN -> GPIO_MODE -> Ivory eff ()
 modePort gpio pin mode = do
@@ -158,29 +178,14 @@ runMeasurement Touch{..} = do
                 when (variance'' >? 0.6) do
                     store stateTouch true
                     var1' <- deref var1
-                    store var1 $ average 0.1 var1' var_'
-                    store debugVal $ 100 * variance''
+                    store var1 $ average 0.01 var1' var_'
+                -- store debugVal $ 100 * variance''
 
                 when (variance'' <? 0.3) do
                     store stateTouch false
-
-                var0' <- deref var0
-                store var0 $ average 0.1 var0' var_'
-                store debugVal $ (-100) * variance''
-
-                var0' <- deref var0
-                var1' <- deref var1
-                when (var0' >? 0 .&& var1' >? 0) do
-                    when (var1' / var0' >? 1.5) do
-                        store shouldCalibrate false
-                    when (var0' / var1' >? 1.5) do
-                        store shouldCalibrate true
-
-                shouldCalibrate' <- deref shouldCalibrate
-                ifte_
-                    shouldCalibrate'
-                    do store debugVal 100
-                    do store debugVal 0
+                    var0' <- deref var0
+                    store var0 $ average 0.01 var0' var_'
+                -- store debugVal $ (-100) * variance''
 
                 avg' <- deref avg
                 shouldCalibrate' <- deref shouldCalibrate
