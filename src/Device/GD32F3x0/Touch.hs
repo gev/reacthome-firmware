@@ -32,7 +32,6 @@ data Touch = Touch
     , stateTouch :: Value IBool
     , start :: Value IBool
     , ready :: Value IBool
-    , shouldRecalebrate :: Value IBool
     , debugVal :: Value IFloat
     }
 
@@ -58,7 +57,6 @@ mkTouch port pin rcuPin threshold = do
     stateTouch <- value ("touch_state_touch" <> name) false
     start <- value ("touch_start" <> name) false
     ready <- value ("touch_ready" <> name) false
-    shouldRecalebrate <- value ("touch_should_recalebrate" <> name) true
     debugVal <- value ("debug_val" <> name) 0
 
     addInit name do
@@ -82,7 +80,6 @@ mkTouch port pin rcuPin threshold = do
                 , stateTouch
                 , start
                 , ready
-                , shouldRecalebrate
                 , debugVal
                 }
 
@@ -180,12 +177,10 @@ runMeasurement Touch{..} = do
                         do
                             when (var1' / var0' >? 1.5) do
                                 store ready true
-                            shouldRecalebrate' <- deref shouldRecalebrate
                             stateTouch' <- deref stateTouch
-                            when (stateTouch' .&& shouldRecalebrate' .&& var0' / var1' >? 1.5) do
+                            when (stateTouch' .&& var0' / var1' >? 1.5) do
                                 store var1 0
                                 store var0 0
-                                store shouldRecalebrate false
 
                 avg' <- deref avg
                 ready' <- deref ready
