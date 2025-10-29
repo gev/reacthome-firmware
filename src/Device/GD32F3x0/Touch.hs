@@ -176,23 +176,21 @@ runMeasurement Touch{..} = do
                     when (var0' / var1' >? 1.5) do
                         store shouldCalibrate true
 
-                -- shouldCalibrate' <- deref shouldCalibrate
-                -- ifte_
-                --     shouldCalibrate'
-                --     do store debugVal 100
-                --     do store debugVal 0
+                shouldCalibrate' <- deref shouldCalibrate
+                ifte_
+                    shouldCalibrate'
+                    do store debugVal 100
+                    do store debugVal 0
 
                 avg' <- deref avg
-                -- shouldCalibrate' <- deref shouldCalibrate
-                -- ifte_
-                --     shouldCalibrate'
-                --     do
-                --         store avg $ average 0.001 avg' avg_
-                --     do
-                --         when (variance'' <? 0.2) do
-                --             store avg $ average 0.01 avg' avg_
-                when (variance'' <? 0.2) do
-                    store avg $ average 0.01 avg' avg_
+                shouldCalibrate' <- deref shouldCalibrate
+                ifte_
+                    shouldCalibrate'
+                    do
+                        store avg $ average 0.001 avg' avg_
+                    do
+                        when (variance'' <? 0.2) do
+                            store avg $ average 0.01 avg' avg_
         do
             avg' <- deref avg
             store avg $ average 0.01 avg' $ safeCast moment
