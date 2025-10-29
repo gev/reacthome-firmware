@@ -32,6 +32,7 @@ data Touch = Touch
     , stateTouch :: Value IBool
     , start :: Value IBool
     , ready :: Value IBool
+    , shouldRecalebrate :: Value IBool
     , debugVal :: Value IFloat
     }
 
@@ -57,6 +58,7 @@ mkTouch port pin rcuPin threshold = do
     stateTouch <- value ("touch_state_touch" <> name) false
     start <- value ("touch_start" <> name) false
     ready <- value ("touch_ready" <> name) false
+    shouldRecalebrate <- value ("touch_should_recalebrate" <> name) true
     debugVal <- value ("debug_val" <> name) 0
 
     addInit name do
@@ -80,6 +82,7 @@ mkTouch port pin rcuPin threshold = do
                 , stateTouch
                 , start
                 , ready
+                , shouldRecalebrate
                 , debugVal
                 }
 
@@ -153,31 +156,55 @@ runMeasurement Touch{..} = do
                 store variance $ average 0.1 variance' var'
                 variance'' <- deref variance
 
-                store debugVal $ variance'' * 100
+                var_' <- (/ avg_) <$> deref var_
 
                 when (variance'' >? 0.6) do
                     ready' <- deref ready
                     when ready' do
                         store stateTouch true
-                    store var1 =<< deref var_
-                    store debugVal $ variance'' * 100
+                    var1' <- deref var1
+                    store var1 $ average 0.1 var1' var_'
+                    store debugVal $ 100 * variance''
 
-                when (variance'' <? 0.25) do
-                    store ready true
+                when (variance'' <? 0.3) do
                     store stateTouch false
-                    store var0 =<< deref var_
-                    store debugVal $ (-variance'') * 100
+                    var0' <- deref var0
+                    store var0 $ average 0.1 var0' var_'
+                    store debugVal $ (-100) * variance''
 
-                var0' <- deref var0
-                var1' <- deref var1
-
-                store ready $
-                    var0' >? 0 .&& var1' >? 0 .&& var1' / var0' >? 1.5
-
+                stateTouch' <- deref stateTouch
                 ready' <- deref ready
-                when (iNot ready' .|| variance'' <? 0.2) do
-                    avg' <- deref avg
-                    store avg $ average 0.001 avg' avg_
+                when (iNot ready') do
+                    var0' <- deref var0
+                    var1' <- deref var1
+                    ifte_ (iNot stateTouch' .&& var0' >? 0 .&& var1' ==? 0)
+                        do
+                            store ready true
+                        do
+                            when (var0' >? 0 .&& var1' >? 0) do
+                                store var0 0
+                                store var1 0
+                                -- when (var1' / var0' >? 1.5) do
+                                --     store ready true
+                                -- shouldRecalebrate' <- deref shouldRecalebrate
+                                -- when (shouldRecalebrate' .&& var0' / var1' >? 1.5) do
+                                --     store var1 var0'
+                                --     store var0 0
+                                --     store shouldRecalebrate false
+
+                -- var0' <- deref var0
+                -- var1' <- deref var1
+                -- store ready $ (var0' >? 0 .&& var1' ==? 0) .|| (var0' >? 0 .&& var1' >? 0 .&& var1' / var0' >? 1.5)
+
+                avg' <- deref avg
+                ready' <- deref ready
+                ifte_
+                    ready'
+                    do
+                        when (variance'' <? 0.1) do
+                            store avg $ average 0.001 avg' avg_
+                    do
+                        store avg $ average 0.001 avg' avg_
         do
             avg' <- deref avg
             store avg $ average 0.01 avg' $ safeCast moment
