@@ -183,7 +183,7 @@ runMeasurement Touch{..} = do
                 ifte_
                     shouldCalibrate'
                     do
-                        store avg $ average 0.001 avg' avg_
+                        store avg $ average 0.01 avg' avg_
                     do
                         when (variance'' <? 0.3) do
                             store avg $ average 0.001 avg' avg_
