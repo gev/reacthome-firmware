@@ -178,6 +178,12 @@ runMeasurement Touch{..} = do
                         store var0 0
                         store var1 0
 
+                shouldCalibrate' <- deref shouldCalibrate
+                ifte_
+                    shouldCalibrate'
+                    do store debugVal 100
+                    do store debugVal 0
+
                 avg' <- deref avg
                 shouldCalibrate' <- deref shouldCalibrate
                 ifte_
