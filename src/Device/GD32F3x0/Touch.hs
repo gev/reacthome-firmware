@@ -96,12 +96,13 @@ checkCalibration Touch{..} = do
     var0' <- deref var0
     var1' <- deref var1
     when (var0' >? 0 .&& var1' >? 0) do
-        when (var1' / var0' >? 1.5) do
-            store shouldCalibrate false
-        when (var0' / var1' >? 1.5) do
-            store shouldCalibrate true
-            store var0 0
-            store var1 0
+        ifte_
+            (var1' / var0' >? 1.5)
+            do
+                store shouldCalibrate false
+            do
+                store var0 0
+                store var1 0
 
     shouldCalibrate' <- deref shouldCalibrate
     ifte_
