@@ -114,10 +114,7 @@ modePort gpio pin mode = do
 
 instance I.Touch Touch where
     getDebug Touch{..} = deref debugVal
-    getState Touch{..} = do
-        shouldCalibrate' <- deref shouldCalibrate
-        stateTouch' <- deref stateTouch
-        pure $ iNot shouldCalibrate' .&& stateTouch'
+    getState Touch{..} = deref stateTouch
 
 runMeasurement :: Touch -> Ivory (ProcEffects s ()) ()
 runMeasurement Touch{..} = do
