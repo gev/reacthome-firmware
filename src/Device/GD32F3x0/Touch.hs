@@ -84,7 +84,7 @@ mkTouch port pin rcuPin threshold = do
                 }
 
     addTask $ delay 5_000 ("touch_start" <> name) $ touchStart touch
-    addTask $ delay 1000 ("touch_check_calibration" <> name) $ checkCalibration touch
+    -- addTask $ delay 1000 ("touch_check_calibration" <> name) $ checkCalibration touch
     addTask $ yeld ("touch_run" <> name) $ runMeasurement touch
 
     pure touch
@@ -128,70 +128,36 @@ runMeasurement Touch{..} = do
     forever do
         isMeasured <- getInputBit port pin
         when isMeasured breakOut
-    moment <- castDefault <$> I.getCounter timer
+    moment <- safeCast <$> I.getCounter timer
     enableIRQ
     modePort port pin gpio_mode_output
     resetBit port pin
 
+    avg' <- deref avg
+
     start' <- deref start
     ifte_
-        start'
+        (start' .&& moment >? 0 .&& avg' >? 0)
         do
-            ix' <- deref ix
-            store (moments ! ix') moment
-
-            let moment' = safeCast moment
-            sum' <- deref sum
-            store sum $ sum' + moment'
-
-            store ix $ ix' + 1
-            ix'' <- deref ix
-
+            let d = moment - avg'
             variance' <- deref variance
-            store variance $ average 0.01 variance' moment'
-            variance'' <- deref variance
+            store variance $ average 0.01 variance' $ d * d
+            variance'' <- (/ avg') <$> deref variance
 
-            when (ix'' ==? 0) do
-                let n = arrayLen moments
+            store debugVal $ 100 * variance''
 
-                avg_ <- (/ n) <$> deref sum
-                store sum 0
+            when (variance'' >? 0.4) do
+                store stateTouch true
 
-                var_ <- local izero
+            when (variance'' <? 0.2) do
+                store stateTouch false
 
-                arrayMap \kx -> do
-                    val <- safeCast <$> deref (moments ! kx)
+            stateTouch' <- deref stateTouch
 
-                    var_' <- deref var_
-                    let d_ = val - avg_
-                    store var_ $ var_' + (d_ * d_)
-
-                var_' <- (/ avg_) <$> deref var_
-
-                when (variance'' >? 0.6) do
-                    store stateTouch true
-                    var1' <- deref var1
-                    store var1 $ average 0.01 var1' var_'
-                -- store debugVal $ 100 * variance''
-
-                when (variance'' <? 0.3) do
-                    store stateTouch false
-                    var0' <- deref var0
-                    store var0 $ average 0.01 var0' var_'
-                -- store debugVal $ (-100) * variance''
-
-                avg' <- deref avg
-                shouldCalibrate' <- deref shouldCalibrate
-                ifte_
-                    shouldCalibrate'
-                    do
-                        store avg $ average 0.001 avg' avg_
-                    do
-                        when (variance'' <? 0.2) do
-                            store avg $ average 0.01 avg' avg_
+            when (iNot stateTouch') do
+                store avg $ average 0.0001 avg' moment
         do
-            avg' <- deref avg
-            store avg $ average 0.01 avg' $ safeCast moment
+            store avg $ average 0.001 avg' moment
 
 average :: IFloat -> IFloat -> IFloat -> IFloat
 average alpha a b =
