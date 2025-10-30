@@ -145,7 +145,9 @@ runMeasurement Touch{..} = do
             store debugVal $ 100 * var''
 
             when (var'' >? 0.4) do
-                store stateTouch true
+                shouldCalibrate' <- deref shouldCalibrate
+                when (iNot shouldCalibrate') do
+                    store stateTouch true
                 avg1' <- deref avg1
                 store avg1 $ average 0.01 avg1' moment
                 avg1'' <- deref avg1
