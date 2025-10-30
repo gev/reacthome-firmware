@@ -15,8 +15,6 @@ import Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
 import Support.Device.GD32F3x0.GPIO
 import Support.Device.GD32F3x0.RCU
 
-type Samples = 100
-
 data Touch = Touch
     { port :: GPIO_PERIPH
     , pin :: GPIO_PIN
@@ -24,11 +22,11 @@ data Touch = Touch
     , threshold :: IFloat
     , sum :: Value IFloat
     , avg :: Value IFloat
+    , avg0 :: Value IFloat
+    , avg1 :: Value IFloat
     , var0 :: Value IFloat
     , var1 :: Value IFloat
-    , ix :: Value (Ix Samples)
-    , moments :: Values Samples Uint16
-    , variance :: Value IFloat
+    , var :: Value IFloat
     , stateTouch :: Value IBool
     , start :: Value IBool
     , shouldCalibrate :: Value IBool
@@ -49,11 +47,11 @@ mkTouch port pin rcuPin threshold = do
 
     sum <- value ("touch_sum" <> name) 0
     avg <- value ("touch_avg" <> name) 0
+    avg0 <- value ("touch_avg0" <> name) 0
+    avg1 <- value ("touch_avg1" <> name) 0
     var0 <- value ("touch_var0" <> name) 0
     var1 <- value ("touch_var1" <> name) 0
-    variance <- value ("touch_variance" <> name) 0
-    ix <- value ("touch_ix" <> name) 0
-    moments <- values_ ("touch_moments" <> name)
+    var <- value ("touch_var" <> name) 0
     stateTouch <- value ("touch_state_touch" <> name) false
     start <- value ("touch_start" <> name) false
     shouldCalibrate <- value ("touch_should_calibrate" <> name) true
@@ -72,11 +70,11 @@ mkTouch port pin rcuPin threshold = do
                 , threshold
                 , sum
                 , avg
+                , avg0
+                , avg1
+                , var
                 , var0
                 , var1
-                , ix
-                , variance
-                , moments
                 , stateTouch
                 , start
                 , shouldCalibrate
@@ -84,7 +82,7 @@ mkTouch port pin rcuPin threshold = do
                 }
 
     addTask $ delay 5_000 ("touch_start" <> name) $ touchStart touch
-    -- addTask $ delay 1000 ("touch_check_calibration" <> name) $ checkCalibration touch
+    addTask $ delay 500 ("touch_check_calibration" <> name) $ checkCalibration touch
     addTask $ yeld ("touch_run" <> name) $ runMeasurement touch
 
     pure touch
@@ -103,7 +101,7 @@ checkCalibration Touch{..} = do
         when (var0' / var1' >? 1.5) do
             store shouldCalibrate true
             store var0 0
-            store var1 1
+            store var1 0
 
     shouldCalibrate' <- deref shouldCalibrate
     ifte_
@@ -140,21 +138,34 @@ runMeasurement Touch{..} = do
         (start' .&& moment >? 0 .&& avg' >? 0)
         do
             let d = moment - avg'
-            variance' <- deref variance
-            store variance $ average 0.01 variance' $ d * d
-            variance'' <- (/ avg') <$> deref variance
+            var' <- deref var
+            store var $ average 0.01 var' $ d * d
+            var'' <- (/ avg') <$> deref var
 
-            store debugVal $ 100 * variance''
+            store debugVal $ 100 * var''
 
-            when (variance'' >? 0.4) do
+            when (var'' >? 0.4) do
                 store stateTouch true
+                avg1' <- deref avg1
+                store avg1 $ average 0.01 avg1' moment
+                avg1'' <- deref avg1
+                var1' <- deref var1
+                let d1 = var1' - avg1''
+                store var1 $ average 0.01 var1' $ d1 * d1
 
-            when (variance'' <? 0.2) do
+            when (var'' <? 0.2) do
                 store stateTouch false
+                avg0' <- deref avg0
+                store avg0 $ average 0.01 avg0' moment
+                avg0'' <- deref avg0
+                var0' <- deref var0
+                let d0 = var0' - avg0''
+                store var0 $ average 0.01 var0' $ d0 * d0
 
             stateTouch' <- deref stateTouch
 
-            when (iNot stateTouch') do
+            shouldCalibrate' <- deref shouldCalibrate
+            when (iNot stateTouch' .|| shouldCalibrate') do
                 store avg $ average 0.0001 avg' moment
         do
             store avg $ average 0.001 avg' moment
