@@ -15,7 +15,7 @@ import Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
 import Support.Device.GD32F3x0.GPIO
 import Support.Device.GD32F3x0.RCU
 
-type Samples = 10
+type Samples = 100
 
 data Touch = Touch
     { port :: GPIO_PERIPH
@@ -147,10 +147,12 @@ runMeasurement Touch{..} = do
             store ix $ ix' + 1
             ix'' <- deref ix
 
+            variance' <- deref variance
+            store variance $ average 0.01 variance' moment'
+            variance'' <- deref variance
+
             when (ix'' ==? 0) do
                 let n = arrayLen moments
-                avg' <- deref avg
-                var <- local izero
 
                 avg_ <- (/ n) <$> deref sum
                 store sum 0
@@ -160,18 +162,9 @@ runMeasurement Touch{..} = do
                 arrayMap \kx -> do
                     val <- safeCast <$> deref (moments ! kx)
 
-                    var' <- deref var
-                    let d = val - avg'
-                    store var $ var' + (d * d)
-
                     var_' <- deref var_
                     let d_ = val - avg_
                     store var_ $ var_' + (d_ * d_)
-
-                var' <- (/ avg') . (/ n) <$> deref var
-                variance' <- deref variance
-                store variance $ average 0.1 variance' var'
-                variance'' <- deref variance
 
                 var_' <- (/ avg_) <$> deref var_
 
