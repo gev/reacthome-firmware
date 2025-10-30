@@ -19,8 +19,6 @@ data Touch = Touch
     { port :: GPIO_PERIPH
     , pin :: GPIO_PIN
     , timer :: Timer
-    , threshold :: IFloat
-    , sum :: Value IFloat
     , avg :: Value IFloat
     , avg0 :: Value IFloat
     , avg1 :: Value IFloat
@@ -40,12 +38,11 @@ mkTouch ::
     RCU_PERIPH ->
     IFloat ->
     m Touch
-mkTouch port pin rcuPin threshold = do
+mkTouch port pin rcuPin _ = do
     timer <- cfg_timer_14 84_000_000 0xffff_ffff
 
     let name = symbol port <> "_" <> symbol pin
 
-    sum <- value ("touch_sum" <> name) 0
     avg <- value ("touch_avg" <> name) 0
     avg0 <- value ("touch_avg0" <> name) 0
     avg1 <- value ("touch_avg1" <> name) 0
@@ -67,8 +64,6 @@ mkTouch port pin rcuPin threshold = do
                 { port
                 , pin
                 , timer
-                , threshold
-                , sum
                 , avg
                 , avg0
                 , avg1
@@ -96,19 +91,21 @@ checkCalibration Touch{..} = do
     var0' <- deref var0
     var1' <- deref var1
     when (var0' >? 0 .&& var1' >? 0) do
+        let d = var1' / var0' * (-100)
         ifte_
-            (var1' / var0' >? 1.5)
+            (d >? -1000)
+            do store debugVal d
+            do store debugVal (-1000)
+
+        ifte_
+            (var1' >? var0')
             do
                 store shouldCalibrate false
             do
-                store var0 0
-                store var1 0
-
-    shouldCalibrate' <- deref shouldCalibrate
-    ifte_
-        shouldCalibrate'
-        do store debugVal 100
-        do store debugVal 0
+                avg1' <- deref avg1
+                store avg0 avg1'
+                store avg avg1'
+                store var0 var1'
 
 modePort :: GPIO_PERIPH -> GPIO_PIN -> GPIO_MODE -> Ivory eff ()
 modePort gpio pin mode = do
@@ -133,6 +130,8 @@ runMeasurement Touch{..} = do
     resetBit port pin
 
     avg' <- deref avg
+    avg0' <- deref avg0
+    avg1' <- deref avg1
 
     start' <- deref start
     ifte_
@@ -146,32 +145,35 @@ runMeasurement Touch{..} = do
             store debugVal $ 100 * var''
 
             when (var'' >? 0.4) do
-                shouldCalibrate' <- deref shouldCalibrate
-                when (iNot shouldCalibrate') do
-                    store stateTouch true
-                avg1' <- deref avg1
-                store avg1 $ average 0.01 avg1' moment
-                avg1'' <- deref avg1
-                var1' <- deref var1
-                let d1 = var1' - avg1''
-                store var1 $ average 0.01 var1' $ d1 * d1
+                store stateTouch true
 
             when (var'' <? 0.2) do
                 store stateTouch false
-                avg0' <- deref avg0
-                store avg0 $ average 0.01 avg0' moment
-                avg0'' <- deref avg0
-                var0' <- deref var0
-                let d0 = var0' - avg0''
-                store var0 $ average 0.01 var0' $ d0 * d0
 
             stateTouch' <- deref stateTouch
+            ifte_
+                stateTouch'
+                do
+                    store avg1 $ average 0.0001 avg1' moment
+                    avg1'' <- deref avg1
+                    var1' <- deref var1
+                    let d1 = moment - avg1''
+                    store var1 $ average 0.01 var1' $ d1 * d1
+                do
+                    store avg0 $ average 0.0001 avg0' moment
+                    avg0'' <- deref avg0
+                    var0' <- deref var0
+                    let d0 = moment - avg0''
+                    store var0 $ average 0.001 var0' $ d0 * d0
 
             shouldCalibrate' <- deref shouldCalibrate
             when (iNot stateTouch' .|| shouldCalibrate') do
                 store avg $ average 0.0001 avg' moment
         do
-            store avg $ average 0.001 avg' moment
+            let a = average 0.001 avg' moment
+            store avg a
+            store avg0 a
+            store avg1 a
 
 average :: IFloat -> IFloat -> IFloat -> IFloat
 average alpha a b =
