@@ -155,7 +155,7 @@ runMeasurement Touch{..} = do
             store debugVal $ 100 * var''
 
             ifte_
-                (var'' >? 0.4)
+                (var'' >? 0.5)
                 do
                     counter' <- deref counter
                     store counter $ counter' + 1
