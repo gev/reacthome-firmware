@@ -143,7 +143,7 @@ runMeasurement Touch{..} = do
             stateTouch' <- deref stateTouch
             shouldCalibrate' <- deref shouldCalibrate
             when (iNot stateTouch' .|| shouldCalibrate') do
-                store avg $ average 0.0001 avg' moment
+                store avg $ average 0.005 avg' moment
 
             avg'' <- deref avg
 
