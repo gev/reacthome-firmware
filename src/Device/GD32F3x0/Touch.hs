@@ -130,14 +130,25 @@ runMeasurement Touch{..} = do
     avg0' <- deref avg0
     avg1' <- deref avg1
 
+    let diff = abs $ moment - avg1'
+
     start' <- deref start
+
     ifte_
-        (start' .&& moment >? 0 .&& avg' >? 0)
+        (start' .&& moment >? 0 .&& avg' >? 0 .&& diff <? 30)
         do
             stateTouch' <- deref stateTouch
             shouldCalibrate' <- deref shouldCalibrate
             when (iNot stateTouch' .|| shouldCalibrate') do
                 store avg $ average 0.005 avg' moment
+
+            avg'' <- deref avg
+            let d = moment - avg''
+            var' <- deref var
+            store var $ average 0.01 var' $ d * d
+            var'' <- (/ avg'') <$> deref var
+
+            store debugVal $ 100 * var''
 
             ifte_
                 stateTouch'
@@ -153,14 +164,6 @@ runMeasurement Touch{..} = do
                     var0' <- deref var0
                     let d0 = moment - avg0''
                     store var0 $ average 0.001 var0' $ d0 * d0
-
-            avg'' <- deref avg
-            let d = moment - avg''
-            var' <- deref var
-            store var $ average 0.01 var' $ d * d
-            var'' <- (/ avg'') <$> deref var
-
-            store debugVal $ 100 * var''
 
             ifte_
                 (var'' >? 0.5)
