@@ -93,7 +93,8 @@ checkCalibration :: Touch -> Ivory eff ()
 checkCalibration Touch{..} = do
     var0' <- deref var0
     var1' <- deref var1
-    when (var0' >? 0 .&& var1' >? 0) do
+    shouldCalibrate' <- deref shouldCalibrate
+    when (shouldCalibrate' .&& var0' >? 0 .&& var1' >? 0) do
         ifte_
             (var1' >? var0')
             do
@@ -130,25 +131,38 @@ runMeasurement Touch{..} = do
     avg0' <- deref avg0
     avg1' <- deref avg1
 
-    let diff = abs $ moment - avg1'
+    let diff = abs $ moment - avg'
+
+    -- store debugVal diff
 
     start' <- deref start
 
     ifte_
-        (start' .&& moment >? 0 .&& avg' >? 0 .&& diff <? 30)
+        (start' .&& moment >? 0 .&& avg' >? 0 .&& diff <? 60)
         do
-            stateTouch' <- deref stateTouch
-            shouldCalibrate' <- deref shouldCalibrate
-            when (iNot stateTouch' .|| shouldCalibrate') do
-                store avg $ average 0.005 avg' moment
-
-            avg'' <- deref avg
-            let d = moment - avg''
             var' <- deref var
-            store var $ average 0.01 var' $ d * d
-            var'' <- (/ avg'') <$> deref var
+            store var $ average 0.01 var' $ diff * diff
+            var'' <- (/ avg') <$> deref var
 
             store debugVal $ 100 * var''
+
+            ifte_
+                (var'' >? 0.5)
+                do
+                    counter' <- deref counter
+                    store counter $ counter' + 1
+                    counter'' <- deref counter
+                    when (counter'' ==? 30) do
+                        store stateTouch true
+                do
+                    store counter 0
+
+            -- store debugVal . safeCast =<< deref counter
+
+            when (var'' <? 0.2) do
+                store stateTouch false
+
+            stateTouch' <- deref stateTouch
 
             ifte_
                 stateTouch'
@@ -165,19 +179,9 @@ runMeasurement Touch{..} = do
                     let d0 = moment - avg0''
                     store var0 $ average 0.001 var0' $ d0 * d0
 
-            ifte_
-                (var'' >? 0.5)
-                do
-                    counter' <- deref counter
-                    store counter $ counter' + 1
-                    counter'' <- deref counter
-                    when (counter'' ==? 50) do
-                        store stateTouch true
-                do
-                    store counter 0
-
-            when (var'' <? 0.2) do
-                store stateTouch false
+            shouldCalibrate' <- deref shouldCalibrate
+            when (iNot stateTouch' .|| shouldCalibrate') do
+                store avg $ average 0.0001 avg' moment
         do
             let a = average 0.001 avg' moment
             store avg a
