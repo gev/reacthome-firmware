@@ -138,7 +138,7 @@ runMeasurement Touch{..} = do
     start' <- deref start
 
     ifte_
-        (start' .&& moment >? 0 .&& avg' >? 0 .&& diff <? 50)
+        (start' .&& moment >? 0 .&& avg' >? 0 .&& diff <? 80)
         do
             var' <- deref var
             store var $ average 0.01 var' $ diff * diff
