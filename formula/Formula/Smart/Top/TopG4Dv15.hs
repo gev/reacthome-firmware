@@ -18,7 +18,7 @@ smartTopG4Dv15 =
     Formula
         { name = "smart_top_g4d_v15"
         , model = deviceTypeSmartTopG4D
-        , version = (4, 8)
+        , version = (4, 9)
         , shouldInit = false
         , mcu = gd32f330k8u6
         , quartzFrequency = 8_000_000
