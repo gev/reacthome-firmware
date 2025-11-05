@@ -178,6 +178,7 @@ executable reacthome-firmware
     Formula.Smart.Top.TopA4TD
     Formula.Smart.Top.TopA6P
     Formula.Smart.Top.TopA6T
+    Formula.Smart.Top.TopClimate
     Formula.Smart.Top.TopG2
     Formula.Smart.Top.TopG4
     Formula.Smart.Top.TopG4D
@@ -207,6 +208,7 @@ executable reacthome-firmware
     Implementation.Smart.TopA4TD
     Implementation.Smart.TopA6T
     Implementation.Smart.TopAP
+    Implementation.Smart.TopClimate
     Implementation.Smart.TopG2
     Implementation.Smart.TopG4
     Implementation.Smart.TopG6
