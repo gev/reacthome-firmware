@@ -119,7 +119,7 @@ runMeasurement Touch{..} = do
     disableIRQ
     modePort port pin gpio_mode_input
     I.resetCounter timer
-    forever do
+    times (120 :: Ix 121) \_ -> do
         isMeasured <- getInputBit port pin
         when isMeasured breakOut
     moment <- safeCast <$> I.getCounter timer
