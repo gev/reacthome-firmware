@@ -198,7 +198,7 @@ average alpha a b =
 
 aluminium = I.Material {
       maxMoment = 1800
-    , maxDiff = 1400
+    , maxDiff = 1800
     , thresholdUp = 300
     , thresholdDown = 50
 }
