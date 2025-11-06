@@ -12,6 +12,7 @@ import Feature.Touches (touches)
 import Implementation.Smart.TopA6Tv5 (topA6Tv5)
 import Ivory.Language
 import Transport.UART.RBUS
+import Device.GD32F3x0.Touch (aluminium)
 
 smartTopA6Tv5 :: Formula GD32F3x0
 smartTopA6Tv5 =
@@ -26,7 +27,7 @@ smartTopA6Tv5 =
         , implementation =
             topA6Tv5
                 (rbusTop uart_1)
-                ( touches 200 $
+                ( touches aluminium $
                     touch_pa0
                         :> touch_pb1
                         :> touch_pa1

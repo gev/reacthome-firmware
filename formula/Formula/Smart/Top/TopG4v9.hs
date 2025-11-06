@@ -12,6 +12,7 @@ import Feature.Touches (touches)
 import Implementation.Smart.TopG4v9 (topG4v9)
 import Ivory.Language
 import Transport.UART.RBUS
+import Device.GD32F3x0.Touch (glass)
 
 smartTopG4v9 :: Formula GD32F3x0
 smartTopG4v9 =
@@ -26,7 +27,7 @@ smartTopG4v9 =
             , implementation =
                   topG4v9
                         (rbusTop uart_1)
-                        ( touches 16.5 $
+                        ( touches glass $
                               touch_pa0
                                     :> touch_pb1
                                     :> touch_pa6

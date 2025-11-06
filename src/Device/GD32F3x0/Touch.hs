@@ -19,6 +19,7 @@ data Touch = Touch
     { port :: GPIO_PERIPH
     , pin :: GPIO_PIN
     , timer :: Timer
+    , material :: I.Material
     , avg :: Value IFloat
     , avg0 :: Value IFloat
     , avg1 :: Value IFloat
@@ -37,9 +38,9 @@ mkTouch ::
     GPIO_PERIPH ->
     GPIO_PIN ->
     RCU_PERIPH ->
-    IFloat ->
+    I.Material ->
     m Touch
-mkTouch port pin rcuPin _ = do
+mkTouch port pin rcuPin material = do
     timer <- cfg_timer_14 84_000_000 0xffff_ffff
 
     let name = symbol port <> "_" <> symbol pin
@@ -66,6 +67,7 @@ mkTouch port pin rcuPin _ = do
                 { port
                 , pin
                 , timer
+                , material
                 , avg
                 , avg0
                 , avg1
@@ -119,9 +121,10 @@ runMeasurement Touch{..} = do
     disableIRQ
     modePort port pin gpio_mode_input
     I.resetCounter timer
-    times (120 :: Ix 121) \_ -> do
+    forever do
         isMeasured <- getInputBit port pin
-        when isMeasured breakOut
+        moment <- I.getCounter timer
+        when (isMeasured .|| moment >? I.maxMoment material) breakOut
     moment <- safeCast <$> I.getCounter timer
     enableIRQ
     modePort port pin gpio_mode_output
@@ -133,21 +136,21 @@ runMeasurement Touch{..} = do
 
     let diff = abs $ moment - avg'
 
-    -- store debugVal diff
+    store debugVal moment
 
     start' <- deref start
 
     ifte_
-        (start' .&& moment >? 0 .&& avg' >? 0 .&& diff <? 80)
+        (start' .&& moment >? 0 .&& avg' >? 0 .&& diff <? I.maxDiff material)
         do
             var' <- deref var
             store var $ average 0.01 var' $ diff * diff
             var'' <- (/ avg') <$> deref var
 
-            store debugVal $ 100 * var''
+            -- store debugVal $ 100 * var''
 
             ifte_
-                (var'' >? 0.5 .&& moment >? avg')
+                (var'' >? I.thresholdUp material .&& moment >? avg')
                 do
                     counter' <- deref counter
                     store counter $ counter' + 1
@@ -159,7 +162,7 @@ runMeasurement Touch{..} = do
 
             -- store debugVal . safeCast =<< deref counter
 
-            when (var'' <? 0.2) do
+            when (var'' <? I.thresholdDown material) do
                 store stateTouch false
 
             stateTouch' <- deref stateTouch
@@ -191,3 +194,18 @@ runMeasurement Touch{..} = do
 average :: IFloat -> IFloat -> IFloat -> IFloat
 average alpha a b =
     a * (1 - alpha) + b * alpha
+
+
+aluminium = I.Material {
+      maxMoment = 1800
+    , maxDiff = 1400
+    , thresholdUp = 300
+    , thresholdDown = 50
+}
+
+glass = I.Material {
+      maxMoment = 1800
+    , maxDiff = 80
+    , thresholdUp = 0.5
+    , thresholdDown = 0.2
+}

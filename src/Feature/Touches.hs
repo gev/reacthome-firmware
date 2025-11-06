@@ -47,8 +47,8 @@ touches ::
     , I.Touch to
     , KnownNat n, KnownNat (LogBuffSize n)
     ) =>
-    IFloat ->
-    List n (p -> IFloat -> m to) ->
+    I.Material ->
+    List n (p -> I.Material -> m to) ->
     tr ->
     m (Touches n)
 touches threshold touches' transport = do
@@ -76,7 +76,7 @@ touches threshold touches' transport = do
                 , transmit = T.transmitBuffer transport
                 }
 
-    -- addTask $ delay 100 "touches_log" $ sendTimeTask touches
+    addTask $ delay 100 "touches_log" $ sendTimeTask touches
     addTask $ delay 10 "touches_manage" $ manageTouches touches
     addTask $ yeld "touches_sync" $ syncTouches touches
 
