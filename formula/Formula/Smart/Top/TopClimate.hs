@@ -15,7 +15,7 @@ smartTopClimate =
     Formula
         { name = "smart_top_climate"
         , model = deviceTypeSmartTopClimate
-        , version = (4, 8)
+        , version = (4, 10)
         , shouldInit = false
         , mcu = gd32f330k8u6
         , quartzFrequency = 8_000_000
