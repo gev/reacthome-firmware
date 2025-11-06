@@ -158,7 +158,7 @@ topG4Dv15 transport' touches' vibro' sht21' display' etc' = do
             ]
             transport
             etc
-            (replicate 64 true)
+            (replicate 8 true)
 
     ledsPerButton <-
         values

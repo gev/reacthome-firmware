@@ -167,7 +167,7 @@ topA4TD transport' dinputs' vibro' touch' sht21' display' etc' = do
             ]
             transport
             etc
-            (replicate 62 true)
+            (replicate 6 true)
 
     ledsPerButton <-
         values
