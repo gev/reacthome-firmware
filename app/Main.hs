@@ -58,16 +58,15 @@ main = do
       -- , smartTopA4T
       smartTopA4Tv5
     , -- , smartTopA4TD
-      -- smartTopA4TDv5
-     -- , smartTopA6P
+      smartTopA4TDv5
+    , -- , smartTopA6P
       -- , smartTopA6T
       smartTopA6Tv5
     , -- , smartTopG2
       -- , smartTopG4
       -- , smartTopG4D
      smartTopG4Dv15
-    ,
-     -- , smartTopG6
+    , -- , smartTopG6
       smartTopG2v9
     , smartTopG4v9
     , smartTopG6v7
