@@ -29,6 +29,7 @@ import Formula.Smart.Top.TopG6
 import Formula.Smart.Top.TopG6I
 import Formula.Smart.Top.TopG6IT
 import Formula.Soundbox
+import Formula.Smart.Top.TopClimate
 
 main :: IO ()
 main = do
@@ -53,6 +54,7 @@ main = do
         , smartTopA4TD
         , smartTopA6P
         , smartTopA6T
+        , smartTopClimate
         , smartTopG2
         , smartTopG4
         , smartTopG4D
