@@ -86,7 +86,7 @@ rbus uart' speed = do
     --}
     rbus <- mkRbus name uart speed $ makeDispatcher implementation
 
-    addTask $ delay 1_000 (name <> "_discovery") $ discoveryTask rbus
+    addTask $ delay 10_000 (name <> "_discovery") $ discoveryTask rbus
 
     pure rbus
 
