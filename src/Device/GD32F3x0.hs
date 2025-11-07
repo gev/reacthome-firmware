@@ -30,6 +30,7 @@ import GHC.TypeNats
 import Interface.GPIO.Port
 import Interface.MCU
 import Interface.OneWire
+import Interface.Touch (Material)
 import Ivory.Language
 import Support.Device.GD32F3x0
 import Support.Device.GD32F3x0.DMA
@@ -54,7 +55,7 @@ type PWM' = forall m. (MonadState Context m) => Uint32 -> Uint32 -> m PWM
 type NeoPixel' = forall m. (MonadState Context m) => m NeoPixel
 type EXTI' = forall m. (MonadState Context m) => m EXTI
 type OneWire' = forall m. (MonadState Context m) => m OpenDrain -> m OneWire
-type Touch' = forall m. (MonadState Context m) => IFloat -> m Touch
+type Touch' = forall m. (MonadState Context m) => Material -> m Touch
 
 data GD32F3x0 = GD32F3x0
     { uart_0 :: UART'

@@ -23,12 +23,14 @@ import Interface.Touch qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 
+type LogBuffSize n = n * 2 + 2 
+
 data Touches n = forall to. (I.Touch to) => Touches
     { getTouches :: List n to
     , getDInputs :: DI.DInputs n
     , currentTouch :: Value (Ix n)
     , indexTouch :: Value Uint8
-    , buf :: Buffer 14 Uint8
+    , buf :: Buffer (LogBuffSize n) Uint8
     , transmit ::
         forall l.
         (KnownNat l) =>
@@ -43,10 +45,10 @@ touches ::
     , MonadReader (D.Domain p c) m
     , T.Transport tr
     , I.Touch to
-    , KnownNat n
+    , KnownNat n, KnownNat (LogBuffSize n)
     ) =>
-    IFloat ->
-    List n (p -> IFloat -> m to) ->
+    I.Material ->
+    List n (p -> I.Material -> m to) ->
     tr ->
     m (Touches n)
 touches threshold touches' transport = do
@@ -74,7 +76,7 @@ touches threshold touches' transport = do
                 , transmit = T.transmitBuffer transport
                 }
 
-    -- addTask $ delay 50 "touches_log" $ sendTimeTask touches
+    -- addTask $ delay 100 "touches_log" $ sendTimeTask touches
     addTask $ delay 10 "touches_manage" $ manageTouches touches
     addTask $ yeld "touches_sync" $ syncTouches touches
 
@@ -83,7 +85,7 @@ touches threshold touches' transport = do
     pure touches
 
 sendTimeTask ::
-    (KnownNat n) =>
+    (KnownNat n, KnownNat (LogBuffSize n)) =>
     Touches n ->
     Ivory (ProcEffects s ()) ()
 sendTimeTask touches@Touches{..} = do

@@ -1,4 +1,4 @@
-module Implementation.Smart.TopG6I where
+module Implementation.Smart.TopA4TDv5 where
 
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
@@ -6,11 +6,12 @@ import Core.Actions
 import Core.Context
 import Core.Controller
 import Core.Domain qualified as D
-import Core.Handler
+import Core.Handler (Handler, addHandler)
 import Core.Transport
-import Data.Display.Canvas1D (Canvas1DSize)
+import Data.Matrix
 import Data.Value
 import Endpoint.DInputs as E (DInputs)
+import Feature.Touches qualified as FT
 import Feature.Sht21 (SHT21)
 import Feature.Smart.Top.Buttons
 import Feature.Smart.Top.LEDs (
@@ -26,14 +27,11 @@ import Feature.Smart.Top.LEDs (
     sendLEDs,
     updateLeds,
  )
-
-import Data.Matrix
 import Feature.Smart.Top.Vibro (
     Vibro,
     onVibro,
     sendVibro,
  )
-import Feature.Touches qualified as FT
 import GHC.TypeNats
 import Interface.Display (Display, Render (Render))
 import Interface.Flash
@@ -43,20 +41,37 @@ import Ivory.Stdlib
 
 data Top n = Top
     { touches :: FT.Touches n
-    , leds :: LEDs 4 12
-    , buttons :: Buttons n 4 12
+    , leds :: LEDs 12 41
+    , buttons :: Buttons n 12 41
     , vibro :: Vibro n
     , sht21 :: SHT21
     }
 
-topG6I ::
+{- The LEDs configuration:
+
+                            0
+
+        5                                         1
+
+    6              15          22          30   
+    7     12    14    19    21    26    29    34     35 40
+    8  10          16          23          31        36 39
+          11    13    18    20    25    28    33     37 38
+    9              17          24    27    32   
+
+        4                                         2
+
+                            3
+-}
+
+topA4TDv5 ::
     ( MonadState Context m
     , MonadReader (D.Domain p c) m
+    , Handler (Render 123) d
     , Display d
-    , Handler (Render (Canvas1DSize 12)) d
     , LazyTransport t
-    , Flash f
     , KnownNat n
+    , Flash f
     ) =>
     m t ->
     (t -> m (FT.Touches n)) ->
@@ -65,36 +80,79 @@ topG6I ::
     (p -> m d) ->
     (p -> f) ->
     m (Top n)
-topG6I transport' touches' vibro' sht21' display' etc' = do
+topA4TDv5 transport' touches' vibro' sht21' display' etc' = do
     transport <- transport'
     mcu <- asks D.mcu
     display <- display' $ peripherals mcu
-    let etc = etc' $ peripherals mcu
     touches <- touches' transport
+
     frameBuffer <- values' "top_frame_buffer" 0
+
+    let etc = etc' $ peripherals mcu
+
+    vibro <- vibro' (FT.getDInputs touches) transport etc
 
     leds <-
         mkLeds
             frameBuffer
-            [10, 11, 0, 1, 8, 9, 2, 3, 7, 6, 5, 4]
+            [ 0
+            , 5
+            , 1
+            , 4
+            , 2
+            , 3
+            , 6
+            , 7
+            , 8
+            , 9
+            , 35
+            , 40
+            , 36
+            , 39
+            , 37
+            , 38
+            , 15
+            , 22
+            , 30 
+            , 12
+            , 14
+            , 19
+            , 21
+            , 26
+            , 29
+            , 34
+            , 10
+            , 16
+            , 23
+            , 31
+            , 11
+            , 13
+            , 18
+            , 20
+            , 25
+            , 28
+            , 33
+            , 17
+            , 24
+            , 27
+            , 32
+            ]
             transport
             etc
-            (replicate 12 true)
+            (replicate 6 true)
 
     ledsPerButton <-
         values
             "leds_per_button"
-            [2, 2, 2, 2, 2, 2]
+            [2, 2, 2, 2]
 
     ledsOfButton <-
         matrix
             "leds_of_button"
             [ [0, 1, 0, 0]
-            , [2, 3, 0, 0]
+            , [0, 2, 0, 0]
+            , [3, 5, 0, 0]
             , [4, 5, 0, 0]
-            , [6, 7, 0, 0]
-            , [8, 9, 0, 0]
-            , [10, 11, 0, 0]
             ]
 
     buttons <-
@@ -104,13 +162,17 @@ topG6I transport' touches' vibro' sht21' display' etc' = do
             ledsPerButton
             ledsOfButton
             transport
+
     sht21 <- sht21' transport
 
-    vibro <-
-        vibro'
-            (FT.getDInputs touches)
-            transport
-            etc
+    let top =
+            Top
+                { touches
+                , leds
+                , vibro
+                , buttons
+                , sht21
+                }
 
     addHandler $
         Render
@@ -122,7 +184,7 @@ topG6I transport' touches' vibro' sht21' display' etc' = do
                 updateButtons buttons
                 render leds
 
-    pure Top{touches, leds, vibro, buttons, sht21}
+    pure top
 
 onGetState :: (KnownNat n) => Top n -> Ivory (ProcEffects s t) ()
 onGetState Top{..} = do

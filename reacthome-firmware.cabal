@@ -176,16 +176,21 @@ executable reacthome-firmware
     Formula.Smart.Top.TopA4P
     Formula.Smart.Top.TopA4T
     Formula.Smart.Top.TopA4TD
+    Formula.Smart.Top.TopA4TDv5
+    Formula.Smart.Top.TopA4Tv5
     Formula.Smart.Top.TopA6P
     Formula.Smart.Top.TopA6T
+    Formula.Smart.Top.TopA6Tv5
     Formula.Smart.Top.TopClimate
     Formula.Smart.Top.TopG2
+    Formula.Smart.Top.TopG2v9
     Formula.Smart.Top.TopG4
     Formula.Smart.Top.TopG4D
+    Formula.Smart.Top.TopG4Dv15
+    Formula.Smart.Top.TopG4v9
     Formula.Smart.Top.TopG6
-    Formula.Smart.Top.TopG6I
-    Formula.Smart.Top.TopG6IT
-    Formula.Smart.Top.TopG6Test
+    Formula.Smart.Top.TopG6v7
+    Formula.Smart.Top.TopG6v9
     Formula.Soundbox
     Formula.UdpEcho450
     Implementation.Blink
@@ -206,14 +211,19 @@ executable reacthome-firmware
     Implementation.Smart.TopA4P
     Implementation.Smart.TopA4T
     Implementation.Smart.TopA4TD
+    Implementation.Smart.TopA4TDv5
+    Implementation.Smart.TopA4Tv5
     Implementation.Smart.TopA6T
+    Implementation.Smart.TopA6Tv5
     Implementation.Smart.TopAP
     Implementation.Smart.TopClimate
     Implementation.Smart.TopG2
+    Implementation.Smart.TopG2v9
     Implementation.Smart.TopG4
+    Implementation.Smart.TopG4Dv15
+    Implementation.Smart.TopG4v9
     Implementation.Smart.TopG6
-    Implementation.Smart.TopG6I
-    Implementation.Smart.TopG6Test
+    Implementation.Smart.TopG6v9
     Implementation.Smart.TopGD
     Implementation.Soundbox
     Implementation.UdpEcho

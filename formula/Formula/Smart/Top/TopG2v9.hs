@@ -1,6 +1,6 @@
 {-# LANGUAGE NumericUnderscores #-}
 
-module Formula.Smart.Top.TopG6I where
+module Formula.Smart.Top.TopG2v9 where
 
 import Core.Formula
 import Core.Models
@@ -9,30 +9,27 @@ import Device.GD32F3x0
 import Feature.Sht21 (sht21)
 import Feature.Smart.Top.Vibro (vibro)
 import Feature.Touches (touches)
-import Implementation.Smart.TopG6I (topG6I)
+import Implementation.Smart.TopG2v9 (topG2v9)
 import Ivory.Language
 import Transport.UART.RBUS
+import Device.GD32F3x0.Touch (glass)
 
-smartTopG6I :: Formula GD32F3x0
-smartTopG6I =
+smartTopG2v9 :: Formula GD32F3x0
+smartTopG2v9 =
       Formula
-            { name = "smart_top_g6i"
-            , model = deviceTypeSmartTopG6
-            , version = (4, 8)
+            { name = "smart_top_g2_v9"
+            , model = deviceTypeSmartTopG2
+            , version = (4, 12)
             , shouldInit = false
             , mcu = gd32f330k8u6
             , quartzFrequency = 8_000_000
             , systemFrequency = 84_000_000
             , implementation =
-                  topG6I
+                  topG2v9
                         (rbusTop uart_1)
-                        ( touches 15 $
-                              touch_pa0
-                                    :> touch_pb1
-                                    :> touch_pa1
+                        ( touches glass $
+                              touch_pa1
                                     :> touch_pb0
-                                    :> touch_pa6
-                                    :> touch_pa7
                                     :> Nil
                         )
                         (vibro out_pb_5)
