@@ -20,6 +20,14 @@ module Support.Device.GD32F3x0.Timer (
     ocnidlestate,
     timerOcParam,
     timerOcDefaultParam,
+    TIMER_IC_PARAM_STRUCT,
+    TIMER_IC_PARAM,
+    icpolarity,
+    icselection, 
+    icprescaler,
+    icfilter,
+    timerIcParam,
+    timerIcDefaultParam,
     TIMER_PERIPH,
     timer0,
     timer1,
@@ -67,6 +75,17 @@ module Support.Device.GD32F3x0.Timer (
     timer_ocn_idle_state_low,
     TIMER_DMA_SOURCE,
     timer_dma_upd,
+    TIMER_IC_POLARITY,
+    timer_ic_polarity_rising,
+    TIMER_IC_SELECTION,
+    timer_ic_selection_directti,
+    TIMER_IC_PSC,
+    timer_ic_psc_div1,
+    TIMER_FLAG,
+    timer_flag_ch0,
+    timer_flag_ch1,
+    timer_flag_ch2,
+    timer_flag_ch3,
     deinitTimer,
     enableTimer,
     enableTimerInterrupt,
@@ -86,6 +105,10 @@ module Support.Device.GD32F3x0.Timer (
     ch1cv,
     ch2cv,
     ch3cv,
+    clearTimerFlag,
+    getTimerFlag,
+    readTimerChannelRegister,
+    configTimerInputCapture,
     inclTimer,
 ) where
 
@@ -149,6 +172,33 @@ timerOcDefaultParam =
     , ocidlestate .= ival timer_oc_idle_state_high
     , ocnidlestate .= ival timer_ocn_idle_state_low
     ]
+
+
+type TIMER_IC_PARAM_STRUCT = "timer_ic_parameter_struct"
+type TIMER_IC_PARAM s = Ref s (Struct TIMER_IC_PARAM_STRUCT)
+
+[ivory|
+    struct timer_ic_parameter_struct
+        { icpolarity :: Stored TIMER_IC_POLARITY
+        ; icselection :: Stored TIMER_IC_SELECTION
+        ; icprescaler :: Stored TIMER_IC_PSC
+        ; icfilter :: Stored Uint16
+        }
+|]
+
+timerIcParam ::
+    [InitStruct TIMER_IC_PARAM_STRUCT] ->
+    Init (Struct TIMER_IC_PARAM_STRUCT)
+timerIcParam p =
+    istruct $ p <+> timerIcDefaultParam
+
+timerIcDefaultParam =
+    [ icpolarity .= ival timer_ic_polarity_rising
+    , icselection .= ival timer_ic_selection_directti
+    , icprescaler .= ival timer_ic_psc_div1
+    , icfilter .= ival 0
+    ]
+
 
 newtype TIMER_PERIPH = TIMER_PERIPH Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
@@ -245,6 +295,30 @@ newtype TIMER_DMA_SOURCE = TIMER_DMA_SOURCE Uint16
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
 
 timer_dma_upd = TIMER_DMA_SOURCE $ ext "TIMER_DMA_UPD"
+
+newtype TIMER_IC_POLARITY = TIMER_IC_POLARITY Uint16
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
+
+timer_ic_polarity_rising = TIMER_IC_POLARITY $ ext "TIMER_IC_POLARITY_RISING"
+
+newtype TIMER_IC_SELECTION = TIMER_IC_SELECTION Uint16
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
+
+timer_ic_selection_directti = TIMER_IC_SELECTION $ ext "TIMER_IC_SELECTION_DIRECTTI"
+
+newtype TIMER_IC_PSC = TIMER_IC_PSC Uint16
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
+
+timer_ic_psc_div1 = TIMER_IC_PSC $ ext "TIMER_IC_PSC_DIV1"
+
+newtype TIMER_FLAG = TIMER_FLAG Uint32
+    deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
+
+timer_flag_ch0 = TIMER_FLAG $ ext "TIMER_FLAG_CH0"
+timer_flag_ch1 = TIMER_FLAG $ ext "TIMER_FLAG_CH1"
+timer_flag_ch2 = TIMER_FLAG $ ext "TIMER_FLAG_CH2"
+timer_flag_ch3 = TIMER_FLAG $ ext "TIMER_FLAG_CH3"
+
 
 deinitTimer :: TIMER_PERIPH -> Ivory eff ()
 deinitTimer = call_ timer_deinit
@@ -363,6 +437,31 @@ ch3cv = call timer_ch3cv
 timer_ch3cv :: Def ('[TIMER_PERIPH] :-> Uint32)
 timer_ch3cv = fun "(uint32_t) &TIMER_CH3CV"
 
+clearTimerFlag :: TIMER_PERIPH -> TIMER_FLAG -> Ivory eff ()
+clearTimerFlag = call_ timer_flag_clear
+
+timer_flag_clear :: Def ('[TIMER_PERIPH, TIMER_FLAG] :-> ())
+timer_flag_clear = fun "timer_flag_clear"
+
+getTimerFlag :: TIMER_PERIPH -> TIMER_FLAG -> Ivory eff IBool
+getTimerFlag = call timer_flag_get
+
+timer_flag_get :: Def ('[TIMER_PERIPH, TIMER_FLAG] :-> IBool)
+timer_flag_get = fun "timer_flag_get"
+
+readTimerChannelRegister :: TIMER_PERIPH -> TIMER_CHANNEL -> Ivory eff Uint32
+readTimerChannelRegister = call timer_channel_capture_value_register_read
+
+timer_channel_capture_value_register_read :: Def ('[TIMER_PERIPH, TIMER_CHANNEL] :-> Uint32)
+timer_channel_capture_value_register_read = fun "timer_channel_capture_value_register_read"
+
+configTimerInputCapture :: TIMER_PERIPH -> TIMER_CHANNEL -> TIMER_IC_PARAM s -> Ivory eff ()
+configTimerInputCapture = call_ timer_input_capture_config
+
+timer_input_capture_config :: Def ('[TIMER_PERIPH, TIMER_CHANNEL, TIMER_IC_PARAM s] :-> ())
+timer_input_capture_config = fun "timer_input_capture_config"
+
+
 inclTimer :: ModuleDef
 inclTimer = do
     inclSym timer0
@@ -411,6 +510,16 @@ inclTimer = do
 
     inclSym timer_dma_upd
 
+    inclSym timer_ic_polarity_rising
+    inclSym timer_ic_selection_directti
+    inclSym timer_ic_psc_div1
+
+    inclSym timer_flag_ch0
+    inclSym timer_flag_ch1
+    inclSym timer_flag_ch2
+    inclSym timer_flag_ch3
+
+
     incl timer_interrupt_flag_get
     incl timer_interrupt_flag_clear
     incl timer_interrupt_enable
@@ -430,3 +539,8 @@ inclTimer = do
     incl timer_ch1cv
     incl timer_ch2cv
     incl timer_ch3cv
+    incl timer_flag_clear
+    incl timer_flag_get
+    incl timer_channel_capture_value_register_read
+    incl timer_input_capture_config
+
