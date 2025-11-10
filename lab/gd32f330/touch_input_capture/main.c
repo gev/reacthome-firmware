@@ -35,8 +35,8 @@ int main() {
     while (1) {
         touch_af();
         timer_counter_value_config(TIMER2, 0);
-        timer_flag_clear(TIMER2, TIMER_CH_2);
-        while (!timer_flag_get(TIMER2, TIMER_CH_2)) {
+        timer_flag_clear(TIMER2, TIMER_FLAG_CH2);
+        while (!timer_flag_get(TIMER2, TIMER_FLAG_CH2)) {
         }
         touch_reset();
         uint16_t val = timer_channel_capture_value_register_read(TIMER2, TIMER_CH_2);
