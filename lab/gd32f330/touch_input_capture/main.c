@@ -82,7 +82,7 @@ void init_timer(void) {
     timer_icinitpara.icfilter = 0x0;
     timer_input_capture_config(TIMER2, TIMER_CH_2, &timer_icinitpara);
 
-    timer_auto_reload_shadow_enable(TIMER2);
+    // timer_auto_reload_shadow_enable(TIMER2);
 
     timer_enable(TIMER2);
 }
