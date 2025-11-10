@@ -195,17 +195,18 @@ average :: IFloat -> IFloat -> IFloat -> IFloat
 average alpha a b =
     a * (1 - alpha) + b * alpha
 
+aluminum =
+    I.Material
+        { maxMoment = 1800
+        , maxDiff = 1800
+        , thresholdUp = 300
+        , thresholdDown = 50
+        }
 
-aluminium = I.Material {
-      maxMoment = 1800
-    , maxDiff = 1800
-    , thresholdUp = 300
-    , thresholdDown = 50
-}
-
-glass = I.Material {
-      maxMoment = 1800
-    , maxDiff = 80
-    , thresholdUp = 0.5
-    , thresholdDown = 0.2
-}
+glass =
+    I.Material
+        { maxMoment = 1800
+        , maxDiff = 80
+        , thresholdUp = 0.5
+        , thresholdDown = 0.2
+        }
