@@ -3,8 +3,7 @@ module Interface.Touch where
 import Ivory.Language
 
 data Material = Material
-    { maxMoment :: Uint32
-    , maxDiff :: IFloat
+    { maxDiff :: IFloat
     , thresholdUp :: IFloat
     , thresholdDown :: IFloat
     }
@@ -12,5 +11,3 @@ data Material = Material
 class Touch t where
     getDebug :: t -> Ivory eff IFloat
     getState :: t -> Ivory eff IBool
-    startMeasuring :: t -> Ivory eff ()
-    isMeasuring :: t -> Ivory eff IBool

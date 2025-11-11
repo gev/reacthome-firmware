@@ -79,23 +79,10 @@ touches threshold touches' transport = do
     -- addTask $ delay 100 "touches_log" $ sendTimeTask touches
     addTask $ delay 10 "touches_manage" $ manageTouches touches
     addTask $ yeld "touches_sync" $ syncTouches touches
-    addTask $ yeld "run_measurement_touch" $ runMeasurement touches
 
     addSync "touches" $ forceSyncTouches touches
 
     pure touches
-
-runMeasurement :: KnownNat n => Touches n -> Ivory (ProcEffects s ()) ()
-runMeasurement touches@Touches{..} = 
-    overSingleTouch touches \t i -> do
-        current <- fromIx <$> deref currentTouch
-        isMeasuring' <- I.isMeasuring t
-        when (current ==? fromIntegral i .&& isMeasuring' ==? false) do
-            store currentTouch $ toIx (current + 1)
-            overSingleTouch touches \t i -> do
-                current' <- fromIx <$> deref currentTouch
-                when (current' ==? fromIntegral i) do
-                    I.startMeasuring t
 
 sendTimeTask ::
     (KnownNat n, KnownNat (LogBuffSize n)) =>
