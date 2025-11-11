@@ -12,3 +12,5 @@ data Material = Material
 class Touch t where
     getDebug :: t -> Ivory eff IFloat
     getState :: t -> Ivory eff IBool
+    startMeasuring :: t -> Ivory eff ()
+    isMeasuring :: t -> Ivory eff IBool
