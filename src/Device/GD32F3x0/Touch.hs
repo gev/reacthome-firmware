@@ -146,10 +146,10 @@ instance I.Touch Touch where
 startMeasurement :: Touch -> Ivory eff ()
 startMeasurement Touch{..} = do
     store isMeasuring true
-    pinToAF port pin afPin
-    I.resetCounter timer
     let t = T.timer timer
     clearTimerFlag t timerFlag
+    pinToAF port pin afPin
+    I.resetCounter timer
 
 processingMeasurement :: Touch -> Ivory eff ()
 processingMeasurement Touch{..} = do
