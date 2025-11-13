@@ -14,6 +14,7 @@ import Ivory.Support (symbol)
 import Support.Device.GD32F3x0.GPIO
 import Support.Device.GD32F3x0.RCU
 import Support.Device.GD32F3x0.Timer
+import Data.Concurrent.Atomically
 
 data Touch = Touch
     { port :: GPIO_PERIPH
@@ -143,8 +144,9 @@ startMeasurement Touch{..} = do
     pinToGround port pin
     let t = T.timer timer
     clearTimerFlag t timerChannelFlag
-    pinToAF port pin afPin
-    store timestamp . castDefault =<< readCounter t
+    atomically do 
+        pinToAF port pin afPin
+        store timestamp . castDefault =<< readCounter t
 
 processingMeasurement :: Touch -> Ivory eff ()
 processingMeasurement touch@Touch{..} = do
