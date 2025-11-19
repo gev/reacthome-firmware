@@ -18,6 +18,7 @@ import Support.Device.GD32F3x0.SYSCFG
 import Support.Device.GD32F3x0.System
 import Support.Device.GD32F3x0.Timer
 import Support.Device.GD32F3x0.USART
+import Support.Device.GD32F3x0.SPI 
 
 inclGD32F3x0 :: ModuleDef
 inclGD32F3x0 = do
@@ -30,6 +31,7 @@ inclGD32F3x0 = do
     inclIRQ
     inclMisc
     inclRCU
+    inclSPI
     inclSYSCFG
     inclSystem
     inclTimer
