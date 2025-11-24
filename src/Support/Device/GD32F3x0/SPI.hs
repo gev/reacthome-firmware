@@ -32,12 +32,15 @@ module Support.Device.GD32F3x0.SPI (
     spi_ck_pl_low_ph_1edge,
     spi_ck_pl_high_ph_1edge,
     SPI_PRESCALE,
-    spi_pck_2,
-    spi_pck_64,
+    spi_psc_2,
+    spi_psc_64,
     transmitSPII2S,
     deinitSPII2S,
+    enableSpiNssOutput,
+    enableSpiNsspMode,
     enableSPI,
     getFlagSPII2S,
+    initSPI,
     inclSPI,
 ) where
 
@@ -80,7 +83,7 @@ spiDefaultParam =
     , nss .= ival spi_nss_hard
     , endian .= ival spi_endian_msb
     , clock_polarity_phase .= ival spi_ck_pl_low_ph_1edge
-    , prescale .= ival spi_pck_2
+    , prescale .= ival spi_psc_2
     ]
 
 newtype SPI_PERIPH = SPI_PERIPH Uint32
@@ -124,8 +127,8 @@ spi_ck_pl_high_ph_1edge = SPI_CK_PL_PHASE $ ext "SPI_CK_PL_HIGH_PH_1EDGE"
 
 newtype SPI_PRESCALE = SPI_PRESCALE Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
-spi_pck_2 = SPI_PRESCALE $ ext "SPI_PCK_2"
-spi_pck_64 = SPI_PRESCALE $ ext "SPI_PCK_64"
+spi_psc_2 = SPI_PRESCALE $ ext "SPI_PSC_2"
+spi_psc_64 = SPI_PRESCALE $ ext "SPI_PSC_64"
 
 enableSPI :: SPI_PERIPH -> Ivory eff ()
 enableSPI = call_ spi_enable
@@ -139,6 +142,18 @@ deinitSPII2S = call_ spi_i2s_deinit
 spi_i2s_deinit :: Def ('[SPI_PERIPH] :-> ())
 spi_i2s_deinit = fun "spi_i2s_deinit"
 
+enableSpiNssOutput :: SPI_PERIPH -> Ivory eff ()
+enableSpiNssOutput = call_ spi_nss_output_enable
+
+spi_nss_output_enable :: Def ('[SPI_PERIPH] :-> ())
+spi_nss_output_enable = fun "spi_nss_output_enable"
+
+enableSpiNsspMode :: SPI_PERIPH -> Ivory eff ()
+enableSpiNsspMode = call_ spi_nssp_mode_enable
+
+spi_nssp_mode_enable :: Def ('[SPI_PERIPH] :-> ())
+spi_nssp_mode_enable = fun "spi_nssp_mode_enable"
+
 transmitSPII2S :: SPI_PERIPH -> Uint16 -> Ivory eff ()
 transmitSPII2S = call_ spi_i2s_data_transmit
 
@@ -151,12 +166,21 @@ getFlagSPII2S = call spi_i2s_flag_get
 spi_i2s_flag_get :: Def ('[SPI_PERIPH, SPI_I2S_FLAG] :-> IBool)
 spi_i2s_flag_get = fun "spi_i2s_flag_get"
 
+initSPI :: SPI_PERIPH -> SPI_PARAM s -> Ivory eff ()
+initSPI = call_ spi_init
+
+spi_init :: Def ('[SPI_PERIPH, SPI_PARAM s] :-> ())
+spi_init = fun "spi_init"
+
 inclSPI :: ModuleDef
 inclSPI = do
     incl spi_enable
     incl spi_i2s_deinit
     incl spi_i2s_data_transmit
     incl spi_i2s_flag_get
+    incl spi_init
+    incl spi_nss_output_enable
+    incl spi_nssp_mode_enable
 
     inclSym spi0
     inclSym spi_flag_trans
@@ -170,5 +194,5 @@ inclSPI = do
     inclSym spi_endian_msb
     inclSym spi_ck_pl_low_ph_1edge
     inclSym spi_ck_pl_high_ph_1edge
-    inclSym spi_pck_2
-    inclSym spi_pck_64
+    inclSym spi_psc_2
+    inclSym spi_psc_64
