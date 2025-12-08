@@ -35,7 +35,7 @@ txTask r@RBUS{..} = do
         shouldPing' <- deref shouldPing
         cond_
             [ shouldConfirm' ==> doConfirm r
-            , shouldPing' ==> doPing r
+            , shouldPing' /=? 0 ==> doPing r
             , shouldDiscovery' ==> doDiscovery r
             , true ==> doTransmitMessage r
             ]
@@ -90,10 +90,12 @@ doPing :: RBUS -> Ivory (ProcEffects s ()) ()
 doPing r@RBUS{..} = do
     t0 <- deref txTimestamp
     t1 <- getSystemTime clock
-    when (t1 - t0 >? 5000) do
+    when (t1 - t0 >? 1000) do
         address' <- deref pingAddress
         toRS (transmitPing address') r
         store txTimestamp t1
+        shouldPing' <- deref shouldPing
+        store shouldPing $ shouldPing' - 1
 
 toRS ::
     (Master 255 -> (Uint8 -> forall eff. Ivory eff ()) -> Ivory (ProcEffects s ()) ()) ->
