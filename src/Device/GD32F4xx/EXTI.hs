@@ -29,7 +29,6 @@ mkEXTI :: (MonadState Context m) => (Mode -> GPIO_PUPD -> Port) -> IRQn -> EXTI_
 mkEXTI input extiIRQ srcPort srcPin ex = do
     port <- mkInput input gpio_pupd_none
     addInit (symbol srcPort <> "_" <> symbol srcPin) do
-        enablePeriphClock rcu_cfgcmp
         enableIrqNvic extiIRQ 0 0
         configExtiLine srcPort srcPin
         initExti ex exti_interrupt exti_trig_rising
