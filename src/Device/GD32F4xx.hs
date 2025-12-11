@@ -498,7 +498,7 @@ gd32f4xx =
                 , exti_pa_1 =
                     mkEXTI
                         pa_1
-                        exti0_1_irqn
+                        exti1_irqn
                         exti_source_gpioa
                         exti_source_pin1
                         exti_1
