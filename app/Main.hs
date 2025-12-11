@@ -1,6 +1,7 @@
 module Main where
 
 import Build.Compiler.GCC
+import Formula.AO4
 import Formula.DI4
 import Formula.DI4LA
 import Formula.DI4RSM
@@ -71,6 +72,7 @@ main = do
         , smartTopG2v9
         , smartTopG4v9
         , smartTopG6v9
+        , ao4
         ]
     mapM_
         gcc

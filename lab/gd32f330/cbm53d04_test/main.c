@@ -55,6 +55,12 @@ int main(void)
     /* configure SPI */
     spi_config();
 
+    /* enable NSS output */
+    spi_nss_output_enable(SPI0);
+
+    /* enable SPI NSSP mode */
+    spi_nssp_mode_enable(SPI0);
+
     spi_enable(SPI0);
 
 
@@ -88,10 +94,8 @@ void cbm53_set_voltage(uint8_t ch, float v){
     float value = 255/ref_voltage*v;
     uint16_t reg = 0;
     reg = (((uint16_t)value)) << 4 | ch << offset_ch | 1 << offset_pd | 0 << offset_ldak;
-    gpio_bit_reset(GPIOA, GPIO_PIN_4);
-    spi_i2s_data_transmit(SPI0, reg);
     while(spi_i2s_flag_get(SPI0, SPI_FLAG_TRANS));
-    gpio_bit_set(GPIOA, GPIO_PIN_4);
+    spi_i2s_data_transmit(SPI0, reg);
 }
 
 /*!
@@ -115,13 +119,14 @@ void rcu_config(void)
 */
 void gpio_config(void)
 {
-    gpio_mode_set(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_4);
-    gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_4);
-    gpio_bit_set(GPIOA, GPIO_PIN_4);
-
+    
     gpio_af_set(GPIOB, GPIO_AF_0, GPIO_PIN_3 | GPIO_PIN_5);
     gpio_mode_set(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_3 | GPIO_PIN_5);
     gpio_output_options_set(GPIOB, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_3 | GPIO_PIN_5);
+    
+    gpio_af_set(GPIOA, GPIO_AF_0, GPIO_PIN_15);
+    gpio_mode_set(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_15);
+    gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_15);
 }
 
 void spi_config(void)
@@ -135,8 +140,8 @@ void spi_config(void)
     spi_init_struct.device_mode          = SPI_MASTER;
     spi_init_struct.frame_size           = SPI_FRAMESIZE_16BIT;
     spi_init_struct.clock_polarity_phase = SPI_CK_PL_HIGH_PH_1EDGE;
-    spi_init_struct.nss                  = SPI_NSS_SOFT;
-    spi_init_struct.prescale             = SPI_PSC_64;
+    spi_init_struct.nss                  = SPI_NSS_HARD;
+    spi_init_struct.prescale             = SPI_PSC_2;
     spi_init_struct.endian               = SPI_ENDIAN_MSB;
     spi_init(SPI0, &spi_init_struct);
 }

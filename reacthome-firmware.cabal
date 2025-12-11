@@ -63,6 +63,7 @@ executable reacthome-firmware
     Device.GD32F3x0.I2C
     Device.GD32F3x0.Mac
     Device.GD32F3x0.PWM
+    Device.GD32F3x0.SPI
     Device.GD32F3x0.SysTick
     Device.GD32F3x0.SystemClock
     Device.GD32F3x0.Timer
@@ -123,6 +124,7 @@ executable reacthome-firmware
     Endpoint.StereoAMP
     Feature.ALED
     Feature.AOutputs
+    Feature.CBM53D04
     Feature.DInputs
     Feature.DS18B20
     Feature.Dimmers
@@ -154,6 +156,7 @@ executable reacthome-firmware
     Feature.Smart.Top.PowerTouch
     Feature.Smart.Top.Vibro
     Feature.Touches
+    Formula.AO4
     Formula.Blink330
     Formula.Blink450
     Formula.DI4
@@ -192,6 +195,7 @@ executable reacthome-firmware
     Formula.Smart.Top.TopG6v9
     Formula.Soundbox
     Formula.UdpEcho450
+    Implementation.AO4
     Implementation.Blink
     Implementation.DI
     Implementation.DILA
@@ -247,6 +251,7 @@ executable reacthome-firmware
     Interface.OneWire
     Interface.PWM
     Interface.RS485
+    Interface.SPI
     Interface.SystemClock
     Interface.Timer
     Interface.Touch
@@ -281,6 +286,7 @@ executable reacthome-firmware
     Support.Device.GD32F3x0.IRQ
     Support.Device.GD32F3x0.Misc
     Support.Device.GD32F3x0.RCU
+    Support.Device.GD32F3x0.SPI
     Support.Device.GD32F3x0.SYSCFG
     Support.Device.GD32F3x0.System
     Support.Device.GD32F3x0.Timer

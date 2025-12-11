@@ -15,6 +15,7 @@ import Device.GD32F3x0.GPIO.Output
 import Device.GD32F3x0.I2C
 import Device.GD32F3x0.Mac (makeMac)
 import Device.GD32F3x0.PWM
+import Device.GD32F3x0.SPI
 import Device.GD32F3x0.SystemClock as G
 import Device.GD32F3x0.Timer (
     Timer,
@@ -39,6 +40,7 @@ import Support.Device.GD32F3x0.GPIO
 import Support.Device.GD32F3x0.I2C
 import Support.Device.GD32F3x0.IRQ
 import Support.Device.GD32F3x0.RCU as R
+import Support.Device.GD32F3x0.SPI
 import Support.Device.GD32F3x0.SYSCFG
 import Support.Device.GD32F3x0.Timer
 import Support.Device.GD32F3x0.USART
@@ -56,6 +58,7 @@ type NeoPixel' = forall m. (MonadState Context m) => m NeoPixel
 type EXTI' = forall m. (MonadState Context m) => m EXTI
 type OneWire' = forall m. (MonadState Context m) => m OpenDrain -> m OneWire
 type Touch' = forall m. (MonadState Context m) => Material -> m Touch
+type SPI' = forall m. (MonadState Context m) => m SPI
 
 data GD32F3x0 = GD32F3x0
     { uart_0 :: UART'
@@ -166,6 +169,14 @@ data GD32F3x0 = GD32F3x0
     , touch_pa7 :: Touch'
     , touch_pb0 :: Touch'
     , touch_pb1 :: Touch'
+    , touch_pb2 :: Touch'
+    , touch_pb3 :: Touch'
+    , touch_pb4 :: Touch'
+    , touch_pb5 :: Touch'
+    , touch_pb6 :: Touch'
+    , touch_pb7 :: Touch'
+    , touch_pb8 :: Touch'
+    , spi_0 :: SPI'
     }
 
 gd32f3x0 :: String -> String -> MCU GD32F3x0
@@ -384,60 +395,29 @@ gd32f3x0 =
                 , adc_pa_6 = mkADC (pa_6 analog) 6
                 , adc_pa_7 = mkADC (pa_7 analog) 7
                 , dac_pa_4 = mkDAC (pa_4 analog)
-                , touch_pa0 = 
-                    mkTouch 
-                        gpioa 
-                        gpio_pin_0 
-                        rcu_gpioa 
-                        gpio_af_2 
-                        cfg_timer_1 
-                        timer_ch_0 
-                        timer_flag_ch0
-                , touch_pa1 = 
-                    mkTouch 
-                        gpioa 
-                        gpio_pin_1 
-                        rcu_gpioa 
-                        gpio_af_2 
-                        cfg_timer_1 
-                        timer_ch_1 
-                        timer_flag_ch1
-                , touch_pa6 = 
-                    mkTouch 
-                        gpioa 
-                        gpio_pin_6 
-                        rcu_gpioa 
-                        gpio_af_1 
-                        cfg_timer_2 
-                        timer_ch_0 
-                        timer_flag_ch0
-                , touch_pa7 = 
-                    mkTouch 
-                        gpioa 
-                        gpio_pin_7 
-                        rcu_gpioa 
-                        gpio_af_1 
-                        cfg_timer_2 
-                        timer_ch_1 
-                        timer_flag_ch1
-                , touch_pb0 = 
-                    mkTouch 
-                        gpiob 
-                        gpio_pin_0 
-                        rcu_gpiob 
-                        gpio_af_1 
-                        cfg_timer_2 
-                        timer_ch_2 
-                        timer_flag_ch2
-                , touch_pb1 = 
-                    mkTouch 
-                        gpiob 
-                        gpio_pin_1 
-                        rcu_gpiob 
-                        gpio_af_1 
-                        cfg_timer_2 
-                        timer_ch_3 
-                        timer_flag_ch3
+                , touch_pa0 = mkTouch gpioa gpio_pin_0 rcu_gpioa
+                , touch_pa1 = mkTouch gpioa gpio_pin_1 rcu_gpioa
+                , touch_pa4 = mkTouch gpioa gpio_pin_4 rcu_gpioa
+                , touch_pa5 = mkTouch gpioa gpio_pin_5 rcu_gpioa
+                , touch_pa6 = mkTouch gpioa gpio_pin_6 rcu_gpioa
+                , touch_pa7 = mkTouch gpioa gpio_pin_7 rcu_gpioa
+                , touch_pa15 = mkTouch gpioa gpio_pin_15 rcu_gpioa
+                , touch_pb0 = mkTouch gpiob gpio_pin_0 rcu_gpiob
+                , touch_pb1 = mkTouch gpiob gpio_pin_1 rcu_gpiob
+                , touch_pb2 = mkTouch gpiob gpio_pin_2 rcu_gpiob
+                , touch_pb3 = mkTouch gpiob gpio_pin_3 rcu_gpiob
+                , touch_pb4 = mkTouch gpiob gpio_pin_4 rcu_gpiob
+                , touch_pb5 = mkTouch gpiob gpio_pin_5 rcu_gpiob
+                , touch_pb6 = mkTouch gpiob gpio_pin_6 rcu_gpiob
+                , touch_pb7 = mkTouch gpiob gpio_pin_7 rcu_gpiob
+                , touch_pb8 = mkTouch gpiob gpio_pin_8 rcu_gpiob
+                , spi_0 =
+                    mkSPI
+                        spi0
+                        rcu_spi0
+                        (pb_5 af_0)
+                        (pb_3 af_0)
+                        (pa_15 af_0)
                 }
 
 gd32f330k8u6 :: MCU GD32F3x0

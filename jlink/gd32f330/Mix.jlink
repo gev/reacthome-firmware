@@ -1,0 +1,7 @@
+r
+h
+loadbin dist/firmware/mix6x12/mix6x12-gd32f330k8u6-3.9.bin, 0x8000000
+g
+verifybin dist/firmware/mix6x12/mix6x12-gd32f330k8u6-3.9.bin, 0x8000000
+r
+q

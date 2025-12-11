@@ -6,13 +6,13 @@ import Core.Formula
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
+import Device.GD32F3x0.Touch (aluminum)
 import Feature.Sht21 (sht21)
 import Feature.Smart.Top.Vibro (vibro)
+import Feature.Touches (touches)
 import Implementation.Smart.TopA4TDv5 (topA4TDv5)
 import Ivory.Language
 import Transport.UART.RBUS
-import Feature.Touches (touches)
-import Device.GD32F3x0.Touch (aluminium)
 
 smartTopA4TDv5 :: Formula GD32F3x0
 smartTopA4TDv5 =
@@ -27,7 +27,7 @@ smartTopA4TDv5 =
         , implementation =
             topA4TDv5
                 (rbusTop uart_1)
-                ( touches aluminium $
+                ( touches aluminum $
                     touch_pa6
                         :> touch_pb1
                         :> touch_pa7

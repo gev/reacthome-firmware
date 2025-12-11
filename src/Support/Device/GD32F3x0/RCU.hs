@@ -17,6 +17,7 @@ module Support.Device.GD32F3x0.RCU (
     rcu_i2c1,
     rcu_adc,
     rcu_dac,
+    rcu_spi0,
     rcu_adcck_apb2_div2,
     enablePeriphClock,
     configClockADC,
@@ -44,6 +45,7 @@ rcu_i2c0 = RCU_PERIPH $ ext "RCU_I2C0"
 rcu_i2c1 = RCU_PERIPH $ ext "RCU_I2C1"
 rcu_adc = RCU_PERIPH $ ext "RCU_ADC"
 rcu_dac = RCU_PERIPH $ ext "RCU_DAC"
+rcu_spi0 = RCU_PERIPH $ ext "RCU_SPI0"
 
 newtype RCU_CLOCK_ADC = RCU_CLOCK_ADC Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
@@ -79,6 +81,7 @@ inclRCU = do
     inclSym rcu_i2c1
     inclSym rcu_adc
     inclSym rcu_dac
+    inclSym rcu_spi0
 
     inclSym rcu_adcck_apb2_div2
 

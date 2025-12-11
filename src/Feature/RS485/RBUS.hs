@@ -75,7 +75,7 @@ rbus' transport rs485 index = do
     txTimestamp <- value (name <> "_timestamp_tx") 0
     shouldDiscovery <- value (name <> "_should_discovery") false
     shouldConfirm <- value (name <> "_should_confirm") false
-    shouldPing <- value (name <> "_should_ping") true
+    shouldPing <- value (name <> "_should_ping") 5
     discoveryAddress <- value (name <> "_address_discovery") broadcastAddress
     confirmAddress <- value (name <> "_address_confirm") broadcastAddress
     pingAddress <- value (name <> "_address_ping") broadcastAddress
@@ -118,7 +118,6 @@ rbus' transport rs485 index = do
             onPing mac address model version
             store discoveryAddress address
             store shouldDiscovery true
-            store shouldPing false
 
     let onReceive = store rxLock false
 
@@ -289,7 +288,7 @@ configureRBUS RBUS{..} = do
     I.configureRS485 rs defaultBaudrate I.WL_8b I.SB_1b I.None
     store shouldDiscovery false
     store shouldConfirm false
-    store shouldPing true
+    store shouldPing 5
     Q.clear msgQueue
     reset protocol
 
