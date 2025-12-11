@@ -22,7 +22,7 @@ server =
     Formula
         { name = "server"
         , model = deviceTypeServer
-        , version = (5, 9)
+        , version = (5, 10)
         , shouldInit = true
         , mcu = gd32f450vgt6
         , quartzFrequency = 25_000_000

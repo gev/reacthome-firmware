@@ -37,7 +37,7 @@ data RBUS = forall t. (LazyTransport t, Transport t) => RBUS
     , txTimestamp :: Value Uint32
     , shouldDiscovery :: Value IBool
     , shouldConfirm :: Value IBool
-    , shouldPing :: Value IBool
+    , shouldPing :: Value Uint8
     , discoveryAddress :: Value Uint8
     , confirmAddress :: Value Uint8
     , pingAddress :: Value Uint8
