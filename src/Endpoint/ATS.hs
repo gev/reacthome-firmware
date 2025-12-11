@@ -134,7 +134,7 @@ manageLine n a@ATS{..} hasVoltage isRelayOn relay = do
                 do
                     cond_
                         [ n <? source' ==> do
-                            delayTurnOn relay 10_000 timestamp
+                            delayTurnOn relay 20_000 timestamp
                             store source n
                             store synced false
                         , n >? source' ==> justTurnOff relay timestamp
