@@ -226,7 +226,7 @@ average :: IFloat -> IFloat -> IFloat -> IFloat
 average alpha a b =
     a * (1 - alpha) + b * alpha
 
-aluminium =
+aluminum =
     I.Material
         { maxDiff = 1800
         , thresholdUp = 300

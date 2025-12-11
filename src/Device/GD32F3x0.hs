@@ -395,22 +395,60 @@ gd32f3x0 =
                 , adc_pa_6 = mkADC (pa_6 analog) 6
                 , adc_pa_7 = mkADC (pa_7 analog) 7
                 , dac_pa_4 = mkDAC (pa_4 analog)
-                , touch_pa0 = mkTouch gpioa gpio_pin_0 rcu_gpioa
-                , touch_pa1 = mkTouch gpioa gpio_pin_1 rcu_gpioa
-                , touch_pa4 = mkTouch gpioa gpio_pin_4 rcu_gpioa
-                , touch_pa5 = mkTouch gpioa gpio_pin_5 rcu_gpioa
-                , touch_pa6 = mkTouch gpioa gpio_pin_6 rcu_gpioa
-                , touch_pa7 = mkTouch gpioa gpio_pin_7 rcu_gpioa
-                , touch_pa15 = mkTouch gpioa gpio_pin_15 rcu_gpioa
-                , touch_pb0 = mkTouch gpiob gpio_pin_0 rcu_gpiob
-                , touch_pb1 = mkTouch gpiob gpio_pin_1 rcu_gpiob
-                , touch_pb2 = mkTouch gpiob gpio_pin_2 rcu_gpiob
-                , touch_pb3 = mkTouch gpiob gpio_pin_3 rcu_gpiob
-                , touch_pb4 = mkTouch gpiob gpio_pin_4 rcu_gpiob
-                , touch_pb5 = mkTouch gpiob gpio_pin_5 rcu_gpiob
-                , touch_pb6 = mkTouch gpiob gpio_pin_6 rcu_gpiob
-                , touch_pb7 = mkTouch gpiob gpio_pin_7 rcu_gpiob
-                , touch_pb8 = mkTouch gpiob gpio_pin_8 rcu_gpiob
+                , touch_pa0 = 
+                    mkTouch 
+                        gpioa 
+                        gpio_pin_0 
+                        rcu_gpioa 
+                        gpio_af_2 
+                        cfg_timer_1 
+                        timer_ch_0 
+                        timer_flag_ch0
+                , touch_pa1 = 
+                    mkTouch 
+                        gpioa 
+                        gpio_pin_1 
+                        rcu_gpioa 
+                        gpio_af_2 
+                        cfg_timer_1 
+                        timer_ch_1 
+                        timer_flag_ch1
+                , touch_pa6 = 
+                    mkTouch 
+                        gpioa 
+                        gpio_pin_6 
+                        rcu_gpioa 
+                        gpio_af_1 
+                        cfg_timer_2 
+                        timer_ch_0 
+                        timer_flag_ch0
+                , touch_pa7 = 
+                    mkTouch 
+                        gpioa 
+                        gpio_pin_7 
+                        rcu_gpioa 
+                        gpio_af_1 
+                        cfg_timer_2 
+                        timer_ch_1 
+                        timer_flag_ch1
+                , touch_pb0 = 
+                    mkTouch 
+                        gpiob 
+                        gpio_pin_0 
+                        rcu_gpiob 
+                        gpio_af_1 
+                        cfg_timer_2 
+                        timer_ch_2 
+                        timer_flag_ch2
+                , touch_pb1 = 
+                    mkTouch 
+                        gpiob 
+                        gpio_pin_1 
+                        rcu_gpiob 
+                        gpio_af_1 
+                        cfg_timer_2 
+                        timer_ch_3 
+                        timer_flag_ch3
                 , spi_0 =
                     mkSPI
                         spi0
