@@ -34,7 +34,6 @@ import Formula.Smart.Top.TopG4D
 import Formula.Smart.Top.TopG4Dv15
 import Formula.Smart.Top.TopG4v9
 import Formula.Smart.Top.TopG6
-import Formula.Smart.Top.TopG6v7
 import Formula.Smart.Top.TopG6v9
 import Formula.Soundbox
 
@@ -72,7 +71,6 @@ main = do
         , smartTopG6
         , smartTopG2v9
         , smartTopG4v9
-        , smartTopG6v7
         , smartTopG6v9
         , ao4
         ]

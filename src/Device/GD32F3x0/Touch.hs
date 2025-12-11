@@ -6,20 +6,25 @@ import Core.Context
 import Core.Task
 import Data.Value
 import Device.GD32F3x0.Timer
-import Interface.Timer qualified as I
+import Device.GD32F3x0.Timer qualified as T
 import Interface.Touch qualified as I
 import Ivory.Language hiding (setBit)
 import Ivory.Stdlib.Control
 import Ivory.Support (symbol)
-import Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
 import Support.Device.GD32F3x0.GPIO
 import Support.Device.GD32F3x0.RCU
+import Support.Device.GD32F3x0.Timer
+import Data.Concurrent.Atomically
 
 data Touch = Touch
     { port :: GPIO_PERIPH
     , pin :: GPIO_PIN
+    , afPin :: GPIO_AF
     , timer :: Timer
+    , timerChannel :: TIMER_CHANNEL
+    , timerChannelFlag :: TIMER_FLAG
     , material :: I.Material
+    , timestamp :: Value Uint16
     , avg :: Value IFloat
     , avg0 :: Value IFloat
     , avg1 :: Value IFloat
@@ -38,13 +43,18 @@ mkTouch ::
     GPIO_PERIPH ->
     GPIO_PIN ->
     RCU_PERIPH ->
+    GPIO_AF ->
+    (Uint32 -> Uint32 -> m Timer) ->
+    TIMER_CHANNEL ->
+    TIMER_FLAG ->
     I.Material ->
     m Touch
-mkTouch port pin rcuPin material = do
-    timer <- cfg_timer_14 84_000_000 0xffff_ffff
+mkTouch port pin rcuPin afPin timer' timerChannel timerChannelFlag material = do
+    timer <- timer' 84_000_000 0xffff
 
     let name = symbol port <> "_" <> symbol pin
 
+    timestamp <- value ("touch_timestamp" <> name) 0
     avg <- value ("touch_avg" <> name) 0
     avg0 <- value ("touch_avg0" <> name) 0
     avg1 <- value ("touch_avg1" <> name) 0
@@ -59,15 +69,21 @@ mkTouch port pin rcuPin material = do
 
     addInit name do
         enablePeriphClock rcuPin
-        modePort port pin gpio_mode_output
-        resetBit port pin
+        pinToGround port pin
+        let t = T.timer timer
+        configTimerInputCapture t timerChannel =<< local (istruct timerIcDefaultParam)
+        enableTimer t
 
     let touch =
             Touch
                 { port
                 , pin
+                , afPin
                 , timer
+                , timerChannel
+                , timerChannelFlag
                 , material
+                , timestamp
                 , avg
                 , avg0
                 , avg1
@@ -83,7 +99,7 @@ mkTouch port pin rcuPin material = do
 
     addTask $ delay 5_000 ("touch_start" <> name) $ touchStart touch
     addTask $ delay 500 ("touch_check_calibration" <> name) $ checkCalibration touch
-    addTask $ yeld ("touch_run" <> name) $ runMeasurement touch
+    addTask $ yeld ("touch_run" <> name) $ processingMeasurement touch
 
     pure touch
 
@@ -107,106 +123,119 @@ checkCalibration Touch{..} = do
                 store avg avg1'
                 store var0 var1'
 
-modePort :: GPIO_PERIPH -> GPIO_PIN -> GPIO_MODE -> Ivory eff ()
-modePort gpio pin mode = do
+pinToGround :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff ()
+pinToGround gpio pin = do
     setOutputOptions gpio gpio_otype_pp gpio_ospeed_50mhz pin
-    setMode gpio mode gpio_pupd_none pin
+    setMode gpio gpio_mode_output gpio_pupd_none pin
+    resetBit gpio pin
+
+pinToAF :: GPIO_PERIPH -> GPIO_PIN -> GPIO_AF -> Ivory eff ()
+pinToAF gpio pin af = do
+    setMode gpio gpio_mode_af gpio_pupd_none pin
+    setOutputOptions gpio gpio_otype_pp gpio_ospeed_50mhz pin
+    setAF gpio af pin
 
 instance I.Touch Touch where
     getDebug Touch{..} = deref debugVal
     getState Touch{..} = deref stateTouch
 
-runMeasurement :: Touch -> Ivory (ProcEffects s ()) ()
-runMeasurement Touch{..} = do
-    disableIRQ
-    modePort port pin gpio_mode_input
-    I.resetCounter timer
-    forever do
-        isMeasured <- getInputBit port pin
-        moment <- I.getCounter timer
-        when (isMeasured .|| moment >? I.maxMoment material) breakOut
-    moment <- safeCast <$> I.getCounter timer
-    enableIRQ
-    modePort port pin gpio_mode_output
-    resetBit port pin
+startMeasurement :: Touch -> Ivory eff ()
+startMeasurement Touch{..} = do
+    pinToGround port pin
+    let t = T.timer timer
+    clearTimerFlag t timerChannelFlag
+    atomically do 
+        pinToAF port pin afPin
+        store timestamp . castDefault =<< readCounter t
 
-    avg' <- deref avg
-    avg0' <- deref avg0
-    avg1' <- deref avg1
+processingMeasurement :: Touch -> Ivory eff ()
+processingMeasurement touch@Touch{..} = do
+    let t = T.timer timer
+    isReady <- getTimerFlag t timerChannelFlag
+    when isReady do
+        t0 <- deref timestamp
+        t1 <- castDefault <$> readTimerChannelRegister t timerChannel
 
-    let diff = abs $ moment - avg'
+        startMeasurement touch
 
-    store debugVal moment
+        let moment = safeCast $ t1 - t0
 
-    start' <- deref start
+        avg' <- deref avg
+        avg0' <- deref avg0
+        avg1' <- deref avg1
 
-    ifte_
-        (start' .&& moment >? 0 .&& avg' >? 0 .&& diff <? I.maxDiff material)
-        do
-            var' <- deref var
-            store var $ average 0.01 var' $ diff * diff
-            var'' <- (/ avg') <$> deref var
+        let diff = abs $ moment - avg'
 
-            -- store debugVal $ 100 * var''
+        -- store debugVal moment
 
-            ifte_
-                (var'' >? I.thresholdUp material .&& moment >? avg')
-                do
-                    counter' <- deref counter
-                    store counter $ counter' + 1
-                    counter'' <- deref counter
-                    when (counter'' ==? 30) do
-                        store stateTouch true
-                do
-                    store counter 0
+        start' <- deref start
 
-            -- store debugVal . safeCast =<< deref counter
+        ifte_
+            start'
+            do
+                when (moment >? 0 .&& avg' >? 0 .&& diff <? I.maxDiff material) do
+                    var' <- deref var
+                    store var $ average 0.01 var' $ diff * diff
+                    var'' <- (/ avg') <$> deref var
 
-            when (var'' <? I.thresholdDown material) do
-                store stateTouch false
+                    store debugVal $ 100 * var''
 
-            stateTouch' <- deref stateTouch
+                    ifte_
+                        (var'' >? I.thresholdUp material .&& moment >? avg')
+                        do
+                            counter' <- deref counter
+                            store counter $ counter' + 1
+                            counter'' <- deref counter
+                            when (counter'' ==? 100) do
+                                store stateTouch true
+                        do
+                            store counter 0
 
-            ifte_
-                stateTouch'
-                do
-                    store avg1 $ average 0.0001 avg1' moment
-                    avg1'' <- deref avg1
-                    var1' <- deref var1
-                    let d1 = moment - avg1''
-                    store var1 $ average 0.01 var1' $ d1 * d1
-                do
-                    store avg0 $ average 0.0001 avg0' moment
-                    avg0'' <- deref avg0
-                    var0' <- deref var0
-                    let d0 = moment - avg0''
-                    store var0 $ average 0.001 var0' $ d0 * d0
+                    -- store debugVal . safeCast =<< deref counter
 
-            shouldCalibrate' <- deref shouldCalibrate
-            when (iNot stateTouch' .|| shouldCalibrate') do
-                store avg $ average 0.0001 avg' moment
-        do
-            let a = average 0.001 avg' moment
-            store avg a
-            store avg0 a
-            store avg1 a
+                    when (var'' <? I.thresholdDown material) do
+                        store stateTouch false
+
+                    stateTouch' <- deref stateTouch
+
+                    ifte_
+                        stateTouch'
+                        do
+                            store avg1 $ average 0.0001 avg1' moment
+                            avg1'' <- deref avg1
+                            var1' <- deref var1
+                            let d1 = moment - avg1''
+                            store var1 $ average 0.01 var1' $ d1 * d1
+                        do
+                            store avg0 $ average 0.0001 avg0' moment
+                            avg0'' <- deref avg0
+                            var0' <- deref var0
+                            let d0 = moment - avg0''
+                            store var0 $ average 0.001 var0' $ d0 * d0
+
+                    shouldCalibrate' <- deref shouldCalibrate
+                    when (iNot stateTouch' .|| shouldCalibrate') do
+                        store avg $ average 0.0001 avg' moment
+            do
+                let a = average 0.001 avg' moment
+                store avg a
+                store avg0 a
+                store avg1 a
 
 average :: IFloat -> IFloat -> IFloat -> IFloat
 average alpha a b =
     a * (1 - alpha) + b * alpha
 
-aluminum =
+aluminium =
     I.Material
-        { maxMoment = 1800
-        , maxDiff = 1800
+        { maxDiff = 1800
         , thresholdUp = 300
         , thresholdDown = 50
         }
 
 glass =
     I.Material
-        { maxMoment = 1800
-        , maxDiff = 80
+        { maxDiff = 80
         , thresholdUp = 0.5
         , thresholdDown = 0.2
         }

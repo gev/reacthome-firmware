@@ -292,7 +292,7 @@ typedef struct timer_oc_parameter_struct {
 } timer_oc_parameter_struct;                                                        
                                                                                     
 /* channel input parameter struct definitions */                                    
-typedef struct {                                                                    
+typedef struct timer_ic_parameter_struct {                                                                    
     uint16_t icpolarity;                                                            /*!< channel input polarity */
     uint16_t icselection;                                                           /*!< channel input mode selection */
     uint16_t icprescaler;                                                           /*!< channel input capture prescaler */

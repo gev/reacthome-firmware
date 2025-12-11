@@ -19,7 +19,7 @@ smartTopA4TDv5 =
     Formula
         { name = "smart_top_a4td_v5"
         , model = deviceTypeSmartTopA4TD7S
-        , version = (4, 12)
+        , version = (4, 13)
         , shouldInit = false
         , mcu = gd32f330k8u6
         , quartzFrequency = 8_000_000
