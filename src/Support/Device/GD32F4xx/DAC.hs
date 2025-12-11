@@ -19,7 +19,7 @@ module Support.Device.GD32F4xx.DAC (
 ) where
 
 import Ivory.Language
-import Ivory.Support.Device.GD32F3x0
+import Ivory.Support.Device.GD32F4xx
 import Ivory.Support
 
 newtype DAC_PERIPH = DAC_PERIPH Uint32

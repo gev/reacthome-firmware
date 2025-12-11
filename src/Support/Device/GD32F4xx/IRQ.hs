@@ -38,9 +38,13 @@ module Support.Device.GD32F4xx.IRQ (
     i2c0_er_irqn,
     i2c1_er_irqn,
     i2c2_er_irqn,
-    exti0_1_irqn,
-    exti2_3_irqn,
-    exti4_15_irqn,
+    exti0_irqn,
+    exti1_irqn,
+    exti2_irqn,
+    exti3_irqn,
+    exti4_irqn,
+    exti5_9_irqn,
+    exti10_15_irqn,
     makeIRQHandler,
     inclIRQ,
 ) where
@@ -89,9 +93,13 @@ i2c2_ev_irqn = IRQn $ ext "I2C2_EV_IRQn"
 i2c0_er_irqn = IRQn $ ext "I2C0_ER_IRQn"
 i2c1_er_irqn = IRQn $ ext "I2C1_ER_IRQn"
 i2c2_er_irqn = IRQn $ ext "I2C2_ER_IRQn"
-exti0_1_irqn = IRQn $ ext "EXTI0_1_IRQn"
-exti2_3_irqn = IRQn $ ext "EXTI2_3_IRQn"
-exti4_15_irqn = IRQn $ ext "EXTI4_15_IRQn"
+exti0_irqn = IRQn $ ext "EXTI0_IRQn"
+exti1_irqn = IRQn $ ext "EXTI1_IRQn"
+exti2_irqn = IRQn $ ext "EXTI2_IRQn"
+exti3_irqn = IRQn $ ext "EXTI3_IRQn"
+exti4_irqn = IRQn $ ext "EXTI4_IRQn"
+exti5_9_irqn = IRQn $ ext "EXTI5_9_IRQn"
+exti10_15_irqn = IRQn $ ext "EXTI10_15_IRQn"
 
 inclIRQ :: ModuleDef
 inclIRQ = do
@@ -131,9 +139,13 @@ inclIRQ = do
     inclSym i2c0_er_irqn
     inclSym i2c1_er_irqn
     inclSym i2c2_er_irqn
-    inclSym exti0_1_irqn 
-    inclSym exti2_3_irqn 
-    inclSym exti4_15_irqn
+    inclSym exti0_irqn
+    inclSym exti1_irqn
+    inclSym exti2_irqn
+    inclSym exti3_irqn
+    inclSym exti4_irqn
+    inclSym exti5_9_irqn
+    inclSym exti10_15_irqn
 
 makeIRQHandler ::
     IRQn ->
