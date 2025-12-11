@@ -35,7 +35,7 @@ txTask r@RBUS{..} = do
         shouldPing' <- deref shouldPing
         cond_
             [ shouldConfirm' ==> doConfirm r
-            , shouldPing' /=? 0 ==> doPing r
+            , shouldPing' >? 0 ==> doPing r
             , shouldDiscovery' ==> doDiscovery r
             , true ==> doTransmitMessage r
             ]
