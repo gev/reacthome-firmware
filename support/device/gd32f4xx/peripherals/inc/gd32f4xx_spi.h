@@ -147,7 +147,7 @@ OF SUCH DAMAGE.
 
 /* constants definitions */
 /* SPI and I2S parameter struct definitions */
-typedef struct {
+typedef struct spi_parameter_struct {
     uint32_t device_mode;                                                       /*!< SPI master or slave */
     uint32_t trans_mode;                                                        /*!< SPI transtype */
     uint32_t frame_size;                                                        /*!< SPI frame size */

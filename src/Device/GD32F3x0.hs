@@ -15,6 +15,7 @@ import Device.GD32F3x0.GPIO.Output
 import Device.GD32F3x0.I2C
 import Device.GD32F3x0.Mac (makeMac)
 import Device.GD32F3x0.PWM
+import Device.GD32F3x0.SPI
 import Device.GD32F3x0.SystemClock as G
 import Device.GD32F3x0.Timer (
     Timer,
@@ -39,6 +40,7 @@ import Support.Device.GD32F3x0.GPIO
 import Support.Device.GD32F3x0.I2C
 import Support.Device.GD32F3x0.IRQ
 import Support.Device.GD32F3x0.RCU as R
+import Support.Device.GD32F3x0.SPI
 import Support.Device.GD32F3x0.SYSCFG
 import Support.Device.GD32F3x0.Timer
 import Support.Device.GD32F3x0.USART
@@ -56,6 +58,7 @@ type NeoPixel' = forall m. (MonadState Context m) => m NeoPixel
 type EXTI' = forall m. (MonadState Context m) => m EXTI
 type OneWire' = forall m. (MonadState Context m) => m OpenDrain -> m OneWire
 type Touch' = forall m. (MonadState Context m) => Material -> m Touch
+type SPI' = forall m. (MonadState Context m) => m SPI
 
 data GD32F3x0 = GD32F3x0
     { uart_0 :: UART'
@@ -176,6 +179,7 @@ data GD32F3x0 = GD32F3x0
     , touch_pb6 :: Touch'
     , touch_pb7 :: Touch'
     , touch_pb8 :: Touch'
+    , spi_0 :: SPI'
     }
 
 gd32f3x0 :: String -> String -> MCU GD32F3x0
@@ -410,6 +414,13 @@ gd32f3x0 =
                 , touch_pb6 = mkTouch gpiob gpio_pin_6 rcu_gpiob
                 , touch_pb7 = mkTouch gpiob gpio_pin_7 rcu_gpiob
                 , touch_pb8 = mkTouch gpiob gpio_pin_8 rcu_gpiob
+                , spi_0 =
+                    mkSPI
+                        spi0
+                        rcu_spi0
+                        (pb_5 af_0)
+                        (pb_3 af_0)
+                        (pa_15 af_0)
                 }
 
 gd32f330k8u6 :: MCU GD32F3x0
