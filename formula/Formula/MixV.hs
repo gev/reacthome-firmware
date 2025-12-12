@@ -6,6 +6,7 @@ import Core.Formula
 import Core.Models
 import Data.Fixed
 import Device.GD32F4xx
+import Feature.AOutputs (aoutputs)
 import Feature.DInputs (dinputs)
 import Feature.DS18B20 (ds18b20)
 import Feature.Dimmers.ACSimple (dimmersAC)
@@ -13,7 +14,6 @@ import Implementation.MixV (mix)
 import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
-import Feature.AOutputs (aoutputs)
 
 mixV :: Formula GD32F4xx
 mixV =
@@ -29,14 +29,14 @@ mixV =
             mix
                 (rbus $ rs485 uart_3 out_pc_12)
                 ( dinputs $
-                    in_pe_11
-                        :> in_pe_10
-                        :> in_pe_9
-                        :> in_pe_8
-                        :> in_pd_4
-                        :> in_pd_3
+                    in_pd_1
                         :> in_pd_2
-                        :> in_pd_1
+                        :> in_pd_3
+                        :> in_pd_4
+                        :> in_pe_8
+                        :> in_pe_9
+                        :> in_pe_10
+                        :> in_pe_11
                         :> Nil
                 )
                 ( aoutputs $
@@ -50,7 +50,7 @@ mixV =
                         :> pwm_1
                         :> Nil
                     )
-                        exti_pa_1
+                    exti_pa_1
                 )
                 (ds18b20 ow_0 od_pe_14)
         }
