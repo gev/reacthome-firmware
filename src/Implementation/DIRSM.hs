@@ -13,8 +13,7 @@ import Feature.AOutputs (
     AOutputs (getAOutputs),
     forceSync,
     n,
-    onDim,
-    onDo,
+    onAo,
  )
 import Feature.DInputs (DInputs, forceSyncDInputs)
 import Feature.DS18B20
@@ -57,8 +56,7 @@ instance (KnownNat ni, KnownNat no, KnownNat nr) => Controller (DIRSM ni no nr) 
     handle s@DIRSM{..} buff size = do
         action <- deref $ buff ! 0
         cond_
-            [ action ==? actionDo ==> onDo aoutputs buff size
-            , action ==? actionDim ==> onDim aoutputs buff size
+            [ action ==? actionAo ==> onAo aoutputs buff size
             , action ==? actionInitialize ==> onInit s buff size
             , action ==? actionRs485Mode ==> setMode rsm buff size
             , action ==? actionRs485Transmit ==> transmitRS485 rsm buff size
