@@ -120,7 +120,6 @@ executable reacthome-firmware
     Endpoint.DInputs
     Endpoint.DInputsRelaysRules
     Endpoint.Dimmers
-    Endpoint.DimmersSimple
     Endpoint.Groups
     Endpoint.Relays
     Endpoint.StereoAMP
@@ -130,9 +129,7 @@ executable reacthome-firmware
     Feature.DS18B20
     Feature.Dimmers
     Feature.Dimmers.AC
-    Feature.Dimmers.ACSimple
     Feature.Dimmers.DC
-    Feature.DimmersSimple
     Feature.Dopplers
     Feature.I2SPlay
     Feature.Indicator
