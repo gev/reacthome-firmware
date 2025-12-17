@@ -1,7 +1,7 @@
 r
 h
-loadbin dist/firmware/soundbox/soundbox-gd32f450vit6-1.0.bin 0x8000000
+loadbin dist/firmware/mixV/mixV-gd32f450vgt6-2.0.bin 0x8000000
 g
-verifybin dist/firmware/soundbox/soundbox-gd32f450vit6-1.0.bin 0x8000000
+verifybin dist/firmware/mixV/mixV-gd32f450vgt6-2.0.bin 0x8000000
 r
 q
