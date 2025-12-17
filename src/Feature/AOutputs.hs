@@ -114,60 +114,19 @@ onInit AOutputs{..} buff size =
             store offset $ offset' + 1
         store shouldInit false
 
-onDim ::
+onAo ::
     (KnownNat n, KnownNat l) =>
     AOutputs n ->
     Buffer l Uint8 ->
     Uint8 ->
     Ivory eff ()
-onDim AOutputs{..} buff size = do
-    when (size >=? 3) do
+onAo AOutputs{..} buff size = do
+    when (size >=? 2) do
         shouldInit' <- deref shouldInit
         when (iNot shouldInit') do
             index <- deref $ buff ! 1
             when (index >=? 1 .&& index <=? n) do
                 let index' = index - 1
-                action <- deref $ buff ! 2
-                cond_
-                    [ action ==? 0 ==> onOff getAOutputs index'
-                    , action ==? 1 ==> onOn getAOutputs index'
-                    , action ==? 2 ==> onSet getAOutputs index' buff size
-                    , action ==? 3 ==> onSet getAOutputs index' buff size
-                    ]
+                value <- deref $ buff ! 2
+                E.set getAOutputs index' (safeCast value / 255)
 
-onDo ::
-    (KnownNat n, KnownNat l) =>
-    AOutputs n ->
-    Buffer l Uint8 ->
-    Uint8 ->
-    Ivory eff ()
-onDo AOutputs{..} buff size = do
-    when (size >=? 3) do
-        shouldInit' <- deref shouldInit
-        when (iNot shouldInit') do
-            index <- deref $ buff ! 1
-            when (index >=? 1 .&& index <=? n) do
-                let index' = index - 1
-                value' <- deref $ buff ! 2
-                ifte_
-                    (value' ==? 0)
-                    do onOff getAOutputs index'
-                    do onOn getAOutputs index'
-
-onOn :: (KnownNat n) => E.AOutputs n -> Uint8 -> Ivory eff ()
-onOn = E.on
-
-onOff :: (KnownNat n) => E.AOutputs n -> Uint8 -> Ivory eff ()
-onOff = E.off
-
-onSet ::
-    (KnownNat n, KnownNat l) =>
-    E.AOutputs n ->
-    Uint8 ->
-    Buffer l Uint8 ->
-    Uint8 ->
-    Ivory eff ()
-onSet aoutputs' index buff size =
-    when (size >=? 4) do
-        value <- unpack buff 3 :: Ivory eff Uint8
-        E.set aoutputs' index (safeCast value / 255)
