@@ -9,7 +9,8 @@ import Device.GD32F4xx
 import Feature.AOutputs (aoutputs)
 import Feature.DInputs (dinputs)
 import Feature.DS18B20 (ds18b20)
-import Feature.Dimmers.ACSimple (dimmersAC)
+import Feature.Dimmers.AC (dimmersAC)
+import Feature.Relays
 import Implementation.MixV (mix)
 import Interface.RS485
 import Ivory.Language
@@ -47,10 +48,13 @@ mixV =
                 ( dimmersAC
                     ( pwm_2
                         :> pwm_0
-                        :> pwm_1
                         :> Nil
                     )
                     exti_pa_1
+                )
+                ( relays $
+                    out_pd_13
+                        :> Nil
                 )
                 (ds18b20 ow_0 od_pe_14)
         }
