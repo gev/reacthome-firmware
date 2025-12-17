@@ -21,7 +21,7 @@ mixV =
     Formula
         { name = "mixV"
         , model = deviceTypeMixV
-        , version = (2, 0)
+        , version = (3, 0)
         , shouldInit = true
         , mcu = gd32f450vgt6
         , quartzFrequency = 25_000_000
