@@ -48,7 +48,7 @@ message ::
     Uint8 ->
     Ivory eff (Buffer 3 Uint8)
 message AOutputs{..} i = do
-    pack payload 0 actionDim
+    pack payload 0 actionAo
     pack payload 1 $ i + 1
     pack payload 2 =<< castFloatToUint8 . (* 255) =<< deref (aoutput ~> value)
     pure payload
