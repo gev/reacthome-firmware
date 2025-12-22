@@ -20,7 +20,7 @@ di4rsm =
     Formula
         { name = "di4rsm"
         , model = deviceTypeDi4Rsm
-        , version = (2, 9)
+        , version = (3, 0)
         , shouldInit = true
         , mcu = gd32f350k8u6
         , quartzFrequency = 8_000_000

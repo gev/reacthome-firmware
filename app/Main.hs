@@ -13,6 +13,7 @@ import Formula.Doppler5
 import Formula.LeakSensor
 import Formula.Mix6x12
 import Formula.MixH
+import Formula.MixV
 import Formula.Relay12
 import Formula.RsHub4
 import Formula.Server
@@ -76,7 +77,8 @@ main = do
         ]
     mapM_
         gcc
-        [ rsHub4
+        [ mixV
+        , rsHub4
         , server
         , soundbox
         ]

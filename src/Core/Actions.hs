@@ -7,6 +7,7 @@ actionDi = 0x01 :: Uint8
 actionGroup = 0x02 :: Uint8
 actionDiRelaySync = 0x03 :: Uint8
 actionMix = 0x04 :: Uint8
+actionAo = 0x05 :: Uint8
 
 actionVibro = 0x0A :: Uint8
 

@@ -2,8 +2,10 @@ module Device.GD32F4xx where
 
 import Control.Monad.State
 import Core.Context
+import Device.GD32F4xx.DAC
 import Device.GD32F4xx.Display.NeoPixel
 import Device.GD32F4xx.ENET
+import Device.GD32F4xx.EXTI
 import Device.GD32F4xx.Flash
 import Device.GD32F4xx.GPIO
 import Device.GD32F4xx.GPIO.Input
@@ -31,13 +33,16 @@ import Interface.MCU
 import Interface.OneWire
 import Ivory.Language
 import Support.Device.GD32F4xx
+import Support.Device.GD32F4xx.DAC
 import Support.Device.GD32F4xx.DMA
+import Support.Device.GD32F4xx.EXTI
 import Support.Device.GD32F4xx.FMC
 import Support.Device.GD32F4xx.GPIO
 import Support.Device.GD32F4xx.I2C
 import Support.Device.GD32F4xx.IRQ
 import Support.Device.GD32F4xx.RCU
 import Support.Device.GD32F4xx.SPI
+import Support.Device.GD32F4xx.SYSCFG
 import Support.Device.GD32F4xx.Timer
 import Support.Device.GD32F4xx.USART
 
@@ -46,6 +51,8 @@ type I2C' = forall m n. (MonadState Context m) => (KnownNat n) => m (I2C n)
 type Input' = forall m. (MonadState Context m) => GPIO_PUPD -> m Input
 type Output' = forall m. (MonadState Context m) => GPIO_PUPD -> m Output
 type OpenDrain' = forall m. (MonadState Context m) => m OpenDrain
+type EXTI' = forall m. (MonadState Context m) => m EXTI
+type DAC' = forall m. (MonadState Context m) => m DAC
 type Timer' = forall m. (MonadState Context m) => Uint32 -> Uint32 -> m Timer
 type PWM' = forall m. (MonadState Context m) => Uint32 -> Uint32 -> m PWM
 type NeoPixel' = forall m. (MonadState Context m) => m NeoPixel
@@ -222,6 +229,10 @@ data GD32F4xx = GD32F4xx
     , out_pe_14 :: Output'
     , out_pe_15 :: Output'
     , od_pb_3 :: OpenDrain'
+    , od_pe_14 :: OpenDrain'
+    , exti_pa_1 :: EXTI'
+    , dac_pa_4 :: DAC'
+    , dac_pa_5 :: DAC'
     , timer_1 :: Timer'
     , timer_2 :: Timer'
     , timer_3 :: Timer'
@@ -483,6 +494,16 @@ gd32f4xx =
                 , out_pe_14 = mkOutput pe_14
                 , out_pe_15 = mkOutput pe_15
                 , od_pb_3 = mkOpenDrain pb_3
+                , od_pe_14 = mkOpenDrain pe_14
+                , exti_pa_1 =
+                    mkEXTI
+                        pa_1
+                        exti1_irqn
+                        exti_source_gpioa
+                        exti_source_pin1
+                        exti_1
+                , dac_pa_4 = mkDAC (pa_4 analog) dac0
+                , dac_pa_5 = mkDAC (pa_5 analog) dac1
                 , timer_1 = cfg_timer_1
                 , timer_2 = cfg_timer_2
                 , timer_3 = cfg_timer_3

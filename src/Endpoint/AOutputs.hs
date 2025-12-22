@@ -48,7 +48,7 @@ message ::
     Uint8 ->
     Ivory eff (Buffer 3 Uint8)
 message AOutputs{..} i = do
-    pack payload 0 actionDim
+    pack payload 0 actionAo
     pack payload 1 $ i + 1
     pack payload 2 =<< castFloatToUint8 . (* 255) =<< deref (aoutput ~> value)
     pure payload
@@ -61,18 +61,6 @@ initialize ::
     Ivory eff ()
 initialize aoutput value' = do
     store (aoutput ~> value) value'
-
-on :: (KnownNat n) => AOutputs n -> Uint8 -> Ivory eff ()
-on AOutputs{..} i = do
-    let aoutput' = aoutputs ! toIx i
-    store (aoutput' ~> value) 1
-    store (aoutput' ~> synced) false
-
-off :: (KnownNat n) => AOutputs n -> Uint8 -> Ivory eff ()
-off AOutputs{..} i = do
-    let aoutput' = aoutputs ! toIx i
-    store (aoutput' ~> value) 0
-    store (aoutput' ~> synced) false
 
 set :: (KnownNat n) => AOutputs n -> Uint8 -> IFloat -> Ivory eff ()
 set AOutputs{..} i v = do

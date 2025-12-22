@@ -3,6 +3,7 @@ module Support.Device.GD32F4xx where
 import Ivory.Language.Module
 import Support.CMSIS.CoreCM4
 import Support.CMSIS.CoreCMFunc
+import Support.Device.GD32F4xx.DAC
 import Support.Device.GD32F4xx.DBG
 import Support.Device.GD32F4xx.DMA
 import Support.Device.GD32F4xx.ENET
@@ -20,6 +21,7 @@ import Support.Device.GD32F4xx.USART
 
 inclGD32F4xx :: ModuleDef
 inclGD32F4xx = do
+    inclDAC
     inclDBG
     inclDMA
     inclExti
