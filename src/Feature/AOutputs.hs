@@ -121,7 +121,7 @@ onAo ::
     Uint8 ->
     Ivory eff ()
 onAo AOutputs{..} buff size = do
-    when (size >=? 2) do
+    when (size >=? 3) do
         shouldInit' <- deref shouldInit
         when (iNot shouldInit') do
             index <- deref $ buff ! 1
