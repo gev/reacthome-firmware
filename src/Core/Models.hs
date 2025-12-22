@@ -50,6 +50,7 @@ deviceTypeDi4Rsm = 0x2F :: Uint8
 deviceTypeDi4La = 0x40 :: Uint8
 deviceTypeMixH = 0x41 :: Uint8
 deviceTypeMixV = 0x42 :: Uint8
+deviceTypeAo4 = 0x43 :: Uint8
 
 {-
     Modern two component SMART devices

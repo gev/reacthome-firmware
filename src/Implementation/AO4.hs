@@ -19,8 +19,7 @@ instance Controller AO4 where
     handle AO4{..} buff size = do
         action <- deref $ buff ! 0
         cond_
-            [ action ==? actionDo ==> onDo aoutput4 buff size
-            , action ==? actionDim ==> onDim aoutput4 buff size
+            [ action ==? actionAo ==> onAo aoutput4 buff size
             , action ==? actionInitialize ==> onInit aoutput4 buff size
             , action ==? actionGetState ==> forceSync aoutput4
             ]

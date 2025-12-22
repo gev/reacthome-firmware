@@ -120,51 +120,21 @@ onInit CBM53D04{..} buff size =
             store offset $ offset' + 1
         store shouldInit false
 
-onDim ::
+onAo ::
     (KnownNat l) =>
     CBM53D04 ->
     Buffer l Uint8 ->
     Uint8 ->
     Ivory eff ()
-onDim CBM53D04{..} buff size = do
+onAo CBM53D04{..} buff size = do
     when (size >=? 3) do
         shouldInit' <- deref shouldInit
         when (iNot shouldInit') do
             index <- deref $ buff ! 1
             when (index >=? 1 .&& index <=? n) do
                 let index' = index - 1
-                action <- deref $ buff ! 2
-                cond_
-                    [ action ==? 0 ==> onOff getAOutputs index'
-                    , action ==? 1 ==> onOn getAOutputs index'
-                    , action ==? 2 ==> onSet getAOutputs index' buff size
-                    , action ==? 3 ==> onSet getAOutputs index' buff size
-                    ]
+                onSet getAOutputs index' buff size
 
-onDo ::
-    (KnownNat l) =>
-    CBM53D04 ->
-    Buffer l Uint8 ->
-    Uint8 ->
-    Ivory eff ()
-onDo CBM53D04{..} buff size = do
-    when (size >=? 3) do
-        shouldInit' <- deref shouldInit
-        when (iNot shouldInit') do
-            index <- deref $ buff ! 1
-            when (index >=? 1 .&& index <=? n) do
-                let index' = index - 1
-                value' <- deref $ buff ! 2
-                ifte_
-                    (value' ==? 0)
-                    do onOff getAOutputs index'
-                    do onOn getAOutputs index'
-
-onOn :: (KnownNat n) => E.AOutputs n -> Uint8 -> Ivory eff ()
-onOn = E.on
-
-onOff :: (KnownNat n) => E.AOutputs n -> Uint8 -> Ivory eff ()
-onOff = E.off
 
 onSet ::
     (KnownNat n, KnownNat l) =>
@@ -174,8 +144,8 @@ onSet ::
     Uint8 ->
     Ivory eff ()
 onSet aoutputs' index buff size =
-    when (size >=? 4) do
-        value <- unpack buff 3 :: Ivory eff Uint8
+    when (size >=? 3) do
+        value <- unpack buff 2 :: Ivory eff Uint8
         E.set aoutputs' index (safeCast value / 255)
 
 setVoltageReduced :: CBM53D04 -> Uint8 -> IFloat -> Ivory eff ()
