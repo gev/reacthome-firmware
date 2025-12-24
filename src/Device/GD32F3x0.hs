@@ -169,13 +169,6 @@ data GD32F3x0 = GD32F3x0
     , touch_pa7 :: Touch'
     , touch_pb0 :: Touch'
     , touch_pb1 :: Touch'
-    , touch_pb2 :: Touch'
-    , touch_pb3 :: Touch'
-    , touch_pb4 :: Touch'
-    , touch_pb5 :: Touch'
-    , touch_pb6 :: Touch'
-    , touch_pb7 :: Touch'
-    , touch_pb8 :: Touch'
     , spi_0 :: SPI'
     }
 
