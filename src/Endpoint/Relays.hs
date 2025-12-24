@@ -97,6 +97,7 @@ turnOffRelay Relays{..} index = do
         store (r ~> delayOn) 0
         store (r ~> delayOff) 0
         store (r ~> timestamp) =<< getSystemTime clock
+    store (r ~> synced) false
 
 turnOnRelay ::
     (KnownNat n) =>
@@ -120,6 +121,7 @@ turnOnRelay Relays{..} groups index = do
         when (delay' ==? 0) do
             store (r ~> state) true
     store (r ~> delayOff) =<< deref (r ~> defaultDelayOff)
+    store (r ~> synced) false
 
 turnOnRelay' ::
     (KnownNat n) =>
@@ -144,6 +146,7 @@ turnOnRelay' Relays{..} groups index delayOff' = do
         when (delay' ==? 0) do
             store (r ~> state) true
     store (r ~> delayOff) delayOff'
+    store (r ~> synced) false
 
 toggleRelay ::
     (KnownNat n) =>
