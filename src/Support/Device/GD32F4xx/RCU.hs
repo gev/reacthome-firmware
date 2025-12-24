@@ -31,6 +31,7 @@ module Support.Device.GD32F4xx.RCU (
     rcu_i2c2,
     rcu_spi1,
     rcu_spi2,
+    rcu_dac,
     rcu_timer_psc_mul4,
     enablePeriphClock,
     configRcuTimerClockPrescaler,
@@ -72,6 +73,7 @@ rcu_i2c1 = RCU_PERIPH $ ext "RCU_I2C1"
 rcu_i2c2 = RCU_PERIPH $ ext "RCU_I2C2"
 rcu_spi1 = RCU_PERIPH $ ext "RCU_SPI1"
 rcu_spi2 = RCU_PERIPH $ ext "RCU_SPI2"
+rcu_dac = RCU_PERIPH $ ext "RCU_DAC"
 
 newtype TIMER_PSC_MUL = TIMER_PSC_MUL Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
@@ -120,6 +122,7 @@ inclRCU = do
     inclSym rcu_i2c2
     inclSym rcu_spi1
     inclSym rcu_spi2
+    inclSym rcu_dac
 
     inclSym rcu_timer_psc_mul4
 

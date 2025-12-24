@@ -13,6 +13,7 @@ import Formula.Doppler5
 import Formula.LeakSensor
 import Formula.Mix6x12
 import Formula.MixH
+import Formula.MixV
 import Formula.Relay12
 import Formula.RsHub4
 import Formula.Server
@@ -41,7 +42,8 @@ main :: IO ()
 main = do
     mapM_
         gcc
-        [ di4
+        [ ao4
+        , di4
         , di4la
         , di4rsm
         , relay12
@@ -72,11 +74,11 @@ main = do
         , smartTopG2v9
         , smartTopG4v9
         , smartTopG6v9
-        , ao4
         ]
     mapM_
         gcc
-        [ rsHub4
+        [ mixV
+        , rsHub4
         , server
         , soundbox
         ]

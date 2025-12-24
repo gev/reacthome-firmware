@@ -70,8 +70,10 @@ executable reacthome-firmware
     Device.GD32F3x0.Touch
     Device.GD32F3x0.UART
     Device.GD32F4xx
+    Device.GD32F4xx.DAC
     Device.GD32F4xx.Display.NeoPixel
     Device.GD32F4xx.ENET
+    Device.GD32F4xx.EXTI
     Device.GD32F4xx.Flash
     Device.GD32F4xx.GPIO
     Device.GD32F4xx.GPIO.Input
@@ -171,6 +173,7 @@ executable reacthome-firmware
     Formula.LeakSensor
     Formula.Mix6x12
     Formula.MixH
+    Formula.MixV
     Formula.Relay12
     Formula.RsHub4
     Formula.Server
@@ -209,6 +212,7 @@ executable reacthome-firmware
     Implementation.LeakSensor
     Implementation.Mix
     Implementation.MixH
+    Implementation.MixV
     Implementation.Relay
     Implementation.Smart.Bottom
     Implementation.Smart.TopA4P
@@ -292,6 +296,7 @@ executable reacthome-firmware
     Support.Device.GD32F3x0.Timer
     Support.Device.GD32F3x0.USART
     Support.Device.GD32F4xx
+    Support.Device.GD32F4xx.DAC
     Support.Device.GD32F4xx.DBG
     Support.Device.GD32F4xx.DMA
     Support.Device.GD32F4xx.ENET

@@ -169,13 +169,6 @@ data GD32F3x0 = GD32F3x0
     , touch_pa7 :: Touch'
     , touch_pb0 :: Touch'
     , touch_pb1 :: Touch'
-    , touch_pb2 :: Touch'
-    , touch_pb3 :: Touch'
-    , touch_pb4 :: Touch'
-    , touch_pb5 :: Touch'
-    , touch_pb6 :: Touch'
-    , touch_pb7 :: Touch'
-    , touch_pb8 :: Touch'
     , spi_0 :: SPI'
     }
 
@@ -461,6 +454,9 @@ gd32f3x0 =
 gd32f330k8u6 :: MCU GD32F3x0
 gd32f330k8u6 = gd32f3x0 "gd32f330" "k8u6"
 
+{-
+    ToDo : GD32F350 MCUs Should be defined via separate type, kind or data kind
+-}
 gd32f350k8u6 :: MCU GD32F3x0
 gd32f350k8u6 = gd32f3x0 "gd32f350" "k8u6"
 
