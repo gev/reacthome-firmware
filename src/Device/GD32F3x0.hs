@@ -461,6 +461,9 @@ gd32f3x0 =
 gd32f330k8u6 :: MCU GD32F3x0
 gd32f330k8u6 = gd32f3x0 "gd32f330" "k8u6"
 
+{-
+    ToDo : GD32F350 MCUs Should be defined via separate type, kind or data kind
+-}
 gd32f350k8u6 :: MCU GD32F3x0
 gd32f350k8u6 = gd32f3x0 "gd32f350" "k8u6"
 

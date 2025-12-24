@@ -2,6 +2,9 @@ module Device.GD32F3x0.GPIO.Mode where
 
 import Support.Device.GD32F3x0.GPIO
 
+{-
+    ToDo : Remove AN constructor when all usages are converted to MF
+-}
 data Mode
     = MF GPIO_MODE GPIO_OTYPE
     | AF GPIO_AF
