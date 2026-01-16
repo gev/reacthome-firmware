@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+{- HLINT ignore "Use for_" -}
 
 module Implementation.Mix where
 
@@ -48,6 +49,11 @@ import Ivory.Language.Proxy
 import Ivory.Stdlib
 import Util.CRC16
 import Prelude hiding (error)
+import Data.Type.Bool
+import Data.Type.Equality
+
+type SizeForSCB n = Div n 8 + If (Mod n 8 == 0) 0 1
+type SCB ni no = 1 + SizeForSCB ni + SizeForSCB no
 
 data Mix ni no = forall f. (Flash f) => Mix
     { relays :: Relays no
@@ -59,6 +65,7 @@ data Mix ni no = forall f. (Flash f) => Mix
     , shouldInit :: Value IBool
     , shouldSaveConfig :: Value IBool
     , saveCountdown :: Value Uint8
+    , syncChannelsBuff :: Buffer (SCB ni no) Uint8
     , transmit ::
         forall n.
         (KnownNat n) =>
@@ -75,6 +82,7 @@ mix ::
     , KnownNat ni
     , KnownNat no
     , KnownNat (PayloadSize no)
+    , KnownNat (SCB ni no), KnownNat (SizeForSCB ni)
     ) =>
     m t ->
     (Bool -> t -> m (DInputs ni)) ->
@@ -98,6 +106,8 @@ mix transport' dinputs' relays' indicator' etc = do
     shouldInit <- asks D.shouldInit
     shouldSaveConfig <- value "mix_should_save_config" false
     saveCountdown <- value "mix_save_save_countdown" 0
+    syncChannelsBuff <- buffer "mix_sync_channels"
+
     let mix =
             Mix
                 { relays
@@ -109,6 +119,7 @@ mix transport' dinputs' relays' indicator' etc = do
                 , shouldInit
                 , shouldSaveConfig
                 , saveCountdown
+                , syncChannelsBuff
                 , transmit = T.transmitBuffer transport
                 }
 
@@ -117,6 +128,7 @@ mix transport' dinputs' relays' indicator' etc = do
     addTask $ delay 10 "mix_manage" $ manage mix
     addTask $ delay 1 "mix_sync" $ sync mix
     addTask $ delay 1 "mix_save_config" $ saveTask mix
+    addTask $ delay 100 "sync_channels" $ syncChannels mix
 
     addSync "dinputs" $ forceSyncDInputs dinputs
     addSync "relays" $ forceSyncRelays relays
@@ -144,6 +156,42 @@ sync Mix{..} = do
     syncRelays relays
     syncRules rules
     syncATS ats
+
+syncChannels :: forall ni no s. (KnownNat ni, KnownNat no, KnownNat (SCB ni no), KnownNat (SizeForSCB ni)) => Mix ni no -> Ivory (ProcEffects s ()) ()
+syncChannels Mix{..} = do
+    shouldInit' <- deref shouldInit
+    when (iNot shouldInit') do
+        arrayMap \ix -> store (syncChannelsBuff ! ix) 0
+        pack syncChannelsBuff 0 actionGetState
+
+        offset <- local $ ival 1
+
+        arrayMap \ix -> do
+            let di' = DI.dinputs (getDInputs dinputs) ! ix
+            diState <- deref $ di' ~> DI.state
+            when diState do
+                offset' <- deref offset
+                let ixByte = toIx $ offset' + (fromIx ix `iDiv` 8)
+                let numBit = castDefault $ fromIx ix .% 8
+                let bitMask = 1 `iShiftL` numBit
+                buffByte <- deref $ syncChannelsBuff ! ixByte
+                pack syncChannelsBuff ixByte (buffByte .| bitMask)
+
+        let ndi = fromIntegral $ natVal (aNat :: NatType (SizeForSCB ni))
+        store offset . (+ ndi) <$> deref offset
+
+        arrayMap \ix -> do
+            let relay' = R.relays (getRelays relays) ! ix
+            relayState <- deref $ relay' ~> R.state
+            when relayState do
+                offset' <- deref offset
+                let ixByte = toIx $ offset' + (fromIx ix `iDiv` 8)
+                let numBit = castDefault $ fromIx ix .% 8
+                let bitMask = 1 `iShiftL` numBit
+                buffByte <- deref $ syncChannelsBuff ! ixByte
+                pack syncChannelsBuff ixByte (buffByte .| bitMask)
+
+        transmit syncChannelsBuff
 
 instance (KnownNat ni, KnownNat no, KnownNat (PayloadSize no)) => Controller (Mix ni no) where
     handle mix@Mix{..} buff size = do
