@@ -129,7 +129,7 @@ mix transport' dinputs' relays' indicator' etc = do
     addTask $ delay 10 "mix_manage" $ manage mix
     addTask $ delay 1 "mix_sync" $ sync mix
     addTask $ delay 1 "mix_save_config" $ saveTask mix
-    addTask $ delay 100 "sync_channels" $ syncChannels mix
+    addTask $ delay 1_000 "sync_channels" $ syncChannels mix
 
     addSync "dinputs" $ forceSyncDInputs dinputs
     addSync "relays" $ forceSyncRelays relays
