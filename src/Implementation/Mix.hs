@@ -158,49 +158,8 @@ sync Mix{..} = do
     syncRules rules
     syncATS ats
 
-syncChannels :: forall ni no s. 
-                (KnownNat ni, KnownNat no, 
-                KnownNat (SizeSyncStateBuff ni no), 
-                KnownNat (ToSizeInBytes ni)) 
-             => Mix ni no 
-             -> Ivory (ProcEffects s ()) ()
-syncChannels Mix{..} = do
-    shouldInit' <- deref shouldInit
-    when (iNot shouldInit') do
-        arrayMap \ix -> store (syncStateBuff ! ix) 0
-        pack syncStateBuff 0 actionGetState
 
-        offsetByte <- local $ ival 1
-
-        arrayMap \ix -> do
-            let di' = DI.dinputs (getDInputs dinputs) ! ix
-            diState <- deref $ di' ~> DI.state
-            when diState do
-                offsetByte' <- deref offsetByte
-                let ixByte = toIx $ offsetByte' + (fromIx ix `iDiv` 8)
-                let numBit = castDefault $ fromIx ix .% 8
-                let bitMask = 1 `iShiftL` numBit
-                buffByte <- deref $ syncStateBuff ! ixByte
-                pack syncStateBuff ixByte (buffByte .| bitMask)
-
-        let numByteDI = fromIntegral $ natVal (aNat :: NatType (ToSizeInBytes ni))
-        store offsetByte . (+ numByteDI) <$> deref offsetByte
-
-        arrayMap \ix -> do
-            let relay' = R.relays (getRelays relays) ! ix
-            relayState <- deref $ relay' ~> R.state
-            when relayState do
-                offsetByte' <- deref offsetByte
-                let ixByte = toIx $ offsetByte' + (fromIx ix `iDiv` 8)
-                let numBit = castDefault $ fromIx ix .% 8
-                let bitMask = 1 `iShiftL` numBit
-                buffByte <- deref $ syncStateBuff ! ixByte
-                pack syncStateBuff ixByte (buffByte .| bitMask)
-
-        transmit syncStateBuff
-
-
-instance (KnownNat ni, KnownNat no, KnownNat (PayloadSize no)) => Controller (Mix ni no) where
+instance (KnownNat ni, KnownNat no, KnownNat (PayloadSize no), KnownNat (SizeSyncStateBuff ni no), KnownNat (ToSizeInBytes ni)) => Controller (Mix ni no) where
     handle mix@Mix{..} buff size = do
         shouldInit' <- deref shouldInit
         action <- deref $ buff ! 0
@@ -210,10 +169,51 @@ instance (KnownNat ni, KnownNat no, KnownNat (PayloadSize no)) => Controller (Mi
             , action ==? actionDiRelaySync .&& iNot shouldInit' ==> onRule mix buff size
             , action ==? actionMix .&& iNot shouldInit' ==> onMode mix buff size
             , action ==? actionInitialize ==> onInit relays buff size
-            , action ==? actionGetState ==> onGetState mix
+            , action ==? actionGetState ==> syncChannels mix
             , action ==? actionFindMe ==> onFindMe indicator buff size
             , action ==? actionError ==> resetError ats
             ]
+
+syncChannels :: forall ni no s t. 
+                (KnownNat ni, KnownNat no, 
+                KnownNat (SizeSyncStateBuff ni no), 
+                KnownNat (ToSizeInBytes ni)) 
+             => Mix ni no 
+             -> Ivory (ProcEffects s t) ()
+syncChannels Mix{..} = do
+    shouldInit' <- deref shouldInit
+    when (iNot shouldInit') do
+        arrayMap \ix -> store (syncStateBuff ! ix) 0
+        pack syncStateBuff 0 actionGetState
+
+        offsetByte <- local $ ival 1
+        offsetByte' <- deref offsetByte
+
+        arrayMap \ix -> do
+            let di' = DI.dinputs (getDInputs dinputs) ! ix
+            diState <- deref $ di' ~> DI.state
+            when diState do
+                let ixByte = toIx $ offsetByte' + (fromIx ix `iDiv` 8)
+                let numBit = castDefault $ fromIx ix .% 8
+                let bitMask = 1 `iShiftL` numBit
+                buffByte <- deref $ syncStateBuff ! ixByte
+                pack syncStateBuff ixByte (buffByte .| bitMask)
+
+        let numByteDI = fromIntegral $ natVal (aNat :: NatType (ToSizeInBytes ni))
+        store offsetByte $ offsetByte' + numByteDI
+
+        arrayMap \ix -> do
+            let relay' = R.relays (getRelays relays) ! ix
+            relayState <- deref $ relay' ~> R.state
+            when relayState do
+                offsetByte'' <- deref offsetByte
+                let ixByte = toIx $ offsetByte'' + (fromIx ix `iDiv` 8)
+                let numBit = castDefault $ fromIx ix .% 8
+                let bitMask = 1 `iShiftL` numBit
+                buffByte <- deref $ syncStateBuff ! ixByte
+                pack syncStateBuff ixByte (buffByte .| bitMask)
+
+        transmit syncStateBuff
 
 onRule ::
     forall l ni no s t.
