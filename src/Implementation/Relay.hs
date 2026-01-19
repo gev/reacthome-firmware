@@ -1,4 +1,5 @@
 {- HLINT ignore "Use for_" -}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Implementation.Relay where
 
@@ -10,7 +11,7 @@ import Data.Buffer
 import Data.Serialize
 import Endpoint.Relays qualified as R
 import Feature.Indicator (Indicator, onFindMe)
-import Feature.Relays (Relays, getRelays, onDo, onGetState, onGroup, onInit, shouldInit, transmit)
+import Feature.Relays (Relays, getRelays, onDo, onGroup, onInit, shouldInit, transmit)
 import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
@@ -45,7 +46,19 @@ relay transport' relays' indicator' = do
 
     pure relay
 
-syncChannels :: forall n s. (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Relay n -> Ivory (ProcEffects s ()) ()
+
+instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (Relay n) where
+    handle r@Relay{..} buff size = do
+        action <- unpack buff 0
+        cond_
+            [ action ==? actionDo ==> onDo relays buff size
+            , action ==? actionGroup ==> onGroup relays buff size
+            , action ==? actionGetState ==> syncChannels r
+            , action ==? actionInitialize ==> onInit relays buff size
+            , action ==? actionFindMe ==> onFindMe indicator buff size
+            ]
+
+syncChannels :: forall n s t. (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Relay n -> Ivory (ProcEffects s t) ()
 syncChannels Relay{..} = do
     shouldInit' <- deref $ shouldInit relays
     when (iNot shouldInit') do
@@ -62,14 +75,3 @@ syncChannels Relay{..} = do
                 let newByte = byteFromBuff .| (1 `iShiftL` numBit)
                 pack syncStateBuff ixByte newByte
         transmit relays syncStateBuff
-
-instance (KnownNat n) => Controller (Relay n) where
-    handle Relay{..} buff size = do
-        action <- unpack buff 0
-        cond_
-            [ action ==? actionDo ==> onDo relays buff size
-            , action ==? actionGroup ==> onGroup relays buff size
-            , action ==? actionGetState ==> onGetState relays
-            , action ==? actionInitialize ==> onInit relays buff size
-            , action ==? actionFindMe ==> onFindMe indicator buff size
-            ]
