@@ -32,9 +32,10 @@ void timer_config(void) {
   timer_enable(TIMER1);
 }
 
-void uart_config(void) {
+void uart_config(uint32_t baudrate) {
     rcu_periph_clock_enable(RCU_GPIOA);
     rcu_periph_clock_enable(RCU_USART1);
+    usart_disable(USART1);
 
     gpio_af_set(GPIOA, GPIO_AF_1, GPIO_PIN_2 | GPIO_PIN_3);
     gpio_mode_set(GPIOA, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO_PIN_2 | GPIO_PIN_3);
@@ -42,7 +43,7 @@ void uart_config(void) {
                             GPIO_PIN_2 | GPIO_PIN_3);
 
     usart_deinit(USART1);
-    usart_baudrate_set(USART1, 250000U);
+    usart_baudrate_set(USART1, baudrate);
     usart_word_length_set(USART1, USART_WL_8BIT);
     usart_stop_bit_set(USART1, USART_STB_2BIT);
     usart_parity_config(USART1, USART_PM_NONE);
@@ -68,11 +69,12 @@ void dmx_send_buf(uint8_t *buf, uint16_t len) {
         while (!usart_flag_get(USART1, USART_FLAG_TBE));
         usart_data_transmit(USART1, buf[i]);
     }
+  while (!usart_flag_get(USART1, USART_FLAG_TC));
 }
 
 int main() {
   timer_config();
-  uart_config();
+  uart_config(250000U);
 
   rcu_periph_clock_enable(RCU_GPIOA);
   rcu_periph_clock_enable(RCU_GPIOB);
@@ -95,17 +97,14 @@ int main() {
   dmx_buffer[9] = 100;
 
   while (1) {
-
+    
     // send break
-    init_pin_out(GPIOA, GPIO_PIN_2); // tx as gpio
-    gpio_bit_reset(GPIOA, GPIO_PIN_2); // low
-    delay_us(88); // 88us min
-    gpio_bit_set(GPIOA, GPIO_PIN_2); // high
-    delay_us(8); // 8us min
-    init_pin_af(GPIOA, GPIO_PIN_2, GPIO_AF_1); // tx as af
+    uart_config(100000U);
+    uint8_t break_byte = 0;
+    dmx_send_buf(&break_byte, 1);
+    uart_config(250000U);
 
-
-    dmx_send_buf(dmx_buffer, 10);
+    dmx_send_buf(dmx_buffer, 512);
 
     delay_us(1000);
   }
