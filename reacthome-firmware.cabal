@@ -121,6 +121,7 @@ executable reacthome-firmware
     Endpoint.DInputs
     Endpoint.DInputsRelaysRules
     Endpoint.Dimmers
+    Endpoint.DMX512
     Endpoint.Groups
     Endpoint.Relays
     Endpoint.StereoAMP
