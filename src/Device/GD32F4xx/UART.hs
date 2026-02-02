@@ -77,6 +77,12 @@ mkUART uart rcu uartIRQ dmaRcu dmaPer dmaCh dmaSubPer dmaIRQn rx' tx' = do
         enableIrqNvic uartIRQ 0 0
         enableIrqNvic dmaIRQn 1 0
         enablePeriphClock rcu
+        configReceive uart usart_receive_enable
+        configTransmit uart usart_transmit_enable
+        enableInterrupt uart usart_int_rbne
+        enableInterrupt uart usart_int_err
+        enableInterrupt uart usart_int_perr
+        enableUSART uart
 
     pure
         UART
@@ -170,18 +176,18 @@ handleDrain uart onDrain = do
 
 instance (KnownNat rn, KnownNat tn) => I.UART (UART rn tn) where
     configUART (UART{..}) baudrate length stop parity = do
-        deinitDMA dmaPer dmaCh
-        deinitUSART uart
-        configReceive uart usart_receive_enable
-        configTransmit uart usart_transmit_enable
-        enableInterrupt uart usart_int_rbne
-        enableInterrupt uart usart_int_err
-        enableInterrupt uart usart_int_perr
+        -- deinitDMA dmaPer dmaCh
+        -- deinitUSART uart
+        -- configReceive uart usart_receive_enable
+        -- configTransmit uart usart_transmit_enable
+        -- enableInterrupt uart usart_int_rbne
+        -- enableInterrupt uart usart_int_err
+        -- enableInterrupt uart usart_int_perr
+        -- enableUSART uart
         setBaudrate uart baudrate
         setWordLength uart $ coerceWordLength length
         setStopBit uart $ coerceStopBit stop
         configParity uart $ coerceParity parity
-        enableUSART uart
 
     clearRX UART{..} = Q.clearConcurrently rxQueue
 
