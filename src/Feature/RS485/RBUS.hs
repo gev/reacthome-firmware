@@ -34,7 +34,6 @@ import Protocol.RS485.RBUS.Master as P
 import Protocol.RS485.RBUS.Master.MacTable as T
 import Protocol.RS485.RBUS.Master.Rx
 import Support.CMSIS.CoreCM4 (nop)
-import Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
 import Support.Cast (castFloatToUint16)
 
 rbus ::
@@ -175,7 +174,7 @@ rbus' transport rs485 index = do
     addTask $ yeld (name <> "_reset") $ resetTask rbus
     addTask $ yeld (name <> "_sync") $ syncTask rbus
 
-    addTask $ delay 1 (name <> "_break_dmx512") $ dmx512Task rbus
+    addTask $ delay 40 (name <> "_break_dmx512") $ dmx512Task rbus
 
     addTask $ yeld (name <> "sync_dmx512") $ syncDMX512Task rbus
     addTask $ delay 1 (name <> "calculate_dmx512") $ calculateDMX512Task rbus
@@ -375,68 +374,17 @@ dmx512Task :: RBUS -> Ivory (ProcEffects s t) ()
 dmx512Task RBUS{..} = do
     mode' <- deref mode
     when (mode' ==? modeDMX512) do
-        t <- (.% 40) <$> getSystemTime clock
-        cond_
-            [ t ==? 0 ==> do 
-                RS.configureRS485 rs 50_000 I.WL_8b I.SB_2b I.None
-                RS.transmit rs \write -> write 0 >> write 0 >> write 0
-                times (1_000 :: Ix 2_000) \_ -> nop 10
-                RS.configureRS485 rs 250_000 I.WL_8b I.SB_2b I.None
-                RS.transmit rs \write -> do
-                    write 0 -- first byte 0
-                    arrayMap (write <=< val)
-                    write 0 -- work around
-                    write 0 -- work around
-                    write 0 -- work around
-                    write 0 -- work around
-            ]
-  where
-    val ix = castFloatToUint16 . (* 255) =<< deref ((ED.dmx512 dmx512 ! ix) ~> ED.value)
-
-transmitConfDMX512Task :: RBUS -> Ivory (ProcEffects s t) ()
-transmitConfDMX512Task RBUS{..} = do
-    mode' <- deref mode
-    when (mode' ==? modeDMX512) do
-        RS.configureRS485 rs 250_000 I.WL_8b I.SB_2b I.None
-
-transmitDMX512Task :: RBUS -> Ivory (ProcEffects s t) ()
-transmitDMX512Task RBUS{..} = do
-    mode' <- deref mode
-    when (mode' ==? modeDMX512) do
-        RS.configureRS485 rs 250_000 I.WL_8b I.SB_2b I.None
+        RS.configureRS485 rs 100_000 I.WL_8b I.SB_2b I.None
         RS.transmit rs \write -> do
+            write 0 -- break byte 0
             write 0 -- first byte 0
             arrayMap (write <=< val)
-            write 0 -- work around
+        times (5_000 :: Ix 10_000) \_ -> nop 1
+        RS.configureRS485 rs 250_000 I.WL_8b I.SB_2b I.None
   where
-    val ix = castFloatToUint16 . (* 255) =<< deref ((ED.dmx512 dmx512 ! ix) ~> ED.value)
-
-breakConfDMX512Task :: RBUS -> Ivory (ProcEffects s t) ()
-breakConfDMX512Task RBUS{..} = do
-    -- mode' <- deref mode
-    -- when (mode' ==? modeDMX512) do
-    RS.configureRS485 rs 100_000 I.WL_8b I.SB_2b I.None
-
-breakDMX512Task :: RBUS -> Ivory (ProcEffects s t) ()
-breakDMX512Task RBUS{..} = do
-    mode' <- deref mode
-    when (mode' ==? modeDMX512) do
-        RS.configureRS485 rs 10_000 I.WL_8b I.SB_2b I.None
-        RS.transmit rs \write -> do
-            write 0
-            write 0
-            write 0
-
-break2DMX512Task :: RBUS -> Ivory (ProcEffects s t) ()
-break2DMX512Task RBUS{..} = do
-    mode' <- deref mode
-    when (mode' ==? modeDMX512) do
-        RS.transmit rs \write -> do
-            write 6
-            write 7
-            write 8
-            write 9
-            write 10
+    val ix =
+        castFloatToUint16 . (* 255)
+            =<< deref ((ED.dmx512 dmx512 ! ix) ~> ED.value)
 
 syncDMX512Task :: RBUS -> Ivory (ProcEffects s ()) ()
 syncDMX512Task RBUS{..} = do
