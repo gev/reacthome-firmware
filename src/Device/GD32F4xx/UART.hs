@@ -170,6 +170,7 @@ handleDrain uart onDrain = do
 
 instance (KnownNat rn, KnownNat tn) => I.UART (UART rn tn) where
     configUART (UART{..}) baudrate length stop parity = do
+        deinitDMA dmaPer dmaCh
         deinitUSART uart
         configReceive uart usart_receive_enable
         configTransmit uart usart_transmit_enable
