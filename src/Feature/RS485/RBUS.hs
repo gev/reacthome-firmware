@@ -1,7 +1,9 @@
 {-# HLINT ignore "Use for_" #-}
+{-# LANGUAGE NondecreasingIndentation #-}
 
 module Feature.RS485.RBUS where
 
+import Control.Monad ((<=<))
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Actions
@@ -16,6 +18,7 @@ import Data.Fixed
 import Data.Queue as Q
 import Data.Serialize
 import Data.Value
+import Endpoint.DMX512 qualified as ED
 import Feature.RS485.RBUS.Data
 import Feature.RS485.RBUS.Rx
 import Feature.RS485.RBUS.Tx
@@ -23,12 +26,16 @@ import GHC.TypeNats
 import Interface.MCU
 import Interface.RS485 qualified as I
 import Interface.RS485 qualified as RS
+import Interface.SystemClock (getSystemTime)
 import Ivory.Language
 import Ivory.Stdlib
 import Protocol.RS485.RBUS hiding (message)
 import Protocol.RS485.RBUS.Master as P
 import Protocol.RS485.RBUS.Master.MacTable as T
 import Protocol.RS485.RBUS.Master.Rx
+import Support.CMSIS.CoreCM4 (nop)
+import Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
+import Support.Cast (castFloatToUint16)
 
 rbus ::
     ( MonadState Context m
@@ -36,7 +43,7 @@ rbus ::
     , LazyTransport t
     , Transport t
     ) =>
-    List n (m (I.RS485 300 300)) ->
+    List n (m (I.RS485 300 600)) ->
     t ->
     m (List n RBUS)
 rbus rs485 transport = zipWithM (rbus' transport) rs485 nats
@@ -48,7 +55,7 @@ rbus' ::
     , Transport t
     ) =>
     t ->
-    m (I.RS485 300 300) ->
+    m (I.RS485 300 600) ->
     Int ->
     m RBUS
 rbus' transport rs485 index = do
@@ -59,9 +66,12 @@ rbus' transport rs485 index = do
     let clock = systemClock mcu
 
     rs <- rs485
+    dmx512 <- ED.mkDMX512 (name <> "_dmx512") index
     mode <- value (name <> "_mode") modeNone
     baudrate <- value (name <> "_baudrate") defaultBaudrate
     lineControl <- value (name <> "_line_control") 0
+    sizeDMX512 <- value (name <> "_size_dmx512") 0
+    curSyncDMX512 <- value (name <> "_current_sync_dmx512") 0
     msgWaitingConfirm <- values (name <> "_msg_waiting_confirm") (replicate 255 false)
     msgConfirmed <- values (name <> "_msg_confirmed") (replicate 255 false)
     msgQueue <- queue (name <> "_msg") =<< messages name
@@ -127,11 +137,14 @@ rbus' transport rs485 index = do
             RBUS
                 { index
                 , clock
+                , dmx512
                 , rs
                 , mode
                 , baudrate
                 , lineControl
                 , protocol
+                , sizeDMX512
+                , curSyncDMX512
                 , msgWaitingConfirm
                 , msgConfirmed
                 , msgQueue
@@ -162,6 +175,11 @@ rbus' transport rs485 index = do
     addTask $ yeld (name <> "_reset") $ resetTask rbus
     addTask $ yeld (name <> "_sync") $ syncTask rbus
 
+    addTask $ delay 1 (name <> "_break_dmx512") $ dmx512Task rbus
+
+    addTask $ yeld (name <> "sync_dmx512") $ syncDMX512Task rbus
+    addTask $ delay 1 (name <> "calculate_dmx512") $ calculateDMX512Task rbus
+
     addSync (name <> "_sync") $ forceSyncRBUS rbus
 
     pure rbus
@@ -180,13 +198,14 @@ syncTask r@RBUS{..} = do
         T.transmitBuffer transport =<< message r
         store synced true
 
-message :: RBUS -> Ivory eff (Buffer 8 Uint8)
+message :: RBUS -> Ivory eff (Buffer 10 Uint8)
 message RBUS{..} = do
     pack payload 0 actionRs485Mode
     pack payload 1 (fromIntegral index :: Uint8)
     pack payload 2 =<< deref mode
-    packLE payload 3 =<< deref baudrate
+    packBE payload 3 =<< deref baudrate
     pack payload 7 =<< deref lineControl
+    packBE payload 8 =<< deref sizeDMX512
     pure payload
 
 setMode ::
@@ -196,14 +215,15 @@ setMode ::
     Uint8 ->
     Ivory eff ()
 setMode list buff size = do
-    when (size ==? 8) do
+    when (size ==? 10) do
         port <- deref $ buff ! 1
         let run r@RBUS{..} p = do
                 shouldInit' <- deref shouldInit
                 when (iNot shouldInit' .&& p ==? port) do
                     store mode =<< unpack buff 2
-                    store baudrate =<< unpackLE buff 3
+                    store baudrate =<< unpackBE buff 3
                     store lineControl =<< unpack buff 7
+                    store sizeDMX512 =<< unpackBE buff 8
                     configureMode r
                     store synced false
         zipWithM_ run list $ fromIntegral <$> nats
@@ -237,13 +257,13 @@ transmitRBUS list buff size = do
                             toQueue r address buff 9 (size - 9)
         zipWithM_ run list $ fromIntegral <$> nats
 
-transmitRB485 ::
+transmitRS485 ::
     (KnownNat n, KnownNat l) =>
     List n RBUS ->
     Buffer l Uint8 ->
     Uint8 ->
     Ivory (ProcEffects s t) ()
-transmitRB485 list buff size = do
+transmitRS485 list buff size = do
     when (size >? 2) do
         port <- deref $ buff ! 1
         let run RBUS{..} p = do
@@ -264,14 +284,15 @@ initialize ::
     Uint8 ->
     Ivory (ProcEffects s t) ()
 initialize list buff size =
-    when (size ==? 25) do
+    when (size ==? 33) do
         let run r@RBUS{..} offset = do
                 store mode =<< unpack buff offset
-                store baudrate =<< unpackLE buff (offset + 1)
+                store baudrate =<< unpackBE buff (offset + 1)
                 store lineControl =<< unpack buff (offset + 5)
+                store sizeDMX512 =<< unpackBE buff (offset + 6)
                 configureMode r
                 store shouldInit false
-        zipWithM_ run list $ fromIntegral <$> fromList [1, 7 ..]
+        zipWithM_ run list $ fromIntegral <$> fromList [1, 9 ..]
 
 configureMode :: RBUS -> Ivory eff ()
 configureMode r = do
@@ -279,6 +300,7 @@ configureMode r = do
     cond_
         [ mode' ==? modeRBUS ==> configureRBUS r
         , mode' ==? modeRS485 ==> configureRS485 r
+        , mode' ==? modeDMX512 ==> RS.configureRS485 (rs r) 250_000 I.WL_8b I.SB_1b I.None
         ]
     store (rxLock r) false
     I.clearRX $ rs r
@@ -312,6 +334,133 @@ configureRS485 RBUS{..} = do
             , config 7 I.WL_9b I.SB_2b I.None
             ]
     store rsSize 0
+
+onDMX512 :: (KnownNat n, KnownNat l) => List n RBUS -> Buffer l Uint8 -> Uint8 -> Ivory eff ()
+onDMX512 list buff size = do
+    when (size >=? 4) do
+        port <- deref $ buff ! 1
+        let run RBUS{..} p = do
+                shouldInit' <- deref shouldInit
+                mode' <- deref mode
+                sizeDMX <- deref sizeDMX512
+                channel' <- unpackBE buff 2
+                let channel = channel' - 1
+                typeValue <- deref $ buff ! 4
+                when
+                    ( iNot shouldInit'
+                        .&& mode'
+                        ==? modeDMX512
+                        .&& p
+                        ==? port
+                        .&& channel
+                        <? sizeDMX
+                    )
+                    do
+                        cond_
+                            [ typeValue ==? 0 ==> do
+                                ED.off dmx512 channel
+                            , typeValue ==? 1 ==> do
+                                ED.on dmx512 channel
+                            , typeValue ==? 2 ==> do
+                                brightness <- unpack buff 5 :: Ivory eff Uint8
+                                ED.setBrightness dmx512 (safeCast brightness / 255) channel
+                            , typeValue ==? 3 ==> do
+                                brightness <- unpack buff 5 :: Ivory eff Uint8
+                                velocity <- unpack buff 6 :: Ivory eff Uint8
+                                ED.fade dmx512 (safeCast brightness / 255) (safeCast velocity / 255) channel
+                            ]
+        zipWithM_ run list $ fromIntegral <$> nats
+
+dmx512Task :: RBUS -> Ivory (ProcEffects s t) ()
+dmx512Task RBUS{..} = do
+    mode' <- deref mode
+    when (mode' ==? modeDMX512) do
+        t <- (.% 40) <$> getSystemTime clock
+        cond_
+            [ t ==? 0 ==> do 
+                RS.configureRS485 rs 50_000 I.WL_8b I.SB_2b I.None
+                RS.transmit rs \write -> write 0 >> write 0 >> write 0
+                times (1_000 :: Ix 2_000) \_ -> nop 10
+                RS.configureRS485 rs 250_000 I.WL_8b I.SB_2b I.None
+                RS.transmit rs \write -> do
+                    write 0 -- first byte 0
+                    arrayMap (write <=< val)
+                    write 0 -- work around
+                    write 0 -- work around
+                    write 0 -- work around
+                    write 0 -- work around
+            ]
+  where
+    val ix = castFloatToUint16 . (* 255) =<< deref ((ED.dmx512 dmx512 ! ix) ~> ED.value)
+
+transmitConfDMX512Task :: RBUS -> Ivory (ProcEffects s t) ()
+transmitConfDMX512Task RBUS{..} = do
+    mode' <- deref mode
+    when (mode' ==? modeDMX512) do
+        RS.configureRS485 rs 250_000 I.WL_8b I.SB_2b I.None
+
+transmitDMX512Task :: RBUS -> Ivory (ProcEffects s t) ()
+transmitDMX512Task RBUS{..} = do
+    mode' <- deref mode
+    when (mode' ==? modeDMX512) do
+        RS.configureRS485 rs 250_000 I.WL_8b I.SB_2b I.None
+        RS.transmit rs \write -> do
+            write 0 -- first byte 0
+            arrayMap (write <=< val)
+            write 0 -- work around
+  where
+    val ix = castFloatToUint16 . (* 255) =<< deref ((ED.dmx512 dmx512 ! ix) ~> ED.value)
+
+breakConfDMX512Task :: RBUS -> Ivory (ProcEffects s t) ()
+breakConfDMX512Task RBUS{..} = do
+    -- mode' <- deref mode
+    -- when (mode' ==? modeDMX512) do
+    RS.configureRS485 rs 100_000 I.WL_8b I.SB_2b I.None
+
+breakDMX512Task :: RBUS -> Ivory (ProcEffects s t) ()
+breakDMX512Task RBUS{..} = do
+    mode' <- deref mode
+    when (mode' ==? modeDMX512) do
+        RS.configureRS485 rs 10_000 I.WL_8b I.SB_2b I.None
+        RS.transmit rs \write -> do
+            write 0
+            write 0
+            write 0
+
+break2DMX512Task :: RBUS -> Ivory (ProcEffects s t) ()
+break2DMX512Task RBUS{..} = do
+    mode' <- deref mode
+    when (mode' ==? modeDMX512) do
+        RS.transmit rs \write -> do
+            write 6
+            write 7
+            write 8
+            write 9
+            write 10
+
+syncDMX512Task :: RBUS -> Ivory (ProcEffects s ()) ()
+syncDMX512Task RBUS{..} = do
+    shouldInit' <- deref shouldInit
+    mode' <- deref mode
+    when (mode' ==? modeDMX512 .&& iNot shouldInit') do
+        i <- deref curSyncDMX512
+        let dmx = ED.dmx512 dmx512 ! toIx i
+        synced' <- deref $ dmx ~> ED.synced
+        when (iNot synced') do
+            msg <- ED.message dmx512 i
+            T.transmitBuffer transport msg
+            store (dmx ~> ED.synced) true
+        sizeDMX512' <- deref sizeDMX512
+        store curSyncDMX512 $ (i + 1) .% sizeDMX512'
+
+calculateDMX512Task :: RBUS -> Ivory (ProcEffects s ()) ()
+calculateDMX512Task RBUS{..} = do
+    shouldInit' <- deref shouldInit
+    mode' <- deref mode
+    when (mode' ==? modeDMX512 .&& iNot shouldInit') do
+        sizeDMX512' <- deref sizeDMX512
+        for (toIx sizeDMX512') \ix -> do
+            ED.calculateValue $ ED.dmx512 dmx512 ! ix
 
 onGetState :: [RBUS] -> Ivory eff ()
 onGetState = mapM_ run
