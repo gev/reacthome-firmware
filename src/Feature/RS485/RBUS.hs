@@ -26,7 +26,6 @@ import GHC.TypeNats
 import Interface.MCU
 import Interface.RS485 qualified as I
 import Interface.RS485 qualified as RS
-import Interface.SystemClock (getSystemTime)
 import Ivory.Language
 import Ivory.Stdlib
 import Protocol.RS485.RBUS hiding (message)
