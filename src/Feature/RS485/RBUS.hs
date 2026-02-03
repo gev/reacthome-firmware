@@ -373,12 +373,12 @@ dmx512Task :: RBUS -> Ivory (ProcEffects s t) ()
 dmx512Task RBUS{..} = do
     mode' <- deref mode
     when (mode' ==? modeDMX512) do
-        RS.configureRS485 rs 100_000 I.WL_8b I.SB_2b I.None
+        RS.configureRS485 rs 98_000 I.WL_8b I.SB_2b I.None
         RS.transmit rs \write -> do
             write 0 -- break byte 0
             write 0 -- first byte 0
             arrayMap (write <=< val)
-        times (5_000 :: Ix 10_000) \_ -> nop 1
+        times (1_800 :: Ix 10_000) \_ -> nop 1
         RS.configureRS485 rs 250_000 I.WL_8b I.SB_2b I.None
   where
     val ix =
