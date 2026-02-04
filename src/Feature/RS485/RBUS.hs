@@ -298,7 +298,6 @@ configureMode r = do
     cond_
         [ mode' ==? modeRBUS ==> configureRBUS r
         , mode' ==? modeRS485 ==> configureRS485 r
-        , mode' ==? modeDMX512 ==> RS.configureRS485 (rs r) 250_000 I.WL_8b I.SB_1b I.None
         ]
     store (rxLock r) false
     I.clearRX $ rs r
