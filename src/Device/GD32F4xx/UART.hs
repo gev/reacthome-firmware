@@ -176,14 +176,6 @@ handleDrain uart onDrain = do
 
 instance (KnownNat rn, KnownNat tn) => I.UART (UART rn tn) where
     configUART (UART{..}) baudrate length stop parity = do
-        -- deinitDMA dmaPer dmaCh
-        -- deinitUSART uart
-        -- configReceive uart usart_receive_enable
-        -- configTransmit uart usart_transmit_enable
-        -- enableInterrupt uart usart_int_rbne
-        -- enableInterrupt uart usart_int_err
-        -- enableInterrupt uart usart_int_perr
-        -- enableUSART uart
         setBaudrate uart baudrate
         setWordLength uart $ coerceWordLength length
         setStopBit uart $ coerceStopBit stop
