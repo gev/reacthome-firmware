@@ -11,18 +11,23 @@ import Interface.RS485
 import Interface.SystemClock
 import Ivory.Language
 import Protocol.RS485.RBUS.Master
+import Endpoint.DMX512
 
-modeNone = 2 :: Uint8
+modeNone = 3 :: Uint8
+modeDMX512 = 2 :: Uint8
 modeRBUS = 1 :: Uint8
 modeRS485 = 0 :: Uint8
 
 data RBUS = forall t. (LazyTransport t, Transport t) => RBUS
     { index :: Int
     , clock :: SystemClock
-    , rs :: RS485 300 300
+    , rs :: RS485 300 600
+    , dmx512 :: DMX512 512
     , mode :: Value Uint8
     , baudrate :: Value Uint32
     , lineControl :: Value Uint8
+    , sizeDMX512 :: Value Uint16
+    , curSyncDMX512 :: Value Uint16
     , protocol :: Master 255
     , msgQueue :: Queue 64 (Messages 64)
     , msgWaitingConfirm :: Values 255 IBool
@@ -43,7 +48,7 @@ data RBUS = forall t. (LazyTransport t, Transport t) => RBUS
     , pingAddress :: Value Uint8
     , shouldInit :: Value IBool
     , synced :: Value IBool
-    , payload :: Buffer 8 Uint8
+    , payload :: Buffer 10 Uint8
     , transport :: t
     }
 

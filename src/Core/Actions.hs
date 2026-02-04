@@ -33,6 +33,7 @@ actionALedConfigGroup = 0x48 :: Uint8
 actionRs485Mode = 0xA0 :: Uint8
 actionRbusTransmit = 0xA1 :: Uint8
 actionRs485Transmit = 0xA2 :: Uint8
+actionDMX512 = 0xA3 :: Uint8
 
 actionDoppler0 = 0xB0 :: Uint8 -- deprecated
 actionDopplerRaw = 0xB1 :: Uint8

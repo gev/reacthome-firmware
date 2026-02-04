@@ -29,8 +29,9 @@ import Feature.RS485.RBUS (
     configureMode,
     forceSyncRBUS',
     setMode,
-    transmitRB485,
+    transmitRS485,
     transmitRBUS,
+    onDMX512,
  )
 import Feature.RS485.RBUS.Data (RBUS (..))
 import GHC.TypeNats
@@ -75,7 +76,8 @@ instance (KnownNat ni, KnownNat nd, KnownNat nr) => Controller (Hub ni nd nr) wh
             , action ==? actionDim ==> onDim dimmers buff size
             , action ==? actionRs485Mode ==> setMode rbus buff size
             , action ==? actionRbusTransmit ==> transmitRBUS rbus buff size
-            , action ==? actionRs485Transmit ==> transmitRB485 rbus buff size
+            , action ==? actionRs485Transmit ==> transmitRS485 rbus buff size
+            , action ==? actionDMX512 ==> onDMX512 rbus buff size
             , action ==? actionFindMe ==> onFindMe indicator buff size
             , action ==? actionInitialize ==> onInit s buff size
             , action ==? actionGetState ==> onGetState s
@@ -97,16 +99,17 @@ onInit ::
     Uint8 ->
     Ivory (ProcEffects s t) ()
 onInit Hub{..} buff size = do
-    let s = 1 + (6 * fromIntegral (length rbus))
+    let s = 1 + (8 * fromIntegral (length rbus))
     let dim' = n dimmers * 3
     let ng' = 10
     when (size ==? s + dim' + ng') do
         let run r@RBUS{..} offset = do
                 store mode =<< unpack buff offset
-                store baudrate =<< unpackLE buff (offset + 1)
+                store baudrate =<< unpackBE buff (offset + 1)
                 store lineControl =<< unpack buff (offset + 5)
+                store sizeDMX512 =<< unpackBE buff (offset + 6)
                 configureMode r
-        zipWithM_ run rbus $ fromIntegral <$> fromList [1, 7 ..]
+        zipWithM_ run rbus $ fromIntegral <$> fromList [1, 9 ..]
 
         offset <- local $ ival $ toIx s
 

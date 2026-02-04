@@ -21,6 +21,7 @@ rxTask r = do
     cond_
         [ mode' ==? modeRBUS ==> rxRBUS r
         , mode' ==? modeRS485 ==> rxRS485 r
+        , mode' ==? modeDMX512 ==> I.clearRX (rs r)
         ]
 
 rxRBUS :: RBUS -> Ivory (ProcEffects s ()) ()
