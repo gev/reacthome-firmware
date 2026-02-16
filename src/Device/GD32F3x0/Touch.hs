@@ -111,17 +111,8 @@ checkCalibration :: Touch -> Ivory eff ()
 checkCalibration Touch{..} = do
     var0' <- deref var0
     var1' <- deref var1
-    shouldCalibrate' <- deref shouldCalibrate
-    when (shouldCalibrate' .&& var0' >? 0 .&& var1' >? 0) do
-        ifte_
-            (var1' >? var0')
-            do
-                store shouldCalibrate false
-            do
-                avg1' <- deref avg1
-                store avg0 avg1'
-                store avg avg1'
-                store var0 var1'
+    store shouldCalibrate $ var0' >? var1'
+ 
 
 pinToGround :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff ()
 pinToGround gpio pin = do
@@ -178,7 +169,8 @@ processingMeasurement touch@Touch{..} = do
                     store var $ average 0.01 var' $ diff * diff
                     var'' <- (/ avg') <$> deref var
 
-                    store debugVal $ 100 * var''
+                    store debugVal var''
+                    -- store debugVal diff
 
                     ifte_
                         (var'' >? I.thresholdUp material .&& moment >? avg')
@@ -230,7 +222,7 @@ aluminum =
     I.Material
         { maxDiff = 4000
         , thresholdUp = 300
-        , thresholdDown = 50
+        , thresholdDown = 100
         }
 
 glass =
