@@ -228,7 +228,7 @@ average alpha a b =
 
 aluminum =
     I.Material
-        { maxDiff = 1800
+        { maxDiff = 4000
         , thresholdUp = 300
         , thresholdDown = 50
         }
