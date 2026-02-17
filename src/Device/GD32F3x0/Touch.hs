@@ -28,8 +28,6 @@ data Touch = Touch
     , avg :: Value IFloat
     , avg0 :: Value IFloat
     , avg1 :: Value IFloat
-    , var0 :: Value IFloat
-    , var1 :: Value IFloat
     , var :: Value IFloat
     , stateTouch :: Value IBool
     , start :: Value IBool
@@ -58,8 +56,6 @@ mkTouch port pin rcuPin afPin timer' timerChannel timerChannelFlag material = do
     avg <- value ("touch_avg" <> name) 0
     avg0 <- value ("touch_avg0" <> name) 0
     avg1 <- value ("touch_avg1" <> name) 0
-    var0 <- value ("touch_var0" <> name) 0
-    var1 <- value ("touch_var1" <> name) 0
     var <- value ("touch_var" <> name) 0
     stateTouch <- value ("touch_state_touch" <> name) false
     start <- value ("touch_start" <> name) false
@@ -88,8 +84,6 @@ mkTouch port pin rcuPin afPin timer' timerChannel timerChannelFlag material = do
                 , avg0
                 , avg1
                 , var
-                , var0
-                , var1
                 , stateTouch
                 , start
                 , shouldCalibrate
@@ -109,9 +103,9 @@ touchStart Touch{..} =
 
 checkCalibration :: Touch -> Ivory eff ()
 checkCalibration Touch{..} = do
-    var0' <- deref var0
-    var1' <- deref var1
-    store shouldCalibrate $ var0' >? var1'
+    avg0' <- deref avg0
+    avg1' <- deref avg1
+    store shouldCalibrate $ avg0' >? avg1'
  
 
 pinToGround :: GPIO_PERIPH -> GPIO_PIN -> Ivory eff ()
@@ -158,7 +152,7 @@ processingMeasurement touch@Touch{..} = do
         let diff = abs $ moment - avg'
 
         -- store debugVal moment
-
+        
         start' <- deref start
 
         ifte_
@@ -169,7 +163,7 @@ processingMeasurement touch@Touch{..} = do
                     store var $ average 0.01 var' $ diff * diff
                     var'' <- (/ avg') <$> deref var
 
-                    store debugVal var''
+                    -- store debugVal $ var'' * 100
                     -- store debugVal diff
 
                     ifte_
@@ -194,16 +188,8 @@ processingMeasurement touch@Touch{..} = do
                         stateTouch'
                         do
                             store avg1 $ average 0.0001 avg1' moment
-                            avg1'' <- deref avg1
-                            var1' <- deref var1
-                            let d1 = moment - avg1''
-                            store var1 $ average 0.01 var1' $ d1 * d1
                         do
                             store avg0 $ average 0.0001 avg0' moment
-                            avg0'' <- deref avg0
-                            var0' <- deref var0
-                            let d0 = moment - avg0''
-                            store var0 $ average 0.001 var0' $ d0 * d0
 
                     shouldCalibrate' <- deref shouldCalibrate
                     when (iNot stateTouch' .|| shouldCalibrate') do
@@ -220,9 +206,9 @@ average alpha a b =
 
 aluminum =
     I.Material
-        { maxDiff = 4000
+        { maxDiff = 1800
         , thresholdUp = 300
-        , thresholdDown = 100
+        , thresholdDown = 50
         }
 
 glass =
