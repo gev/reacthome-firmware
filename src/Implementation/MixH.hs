@@ -12,10 +12,12 @@ import Core.Task
 import Core.Transport
 import Data.Buffer
 import Data.Serialize
+import Data.Type.Bool
+import Data.Type.Equality
 import Data.Value
+import Endpoint.DInputs qualified as DI
 import Endpoint.DInputsRelaysRules as Ru
 import Endpoint.Dimmers qualified as EDim
-import Endpoint.DInputs qualified as DI
 import Endpoint.Relays qualified as R
 import Feature.DInputs (
     DInputs,
@@ -45,10 +47,8 @@ import Interface.MCU as I
 import Ivory.Language
 import Ivory.Language.Proxy
 import Ivory.Stdlib
-import Util.CRC16
-import Data.Type.Bool
-import Data.Type.Equality
 import Support.Cast
+import Util.CRC16
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff ni no nd = 1 + ToSizeInBytes ni + ToSizeInBytes no + nd
@@ -147,7 +147,17 @@ sync Mix{..} = do
     syncRelays relays
     syncRules rules
 
-instance (KnownNat ni, KnownNat no, KnownNat nd, KnownNat (PayloadSize no)) => Controller (Mix ni no nd) where
+instance
+    ( KnownNat ni
+    , KnownNat no
+    , KnownNat nd
+    , KnownNat (PayloadSize no)
+    , KnownNat (SizeSyncStateBuff ni no nd)
+    , KnownNat (ToSizeInBytes ni)
+    , KnownNat (ToSizeInBytes no)
+    ) =>
+    Controller (Mix ni no nd)
+    where
     handle mix@Mix{..} buff size = do
         shouldInit' <- deref shouldInit
         action <- deref $ buff ! 0
@@ -157,16 +167,20 @@ instance (KnownNat ni, KnownNat no, KnownNat nd, KnownNat (PayloadSize no)) => C
             , action ==? actionDim .&& iNot shouldInit' ==> onDim dimmers buff size
             , action ==? actionDiRelaySync .&& iNot shouldInit' ==> onRule mix buff size
             , action ==? actionInitialize ==> onInit mix buff size
-            , action ==? actionGetState ==> onGetState mix
+            , action ==? actionGetState ==> syncChannels mix
             ]
 
-syncChannels :: forall ni no nd s t. 
-                (KnownNat ni, KnownNat no, KnownNat nd,
-                KnownNat (SizeSyncStateBuff ni no nd), 
-                KnownNat (ToSizeInBytes ni), 
-                KnownNat (ToSizeInBytes no)) 
-             => Mix ni no nd
-             -> Ivory (ProcEffects s t) ()
+syncChannels ::
+    forall ni no nd s t.
+    ( KnownNat ni
+    , KnownNat no
+    , KnownNat nd
+    , KnownNat (SizeSyncStateBuff ni no nd)
+    , KnownNat (ToSizeInBytes ni)
+    , KnownNat (ToSizeInBytes no)
+    ) =>
+    Mix ni no nd ->
+    Ivory (ProcEffects s t) ()
 syncChannels Mix{..} = do
     shouldInit' <- deref shouldInit
     when (iNot shouldInit') do
@@ -205,10 +219,10 @@ syncChannels Mix{..} = do
 
         offsetByte''' <- deref offsetByte
         arrayMap \ix -> do
-           let dimmer = EDim.dimmers (getDimmers dimmers) ! ix
-           dimmerBrightness <- castFloatToUint8 . (* 255) =<< deref (dimmer ~> EDim.brightness)
-           let ixBuff = toIx . (+ offsetByte''') $ fromIx ix
-           pack syncStateBuff ixBuff dimmerBrightness
+            let dimmer = EDim.dimmers (getDimmers dimmers) ! ix
+            dimmerBrightness <- castFloatToUint8 . (* 255) =<< deref (dimmer ~> EDim.brightness)
+            let ixBuff = toIx . (+ offsetByte''') $ fromIx ix
+            pack syncStateBuff ixBuff dimmerBrightness
 
         transmit syncStateBuff
 
