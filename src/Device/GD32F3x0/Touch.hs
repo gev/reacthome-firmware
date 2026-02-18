@@ -30,7 +30,7 @@ data Touch = Touch
     , avg1 :: Value IFloat
     , var :: Value IFloat
     , stateTouch :: Value IBool
-    , start :: Value IBool
+    , running :: Value IBool
     , shouldCalibrate :: Value IBool
     , counter :: Value Uint8
     , debugVal :: Value IFloat
@@ -58,7 +58,7 @@ mkTouch port pin rcuPin afPin timer' timerChannel timerChannelFlag material = do
     avg1 <- value ("touch_avg1" <> name) 0
     var <- value ("touch_var" <> name) 0
     stateTouch <- value ("touch_state_touch" <> name) false
-    start <- value ("touch_start" <> name) false
+    running <- value ("touch_running" <> name) false
     shouldCalibrate <- value ("touch_should_calibrate" <> name) true
     counter <- value ("touch_counter" <> name) 0
     debugVal <- value ("debug_val" <> name) 0
@@ -85,21 +85,21 @@ mkTouch port pin rcuPin afPin timer' timerChannel timerChannelFlag material = do
                 , avg1
                 , var
                 , stateTouch
-                , start
+                , running
                 , shouldCalibrate
                 , counter
                 , debugVal
                 }
 
-    addTask $ delay 5_000 ("touch_start" <> name) $ touchStart touch
+    addTask $ delay 5_000 ("touch_run" <> name) $ touchRun touch
     addTask $ delay 500 ("touch_check_calibration" <> name) $ checkCalibration touch
     addTask $ yeld ("touch_run" <> name) $ processingMeasurement touch
 
     pure touch
 
-touchStart :: Touch -> Ivory eff ()
-touchStart Touch{..} =
-    store start true
+touchRun :: Touch -> Ivory eff ()
+touchRun Touch{..} =
+    store running true
 
 checkCalibration :: Touch -> Ivory eff ()
 checkCalibration Touch{..} = do
@@ -153,10 +153,10 @@ processingMeasurement touch@Touch{..} = do
 
         -- store debugVal moment
         
-        start' <- deref start
+        running' <- deref running
 
         ifte_
-            start'
+            running'
             do
                 when (moment >? 0 .&& avg' >? 0 .&& diff <? I.maxDiff material) do
                     var' <- deref var
