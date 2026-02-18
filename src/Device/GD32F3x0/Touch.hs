@@ -214,6 +214,6 @@ aluminum =
 glass =
     I.Material
         { maxDiff = 80
-        , thresholdUp = 0.5
+        , thresholdUp = 0.4
         , thresholdDown = 0.2
         }
