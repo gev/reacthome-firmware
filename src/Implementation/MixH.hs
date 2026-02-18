@@ -81,6 +81,8 @@ mix ::
     , KnownNat nd
     , KnownNat (PayloadSize no)
     , KnownNat (SizeSyncStateBuff ni no nd)
+    , KnownNat (ToSizeInBytes ni)
+    , KnownNat (ToSizeInBytes no)
     ) =>
     m t ->
     (Bool -> t -> m (DInputs ni)) ->
@@ -121,6 +123,7 @@ mix transport' dinputs' relays' dimmers' ds18b20 etc = do
     addTask $ delay 10 "mix_manage" $ manage mix
     addTask $ delay 1 "mix_sync" $ sync mix
     addTask $ delay 1 "mix_save_config" $ saveTask mix
+    addTask $ delay 5_000 "sync_channels" $ syncChannels mix
 
     addSync "dinputs" $ forceSyncDInputs dinputs
     addSync "relays" $ forceSyncRelays relays
