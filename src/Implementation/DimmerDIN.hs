@@ -68,11 +68,11 @@ syncChannels Dimmer{..} = do
     when (iNot shouldInit') do
         arrayMap \ix -> store (syncStateBuff ! ix) 0
         pack syncStateBuff 0 actionGetState
-
+        let offset = 1
         arrayMap \ix -> do
             let dimmer = D.dimmers (getDimmers dimmers) ! ix
             dimmerBrightness <- castFloatToUint8 . (* 255) =<< deref (dimmer ~> D.brightness)
-            let ixBuff = toIx . (+1) $ fromIx ix
+            let ixBuff = toIx . (+ offset) $ fromIx ix
             pack syncStateBuff ixBuff dimmerBrightness
 
         transmit dimmers syncStateBuff
