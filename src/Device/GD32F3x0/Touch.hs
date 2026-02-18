@@ -91,14 +91,14 @@ mkTouch port pin rcuPin afPin timer' timerChannel timerChannelFlag material = do
                 , debugVal
                 }
 
-    addTask $ delay 5_000 ("touch_run" <> name) $ touchRun touch
+    addTask $ delay 5_000 ("touch_set_running" <> name) $ touchSetRunning touch
     addTask $ delay 500 ("touch_check_calibration" <> name) $ checkCalibration touch
     addTask $ yeld ("touch_run" <> name) $ processingMeasurement touch
 
     pure touch
 
-touchRun :: Touch -> Ivory eff ()
-touchRun Touch{..} =
+touchSetRunning :: Touch -> Ivory eff ()
+touchSetRunning Touch{..} =
     store running true
 
 checkCalibration :: Touch -> Ivory eff ()
