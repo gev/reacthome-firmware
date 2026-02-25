@@ -1,6 +1,6 @@
 {-# LANGUAGE UndecidableInstances #-}
 
-module Implementation.Smart.TopAP where
+module Implementation.Smart.TopA4P where
 
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
@@ -45,9 +45,9 @@ import Interface.MCU (peripherals)
 import Ivory.Language
 import Ivory.Stdlib
 
-
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff n = 1 + ToSizeInBytes n
+
 data Top n = Top
     { dinputs :: DI.DInputs n
     , leds :: LEDs 4 n
