@@ -1,4 +1,6 @@
-module Implementation.Smart.TopA4P where
+{-# LANGUAGE UndecidableInstances #-}
+
+module Implementation.Smart.TopAP where
 
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
@@ -7,12 +9,18 @@ import Core.Context
 import Core.Controller
 import Core.Domain qualified as D
 import Core.Handler
+import Core.Task
 import Core.Transport
+import Data.Buffer
 import Data.Display.Canvas1D (Canvas1DSize)
 import Data.Matrix
+import Data.Serialize
+import Data.Type.Bool
+import Data.Type.Equality
 import Data.Value
+import Endpoint.DInputs qualified as D
 import Feature.DInputs as DI (
-    DInputs (getDInputs),
+    DInputs (getDInputs, transmit),
     forceSyncDInputs,
  )
 import Feature.Sht21 (SHT21)
@@ -37,11 +45,15 @@ import Interface.MCU (peripherals)
 import Ivory.Language
 import Ivory.Stdlib
 
+
+type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
+type SizeSyncStateBuff n = 1 + ToSizeInBytes n
 data Top n = Top
     { dinputs :: DI.DInputs n
     , leds :: LEDs 4 n
     , buttons :: Buttons n 4 n
     , sht21 :: SHT21
+    , syncStateBuff :: Buffer (SizeSyncStateBuff n) Uint8
     }
 
 topA4P ::
@@ -53,6 +65,7 @@ topA4P ::
     , Flash f
     , KnownNat n
     , KnownNat (Canvas1DSize n)
+    , KnownNat (SizeSyncStateBuff n)
     ) =>
     m t ->
     (Bool -> t -> m (DI.DInputs n)) ->
@@ -67,6 +80,7 @@ topA4P transport' dinputs' sht21' display' etc' = do
     let etc = etc' $ peripherals mcu
     dinputs <- dinputs' False transport
     frameBuffer <- values' "top_frame_buffer" 0
+    syncStateBuff <- buffer "sync_channels"
 
     leds <-
         mkLeds
@@ -106,7 +120,10 @@ topA4P transport' dinputs' sht21' display' etc' = do
                 , leds
                 , buttons
                 , sht21
+                , syncStateBuff
                 }
+
+    addTask $ delay 5_000 "sync_channels" $ syncChannels top
 
     addHandler $
         Render
@@ -125,7 +142,7 @@ onGetState Top{..} = do
     forceSyncDInputs dinputs
     sendLEDs leds
 
-instance (KnownNat n) => Controller (Top n) where
+instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (Top n) where
     handle t@Top{..} buff size = do
         action <- deref $ buff ! 0
         cond_
@@ -136,5 +153,27 @@ instance (KnownNat n) => Controller (Top n) where
             , action ==? actionBlink ==> onBlink leds buff size
             , action ==? actionPalette ==> onPalette leds buff size
             , action ==? actionFindMe ==> onFindMe buttons buff size
-            , action ==? actionGetState ==> onGetState t
+            , action ==? actionGetState ==> syncChannels t
             ]
+
+syncChannels ::
+    forall n s t.
+    ( KnownNat n
+    , KnownNat (SizeSyncStateBuff n)
+    ) =>
+    Top n ->
+    Ivory (ProcEffects s t) ()
+syncChannels Top{..} = do
+    arrayMap \ix -> store (syncStateBuff ! ix) 0
+    pack syncStateBuff 0 actionGetState
+    let offset = 1
+    arrayMap \ix -> do
+        let relay' = D.dinputs (DI.getDInputs dinputs) ! ix
+        diState <- deref $ relay' ~> D.state
+        when diState do
+            let ixByte = toIx $ offset + (fromIx ix `iDiv` 8)
+            let numBit = castDefault $ fromIx ix .% 8
+            byteFromBuff <- deref $ syncStateBuff ! ixByte
+            let newByte = byteFromBuff .| (1 `iShiftL` numBit)
+            pack syncStateBuff ixByte newByte
+    DI.transmit dinputs syncStateBuff
