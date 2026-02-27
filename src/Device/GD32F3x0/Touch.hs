@@ -32,7 +32,8 @@ data Touch = Touch
     , stateTouch :: Value IBool
     , running :: Value IBool
     , shouldCalibrate :: Value IBool
-    , counter :: Value Uint8
+    , counterUp :: Value Uint8
+    , counterDown :: Value Uint8
     , debugVal :: Value IFloat
     }
 
@@ -60,7 +61,8 @@ mkTouch port pin rcuPin afPin timer' timerChannel timerChannelFlag material = do
     stateTouch <- value ("touch_state_touch" <> name) false
     running <- value ("touch_running" <> name) false
     shouldCalibrate <- value ("touch_should_calibrate" <> name) true
-    counter <- value ("touch_counter" <> name) 0
+    counterUp <- value ("touch_counter_up" <> name) 0
+    counterDown <- value ("touch_counter_down" <> name) 0
     debugVal <- value ("debug_val" <> name) 0
 
     addInit name do
@@ -87,7 +89,8 @@ mkTouch port pin rcuPin afPin timer' timerChannel timerChannelFlag material = do
                 , stateTouch
                 , running
                 , shouldCalibrate
-                , counter
+                , counterUp
+                , counterDown
                 , debugVal
                 }
 
@@ -158,29 +161,39 @@ processingMeasurement touch@Touch{..} = do
         ifte_
             running'
             do
-                when (moment >? 0 .&& avg' >? 0 .&& diff <? I.maxDiff material) do
+                when (moment >? 0 .&& avg' >? 0) do
                     var' <- deref var
                     store var $ average 0.01 var' $ diff * diff
                     var'' <- (/ avg') <$> deref var
 
                     -- store debugVal $ var'' * 100
-                    -- store debugVal diff
+                    store debugVal diff
 
                     ifte_
                         (var'' >? I.thresholdUp material .&& moment >? avg')
                         do
-                            counter' <- deref counter
-                            store counter $ counter' + 1
-                            counter'' <- deref counter
+                            counter' <- deref counterUp
+                            store counterUp $ counter' + 1
+                            counter'' <- deref counterUp
                             when (counter'' ==? 100) do
                                 store stateTouch true
                         do
-                            store counter 0
+                            store counterUp 0
 
-                    -- store debugVal . safeCast =<< deref counter
+                    ifte_
+                        (var'' <? I.thresholdDown material)
+                        do
+                            counter' <- deref counterDown
+                            store counterDown $ counter' + 1
+                            counter'' <- deref counterDown
+                            when (counter'' ==? 100) do
+                                store stateTouch false
+                        do
+                            store counterDown 0
 
-                    when (var'' <? I.thresholdDown material) do
-                        store stateTouch false
+
+                    -- when (var'' <? I.thresholdDown material) do
+                    --     store stateTouch false
 
                     stateTouch' <- deref stateTouch
 
@@ -207,7 +220,7 @@ average alpha a b =
 aluminum =
     I.Material
         { maxDiff = 1800
-        , thresholdUp = 300
+        , thresholdUp = 70
         , thresholdDown = 50
         }
 
