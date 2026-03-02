@@ -137,7 +137,7 @@ topA4T transport' dinputs' vibro' touch' sht21' display' etc' = do
                 }
 
     addTask $ delay 5_000 "sync_channels" $ syncChannels top
-    
+
     addHandler $
         Render
             display
