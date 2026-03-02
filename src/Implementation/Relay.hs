@@ -9,9 +9,9 @@ import Core.Controller
 import Core.Task
 import Data.Buffer
 import Data.Serialize
-import Endpoint.Relays qualified as R
+import Endpoint.Relays qualified as E
 import Feature.Indicator (Indicator, onFindMe)
-import Feature.Relays (Relays, getRelays, onDo, onGroup, onInit, shouldInit, transmit)
+import Feature.Relays (Relays, getRelays, onDo, onGroup, onInit, shouldInit, transmit, onGetState)
 import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
@@ -29,7 +29,10 @@ data Relay n = Relay
     }
 
 relay ::
-    (Monad m, MonadState Context m, KnownNat n, KnownNat (SizeSyncStateBuff n)) =>
+    ( Monad m
+    , MonadState Context m
+    , KnownNat n 
+    , KnownNat (SizeSyncStateBuff n)) =>
     m t ->
     (t -> m (Relays n)) ->
     (t -> m (Indicator 20)) ->
@@ -53,12 +56,14 @@ instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (Relay n) wh
         cond_
             [ action ==? actionDo ==> onDo relays buff size
             , action ==? actionGroup ==> onGroup relays buff size
-            , action ==? actionGetState ==> syncChannels r
+            , action ==? actionGetState ==> onGetState relays
             , action ==? actionInitialize ==> onInit relays buff size
             , action ==? actionFindMe ==> onFindMe indicator buff size
             ]
 
-syncChannels :: forall n s t. (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Relay n -> Ivory (ProcEffects s t) ()
+syncChannels :: forall n s t. (KnownNat n, KnownNat (SizeSyncStateBuff n)) 
+             => Relay n 
+             -> Ivory (ProcEffects s t) ()
 syncChannels Relay{..} = do
     shouldInit' <- deref $ shouldInit relays
     when (iNot shouldInit') do
@@ -66,8 +71,8 @@ syncChannels Relay{..} = do
         pack syncStateBuff 0 actionGetState
 
         arrayMap \ix -> do
-            let relay' = R.relays (getRelays relays) ! ix
-            relayState <- deref $ relay' ~> R.state
+            let relay' = E.relays (getRelays relays) ! ix
+            relayState <- deref $ relay' ~> E.state
             when relayState do
                 let ixByte = toIx $ 1 + (fromIx ix `iDiv` 8)
                 let numBit = castDefault $ fromIx ix .% 8

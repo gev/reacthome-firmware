@@ -153,7 +153,7 @@ instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (Top n) wher
             , action ==? actionBlink ==> onBlink leds buff size
             , action ==? actionPalette ==> onPalette leds buff size
             , action ==? actionFindMe ==> onFindMe buttons buff size
-            , action ==? actionGetState ==> syncChannels t
+            , action ==? actionGetState ==> onGetState t
             ]
 
 syncChannels ::

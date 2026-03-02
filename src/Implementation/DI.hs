@@ -11,7 +11,7 @@ import Data.Serialize
 import Data.Type.Bool
 import Data.Type.Equality
 import Endpoint.DInputs qualified as D
-import Feature.DInputs (DInputs, getDInputs, transmit)
+import Feature.DInputs (DInputs, getDInputs, transmit, forceSyncDInputs)
 import Feature.DS18B20
 import GHC.TypeNats
 import Ivory.Language
@@ -49,12 +49,12 @@ di transport' dinputs' ds18b20 = do
     pure di
 
 instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (DI n) where
-    handle di buff _ = do
+    handle DI{..} buff _ = do
         action <- deref $ buff ! 0
         cond_
             [ action
                 ==? actionGetState
-                ==> syncChannels di
+                ==> forceSyncDInputs dinputs
             ]
 
 syncChannels ::

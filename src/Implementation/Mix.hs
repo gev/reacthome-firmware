@@ -169,7 +169,7 @@ instance (KnownNat ni, KnownNat no, KnownNat (PayloadSize no), KnownNat (SizeSyn
             , action ==? actionDiRelaySync .&& iNot shouldInit' ==> onRule mix buff size
             , action ==? actionMix .&& iNot shouldInit' ==> onMode mix buff size
             , action ==? actionInitialize ==> onInit relays buff size
-            , action ==? actionGetState ==> syncChannels mix
+            , action ==? actionGetState ==> onGetState mix
             , action ==? actionFindMe ==> onFindMe indicator buff size
             , action ==? actionError ==> resetError ats
             ]

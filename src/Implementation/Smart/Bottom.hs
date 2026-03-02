@@ -96,7 +96,7 @@ instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (Bottom n) w
     handle b@Bottom{..} buff size = do
         action <- deref $ buff ! 0
         cond_
-            [ action ==? actionGetState ==> syncChannels b
+            [ action ==? actionGetState ==> onGetState b buff size
             , action ==? actionSmartTop ==> onMessage top buff size
             , action ==? actionFindMe ==> onFindMe top buff size
             , action ==? actionInitialize ==> onInitialize aled buff size

@@ -20,14 +20,14 @@ import Endpoint.DInputs qualified as D
 import Feature.AOutputs (
     AOutputs (getAOutputs),
     n,
-    onAo,
+    onAo, forceSync,
  )
-import Feature.DInputs (DInputs (getDInputs, transmit))
+import Feature.DInputs (DInputs (getDInputs, transmit), forceSyncDInputs)
 import Feature.DS18B20
 import Feature.RS485.RSM (
     configureMode,
     setMode,
-    transmitRS485,
+    transmitRS485, forceSyncRSM',
  )
 import Feature.RS485.RSM.Data
 import GHC.TypeNats
@@ -92,7 +92,7 @@ instance
             , action ==? actionInitialize ==> onInit s buff size
             , action ==? actionRs485Mode ==> setMode rsm buff size
             , action ==? actionRs485Transmit ==> transmitRS485 rsm buff size
-            , action ==? actionGetState ==> syncChannels s
+            , action ==? actionGetState ==> onGetState s
             ]
 
 onInit ::
@@ -121,6 +121,11 @@ onInit DIRSM{..} buff size = do
             store offset $ offset' + 1
 
         store shouldInit false
+
+onGetState DIRSM{..} = do
+    forceSyncDInputs dinputs
+    forceSync aoutputs
+    forceSyncRSM' rsm
 
 syncChannels ::
     forall ni no nr s t.

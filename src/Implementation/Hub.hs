@@ -121,7 +121,7 @@ instance (KnownNat ni, KnownNat nd, KnownNat nr, KnownNat (SizeSyncStateBuff ni 
             , action ==? actionRs485Transmit ==> transmitRB485 rbus buff size
             , action ==? actionFindMe ==> onFindMe indicator buff size
             , action ==? actionInitialize ==> onInit s buff size
-            , action ==? actionGetState ==> syncChannels s
+            , action ==? actionGetState ==> onGetState s
             , action ==? actionALedOn ==> onALedOn aled buff size
             , action ==? actionALedOff ==> onALedOff aled buff size
             , action ==? actionALedColorAnimationPlay ==> onALedColorAnimationPlay aled buff size

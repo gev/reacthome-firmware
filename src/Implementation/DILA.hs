@@ -60,7 +60,7 @@ instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (DILA n) whe
     handle d@DILA{..} buff size = do
         action <- deref $ buff ! 0
         cond_
-            [ action ==? actionGetState ==> syncChannels d
+            [ action ==? actionGetState ==> onGetState d buff size
             , action ==? actionInitialize ==> onInitialize aled buff size
             , action ==? actionALedOn ==> onALedOn aled buff size
             , action ==? actionALedOff ==> onALedOff aled buff size

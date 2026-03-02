@@ -170,7 +170,7 @@ instance
             , action ==? actionDim .&& iNot shouldInit' ==> onDim dimmers buff size
             , action ==? actionDiRelaySync .&& iNot shouldInit' ==> onRule mix buff size
             , action ==? actionInitialize ==> onInit mix buff size
-            , action ==? actionGetState ==> syncChannels mix
+            , action ==? actionGetState ==> onGetState mix
             ]
 
 syncChannels ::

@@ -48,13 +48,13 @@ dimmer transport' dimmers' indicator' = do
     pure dimmer
 
 instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (Dimmer n) where
-    handle d@Dimmer{..} buff size = do
+    handle Dimmer{..} buff size = do
         action <- deref $ buff ! 0
         cond_
             [ action ==? actionDo ==> onDo dimmers buff size
             , action ==? actionDim ==> onDim dimmers buff size
             , action ==? actionInitialize ==> onInit dimmers buff size
-            , action ==? actionGetState ==> syncChannels d
+            , action ==? actionGetState ==> onGetState dimmers
             , action ==? actionFindMe ==> onFindMe indicator buff size
             ]
 

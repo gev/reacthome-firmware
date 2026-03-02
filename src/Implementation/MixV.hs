@@ -113,7 +113,7 @@ instance
             , action ==? actionDim ==> onDim mix buff size
             , action ==? actionAo ==> onAo mix buff size
             , action ==? actionInitialize ==> onInit mix buff size
-            , action ==? actionGetState ==> syncChannels mix
+            , action ==? actionGetState ==> onGetState mix
             ]
 
 onInit ::

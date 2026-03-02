@@ -39,12 +39,12 @@ ao4 transport' sbm53d04' = do
     pure ao4
 
 instance Controller AO4 where
-    handle ao4@AO4{..} buff size = do
+    handle AO4{..} buff size = do
         action <- deref $ buff ! 0
         cond_
             [ action ==? actionAo ==> onAo aoutput4 buff size
             , action ==? actionInitialize ==> onInit aoutput4 buff size
-            , action ==? actionGetState ==> syncChannels ao4
+            , action ==? actionGetState ==> forceSync aoutput4
             ]
 
 syncChannels ::
