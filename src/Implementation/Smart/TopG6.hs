@@ -12,7 +12,7 @@ import Data.Display.Canvas1D (Canvas1DSize)
 import Data.Value
 import Endpoint.DInputs as E (DInputs)
 import Feature.DInputs as DI (
-    DInputs (getDInputs),
+    DInputs (..),
     forceSyncDInputs,
  )
 import Feature.Sht21 (SHT21)
@@ -31,7 +31,13 @@ import Feature.Smart.Top.LEDs (
     updateLeds,
  )
 
+import Core.Task
+import Data.Buffer
 import Data.Matrix
+import Data.Serialize (pack)
+import Data.Type.Bool
+import Data.Type.Equality
+import Endpoint.DInputs qualified as D
 import Feature.Smart.Top.PowerTouch (PowerTouch)
 import Feature.Smart.Top.Vibro (
     Vibro,
@@ -45,12 +51,16 @@ import Interface.MCU (peripherals)
 import Ivory.Language
 import Ivory.Stdlib
 
+type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
+type SizeSyncStateBuff n = 1 + ToSizeInBytes n
+
 data Top n = Top
     { dinputs :: DI.DInputs n
     , leds :: LEDs 4 12
     , buttons :: Buttons n 4 12
     , vibro :: Vibro n
     , sht21 :: SHT21
+    , syncStateBuff :: Buffer (SizeSyncStateBuff n) Uint8
     }
 
 topG6 ::
@@ -61,6 +71,7 @@ topG6 ::
     , LazyTransport t
     , Flash f
     , KnownNat n
+    , KnownNat (SizeSyncStateBuff n)
     ) =>
     m t ->
     (Bool -> t -> m (DI.DInputs n)) ->
@@ -79,6 +90,7 @@ topG6 transport' dinputs' vibro' touch' sht21' display' etc' = do
     vibro <- vibro' (DI.getDInputs dinputs) transport etc
     touch'
     frameBuffer <- values' "top_frame_buffer" 0
+    syncStateBuff <- buffer "sync_channels"
 
     leds <-
         mkLeds
@@ -112,7 +124,17 @@ topG6 transport' dinputs' vibro' touch' sht21' display' etc' = do
 
     sht21 <- sht21' transport
 
-    let top = Top{dinputs, leds, vibro, buttons, sht21}
+    let top =
+            Top
+                { dinputs
+                , leds
+                , vibro
+                , buttons
+                , sht21
+                , syncStateBuff
+                }
+
+    addTask $ delay 5_000 "sync_channels" $ syncChannels top
 
     addHandler $
         Render
@@ -146,3 +168,25 @@ instance (KnownNat n) => Controller (Top n) where
             , action ==? actionFindMe ==> onFindMe buttons buff size
             , action ==? actionGetState ==> onGetState t
             ]
+
+syncChannels ::
+    forall n s t.
+    ( KnownNat n
+    , KnownNat (SizeSyncStateBuff n)
+    ) =>
+    Top n ->
+    Ivory (ProcEffects s t) ()
+syncChannels Top{..} = do
+    arrayMap \ix -> store (syncStateBuff ! ix) 0
+    pack syncStateBuff 0 actionGetState
+    let offset = 1
+    arrayMap \ix -> do
+        let relay' = D.dinputs (DI.getDInputs dinputs) ! ix
+        diState <- deref $ relay' ~> D.state
+        when diState do
+            let ixByte = toIx $ offset + (fromIx ix `iDiv` 8)
+            let numBit = castDefault $ fromIx ix .% 8
+            byteFromBuff <- deref $ syncStateBuff ! ixByte
+            let newByte = byteFromBuff .| (1 `iShiftL` numBit)
+            pack syncStateBuff ixByte newByte
+    DI.transmit dinputs syncStateBuff
