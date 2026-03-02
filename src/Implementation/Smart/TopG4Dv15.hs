@@ -253,8 +253,8 @@ syncChannels Top{..} = do
     pack syncStateBuff 0 actionGetState
     let offset = 1
     arrayMap \ix -> do
-        let relay' = D.dinputs (FT.getDInputs touches) ! ix
-        diState <- deref $ relay' ~> D.state
+        let di' = D.dinputs (FT.getDInputs touches) ! ix
+        diState <- deref $ di' ~> D.state
         when diState do
             let ixByte = toIx $ offset + (fromIx ix `iDiv` 8)
             let numBit = castDefault $ fromIx ix .% 8
