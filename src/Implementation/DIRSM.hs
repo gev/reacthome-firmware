@@ -128,14 +128,14 @@ onGetState DIRSM{..} = do
     forceSyncRSM' rsm
 
 syncChannels ::
-    forall ni no nr s t.
+    forall ni no nr s.
     ( KnownNat ni
     , KnownNat no
     , KnownNat (SizeSyncStateBuff ni no)
     , KnownNat (ToSizeInBytes ni)
     ) =>
     DIRSM ni no nr ->
-    Ivory (ProcEffects s t) ()
+    Ivory (ProcEffects s ()) ()
 syncChannels DIRSM{..} = do
     shouldInit' <- deref shouldInit
     when (iNot shouldInit') do

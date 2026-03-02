@@ -248,7 +248,7 @@ instance (KnownNat n) => Controller (Top n) where
             ]
 
 syncChannels ::
-    forall n s t.
+    forall n s.
     ( KnownNat n
     , KnownNat (SizeSyncStateBuff n)
     ) =>
