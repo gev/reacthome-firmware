@@ -74,12 +74,12 @@ instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (DILA n) whe
             ]
 
 syncChannels ::
-    forall n s t.
+    forall n s.
     ( KnownNat n
     , KnownNat (SizeSyncStateBuff n)
     ) =>
     DILA n ->
-    Ivory (ProcEffects s t) ()
+    Ivory (ProcEffects s ()) ()
 syncChannels DILA{..} = do
     arrayMap \ix -> store (syncStateBuff ! ix) 0
     pack syncStateBuff 0 actionGetState

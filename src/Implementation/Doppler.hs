@@ -82,13 +82,13 @@ instance
             ]
 
 syncChannels ::
-    forall nd ni s t.
+    forall nd ni s.
     ( KnownNat nd
     , KnownNat ni
     , KnownNat (SizeSyncStateBuff ni)
     ) =>
     Doppler nd ni ->
-    Ivory (ProcEffects s t) ()
+    Ivory (ProcEffects s ()) ()
 syncChannels Doppler{..} = do
     arrayMap \ix -> store (syncStateBuff ! ix) 0
     pack syncStateBuff 0 actionGetState

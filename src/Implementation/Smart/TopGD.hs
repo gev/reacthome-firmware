@@ -253,7 +253,7 @@ syncChannels ::
     , KnownNat (SizeSyncStateBuff n)
     ) =>
     Top n ->
-    Ivory (ProcEffects s t) ()
+    Ivory (ProcEffects s ()) ()
 syncChannels Top{..} = do
     arrayMap \ix -> store (syncStateBuff ! ix) 0
     pack syncStateBuff 0 actionGetState

@@ -112,12 +112,12 @@ instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (Bottom n) w
             ]
 
 syncChannels ::
-    forall n s t.
+    forall n s.
     ( KnownNat n
     , KnownNat (SizeSyncStateBuff n)
     ) =>
     Bottom n ->
-    Ivory (ProcEffects s t) ()
+    Ivory (ProcEffects s ()) ()
 syncChannels Bottom{..} = do
     arrayMap \ix -> store (syncStateBuff ! ix) 0
     pack syncStateBuff 0 actionGetState
