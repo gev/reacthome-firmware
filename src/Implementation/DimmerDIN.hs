@@ -43,7 +43,7 @@ dimmer transport' dimmers' indicator' = do
 
     let dimmer = Dimmer{dimmers, indicator, syncStateBuff}
 
-    addTask $ delay 1_000 "sync_channels" $ syncChannels dimmer
+    addTask $ delay 5_000 "sync_channels" $ syncChannels dimmer
 
     pure dimmer
 
