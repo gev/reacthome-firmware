@@ -1,7 +1,17 @@
+{-# LANGUAGE UndecidableInstances #-}
+
 module Implementation.Doppler where
 
+import Control.Monad.State
 import Core.Actions
+import Core.Context
 import Core.Controller
+import Core.Task
+import Data.Buffer
+import Data.Serialize
+import Data.Type.Bool
+import Data.Type.Equality
+import Endpoint.DInputs qualified as D
 import Feature.ALED
 import Feature.DInputs
 import Feature.Dopplers
@@ -9,14 +19,23 @@ import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
 
+type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
+type SizeSyncStateBuff n = 1 + ToSizeInBytes n
+
 data Doppler nd ni = Doppler
     { dopplers :: Dopplers nd
     , dinputs :: DInputs ni
     , aled :: ALED 10 100 2400
+    , syncStateBuff :: Buffer (SizeSyncStateBuff ni) Uint8
     }
 
 doppler ::
-    (Monad m) =>
+    ( Monad m
+    , KnownNat nd
+    , KnownNat ni
+    , MonadState Context m
+    , KnownNat (SizeSyncStateBuff ni)
+    ) =>
     m t ->
     (t -> m (Dopplers nd)) ->
     (Bool -> t -> m (DInputs ni)) ->
@@ -27,13 +46,25 @@ doppler transport' dopplers' dinputs' aled' = do
     dopplers <- dopplers' transport
     dinputs <- dinputs' True transport
     aled <- aled' transport
-    pure Doppler{dopplers, dinputs, aled}
+    syncStateBuff <- buffer "sync_channels"
+
+    let doppler = Doppler{dopplers, dinputs, aled, syncStateBuff}
+
+    addTask $ delay 5_000 "sync_channels" $ syncChannels doppler
+
+    pure doppler
 
 onGetState Doppler{..} _ _ = do
     forceSyncDInputs dinputs
     forceSyncAled aled
 
-instance (KnownNat ni) => Controller (Doppler nd ni) where
+instance
+    ( KnownNat nd
+    , KnownNat ni
+    , KnownNat (SizeSyncStateBuff ni)
+    ) =>
+    Controller (Doppler nd ni)
+    where
     handle d@Doppler{..} buff size = do
         action <- deref $ buff ! 0
         cond_
@@ -49,3 +80,26 @@ instance (KnownNat ni) => Controller (Doppler nd ni) where
             , action ==? actionALedBrightness ==> onALedBrightness aled buff size
             , action ==? actionALedConfigGroup ==> onALedConfigGroup aled buff size
             ]
+
+syncChannels ::
+    forall nd ni s.
+    ( KnownNat nd
+    , KnownNat ni
+    , KnownNat (SizeSyncStateBuff ni)
+    ) =>
+    Doppler nd ni ->
+    Ivory (ProcEffects s ()) ()
+syncChannels Doppler{..} = do
+    arrayMap \ix -> store (syncStateBuff ! ix) 0
+    pack syncStateBuff 0 actionGetState
+    let offset = 1
+    arrayMap \ix -> do
+        let di' = D.dinputs (getDInputs dinputs) ! ix
+        diState <- deref $ di' ~> D.state
+        when diState do
+            let ixByte = toIx $ offset + (fromIx ix `iDiv` 8)
+            let numBit = castDefault $ fromIx ix .% 8
+            byteFromBuff <- deref $ syncStateBuff ! ixByte
+            let newByte = byteFromBuff .| (1 `iShiftL` numBit)
+            pack syncStateBuff ixByte newByte
+    transmit dinputs syncStateBuff

@@ -1,42 +1,60 @@
+{-# LANGUAGE UndecidableInstances #-}
+
 module Implementation.DIRSM where
 
 import Control.Monad.Reader (MonadReader, asks)
+import Control.Monad.State
 import Core.Actions
+import Core.Context
 import Core.Controller
 import Core.Domain qualified as D
+import Core.Task
 import Data.Buffer
 import Data.Fixed (List, fromList, zipWithM_)
 import Data.Serialize
+import Data.Type.Bool
+import Data.Type.Equality
 import Data.Value
 import Endpoint.AOutputs qualified as A
+import Endpoint.DInputs qualified as D
 import Feature.AOutputs (
     AOutputs (getAOutputs),
-    forceSync,
     n,
-    onAo,
+    onAo, forceSync,
  )
-import Feature.DInputs (DInputs, forceSyncDInputs)
+import Feature.DInputs (DInputs (getDInputs, transmit), forceSyncDInputs)
 import Feature.DS18B20
 import Feature.RS485.RSM (
     configureMode,
-    forceSyncRSM',
     setMode,
-    transmitRS485,
+    transmitRS485, forceSyncRSM',
  )
 import Feature.RS485.RSM.Data
 import GHC.TypeNats
 import Ivory.Language
+import Ivory.Language.Proxy
 import Ivory.Stdlib
+import Support.Cast
+
+type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
+type SizeSyncStateBuff ni no = 1 + ToSizeInBytes ni + no
 
 data DIRSM ni no nr = DIRSM
     { rsm :: List nr RSM
     , dinputs :: DInputs ni
     , aoutputs :: AOutputs no
     , shouldInit :: Value IBool
+    , syncStateBuff :: Buffer (SizeSyncStateBuff ni no) Uint8
     }
 
 diRsm ::
-    (MonadReader (D.Domain p c) m) =>
+    ( MonadReader (D.Domain p c) m
+    , KnownNat (SizeSyncStateBuff ni no)
+    , MonadState Context m
+    , KnownNat ni
+    , KnownNat no
+    , KnownNat (ToSizeInBytes ni)
+    ) =>
     m t ->
     (Bool -> t -> m (DInputs ni)) ->
     (t -> m (List nr RSM)) ->
@@ -50,9 +68,23 @@ diRsm transport' dinputs' rsm' aoutputs' ds18b20 = do
     rsm <- rsm' transport
     dinputs <- dinputs' True transport
     aoutputs <- aoutputs' transport
-    pure DIRSM{rsm, dinputs, aoutputs, shouldInit}
+    syncStateBuff <- buffer "sync_channels"
 
-instance (KnownNat ni, KnownNat no, KnownNat nr) => Controller (DIRSM ni no nr) where
+    let dirsm = DIRSM{rsm, dinputs, aoutputs, shouldInit, syncStateBuff}
+
+    addTask $ delay 5_000 "sync_channels" $ syncChannels dirsm
+
+    pure dirsm
+
+instance
+    ( KnownNat ni
+    , KnownNat no
+    , KnownNat nr
+    , KnownNat (SizeSyncStateBuff ni no)
+    , KnownNat (ToSizeInBytes ni)
+    ) =>
+    Controller (DIRSM ni no nr)
+    where
     handle s@DIRSM{..} buff size = do
         action <- deref $ buff ! 0
         cond_
@@ -94,3 +126,44 @@ onGetState DIRSM{..} = do
     forceSyncDInputs dinputs
     forceSync aoutputs
     forceSyncRSM' rsm
+
+syncChannels ::
+    forall ni no nr s.
+    ( KnownNat ni
+    , KnownNat no
+    , KnownNat (SizeSyncStateBuff ni no)
+    , KnownNat (ToSizeInBytes ni)
+    ) =>
+    DIRSM ni no nr ->
+    Ivory (ProcEffects s ()) ()
+syncChannels DIRSM{..} = do
+    shouldInit' <- deref shouldInit
+    when (iNot shouldInit') do
+        arrayMap \ix -> store (syncStateBuff ! ix) 0
+        pack syncStateBuff 0 actionGetState
+
+        let startOffset = 1
+        offsetByte <- local $ ival startOffset
+        offsetByte' <- deref offsetByte
+
+        arrayMap \ix -> do
+            let input = D.dinputs (getDInputs dinputs) ! ix
+            diState <- deref $ input ~> D.state
+            when diState do
+                let ixByte = toIx $ offsetByte' + (fromIx ix `iDiv` 8)
+                let numBit = castDefault $ fromIx ix .% 8
+                byteFromBuff <- deref $ syncStateBuff ! ixByte
+                let newByte = byteFromBuff .| (1 `iShiftL` numBit)
+                pack syncStateBuff ixByte newByte
+
+        let numByteDI = fromIntegral $ natVal (aNat :: NatType (ToSizeInBytes ni))
+        store offsetByte $ offsetByte' + numByteDI
+
+        arrayMap \ix -> do
+            offset <- deref offsetByte
+            let aoutput = A.aoutputs (getAOutputs aoutputs) ! ix
+            aoutputValue <- castFloatToUint8 . (* 255) =<< deref (aoutput ~> A.value)
+            let ixBuff = toIx . (+ offset) $ fromIx ix
+            pack syncStateBuff ixBuff aoutputValue
+
+        transmit dinputs syncStateBuff

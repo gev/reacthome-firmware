@@ -6,12 +6,10 @@ import Core.Actions
 import Core.Context
 import Core.Controller
 import Core.Domain qualified as D
-import Core.Handler (Handler, addHandler)
+import Core.Handler
 import Core.Transport
-import Data.Matrix
 import Data.Value
 import Endpoint.DInputs as E (DInputs)
-import Feature.Touches qualified as FT
 import Feature.Sht21 (SHT21)
 import Feature.Smart.Top.Buttons
 import Feature.Smart.Top.LEDs (
@@ -27,11 +25,20 @@ import Feature.Smart.Top.LEDs (
     sendLEDs,
     updateLeds,
  )
+
+import Core.Task
+import Data.Buffer
+import Data.Matrix
+import Data.Serialize
+import Data.Type.Bool
+import Data.Type.Equality
+import Endpoint.DInputs qualified as D
 import Feature.Smart.Top.Vibro (
     Vibro,
     onVibro,
     sendVibro,
  )
+import Feature.Touches qualified as FT
 import GHC.TypeNats
 import Interface.Display (Display, Render (Render))
 import Interface.Flash
@@ -39,12 +46,16 @@ import Interface.MCU (peripherals)
 import Ivory.Language
 import Ivory.Stdlib
 
+type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
+type SizeSyncStateBuff n = 1 + ToSizeInBytes n
+
 data Top n = Top
     { touches :: FT.Touches n
     , leds :: LEDs 12 41
     , buttons :: Buttons n 12 41
     , vibro :: Vibro n
     , sht21 :: SHT21
+    , syncStateBuff :: Buffer (SizeSyncStateBuff n) Uint8
     }
 
 {- The LEDs configuration:
@@ -72,6 +83,7 @@ topA4TDv5 ::
     , LazyTransport t
     , KnownNat n
     , Flash f
+    , KnownNat (SizeSyncStateBuff n)
     ) =>
     m t ->
     (t -> m (FT.Touches n)) ->
@@ -85,12 +97,11 @@ topA4TDv5 transport' touches' vibro' sht21' display' etc' = do
     mcu <- asks D.mcu
     display <- display' $ peripherals mcu
     touches <- touches' transport
-
-    frameBuffer <- values' "top_frame_buffer" 0
-
     let etc = etc' $ peripherals mcu
-
     vibro <- vibro' (FT.getDInputs touches) transport etc
+    frameBuffer <- values' "top_frame_buffer" 0
+    syncStateBuff <- buffer "sync_channels"
+
 
     leds <-
         mkLeds
@@ -172,7 +183,10 @@ topA4TDv5 transport' touches' vibro' sht21' display' etc' = do
                 , vibro
                 , buttons
                 , sht21
+                , syncStateBuff
                 }
+
+    addTask $ delay 5_000 "sync_channels" $ syncChannels top
 
     addHandler $
         Render
@@ -206,3 +220,25 @@ instance (KnownNat n) => Controller (Top n) where
             , action ==? actionFindMe ==> onFindMe buttons buff size
             , action ==? actionGetState ==> onGetState t
             ]
+
+syncChannels ::
+    forall n s.
+    ( KnownNat n
+    , KnownNat (SizeSyncStateBuff n)
+    ) =>
+    Top n ->
+    Ivory (ProcEffects s ()) ()
+syncChannels Top{..} = do
+    arrayMap \ix -> store (syncStateBuff ! ix) 0
+    pack syncStateBuff 0 actionGetState
+    let offset = 1
+    arrayMap \ix -> do
+        let di' = D.dinputs (FT.getDInputs touches) ! ix
+        diState <- deref $ di' ~> D.state
+        when diState do
+            let ixByte = toIx $ offset + (fromIx ix `iDiv` 8)
+            let numBit = castDefault $ fromIx ix .% 8
+            byteFromBuff <- deref $ syncStateBuff ! ixByte
+            let newByte = byteFromBuff .| (1 `iShiftL` numBit)
+            pack syncStateBuff ixByte newByte
+    FT.transmit touches syncStateBuff
