@@ -51,7 +51,7 @@ relay transport' relays' indicator' = do
 
 
 instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (Relay n) where
-    handle r@Relay{..} buff size = do
+    handle Relay{..} buff size = do
         action <- unpack buff 0
         cond_
             [ action ==? actionDo ==> onDo relays buff size
