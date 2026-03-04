@@ -18,7 +18,7 @@ dimmerDC12 =
     Formula
         { name = "dimmerDC12"
         , model = deviceTypeDim12DcRs
-        , version = (2, 10)
+        , version = (2, 11)
         , shouldInit = true
         , mcu = gd32f330k8u6
         , quartzFrequency = 8_000_000

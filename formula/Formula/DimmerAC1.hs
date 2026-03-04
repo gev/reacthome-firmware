@@ -17,7 +17,7 @@ dimmerAC1 =
     Formula
         { name = "dimmerAC1"
         , model = deviceTypeDim1AcRs
-        , version = (2, 3)
+        , version = (2, 4)
         , shouldInit = true
         , mcu = gd32f330k8u6
         , quartzFrequency = 8_000_000
