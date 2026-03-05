@@ -138,8 +138,13 @@ onData DS18B20{..} i index v = do
                 packLE txB 9 t
                 transmit txB
             do
-                arrayCopy dsErrB id 1 8
-                transmit dsErrB
+                pure()
+                -- arrayCopy dsErrB id 1 8
+                -- transmit dsErrB
+
+{-
+  TODO:  Need send errors for ds18b20?
+-}
 
 onDiscovery :: DS18B20 -> Uint8 -> Buffer 8 Uint8 -> Ivory (ProcEffects s ()) ()
 onDiscovery DS18B20{..} _ id = do
