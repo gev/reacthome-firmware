@@ -57,8 +57,7 @@ instance Compiler GCC GD32F4xx where
           , "-Wno-main"
           , "-O3"
           ]
-      , -- , ld      = "-Tsupport/device/gd32f4xx/gd32f450-470.ld"
-        ld = "-Tsupport/device/gd32f4xx/" <> model mcu <> modification mcu <> ".ld"
+      , ld = "-Tsupport/device/gd32f4xx/gd32f450-470.ld"
       , ldflags =
           [ "-mthumb"
           , "-mcpu=cortex-m4"
@@ -67,7 +66,7 @@ instance Compiler GCC GD32F4xx where
           , "-Wl,--gc-sections"
           , "-flto"
           , "-specs=nano.specs"
-          ]
+          ] ++ modificationLdDefs (modification mcu)
       }
 
 sysClockDefs :: Int -> Int -> [String]
@@ -80,3 +79,8 @@ sysClockDefs 24_000_000 192_000_000 =
   , "__SYSTEM_CLOCK_192M_PLL_24M_HXTAL=(uint32_t)(192000000)"
   ]
 sysClockDefs _ _ = error "Unsupported clock configuration"
+
+modificationLdDefs :: String -> [String]
+modificationLdDefs "vgt6" = ["-Wl,--defsym=__flash_start=0x08000000,--defsym=__flash_length=1024K,--defsym=__ram_length=192K"]
+modificationLdDefs "vit6" = ["-Wl,--defsym=__flash_start=0x08000000,--defsym=__flash_length=2048K,--defsym=__ram_length=448K"]
+modificationLdDefs _ = error "Unsupported ld configuration"
