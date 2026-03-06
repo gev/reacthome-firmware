@@ -63,8 +63,8 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
 /* Specify the memory areas */
 MEMORY
 {
-FLASH (rx)     : ORIGIN = __flash_start , LENGTH = __flash_length
-RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = __ram_length
+  FLASH (rx)     : ORIGIN = __flash_start , LENGTH = __flash_length
+  RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = __ram_length
 }
 
 /* Define output sections */
