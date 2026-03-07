@@ -117,7 +117,7 @@ coerce :: (IFloat -> IFloat) -> Uint16 -> Uint16
 coerce calculate = castDefault . calculate . safeCast
 
 calculateTemperature :: IFloat -> IFloat
-calculateTemperature = convert (-46.88) 175.72
+calculateTemperature = convert (-46.85) 175.72
 
 calculateHumidity :: IFloat -> IFloat
 calculateHumidity = convert (-6.0) 125.0
