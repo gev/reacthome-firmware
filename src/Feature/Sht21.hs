@@ -61,12 +61,12 @@ sht21 i2c' transport = do
                 }
 
     addTask $ delay 15_000 "sht21_reset" $ reset sht21
-    addTask $ delayPhase 15_000 15 "sht21_measure_humidity" $ measureHumidity sht21
-    addTask $ delayPhase 15_000 45 "sht21_get_humidity" $ getData sht21
-    addTask $ delayPhase 15_000 46 "sht21_transmit_humidity" $ transmitHumidity sht21
-    addTask $ delayPhase 15_000 2_045 "sht21_measure_temperature" $ measureTemperature sht21
-    addTask $ delayPhase 15_000 2_130 "sht21_get_temperature" $ getData sht21
-    addTask $ delayPhase 15_000 2_131 "sht21_transmit_temperature" $ transmitTemperature sht21
+    addTask $ delayPhase 15_000 1_000 "sht21_measure_temperature" $ measureTemperature sht21
+    addTask $ delayPhase 15_000 1_090 "sht21_get_temperature" $ getData sht21
+    addTask $ delayPhase 15_000 1_100 "sht21_transmit_temperature" $ transmitTemperature sht21
+    addTask $ delayPhase 15_000 2_000 "sht21_measure_humidity" $ measureHumidity sht21
+    addTask $ delayPhase 15_000 2_040 "sht21_get_humidity" $ getData sht21
+    addTask $ delayPhase 15_000 2_050 "sht21_transmit_humidity" $ transmitHumidity sht21
 
     addHandler $ I.HandleI2C i2c $ receive sht21
 
