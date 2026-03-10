@@ -101,7 +101,7 @@ transmit' action calculate SHT21{..} = do
     isReady' <- deref isReady
     when isReady' do
         store (txBuff ! 0) action
-        packLE txBuff 1 . coerce calculate =<< unpackBE rxBuff 0
+        packLE txBuff 1 . coerce calculate . (.& 0xfffc) =<< unpackBE rxBuff 0
         transmit txBuff
 
 receive :: SHT21 -> Uint8 -> Uint16 -> Ivory eff ()
