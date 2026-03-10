@@ -1,6 +1,6 @@
 {-# LANGUAGE NumericUnderscores #-}
 
-module Formula.Smart.Bottom.Bottom2 where
+module Formula.Smart.Bottom.BottomCO2 where
 
 import Core.Formula
 import Core.Models
@@ -11,23 +11,23 @@ import Feature.DInputs
 import Feature.DS18B20
 import Feature.Scd40
 import Feature.Smart.Top
-import Implementation.Smart.Bottom (bottom2)
+import Implementation.Smart.Bottom (bottomCO2)
 import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
 
-smartBottom2 :: Formula GD32F3x0
-smartBottom2 =
+smartBottomCO2 :: Formula GD32F3x0
+smartBottomCO2 =
     Formula
-        { name = "smart_bottom_2"
-        , model = deviceTypeSmartBottom2
+        { name = "smart_bottom_co2"
+        , model = deviceTypeSmartBottomCO2
         , version = (4, 11)
         , shouldInit = true
         , mcu = gd32f330k8u6
         , quartzFrequency = 8_000_000
         , systemFrequency = 84_000_000
         , implementation =
-            bottom2
+            bottomCO2
                 (rbus $ rs485 uart_1 out_pa_4)
                 (top uart_0 in_pb_4)
                 ( dinputs $
