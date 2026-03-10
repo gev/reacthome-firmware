@@ -19,7 +19,7 @@ smartTopG6 =
     Formula
         { name = "smart_top_g6"
         , model = deviceTypeSmartTopG6
-        , version = (4, 9)
+        , version = (4, 10)
         , shouldInit = false
         , mcu = gd32f330k8u6
         , quartzFrequency = 8_000_000
