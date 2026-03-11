@@ -13,6 +13,7 @@ import Core.Formula (
 import Data.Char
 import Device.GD32F4xx
 import Interface.MCU
+import Numeric
 
 instance Compiler GCC GD32F4xx where
   mkCompiler f@Formula{mcu, quartzFrequency, systemFrequency} =
@@ -66,7 +67,7 @@ instance Compiler GCC GD32F4xx where
           , "-Wl,--gc-sections"
           , "-flto"
           , "-specs=nano.specs"
-          ] <> modificationLdDefs (modification mcu)
+          ] <> modificationLdDefs mcu
       }
 
 sysClockDefs :: Int -> Int -> [String]
@@ -80,7 +81,8 @@ sysClockDefs 24_000_000 192_000_000 =
   ]
 sysClockDefs _ _ = error "Unsupported clock configuration"
 
-modificationLdDefs :: String -> [String]
-modificationLdDefs "vgt6" = ["-Wl,--defsym=__flash_start=0x08000000,--defsym=__flash_length=1024K,--defsym=__ram_length=192K"]
-modificationLdDefs "vit6" = ["-Wl,--defsym=__flash_start=0x08000000,--defsym=__flash_length=2048K,--defsym=__ram_length=448K"]
-modificationLdDefs _ = error "Unsupported ld configuration"
+modificationLdDefs :: MCU p -> [String]
+modificationLdDefs MCU{..} =
+  ["-Wl,--defsym=__flash_start=" <> show startFlash]
+    <> ["-Wl,--defsym=__flash_length=" <> show sizeFlash]
+    <> ["-Wl,--defsym=__ram_length=" <> show sizeRam]
