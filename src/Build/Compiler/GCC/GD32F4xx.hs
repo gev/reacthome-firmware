@@ -66,7 +66,7 @@ instance Compiler GCC GD32F4xx where
           , "-Wl,--gc-sections"
           , "-flto"
           , "-specs=nano.specs"
-          ] ++ modificationLdDefs (modification mcu)
+          ] <> modificationLdDefs (modification mcu)
       }
 
 sysClockDefs :: Int -> Int -> [String]
