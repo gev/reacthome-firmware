@@ -30,7 +30,7 @@ data Bottom n = Bottom
     , syncStateBuff :: Buffer (SizeSyncStateBuff n) Uint8
     }
 
-bottom1 ::
+bottom ::
     ( MonadState Context m
     , KnownNat n
     , Monad m
@@ -42,7 +42,7 @@ bottom1 ::
     (t -> m DS18B20) ->
     (t -> m (ALED 10 100 2040)) ->
     m (Bottom n)
-bottom1 transport' top' dinputs' ds18b20 aled' = do
+bottom transport' top' dinputs' ds18b20 aled' = do
     transport <- transport'
     ds18b20 transport
     dinputs <- dinputs' True transport
@@ -62,7 +62,7 @@ bottom1 transport' top' dinputs' ds18b20 aled' = do
 
     pure bottom
 
-bottom2 ::
+bottomCO2 ::
     ( MonadState Context m
     , KnownNat n
     , Monad m
@@ -78,9 +78,9 @@ bottom2 ::
     (t -> m SCD40) ->
     (t -> m (ALED 10 100 2040)) ->
     m (Bottom n)
-bottom2 transport top dinputs ds18b20 scd40 aled' = do
+bottomCO2 transport top dinputs ds18b20 scd40 aled' = do
     scd40 =<< transport
-    bottom1
+    bottom
         transport
         top
         dinputs

@@ -66,8 +66,8 @@ deviceTypeSmartTopG2 = 0x36 :: Uint8
 deviceTypeSmartTopA4P = 0x37 :: Uint8
 deviceTypeSmartTopA4TD = 0x38 :: Uint8
 deviceTypeSmartTopA4TD7S = 0x39 :: Uint8
-deviceTypeSmartBottom1 = 0x3a :: Uint8
-deviceTypeSmartBottom2 = 0x3b :: Uint8
+deviceTypeSmartBottom = 0x3a :: Uint8
+deviceTypeSmartBottomCO2 = 0x3b :: Uint8
 deviceTypeSmartTopClimate = 0x3c :: Uint8
 
 {-

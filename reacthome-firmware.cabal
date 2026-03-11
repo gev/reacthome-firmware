@@ -178,8 +178,8 @@ executable reacthome-firmware
     Formula.Relay12
     Formula.RsHub4
     Formula.Server
-    Formula.Smart.Bottom.Bottom1
-    Formula.Smart.Bottom.Bottom2
+    Formula.Smart.Bottom.Bottom
+    Formula.Smart.Bottom.BottomCO2
     Formula.Smart.Top.TopA4P
     Formula.Smart.Top.TopA4T
     Formula.Smart.Top.TopA4TD

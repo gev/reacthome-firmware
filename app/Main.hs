@@ -17,8 +17,8 @@ import Formula.MixV
 import Formula.Relay12
 import Formula.RsHub4
 import Formula.Server
-import Formula.Smart.Bottom.Bottom1
-import Formula.Smart.Bottom.Bottom2
+import Formula.Smart.Bottom.Bottom
+import Formula.Smart.Bottom.BottomCO2
 import Formula.Smart.Top.TopA4P
 import Formula.Smart.Top.TopA4T
 import Formula.Smart.Top.TopA4TD
@@ -55,8 +55,8 @@ main = do
         , leakSensor
         , mix6x12
         , mixH
-        , smartBottom1
-        , smartBottom2
+        , smartBottom
+        , smartBottomCO2
         , smartTopA4P
         , smartTopA4T
         , smartTopA4Tv5
