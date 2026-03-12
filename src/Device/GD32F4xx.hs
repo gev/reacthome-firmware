@@ -253,7 +253,7 @@ data GD32F4xx = GD32F4xx
     , etc :: PageAddr
     }
 
-gd32f4xx :: String -> String -> MCU GD32F4xx
+gd32f4xx :: String -> String -> Int -> Int -> Int -> MCU GD32F4xx
 gd32f4xx =
     MCU $
         mkPlatform
@@ -622,10 +622,11 @@ gd32f4xx =
                 }
 
 gd32f450vgt6 :: MCU GD32F4xx
-gd32f450vgt6 = gd32f4xx "gd32f450" "vgt6"
+gd32f450vgt6 = gd32f4xx "gd32f450" "vgt6" 0x8_000_000 (1024 * 1024) (192 * 1024)
 
 gd32f450vit6 :: MCU GD32F4xx
-gd32f450vit6 = gd32f4xx "gd32f450" "vit6"
+gd32f450vit6 = gd32f4xx "gd32f450" "vit6" 0x8_000_000 (2048 * 1024) (448 * 1024)
+
 
 instance Pull GD32F4xx GPIO_PUPD where
     pullNone _ = gpio_pupd_none

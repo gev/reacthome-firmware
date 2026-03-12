@@ -172,7 +172,7 @@ data GD32F3x0 = GD32F3x0
     , spi_0 :: SPI'
     }
 
-gd32f3x0 :: String -> String -> MCU GD32F3x0
+gd32f3x0 :: String -> String -> Int -> Int -> Int -> MCU GD32F3x0
 gd32f3x0 =
     MCU $
         mkPlatform
@@ -452,13 +452,13 @@ gd32f3x0 =
                 }
 
 gd32f330k8u6 :: MCU GD32F3x0
-gd32f330k8u6 = gd32f3x0 "gd32f330" "k8u6"
+gd32f330k8u6 = gd32f3x0 "gd32f330" "k8u6" 0x8_000_000 (64 * 1024) (8 * 1024)
 
 {-
     ToDo : GD32F350 MCUs Should be defined via separate type, kind or data kind
 -}
 gd32f350k8u6 :: MCU GD32F3x0
-gd32f350k8u6 = gd32f3x0 "gd32f350" "k8u6"
+gd32f350k8u6 = gd32f3x0 "gd32f350" "k8u6" 0x8_000_000 (64 * 1024) (8 * 1024)
 
 instance Pull GD32F3x0 GPIO_PUPD where
     pullNone _ = gpio_pupd_none

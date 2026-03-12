@@ -3,4 +3,4 @@ module Build.Compiler where
 import Core.Formula
 
 class Compiler c p where
-    mkCompiler :: Formula p -> c
+    mkCompiler :: Formula p -> Int -> Int -> c

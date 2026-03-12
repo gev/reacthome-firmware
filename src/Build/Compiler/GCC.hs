@@ -14,12 +14,16 @@ import Data.String
 import Development.Shake
 import Development.Shake.FilePath
 import Development.Shake.Util
+import Interface.MCU
 
 gcc :: (Compiler GCC p) => Formula p -> IO ()
 gcc = mkGCC >>= build
 
 mkGCC :: (Compiler GCC p) => Formula p -> GCC
-mkGCC = mkCompiler
+mkGCC f@Formula{..} = do
+    let startFirmware = startFlash mcu
+    let maxLength = sizeFlash mcu 
+    mkCompiler f startFirmware maxLength
 
 cc :: String
 cc = "arm-none-eabi-gcc"

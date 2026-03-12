@@ -13,7 +13,7 @@ import Device.GD32F3x0
 import Interface.MCU
 
 instance Compiler GCC GD32F3x0 where
-  mkCompiler Formula{mcu, quartzFrequency, systemFrequency} =
+  mkCompiler Formula{mcu, quartzFrequency, systemFrequency} firmwareStart maxLength =
     GCC
       { path = model mcu <> modification mcu
       , defs =
@@ -58,7 +58,8 @@ instance Compiler GCC GD32F3x0 where
           , "-Wl,--gc-sections"
           , "-flto"
           , "-specs=nano.specs"
-          ] <> modificationLdDefs (modification mcu)
+          ]
+            <> modificationLdDefs mcu firmwareStart maxLength
       }
 
 sysClockDefs :: Int -> Int -> [String]
@@ -68,6 +69,8 @@ sysClockDefs 8_000_000 84_000_000 =
   ]
 sysClockDefs _ _ = error "Unsupported clock configuration"
 
-modificationLdDefs :: String -> [String]
-modificationLdDefs "k8u6" = ["-Wl,--defsym=__flash_start=0x08000000,--defsym=__flash_length=64K,--defsym=__ram_length=8K"]
-modificationLdDefs _ = error "Unsupported ld configuration"
+modificationLdDefs :: MCU p -> Int -> Int -> [String]
+modificationLdDefs MCU{..} firmwareStart maxLength =
+  ["-Wl,--defsym=__flash_start=" <> show firmwareStart]
+    <> ["-Wl,--defsym=__flash_length=" <> show maxLength]
+    <> ["-Wl,--defsym=__ram_length=" <> show sizeRam]
