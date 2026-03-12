@@ -13,7 +13,6 @@ import Core.Formula (
 import Data.Char
 import Device.GD32F4xx
 import Interface.MCU
-import Numeric
 
 instance Compiler GCC GD32F4xx where
   mkCompiler f@Formula{mcu, quartzFrequency, systemFrequency} =
