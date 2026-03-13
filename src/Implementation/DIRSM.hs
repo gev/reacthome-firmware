@@ -55,13 +55,13 @@ diRsm ::
     , KnownNat no
     , KnownNat (ToSizeInBytes ni)
     ) =>
-    m t ->
     (Bool -> t -> m (DInputs ni)) ->
     (t -> m (List nr RSM)) ->
     (t -> m (AOutputs no)) ->
     (t -> m DS18B20) ->
+    m t ->
     m (DIRSM ni no nr)
-diRsm transport' dinputs' rsm' aoutputs' ds18b20 = do
+diRsm dinputs' rsm' aoutputs' ds18b20 transport' = do
     shouldInit <- asks D.shouldInit
     transport <- transport'
     ds18b20 transport

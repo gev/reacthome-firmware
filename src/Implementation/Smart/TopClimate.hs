@@ -12,10 +12,10 @@ topClimate ::
     ( MonadState Context m
     , LazyTransport t
     ) =>
-    m t ->
     (t -> m SHT21) ->
+    m t ->
     m Top
-topClimate transport' sht21' = do
+topClimate sht21' transport' = do
     transport <- transport'
     sht21 <- sht21' transport
 

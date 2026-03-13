@@ -36,12 +36,12 @@ doppler ::
     , MonadState Context m
     , KnownNat (SizeSyncStateBuff ni)
     ) =>
-    m t ->
     (t -> m (Dopplers nd)) ->
     (Bool -> t -> m (DInputs ni)) ->
     (t -> m (ALED 10 100 2400)) ->
+    m t ->
     m (Doppler nd ni)
-doppler transport' dopplers' dinputs' aled' = do
+doppler dopplers' dinputs' aled' transport' = do
     transport <- transport'
     dopplers <- dopplers' transport
     dinputs <- dinputs' True transport

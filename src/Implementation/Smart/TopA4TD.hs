@@ -55,7 +55,6 @@ import Ivory.Stdlib
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff n = 1 + ToSizeInBytes n
 
-
 data Top n = Top
     { dinputs :: DI.DInputs n
     , leds :: LEDs 12 62
@@ -92,15 +91,15 @@ topA4TD ::
     , Flash f
     , KnownNat (SizeSyncStateBuff n)
     ) =>
-    m t ->
     (Bool -> t -> m (DI.DInputs n)) ->
     (E.DInputs n -> t -> f -> m (Vibro n)) ->
     m PowerTouch ->
     (t -> m SHT21) ->
     (p -> m d) ->
     (p -> f) ->
+    m t ->
     m (Top n)
-topA4TD transport' dinputs' vibro' touch' sht21' display' etc' = do
+topA4TD dinputs' vibro' touch' sht21' display' etc' transport' = do
     transport <- transport'
     mcu <- asks D.mcu
     display <- display' $ peripherals mcu
@@ -220,7 +219,7 @@ topA4TD transport' dinputs' vibro' touch' sht21' display' etc' = do
                 }
 
     addTask $ delay 5_000 "sync_channels" $ syncChannels top
-    
+
     addHandler $
         Render
             display

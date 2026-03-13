@@ -27,7 +27,6 @@ di4rsm =
         , systemFrequency = 84_000_000
         , implementation =
             diRsm
-                (rbus $ rs485 uart_1 out_pa_5)
                 ( dinputs $
                     in_pa_12
                         :> in_pa_11
@@ -44,4 +43,5 @@ di4rsm =
                         :> Nil
                 )
                 (ds18b20 ow_0 od_pa_15)
+                (rbus $ rs485 uart_1 out_pa_5)
         }

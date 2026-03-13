@@ -26,8 +26,8 @@ ao4 ::
     , KnownNat (SizeSyncStateBuff AONumber)
     , MonadState Context m
     ) =>
-    m t -> (t -> m CBM53D04) -> m AO4
-ao4 transport' sbm53d04' = do
+    (t -> m CBM53D04) -> m t -> m AO4
+ao4 sbm53d04' transport' = do
     transport <- transport'
     aoutput4 <- sbm53d04' transport
     syncStateBuff <- buffer "sync_channels"

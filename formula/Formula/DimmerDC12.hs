@@ -25,7 +25,6 @@ dimmerDC12 =
         , systemFrequency = 84_000_000
         , implementation =
             dimmer
-                (rbus $ rs485 uart_0 out_pb_2)
                 ( dimmersDC $
                     pwm_9
                         :> pwm_10
@@ -42,4 +41,5 @@ dimmerDC12 =
                         :> Nil
                 )
                 (indicator npx_pwm_0 240)
+                (rbus $ rs485 uart_0 out_pb_2)
         }

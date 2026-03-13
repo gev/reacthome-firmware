@@ -26,7 +26,6 @@ doppler5 =
         , systemFrequency = 84_000_000
         , implementation =
             doppler
-                (rbus $ rs485 uart_1 out_pa_4)
                 ( dopplers $
                     adc_pa_1
                         :> adc_pa_6
@@ -43,4 +42,5 @@ doppler5 =
                         :> Nil
                 )
                 (aled npx_pwm_0 etc)
+                (rbus $ rs485 uart_1 out_pa_4)
         }

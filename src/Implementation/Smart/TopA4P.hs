@@ -67,13 +67,13 @@ topA4P ::
     , KnownNat (Canvas1DSize n)
     , KnownNat (SizeSyncStateBuff n)
     ) =>
-    m t ->
     (Bool -> t -> m (DI.DInputs n)) ->
     (t -> m SHT21) ->
     (p -> m d) ->
     (p -> f) ->
+    m t ->
     m (Top n)
-topA4P transport' dinputs' sht21' display' etc' = do
+topA4P dinputs' sht21' display' etc' transport' = do
     transport <- transport'
     mcu <- asks D.mcu
     display <- display' $ peripherals mcu

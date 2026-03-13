@@ -31,11 +31,11 @@ dimmer ::
     , KnownNat n
     , KnownNat (SizeSyncStateBuff n)
     ) =>
-    m t ->
     (t -> m (Dimmers n)) ->
     (t -> m (Indicator 20)) ->
+    m t ->
     m (Dimmer n)
-dimmer transport' dimmers' indicator' = do
+dimmer dimmers' indicator' transport' = do
     transport <- transport'
     dimmers <- dimmers' transport
     indicator <- indicator' transport

@@ -69,14 +69,14 @@ topA6Tv5 ::
     , KnownNat n
     , KnownNat (SizeSyncStateBuff n)
     ) =>
-    m t ->
     (t -> m (FT.Touches n)) ->
     (E.DInputs n -> t -> f -> m (Vibro n)) ->
     (t -> m SHT21) ->
     (p -> m d) ->
     (p -> f) ->
+    m t ->
     m (Top n)
-topA6Tv5 transport' touches' vibro' sht21' display' etc' = do
+topA6Tv5 touches' vibro' sht21' display' etc' transport' = do
     transport <- transport'
     mcu <- asks D.mcu
     display <- display' $ peripherals mcu

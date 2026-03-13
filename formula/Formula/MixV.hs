@@ -28,7 +28,6 @@ mixV =
         , systemFrequency = 200_000_000
         , implementation =
             mix
-                (rbus $ rs485 uart_3 out_pc_12)
                 ( dinputs $
                     in_pd_1
                         :> in_pd_2
@@ -57,6 +56,7 @@ mixV =
                         :> Nil
                 )
                 (ds18b20 ow_0 od_pe_14)
+                (rbus $ rs485 uart_3 out_pc_12)
         }
 
 {--

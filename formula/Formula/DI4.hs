@@ -25,7 +25,6 @@ di4 =
         , systemFrequency = 84_000_000
         , implementation =
             di
-                (rbus $ rs485 uart_1 out_pa_4)
                 ( dinputs $
                     in_pa_12
                         :> in_pa_11
@@ -34,4 +33,5 @@ di4 =
                         :> Nil
                 )
                 (ds18b20 ow_1 od_pa_8)
+                (rbus $ rs485 uart_1 out_pa_4)
         }

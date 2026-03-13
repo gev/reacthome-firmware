@@ -26,7 +26,6 @@ mix6x12 =
         , systemFrequency = 84_000_000
         , implementation =
             mix
-                (rbus $ rs485 uart_0 out_pb_2)
                 ( dinputs $
                     in_pa_4
                         :> in_pa_15
@@ -53,4 +52,5 @@ mix6x12 =
                 )
                 (indicator npx_pwm_0 150)
                 etc
+                (rbus $ rs485 uart_0 out_pb_2)
         }

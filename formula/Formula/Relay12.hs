@@ -25,7 +25,6 @@ relay12 =
                 , systemFrequency = 84_000_000
                 , implementation =
                         relay
-                                (rbus $ rs485 uart_0 out_pb_2)
                                 ( relays $
                                         out_pb_1
                                                 :> out_pa_11
@@ -42,4 +41,5 @@ relay12 =
                                                 :> Nil
                                 )
                                 (indicator npx_pwm_0 300)
+                                (rbus $ rs485 uart_0 out_pb_2)
                 }

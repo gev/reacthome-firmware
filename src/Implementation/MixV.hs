@@ -65,14 +65,14 @@ mix ::
     , KnownNat (ToSizeInBytes no)
     , Transport t
     ) =>
-    m t ->
     (Bool -> t -> m (DInputs ni)) ->
     (t -> m (AO.AOutputs na)) ->
     (t -> m (DIM.Dimmers nd)) ->
     (t -> m (REL.Relays no)) ->
     (t -> m DS18B20) ->
+    m t ->
     m (Mix ni no nd na)
-mix transport' dinputs' aoutputs' dimmers' relays' ds18b20 = do
+mix dinputs' aoutputs' dimmers' relays' ds18b20 transport' = do
     transport <- transport'
     dinputs <- dinputs' True transport
     aoutputs <- aoutputs' transport

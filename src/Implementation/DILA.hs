@@ -34,12 +34,12 @@ dila ::
     , MonadState Context m
     , KnownNat (SizeSyncStateBuff n)
     ) =>
-    m t ->
     (Bool -> t -> m (DInputs n)) ->
     (t -> m DS18B20) ->
     (t -> m (ALED 10 100 2040)) ->
+    m t ->
     m (DILA n)
-dila transport' dinputs' ds18b20 aled' = do
+dila dinputs' ds18b20 aled' transport' = do
     transport <- transport'
     ds18b20 transport
     dinputs <- dinputs' True transport

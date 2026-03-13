@@ -22,6 +22,6 @@ smartTopClimate =
         , systemFrequency = 84_000_000
         , implementation =
             topClimate
-                (rbusTop uart_1)
                 (sht21 i2c_0)
+                (rbusTop uart_1)
         }

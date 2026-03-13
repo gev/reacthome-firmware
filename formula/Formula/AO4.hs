@@ -23,6 +23,6 @@ ao4 =
         , systemFrequency = 84_000_000
         , implementation =
             I.ao4
-                (rbus $ rs485 uart_1 out_pa_4)
                 (cbm53d04 spi_0 [1, 0, 2, 3])
+                (rbus $ rs485 uart_1 out_pa_4)
         }

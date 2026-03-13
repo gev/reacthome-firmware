@@ -77,15 +77,15 @@ hub ::
     , KnownNat (ToSizeInBytes ni)
     , Transport t
     ) =>
-    m t ->
     (t -> m (List nr RBUS)) ->
     (t -> m (Dimmers nd)) ->
     (Bool -> t -> m (DInputs ni)) ->
     (t -> m DS18B20) ->
     (t -> m (Indicator 20)) ->
     (t -> m (ALED 10 100 2400)) ->
+    m t ->
     m (Hub ni nd nr)
-hub transport' rbus' dimmers' dinputs' ds18b20' indicator' aled' = do
+hub rbus' dimmers' dinputs' ds18b20' indicator' aled' transport' = do
     transport <- transport'
     rbus <- rbus' transport
     dimmers <- dimmers' transport

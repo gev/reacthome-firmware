@@ -27,7 +27,6 @@ smartBottom =
         , systemFrequency = 84_000_000
         , implementation =
             bottom
-                (rbus $ rs485 uart_1 out_pa_4)
                 (top uart_0 in_pb_4)
                 ( dinputs $
                     in_pa_5
@@ -38,4 +37,5 @@ smartBottom =
                 )
                 (ds18b20 ow_0 od_pa_15)
                 (aled npx_pwm_3 etc)
+                (rbus $ rs485 uart_1 out_pa_4)
         }

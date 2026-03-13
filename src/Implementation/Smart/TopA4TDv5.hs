@@ -64,11 +64,11 @@ data Top n = Top
 
         5                                         1
 
-    6              15          22          30   
+    6              15          22          30
     7     12    14    19    21    26    29    34     35 40
     8  10          16          23          31        36 39
           11    13    18    20    25    28    33     37 38
-    9              17          24    27    32   
+    9              17          24    27    32
 
         4                                         2
 
@@ -85,14 +85,14 @@ topA4TDv5 ::
     , Flash f
     , KnownNat (SizeSyncStateBuff n)
     ) =>
-    m t ->
     (t -> m (FT.Touches n)) ->
     (E.DInputs n -> t -> f -> m (Vibro n)) ->
     (t -> m SHT21) ->
     (p -> m d) ->
     (p -> f) ->
+    m t ->
     m (Top n)
-topA4TDv5 transport' touches' vibro' sht21' display' etc' = do
+topA4TDv5 touches' vibro' sht21' display' etc' transport' = do
     transport <- transport'
     mcu <- asks D.mcu
     display <- display' $ peripherals mcu
@@ -101,7 +101,6 @@ topA4TDv5 transport' touches' vibro' sht21' display' etc' = do
     vibro <- vibro' (FT.getDInputs touches) transport etc
     frameBuffer <- values' "top_frame_buffer" 0
     syncStateBuff <- buffer "sync_channels"
-
 
     leds <-
         mkLeds
@@ -124,7 +123,7 @@ topA4TDv5 transport' touches' vibro' sht21' display' etc' = do
             , 38
             , 15
             , 22
-            , 30 
+            , 30
             , 12
             , 14
             , 19

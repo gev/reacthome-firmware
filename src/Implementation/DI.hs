@@ -32,11 +32,11 @@ di ::
     , KnownNat n
     , KnownNat (SizeSyncStateBuff n)
     ) =>
-    m t ->
     (Bool -> t -> m (DInputs n)) ->
     (t -> m DS18B20) ->
+    m t ->
     m (DI n)
-di transport' dinputs' ds18b20 = do
+di dinputs' ds18b20 transport' = do
     transport <- transport'
     ds18b20 transport
     dinputs <- dinputs' True transport
@@ -44,7 +44,7 @@ di transport' dinputs' ds18b20 = do
 
     let di = DI{dinputs, syncStateBuff}
 
-    addTask $ delay 5_000 "sync_channels" $ syncChannels di    
+    addTask $ delay 5_000 "sync_channels" $ syncChannels di
 
     pure di
 
