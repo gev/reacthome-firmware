@@ -28,7 +28,6 @@ di4la =
         , systemFrequency = 84_000_000
         , implementation =
             dila
-                (rbus $ rs485 uart_1 out_pa_4)
                 ( dinputs $
                     in_pa_12
                         :> in_pa_11
@@ -38,4 +37,5 @@ di4la =
                 )
                 (ds18b20 ow_1 od_pa_8)
                 (aled npx_pwm_0 etc)
+                (rbus $ rs485 uart_1 out_pa_4)
         }

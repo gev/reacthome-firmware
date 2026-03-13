@@ -81,14 +81,14 @@ topG4Dv15 ::
     , Flash f
     , KnownNat (SizeSyncStateBuff n)
     ) =>
-    m t ->
     (t -> m (FT.Touches n)) ->
     (E.DInputs n -> t -> f -> m (Vibro n)) ->
     (t -> m SHT21) ->
     (p -> m d) ->
     (p -> f) ->
+    m t ->
     m (Top n)
-topG4Dv15 transport' touches' vibro' sht21' display' etc' = do
+topG4Dv15 touches' vibro' sht21' display' etc' transport' = do
     transport <- transport'
     mcu <- asks D.mcu
     display <- display' $ peripherals mcu
@@ -205,7 +205,7 @@ topG4Dv15 transport' touches' vibro' sht21' display' etc' = do
                 , sht21
                 , syncStateBuff
                 }
-    
+
     addTask $ delay 5_000 "sync_channels" $ syncChannels top
 
     addHandler $

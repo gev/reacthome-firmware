@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Implementation.Dimmer where
 
 import Control.Monad.State
@@ -28,10 +29,10 @@ dimmer ::
     , KnownNat n
     , KnownNat (SizeSyncStateBuff n)
     ) =>
-    m t ->
     (t -> m (Dimmers n)) ->
+    m t ->
     m (Dimmer n)
-dimmer transport' dimmers' = do
+dimmer dimmers' transport' = do
     transport <- transport'
     dimmers <- dimmers' transport
     syncStateBuff <- buffer "sync_channels"

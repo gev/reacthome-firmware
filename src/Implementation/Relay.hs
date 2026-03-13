@@ -31,13 +31,14 @@ data Relay n = Relay
 relay ::
     ( Monad m
     , MonadState Context m
-    , KnownNat n 
-    , KnownNat (SizeSyncStateBuff n)) =>
-    m t ->
+    , KnownNat n
+    , KnownNat (SizeSyncStateBuff n)
+    ) =>
     (t -> m (Relays n)) ->
     (t -> m (Indicator 20)) ->
+    m t ->
     m (Relay n)
-relay transport' relays' indicator' = do
+relay relays' indicator' transport' = do
     transport <- transport'
     relays <- relays' transport
     indicator <- indicator' transport

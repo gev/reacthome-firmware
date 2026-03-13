@@ -26,7 +26,6 @@ smartTopA6Tv5 =
         , systemFrequency = 84_000_000
         , implementation =
             topA6Tv5
-                (rbusTop uart_1)
                 ( touches aluminum $
                     touch_pa0
                         :> touch_pb1
@@ -40,4 +39,5 @@ smartTopA6Tv5 =
                 (sht21 i2c_0)
                 npx_pwm_0
                 etc
+                (rbusTop uart_1)
         }

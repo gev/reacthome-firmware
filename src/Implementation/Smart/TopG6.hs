@@ -73,15 +73,15 @@ topG6 ::
     , KnownNat n
     , KnownNat (SizeSyncStateBuff n)
     ) =>
-    m t ->
     (Bool -> t -> m (DI.DInputs n)) ->
     (E.DInputs n -> t -> f -> m (Vibro n)) ->
     m PowerTouch ->
     (t -> m SHT21) ->
     (p -> m d) ->
     (p -> f) ->
+    m t ->
     m (Top n)
-topG6 transport' dinputs' vibro' touch' sht21' display' etc' = do
+topG6 dinputs' vibro' touch' sht21' display' etc' transport' = do
     transport <- transport'
     mcu <- asks D.mcu
     display <- display' $ peripherals mcu

@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 {- HLINT ignore "Use for_" -}
 
 module Implementation.Mix where
@@ -85,7 +86,6 @@ mix ::
     , KnownNat (SizeSyncStateBuff ni no)
     , KnownNat (ToSizeInBytes ni)
     ) =>
-    m t ->
     (Bool -> t -> m (DInputs ni)) ->
     (t -> m (Relays no)) ->
     ( ATS ->
@@ -95,8 +95,9 @@ mix ::
       m (Indicator ni no)
     ) ->
     (p -> f) ->
+    m t ->
     m (Mix ni no)
-mix transport' dinputs' relays' indicator' etc = do
+mix dinputs' relays' indicator' etc transport' = do
     transport <- transport'
     relays <- relays' transport
     dinputs <- dinputs' True transport
@@ -158,7 +159,6 @@ sync Mix{..} = do
     syncRules rules
     syncATS ats
 
-
 instance (KnownNat ni, KnownNat no, KnownNat (PayloadSize no), KnownNat (SizeSyncStateBuff ni no), KnownNat (ToSizeInBytes ni)) => Controller (Mix ni no) where
     handle mix@Mix{..} buff size = do
         shouldInit' <- deref shouldInit
@@ -174,12 +174,15 @@ instance (KnownNat ni, KnownNat no, KnownNat (PayloadSize no), KnownNat (SizeSyn
             , action ==? actionError ==> resetError ats
             ]
 
-syncChannels :: forall ni no s t. 
-                (KnownNat ni, KnownNat no, 
-                KnownNat (SizeSyncStateBuff ni no), 
-                KnownNat (ToSizeInBytes ni)) 
-             => Mix ni no 
-             -> Ivory (ProcEffects s t) ()
+syncChannels ::
+    forall ni no s t.
+    ( KnownNat ni
+    , KnownNat no
+    , KnownNat (SizeSyncStateBuff ni no)
+    , KnownNat (ToSizeInBytes ni)
+    ) =>
+    Mix ni no ->
+    Ivory (ProcEffects s t) ()
 syncChannels Mix{..} = do
     shouldInit' <- deref shouldInit
     when (iNot shouldInit') do

@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Implementation.Smart.Bottom where
 
 import Control.Monad.State
@@ -36,13 +37,13 @@ bottom ::
     , Monad m
     , KnownNat (SizeSyncStateBuff n)
     ) =>
-    m t ->
     (t -> m Top) ->
     (Bool -> t -> m (DInputs n)) ->
     (t -> m DS18B20) ->
     (t -> m (ALED 10 100 2040)) ->
+    m t ->
     m (Bottom n)
-bottom transport' top' dinputs' ds18b20 aled' = do
+bottom top' dinputs' ds18b20 aled' transport' = do
     transport <- transport'
     ds18b20 transport
     dinputs <- dinputs' True transport
@@ -68,7 +69,6 @@ bottomCO2 ::
     , Monad m
     , KnownNat (SizeSyncStateBuff n)
     ) =>
-    m t ->
     (t -> m Top) ->
     ( Bool ->
       t ->
@@ -77,15 +77,16 @@ bottomCO2 ::
     (t -> m DS18B20) ->
     (t -> m SCD40) ->
     (t -> m (ALED 10 100 2040)) ->
+    m t ->
     m (Bottom n)
-bottomCO2 transport top dinputs ds18b20 scd40 aled' = do
+bottomCO2 top dinputs ds18b20 scd40 aled' transport = do
     scd40 =<< transport
     bottom
-        transport
         top
         dinputs
         ds18b20
         aled'
+        transport
 
 onGetState Bottom{..} _ _ = do
     forceSyncDInputs dinputs

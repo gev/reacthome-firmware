@@ -26,7 +26,6 @@ smartTopG6 =
         , systemFrequency = 84_000_000
         , implementation =
             topG6
-                (rbusTop uart_1)
                 ( dinputs $
                     in_pb_8
                         :> in_pa_15
@@ -41,4 +40,5 @@ smartTopG6 =
                 (sht21 i2c_0)
                 npx_pwm_1
                 etc
+                (rbusTop uart_1)
         }

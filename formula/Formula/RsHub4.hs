@@ -29,7 +29,6 @@ rsHub4 =
         , systemFrequency = 200_000_000
         , implementation =
             hub
-                (U.rbus eth_0)
                 ( F.rbus $
                     rs485 uart_5 out_pb_14
                         :> rs485 uart_3 out_pc_12
@@ -53,4 +52,5 @@ rsHub4 =
                 (ds18b20 ow_0 od_pb_3)
                 (indicator npx_pwm_0 50)
                 (aled npx_pwm_1 etc)
+                (U.rbus eth_0)
         }

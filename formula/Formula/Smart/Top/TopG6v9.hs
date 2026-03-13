@@ -26,7 +26,6 @@ smartTopG6v9 =
             , systemFrequency = 84_000_000
             , implementation =
                   topG6v9
-                        (rbusTop uart_1)
                         ( touches glass $
                               touch_pa0
                                     :> touch_pb1
@@ -40,4 +39,5 @@ smartTopG6v9 =
                         (sht21 i2c_0)
                         npx_pwm_0
                         etc
+                        (rbusTop uart_1)
             }

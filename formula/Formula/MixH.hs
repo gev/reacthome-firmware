@@ -27,7 +27,6 @@ mixH =
                 , systemFrequency = 84_000_000
                 , implementation =
                         mix
-                                (rbus $ rs485 uart_0 out_pb_2)
                                 ( dinputs $
                                         in_pa_3
                                                 :> in_pa_2
@@ -55,6 +54,7 @@ mixH =
                                 )
                                 (ds18b20 ow_0 od_pa_5)
                                 etc
+                                (rbus $ rs485 uart_0 out_pb_2)
                 }
 
 {--

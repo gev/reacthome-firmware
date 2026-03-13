@@ -24,11 +24,11 @@ dimmerAC1 =
         , systemFrequency = 84_000_000
         , implementation =
             dimmer
-                (rbus $ rs485 uart_1 out_pa_4)
                 ( dimmersAC
                     ( pwm_11
                         :> Nil
                     )
                     exti_pb_7
                 )
+                (rbus $ rs485 uart_1 out_pa_4)
         }

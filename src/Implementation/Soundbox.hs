@@ -63,7 +63,6 @@ mkSoundbox ::
     , I.I2C ic 2
     , Pull p d
     ) =>
-    m t ->
     (p -> m e) ->
     (p -> m (i 256 256)) ->
     (p -> d -> m o) ->
@@ -71,8 +70,9 @@ mkSoundbox ::
     (p -> d -> m o) ->
     (p -> m (ic 2)) ->
     (p -> d -> m o) ->
+    m t ->
     m Soundbox
-mkSoundbox transport' enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute = do
+mkSoundbox enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute transport' = do
     S.mkSRC4392 i2c mute
 
     transport <- transport'
