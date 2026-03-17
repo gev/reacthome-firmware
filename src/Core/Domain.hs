@@ -10,6 +10,7 @@ import Support.Cast
 import Support.ReadAddr
 import Support.Serialize
 import Util.String
+import Support.RunAppByAddr (inclRunAppByAddr)
 
 data Domain p i = Domain
        { model :: Value Uint8
@@ -33,6 +34,7 @@ domain model' version' mcu mustInit implementation = do
        addModule inclString
        addModule inclSerialize
        addModule inclReadAddr
+       addModule inclRunAppByAddr
        model <- value "model" model'
        version <- V.version "version" version'
        shouldInit <- value "should_init" mustInit

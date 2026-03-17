@@ -162,6 +162,8 @@ executable reacthome-firmware
     Formula.AO4
     Formula.Blink330
     Formula.Blink450
+    Formula.Dfu330
+    Formula.Dfu450
     Formula.DI4
     Formula.DI4LA
     Formula.DI4RSM
@@ -204,6 +206,7 @@ executable reacthome-firmware
     Implementation.DI
     Implementation.DILA
     Implementation.DIRSM
+    Implementation.Dfu
     Implementation.Dimmer
     Implementation.DimmerDIN
     Implementation.Doppler
@@ -326,6 +329,7 @@ executable reacthome-firmware
     Support.Lwip.Tcp
     Support.Lwip.Udp
     Support.ReadAddr
+    Support.RunAppByAddr
     Support.Serialize
     Transport.RS485.RBUS
     Transport.RS485.RBUS.Data
