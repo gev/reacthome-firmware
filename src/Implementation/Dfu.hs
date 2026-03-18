@@ -20,7 +20,6 @@ dfu transport' = do
 
 jumpToFirmware :: Uint32 -> Ivory eff ()
 jumpToFirmware address = do
-    disableIRQ
     setMSP address
     startFirmware address
 
