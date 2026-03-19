@@ -23,10 +23,6 @@ jumpToFirmware :: Uint32 -> Ivory eff ()
 jumpToFirmware address = do
     -- disableIRQ
     setMSP =<< readAddr32u address
-    startFirmware address
-
-startFirmware :: Uint32 -> Ivory eff ()
-startFirmware address = do
     runAppByAddr $ address + 4
 
 instance Controller DFU where
