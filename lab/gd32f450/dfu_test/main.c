@@ -15,7 +15,7 @@ void jump_to_app(void) {
   // app_entry_t app_entry = (app_entry_t)(*(volatile uint32_t *)(APP_ADDRESS + 4u));
   
   __set_MSP(*(volatile uint32_t *)APP_ADDRESS);
-  run_app_by_addr(APP_ADDRESS+4);
+  run_app_by_addr(APP_ADDRESS + 4);
   // app_entry();
 }
 
