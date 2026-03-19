@@ -8,9 +8,9 @@ import Interface.MCU qualified as I
 import Ivory.Language
 import Support.Cast
 import Support.ReadAddr
+import Support.RunAppByAddr
 import Support.Serialize
 import Util.String
-import Support.RunAppByAddr (inclRunAppByAddr)
 
 data Domain p i = Domain
        { model :: Value Uint8
