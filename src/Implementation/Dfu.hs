@@ -5,7 +5,8 @@ import Control.Monad.State
 import Core.Context
 import Core.Controller
 import Ivory.Language
-import Support.CMSIS.CoreCMFunc (disableIRQ, setMSP)
+import Support.CMSIS.CoreCMFunc
+import Support.ReadAddr
 import Support.RunAppByAddr
 
 data DFU = forall t. DFU
@@ -20,7 +21,8 @@ dfu transport' = do
 
 jumpToFirmware :: Uint32 -> Ivory eff ()
 jumpToFirmware address = do
-    setMSP address
+    -- disableIRQ
+    setMSP =<< readAddr32u address
     startFirmware address
 
 startFirmware :: Uint32 -> Ivory eff ()
