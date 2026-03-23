@@ -13,7 +13,7 @@
 ######################################
 # target
 ######################################
-TARGET = gd32_blink
+TARGET = 450_led
 
 
 ######################################
@@ -22,7 +22,7 @@ TARGET = gd32_blink
 # debug build?
 DEBUG = 1
 # optimization
-OPT = -O0
+OPT = -O3
 
 
 #######################################
@@ -36,36 +36,43 @@ BUILD_DIR = build
 ######################################
 # C sources
 C_SOURCES =  \
-../../../support/device/gd32f3x0/src/system_gd32f3x0.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_adc.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_cec.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_cmp.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_crc.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_ctc.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_dac.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_dbg.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_dma.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_exti.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fmc.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_fwdgt.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_gpio.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_i2c.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_misc.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_pmu.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_rcu.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_rtc.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_spi.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_syscfg.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_timer.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_tsi.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_usart.c \
-../../../support/device/gd32f3x0/peripherals/src/gd32f3x0_wwdgt.c \
-main.c 
+../../../support/device/gd32f4xx/src/system_gd32f4xx.c \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_adc.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_enet.c  \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_iref.c  \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_timer.c \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_can.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_exmc.c  \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_misc.c  \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_tli.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_crc.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_exti.c  \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_pmu.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_trng.c  \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_ctc.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_fmc.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_rcu.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_usart.c \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dac.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_fwdgt.c \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_rtc.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_wwdgt.c \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dbg.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_gpio.c  \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_sdio.c  \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dci.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_i2c.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_spi.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_dma.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_ipa.c   \
+../../../support/device/gd32f4xx/peripherals/src/gd32f4xx_syscfg.c\
+main.c \
+
 
 
 # ASM sources
 ASM_SOURCES =  \
-../../../support/device/gd32f3x0/src/startup_gd32f3x0.s
+../../../support/device/gd32f4xx/src/startup_gd32f450_470.s
 
 #######################################
 # binaries
@@ -108,8 +115,8 @@ AS_DEFS =
 
 # C defines
 C_DEFS =  \
--DGD32F330 \
--D__SYSTEM_CLOCK_84M_PLL_HXTAL \
+-DGD32F450 \
+-D__SYSTEM_CLOCK_200M_PLL_25M_HXTAL \
 
 
 
@@ -118,10 +125,11 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
--I../../../support/device/gd32f3x0/inc \
+-I../../../support/device/gd32f4xx/inc \
 -I../../../support/CMSIS/inc \
--I../../../support/device/gd32f3x0/peripherals/inc \
+-I../../../support/device/gd32f4xx/peripherals/inc \
 -I.
+
 
 
 # compile gcc flags
@@ -142,12 +150,12 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 # LDFLAGS
 #######################################
 # link script
-LDSCRIPT = ../../../support/device/gd32f3x0/gd32f3x0.ld
+LDSCRIPT = ../../../support/device/gd32f4xx/gd32f450-470.ld
 
 # libraries
 LIBS = -lc -lm -lnosys 
 LIBDIR = 
-LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
+LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections -Wl,--defsym=__flash_start=0x8000000 -Wl,--defsym=__flash_length=1024K -Wl,--defsym=__ram_length=192K
 
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
@@ -188,20 +196,26 @@ $(BUILD_DIR):
 clean:
 	-rm -fR $(BUILD_DIR)
 flash:
-	make
-	JLinkExe -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink
+	JLinkExe -Device GD32F450VG -If SWD -Speed 1000 jlink/FlashMCU.jlink
 erase:
-	JLinkExe -Device GD32F330K8 -If SWD -Speed 1000 jlink/EraseMCU.jlink
+	JLinkExe -Device GD32F450VG -If SWD -Speed 1000 jlink/EraseMCU.jlink
 r_flash:
 	make
-	JLinkExe ip 192.168.88.124 -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink
+	JLinkExe ip 192.168.88.124 -Device GD32F450VG -If SWD -Speed 1000 jlink/FlashMCU.jlink
+#	JLinkExe ip 192.168.88.154 -Device GD32F450VG -If SWD -Speed 1000 jlink/FlashMCU.jlink
 r_erase:
-	JLinkExe ip 192.168.88.124 -Device GD32F330K8 -If SWD -Speed 1000 jlink/EraseMCU.jlink
+	JLinkExe ip 192.168.88.124 -Device GD32F450VG -If SWD -Speed 1000 jlink/EraseMCU.jlink
 koro_flash:
 	make
-	JLinkExe ip tunnel:69610692::jlink-europe.segger.com -Device GD32F330K8 -If SWD -Speed 1000 jlink/FlashMCU.jlink
+	JLinkExe ip tunnel:69610692::jlink-europe.segger.com -Device GD32F450VG -If SWD -Speed 1000 jlink/FlashMCU.jlink
 koro_erase:
-	JLinkExe ip tunnel:69610692::jlink-europe.segger.com -Device GD32F330K8 -If SWD -Speed 1000 jlink/EraseMCU.jlink
+	JLinkExe ip tunnel:69610692::jlink-europe.segger.com -Device GD32F450VG -If SWD -Speed 1000 jlink/EraseMCU.jlink
+flash_rasp_loc:
+	make
+	JLinkExe ip 192.168.31.93 -Device GD32F450VG -If SWD -Speed 1000 jlink/FlashMCU.jlink
+erase_rasp_loc:
+	JLinkExe ip 192.168.31.93 -Device GD32F450VG -If SWD -Speed 1000 jlink/EraseMCU.jlink
+	
 #######################################
 # dependencies
 #######################################

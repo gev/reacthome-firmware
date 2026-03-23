@@ -37,6 +37,8 @@ import Formula.Smart.Top.TopG4v9
 import Formula.Smart.Top.TopG6
 import Formula.Smart.Top.TopG6v9
 import Formula.Soundbox
+import Formula.Dfu330
+import Formula.Dfu450
 
 main :: IO ()
 main = do
@@ -47,6 +49,7 @@ main = do
         , di4la
         , di4rsm
         , relay12
+        , dfu330
         , dimmerDC12
         , dimmerAC12
         , dimmerAC1
@@ -77,7 +80,8 @@ main = do
         ]
     mapM_
         gcc
-        [ mixV
+        [ dfu450
+        , mixV
         , rsHub4
         , server
         , soundbox

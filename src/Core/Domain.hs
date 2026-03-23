@@ -8,6 +8,7 @@ import Interface.MCU qualified as I
 import Ivory.Language
 import Support.Cast
 import Support.ReadAddr
+import Support.RunAppByAddr
 import Support.Serialize
 import Util.String
 
@@ -33,6 +34,7 @@ domain model' version' mcu mustInit implementation = do
        addModule inclString
        addModule inclSerialize
        addModule inclReadAddr
+       addModule inclRunAppByAddr
        model <- value "model" model'
        version <- V.version "version" version'
        shouldInit <- value "should_init" mustInit
