@@ -21,5 +21,6 @@ dfu450 =
         , systemFrequency = 200_000_000
         , implementation =
             dfu
+                0x8_008_000
                 (rbus eth_0)
         }

@@ -13,10 +13,10 @@ data DFU = forall t. DFU
     { transport :: t
     }
 
-dfu :: (Monad m, MonadState Context m) => m t -> m DFU
-dfu transport' = do
+dfu :: (Monad m, MonadState Context m) => Uint32 -> m t -> m DFU
+dfu address transport' = do
     transport <- transport'
-    addInit "jump_to_firmware" $ jumpToFirmware 0x8_002_000
+    addInit "jump_to_firmware" $ jumpToFirmware address
     pure DFU{transport}
 
 jumpToFirmware :: Uint32 -> Ivory eff ()
