@@ -182,6 +182,7 @@ executable reacthome-firmware
     Formula.Server
     Formula.Smart.Bottom.Bottom
     Formula.Smart.Bottom.BottomCO2
+    Formula.Smart.Bottom.BottomClimate
     Formula.Smart.Top.TopA4P
     Formula.Smart.Top.TopA4T
     Formula.Smart.Top.TopA4TD
