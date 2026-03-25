@@ -20,6 +20,7 @@ import Feature.Smart.Top
 import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
+import Feature.Sht21 (SHT21)
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff n = 1 + ToSizeInBytes n
@@ -81,6 +82,31 @@ bottomCO2 ::
     m (Bottom n)
 bottomCO2 top dinputs ds18b20 scd40 aled' transport = do
     scd40 =<< transport
+    bottom
+        top
+        dinputs
+        ds18b20
+        aled'
+        transport
+
+bottomClimate ::
+    ( MonadState Context m
+    , KnownNat n
+    , Monad m
+    , KnownNat (SizeSyncStateBuff n)
+    ) =>
+    (t -> m Top) ->
+    ( Bool ->
+      t ->
+      m (DInputs n)
+    ) ->
+    (t -> m DS18B20) ->
+    (t -> m SHT21) ->
+    (t -> m (ALED 10 100 2040)) ->
+    m t ->
+    m (Bottom n)
+bottomClimate top dinputs ds18b20 sht21 aled' transport = do
+    sht21 =<< transport
     bottom
         top
         dinputs

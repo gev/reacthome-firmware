@@ -69,6 +69,7 @@ deviceTypeSmartTopA4TD7S = 0x39 :: Uint8
 deviceTypeSmartBottom = 0x3a :: Uint8
 deviceTypeSmartBottomCO2 = 0x3b :: Uint8
 deviceTypeSmartTopClimate = 0x3c :: Uint8
+deviceTypeSmartBottomClimate = 0x3d :: Uint8
 
 {-
     The DIN rail devices
