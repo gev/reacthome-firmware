@@ -1,6 +1,6 @@
 {-# LANGUAGE UndecidableInstances #-}
 
-module Implementation.Smart.Bottom where
+module Implementation.Smart.BottomClimate where
 
 import Control.Monad.State
 import Core.Actions
@@ -15,8 +15,6 @@ import Endpoint.DInputs qualified as D
 import Feature.ALED
 import Feature.DInputs
 import Feature.DS18B20
-import Feature.Scd40 hiding (transmit)
-import Feature.Smart.Top
 import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
@@ -25,37 +23,38 @@ import Feature.Sht21 (SHT21)
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff n = 1 + ToSizeInBytes n
 
-data Bottom n = Bottom
-    { top :: Top
-    , dinputs :: DInputs n
+data BottomClimate n = BottomClimate
+    { dinputs :: DInputs n
     , aled :: ALED 10 100 2040
     , syncStateBuff :: Buffer (SizeSyncStateBuff n) Uint8
     }
 
-bottom ::
+bottomClimate ::
     ( MonadState Context m
     , KnownNat n
     , Monad m
     , KnownNat (SizeSyncStateBuff n)
     ) =>
-    (t -> m Top) ->
-    (Bool -> t -> m (DInputs n)) ->
+    ( Bool ->
+      t ->
+      m (DInputs n)
+    ) ->
     (t -> m DS18B20) ->
+    (t -> m SHT21) ->
     (t -> m (ALED 10 100 2040)) ->
     m t ->
-    m (Bottom n)
-bottom top' dinputs' ds18b20 aled' transport' = do
+    m (BottomClimate n)
+bottomClimate dinputs' ds18b20 sht21 aled' transport' = do
     transport <- transport'
+    sht21 transport
     ds18b20 transport
     dinputs <- dinputs' True transport
-    top <- top' transport
     aled <- aled' transport
     syncStateBuff <- buffer "sync_channels"
 
     let bottom =
-            Bottom
-                { top
-                , dinputs
+            BottomClimate
+                { dinputs
                 , aled
                 , syncStateBuff
                 }
@@ -64,43 +63,15 @@ bottom top' dinputs' ds18b20 aled' transport' = do
 
     pure bottom
 
-bottomCO2 ::
-    ( MonadState Context m
-    , KnownNat n
-    , Monad m
-    , KnownNat (SizeSyncStateBuff n)
-    ) =>
-    (t -> m Top) ->
-    ( Bool ->
-      t ->
-      m (DInputs n)
-    ) ->
-    (t -> m DS18B20) ->
-    (t -> m SCD40) ->
-    (t -> m (ALED 10 100 2040)) ->
-    m t ->
-    m (Bottom n)
-bottomCO2 top dinputs ds18b20 scd40 aled' transport = do
-    scd40 =<< transport
-    bottom
-        top
-        dinputs
-        ds18b20
-        aled'
-        transport
-
-onGetState Bottom{..} _ _ = do
+onGetState BottomClimate{..} _ _ = do
     forceSyncDInputs dinputs
-    forceSyncTop top
     forceSyncAled aled
 
-instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (Bottom n) where
-    handle b@Bottom{..} buff size = do
+instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (BottomClimate n) where
+    handle b@BottomClimate{..} buff size = do
         action <- deref $ buff ! 0
         cond_
             [ action ==? actionGetState ==> onGetState b buff size
-            , action ==? actionSmartTop ==> onMessage top buff size
-            , action ==? actionFindMe ==> onFindMe top buff size
             , action ==? actionInitialize ==> onInitialize aled buff size
             , action ==? actionALedOn ==> onALedOn aled buff size
             , action ==? actionALedOff ==> onALedOff aled buff size
@@ -118,9 +89,9 @@ syncChannels ::
     ( KnownNat n
     , KnownNat (SizeSyncStateBuff n)
     ) =>
-    Bottom n ->
+    BottomClimate n ->
     Ivory (ProcEffects s ()) ()
-syncChannels Bottom{..} = do
+syncChannels BottomClimate{..} = do
     arrayMap \ix -> store (syncStateBuff ! ix) 0
     pack syncStateBuff 0 actionGetState
     let offset = 1
