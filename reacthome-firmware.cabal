@@ -220,6 +220,7 @@ executable reacthome-firmware
     Implementation.MixV
     Implementation.Relay
     Implementation.Smart.Bottom
+    Implementation.Smart.BottomClimate
     Implementation.Smart.TopA4P
     Implementation.Smart.TopA4T
     Implementation.Smart.TopA4TD

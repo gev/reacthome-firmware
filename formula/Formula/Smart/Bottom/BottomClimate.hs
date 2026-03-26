@@ -9,8 +9,7 @@ import Device.GD32F3x0
 import Feature.ALED (aled)
 import Feature.DInputs
 import Feature.DS18B20
-import Feature.Smart.Top
-import Implementation.Smart.Bottom (bottomClimate)
+import Implementation.Smart.BottomClimate (bottomClimate)
 import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
@@ -21,14 +20,13 @@ smartBottomClimate =
     Formula
         { name = "smart_bottom_climate"
         , model = deviceTypeSmartBottomClimate
-        , version = (4, 11)
+        , version = (4, 12)
         , shouldInit = true
         , mcu = gd32f330k8u6
         , quartzFrequency = 8_000_000
         , systemFrequency = 84_000_000
         , implementation =
             bottomClimate
-                (top uart_0 in_pb_4)
                 ( dinputs $
                     in_pa_5
                         :> in_pa_6
