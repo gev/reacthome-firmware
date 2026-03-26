@@ -249,6 +249,7 @@ data GD32F4xx = GD32F4xx
     , i2s_tx_1 :: I2STX'
     , i2s_tx_2 :: I2STX'
     , i2s_trx_1 :: I2STRX'
+    , i2s_trx_2 :: I2STRX'
     , eth_0 :: Enet'
     , etc :: PageAddr
     }
@@ -606,6 +607,26 @@ gd32f4xx =
                         dma_subperi3
                         dma0_channel3_irqn
                         (pb_14 af_6)
+                , i2s_trx_2 =
+                    mkI2STRX
+                        spi2
+                        rcu_spi2
+                        rcu_dma0
+                        dma0
+                        dma_ch5
+                        dma_subperi0
+                        dma0_channel5_irqn
+                        (pb_5 af_6)
+                        (pa_15 af_6)
+                        (pb_3 af_6)
+                        (pb_10 af_6)
+                        i2s2_add
+                        rcu_dma0
+                        dma0
+                        dma_ch2
+                        dma_subperi2
+                        dma0_channel2_irqn
+                        (pc_11 af_5)
                 , eth_0 =
                     mkENET
                         (pa_1 af_11)
