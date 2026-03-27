@@ -22,7 +22,7 @@ gcc = mkGCC >>= build
 mkGCC :: (Compiler GCC p) => Formula p -> GCC
 mkGCC f@Formula{..} = do
     let startFirmware = startFlash mcu
-    let maxLength = sizeFlash mcu 
+    let maxLength = sizeFlash mcu
     mkCompiler f startFirmware maxLength
 
 cc :: String

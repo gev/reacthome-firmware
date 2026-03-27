@@ -17,64 +17,64 @@ import Ivory.Language
 
 cook :: Formula p -> ModuleDef
 cook Formula{..} = do
-  inclModule
-  mapM_ incl multiBodyFunctions
-  incl initialize
-  incl loop
-  incl main
- where
-  (domain', domainContext') = runState (domain model version' mcu' shouldInit implementation') mempty
-  (mcu', mcuContext') = runState (platform mcu) mempty
-  (implementation', implementationContext') = runReader (runStateT implementation mempty) domain'
+    inclModule
+    mapM_ incl multiBodyFunctions
+    incl initialize
+    incl loop
+    incl main
+  where
+    (domain', domainContext') = runState (domain model version' mcu' shouldInit implementation') mempty
+    (mcu', mcuContext') = runState (platform mcu) mempty
+    (implementation', implementationContext') = runReader (runStateT implementation mempty) domain'
 
-  (Context inclModule inits tasks syncs bodies) =
-    mcuContext'
-      <> domainContext'
-      <> implementationContext'
+    (Context inclModule inits tasks syncs bodies) =
+        mcuContext'
+            <> domainContext'
+            <> implementationContext'
 
-  bodyNames = nub $ fst <$> bodies
+    bodyNames = nub $ fst <$> bodies
 
-  multiBodyFunctions = mkMultiBodyFunction <$> bodyNames
+    multiBodyFunctions = mkMultiBodyFunction <$> bodyNames
 
-  mkMultiBodyFunction :: String -> Def ('[] :-> ())
-  mkMultiBodyFunction name' = proc name' $ body $ mapM_ snd $ filter (\(id', _) -> id' == name') bodies
+    mkMultiBodyFunction :: String -> Def ('[] :-> ())
+    mkMultiBodyFunction name' = proc name' $ body $ mapM_ snd $ filter (\(id', _) -> id' == name') bodies
 
-  loop = mkLoop (systemClock mcu') tasks
+    loop = mkLoop (systemClock mcu') tasks
 
-  initialize :: Def ('[] :-> ())
-  initialize = proc "init" $ body $ mapM_ call_ inits
+    initialize :: Def ('[] :-> ())
+    initialize = proc "init" $ body $ mapM_ call_ inits
 
-  main :: Def ('[] :-> Sint32)
-  main = proc "main" $ body do
-    call_ initialize
-    call_ loop
-    ret 0
+    main :: Def ('[] :-> Sint32)
+    main = proc "main" $ body do
+        call_ initialize
+        call_ loop
+        ret 0
 
-  version' = bimap fromIntegral fromIntegral version
+    version' = bimap fromIntegral fromIntegral version
 
 generate :: ModuleDef -> String -> String -> IO ()
 generate moduleDef path name =
-  runCompiler
-    [package name moduleDef]
-    []
-    initialOpts
-      { outDir = Just $ "./firmware" <> "/" <> path
-      , constFold = True
-      }
+    runCompiler
+        [package name moduleDef]
+        []
+        initialOpts
+            { outDir = Just $ "./firmware" <> "/" <> path
+            , constFold = True
+            }
 
 build :: (Shake c) => c -> Formula p -> IO ()
 build config f@Formula{..} = do
-  let name' =
-        name
-          <> "-"
-          <> I.model mcu
-          <> I.modification mcu
-          <> "-"
-          <> major version
-          <> "."
-          <> minor version
-  generate (cook f) name name'
-  shake config $ name <> "/" <> name'
- where
-  major = show . fst
-  minor = show . snd
+    let name' =
+            name
+                <> "-"
+                <> I.model mcu
+                <> I.modification mcu
+                <> "-"
+                <> major version
+                <> "."
+                <> minor version
+    generate (cook f) name name'
+    shake config $ name <> "/" <> name'
+  where
+    major = show . fst
+    minor = show . snd

@@ -5,6 +5,8 @@ import Formula.AO4
 import Formula.DI4
 import Formula.DI4LA
 import Formula.DI4RSM
+import Formula.Dfu330
+import Formula.Dfu450
 import Formula.DimmerAC1
 import Formula.DimmerAC12
 import Formula.DimmerDC12
@@ -37,8 +39,6 @@ import Formula.Smart.Top.TopG4v9
 import Formula.Smart.Top.TopG6
 import Formula.Smart.Top.TopG6v9
 import Formula.Soundbox
-import Formula.Dfu330
-import Formula.Dfu450
 
 main :: IO ()
 main = do
