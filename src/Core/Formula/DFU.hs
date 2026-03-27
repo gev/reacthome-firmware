@@ -7,7 +7,7 @@ import Core.Domain
 import Interface.MCU
 import Ivory.Language
 
-data DFU = forall i t. DFU
+data DFU p = forall i t. DFU
     { name :: String
     , model :: Uint8
     , version :: (Int, Int)
