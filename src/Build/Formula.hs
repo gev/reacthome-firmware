@@ -1,0 +1,85 @@
+module Build.Formula where
+
+import Build.Compiler
+import Build.Shake
+import Control.Monad.Reader
+import Control.Monad.State
+import Core.Context
+import Core.Domain
+import Core.Formula
+import Core.Scheduler
+import Data.Bifunctor
+import Data.List (nub)
+import Interface.MCU as I
+import Ivory.Compile.C.CmdlineFrontend
+import Ivory.Language
+
+cook :: Formula p -> ModuleDef
+cook Formula{..} = do
+    inclModule
+    mapM_ incl multiBodyFunctions
+    incl initialize
+    incl loop
+    incl main
+  where
+    (domain', domainContext') = runState (domain model version' mcu' shouldInit implementation') mempty
+    (mcu', mcuContext') = runState (platform mcu) mempty
+    (implementation', implementationContext') = runReader (runStateT implementation mempty) domain'
+
+    (Context inclModule inits tasks _ bodies) =
+        mcuContext'
+            <> domainContext'
+            <> implementationContext'
+
+    bodyNames = nub $ fst <$> bodies
+
+    multiBodyFunctions = mkMultiBodyFunction <$> bodyNames
+
+    mkMultiBodyFunction :: String -> Def ('[] :-> ())
+    mkMultiBodyFunction name' = proc name' $ body $ mapM_ snd $ filter (\(id', _) -> id' == name') bodies
+
+    loop = mkLoop (systemClock mcu') tasks
+
+    initialize :: Def ('[] :-> ())
+    initialize = proc "init" $ body $ mapM_ call_ inits
+
+    main :: Def ('[] :-> Sint32)
+    main = proc "main" $ body do
+        call_ initialize
+        call_ loop
+        ret 0
+
+    version' = bimap fromIntegral fromIntegral version
+
+generate :: ModuleDef -> String -> String -> IO ()
+generate moduleDef path name =
+    runCompiler
+        [package name moduleDef]
+        []
+        initialOpts
+            { outDir = Just $ "./firmware" <> "/" <> path
+            , constFold = True
+            }
+
+build :: (Shake c) => c -> Formula p -> IO ()
+build config f@Formula{..} = do
+    let name' =
+            name
+                <> "-"
+                <> I.model mcu
+                <> I.modification mcu
+                <> "-"
+                <> major version
+                <> "."
+                <> minor version
+    generate (cook f) name name'
+    shake config $ name <> "/" <> name'
+  where
+    major = show . fst
+    minor = show . snd
+
+mkFormula :: (Compiler c p, Shake c) => (Formula p -> Int -> Int -> c) -> Formula p -> IO ()
+mkFormula mkCompiler f@Formula{..} = do
+    let startFirmware = startFlash mcu
+    let maxLength = sizeFlash mcu
+    build (mkCompiler f startFirmware maxLength) f
