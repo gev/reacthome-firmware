@@ -1,6 +1,7 @@
 module Main where
 
 import Build.Compiler.GCC
+import Build.Make
 import Formula.AO4
 import Formula.DI4
 import Formula.DI4LA
@@ -43,7 +44,7 @@ import Formula.Soundbox
 main :: IO ()
 main = do
     mapM_
-        gcc
+        (make gcc)
         [ ao4
         , di4
         , di4la
@@ -79,7 +80,7 @@ main = do
         , smartTopG6v9
         ]
     mapM_
-        gcc
+        (make gcc)
         [ dfu450
         , mixV
         , rsHub4

@@ -14,7 +14,9 @@ executable reacthome-firmware
     Build.Compiler.GCC.Config
     Build.Compiler.GCC.GD32F3x0
     Build.Compiler.GCC.GD32F4xx
-    Build.Firmware
+    Build.Formula
+    Build.Formula.DFU
+    Build.Make
     Build.Shake
     Core.Actions
     Core.Context
