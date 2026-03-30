@@ -2,7 +2,7 @@
 
 module Formula.MixV where
 
-import Core.Formula
+import Core.Formula.DFU
 import Core.Models
 import Data.Fixed
 import Device.GD32F4xx
@@ -16,9 +16,9 @@ import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
 
-mixV :: Formula GD32F4xx
+mixV :: DFU GD32F4xx
 mixV =
-    Formula
+    DFU
         { name = "mixV"
         , model = deviceTypeMixV
         , version = (3, 1)
@@ -26,6 +26,7 @@ mixV =
         , mcu = gd32f450vgt6
         , quartzFrequency = 25_000_000
         , systemFrequency = 200_000_000
+        , transport = rbus $ rs485 uart_3 out_pc_12
         , implementation =
             mix
                 ( dinputs $
@@ -56,7 +57,6 @@ mixV =
                         :> Nil
                 )
                 (ds18b20 ow_0 od_pe_14)
-                (rbus $ rs485 uart_3 out_pc_12)
         }
 
 {--

@@ -2,7 +2,7 @@
 
 module Formula.Server where
 
-import Core.Formula
+import Core.Formula.DFU
 import Core.Models
 import Data.Fixed
 import Device.GD32F4xx
@@ -17,9 +17,9 @@ import Interface.RS485
 import Ivory.Language
 import Transport.UART.RBUS
 
-server :: Formula GD32F4xx
+server :: DFU GD32F4xx
 server =
-    Formula
+    DFU
         { name = "server"
         , model = deviceTypeServer
         , version = (6, 2)
@@ -27,6 +27,7 @@ server =
         , mcu = gd32f450vgt6
         , quartzFrequency = 25_000_000
         , systemFrequency = 200_000_000
+        , transport = rbusHub uart_1
         , implementation =
             hub
                 ( F.rbus $
@@ -52,5 +53,4 @@ server =
                 (ds18b20 ow_0 od_pb_3)
                 (indicator npx_pwm_0 120)
                 (aled npx_pwm_1 etc)
-                (rbusHub uart_1)
         }

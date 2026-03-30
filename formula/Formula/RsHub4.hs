@@ -2,7 +2,7 @@
 
 module Formula.RsHub4 where
 
-import Core.Formula
+import Core.Formula.DFU
 import Core.Models
 import Data.Fixed
 import Device.GD32F4xx
@@ -17,9 +17,9 @@ import Interface.RS485
 import Ivory.Language
 import Transport.UDP.RBUS as U
 
-rsHub4 :: Formula GD32F4xx
+rsHub4 :: DFU GD32F4xx
 rsHub4 =
-    Formula
+    DFU
         { name = "rs_hub4"
         , model = deviceTypeRsHub4
         , version = (6, 2)
@@ -27,6 +27,7 @@ rsHub4 =
         , mcu = gd32f450vgt6
         , quartzFrequency = 25_000_000
         , systemFrequency = 200_000_000
+        , transport = U.rbus eth_0
         , implementation =
             hub
                 ( F.rbus $
@@ -52,5 +53,4 @@ rsHub4 =
                 (ds18b20 ow_0 od_pb_3)
                 (indicator npx_pwm_0 50)
                 (aled npx_pwm_1 etc)
-                (U.rbus eth_0)
         }

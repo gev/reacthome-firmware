@@ -2,7 +2,7 @@
 
 module Formula.DI4RSM where
 
-import Core.Formula
+import Core.Formula.DFU
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
@@ -15,9 +15,9 @@ import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
 
-di4rsm :: Formula GD32F3x0
+di4rsm :: DFU GD32F3x0
 di4rsm =
-    Formula
+    DFU
         { name = "di4rsm"
         , model = deviceTypeDi4Rsm
         , version = (3, 1)
@@ -25,6 +25,7 @@ di4rsm =
         , mcu = gd32f350k8u6
         , quartzFrequency = 8_000_000
         , systemFrequency = 84_000_000
+        , transport = rbus $ rs485 uart_1 out_pa_5
         , implementation =
             diRsm
                 ( dinputs $
@@ -43,5 +44,4 @@ di4rsm =
                         :> Nil
                 )
                 (ds18b20 ow_0 od_pa_15)
-                (rbus $ rs485 uart_1 out_pa_5)
         }

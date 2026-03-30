@@ -2,7 +2,7 @@
 
 module Formula.MixH where
 
-import Core.Formula
+import Core.Formula.DFU
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
@@ -15,47 +15,47 @@ import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
 
-mixH :: Formula GD32F3x0
+mixH :: DFU GD32F3x0
 mixH =
-        Formula
-                { name = "mixH"
-                , model = deviceTypeMixH
-                , version = (3, 2)
-                , shouldInit = true
-                , mcu = gd32f330k8u6
-                , quartzFrequency = 8_000_000
-                , systemFrequency = 84_000_000
-                , implementation =
-                        mix
-                                ( dinputs $
-                                        in_pa_3
-                                                :> in_pa_2
-                                                :> in_pa_1
-                                                :> in_pa_0
-                                                :> in_pb_5
-                                                :> in_pb_4
-                                                :> in_pb_3
-                                                :> in_pa_15
-                                                :> Nil
-                                )
-                                ( relays $
-                                        out_pa_11
-                                                :> out_pa_10
-                                                :> Nil
-                                )
-                                ( dimmersDC $
-                                        pwm_9
-                                                :> pwm_8
-                                                :> pwm_7
-                                                :> pwm_6
-                                                :> pwm_5
-                                                :> pwm_4
-                                                :> Nil
-                                )
-                                (ds18b20 ow_0 od_pa_5)
-                                etc
-                                (rbus $ rs485 uart_0 out_pb_2)
-                }
+    DFU
+        { name = "mixH"
+        , model = deviceTypeMixH
+        , version = (3, 2)
+        , shouldInit = true
+        , mcu = gd32f330k8u6
+        , quartzFrequency = 8_000_000
+        , systemFrequency = 84_000_000
+        , transport = rbus $ rs485 uart_0 out_pb_2
+        , implementation =
+            mix
+                ( dinputs $
+                    in_pa_3
+                        :> in_pa_2
+                        :> in_pa_1
+                        :> in_pa_0
+                        :> in_pb_5
+                        :> in_pb_4
+                        :> in_pb_3
+                        :> in_pa_15
+                        :> Nil
+                )
+                ( relays $
+                    out_pa_11
+                        :> out_pa_10
+                        :> Nil
+                )
+                ( dimmersDC $
+                    pwm_9
+                        :> pwm_8
+                        :> pwm_7
+                        :> pwm_6
+                        :> pwm_5
+                        :> pwm_4
+                        :> Nil
+                )
+                (ds18b20 ow_0 od_pa_5)
+                etc
+        }
 
 {--
 

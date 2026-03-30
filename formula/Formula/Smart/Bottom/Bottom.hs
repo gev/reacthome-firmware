@@ -2,7 +2,7 @@
 
 module Formula.Smart.Bottom.Bottom where
 
-import Core.Formula
+import Core.Formula.DFU
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
@@ -15,9 +15,9 @@ import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
 
-smartBottom :: Formula GD32F3x0
+smartBottom :: DFU GD32F3x0
 smartBottom =
-    Formula
+    DFU
         { name = "smart_bottom"
         , model = deviceTypeSmartBottom
         , version = (4, 11)
@@ -25,6 +25,7 @@ smartBottom =
         , mcu = gd32f330k8u6
         , quartzFrequency = 8_000_000
         , systemFrequency = 84_000_000
+        , transport = rbus $ rs485 uart_1 out_pa_4
         , implementation =
             bottom
                 (top uart_0 in_pb_4)
@@ -37,5 +38,4 @@ smartBottom =
                 )
                 (ds18b20 ow_0 od_pa_15)
                 (aled npx_pwm_3 etc)
-                (rbus $ rs485 uart_1 out_pa_4)
         }
