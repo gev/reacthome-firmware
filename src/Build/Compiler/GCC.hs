@@ -16,8 +16,7 @@ import Development.Shake.Util
 import Interface.MCU
 
 gcc :: (Compiler GCC p) => Formula p -> Int -> Int -> GCC
-gcc f startFirmware maxLength = do
-    mkCompiler f startFirmware maxLength
+gcc = mkCompiler
 
 cc :: String
 cc = "arm-none-eabi-gcc"
