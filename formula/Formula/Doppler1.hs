@@ -2,7 +2,7 @@
 
 module Formula.Doppler1 where
 
-import Core.Formula
+import Core.Formula.DFU
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
@@ -14,9 +14,9 @@ import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
 
-doppler1 :: Formula GD32F3x0
+doppler1 :: DFU GD32F3x0
 doppler1 =
-    Formula
+    DFU
         { name = "doppler1"
         , model = deviceTypeDoppler1Di4
         , version = (2, 10)
@@ -24,6 +24,7 @@ doppler1 =
         , mcu = gd32f330k8u6
         , quartzFrequency = 8_000_000
         , systemFrequency = 84_000_000
+        , transport = rbus $ rs485 uart_1 out_pa_4
         , implementation =
             doppler
                 ( dopplers $
@@ -38,5 +39,4 @@ doppler1 =
                         :> Nil
                 )
                 (aled npx_pwm_0 etc)
-                (rbus $ rs485 uart_1 out_pa_4)
         }

@@ -2,21 +2,21 @@
 
 module Formula.Smart.Top.TopG6v9 where
 
-import Core.Formula
+import Core.Formula.DFU
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
+import Device.GD32F3x0.Touch (glass)
 import Feature.Sht21 (sht21)
 import Feature.Smart.Top.Vibro (vibro)
 import Feature.Touches (touches)
 import Implementation.Smart.TopG6v9 (topG6v9)
 import Ivory.Language
 import Transport.UART.RBUS
-import Device.GD32F3x0.Touch (glass)
 
-smartTopG6v9 :: Formula GD32F3x0
+smartTopG6v9 :: DFU GD32F3x0
 smartTopG6v9 =
-      Formula
+      DFU
             { name = "smart_top_g6_v9"
             , model = deviceTypeSmartTopG6
             , version = (4, 19)
@@ -24,6 +24,7 @@ smartTopG6v9 =
             , mcu = gd32f330k8u6
             , quartzFrequency = 8_000_000
             , systemFrequency = 84_000_000
+            , transport = rbusTop uart_1
             , implementation =
                   topG6v9
                         ( touches glass $
@@ -39,5 +40,4 @@ smartTopG6v9 =
                         (sht21 i2c_0)
                         npx_pwm_0
                         etc
-                        (rbusTop uart_1)
             }

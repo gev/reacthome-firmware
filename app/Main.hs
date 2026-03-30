@@ -6,8 +6,6 @@ import Formula.AO4
 import Formula.DI4
 import Formula.DI4LA
 import Formula.DI4RSM
-import Formula.Dfu330
-import Formula.Dfu450
 import Formula.DimmerAC1
 import Formula.DimmerAC12
 import Formula.DimmerDC12
@@ -45,18 +43,20 @@ main :: IO ()
 main = do
     mapM_
         (make gcc)
+        [ leakSensor
+        ]
+    mapM_
+        (make gcc)
         [ ao4
         , di4
         , di4la
         , di4rsm
         , relay12
-        , dfu330
         , dimmerDC12
         , dimmerAC12
         , dimmerAC1
         , doppler1
         , doppler5
-        , leakSensor
         , mix6x12
         , mixH
         , smartBottom
@@ -81,8 +81,7 @@ main = do
         ]
     mapM_
         (make gcc)
-        [ dfu450
-        , mixV
+        [ mixV
         , rsHub4
         , server
         , soundbox

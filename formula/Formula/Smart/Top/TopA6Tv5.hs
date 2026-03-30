@@ -2,7 +2,7 @@
 
 module Formula.Smart.Top.TopA6Tv5 where
 
-import Core.Formula
+import Core.Formula.DFU
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
@@ -14,9 +14,9 @@ import Implementation.Smart.TopA6Tv5 (topA6Tv5)
 import Ivory.Language
 import Transport.UART.RBUS
 
-smartTopA6Tv5 :: Formula GD32F3x0
+smartTopA6Tv5 :: DFU GD32F3x0
 smartTopA6Tv5 =
-    Formula
+    DFU
         { name = "smart_top_a6t_v5"
         , model = deviceTypeSmartTopA6T
         , version = (4, 19)
@@ -24,6 +24,7 @@ smartTopA6Tv5 =
         , mcu = gd32f330k8u6
         , quartzFrequency = 8_000_000
         , systemFrequency = 84_000_000
+        , transport = rbusTop uart_1
         , implementation =
             topA6Tv5
                 ( touches aluminum $
@@ -39,5 +40,4 @@ smartTopA6Tv5 =
                 (sht21 i2c_0)
                 npx_pwm_0
                 etc
-                (rbusTop uart_1)
         }

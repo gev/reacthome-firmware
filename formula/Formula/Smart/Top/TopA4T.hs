@@ -2,7 +2,7 @@
 
 module Formula.Smart.Top.TopA4T where
 
-import Core.Formula
+import Core.Formula.DFU
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
@@ -14,9 +14,9 @@ import Implementation.Smart.TopA4T (topA4T)
 import Ivory.Language
 import Transport.UART.RBUS
 
-smartTopA4T :: Formula GD32F3x0
+smartTopA4T :: DFU GD32F3x0
 smartTopA4T =
-    Formula
+    DFU
         { name = "smart_top_a4t"
         , model = deviceTypeSmartTopA4T
         , version = (4, 10)
@@ -24,6 +24,7 @@ smartTopA4T =
         , mcu = gd32f330k8u6
         , quartzFrequency = 8_000_000
         , systemFrequency = 84_000_000
+        , transport = rbusTop uart_1
         , implementation =
             topA4T
                 ( dinputs $
@@ -38,5 +39,4 @@ smartTopA4T =
                 (sht21 i2c_0)
                 npx_pwm_1
                 etc
-                (rbusTop uart_1)
         }
