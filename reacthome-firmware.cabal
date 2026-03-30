@@ -14,7 +14,9 @@ executable reacthome-firmware
     Build.Compiler.GCC.Config
     Build.Compiler.GCC.GD32F3x0
     Build.Compiler.GCC.GD32F4xx
-    Build.Firmware
+    Build.Formula
+    Build.Formula.DFU
+    Build.Make
     Build.Shake
     Core.Actions
     Core.Context
@@ -23,6 +25,7 @@ executable reacthome-firmware
     Core.Domain
     Core.FSM
     Core.Formula
+    Core.Formula.DFU
     Core.Handler
     Core.Models
     Core.Scheduler
@@ -120,8 +123,8 @@ executable reacthome-firmware
     Endpoint.ATS
     Endpoint.DInputs
     Endpoint.DInputsRelaysRules
-    Endpoint.Dimmers
     Endpoint.DMX512
+    Endpoint.Dimmers
     Endpoint.Groups
     Endpoint.Relays
     Endpoint.StereoAMP
@@ -162,11 +165,11 @@ executable reacthome-firmware
     Formula.AO4
     Formula.Blink330
     Formula.Blink450
-    Formula.Dfu330
-    Formula.Dfu450
     Formula.DI4
     Formula.DI4LA
     Formula.DI4RSM
+    Formula.Dfu330
+    Formula.Dfu450
     Formula.DimmerAC1
     Formula.DimmerAC12
     Formula.DimmerDC12

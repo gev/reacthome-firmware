@@ -6,7 +6,6 @@ import Build.Compiler
 import Build.Compiler.GCC.Config
 import Build.Compiler.GCC.GD32F3x0
 import Build.Compiler.GCC.GD32F4xx
-import Build.Firmware
 import Build.Shake
 import Core.Formula
 import Data.Digest.Pure.MD5 (md5)
@@ -16,13 +15,8 @@ import Development.Shake.FilePath
 import Development.Shake.Util
 import Interface.MCU
 
-gcc :: (Compiler GCC p) => Formula p -> IO ()
-gcc = mkGCC >>= build
-
-mkGCC :: (Compiler GCC p) => Formula p -> GCC
-mkGCC f@Formula{..} = do
-    let startFirmware = startFlash mcu
-    let maxLength = sizeFlash mcu 
+gcc :: (Compiler GCC p) => Formula p -> Int -> Int -> GCC
+gcc f startFirmware maxLength = do
     mkCompiler f startFirmware maxLength
 
 cc :: String
