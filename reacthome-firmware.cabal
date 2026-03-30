@@ -168,8 +168,6 @@ executable reacthome-firmware
     Formula.DI4
     Formula.DI4LA
     Formula.DI4RSM
-    Formula.Dfu330
-    Formula.Dfu450
     Formula.DimmerAC1
     Formula.DimmerAC12
     Formula.DimmerDC12
