@@ -13,29 +13,29 @@ import Support.Serialize
 import Util.String
 
 data Domain p i = Domain
-       { model :: Value Uint8
-       , version :: V.Version
-       , mcu :: I.Platform p
-       , mustInit :: IBool
-       , shouldInit :: Value IBool
-       , implementation :: i
-       }
+    { model :: Value Uint8
+    , version :: V.Version
+    , mcu :: I.Platform p
+    , mustInit :: IBool
+    , shouldInit :: Value IBool
+    , implementation :: i
+    }
 
 domain ::
-       (MonadState Context m) =>
-       Uint8 ->
-       (Uint8, Uint8) ->
-       I.Platform p ->
-       IBool ->
-       i ->
-       m (Domain p i)
+    (MonadState Context m) =>
+    Uint8 ->
+    (Uint8, Uint8) ->
+    I.Platform p ->
+    IBool ->
+    i ->
+    m (Domain p i)
 domain model' version' mcu mustInit implementation = do
-       addModule inclCast
-       addModule inclString
-       addModule inclSerialize
-       addModule inclReadAddr
-       addModule inclRunAppByAddr
-       model <- value "model" model'
-       version <- V.version "version" version'
-       shouldInit <- value "should_init" mustInit
-       pure Domain{model, version, mcu, mustInit, shouldInit, implementation}
+    addModule inclCast
+    addModule inclString
+    addModule inclSerialize
+    addModule inclReadAddr
+    addModule inclRunAppByAddr
+    model <- value "model" model'
+    version <- V.version "version" version'
+    shouldInit <- value "should_init" mustInit
+    pure Domain{model, version, mcu, mustInit, shouldInit, implementation}
