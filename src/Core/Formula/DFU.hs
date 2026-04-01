@@ -5,17 +5,10 @@ import Control.Monad.State
 import Core.Context
 import Core.Controller
 import Core.Domain
-import Interface.MCU
-import Ivory.Language
+import Core.Meta
 
 data DFU p = forall i t. (Controller i) => DFU
-    { name :: String
-    , model :: Uint8
-    , version :: (Int, Int)
-    , shouldInit :: IBool
-    , mcu :: MCU p
-    , quartzFrequency :: Int
-    , systemFrequency :: Int
+    { meta :: Meta p
     , transport :: forall i'. (Controller i') => StateT Context (Reader (Domain p i')) t
     , implementation :: StateT Context (Reader (Domain p i)) t -> StateT Context (Reader (Domain p i)) i
     }

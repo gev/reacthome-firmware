@@ -10,6 +10,7 @@ import Core.Formula
 import Core.Scheduler
 import Data.Bifunctor
 import Data.List (nub)
+import Development.Shake.FilePath
 import Interface.MCU as I
 import Ivory.Compile.C.CmdlineFrontend
 import Ivory.Language
@@ -57,29 +58,19 @@ generate moduleDef path name =
         [package name moduleDef]
         []
         initialOpts
-            { outDir = Just $ "./firmware" <> "/" <> path
+            { outDir = Just $ "c99" </> path
             , constFold = True
             }
 
-build :: (Shake c) => c -> Formula p -> IO ()
-build config f@Formula{..} = do
-    let name' =
-            name
-                <> "-"
-                <> I.model mcu
-                <> I.modification mcu
-                <> "-"
-                <> major version
-                <> "."
-                <> minor version
-    generate (cook f) name name'
-    shake config $ name <> "/" <> name'
-  where
-    major = show . fst
-    minor = show . snd
+build :: (Shake c) => c -> Formula p -> String -> String -> IO ()
+build config formula path name = do
+    generate (cook formula) path name
+    shake config path
 
 mkFormula :: (Compiler c p, Shake c) => (Formula p -> Int -> Int -> c) -> Formula p -> IO ()
 mkFormula mkCompiler f@Formula{..} = do
     let startFirmware = startFlash mcu
-    let maxLength = sizeFlash mcu
-    build (mkCompiler f startFirmware maxLength) f
+        maxLength = sizeFlash mcu
+        name = mkName f Nothing
+        path = "firmware" </> name
+    build (mkCompiler f startFirmware maxLength) f path name

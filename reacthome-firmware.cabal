@@ -27,6 +27,7 @@ executable reacthome-firmware
     Core.Formula
     Core.Formula.DFU
     Core.Handler
+    Core.Meta
     Core.Models
     Core.Scheduler
     Core.Task
@@ -382,6 +383,7 @@ executable reacthome-firmware
     NamedFieldPuns
     NoStarIsType
     NumericUnderscores
+    OverloadedRecordDot
     QuasiQuotes
     RankNTypes
     RecordWildCards

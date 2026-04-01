@@ -1,5 +1,3 @@
-{-# LANGUAGE ScopedTypeVariables #-}
-
 module Build.Formula.DFU where
 
 import Build.Compiler
@@ -8,6 +6,7 @@ import Build.Shake
 import Core.Context
 import Core.Formula
 import Core.Formula.DFU
+import Development.Shake.FilePath
 import Implementation.Dfu qualified as I
 import Interface.MCU
 import Ivory.Language
@@ -21,18 +20,28 @@ mkDFU ::
     DFU p ->
     IO ()
 mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
-    run (convert "main" mainImpl) startMainFirmware maxMainLength
-    run (convert "dfu" dfuImpl) startDfuFirmware maxDfuLength
+    -- let name = mkName
+    mainPath <- prepare (convert mainImpl) startMainFirmware maxMainLength "main"
+    dfuPath <- prepare (convert dfuImpl) startDfuFirmware maxDfuLength "dfu"
   where
+    -- combine mainPath dfuPath
+
     mainImpl = fixIRQ $ implementation transport
     dfuImpl = I.dfu startMainFirmware transport
+
+    startDfuFirmware = startFlash mcu
     startMainFirmware = startDfuFirmware + maxDfuLength
     maxMainLength = sizeFlash mcu - maxDfuLength
-    startDfuFirmware = startFlash mcu
-    run formula startFirmware maxLength = build (mkCompiler formula startFirmware maxLength) formula
-    convert postfix =
+
+    prepare formula startFirmware maxLength postfix = do
+        let name = mkName formula (Just postfix)
+            path = postfix </> name
+        build (mkCompiler formula startFirmware maxLength) formula path name
+        pure $ "dist" </> path <.> "hex"
+
+    convert =
         Formula
-            (name <> "-" <> postfix)
+            name
             model
             version
             shouldInit
