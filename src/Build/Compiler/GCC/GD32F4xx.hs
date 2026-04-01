@@ -11,16 +11,16 @@ import Device.GD32F4xx
 import Interface.MCU
 
 instance Compiler GCC GD32F4xx where
-    mkCompiler f@Formula{mcu, quartzFrequency, systemFrequency} firmwareStart maxLength =
+    mkCompiler f@Formula{..} firmwareStart maxLength =
         GCC
-            { buildPath = model mcu <> modification mcu
+            { buildPath = meta.mcu.model <> meta.mcu.modification
             , defs =
                 ("-D" <>)
-                    <$> [ toUpper <$> model mcu
+                    <$> [ toUpper <$> meta.mcu.model
                         , "USE_STDPERIPH_DRIVER"
                         , "USE_EXTERNPHY_LIB"
                         ]
-                        <> sysClockDefs quartzFrequency systemFrequency
+                        <> sysClockDefs meta.quartzFrequency meta.systemFrequency
             , incs =
                 ("-I" <>)
                     <$> [ "support/inc"
@@ -63,7 +63,7 @@ instance Compiler GCC GD32F4xx where
                 , "-flto"
                 , "-specs=nano.specs"
                 ]
-                    <> modificationLdDefs mcu firmwareStart maxLength
+                    <> modificationLdDefs meta.mcu firmwareStart maxLength
             }
 
 sysClockDefs :: Int -> Int -> [String]

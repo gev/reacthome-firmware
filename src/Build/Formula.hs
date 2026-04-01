@@ -5,13 +5,14 @@ import Build.Shake
 import Control.Monad.Reader
 import Control.Monad.State
 import Core.Context
-import Core.Domain
-import Core.Formula
+import Core.Domain (domain)
+import Core.Formula (Formula (Formula, implementation, meta))
+import Core.Meta (mcu, mkName, model, shouldInit, version)
 import Core.Scheduler
 import Data.Bifunctor
 import Data.List (nub)
 import Development.Shake.FilePath
-import Interface.MCU as I
+import Interface.MCU (MCU (sizeFlash, startFlash), Platform (..), platform)
 import Ivory.Compile.C.CmdlineFrontend
 import Ivory.Language
 
@@ -23,8 +24,8 @@ cook Formula{..} = do
     incl loop
     incl main
   where
-    (domain', domainContext') = runState (domain model version' mcu' shouldInit implementation') mempty
-    (mcu', mcuContext') = runState (platform mcu) mempty
+    (domain', domainContext') = runState (domain meta.model version' mcu' meta.shouldInit implementation') mempty
+    (mcu', mcuContext') = runState (platform meta.mcu) mempty
     (implementation', implementationContext') = runReader (runStateT implementation mempty) domain'
 
     (Context inclModule inits tasks _ bodies) =
@@ -50,7 +51,7 @@ cook Formula{..} = do
         call_ loop
         ret 0
 
-    version' = bimap fromIntegral fromIntegral version
+    version' = bimap fromIntegral fromIntegral meta.version
 
 generate :: ModuleDef -> String -> String -> IO ()
 generate moduleDef path name =
@@ -69,8 +70,8 @@ build config formula path name = do
 
 mkFormula :: (Compiler c p, Shake c) => (Formula p -> Int -> Int -> c) -> Formula p -> IO ()
 mkFormula mkCompiler f@Formula{..} = do
-    let startFirmware = startFlash mcu
-        maxLength = sizeFlash mcu
-        name = mkName f Nothing
+    let startFirmware = startFlash meta.mcu
+        maxLength = sizeFlash meta.mcu
+        name = mkName meta Nothing
         path = "firmware" </> name
     build (mkCompiler f startFirmware maxLength) f path name

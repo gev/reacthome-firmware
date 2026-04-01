@@ -30,6 +30,3 @@ instance Make DFU GD32F4xx where
         mkDFU 0x8_000 $
             GD32F4xx.setVectorTableNvic GD32F4xx.nvic_vecttab_flash
                 . fromIntegral
-
-class Name f where
-    mkName :: f -> Maybe String -> String
