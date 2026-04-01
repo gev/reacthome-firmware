@@ -20,7 +20,6 @@ import Feature.Smart.Top
 import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
-import Feature.Sht21 (SHT21)
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff n = 1 + ToSizeInBytes n
