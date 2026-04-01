@@ -3,6 +3,7 @@
 module Formula.Smart.Top.TopA4T where
 
 import Core.Formula.DFU
+import Core.Meta
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
@@ -17,13 +18,16 @@ import Transport.UART.RBUS
 smartTopA4T :: DFU GD32F3x0
 smartTopA4T =
     DFU
-        { name = "smart_top_a4t"
-        , model = deviceTypeSmartTopA4T
-        , version = (4, 10)
-        , shouldInit = false
-        , mcu = gd32f330k8u6
-        , quartzFrequency = 8_000_000
-        , systemFrequency = 84_000_000
+        { meta =
+            Meta
+                { name = "smart_top_a4t"
+                , model = deviceTypeSmartTopA4T
+                , version = (4, 10)
+                , shouldInit = false
+                , mcu = gd32f330k8u6
+                , quartzFrequency = 8_000_000
+                , systemFrequency = 84_000_000
+                }
         , transport = rbusTop uart_1
         , implementation =
             topA4T

@@ -3,6 +3,7 @@
 module Formula.Server where
 
 import Core.Formula.DFU
+import Core.Meta
 import Core.Models
 import Data.Fixed
 import Device.GD32F4xx
@@ -20,13 +21,16 @@ import Transport.UART.RBUS
 server :: DFU GD32F4xx
 server =
     DFU
-        { name = "server"
-        , model = deviceTypeServer
-        , version = (6, 2)
-        , shouldInit = true
-        , mcu = gd32f450vgt6
-        , quartzFrequency = 25_000_000
-        , systemFrequency = 200_000_000
+        { meta =
+            Meta
+                { name = "server"
+                , model = deviceTypeServer
+                , version = (6, 2)
+                , shouldInit = true
+                , mcu = gd32f450vgt6
+                , quartzFrequency = 25_000_000
+                , systemFrequency = 200_000_000
+                }
         , transport = rbusHub uart_1
         , implementation =
             hub

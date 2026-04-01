@@ -3,6 +3,7 @@
 module Formula.AO4 where
 
 import Core.Formula.DFU
+import Core.Meta
 import Core.Models
 import Device.GD32F3x0
 import Feature.CBM53D04
@@ -14,13 +15,16 @@ import Transport.RS485.RBUS
 ao4 :: DFU GD32F3x0
 ao4 =
     DFU
-        { name = "ao4"
-        , model = deviceTypeAo4
-        , version = (2, 1)
-        , shouldInit = true
-        , mcu = gd32f330k8u6
-        , quartzFrequency = 8_000_000
-        , systemFrequency = 84_000_000
+        { meta =
+            Meta
+                { name = "ao4"
+                , model = deviceTypeAo4
+                , version = (2, 1)
+                , shouldInit = true
+                , mcu = gd32f330k8u6
+                , quartzFrequency = 8_000_000
+                , systemFrequency = 84_000_000
+                }
         , transport = rbus $ rs485 uart_1 out_pa_4
         , implementation =
             I.ao4

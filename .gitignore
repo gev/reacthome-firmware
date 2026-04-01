@@ -3,5 +3,5 @@
 build
 dist
 dist-newstyle
-firmware
+c99
 .DS_Store

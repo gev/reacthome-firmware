@@ -3,6 +3,7 @@
 module Formula.MixH where
 
 import Core.Formula.DFU
+import Core.Meta
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
@@ -18,13 +19,16 @@ import Transport.RS485.RBUS
 mixH :: DFU GD32F3x0
 mixH =
     DFU
-        { name = "mixH"
-        , model = deviceTypeMixH
-        , version = (3, 2)
-        , shouldInit = true
-        , mcu = gd32f330k8u6
-        , quartzFrequency = 8_000_000
-        , systemFrequency = 84_000_000
+        { meta =
+            Meta
+                { name = "mixH"
+                , model = deviceTypeMixH
+                , version = (3, 2)
+                , shouldInit = true
+                , mcu = gd32f330k8u6
+                , quartzFrequency = 8_000_000
+                , systemFrequency = 84_000_000
+                }
         , transport = rbus $ rs485 uart_0 out_pb_2
         , implementation =
             mix

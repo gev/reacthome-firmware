@@ -13,15 +13,15 @@ data DFU = forall t. DFU
     { transport :: t
     }
 
-dfu :: (Monad m, MonadState Context m) => Uint32 -> m t -> m DFU
+dfu :: (Monad m, MonadState Context m) => Int -> m t -> m DFU
 dfu address transport' = do
     transport <- transport'
-    addInit "jump_to_firmware" $ jumpToFirmware address
+    addInit "jump_to_firmware" $ jumpToFirmware $ fromIntegral address
     pure DFU{transport}
 
 jumpToFirmware :: Uint32 -> Ivory eff ()
 jumpToFirmware address = do
-    -- disableIRQ
+    disableIRQ
     setMSP =<< readAddr32u address
     runAppByAddr $ address + 4
 

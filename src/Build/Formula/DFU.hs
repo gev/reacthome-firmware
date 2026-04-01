@@ -3,23 +3,56 @@ module Build.Formula.DFU where
 import Build.Compiler
 import Build.Formula
 import Build.Shake
+import Core.Context
 import Core.Formula
 import Core.Formula.DFU
+import Core.Meta (mcu, mkName)
+import Data.Text qualified as T
+import Data.Text.IO qualified as T
+import Development.Shake.FilePath
+import Implementation.Dfu qualified as I
 import Interface.MCU
+import Ivory.Language
+import Support.CMSIS.CoreCMFunc
 
-mkDFU :: (Compiler c p, Shake c) => (Formula p -> Int -> Int -> c) -> DFU p -> IO ()
-mkDFU mkCompiler DFU{..} = do
-    let f =
-            Formula
-                { name
-                , model
-                , version
-                , shouldInit
-                , mcu
-                , quartzFrequency
-                , systemFrequency
-                , implementation = implementation transport
-                }
-    let startFirmware = startFlash mcu
-    let maxLength = sizeFlash mcu
-    build (mkCompiler f startFirmware maxLength) f
+mkDFU ::
+    (Compiler c p, Shake c) =>
+    Int ->
+    (forall s. Int -> Ivory (ProcEffects s ()) ()) ->
+    (Formula p -> Int -> Int -> c) ->
+    DFU p ->
+    IO ()
+mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
+    let name = mkName meta $ Just "firmware"
+    let path = "dist" </> "firmware" </> name <.> "hex"
+    mainPath <- prepare (convert mainImpl) startMainFirmware maxMainLength "main"
+    dfuPath <- prepare (convert dfuImpl) startDfuFirmware maxDfuLength "dfu"
+    combine mainPath dfuPath path
+  where
+    mainImpl = fixIRQ $ implementation transport
+    dfuImpl = I.dfu startMainFirmware transport
+
+    startDfuFirmware = meta.mcu.startFlash
+    startMainFirmware = startDfuFirmware + maxDfuLength
+    maxMainLength = meta.mcu.sizeFlash - maxDfuLength
+
+    convert = Formula meta
+
+    prepare formula startFirmware maxLength postfix = do
+        let name = mkName formula.meta (Just postfix)
+            path = postfix </> name
+        build (mkCompiler formula startFirmware maxLength) formula path name
+        pure $ "dist" </> path <.> "hex"
+
+    combine mainPath dfuPath path = do
+        main <- T.readFile mainPath
+        dfu <- T.readFile dfuPath
+        T.writeFile path (truncateHex dfu <> main)
+
+    fixIRQ impl = do
+        addInit "fix_IRQ" do
+            setVectorTable startMainFirmware
+            enableIRQ
+        impl
+
+    truncateHex = T.unlines . init . T.lines

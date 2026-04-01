@@ -27,6 +27,7 @@ executable reacthome-firmware
     Core.Formula
     Core.Formula.DFU
     Core.Handler
+    Core.Meta
     Core.Models
     Core.Scheduler
     Core.Task
@@ -168,8 +169,6 @@ executable reacthome-firmware
     Formula.DI4
     Formula.DI4LA
     Formula.DI4RSM
-    Formula.Dfu330
-    Formula.Dfu450
     Formula.DimmerAC1
     Formula.DimmerAC12
     Formula.DimmerDC12
@@ -361,7 +360,7 @@ executable reacthome-firmware
     mtl,
     pureMD5,
     shake,
-    template-haskell,
+    text,
 
   hs-source-dirs:
     app
@@ -384,6 +383,7 @@ executable reacthome-firmware
     NamedFieldPuns
     NoStarIsType
     NumericUnderscores
+    OverloadedRecordDot
     QuasiQuotes
     RankNTypes
     RecordWildCards

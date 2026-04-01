@@ -4,16 +4,9 @@ import Control.Monad.Reader
 import Control.Monad.State
 import Core.Context
 import Core.Domain
-import Interface.MCU
-import Ivory.Language
+import Core.Meta
 
 data Formula p = forall i. Formula
-    { name :: String
-    , model :: Uint8
-    , version :: (Int, Int)
-    , shouldInit :: IBool
-    , mcu :: MCU p
-    , quartzFrequency :: Int
-    , systemFrequency :: Int
+    { meta :: Meta p
     , implementation :: StateT Context (Reader (Domain p i)) i
     }
