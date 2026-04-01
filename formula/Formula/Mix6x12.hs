@@ -3,6 +3,7 @@
 module Formula.Mix6x12 where
 
 import Core.Formula.DFU
+import Core.Meta
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
@@ -17,13 +18,16 @@ import Transport.RS485.RBUS
 mix6x12 :: DFU GD32F3x0
 mix6x12 =
     DFU
-        { name = "mix6x12"
-        , model = deviceTypeMix6x12Rs
-        , version = (3, 12)
-        , shouldInit = true
-        , mcu = gd32f330k8u6
-        , quartzFrequency = 8_000_000
-        , systemFrequency = 84_000_000
+        { meta =
+            Meta
+                { name = "mix6x12"
+                , model = deviceTypeMix6x12Rs
+                , version = (3, 12)
+                , shouldInit = true
+                , mcu = gd32f330k8u6
+                , quartzFrequency = 8_000_000
+                , systemFrequency = 84_000_000
+                }
         , transport = rbus $ rs485 uart_0 out_pb_2
         , implementation =
             mix

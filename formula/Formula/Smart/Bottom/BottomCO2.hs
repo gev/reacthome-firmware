@@ -3,6 +3,7 @@
 module Formula.Smart.Bottom.BottomCO2 where
 
 import Core.Formula.DFU
+import Core.Meta
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
@@ -19,13 +20,16 @@ import Transport.RS485.RBUS
 smartBottomCO2 :: DFU GD32F3x0
 smartBottomCO2 =
     DFU
-        { name = "smart_bottom_co2"
-        , model = deviceTypeSmartBottomCO2
-        , version = (4, 11)
-        , shouldInit = true
-        , mcu = gd32f330k8u6
-        , quartzFrequency = 8_000_000
-        , systemFrequency = 84_000_000
+        { meta =
+            Meta
+                { name = "smart_bottom_co2"
+                , model = deviceTypeSmartBottomCO2
+                , version = (4, 11)
+                , shouldInit = true
+                , mcu = gd32f330k8u6
+                , quartzFrequency = 8_000_000
+                , systemFrequency = 84_000_000
+                }
         , transport = rbus $ rs485 uart_1 out_pa_4
         , implementation =
             bottomCO2

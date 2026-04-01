@@ -3,6 +3,7 @@
 module Formula.Smart.Top.TopG6v9 where
 
 import Core.Formula.DFU
+import Core.Meta
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
@@ -16,28 +17,31 @@ import Transport.UART.RBUS
 
 smartTopG6v9 :: DFU GD32F3x0
 smartTopG6v9 =
-      DFU
-            { name = "smart_top_g6_v9"
-            , model = deviceTypeSmartTopG6
-            , version = (4, 19)
-            , shouldInit = false
-            , mcu = gd32f330k8u6
-            , quartzFrequency = 8_000_000
-            , systemFrequency = 84_000_000
-            , transport = rbusTop uart_1
-            , implementation =
-                  topG6v9
-                        ( touches glass $
-                              touch_pa0
-                                    :> touch_pb1
-                                    :> touch_pa1
-                                    :> touch_pb0
-                                    :> touch_pa6
-                                    :> touch_pa7
-                                    :> Nil
-                        )
-                        (vibro out_pb_5)
-                        (sht21 i2c_0)
-                        npx_pwm_0
-                        etc
-            }
+    DFU
+        { meta =
+            Meta
+                { name = "smart_top_g6_v9"
+                , model = deviceTypeSmartTopG6
+                , version = (4, 19)
+                , shouldInit = false
+                , mcu = gd32f330k8u6
+                , quartzFrequency = 8_000_000
+                , systemFrequency = 84_000_000
+                }
+        , transport = rbusTop uart_1
+        , implementation =
+            topG6v9
+                ( touches glass $
+                    touch_pa0
+                        :> touch_pb1
+                        :> touch_pa1
+                        :> touch_pb0
+                        :> touch_pa6
+                        :> touch_pa7
+                        :> Nil
+                )
+                (vibro out_pb_5)
+                (sht21 i2c_0)
+                npx_pwm_0
+                etc
+        }

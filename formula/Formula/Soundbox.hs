@@ -3,6 +3,7 @@
 module Formula.Soundbox where
 
 import Core.Formula.DFU
+import Core.Meta
 import Core.Models
 import Device.GD32F4xx
 import Implementation.Soundbox (mkSoundbox)
@@ -12,13 +13,16 @@ import Transport.UDP.RBUS qualified as U
 soundbox :: DFU GD32F4xx
 soundbox =
     DFU
-        { name = "soundbox"
-        , model = deviceTypeSoundbox
-        , version = (1, 1)
-        , shouldInit = true
-        , mcu = gd32f450vit6
-        , quartzFrequency = 24_000_000
-        , systemFrequency = 192_000_000
+        { meta =
+            Meta
+                { name = "soundbox"
+                , model = deviceTypeSoundbox
+                , version = (1, 1)
+                , shouldInit = true
+                , mcu = gd32f450vit6
+                , quartzFrequency = 24_000_000
+                , systemFrequency = 192_000_000
+                }
         , transport = U.rbus eth_0
         , implementation =
             mkSoundbox

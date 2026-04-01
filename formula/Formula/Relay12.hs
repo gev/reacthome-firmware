@@ -3,6 +3,7 @@
 module Formula.Relay12 where
 
 import Core.Formula.DFU
+import Core.Meta
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
@@ -16,13 +17,16 @@ import Transport.RS485.RBUS
 relay12 :: DFU GD32F3x0
 relay12 =
     DFU
-        { name = "relay12"
-        , model = deviceTypeRelay12Rs
-        , version = (3, 10)
-        , shouldInit = true
-        , mcu = gd32f330k8u6
-        , quartzFrequency = 8_000_000
-        , systemFrequency = 84_000_000
+        { meta =
+            Meta
+                { name = "relay12"
+                , model = deviceTypeRelay12Rs
+                , version = (3, 10)
+                , shouldInit = true
+                , mcu = gd32f330k8u6
+                , quartzFrequency = 8_000_000
+                , systemFrequency = 84_000_000
+                }
         , transport = rbus $ rs485 uart_0 out_pb_2
         , implementation =
             relay

@@ -3,6 +3,7 @@
 module Formula.RsHub4 where
 
 import Core.Formula.DFU
+import Core.Meta
 import Core.Models
 import Data.Fixed
 import Device.GD32F4xx
@@ -20,13 +21,16 @@ import Transport.UDP.RBUS as U
 rsHub4 :: DFU GD32F4xx
 rsHub4 =
     DFU
-        { name = "rs_hub4"
-        , model = deviceTypeRsHub4
-        , version = (6, 2)
-        , shouldInit = true
-        , mcu = gd32f450vgt6
-        , quartzFrequency = 25_000_000
-        , systemFrequency = 200_000_000
+        { meta =
+            Meta
+                { name = "rs_hub4"
+                , model = deviceTypeRsHub4
+                , version = (6, 2)
+                , shouldInit = true
+                , mcu = gd32f450vgt6
+                , quartzFrequency = 25_000_000
+                , systemFrequency = 200_000_000
+                }
         , transport = U.rbus eth_0
         , implementation =
             hub
