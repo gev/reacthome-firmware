@@ -360,7 +360,7 @@ executable reacthome-firmware
     mtl,
     pureMD5,
     shake,
-    template-haskell,
+    text,
 
   hs-source-dirs:
     app

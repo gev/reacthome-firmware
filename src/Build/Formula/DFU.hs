@@ -7,6 +7,8 @@ import Core.Context
 import Core.Formula
 import Core.Formula.DFU
 import Core.Meta (mcu, mkName)
+import Data.Text qualified as T
+import Data.Text.IO qualified as T
 import Development.Shake.FilePath
 import Implementation.Dfu qualified as I
 import Interface.MCU
@@ -27,8 +29,6 @@ mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
     dfuPath <- prepare (convert dfuImpl) startDfuFirmware maxDfuLength "dfu"
     combine mainPath dfuPath path
   where
-    -- combine mainPath dfuPath
-
     mainImpl = fixIRQ $ implementation transport
     dfuImpl = I.dfu startMainFirmware transport
 
@@ -38,12 +38,6 @@ mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
 
     convert = Formula meta
 
-    fixIRQ impl = do
-        addInit "fix_IRQ" do
-            setVectorTable startMainFirmware
-            enableIRQ
-        impl
-
     prepare formula startFirmware maxLength postfix = do
         let name = mkName formula.meta (Just postfix)
             path = postfix </> name
@@ -51,6 +45,14 @@ mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
         pure $ "dist" </> path <.> "hex"
 
     combine mainPath dfuPath path = do
-        print mainPath
-        print dfuPath
-        print path
+        main <- T.readFile mainPath
+        dfu <- T.readFile dfuPath
+        T.writeFile path (truncateHex dfu <> main)
+
+    fixIRQ impl = do
+        addInit "fix_IRQ" do
+            setVectorTable startMainFirmware
+            enableIRQ
+        impl
+
+    truncateHex = T.unlines . init . T.lines
