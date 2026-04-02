@@ -66,7 +66,7 @@ mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
                         <> B.hexadecimal (fst meta.version)
                         <> B.hexadecimal (snd meta.version)
                         <> B.hexadecimal (length mcu)
-                        <> mconcat (B.hexadecimal . fromEnum <$> mcu)
+                        <> mconcat (B.singleton <$> mcu)
         createDirectoryIfMissing True $
             takeDirectory path
         T.writeFile path $
