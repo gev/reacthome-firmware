@@ -10,7 +10,7 @@ type VersionStruct = "version_struct"
 type Version = Record VersionStruct
 
 [ivory|
-    struct version_struct 
+    struct version_struct
     { major :: Uint8
     ; minor :: Uint8
     }

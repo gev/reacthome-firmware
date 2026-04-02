@@ -347,6 +347,7 @@ executable reacthome-firmware
   build-depends:
     base >=4.16 && <5.0,
     bytestring,
+    directory,
     ivory,
     ivory-backend-c,
     ivory-stdlib,
@@ -377,6 +378,7 @@ executable reacthome-firmware
     NoStarIsType
     NumericUnderscores
     OverloadedRecordDot
+    OverloadedStrings
     QuasiQuotes
     RankNTypes
     RecordWildCards

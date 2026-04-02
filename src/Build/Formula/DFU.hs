@@ -6,14 +6,19 @@ import Build.Shake
 import Core.Context
 import Core.Formula
 import Core.Formula.DFU
-import Core.Meta (mcu, mkName)
+import Core.Meta (board, mcu, mkName, model, version)
+import Data.Char (toLower)
 import Data.Text qualified as T
 import Data.Text.IO qualified as T
+import Data.Text.Internal.Builder qualified as B
+import Data.Text.Lazy qualified as L
+import Data.Text.Lazy.Builder.Int qualified as B
 import Development.Shake.FilePath
 import Implementation.Dfu qualified as I
 import Interface.MCU
 import Ivory.Language
 import Support.CMSIS.CoreCMFunc
+import System.Directory
 
 mkDFU ::
     (Compiler c p, Shake c) =>
@@ -23,11 +28,16 @@ mkDFU ::
     DFU p ->
     IO ()
 mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
-    let name = mkName meta $ Just "firmware"
-    let path = "dist" </> "firmware" </> name <.> "hex"
-    mainPath <- prepare (convert mainImpl) startMainFirmware maxMainLength "main"
-    dfuPath <- prepare (convert dfuImpl) startDfuFirmware maxDfuLength "dfu"
-    combine mainPath dfuPath path
+    main <- prepare (convert mainImpl) startMainFirmware maxMainLength "main"
+    dfu <- prepare (convert dfuImpl) startDfuFirmware maxDfuLength "dfu"
+
+    let firmWareName = mkName meta $ Just "firmware"
+        firmWarePath = "dist" </> "firmware" </> firmWareName <.> "hex"
+    combine main dfu firmWarePath
+
+    let upName = mkName meta Nothing
+        updatePath = "dist" </> "up" </> upName <.> "up"
+    pack main updatePath
   where
     mainImpl = fixIRQ $ implementation transport
     dfuImpl = I.dfu startMainFirmware transport
@@ -42,12 +52,25 @@ mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
         let name = mkName formula.meta (Just postfix)
             path = postfix </> name
         build (mkCompiler formula startFirmware maxLength) formula path name
-        pure $ "dist" </> path <.> "hex"
+        T.readFile $ "dist" </> path <.> "hex"
 
-    combine mainPath dfuPath path = do
-        main <- T.readFile mainPath
-        dfu <- T.readFile dfuPath
-        T.writeFile path (truncateHex dfu <> main)
+    combine main dfu path = T.writeFile path (truncateHex dfu <> main)
+
+    pack main path = do
+        let mcu = toLower <$> (meta.mcu.model <> meta.mcu.modification)
+            header =
+                L.toStrict . B.toLazyText $
+                    B.singleton '#'
+                        <> B.hexadecimal meta.model
+                        <> B.hexadecimal meta.board
+                        <> B.hexadecimal (fst meta.version)
+                        <> B.hexadecimal (snd meta.version)
+                        <> B.hexadecimal (length mcu)
+                        <> mconcat (B.hexadecimal . fromEnum <$> mcu)
+        createDirectoryIfMissing True $
+            takeDirectory path
+        T.writeFile path $
+            T.intercalate "\n" [header, main]
 
     fixIRQ impl = do
         addInit "fix_IRQ" do

@@ -24,7 +24,7 @@ cook Formula{..} = do
     incl loop
     incl main
   where
-    (domain', domainContext') = runState (domain meta.model version' mcu' meta.shouldInit implementation') mempty
+    (domain', domainContext') = runState (domain (fromIntegral meta.model) version' mcu' meta.shouldInit implementation') mempty
     (mcu', mcuContext') = runState (platform meta.mcu) mempty
     (implementation', implementationContext') = runReader (runStateT implementation mempty) domain'
 

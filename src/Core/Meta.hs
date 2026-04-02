@@ -5,7 +5,7 @@ import Ivory.Language
 
 data Meta p = Meta
     { name :: String
-    , model :: Uint8
+    , model :: Int
     , version :: (Int, Int)
     , board :: Int
     , shouldInit :: IBool
