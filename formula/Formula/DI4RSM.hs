@@ -23,6 +23,7 @@ di4rsm =
             Meta
                 { name = "di4rsm"
                 , model = deviceTypeDi4Rsm
+                , board = 0
                 , version = (3, 1)
                 , shouldInit = true
                 , mcu = gd32f350k8u6

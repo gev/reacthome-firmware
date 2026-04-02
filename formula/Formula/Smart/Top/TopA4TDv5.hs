@@ -20,8 +20,9 @@ smartTopA4TDv5 =
     DFU
         { meta =
             Meta
-                { name = "smart_top_a4td_v5"
+                { name = "smart_top_a4td"
                 , model = deviceTypeSmartTopA4TD7S
+                , board = 5
                 , version = (4, 19)
                 , shouldInit = false
                 , mcu = gd32f330k8u6

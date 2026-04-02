@@ -19,6 +19,7 @@ ao4 =
             Meta
                 { name = "ao4"
                 , model = deviceTypeAo4
+                , board = 0
                 , version = (2, 1)
                 , shouldInit = true
                 , mcu = gd32f330k8u6

@@ -24,6 +24,7 @@ smartBottomCO2 =
             Meta
                 { name = "smart_bottom_co2"
                 , model = deviceTypeSmartBottomCO2
+                , board = 0
                 , version = (4, 11)
                 , shouldInit = true
                 , mcu = gd32f330k8u6

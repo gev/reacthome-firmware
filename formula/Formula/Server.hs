@@ -24,6 +24,7 @@ server =
         { meta =
             Meta
                 { name = "server"
+                , board = 0
                 , model = deviceTypeServer
                 , version = (6, 2)
                 , shouldInit = true

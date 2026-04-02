@@ -21,6 +21,7 @@ di4 =
             Meta
                 { name = "di4"
                 , model = deviceTypeDi4
+                , board = 0
                 , version = (4, 9)
                 , shouldInit = true
                 , mcu = gd32f330k8u6

@@ -23,6 +23,7 @@ smartBottom =
             Meta
                 { name = "smart_bottom"
                 , model = deviceTypeSmartBottom
+                , board = 0
                 , version = (4, 11)
                 , shouldInit = true
                 , mcu = gd32f330k8u6

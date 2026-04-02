@@ -14,7 +14,8 @@ blink450 =
         { meta =
             Meta
                 { name = "blink450"
-                , model = 0xff
+                , model = 0
+                , board = 0
                 , version = (1, 0)
                 , shouldInit = false
                 , mcu = gd32f450vgt6

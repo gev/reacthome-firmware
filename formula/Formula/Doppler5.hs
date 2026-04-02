@@ -22,6 +22,7 @@ doppler5 =
             Meta
                 { name = "doppler5"
                 , model = deviceTypeDoppler5Di4
+                , board = 0
                 , version = (2, 10)
                 , shouldInit = true
                 , mcu = gd32f330k8u6

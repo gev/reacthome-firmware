@@ -24,6 +24,7 @@ di4la =
             Meta
                 { name = "di4la"
                 , model = deviceTypeDi4La
+                , board = 0
                 , version = (1, 10)
                 , shouldInit = true
                 , mcu = gd32f330k8u6

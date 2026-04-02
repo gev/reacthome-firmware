@@ -24,6 +24,7 @@ mixV =
             Meta
                 { name = "mixV"
                 , model = deviceTypeMixV
+                , board = 0
                 , version = (3, 1)
                 , shouldInit = true
                 , mcu = gd32f450vgt6

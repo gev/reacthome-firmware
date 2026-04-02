@@ -21,6 +21,7 @@ dimmerAC12 =
             Meta
                 { name = "dimmerAC12"
                 , model = deviceTypeDim12AcRs
+                , board = 0
                 , version = (2, 12)
                 , shouldInit = true
                 , mcu = gd32f330k8u6

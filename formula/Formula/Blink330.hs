@@ -14,8 +14,9 @@ blink330 =
         { meta =
             Meta
                 { name = "blink330"
-                , model = 0xff
+                , model = 0
                 , version = (1, 0)
+                , board = 0
                 , shouldInit = false
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000

@@ -23,6 +23,7 @@ mixH =
             Meta
                 { name = "mixH"
                 , model = deviceTypeMixH
+                , board = 0
                 , version = (3, 2)
                 , shouldInit = true
                 , mcu = gd32f330k8u6

@@ -18,6 +18,7 @@ smartTopClimate =
             Meta
                 { name = "smart_top_climate"
                 , model = deviceTypeSmartTopClimate
+                , board = 0
                 , version = (4, 11)
                 , shouldInit = false
                 , mcu = gd32f330k8u6

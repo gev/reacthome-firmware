@@ -23,6 +23,7 @@ smartBottomClimate =
             Meta
                 { name = "smart_bottom_climate"
                 , model = deviceTypeSmartBottomClimate
+                , board = 0
                 , version = (4, 12)
                 , shouldInit = true
                 , mcu = gd32f330k8u6

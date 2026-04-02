@@ -20,8 +20,9 @@ smartTopG4v9 =
     DFU
         { meta =
             Meta
-                { name = "smart_top_g4_v9"
+                { name = "smart_top_g4"
                 , model = deviceTypeSmartTopG4
+                , board = 9
                 , version = (4, 19)
                 , shouldInit = false
                 , mcu = gd32f330k8u6

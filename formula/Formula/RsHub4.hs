@@ -24,6 +24,7 @@ rsHub4 =
         { meta =
             Meta
                 { name = "rs_hub4"
+                , board = 0
                 , model = deviceTypeRsHub4
                 , version = (6, 2)
                 , shouldInit = true

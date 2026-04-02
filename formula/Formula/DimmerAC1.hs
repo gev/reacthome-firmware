@@ -20,6 +20,7 @@ dimmerAC1 =
             Meta
                 { name = "dimmerAC1"
                 , model = deviceTypeDim1AcRs
+                , board = 0
                 , version = (2, 4)
                 , shouldInit = true
                 , mcu = gd32f330k8u6

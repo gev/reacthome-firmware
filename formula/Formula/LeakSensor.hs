@@ -12,7 +12,8 @@ leakSensor =
         { meta =
             Meta
                 { name = "leak_sensor"
-                , model = 0xff
+                , model = 0
+                , board = 0
                 , version = (1, 0)
                 , shouldInit = false
                 , mcu = gd32f330k8u6

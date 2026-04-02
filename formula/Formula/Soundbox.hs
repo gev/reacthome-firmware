@@ -16,6 +16,7 @@ soundbox =
         { meta =
             Meta
                 { name = "soundbox"
+                , board = 0
                 , model = deviceTypeSoundbox
                 , version = (1, 1)
                 , shouldInit = true

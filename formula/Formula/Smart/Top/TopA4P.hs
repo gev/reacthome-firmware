@@ -20,6 +20,7 @@ smartTopA4P =
             Meta
                 { name = "smart_top_a4p"
                 , model = deviceTypeSmartTopA4P
+                , board = 0
                 , version = (4, 10)
                 , shouldInit = false
                 , mcu = gd32f330k8u6

@@ -21,6 +21,7 @@ relay12 =
             Meta
                 { name = "relay12"
                 , model = deviceTypeRelay12Rs
+                , board = 0
                 , version = (3, 10)
                 , shouldInit = true
                 , mcu = gd32f330k8u6
