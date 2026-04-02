@@ -61,11 +61,11 @@ mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
             header =
                 L.toStrict . B.toLazyText $
                     B.singleton '#'
-                        <> B.hexadecimal meta.model
-                        <> B.hexadecimal meta.board
-                        <> B.hexadecimal (fst meta.version)
-                        <> B.hexadecimal (snd meta.version)
-                        <> B.hexadecimal (length mcu)
+                        <> hexadecimal meta.model
+                        <> hexadecimal meta.board
+                        <> hexadecimal (fst meta.version)
+                        <> hexadecimal (snd meta.version)
+                        <> hexadecimal (length mcu)
                         <> mconcat (B.singleton <$> mcu)
         createDirectoryIfMissing True $
             takeDirectory path
@@ -79,3 +79,7 @@ mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
         impl
 
     truncateHex = T.unlines . init . T.lines
+
+    hexadecimal n
+        | n < 16 = B.singleton '0' <> B.hexadecimal n
+        | otherwise = B.hexadecimal n
