@@ -2,6 +2,7 @@ module Build.Formula where
 
 import Build.Compiler
 import Build.Shake
+import Control.Monad (void)
 import Control.Monad.Reader
 import Control.Monad.State
 import Core.Context
@@ -63,15 +64,17 @@ generate moduleDef path name =
             , constFold = True
             }
 
-build :: (Shake c) => c -> Formula p -> String -> IO ()
-build config formula name = do
-    let path = "firmware" </> name
+build :: (Shake c) => c -> Formula p -> String -> String -> IO String
+build config formula path name = do
     generate (cook formula) path name
     shake config path
 
 mkFormula :: (Compiler c p, Shake c) => (Formula p -> Int -> Int -> c) -> Formula p -> IO ()
-mkFormula mkCompiler f@Formula{..} = do
-    let startFirmware = startFlash meta.mcu
-        maxLength = sizeFlash meta.mcu
-        name = mkName meta
-    build (mkCompiler f startFirmware maxLength) f name
+mkFormula mkCompiler f@Formula{..} =
+    void $ build compiler f path name
+  where
+    startFirmware = startFlash meta.mcu
+    maxLength = sizeFlash meta.mcu
+    compiler = mkCompiler f startFirmware maxLength
+    name = mkName meta
+    path = "firmware" </> name

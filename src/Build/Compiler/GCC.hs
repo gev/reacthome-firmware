@@ -38,10 +38,11 @@ instance Shake GCC where
 
     shake c@GCC{..} cPath = do
         let build = "build" </> buildPath </> hash c
-        let dist = "dist"
+            dist = "dist"
+            path = dist </> cPath <.> "hex"
 
         shakeArgs shakeOptions{shakeFiles = build} do
-            want [dist </> cPath <.> "hex"]
+            want [path]
 
             phony "clean" do
                 putInfo $ "Cleaning files in " <> build
@@ -74,3 +75,5 @@ instance Shake GCC where
             build
                 <> "//*.s.o" %> \out ->
                     cmd_ cc cflags defs incs "-c" (source out) "-o" out
+
+        pure path

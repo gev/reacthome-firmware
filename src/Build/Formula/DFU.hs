@@ -28,17 +28,17 @@ mkDFU ::
     DFU p ->
     IO ()
 mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
-    main <- prepare (convert mainImpl) startMainFirmware maxMainLength
-    dfu <- prepare (convert dfuImpl) startDfuFirmware maxDfuLength
-
-    let firmWareName = mkName meta
-        firmWarePath = "dist" </> "firmware" </> firmWareName <.> "hex"
+    main <- prepare (convert mainImpl) startMainFirmware maxMainLength "main"
+    dfu <- prepare (convert dfuImpl) startDfuFirmware maxDfuLength "dfu"
     combine main dfu firmWarePath
-
-    let upName = mkName meta
-        updatePath = "dist" </> "up" </> upName <.> "up"
     pack main updatePath
+    removeDirectoryRecursive $ "dist" </> "main"
+    removeDirectoryRecursive $ "dist" </> "dfu"
   where
+    name = mkName meta
+    firmWarePath = "dist" </> "firmware" </> name <.> "hex"
+    updatePath = "dist" </> "up" </> name <.> "up"
+
     mainImpl = fixIRQ $ implementation transport
     dfuImpl = I.dfu startMainFirmware transport
 
@@ -48,31 +48,30 @@ mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
 
     convert = Formula meta
 
-    prepare formula startFirmware maxLength = do
-        let name = mkName formula.meta
-            path = "dist" </> "firmware" </> name <.> "hex"
-        build (mkCompiler formula startFirmware maxLength) formula name
-        hex <- T.readFile path
-        removeFile path
-        pure hex
+    prepare formula startFirmware maxLength target = do
+        let compiler = mkCompiler formula startFirmware maxLength
+            path = target </> name
+        T.readFile =<< build compiler formula path name
 
     combine main dfu path = T.writeFile path (truncateHex dfu <> main)
 
     pack main path = do
-        let mcu = toLower <$> (meta.mcu.model <> meta.mcu.modification)
-            header =
-                L.toStrict . B.toLazyText $
-                    B.singleton '#'
-                        <> hexadecimal meta.model
-                        <> hexadecimal meta.board
-                        <> hexadecimal (fst meta.version)
-                        <> hexadecimal (snd meta.version)
-                        <> hexadecimal (length mcu)
-                        <> B.fromString mcu
         createDirectoryIfMissing True $
             takeDirectory path
         T.writeFile path $
             T.intercalate "\n" [header, main]
+
+    header =
+        L.toStrict . B.toLazyText $
+            B.singleton '#'
+                <> hexadecimal meta.model
+                <> hexadecimal meta.board
+                <> hexadecimal (fst meta.version)
+                <> hexadecimal (snd meta.version)
+                <> hexadecimal (length mcu)
+                <> B.fromString mcu
+
+    mcu = toLower <$> (meta.mcu.model <> meta.mcu.modification)
 
     fixIRQ impl = do
         addInit "fix_IRQ" do
