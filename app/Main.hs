@@ -24,20 +24,13 @@ import Formula.Smart.Bottom.BottomClimate
 import Formula.Smart.Top.TopA4P
 import Formula.Smart.Top.TopA4T
 import Formula.Smart.Top.TopA4TD
-import Formula.Smart.Top.TopA4TDv5
-import Formula.Smart.Top.TopA4Tv5
 import Formula.Smart.Top.TopA6P
 import Formula.Smart.Top.TopA6T
-import Formula.Smart.Top.TopA6Tv5
 import Formula.Smart.Top.TopClimate
 import Formula.Smart.Top.TopG2
-import Formula.Smart.Top.TopG2v9
 import Formula.Smart.Top.TopG4
 import Formula.Smart.Top.TopG4D
-import Formula.Smart.Top.TopG4Dv15
-import Formula.Smart.Top.TopG4v9
 import Formula.Smart.Top.TopG6
-import Formula.Smart.Top.TopG6v9
 import Formula.Soundbox
 
 main :: IO ()
@@ -76,9 +69,9 @@ main = do
         , smartTopG4
         , smartTopG4D
         , smartTopG4Dv15
-        , smartTopG6
         , smartTopG2v9
         , smartTopG4v9
+        , smartTopG6
         , smartTopG6v9
         ]
     mapM_

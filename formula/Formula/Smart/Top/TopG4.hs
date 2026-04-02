@@ -7,11 +7,14 @@ import Core.Meta
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
+import Device.GD32F3x0.Touch (glass)
 import Feature.DInputs (dinputs)
 import Feature.Sht21 (sht21)
 import Feature.Smart.Top.PowerTouch (powerTouch)
 import Feature.Smart.Top.Vibro (vibro)
+import Feature.Touches (touches)
 import Implementation.Smart.TopG4 (topG4)
+import Implementation.Smart.TopG4v9 (topG4v9)
 import Ivory.Language
 import Transport.UART.RBUS
 
@@ -43,5 +46,35 @@ smartTopG4 =
                 (powerTouch out_pa_8)
                 (sht21 i2c_0)
                 npx_pwm_1
+                etc
+        }
+
+smartTopG4v9 :: DFU GD32F3x0
+smartTopG4v9 =
+    DFU
+        { meta =
+            Meta
+                { name = "smart_top_g4"
+                , model = deviceTypeSmartTopG4
+                , board = 9
+                , version = (4, 19)
+                , shouldInit = false
+                , mcu = gd32f330k8u6
+                , quartzFrequency = 8_000_000
+                , systemFrequency = 84_000_000
+                }
+        , transport = rbusTop uart_1
+        , implementation =
+            topG4v9
+                ( touches glass $
+                    touch_pa0
+                        :> touch_pb1
+                        :> touch_pa6
+                        :> touch_pa7
+                        :> Nil
+                )
+                (vibro out_pb_5)
+                (sht21 i2c_0)
+                npx_pwm_0
                 etc
         }
