@@ -14,10 +14,9 @@ data Meta p = Meta
     , systemFrequency :: Int
     }
 
-mkName :: Meta p -> Maybe String -> String
-mkName Meta{..} postfix =
+mkName :: Meta p -> String
+mkName Meta{..} =
     name
-        <> maybe "" ("-" <>) postfix
         <> "-v_"
         <> show board
         <> "_"

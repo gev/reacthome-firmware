@@ -28,14 +28,14 @@ mkDFU ::
     DFU p ->
     IO ()
 mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
-    main <- prepare (convert mainImpl) startMainFirmware maxMainLength "main"
-    dfu <- prepare (convert dfuImpl) startDfuFirmware maxDfuLength "dfu"
+    main <- prepare (convert mainImpl) startMainFirmware maxMainLength
+    dfu <- prepare (convert dfuImpl) startDfuFirmware maxDfuLength
 
-    let firmWareName = mkName meta $ Just "firmware"
+    let firmWareName = mkName meta
         firmWarePath = "dist" </> "firmware" </> firmWareName <.> "hex"
     combine main dfu firmWarePath
 
-    let upName = mkName meta Nothing
+    let upName = mkName meta
         updatePath = "dist" </> "up" </> upName <.> "up"
     pack main updatePath
   where
@@ -48,11 +48,13 @@ mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
 
     convert = Formula meta
 
-    prepare formula startFirmware maxLength postfix = do
-        let name = mkName formula.meta (Just postfix)
-            path = postfix </> name
-        build (mkCompiler formula startFirmware maxLength) formula path name
-        T.readFile $ "dist" </> path <.> "hex"
+    prepare formula startFirmware maxLength = do
+        let name = mkName formula.meta
+            path = "dist" </> "firmware" </> name <.> "hex"
+        build (mkCompiler formula startFirmware maxLength) formula name
+        hex <- T.readFile path
+        removeFile path
+        pure hex
 
     combine main dfu path = T.writeFile path (truncateHex dfu <> main)
 

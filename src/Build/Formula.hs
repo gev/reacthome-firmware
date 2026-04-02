@@ -63,8 +63,9 @@ generate moduleDef path name =
             , constFold = True
             }
 
-build :: (Shake c) => c -> Formula p -> String -> String -> IO ()
-build config formula path name = do
+build :: (Shake c) => c -> Formula p -> String -> IO ()
+build config formula name = do
+    let path = "firmware" </> name
     generate (cook formula) path name
     shake config path
 
@@ -72,6 +73,5 @@ mkFormula :: (Compiler c p, Shake c) => (Formula p -> Int -> Int -> c) -> Formul
 mkFormula mkCompiler f@Formula{..} = do
     let startFirmware = startFlash meta.mcu
         maxLength = sizeFlash meta.mcu
-        name = mkName meta Nothing
-        path = "firmware" </> name
-    build (mkCompiler f startFirmware maxLength) f path name
+        name = mkName meta
+    build (mkCompiler f startFirmware maxLength) f name
