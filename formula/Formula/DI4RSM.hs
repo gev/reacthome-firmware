@@ -16,14 +16,14 @@ import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
 
-di4rsm :: DFU GD32F3x0
-di4rsm =
+di4rsm'v7 :: DFU GD32F3x0
+di4rsm'v7 =
     DFU
         { meta =
             Meta
                 { name = "di4rsm"
                 , model = deviceTypeDi4Rsm
-                , board = 0
+                , board = 7
                 , version = (3, 1)
                 , shouldInit = true
                 , mcu = gd32f350k8u6

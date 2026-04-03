@@ -12,14 +12,14 @@ import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
 
-ao4 :: DFU GD32F3x0
-ao4 =
+ao4'v7 :: DFU GD32F3x0
+ao4'v7 =
     DFU
         { meta =
             Meta
                 { name = "ao4"
                 , model = deviceTypeAo4
-                , board = 0
+                , board = 7
                 , version = (2, 1)
                 , shouldInit = true
                 , mcu = gd32f330k8u6

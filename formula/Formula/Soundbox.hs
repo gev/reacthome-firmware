@@ -10,13 +10,13 @@ import Implementation.Soundbox (mkSoundbox)
 import Ivory.Language
 import Transport.UDP.RBUS qualified as U
 
-soundbox :: DFU GD32F4xx
-soundbox =
+soundbox'v5 :: DFU GD32F4xx
+soundbox'v5 =
     DFU
         { meta =
             Meta
                 { name = "soundbox"
-                , board = 0
+                , board = 5
                 , model = deviceTypeSoundbox
                 , version = (1, 1)
                 , shouldInit = true

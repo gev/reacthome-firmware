@@ -17,14 +17,14 @@ import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
 
-smartBottomCO2 :: DFU GD32F3x0
-smartBottomCO2 =
+smartBottomCO2'v13 :: DFU GD32F3x0
+smartBottomCO2'v13 =
     DFU
         { meta =
             Meta
                 { name = "smart_bottom_co2"
                 , model = deviceTypeSmartBottomCO2
-                , board = 0
+                , board = 13
                 , version = (4, 11)
                 , shouldInit = true
                 , mcu = gd32f330k8u6

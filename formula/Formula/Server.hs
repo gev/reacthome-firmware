@@ -18,13 +18,13 @@ import Interface.RS485
 import Ivory.Language
 import Transport.UART.RBUS
 
-server :: DFU GD32F4xx
-server =
+server'v11 :: DFU GD32F4xx
+server'v11 =
     DFU
         { meta =
             Meta
                 { name = "server"
-                , board = 0
+                , board = 11
                 , model = deviceTypeServer
                 , version = (6, 2)
                 , shouldInit = true

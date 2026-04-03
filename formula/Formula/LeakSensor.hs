@@ -6,14 +6,14 @@ import Device.GD32F3x0
 import Implementation.LeakSensor as L
 import Ivory.Language
 
-leakSensor :: Formula GD32F3x0
-leakSensor =
+leakSensor'v3 :: Formula GD32F3x0
+leakSensor'v3 =
     Formula
         { meta =
             Meta
                 { name = "leak_sensor"
                 , model = 0
-                , board = 0
+                , board = 3
                 , version = (1, 0)
                 , shouldInit = false
                 , mcu = gd32f330k8u6

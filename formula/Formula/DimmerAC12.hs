@@ -14,14 +14,14 @@ import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
 
-dimmerAC12 :: DFU GD32F3x0
-dimmerAC12 =
+dimmerAC12'v6 :: DFU GD32F3x0
+dimmerAC12'v6 =
     DFU
         { meta =
             Meta
                 { name = "dimmerAC12"
                 , model = deviceTypeDim12AcRs
-                , board = 0
+                , board = 6
                 , version = (2, 12)
                 , shouldInit = true
                 , mcu = gd32f330k8u6

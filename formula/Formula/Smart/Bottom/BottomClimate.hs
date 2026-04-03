@@ -16,14 +16,14 @@ import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
 
-smartBottomClimate :: DFU GD32F3x0
-smartBottomClimate =
+smartBottomClimate'v13 :: DFU GD32F3x0
+smartBottomClimate'v13 =
     DFU
         { meta =
             Meta
                 { name = "smart_bottom_climate"
                 , model = deviceTypeSmartBottomClimate
-                , board = 0
+                , board = 13
                 , version = (4, 12)
                 , shouldInit = true
                 , mcu = gd32f330k8u6

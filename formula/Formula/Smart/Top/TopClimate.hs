@@ -11,8 +11,8 @@ import Implementation.Smart.TopClimate (topClimate)
 import Ivory.Language
 import Transport.UART.RBUS
 
-smartTopClimate :: DFU GD32F3x0
-smartTopClimate =
+smartTopClimate'v0 :: DFU GD32F3x0
+smartTopClimate'v0 =
     DFU
         { meta =
             Meta

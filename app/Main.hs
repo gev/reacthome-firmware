@@ -37,47 +37,47 @@ main :: IO ()
 main = do
     mapM_
         (make gcc)
-        [ leakSensor
+        [ leakSensor'v3
         ]
     mapM_
         (make gcc)
-        [ ao4
-        , di4
-        , di4la
-        , di4rsm
-        , relay12
-        , dimmerDC12
-        , dimmerAC12
-        , dimmerAC1
-        , doppler1
-        , doppler5
-        , mix6x12
-        , mixH
-        , smartBottom
-        , smartBottomCO2
-        , smartBottomClimate
-        , smartTopA4P
-        , smartTopA4T
-        , smartTopA4Tv5
-        , smartTopA4TD
-        , smartTopA4TDv5
-        , smartTopA6P
-        , smartTopA6T
-        , smartTopA6Tv5
-        , smartTopClimate
-        , smartTopG2
-        , smartTopG4
-        , smartTopG4D
-        , smartTopG4Dv15
-        , smartTopG2v9
-        , smartTopG4v9
-        , smartTopG6
-        , smartTopG6v9
+        [ ao4'v7
+        , di4'v3
+        , di4la'v3
+        , di4rsm'v7
+        , relay12'v6
+        , dimmerDC12'v6
+        , dimmerAC12'v6
+        , dimmerAC1'v3
+        , doppler1'v5
+        , doppler5'v5
+        , mix6x12'v6
+        , mixH'v3
+        , smartBottom'v13
+        , smartBottomCO2'v13
+        , smartBottomClimate'v13
+        , smartTopA4P'v6
+        , smartTopA4T'v3
+        , smartTopA4T'v5
+        , smartTopA4TD'v3
+        , smartTopA4TD'v5
+        , smartTopA6P'v6
+        , smartTopA6T'3
+        , smartTopA6T'v5
+        , smartTopClimate'v0
+        , smartTopG2'v2
+        , smartTopG4'v2
+        , smartTopG4D'v13
+        , smartTopG4D'v15
+        , smartTopG2'v9
+        , smartTopG4'v9
+        , smartTopG6'v2
+        , smartTopG6'v9
         ]
     mapM_
         (make gcc)
-        [ mixV
-        , rsHub4
-        , server
-        , soundbox
+        [ mixV'v2
+        , rsHub4'v1
+        , server'v11
+        , soundbox'v5
         ]

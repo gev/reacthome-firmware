@@ -18,14 +18,14 @@ import Implementation.Smart.TopA6Tv5 (topA6Tv5)
 import Ivory.Language
 import Transport.UART.RBUS
 
-smartTopA6T :: DFU GD32F3x0
-smartTopA6T =
+smartTopA6T'3 :: DFU GD32F3x0
+smartTopA6T'3 =
     DFU
         { meta =
             Meta
                 { name = "smart_top_a6t"
                 , model = deviceTypeSmartTopA6T
-                , board = 0
+                , board = 3
                 , version = (4, 10)
                 , shouldInit = false
                 , mcu = gd32f330k8u6
@@ -51,8 +51,8 @@ smartTopA6T =
                 etc
         }
 
-smartTopA6Tv5 :: DFU GD32F3x0
-smartTopA6Tv5 =
+smartTopA6T'v5 :: DFU GD32F3x0
+smartTopA6T'v5 =
     DFU
         { meta =
             Meta

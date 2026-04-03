@@ -15,14 +15,14 @@ import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
 
-doppler5 :: DFU GD32F3x0
-doppler5 =
+doppler5'v5 :: DFU GD32F3x0
+doppler5'v5 =
     DFU
         { meta =
             Meta
                 { name = "doppler5"
                 , model = deviceTypeDoppler5Di4
-                , board = 0
+                , board = 5
                 , version = (2, 10)
                 , shouldInit = true
                 , mcu = gd32f330k8u6

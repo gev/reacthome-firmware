@@ -18,13 +18,13 @@ import Interface.RS485
 import Ivory.Language
 import Transport.UDP.RBUS as U
 
-rsHub4 :: DFU GD32F4xx
-rsHub4 =
+rsHub4'v1 :: DFU GD32F4xx
+rsHub4'v1 =
     DFU
         { meta =
             Meta
                 { name = "rs_hub4"
-                , board = 0
+                , board = 1
                 , model = deviceTypeRsHub4
                 , version = (6, 2)
                 , shouldInit = true

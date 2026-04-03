@@ -18,8 +18,8 @@ import Implementation.Smart.TopG6v9 (topG6v9)
 import Ivory.Language
 import Transport.UART.RBUS
 
-smartTopG6 :: DFU GD32F3x0
-smartTopG6 =
+smartTopG6'v2 :: DFU GD32F3x0
+smartTopG6'v2 =
     DFU
         { meta =
             Meta
@@ -51,8 +51,8 @@ smartTopG6 =
                 etc
         }
 
-smartTopG6v9 :: DFU GD32F3x0
-smartTopG6v9 =
+smartTopG6'v9 :: DFU GD32F3x0
+smartTopG6'v9 =
     DFU
         { meta =
             Meta

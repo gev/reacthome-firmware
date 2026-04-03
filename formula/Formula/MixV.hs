@@ -17,14 +17,14 @@ import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
 
-mixV :: DFU GD32F4xx
-mixV =
+mixV'v2 :: DFU GD32F4xx
+mixV'v2 =
     DFU
         { meta =
             Meta
                 { name = "mixV"
                 , model = deviceTypeMixV
-                , board = 0
+                , board = 2
                 , version = (3, 1)
                 , shouldInit = true
                 , mcu = gd32f450vgt6
