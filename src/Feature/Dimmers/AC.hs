@@ -5,6 +5,7 @@ import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Domain qualified as D
 import Core.Handler
+import Core.Meta
 import Core.Task
 import Core.Transport as T
 import Data.Fixed
@@ -15,6 +16,7 @@ import Feature.Dimmers
 import GHC.TypeNats
 import Interface.EXTI
 import Interface.MCU
+import Interface.MCU qualified as I
 import Interface.PWM qualified as I
 import Interface.Timer
 import Ivory.Language
@@ -44,8 +46,10 @@ dimmersAC ::
     t ->
     m (Dimmers n)
 dimmersAC pwms exti transport = do
-    mcu <- asks D.mcu
-    e <- exti $ peripherals mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+
+    e <- exti $ peripherals platform
 
     dimmers <- mkDimmers pwms 0xff_ff_ff_ff transport
 

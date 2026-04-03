@@ -8,6 +8,7 @@ import Core.Actions
 import Core.Context
 import Core.Domain as D
 import Core.Handler
+import Core.Meta
 import Core.Task
 import Core.Transport (LazyTransport (lazyTransmit))
 import Data.Buffer
@@ -20,6 +21,7 @@ import GHC.TypeNats
 import Interface.Display (Display, Render (Render))
 import Interface.Flash as F
 import Interface.MCU
+import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Language.Proxy
 import Ivory.Stdlib
@@ -61,8 +63,9 @@ aled ::
     t ->
     m (ALED ng ns np)
 aled mkDisplay etc transport = do
-    mcu <- asks D.mcu
-    display <- mkDisplay $ peripherals mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    display <- mkDisplay $ peripherals platform
     getALED <- E.mkALED
     shouldInit <- asks D.shouldInit
     shouldSaveConfig <- value "aled_should_save_config" false
@@ -75,7 +78,7 @@ aled mkDisplay etc transport = do
             ALED
                 { display
                 , getALED
-                , etc = etc (peripherals mcu)
+                , etc = etc platform.peripherals
                 , transport
                 , shouldSaveConfig
                 , shouldSyncGroups

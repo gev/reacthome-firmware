@@ -8,12 +8,14 @@ import Core.Controller
 import Core.Dispatcher
 import Core.Domain qualified as D
 import Core.Handler
+import Core.Meta
 import Core.Task
 import Core.Transport
 import Data.Buffer
 import Data.Queue
 import Data.Value
 import GHC.TypeNats
+import Interface.MCU
 import Interface.MCU qualified as I
 import Interface.UART
 import Ivory.Language
@@ -77,9 +79,10 @@ rbus ::
     Uint32 ->
     m (RBUS q l)
 rbus uart' speed = do
-    mcu <- asks D.mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     implementation <- asks D.implementation
-    uart <- uart' $ I.peripherals mcu
+    uart <- uart' platform.peripherals
     let name = "transport_uart_rbus"
     {--
         TODO: move dispatcher outside
@@ -105,9 +108,8 @@ mkRbus ::
     (forall s. Buffer 255 Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()) ->
     m (RBUS q l)
 mkRbus name uart speed onMessage = do
-    mcu <- asks D.mcu
-    let mac = I.mac mcu
-    let clock = I.systemClock mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     msgQueue <- queue (name <> "_msg") =<< messages name
     msgBuff <- buffer (name <> "_msg")
     msgIndex <- value (name <> "_msg_index") 0
@@ -121,8 +123,8 @@ mkRbus name uart speed onMessage = do
             RBUS
                 { name
                 , speed
-                , mac
-                , clock
+                , mac = platform.mac
+                , clock = platform.systemClock
                 , uart
                 , protocol
                 , msgQueue

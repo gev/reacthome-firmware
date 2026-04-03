@@ -5,11 +5,13 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Domain as D
+import Core.Meta
 import Core.Task
 import Data.Record
 import Interface.ENET
 import Interface.LwipPort
 import Interface.MCU
+import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 import Support.Lwip.Etharp
@@ -26,8 +28,9 @@ udpEcho ::
     (p -> m e) ->
     m ()
 udpEcho enet = do
-    mcu <- asks D.mcu
-    enet' <- enet $ peripherals mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    enet' <- enet platform.peripherals
     ip4 <- record_ "ipaddr4"
     netmask <- record_ "netmask"
     gateway <- record_ "gateway"
@@ -58,7 +61,7 @@ udpEcho enet = do
         createIpAddr4 netmask 255 255 255 0
         createIpAddr4 gateway 192 168 88 1
         store (netif ~> hwaddr_len) 6
-        arrayCopy (netif ~> hwaddr) (mac mcu) 0 6
+        arrayCopy (netif ~> hwaddr) platform.mac 0 6
 
         addNetif netif ip4 netmask gateway nullPtr (initLwipPortIf enet') inputEthernetPtr
         setNetifDefault netif

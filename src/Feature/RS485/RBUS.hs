@@ -10,6 +10,7 @@ import Core.Actions
 import Core.Context
 import Core.Domain qualified as D
 import Core.Handler
+import Core.Meta
 import Core.Task
 import Core.Transport as T
 import Core.Version
@@ -24,6 +25,7 @@ import Feature.RS485.RBUS.Rx
 import Feature.RS485.RBUS.Tx
 import GHC.TypeNats
 import Interface.MCU
+import Interface.MCU qualified as I
 import Interface.RS485 qualified as I
 import Interface.RS485 qualified as RS
 import Ivory.Language
@@ -58,11 +60,11 @@ rbus' ::
     Int ->
     m RBUS
 rbus' transport rs485 index = do
-    mcu <- asks D.mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     shouldInit <- asks D.shouldInit
 
     let name = "feature_rs485_rbus_" <> show index
-    let clock = systemClock mcu
 
     rs <- rs485
     dmx512 <- ED.mkDMX512 (name <> "_dmx512") index
@@ -135,7 +137,7 @@ rbus' transport rs485 index = do
     let rbus =
             RBUS
                 { index
-                , clock
+                , clock = platform.systemClock
                 , dmx512
                 , rs
                 , mode

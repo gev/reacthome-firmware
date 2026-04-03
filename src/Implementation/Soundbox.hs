@@ -10,6 +10,7 @@ import Core.Context
 import Core.Controller
 import Core.Domain as D
 import Core.Handler
+import Core.Meta
 import Core.Task
 import Core.Transport qualified as T
 import Data.Buffer
@@ -31,6 +32,7 @@ import Interface.I2SRX
 import Interface.I2STX
 import Interface.LwipPort
 import Interface.MCU
+import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 import Support.Lwip.Netif
@@ -78,13 +80,13 @@ mkSoundbox enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute transport' = do
     transport <- transport'
 
     let name = "soundbox"
-    mcu <- asks D.mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     shouldInit <- asks D.shouldInit
-    let peripherals' = peripherals mcu
-    shutdownTrx <- shutdownTrx' peripherals' $ pullNone peripherals'
-    shutdownTx <- shutdownTx' peripherals' $ pullNone peripherals'
-    i2sTrx <- i2sTrx' peripherals'
-    i2sTx <- i2sTx' peripherals'
+    shutdownTrx <- shutdownTrx' platform.peripherals $ pullNone platform.peripherals
+    shutdownTx <- shutdownTx' platform.peripherals $ pullNone platform.peripherals
+    i2sTrx <- i2sTrx' platform.peripherals
+    i2sTx <- i2sTx' platform.peripherals
 
     txRtpBuff <- buffer (name <> "_tx_rtp_buff")
     lanampBuff <- buffer (name <> "_tx_lanamp_buff")
