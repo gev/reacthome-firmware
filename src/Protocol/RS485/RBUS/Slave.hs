@@ -4,7 +4,6 @@ module Protocol.RS485.RBUS.Slave where
 
 import Control.Monad.State
 import Core.Context
-import Core.Version (Version, major, minor)
 import Data.Buffer
 import Data.Record
 import Data.Value
@@ -12,14 +11,13 @@ import GHC.TypeNats
 import Interface.Mac
 import Ivory.Language
 import Ivory.Stdlib
+import Protocol.RBUS
 import Protocol.RS485.RBUS
 import Util.CRC16
 
 data Slave n = Slave
     { name :: String
     , mac :: Mac
-    , model :: Value Uint8
-    , version :: Version
     , address :: Value Uint8
     , state :: Value Uint8
     , phase :: Value Uint8
@@ -52,14 +50,12 @@ slave ::
     (MonadState Context m, KnownNat n) =>
     String ->
     Buffer 6 Uint8 ->
-    Value Uint8 ->
-    Version ->
     (Buffer n Uint8 -> Uint8 -> IBool -> forall s. Ivory (ProcEffects s ()) ()) ->
     (forall eff. Ivory eff ()) ->
     (forall eff. Ivory eff ()) ->
     (forall eff. Ivory eff ()) ->
     m (Slave n)
-slave id mac model version onMessage onConfirm onDiscovery onReceive = do
+slave id mac onMessage onConfirm onDiscovery onReceive = do
     let name = id <> "_protocol_slave"
     address <- value (name <> "_address") broadcastAddress
     state <- value (name <> "_state") readyToReceive
@@ -79,9 +75,9 @@ slave id mac model version onMessage onConfirm onDiscovery onReceive = do
     addInit (name <> "_disc_tx") do
         store (buffDisc ! 0) $ discovery txPreamble
         arrayCopy buffDisc mac 1 $ arrayLen mac
-        store (buffDisc ! 7) =<< deref model
-        store (buffDisc ! 8) =<< deref (version ~> major)
-        store (buffDisc ! 9) =<< deref (version ~> minor)
+        store (buffDisc ! 7) rbusDummy
+        store (buffDisc ! 8) (fst rbusVersion)
+        store (buffDisc ! 9) (snd rbusVersion)
         calcCRC16 buffDisc
 
     initConf <- addInit (name <> "_conf_tx") do
@@ -98,8 +94,6 @@ slave id mac model version onMessage onConfirm onDiscovery onReceive = do
         Slave
             { name
             , mac
-            , model
-            , version
             , address
             , state
             , phase

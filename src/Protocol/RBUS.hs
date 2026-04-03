@@ -1,4 +1,6 @@
 module Protocol.RBUS where
 
-rbusVersion = (1, 1)
-rbusDummy = 0
+import Ivory.Language
+
+rbusVersion = (1, 1) :: (Uint8, Uint8)
+rbusDummy = 0 :: Uint8

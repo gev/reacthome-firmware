@@ -27,8 +27,6 @@ rbus ::
     m (RS485 256 300) ->
     m RBUS
 rbus rs485 = do
-    model <- asks D.model
-    version <- asks D.version
     mcu <- asks D.mcu
     mustInit <- asks D.mustInit
     shouldInit <- asks D.shouldInit
@@ -83,8 +81,6 @@ rbus rs485 = do
         slave
             name
             (mac mcu)
-            model
-            version
             onMessage
             onConfirm
             onDiscovery

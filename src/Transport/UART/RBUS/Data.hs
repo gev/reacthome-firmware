@@ -2,7 +2,6 @@ module Transport.UART.RBUS.Data where
 
 import Control.Monad.State (MonadState)
 import Core.Context
-import Core.Version (Version)
 import Data.Buffer
 import Data.Queue
 import Data.Value
@@ -19,8 +18,6 @@ data RBUS q l
     RBUS
     { name :: String
     , speed :: Uint32
-    , model :: Value Uint8
-    , version :: Version
     , mac :: Mac
     , clock :: SystemClock
     , uart :: u rn tn

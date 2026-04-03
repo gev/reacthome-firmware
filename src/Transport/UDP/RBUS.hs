@@ -10,7 +10,6 @@ import Core.Dispatcher
 import Core.Domain qualified as D
 import Core.Task
 import Core.Transport
-import Core.Version
 import Data.Buffer
 import Data.Record
 import Data.Value
@@ -19,6 +18,7 @@ import Interface.LwipPort
 import Interface.MCU as I
 import Ivory.Language
 import Ivory.Stdlib
+import Protocol.RBUS (rbusDummy, rbusVersion)
 import Support.Lwip.IP_addr
 import Support.Lwip.Udp
 import Transport.UDP.RBUS.Data
@@ -36,8 +36,6 @@ rbus ::
     m RBUS
 rbus enet = do
     mcu <- asks D.mcu
-    model <- asks D.model
-    version <- asks D.version
     shouldInit <- asks D.shouldInit
     let mac = I.mac mcu
     implementation <- asks D.implementation
@@ -91,9 +89,9 @@ rbus enet = do
         createIpAddr4 broadcastIP 255 255 255 255
 
         store (discovery ! 0) 0xf0
-        store (discovery ! 1) =<< deref model
-        store (discovery ! 2) =<< deref (version ~> major)
-        store (discovery ! 3) =<< deref (version ~> minor)
+        store (discovery ! 1) rbusDummy
+        store (discovery ! 2) (fst rbusVersion)
+        store (discovery ! 3) (snd rbusVersion)
 
         store (requestIP ! 0) 0xfd
 
