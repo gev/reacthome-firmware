@@ -1,5 +1,6 @@
 module Core.Meta where
 
+import Data.List
 import Interface.MCU
 import Ivory.Language
 
@@ -16,16 +17,13 @@ data Meta p = Meta
 
 mkName :: Meta p -> String
 mkName Meta{..} =
-    name
-        <> "-v_"
-        <> show board
-        <> "_"
-        <> major version
-        <> "_"
-        <> minor version
-        <> "-"
-        <> mcu.model
-        <> mcu.modification
+    intercalate
+        "-"
+        [ name
+        , show board
+        , major version <> "_" <> minor version
+        , mcu.model <> mcu.modification
+        ]
   where
     major = show . fst
     minor = show . snd
