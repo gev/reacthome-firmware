@@ -8,7 +8,7 @@ import Control.Monad.State
 import Core.Context
 import Core.Domain (domain)
 import Core.Formula (Formula (Formula, implementation, meta))
-import Core.Meta (mcu, mkName, model, shouldInit, version)
+import Core.Meta (board, mcu, mkName, model, shouldInit, version)
 import Core.Scheduler
 import Data.Bifunctor
 import Data.List (nub)
@@ -25,7 +25,7 @@ cook Formula{..} = do
     incl loop
     incl main
   where
-    (domain', domainContext') = runState (domain (fromIntegral meta.model) version' mcu' meta.shouldInit implementation') mempty
+    (domain', domainContext') = runState (domain (fromIntegral meta.model) version' mcu' (fromIntegral meta.board) meta.shouldInit implementation') mempty
     (mcu', mcuContext') = runState (platform meta.mcu) mempty
     (implementation', implementationContext') = runReader (runStateT implementation mempty) domain'
 
