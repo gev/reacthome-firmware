@@ -10,11 +10,14 @@ import Core.Actions
 import Core.Context
 import Core.Controller
 import Core.Domain as D
+import Core.Meta
 import Core.Task
 import Core.Transport
 import Core.Transport qualified as T
 import Data.Buffer
 import Data.Serialize
+import Data.Type.Bool
+import Data.Type.Equality
 import Data.Value
 import Endpoint.ATS as A
 import Endpoint.DInputs qualified as DI
@@ -50,8 +53,6 @@ import Ivory.Language.Proxy
 import Ivory.Stdlib
 import Util.CRC16
 import Prelude hiding (error)
-import Data.Type.Bool
-import Data.Type.Equality
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff ni no = 1 + ToSizeInBytes ni + ToSizeInBytes no
@@ -104,7 +105,8 @@ mix dinputs' relays' indicator' etc transport' = do
     rules <- mkRules transport
     ats <- mkATS transport
     indicator <- indicator' ats (getDInputs dinputs) (getRelays relays) transport
-    mcu <- asks D.mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     shouldInit <- asks D.shouldInit
     shouldSaveConfig <- value "mix_should_save_config" false
     saveCountdown <- value "mix_save_save_countdown" 0
@@ -117,7 +119,7 @@ mix dinputs' relays' indicator' etc transport' = do
                 , rules
                 , ats
                 , indicator
-                , etc = etc (peripherals mcu)
+                , etc = etc platform.peripherals
                 , shouldInit
                 , shouldSaveConfig
                 , saveCountdown

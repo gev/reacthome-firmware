@@ -4,10 +4,12 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Domain qualified as D
+import Core.Meta
 import Core.Task (delay)
 import Interface.GPIO.Output (Output, reset, set)
 import Interface.GPIO.Port (Pull, pullNone)
 import Interface.MCU (peripherals)
+import Interface.MCU qualified as I
 
 data PowerTouch = PowerTouch
 
@@ -20,9 +22,9 @@ powerTouch ::
     (p -> d -> m o) ->
     m PowerTouch
 powerTouch output' = do
-    mcu <- asks D.mcu
-    let peripherals' = peripherals mcu
-    output <- output' peripherals' $ pullNone peripherals'
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    output <- output' platform.peripherals $ pullNone platform.peripherals
 
     addInit "power_touch_off" $ set output
 

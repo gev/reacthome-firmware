@@ -8,6 +8,7 @@ import Core.Context
 import Core.Controller
 import Core.Dispatcher
 import Core.Domain qualified as D
+import Core.Meta
 import Core.Task
 import Core.Transport
 import Data.Buffer
@@ -15,7 +16,7 @@ import Data.Record
 import Data.Value
 import Interface.ENET
 import Interface.LwipPort
-import Interface.MCU as I
+import Interface.MCU
 import Ivory.Language
 import Ivory.Stdlib
 import Protocol.RBUS (rbusDummy, rbusVersion)
@@ -35,9 +36,9 @@ rbus ::
     (p -> m e) ->
     m RBUS
 rbus enet = do
-    mcu <- asks D.mcu
+    meta <- asks D.meta
+    platform <- platform meta.mcu
     shouldInit <- asks D.shouldInit
-    let mac = I.mac mcu
     implementation <- asks D.implementation
     upcb <- value_ "udp_rbus_upcb"
     netif <- mkNetif enet
@@ -61,7 +62,7 @@ rbus enet = do
 
     let rbus =
             RBUS
-                { mac
+                { mac = platform.mac
                 , netif
                 , upcb
                 , serverIP

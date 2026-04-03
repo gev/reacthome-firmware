@@ -33,6 +33,7 @@ import Feature.Smart.Top.LEDs (
     updateLeds,
  )
 
+import Core.Meta
 import Core.Task
 import Data.Buffer
 import Data.Matrix
@@ -50,6 +51,7 @@ import GHC.TypeNats
 import Interface.Display (Display, Render (Render))
 import Interface.Flash
 import Interface.MCU (peripherals)
+import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 
@@ -85,9 +87,10 @@ topA6T ::
     m (Top n)
 topA6T dinputs' vibro' touch' sht21' display' etc' transport' = do
     transport <- transport'
-    mcu <- asks D.mcu
-    display <- display' $ peripherals mcu
-    let etc = etc' $ peripherals mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    display <- display' platform.peripherals
+    let etc = etc' platform.peripherals
     dinputs <- dinputs' True transport
     vibro <- vibro' (DI.getDInputs dinputs) transport etc
     touch'

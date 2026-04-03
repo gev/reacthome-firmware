@@ -5,6 +5,7 @@ import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
 import Core.Domain qualified as D
+import Core.Meta
 import Core.Task (delay, yeld)
 import Core.Transport
 import Data.Buffer
@@ -16,6 +17,7 @@ import Interface.Flash as F
 import Interface.GPIO.Output (Output, reset, set)
 import Interface.GPIO.Port (Pull, pullNone)
 import Interface.MCU
+import Interface.MCU qualified as I
 import Interface.SystemClock (SystemClock, getSystemTime)
 import Ivory.Language
 import Ivory.Stdlib
@@ -49,10 +51,10 @@ vibro ::
     f ->
     m (Vibro n)
 vibro output' getDInputs transport etc = do
-    mcu <- asks D.mcu
-    let clock = systemClock mcu
-    let peripherals' = peripherals mcu
-    output <- output' peripherals' $ pullNone peripherals'
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    let clock = systemClock platform
+    output <- output' platform.peripherals $ pullNone platform.peripherals
     volume <- value "vibro_volume" 100
     isVibrating <- value "is_vibrating" false
     prevState <- values "prev_state" $ replicate 12 false

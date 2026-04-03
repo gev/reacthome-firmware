@@ -6,6 +6,7 @@ import Core.Actions
 import Core.Context
 import Core.Domain qualified as D
 import Core.Handler
+import Core.Meta
 import Core.Task
 import Core.Transport
 import Data.Buffer
@@ -13,6 +14,7 @@ import Data.Serialize
 import Data.Value
 import Interface.I2C qualified as I
 import Interface.MCU
+import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 
@@ -33,8 +35,9 @@ scd40 ::
     t ->
     m SCD40
 scd40 i2c' transport = do
-    mcu <- asks D.mcu
-    i2c <- i2c' $ peripherals mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    i2c <- i2c' platform.peripherals
     startPeriodicMeasureCmd <- values "start_periodic_measure_cmd" [0x21, 0xb1]
     readMeasureCmd <- values "read_measure_cmd" [0xec, 0x05]
     rxBuff <- values_ "rx_buff"

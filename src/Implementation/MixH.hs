@@ -8,6 +8,7 @@ import Core.Actions
 import Core.Context
 import Core.Controller
 import Core.Domain as D
+import Core.Meta
 import Core.Task
 import Core.Transport
 import Data.Buffer
@@ -97,7 +98,8 @@ mix dinputs' relays' dimmers' ds18b20 etc transport' = do
     dinputs <- dinputs' True transport
     dimmers <- dimmers' transport
     rules <- mkRules transport
-    mcu <- asks D.mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     shouldInit <- asks D.shouldInit
     shouldSaveConfig <- value "mix_should_save_config" false
     saveCountdown <- value "mix_save_save_countdown" 0
@@ -110,7 +112,7 @@ mix dinputs' relays' dimmers' ds18b20 etc transport' = do
                 , dinputs
                 , dimmers
                 , rules
-                , etc = etc (peripherals mcu)
+                , etc = etc platform.peripherals
                 , shouldSaveConfig
                 , shouldInit
                 , saveCountdown

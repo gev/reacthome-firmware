@@ -7,6 +7,7 @@ import Core.Controller
 import Core.Dispatcher
 import Core.Domain qualified as D
 import Core.Handler
+import Core.Meta
 import Core.Task
 import Core.Transport
 import Data.Buffer
@@ -27,13 +28,12 @@ rbus ::
     m (RS485 256 300) ->
     m RBUS
 rbus rs485 = do
-    mcu <- asks D.mcu
-    mustInit <- asks D.mustInit
+    meta <- asks D.meta
+    platform <- platform meta.mcu
     shouldInit <- asks D.shouldInit
     implementation <- asks D.implementation
 
     let name = "transport_rs485_rbus"
-    let clock = systemClock mcu
 
     rs <- rs485
     msgQueue <- queue (name <> "_msg") =<< messages name
@@ -66,7 +66,7 @@ rbus rs485 = do
     -}
     let onDiscovery = do
             store shouldConfirm false
-            store shouldInit mustInit
+            store shouldInit meta.shouldInit
             mapM_ call_ syncs
 
     let onConfirm = do
@@ -80,7 +80,7 @@ rbus rs485 = do
     protocol <-
         slave
             name
-            (mac mcu)
+            platform.mac
             onMessage
             onConfirm
             onDiscovery
@@ -88,7 +88,7 @@ rbus rs485 = do
 
     let rbus =
             RBUS
-                { clock
+                { clock = platform.systemClock
                 , rs
                 , protocol
                 , msgQueue

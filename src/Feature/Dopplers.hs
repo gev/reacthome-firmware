@@ -8,12 +8,14 @@ import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
 import Core.Domain qualified as D
+import Core.Meta
 import Core.Task
 import Core.Transport qualified as T
 import Data.Fixed
 import Data.Value
 import Interface.ADC qualified as I
 import Interface.MCU
+import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 
@@ -67,8 +69,9 @@ mkDoppler ::
     m (Doppler a)
 mkDoppler analogInput index = do
     let name = "doppler_" <> show index <> "_"
-    mcu <- asks D.mcu
-    adc <- analogInput $ peripherals mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    adc <- analogInput $ peripherals platform
     expectation <- value (name <> "expectation") 0.5
     current <- value (name <> "current") 0
     previous <- value (name <> "previous") 0

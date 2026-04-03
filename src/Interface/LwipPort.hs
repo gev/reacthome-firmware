@@ -5,11 +5,11 @@ import Control.Monad.Reader.Class
 import Control.Monad.State.Class
 import Core.Context
 import Core.Domain qualified as D
+import Core.Meta
 import Core.Task
 import Data.Record
 import Interface.ENET
 import Interface.MCU
-import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 import Support.Lwip.Err
@@ -32,9 +32,9 @@ mkNetif ::
     (p -> m e) ->
     m (Record NETIF_STRUCT)
 mkNetif enet' = do
-    mcu <- asks D.mcu
-    let mac = I.mac mcu
-    enet <- enet' $ peripherals mcu
+    meta <- asks D.meta
+    platform <- platform meta.mcu
+    enet <- enet' platform.peripherals
     netif <- record_ "netif"
     localIP <- record_ "local_ip"
     netmask <- record_ "netmask"
@@ -66,7 +66,7 @@ mkNetif enet' = do
         store (netif ~> hwaddr_len) 6
 
         arrayMap \ix -> do
-            m <- deref (mac ! ix)
+            m <- deref (platform.mac ! ix)
             store (netif ~> hwaddr ! ix) m
 
         addNetif

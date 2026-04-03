@@ -4,6 +4,7 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Domain qualified as D
+import Core.Meta
 import Core.Task
 import Core.Transport qualified as T
 import Data.Buffer
@@ -15,6 +16,7 @@ import Endpoint.AOutputs qualified as E
 import GHC.TypeNats
 import Interface.DAC qualified as I
 import Interface.MCU
+import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 
@@ -46,9 +48,10 @@ aoutputs ::
     t ->
     m (AOutputs n)
 aoutputs dacs transport = do
-    mcu <- asks D.mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     shouldInit <- asks D.shouldInit
-    as <- traverse ($ peripherals mcu) dacs
+    as <- traverse ($ platform.peripherals) dacs
     let n = length as
     getAOutputs <- E.mkAOutputs "aoutputs"
     current <- index "current_analog"
@@ -129,4 +132,3 @@ onAo AOutputs{..} buff size = do
                 let index' = index - 1
                 value <- deref $ buff ! 2
                 E.set getAOutputs index' (safeCast value / 255)
-

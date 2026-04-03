@@ -9,6 +9,7 @@ import Core.Context
 import Core.Controller
 import Core.Domain qualified as D
 import Core.Handler
+import Core.Meta
 import Core.Task
 import Core.Transport
 import Data.Buffer
@@ -42,6 +43,7 @@ import GHC.TypeNats
 import Interface.Display (Display, Render (Render))
 import Interface.Flash
 import Interface.MCU (peripherals)
+import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 
@@ -75,9 +77,10 @@ topAP ::
     m (Top n)
 topAP dinputs' sht21' display' etc' transport' = do
     transport <- transport'
-    mcu <- asks D.mcu
-    display <- display' $ peripherals mcu
-    let etc = etc' $ peripherals mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    display <- display' platform.peripherals
+    let etc = etc' platform.peripherals
     dinputs <- dinputs' False transport
     frameBuffer <- values' "top_frame_buffer" 0
     syncStateBuff <- buffer "sync_channels"

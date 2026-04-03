@@ -5,6 +5,7 @@ import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
 import Core.Domain qualified as D
+import Core.Meta
 import Data.Buffer
 import Data.Record
 import Data.Serialize
@@ -12,6 +13,7 @@ import Endpoint.Groups (Groups (groups))
 import Endpoint.Groups qualified as G
 import GHC.TypeNats
 import Interface.MCU
+import Interface.MCU qualified as I
 import Interface.SystemClock (SystemClock, getSystemTime)
 import Ivory.Language
 import Ivory.Language.Proxy
@@ -48,14 +50,14 @@ mkRelays ::
     m (Relays n)
 mkRelays name = do
     addStruct (Proxy :: Proxy RelayStruct)
-    mcu <- asks D.mcu
-    let clock = systemClock mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     relays <-
         records name $
             go . fromIntegral
                 <$> [1 .. natVal (aNat :: NatType n)]
     payload <- buffer "relay_message"
-    pure Relays{relays, payload, clock}
+    pure Relays{relays, payload, clock = systemClock platform}
   where
     go i =
         [ state .= ival false

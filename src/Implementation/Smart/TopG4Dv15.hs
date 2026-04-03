@@ -26,6 +26,7 @@ import Feature.Smart.Top.LEDs (
     updateLeds,
  )
 
+import Core.Meta
 import Core.Task
 import Data.Buffer
 import Data.Matrix
@@ -43,6 +44,7 @@ import GHC.TypeNats
 import Interface.Display (Display, Render (Render))
 import Interface.Flash
 import Interface.MCU (peripherals)
+import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 
@@ -90,10 +92,11 @@ topG4Dv15 ::
     m (Top n)
 topG4Dv15 touches' vibro' sht21' display' etc' transport' = do
     transport <- transport'
-    mcu <- asks D.mcu
-    display <- display' $ peripherals mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    display <- display' platform.peripherals
     touches <- touches' transport
-    let etc = etc' $ peripherals mcu
+    let etc = etc' platform.peripherals
     vibro <- vibro' (FT.getDInputs touches) transport etc
     frameBuffer <- values' "top_frame_buffer" 0
     syncStateBuff <- buffer "sync_channels"
