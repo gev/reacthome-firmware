@@ -68,7 +68,6 @@ mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
                 <> hexadecimal meta.board
                 <> hexadecimal (fst meta.version)
                 <> hexadecimal (snd meta.version)
-                <> hexadecimal (length mcu)
                 <> B.fromString mcu
 
     mcu = toLower <$> (meta.mcu.model <> meta.mcu.modification)
