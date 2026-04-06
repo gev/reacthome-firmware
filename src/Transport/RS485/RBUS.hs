@@ -22,6 +22,7 @@ import Protocol.RS485.RBUS.Slave (slave)
 import Transport.RS485.RBUS.Data
 import Transport.RS485.RBUS.Rx
 import Transport.RS485.RBUS.Tx
+import Core.Actions
 
 rbus ::
     (MonadState Context m, MonadReader (D.Domain p c) m, Controller c) =>
@@ -39,7 +40,7 @@ rbus rs485 = do
     msgQueue <- queue (name <> "_msg") =<< messages name
     msgBuff <- buffer (name <> "_msg")
     msgIndex <- value (name <> "_msg_index") 0
-    initBuff <- values (name <> "_init_request") [0xf2]
+    initBuff <- values (name <> "_init_request") [actionInitialize]
     rxLock <- value (name <> "_rx_lock") false
     txLock <- value (name <> "_tx_lock") false
     rxTimestamp <- value (name <> "_timestamp_rx") 0

@@ -25,6 +25,7 @@ import Support.Lwip.Udp
 import Transport.UDP.RBUS.Data
 import Transport.UDP.RBUS.Rx
 import Transport.UDP.RBUS.Tx
+import Core.Actions
 
 rbus ::
     ( MonadState Context m
@@ -89,14 +90,14 @@ rbus enet = do
         createIpAddr4 serverIP 255 255 255 255
         createIpAddr4 broadcastIP 255 255 255 255
 
-        store (discovery ! 0) 0xf0
+        store (discovery ! 0) actionDiscovery
         store (discovery ! 1) rbusDummy
         store (discovery ! 2) (fst rbusVersion)
         store (discovery ! 3) (snd rbusVersion)
 
-        store (requestIP ! 0) 0xfd
+        store (requestIP ! 0) actionIpAddress
 
-        store (requestInit ! 0) 0xf2
+        store (requestInit ! 0) actionInitialize
 
     addTask $ yeld "udp_rbus_discovery" $ discoveryTask rbus
     addTask $ delay 2_000 "request_init" $ requestInitTask rbus
