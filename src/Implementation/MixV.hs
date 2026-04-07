@@ -26,6 +26,7 @@ import Feature.DInputs
 import Feature.DS18B20
 import Feature.Dimmers qualified as DIM
 import Feature.Dimmers qualified as FD
+import Feature.GetInfo
 import Feature.Relays qualified as FR
 import Feature.Relays qualified as REL
 import GHC.TypeLits
@@ -44,6 +45,7 @@ data Mix ni no nd na = Mix
     , aoutputs :: AO.AOutputs na
     , shouldInit :: Value IBool
     , syncStateBuff :: Buffer (SizeSyncStateBuff ni no nd na) Uint8
+    , info :: GetInfo
     , transmit ::
         forall n.
         (KnownNat n) =>
@@ -64,6 +66,7 @@ mix ::
     , KnownNat (ToSizeInBytes ni)
     , KnownNat (ToSizeInBytes no)
     , Transport t
+    , LazyTransport t
     ) =>
     (Bool -> t -> m (DInputs ni)) ->
     (t -> m (AO.AOutputs na)) ->
@@ -81,6 +84,8 @@ mix dinputs' aoutputs' dimmers' relays' ds18b20 transport' = do
     shouldInit <- asks D.shouldInit
     syncStateBuff <- buffer "mix_sync_channels"
     ds18b20 transport
+    info <- mkGetInfo transport
+
     let mix =
             Mix
                 { dinputs
@@ -89,6 +94,7 @@ mix dinputs' aoutputs' dimmers' relays' ds18b20 transport' = do
                 , relays
                 , shouldInit
                 , syncStateBuff
+                , info
                 , transmit = transmitBuffer transport
                 }
     addTask $ delay 5_000 "sync_channels" $ syncChannels mix
@@ -106,7 +112,7 @@ instance
     ) =>
     Controller (Mix ni no nd na)
     where
-    handle mix buff size = do
+    handle mix@Mix{..} buff size = do
         action <- deref $ buff ! 0
         cond_
             [ action ==? actionDo ==> onDo mix buff size
@@ -114,6 +120,7 @@ instance
             , action ==? actionAo ==> onAo mix buff size
             , action ==? actionInitialize ==> onInit mix buff size
             , action ==? actionGetState ==> onGetState mix
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 onInit ::

@@ -18,6 +18,7 @@ import Data.Record
 import Data.Serialize
 import Data.Value
 import Endpoint.StereoAMP
+import Feature.GetInfo
 import Feature.I2SPlay
 import Feature.RTP
 import Feature.SPDIF
@@ -49,6 +50,7 @@ data Soundbox = Soundbox
     , samples :: Records 9 SampleStruct
     , amps :: Records 2 StereoAMPStruct
     , shouldInit :: Value IBool
+    , info :: GetInfo
     , transmit :: forall n s t. (KnownNat n) => Buffer n Uint8 -> Ivory (ProcEffects s t) ()
     }
 
@@ -64,6 +66,7 @@ mkSoundbox ::
     , Handler HandleI2STX (j 256)
     , I.I2C ic 2
     , Pull p d
+    , T.LazyTransport t
     ) =>
     (p -> m e) ->
     (p -> m (i 256 256)) ->
@@ -106,6 +109,8 @@ mkSoundbox enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute transport' = do
 
     amps <- records_ $ name <> "_amps"
 
+    info <- mkGetInfo transport
+
     let soundbox =
             Soundbox
                 { i2sTxCh1
@@ -119,6 +124,7 @@ mkSoundbox enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute transport' = do
                 , samples
                 , amps
                 , shouldInit
+                , info
                 , transmit = T.transmitBuffer transport
                 }
 
@@ -226,12 +232,13 @@ mix11 src amp dst = do
     store (dst ~> right) $ castDefault (dr' / 2)
 
 instance Controller Soundbox where
-    handle s buff size = do
+    handle s@Soundbox{..} buff size = do
         action <- unpack buff 0
         cond_
             [ action ==? actionRtp ==> onRtp s buff size
             , action ==? actionLanamp ==> onLanamp s buff size
             , action ==? actionInitialize ==> onInit s buff size
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 onInit Soundbox{..} buff size = do

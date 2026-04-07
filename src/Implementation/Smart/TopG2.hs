@@ -39,6 +39,7 @@ import Data.Serialize (pack)
 import Data.Type.Bool
 import Data.Type.Equality
 import Endpoint.DInputs qualified as D
+import Feature.GetInfo
 import Feature.Smart.Top.PowerTouch (PowerTouch)
 import Feature.Smart.Top.Vibro (
     Vibro,
@@ -62,6 +63,7 @@ data Top n = Top
     , vibro :: Vibro n
     , sht21 :: SHT21
     , syncStateBuff :: Buffer (SizeSyncStateBuff n) Uint8
+    , info :: GetInfo
     }
 
 topG2 ::
@@ -93,6 +95,7 @@ topG2 dinputs' vibro' touch' sht21' display' etc' transport' = do
     touch'
     frameBuffer <- values' "top_frame_buffer" 0
     syncStateBuff <- buffer "sync_channels"
+    info <- mkGetInfo transport
 
     leds <-
         mkLeds
@@ -132,6 +135,7 @@ topG2 dinputs' vibro' touch' sht21' display' etc' transport' = do
                 , buttons
                 , sht21
                 , syncStateBuff
+                , info
                 }
 
     addTask $ delay 5_000 "sync_channels" $ syncChannels top

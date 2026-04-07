@@ -40,6 +40,7 @@ import Data.Serialize
 import Data.Type.Bool
 import Data.Type.Equality
 import Endpoint.DInputs qualified as D
+import Feature.GetInfo
 import Feature.Smart.Top.PowerTouch (PowerTouch)
 import Feature.Smart.Top.Vibro (
     Vibro,
@@ -64,6 +65,7 @@ data Top n = Top
     , vibro :: Vibro n
     , sht21 :: SHT21
     , syncStateBuff :: Buffer (SizeSyncStateBuff n) Uint8
+    , info :: GetInfo
     }
 
 {- The LEDs configuration:
@@ -107,6 +109,7 @@ topA4TD dinputs' vibro' touch' sht21' display' etc' transport' = do
     platform <- I.platform meta.mcu
     display <- display' platform.peripherals
     dinputs <- dinputs' True transport
+    info <- mkGetInfo transport
 
     frameBuffer <- values' "top_frame_buffer" 0
     syncStateBuff <- buffer "sync_channels"
@@ -219,6 +222,7 @@ topA4TD dinputs' vibro' touch' sht21' display' etc' transport' = do
                 , buttons
                 , sht21
                 , syncStateBuff
+                , info
                 }
 
     addTask $ delay 5_000 "sync_channels" $ syncChannels top
@@ -254,6 +258,7 @@ instance (KnownNat n) => Controller (Top n) where
             , action ==? actionVibro ==> onVibro vibro buff size
             , action ==? actionFindMe ==> onFindMe buttons buff size
             , action ==? actionGetState ==> onGetState t
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 syncChannels ::

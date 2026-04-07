@@ -29,6 +29,7 @@ import Feature.DInputs (
  )
 import Feature.DS18B20 (DS18B20)
 import Feature.Dimmers as FDim (Dimmers, forceSync, getDimmers, n, onDim)
+import Feature.GetInfo
 import Feature.Relays as FR (
     Relays,
     forceSyncRelays,
@@ -64,6 +65,7 @@ data Mix ni no nd = forall f. (Flash f) => Mix
     , shouldInit :: Value IBool
     , saveCountdown :: Value Uint8
     , syncStateBuff :: Buffer (SizeSyncStateBuff ni no nd) Uint8
+    , info :: GetInfo
     , transmit ::
         forall n.
         (KnownNat n) =>
@@ -84,6 +86,7 @@ mix ::
     , KnownNat (SizeSyncStateBuff ni no nd)
     , KnownNat (ToSizeInBytes ni)
     , KnownNat (ToSizeInBytes no)
+    , LazyTransport t
     ) =>
     (Bool -> t -> m (DInputs ni)) ->
     (t -> m (Relays no)) ->
@@ -105,6 +108,7 @@ mix dinputs' relays' dimmers' ds18b20 etc transport' = do
     saveCountdown <- value "mix_save_save_countdown" 0
     syncStateBuff <- buffer "mix_sync_channels"
     ds18b20 transport
+    info <- mkGetInfo transport
 
     let mix =
             Mix
@@ -117,6 +121,7 @@ mix dinputs' relays' dimmers' ds18b20 etc transport' = do
                 , shouldInit
                 , saveCountdown
                 , syncStateBuff
+                , info
                 , transmit = transmitBuffer transport
                 }
 
@@ -173,6 +178,7 @@ instance
             , action ==? actionDiRelaySync .&& iNot shouldInit' ==> onRule mix buff size
             , action ==? actionInitialize ==> onInit mix buff size
             , action ==? actionGetState ==> onGetState mix
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 syncChannels ::

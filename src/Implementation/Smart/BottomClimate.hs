@@ -2,11 +2,14 @@
 
 module Implementation.Smart.BottomClimate where
 
+import Control.Monad.Reader
 import Control.Monad.State
 import Core.Actions
 import Core.Context
 import Core.Controller
+import Core.Domain qualified as D
 import Core.Task
+import Core.Transport
 import Data.Buffer
 import Data.Serialize
 import Data.Type.Bool
@@ -15,10 +18,11 @@ import Endpoint.DInputs qualified as D
 import Feature.ALED
 import Feature.DInputs
 import Feature.DS18B20
+import Feature.GetInfo
+import Feature.Sht21 (SHT21)
 import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
-import Feature.Sht21 (SHT21)
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff n = 1 + ToSizeInBytes n
@@ -27,6 +31,7 @@ data BottomClimate n = BottomClimate
     { dinputs :: DInputs n
     , aled :: ALED 10 100 2040
     , syncStateBuff :: Buffer (SizeSyncStateBuff n) Uint8
+    , info :: GetInfo
     }
 
 bottomClimate ::
@@ -34,6 +39,8 @@ bottomClimate ::
     , KnownNat n
     , Monad m
     , KnownNat (SizeSyncStateBuff n)
+    , LazyTransport t
+    , MonadReader (D.Domain p i) m
     ) =>
     ( Bool ->
       t ->
@@ -51,12 +58,14 @@ bottomClimate dinputs' ds18b20 sht21 aled' transport' = do
     dinputs <- dinputs' True transport
     aled <- aled' transport
     syncStateBuff <- buffer "sync_channels"
+    info <- mkGetInfo transport
 
     let bottom =
             BottomClimate
                 { dinputs
                 , aled
                 , syncStateBuff
+                , info
                 }
 
     addTask $ delay 5_000 "sync_channels" $ syncChannels bottom
@@ -82,6 +91,7 @@ instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (BottomClima
             , action ==? actionALedClip ==> onALedClip aled buff size
             , action ==? actionALedBrightness ==> onALedBrightness aled buff size
             , action ==? actionALedConfigGroup ==> onALedConfigGroup aled buff size
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 syncChannels ::

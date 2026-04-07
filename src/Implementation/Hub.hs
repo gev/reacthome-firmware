@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+
 module Implementation.Hub where
 
 import Control.Monad.Reader (MonadReader, asks)
@@ -33,14 +34,15 @@ import Feature.Dimmers (
     onDim,
     onDo,
  )
+import Feature.GetInfo
 import Feature.Indicator (Indicator, onFindMe)
 import Feature.RS485.RBUS (
     configureMode,
     forceSyncRBUS',
-    setMode,
-    transmitRS485,
-    transmitRBUS,
     onDMX512,
+    setMode,
+    transmitRBUS,
+    transmitRS485,
  )
 import Feature.RS485.RBUS.Data (RBUS (..))
 import GHC.TypeNats
@@ -60,6 +62,7 @@ data Hub ni nd nr = Hub
     , aled :: ALED 10 100 2400
     , shouldInit :: Value IBool
     , syncStateBuff :: Buffer (SizeSyncStateBuff ni nd) Uint8
+    , info :: GetInfo
     , transmit ::
         forall n.
         (KnownNat n) =>
@@ -76,6 +79,7 @@ hub ::
     , KnownNat (SizeSyncStateBuff ni nd)
     , KnownNat (ToSizeInBytes ni)
     , Transport t
+    , LazyTransport t
     ) =>
     (t -> m (List nr RBUS)) ->
     (t -> m (Dimmers nd)) ->
@@ -95,6 +99,7 @@ hub rbus' dimmers' dinputs' ds18b20' indicator' aled' transport' = do
     shouldInit <- asks D.shouldInit
     syncStateBuff <- buffer "hub_sync_channels"
     ds18b20' transport
+    info <- mkGetInfo transport
 
     let hub =
             Hub
@@ -105,6 +110,7 @@ hub rbus' dimmers' dinputs' ds18b20' indicator' aled' transport' = do
                 , shouldInit
                 , aled
                 , syncStateBuff
+                , info
                 , transmit = transmitBuffer transport
                 }
 
@@ -133,6 +139,7 @@ instance (KnownNat ni, KnownNat nd, KnownNat nr, KnownNat (SizeSyncStateBuff ni 
             , action ==? actionALedClip ==> onALedClip aled buff size
             , action ==? actionALedBrightness ==> onALedBrightness aled buff size
             , action ==? actionALedConfigGroup ==> onALedConfigGroup aled buff size
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 onInit ::

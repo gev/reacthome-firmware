@@ -30,6 +30,7 @@ import Feature.DInputs (
     manageDInputs,
     syncDInputs,
  )
+import Feature.GetInfo
 import Feature.Mix.Indicator (
     Indicator,
     onFindMe,
@@ -68,6 +69,7 @@ data Mix ni no = forall f. (Flash f) => Mix
     , shouldSaveConfig :: Value IBool
     , saveCountdown :: Value Uint8
     , syncStateBuff :: Buffer (SizeSyncStateBuff ni no) Uint8
+    , info :: GetInfo
     , transmit ::
         forall n.
         (KnownNat n) =>
@@ -86,6 +88,7 @@ mix ::
     , KnownNat (PayloadSize no)
     , KnownNat (SizeSyncStateBuff ni no)
     , KnownNat (ToSizeInBytes ni)
+    , LazyTransport t
     ) =>
     (Bool -> t -> m (DInputs ni)) ->
     (t -> m (Relays no)) ->
@@ -111,6 +114,7 @@ mix dinputs' relays' indicator' etc transport' = do
     shouldSaveConfig <- value "mix_should_save_config" false
     saveCountdown <- value "mix_save_save_countdown" 0
     syncStateBuff <- buffer "mix_sync_channels"
+    info <- mkGetInfo transport
 
     let mix =
             Mix
@@ -124,6 +128,7 @@ mix dinputs' relays' indicator' etc transport' = do
                 , shouldSaveConfig
                 , saveCountdown
                 , syncStateBuff
+                , info
                 , transmit = T.transmitBuffer transport
                 }
 
@@ -174,6 +179,7 @@ instance (KnownNat ni, KnownNat no, KnownNat (PayloadSize no), KnownNat (SizeSyn
             , action ==? actionGetState ==> onGetState mix
             , action ==? actionFindMe ==> onFindMe indicator buff size
             , action ==? actionError ==> resetError ats
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 syncChannels ::
