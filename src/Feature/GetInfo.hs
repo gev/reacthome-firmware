@@ -28,7 +28,7 @@ mkGetInfo transport = do
 
     pure GetInfo{transport, info}
 
-getInfo :: GetInfo -> Ivory (ProcEffects s t) ()
-getInfo GetInfo{..} = do
+onGetInfo :: GetInfo -> Ivory (ProcEffects s t) ()
+onGetInfo GetInfo{..} = do
     let length' = fromIntegral $ length info
     lazyTransmit transport length' (`mapM_` info)
