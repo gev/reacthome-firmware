@@ -138,6 +138,7 @@ executable reacthome-firmware
     Feature.Dimmers.AC
     Feature.Dimmers.DC
     Feature.Dopplers
+    Feature.GetInfo
     Feature.I2SPlay
     Feature.Indicator
     Feature.LeakLEDs

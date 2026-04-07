@@ -64,4 +64,5 @@ actionFindMe = 0xFA :: Uint8
 actionBootload = 0xFB :: Uint8
 actionMacAddress = 0xFC :: Uint8
 actionIpAddress = 0xFD :: Uint8
+actionGetInfo = 0xFE :: Uint8
 actionError = 0xFF :: Uint8
