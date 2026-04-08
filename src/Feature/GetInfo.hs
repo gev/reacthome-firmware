@@ -7,6 +7,7 @@ import Core.Transport
 import Data.Char
 import Interface.MCU
 import Ivory.Language
+import Core.Actions
 
 data GetInfo = forall t. (LazyTransport t) => GetInfo
     { transport :: t
@@ -24,7 +25,7 @@ mkGetInfo transport = do
     let major = fst meta.version
         minor = snd meta.version
         nameMcu = toEnum . ord . toLower <$> (meta.mcu.model <> meta.mcu.modification)
-        info = fromIntegral <$> (meta.model : meta.board : major : minor : nameMcu)
+        info = actionGetInfo : (fromIntegral <$> ( meta.model : meta.board : major : minor : nameMcu))
 
     pure GetInfo{transport, info}
 
