@@ -23,11 +23,10 @@ mkGetInfo ::
     t -> m GetInfo
 mkGetInfo transport = do
     meta <- asks D.meta
-    let typeDevice = fromIntegral <$> unPack16BE (fromIntegral meta.model) :: [Uint8]
-        major = fst meta.version
-        minor = snd meta.version
+    let typeDevice = unPack16BE meta.model
+        (major, minor) = meta.version
         nameMcu = toEnum . ord . toLower <$> (meta.mcu.model <> meta.mcu.modification)
-        info = actionGetInfo : typeDevice <> (fromIntegral <$> (meta.board : major : minor : nameMcu))
+        info = actionGetInfo : (fromIntegral <$> (typeDevice <> [meta.board, major, minor] <> nameMcu))
 
     pure GetInfo{transport, info}
 

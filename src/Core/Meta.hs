@@ -1,14 +1,15 @@
 module Core.Meta where
 
 import Data.List
+import Data.Word
 import Interface.MCU
 import Ivory.Language
 
 data Meta p = Meta
     { name :: String
-    , model :: Int
-    , version :: (Int, Int)
-    , board :: Int
+    , model :: Word16
+    , version :: (Word8, Word8)
+    , board :: Word8
     , shouldInit :: IBool
     , mcu :: MCU p
     , quartzFrequency :: Int
