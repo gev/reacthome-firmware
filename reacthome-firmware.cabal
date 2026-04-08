@@ -51,6 +51,7 @@ executable reacthome-firmware
     Data.Record
     Data.Semaphore
     Data.Serialize
+    Data.Util
     Data.Value
     Device.GD32F3x0
     Device.GD32F3x0.ADC

@@ -19,6 +19,7 @@ import Interface.MCU
 import Ivory.Language
 import Support.CMSIS.CoreCMFunc
 import System.Directory
+import Data.Util (unPack16BE)
 
 mkDFU ::
     (Compiler c p, Shake c) =>
@@ -64,7 +65,7 @@ mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
     header =
         L.toStrict . B.toLazyText $
             B.singleton '#'
-                <> hexadecimal meta.model
+                <> mconcat (hexadecimal . fromIntegral <$> (unPack16BE . fromIntegral $ meta.model))
                 <> hexadecimal meta.board
                 <> hexadecimal (fst meta.version)
                 <> hexadecimal (snd meta.version)

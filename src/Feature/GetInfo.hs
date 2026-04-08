@@ -1,13 +1,16 @@
 module Feature.GetInfo where
 
 import Control.Monad.Reader
+import Core.Actions
 import Core.Domain qualified as D
 import Core.Meta
 import Core.Transport
+import Data.Bits
 import Data.Char
+import Data.Word
 import Interface.MCU
 import Ivory.Language
-import Core.Actions
+import Data.Util
 
 data GetInfo = forall t. (LazyTransport t) => GetInfo
     { transport :: t
@@ -22,10 +25,11 @@ mkGetInfo ::
     t -> m GetInfo
 mkGetInfo transport = do
     meta <- asks D.meta
-    let major = fst meta.version
+    let typeDevice = fromIntegral <$> unPack16BE (fromIntegral meta.model) :: [Uint8]
+        major = fst meta.version
         minor = snd meta.version
         nameMcu = toEnum . ord . toLower <$> (meta.mcu.model <> meta.mcu.modification)
-        info = actionGetInfo : (fromIntegral <$> ( meta.model : meta.board : major : minor : nameMcu))
+        info = actionGetInfo : typeDevice <> (fromIntegral <$> ( meta.board : major : minor : nameMcu))
 
     pure GetInfo{transport, info}
 
