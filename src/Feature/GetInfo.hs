@@ -5,9 +5,7 @@ import Core.Actions
 import Core.Domain qualified as D
 import Core.Meta
 import Core.Transport
-import Data.Bits
 import Data.Char
-import Data.Word
 import Interface.MCU
 import Ivory.Language
 import Data.Util
