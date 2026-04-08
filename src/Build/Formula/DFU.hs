@@ -65,7 +65,7 @@ mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
     header =
         L.toStrict . B.toLazyText $
             B.singleton '#'
-                <> mconcat (hexadecimal . fromIntegral <$> unPack16BE meta.model)
+                <> mconcat (hexadecimal <$> unPack16BE meta.model)
                 <> hexadecimal meta.board
                 <> hexadecimal (fst meta.version)
                 <> hexadecimal (snd meta.version)
