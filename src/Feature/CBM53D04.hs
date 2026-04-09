@@ -4,6 +4,7 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Domain qualified as D
+import Core.Meta
 import Core.Task
 import Core.Transport qualified as T
 import Data.Buffer
@@ -13,6 +14,7 @@ import Data.Value hiding (value)
 import Endpoint.AOutputs qualified as E
 import GHC.TypeNats
 import Interface.MCU
+import Interface.MCU qualified as I
 import Interface.SPI qualified as I
 import Ivory.Language
 import Ivory.Stdlib
@@ -49,9 +51,10 @@ cbm53d04 ::
     t ->
     m CBM53D04
 cbm53d04 spi' order' transport = do
-    mcu <- asks D.mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     shouldInit <- asks D.shouldInit
-    spi <- spi' $ peripherals mcu
+    spi <- spi' platform.peripherals
     order <- values "ao_orders" order'
     getAOutputs <- E.mkAOutputs "cbm53d04_aoutputs"
     currentSync <- index "current_analog_sync"
@@ -134,7 +137,6 @@ onAo CBM53D04{..} buff size = do
             when (index >=? 1 .&& index <=? n) do
                 let index' = index - 1
                 onSet getAOutputs index' buff size
-
 
 onSet ::
     (KnownNat n, KnownNat l) =>

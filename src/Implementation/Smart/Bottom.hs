@@ -2,11 +2,14 @@
 
 module Implementation.Smart.Bottom where
 
+import Control.Monad.Reader
 import Control.Monad.State
 import Core.Actions
 import Core.Context
 import Core.Controller
+import Core.Domain qualified as D
 import Core.Task
+import Core.Transport
 import Data.Buffer
 import Data.Serialize
 import Data.Type.Bool
@@ -15,6 +18,7 @@ import Endpoint.DInputs qualified as D
 import Feature.ALED
 import Feature.DInputs
 import Feature.DS18B20
+import Feature.GetInfo
 import Feature.Scd40 hiding (transmit)
 import Feature.Smart.Top
 import GHC.TypeNats
@@ -29,6 +33,7 @@ data Bottom n = Bottom
     , dinputs :: DInputs n
     , aled :: ALED 10 100 2040
     , syncStateBuff :: Buffer (SizeSyncStateBuff n) Uint8
+    , info :: GetInfo
     }
 
 bottom ::
@@ -36,6 +41,8 @@ bottom ::
     , KnownNat n
     , Monad m
     , KnownNat (SizeSyncStateBuff n)
+    , LazyTransport t
+    , MonadReader (D.Domain p i) m
     ) =>
     (t -> m Top) ->
     (Bool -> t -> m (DInputs n)) ->
@@ -50,6 +57,7 @@ bottom top' dinputs' ds18b20 aled' transport' = do
     top <- top' transport
     aled <- aled' transport
     syncStateBuff <- buffer "sync_channels"
+    info <- mkGetInfo transport
 
     let bottom =
             Bottom
@@ -57,6 +65,7 @@ bottom top' dinputs' ds18b20 aled' transport' = do
                 , dinputs
                 , aled
                 , syncStateBuff
+                , info
                 }
 
     addTask $ delay 5_000 "sync_channels" $ syncChannels bottom
@@ -68,6 +77,8 @@ bottomCO2 ::
     , KnownNat n
     , Monad m
     , KnownNat (SizeSyncStateBuff n)
+    , LazyTransport t
+    , MonadReader (D.Domain p i) m
     ) =>
     (t -> m Top) ->
     ( Bool ->
@@ -110,6 +121,7 @@ instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (Bottom n) w
             , action ==? actionALedClip ==> onALedClip aled buff size
             , action ==? actionALedBrightness ==> onALedBrightness aled buff size
             , action ==? actionALedConfigGroup ==> onALedConfigGroup aled buff size
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 syncChannels ::

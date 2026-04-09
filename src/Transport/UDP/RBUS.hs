@@ -8,22 +8,24 @@ import Core.Context
 import Core.Controller
 import Core.Dispatcher
 import Core.Domain qualified as D
+import Core.Meta
 import Core.Task
 import Core.Transport
-import Core.Version
 import Data.Buffer
 import Data.Record
 import Data.Value
 import Interface.ENET
 import Interface.LwipPort
-import Interface.MCU as I
+import Interface.MCU
 import Ivory.Language
 import Ivory.Stdlib
+import Protocol.RBUS (rbusDummy, rbusVersion)
 import Support.Lwip.IP_addr
 import Support.Lwip.Udp
 import Transport.UDP.RBUS.Data
 import Transport.UDP.RBUS.Rx
 import Transport.UDP.RBUS.Tx
+import Core.Actions
 
 rbus ::
     ( MonadState Context m
@@ -35,11 +37,9 @@ rbus ::
     (p -> m e) ->
     m RBUS
 rbus enet = do
-    mcu <- asks D.mcu
-    model <- asks D.model
-    version <- asks D.version
+    meta <- asks D.meta
+    platform <- platform meta.mcu
     shouldInit <- asks D.shouldInit
-    let mac = I.mac mcu
     implementation <- asks D.implementation
     upcb <- value_ "udp_rbus_upcb"
     netif <- mkNetif enet
@@ -63,7 +63,7 @@ rbus enet = do
 
     let rbus =
             RBUS
-                { mac
+                { mac = platform.mac
                 , netif
                 , upcb
                 , serverIP
@@ -90,14 +90,14 @@ rbus enet = do
         createIpAddr4 serverIP 255 255 255 255
         createIpAddr4 broadcastIP 255 255 255 255
 
-        store (discovery ! 0) 0xf0
-        store (discovery ! 1) =<< deref model
-        store (discovery ! 2) =<< deref (version ~> major)
-        store (discovery ! 3) =<< deref (version ~> minor)
+        store (discovery ! 0) actionDiscovery
+        store (discovery ! 1) rbusDummy
+        store (discovery ! 2) (fst rbusVersion)
+        store (discovery ! 3) (snd rbusVersion)
 
-        store (requestIP ! 0) 0xfd
+        store (requestIP ! 0) actionIpAddress
 
-        store (requestInit ! 0) 0xf2
+        store (requestInit ! 0) actionInitialize
 
     addTask $ yeld "udp_rbus_discovery" $ discoveryTask rbus
     addTask $ delay 2_000 "request_init" $ requestInitTask rbus

@@ -10,6 +10,7 @@ import Control.Monad.State
 import Core.Context
 import Core.Domain as D
 import Core.Handler
+import Core.Meta
 import GHC.TypeNats
 import Interface.GPIO.Output
 import Interface.GPIO.Port
@@ -46,10 +47,10 @@ rs485 ::
     (p -> d -> m o) ->
     m (RS485 rn tn)
 rs485 uart' rede' = do
-    mcu' <- asks D.mcu
-    let peripherals' = peripherals mcu'
-    uart <- uart' peripherals'
-    rede <- rede' peripherals' (pullNone peripherals')
+    meta <- asks D.meta
+    platform <- platform meta.mcu
+    uart <- uart' platform.peripherals
+    rede <- rede' platform.peripherals (pullNone platform.peripherals)
 
     addInit ("rs485_" <> show uart) $ reset rede
 

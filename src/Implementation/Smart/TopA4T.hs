@@ -33,6 +33,7 @@ import Feature.Smart.Top.LEDs (
     updateLeds,
  )
 
+import Core.Meta
 import Core.Task
 import Data.Buffer
 import Data.Matrix
@@ -40,6 +41,7 @@ import Data.Serialize
 import Data.Type.Bool
 import Data.Type.Equality
 import Endpoint.DInputs qualified as D
+import Feature.GetInfo
 import Feature.Smart.Top.PowerTouch (PowerTouch)
 import Feature.Smart.Top.Vibro (
     Vibro,
@@ -50,6 +52,7 @@ import GHC.TypeNats
 import Interface.Display (Display, Render (Render))
 import Interface.Flash
 import Interface.MCU (peripherals)
+import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 
@@ -63,6 +66,7 @@ data Top n = Top
     , vibro :: Vibro n
     , sht21 :: SHT21
     , syncStateBuff :: Buffer (SizeSyncStateBuff n) Uint8
+    , info :: GetInfo
     }
 
 topA4T ::
@@ -85,14 +89,16 @@ topA4T ::
     m (Top n)
 topA4T dinputs' vibro' touch' sht21' display' etc' transport' = do
     transport <- transport'
-    mcu <- asks D.mcu
-    display <- display' $ peripherals mcu
-    let etc = etc' $ peripherals mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    display <- display' platform.peripherals
+    let etc = etc' platform.peripherals
     dinputs <- dinputs' True transport
     vibro <- vibro' (DI.getDInputs dinputs) transport etc
     touch'
     frameBuffer <- values' "top_frame_buffer" 0
     syncStateBuff <- buffer "sync_channels"
+    info <- mkGetInfo transport
 
     leds <-
         mkLeds
@@ -134,6 +140,7 @@ topA4T dinputs' vibro' touch' sht21' display' etc' transport' = do
                 , buttons
                 , sht21
                 , syncStateBuff
+                , info
                 }
 
     addTask $ delay 5_000 "sync_channels" $ syncChannels top
@@ -169,6 +176,7 @@ instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (Top n) wher
             , action ==? actionVibro ==> onVibro vibro buff size
             , action ==? actionFindMe ==> onFindMe buttons buff size
             , action ==? actionGetState ==> onGetState t
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 syncChannels ::

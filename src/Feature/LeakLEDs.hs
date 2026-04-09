@@ -5,6 +5,7 @@ import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Domain qualified as D
 import Core.Handler
+import Core.Meta
 import Data.Color
 import Data.Display.Canvas1D hiding (canvas)
 import Data.Record
@@ -12,6 +13,7 @@ import Data.Value
 import GHC.TypeLits (KnownNat)
 import Interface.Display hiding (display, render)
 import Interface.MCU
+import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 
@@ -34,8 +36,9 @@ mkLeakLEDs ::
     ) =>
     (p -> m d) -> m (LeakLEDs n)
 mkLeakLEDs display' = do
-    mcu <- asks D.mcu
-    display <- display' $ peripherals mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    display <- display' platform.peripherals
     frameBuffer <- values' "leak_leds_frame_buffer" 0
     let canvas = mkCanvas1D frameBuffer
     pixels <- records_ "leak_leds_pixels"

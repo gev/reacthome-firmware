@@ -5,6 +5,7 @@ import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
 import Core.Domain qualified as D
+import Core.Meta
 import Core.Task
 import Core.Transport
 import Data.Buffer
@@ -13,6 +14,7 @@ import GHC.TypeNats
 import Interface.GPIO.Input
 import Interface.GPIO.Port
 import Interface.MCU
+import Interface.MCU qualified as I
 import Interface.UART qualified as I
 import Ivory.Language
 import Ivory.Stdlib
@@ -42,10 +44,10 @@ top ::
     t ->
     m Top
 top uart' pin' transportUp = do
-    mcu <- asks D.mcu
-    let peripherals' = peripherals mcu
-    uart <- uart' peripherals'
-    pin <- pin' peripherals' $ pullDown peripherals'
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    uart <- uart' platform.peripherals
+    pin <- pin' platform.peripherals $ pullDown platform.peripherals
 
     isDetected <- value "top_is_detected" false
 

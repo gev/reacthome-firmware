@@ -2,11 +2,14 @@
 
 module Implementation.Doppler where
 
+import Control.Monad.Reader
 import Control.Monad.State
 import Core.Actions
 import Core.Context
 import Core.Controller
+import Core.Domain qualified as D
 import Core.Task
+import Core.Transport
 import Data.Buffer
 import Data.Serialize
 import Data.Type.Bool
@@ -15,6 +18,7 @@ import Endpoint.DInputs qualified as D
 import Feature.ALED
 import Feature.DInputs
 import Feature.Dopplers
+import Feature.GetInfo
 import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
@@ -27,6 +31,7 @@ data Doppler nd ni = Doppler
     , dinputs :: DInputs ni
     , aled :: ALED 10 100 2400
     , syncStateBuff :: Buffer (SizeSyncStateBuff ni) Uint8
+    , info :: GetInfo
     }
 
 doppler ::
@@ -35,6 +40,8 @@ doppler ::
     , KnownNat ni
     , MonadState Context m
     , KnownNat (SizeSyncStateBuff ni)
+    , LazyTransport t
+    , MonadReader (D.Domain p i) m
     ) =>
     (t -> m (Dopplers nd)) ->
     (Bool -> t -> m (DInputs ni)) ->
@@ -47,8 +54,9 @@ doppler dopplers' dinputs' aled' transport' = do
     dinputs <- dinputs' True transport
     aled <- aled' transport
     syncStateBuff <- buffer "sync_channels"
+    info <- mkGetInfo transport
 
-    let doppler = Doppler{dopplers, dinputs, aled, syncStateBuff}
+    let doppler = Doppler{dopplers, dinputs, aled, syncStateBuff, info}
 
     addTask $ delay 5_000 "sync_channels" $ syncChannels doppler
 
@@ -79,6 +87,7 @@ instance
             , action ==? actionALedClip ==> onALedClip aled buff size
             , action ==? actionALedBrightness ==> onALedBrightness aled buff size
             , action ==? actionALedConfigGroup ==> onALedConfigGroup aled buff size
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 syncChannels ::

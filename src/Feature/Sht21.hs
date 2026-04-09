@@ -6,6 +6,7 @@ import Core.Actions
 import Core.Context
 import Core.Domain qualified as D
 import Core.Handler
+import Core.Meta
 import Core.Task
 import Core.Transport
 import Data.Buffer
@@ -13,6 +14,7 @@ import Data.Serialize
 import Data.Value
 import Interface.I2C qualified as I
 import Interface.MCU
+import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 
@@ -38,8 +40,9 @@ sht21 ::
     t ->
     m SHT21
 sht21 i2c' transport = do
-    mcu <- asks D.mcu
-    i2c <- i2c' $ peripherals mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    i2c <- i2c' platform.peripherals
     resetCmd <- values "reset_cmd" [0xfe]
     measureTemperatureCmd <- values "measure_temperature_cmd" [0xf3]
     measureHumidityCmd <- values "measure_humidity_cmd" [0xf5]

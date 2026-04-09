@@ -6,6 +6,7 @@ import Core.Actions
 import Core.Context
 import Core.Domain (Domain)
 import Core.Domain qualified as D
+import Core.Meta
 import Core.Transport qualified as T
 import Data.Buffer
 import Data.Record
@@ -14,6 +15,7 @@ import Endpoint.DInputs qualified as DI
 import Endpoint.Relays qualified as R
 import GHC.TypeNats
 import Interface.MCU
+import Interface.MCU qualified as I
 import Interface.SystemClock (SystemClock, getSystemTime)
 import Ivory.Language
 import Ivory.Stdlib
@@ -50,8 +52,8 @@ data ATS = ATS
 
 mkATS :: (MonadState Context m, MonadReader (Domain p i) m, T.Transport t) => t -> m ATS
 mkATS transport = do
-    mcu <- asks D.mcu
-    let clock = systemClock mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     mode <- value "ats_mode" modeNone
     error <- values "ats_error" [errorNone, errorNone, errorNone, errorNone]
     source <- value "ats_source" srcNone
@@ -67,7 +69,7 @@ mkATS transport = do
             , source
             , attempt
             , timestamp
-            , clock
+            , clock = systemClock platform
             , reset
             , payload
             , synced

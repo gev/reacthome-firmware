@@ -7,6 +7,7 @@ import Core.Controller
 import Core.Dispatcher
 import Core.Domain qualified as D
 import Core.Handler
+import Core.Meta
 import Core.Task
 import Core.Transport
 import Data.Buffer
@@ -21,27 +22,25 @@ import Protocol.RS485.RBUS.Slave (slave)
 import Transport.RS485.RBUS.Data
 import Transport.RS485.RBUS.Rx
 import Transport.RS485.RBUS.Tx
+import Core.Actions
 
 rbus ::
     (MonadState Context m, MonadReader (D.Domain p c) m, Controller c) =>
     m (RS485 256 300) ->
     m RBUS
 rbus rs485 = do
-    model <- asks D.model
-    version <- asks D.version
-    mcu <- asks D.mcu
-    mustInit <- asks D.mustInit
+    meta <- asks D.meta
+    platform <- platform meta.mcu
     shouldInit <- asks D.shouldInit
     implementation <- asks D.implementation
 
     let name = "transport_rs485_rbus"
-    let clock = systemClock mcu
 
     rs <- rs485
     msgQueue <- queue (name <> "_msg") =<< messages name
     msgBuff <- buffer (name <> "_msg")
     msgIndex <- value (name <> "_msg_index") 0
-    initBuff <- values (name <> "_init_request") [0xf2]
+    initBuff <- values (name <> "_init_request") [actionInitialize]
     rxLock <- value (name <> "_rx_lock") false
     txLock <- value (name <> "_tx_lock") false
     rxTimestamp <- value (name <> "_timestamp_rx") 0
@@ -68,7 +67,7 @@ rbus rs485 = do
     -}
     let onDiscovery = do
             store shouldConfirm false
-            store shouldInit mustInit
+            store shouldInit meta.shouldInit
             mapM_ call_ syncs
 
     let onConfirm = do
@@ -82,9 +81,7 @@ rbus rs485 = do
     protocol <-
         slave
             name
-            (mac mcu)
-            model
-            version
+            platform.mac
             onMessage
             onConfirm
             onDiscovery
@@ -92,7 +89,7 @@ rbus rs485 = do
 
     let rbus =
             RBUS
-                { clock
+                { clock = platform.systemClock
                 , rs
                 , protocol
                 , msgQueue

@@ -7,6 +7,7 @@ import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
 import Core.Domain qualified as D
+import Core.Meta
 import Core.Task
 import Core.Transport qualified as T
 import Data.Buffer
@@ -17,13 +18,13 @@ import Data.Serialize
 import Data.Value
 import Endpoint.DInputs qualified as DI
 import GHC.TypeNats
-import Interface.MCU (peripherals)
+import Interface.MCU qualified as I
 import Interface.Touch
 import Interface.Touch qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 
-type LogBuffSize n = n * 2 + 2 
+type LogBuffSize n = n * 2 + 2
 
 data Touches n = forall to. (I.Touch to) => Touches
     { getTouches :: List n to
@@ -45,19 +46,21 @@ touches ::
     , MonadReader (D.Domain p c) m
     , T.Transport tr
     , I.Touch to
-    , KnownNat n, KnownNat (LogBuffSize n)
+    , KnownNat n
+    , KnownNat (LogBuffSize n)
     ) =>
     I.Material ->
     List n (p -> I.Material -> m to) ->
     tr ->
     m (Touches n)
 touches threshold touches' transport = do
-    mcu <- asks D.mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     ts <-
         mapM
             ( \touch ->
                 touch
-                    (peripherals mcu)
+                    platform.peripherals
                     threshold
             )
             touches'

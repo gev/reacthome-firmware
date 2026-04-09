@@ -1,14 +1,18 @@
 module Implementation.AO4 where
 
+import Control.Monad.Reader
 import Control.Monad.State
 import Core.Actions
 import Core.Context
 import Core.Controller
+import Core.Domain qualified as D
 import Core.Task
+import Core.Transport
 import Data.Buffer
 import Data.Serialize
 import Endpoint.AOutputs qualified as A
 import Feature.CBM53D04
+import Feature.GetInfo
 import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
@@ -19,12 +23,15 @@ type SizeSyncStateBuff n = 1 + n
 data AO4 = AO4
     { aoutput4 :: CBM53D04
     , syncStateBuff :: Buffer (SizeSyncStateBuff AONumber) Uint8
+    , info :: GetInfo
     }
 
 ao4 ::
     ( Monad m
     , KnownNat (SizeSyncStateBuff AONumber)
     , MonadState Context m
+    , LazyTransport t
+    , MonadReader (D.Domain p i) m
     ) =>
     (t -> m CBM53D04) -> m t -> m AO4
 ao4 sbm53d04' transport' = do
@@ -32,7 +39,9 @@ ao4 sbm53d04' transport' = do
     aoutput4 <- sbm53d04' transport
     syncStateBuff <- buffer "sync_channels"
 
-    let ao4 = AO4 {aoutput4, syncStateBuff}
+    info <- mkGetInfo transport
+
+    let ao4 = AO4{aoutput4, syncStateBuff, info}
 
     addTask $ delay 5_000 "sync_channels" $ syncChannels ao4
 
@@ -45,6 +54,7 @@ instance Controller AO4 where
             [ action ==? actionAo ==> onAo aoutput4 buff size
             , action ==? actionInitialize ==> onInit aoutput4 buff size
             , action ==? actionGetState ==> forceSync aoutput4
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 syncChannels ::

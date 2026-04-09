@@ -5,6 +5,7 @@ import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Domain as D
 import Core.Handler
+import Core.Meta
 import Core.Transport qualified as T
 import Data.Buffer
 import Data.Color
@@ -15,6 +16,7 @@ import Data.Value
 import GHC.TypeNats
 import Interface.Display (Display, Render (Render))
 import Interface.MCU
+import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 
@@ -54,8 +56,9 @@ indicator ::
     t ->
     m (Indicator n)
 indicator mkDisplay hue transport = do
-    mcu <- asks D.mcu
-    display <- mkDisplay $ peripherals mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    display <- mkDisplay platform.peripherals
     frameBuffer <- values' "indicator_frame_buffer" 0
     let canvas = mkCanvas1D frameBuffer
     t <- value "indicator_t" 0

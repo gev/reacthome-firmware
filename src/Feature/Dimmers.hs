@@ -4,6 +4,7 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Domain qualified as D
+import Core.Meta
 import Core.Task
 import Core.Transport qualified as T
 import Data.Buffer
@@ -14,6 +15,7 @@ import Data.Value
 import Endpoint.Dimmers qualified as D
 import GHC.TypeNats
 import Interface.MCU
+import Interface.MCU qualified as I
 import Interface.PWM qualified as I
 import Ivory.Language
 import Ivory.Stdlib
@@ -44,9 +46,10 @@ mkDimmers ::
     t ->
     m (Dimmers n)
 mkDimmers pwms period transport = do
-    mcu <- asks D.mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     shouldInit <- asks D.shouldInit
-    os <- mapM (\pwm -> pwm (peripherals mcu) 1_000_000 period) pwms
+    os <- mapM (\pwm -> pwm platform.peripherals 1_000_000 period) pwms
     let n = length os
     getDimmers <- D.mkDimmers "dimmers"
     current <- index "current_dimmer"

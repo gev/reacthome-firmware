@@ -2,11 +2,14 @@
 
 module Implementation.DILA where
 
+import Control.Monad.Reader
 import Control.Monad.State
 import Core.Actions
 import Core.Context
 import Core.Controller
+import Core.Domain qualified as D
 import Core.Task
+import Core.Transport
 import Data.Buffer
 import Data.Serialize
 import Data.Type.Bool
@@ -15,6 +18,7 @@ import Endpoint.DInputs qualified as D
 import Feature.ALED
 import Feature.DInputs (DInputs (transmit), forceSyncDInputs, getDInputs)
 import Feature.DS18B20
+import Feature.GetInfo
 import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
@@ -26,6 +30,7 @@ data DILA n = DILA
     { dinputs :: DInputs n
     , aled :: ALED 10 100 2040
     , syncStateBuff :: Buffer (SizeSyncStateBuff n) Uint8
+    , info :: GetInfo
     }
 
 dila ::
@@ -33,6 +38,8 @@ dila ::
     , KnownNat n
     , MonadState Context m
     , KnownNat (SizeSyncStateBuff n)
+    , LazyTransport t
+    , MonadReader (D.Domain p i) m
     ) =>
     (Bool -> t -> m (DInputs n)) ->
     (t -> m DS18B20) ->
@@ -45,8 +52,9 @@ dila dinputs' ds18b20 aled' transport' = do
     dinputs <- dinputs' True transport
     aled <- aled' transport
     syncStateBuff <- buffer "sync_channels"
+    info <- mkGetInfo transport
 
-    let dila = DILA{dinputs, aled, syncStateBuff}
+    let dila = DILA{dinputs, aled, syncStateBuff, info}
 
     addTask $ delay 5_000 "sync_channels" $ syncChannels dila
 
@@ -71,6 +79,7 @@ instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (DILA n) whe
             , action ==? actionALedClip ==> onALedClip aled buff size
             , action ==? actionALedBrightness ==> onALedBrightness aled buff size
             , action ==? actionALedConfigGroup ==> onALedConfigGroup aled buff size
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 syncChannels ::

@@ -9,6 +9,7 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Domain qualified as D
+import Core.Meta
 import Core.Task
 import Core.Transport qualified as T
 import Data.Buffer
@@ -18,6 +19,7 @@ import Data.Value
 import GHC.TypeNats
 import Interface.GPIO.OpenDrain (OpenDrain)
 import Interface.MCU (peripherals)
+import Interface.MCU qualified as I
 import Interface.OneWire
 import Ivory.Language
 import Ivory.Stdlib
@@ -49,7 +51,8 @@ ds18b20 ::
     m DS18B20
 ds18b20 ow od transport = do
     let name = "ds18b20"
-    mcu <- asks $ peripherals . D.mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     rxB <- buffer (name <> "_rx_buffer")
     txB <- values (name <> "_tx_buffer") [0xc6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     dsErrB <- values (name <> "_ds_error_buffer") [0xc6, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -59,7 +62,7 @@ ds18b20 ow od transport = do
     shouldRead <- value (name <> "_should_read") false
     idList <- matrix_ (name <> "_id_list")
 
-    onewire <- ow mcu $ od mcu
+    onewire <- ow platform.peripherals $ od platform.peripherals
 
     let ds =
             DS18B20
@@ -138,9 +141,10 @@ onData DS18B20{..} i index v = do
                 packLE txB 9 t
                 transmit txB
             do
-                pure()
-                -- arrayCopy dsErrB id 1 8
-                -- transmit dsErrB
+                pure ()
+
+-- arrayCopy dsErrB id 1 8
+-- transmit dsErrB
 
 {-
   TODO:  Need send errors for ds18b20?

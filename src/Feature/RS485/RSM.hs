@@ -8,6 +8,7 @@ import Core.Actions
 import Core.Context
 import Core.Domain qualified as D
 import Core.Handler
+import Core.Meta
 import Core.Task
 import Core.Transport as T
 import Data.Buffer
@@ -19,6 +20,7 @@ import Feature.RS485.RSM.Rx
 import Feature.RS485.RSM.Tx
 import GHC.TypeNats
 import Interface.MCU
+import Interface.MCU qualified as I
 import Interface.RS485 qualified as I
 import Interface.RS485 qualified as RS
 import Ivory.Language
@@ -46,11 +48,11 @@ rsm' ::
     Int ->
     m RSM
 rsm' transport rs485 index = do
-    mcu <- asks D.mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     shouldInit <- asks D.shouldInit
 
     let name = "feature_rs485_rsm_" <> show index
-    let clock = systemClock mcu
 
     rs <- rs485
     baudrate <- value (name <> "_baudrate") 9600
@@ -67,7 +69,7 @@ rsm' transport rs485 index = do
     let rsm =
             RSM
                 { index
-                , clock
+                , clock = platform.systemClock
                 , rs
                 , baudrate
                 , lineControl

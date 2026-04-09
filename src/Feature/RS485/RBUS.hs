@@ -10,6 +10,7 @@ import Core.Actions
 import Core.Context
 import Core.Domain qualified as D
 import Core.Handler
+import Core.Meta
 import Core.Task
 import Core.Transport as T
 import Core.Version
@@ -24,6 +25,7 @@ import Feature.RS485.RBUS.Rx
 import Feature.RS485.RBUS.Tx
 import GHC.TypeNats
 import Interface.MCU
+import Interface.MCU qualified as I
 import Interface.RS485 qualified as I
 import Interface.RS485 qualified as RS
 import Ivory.Language
@@ -33,8 +35,8 @@ import Protocol.RS485.RBUS.Master as P
 import Protocol.RS485.RBUS.Master.MacTable as T
 import Protocol.RS485.RBUS.Master.Rx
 import Support.CMSIS.CoreCM4 (nop)
-import Support.Cast (castFloatToUint16)
 import Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
+import Support.Cast (castFloatToUint16)
 
 rbus ::
     ( MonadState Context m
@@ -58,11 +60,11 @@ rbus' ::
     Int ->
     m RBUS
 rbus' transport rs485 index = do
-    mcu <- asks D.mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     shouldInit <- asks D.shouldInit
 
     let name = "feature_rs485_rbus_" <> show index
-    let clock = systemClock mcu
 
     rs <- rs485
     dmx512 <- ED.mkDMX512 (name <> "_dmx512") index
@@ -113,12 +115,12 @@ rbus' transport rs485 index = do
 
     let onPing mac address model version = do
             T.lazyTransmit transport 13 \transmit -> do
-                transmit 0xa1
+                transmit actionRbusTransmit
                 arrayMap \ix ->
                     transmit =<< deref (mac ! ix)
                 transmit $ fromIntegral index
                 transmit address
-                transmit 0xf0
+                transmit actionDiscovery
                 transmit =<< deref model
                 transmit =<< deref (version ~> major)
                 transmit =<< deref (version ~> minor)
@@ -135,7 +137,7 @@ rbus' transport rs485 index = do
     let rbus =
             RBUS
                 { index
-                , clock
+                , clock = platform.systemClock
                 , dmx512
                 , rs
                 , mode

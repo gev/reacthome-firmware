@@ -8,9 +8,8 @@ import Control.Monad.State
 import Core.Context
 import Core.Domain (domain)
 import Core.Formula (Formula (Formula, implementation, meta))
-import Core.Meta (mcu, mkName, model, shouldInit, version)
+import Core.Meta (mcu, mkName)
 import Core.Scheduler
-import Data.Bifunctor
 import Data.List (nub)
 import Development.Shake.FilePath
 import Interface.MCU (MCU (sizeFlash, startFlash), Platform (..), platform)
@@ -25,7 +24,7 @@ cook Formula{..} = do
     incl loop
     incl main
   where
-    (domain', domainContext') = runState (domain (fromIntegral meta.model) version' mcu' meta.shouldInit implementation') mempty
+    (domain', domainContext') = runState (domain meta implementation') mempty
     (mcu', mcuContext') = runState (platform meta.mcu) mempty
     (implementation', implementationContext') = runReader (runStateT implementation mempty) domain'
 
@@ -51,8 +50,6 @@ cook Formula{..} = do
         call_ initialize
         call_ loop
         ret 0
-
-    version' = bimap fromIntegral fromIntegral meta.version
 
 generate :: ModuleDef -> String -> String -> IO ()
 generate moduleDef path name =

@@ -2,15 +2,19 @@
 
 module Implementation.Dimmer where
 
+import Control.Monad.Reader
 import Control.Monad.State
 import Core.Actions
 import Core.Context
 import Core.Controller
+import Core.Domain qualified as D
 import Core.Task
+import Core.Transport
 import Data.Buffer
 import Data.Serialize
 import Endpoint.Dimmers qualified as D
 import Feature.Dimmers
+import Feature.GetInfo
 import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
@@ -21,6 +25,7 @@ type SizeSyncStateBuff n = 1 + n
 data Dimmer n = Dimmer
     { dimmers :: Dimmers n
     , syncStateBuff :: Buffer (SizeSyncStateBuff n) Uint8
+    , info :: GetInfo
     }
 
 dimmer ::
@@ -28,6 +33,8 @@ dimmer ::
     , MonadState Context m
     , KnownNat n
     , KnownNat (SizeSyncStateBuff n)
+    , LazyTransport t
+    , MonadReader (D.Domain p i) m
     ) =>
     (t -> m (Dimmers n)) ->
     m t ->
@@ -36,8 +43,9 @@ dimmer dimmers' transport' = do
     transport <- transport'
     dimmers <- dimmers' transport
     syncStateBuff <- buffer "sync_channels"
+    info <- mkGetInfo transport
 
-    let dimmer = Dimmer{dimmers, syncStateBuff}
+    let dimmer = Dimmer{dimmers, syncStateBuff, info}
 
     addTask $ delay 5_000 "sync_channels" $ syncChannels dimmer
 
@@ -51,6 +59,7 @@ instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (Dimmer n) w
             , action ==? actionDim ==> onDim dimmers buff size
             , action ==? actionInitialize ==> onInit dimmers buff size
             , action ==? actionGetState ==> onGetState dimmers
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 syncChannels ::

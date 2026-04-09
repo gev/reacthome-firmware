@@ -6,6 +6,7 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Domain qualified as D
+import Core.Meta
 import Core.Task
 import Core.Transport qualified as T
 import Data.Buffer
@@ -17,6 +18,7 @@ import GHC.TypeNats
 import Interface.GPIO.Input
 import Interface.GPIO.Port
 import Interface.MCU (peripherals, systemClock)
+import Interface.MCU qualified as I
 import Interface.SystemClock (SystemClock, getSystemTime)
 import Ivory.Language
 import Ivory.Stdlib
@@ -49,11 +51,11 @@ dinputs ::
     t ->
     m (DInputs n)
 dinputs inputs zero' transport = do
-    mcu <- asks D.mcu
-    let clock = systemClock mcu
-    let peripherals' = peripherals mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    let clock = systemClock platform
     let pull = if zero' then pullUp else pullDown
-    is <- mapM (($ pull peripherals') . ($ peripherals')) inputs
+    is <- mapM (flip ($ platform.peripherals) (pull platform.peripherals)) inputs
     getDInputs <- DI.mkDinputs "dinputs"
     current <- index "current_dinput"
 

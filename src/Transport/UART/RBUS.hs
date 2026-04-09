@@ -8,16 +8,18 @@ import Core.Controller
 import Core.Dispatcher
 import Core.Domain qualified as D
 import Core.Handler
+import Core.Meta
 import Core.Task
 import Core.Transport
-import Core.Version
 import Data.Buffer
 import Data.Queue
 import Data.Value
 import GHC.TypeNats
+import Interface.MCU
 import Interface.MCU qualified as I
 import Interface.UART
 import Ivory.Language
+import Protocol.RBUS
 import Protocol.UART.RBUS qualified as U
 import Transport.UART.RBUS.Data
 import Transport.UART.RBUS.Rx
@@ -77,9 +79,10 @@ rbus ::
     Uint32 ->
     m (RBUS q l)
 rbus uart' speed = do
-    mcu <- asks D.mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     implementation <- asks D.implementation
-    uart <- uart' $ I.peripherals mcu
+    uart <- uart' platform.peripherals
     let name = "transport_uart_rbus"
     {--
         TODO: move dispatcher outside
@@ -105,11 +108,8 @@ mkRbus ::
     (forall s. Buffer 255 Uint8 -> Uint8 -> Ivory (ProcEffects s ()) ()) ->
     m (RBUS q l)
 mkRbus name uart speed onMessage = do
-    mcu <- asks D.mcu
-    model <- asks D.model
-    version <- asks D.version
-    let mac = I.mac mcu
-    let clock = I.systemClock mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     msgQueue <- queue (name <> "_msg") =<< messages name
     msgBuff <- buffer (name <> "_msg")
     msgIndex <- value (name <> "_msg_index") 0
@@ -123,10 +123,8 @@ mkRbus name uart speed onMessage = do
             RBUS
                 { name
                 , speed
-                , model
-                , version
-                , mac
-                , clock
+                , mac = platform.mac
+                , clock = platform.systemClock
                 , uart
                 , protocol
                 , msgQueue
@@ -158,9 +156,9 @@ initialize RBUS{..} = do
     arrayMap \ix -> do
         let jx = toIx $ 1 + fromIx ix
         store (discoveryBuff ! jx) =<< deref (mac ! ix)
-    store (discoveryBuff ! 7) =<< deref model
-    store (discoveryBuff ! 8) =<< deref (version ~> major)
-    store (discoveryBuff ! 9) =<< deref (version ~> minor)
+    store (discoveryBuff ! 7) rbusDummy
+    store (discoveryBuff ! 8) (fst rbusVersion)
+    store (discoveryBuff ! 9) (snd rbusVersion)
     configUART uart speed WL_8b SB_1b None
 
 instance (KnownNat q, KnownNat l) => Transport (RBUS q l) where

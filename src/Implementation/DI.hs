@@ -2,21 +2,25 @@
 
 module Implementation.DI where
 
+import Control.Monad.Reader
 import Control.Monad.State
 import Core.Actions
 import Core.Context
 import Core.Controller
+import Core.Domain qualified as D
+import Core.Task
+import Core.Transport
 import Data.Buffer
 import Data.Serialize
 import Data.Type.Bool
 import Data.Type.Equality
 import Endpoint.DInputs qualified as D
-import Feature.DInputs (DInputs, getDInputs, transmit, forceSyncDInputs)
+import Feature.DInputs (DInputs, forceSyncDInputs, getDInputs, transmit)
 import Feature.DS18B20
+import Feature.GetInfo
 import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
-import Core.Task
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff n = 1 + ToSizeInBytes n
@@ -24,6 +28,7 @@ type SizeSyncStateBuff n = 1 + ToSizeInBytes n
 data DI n = DI
     { dinputs :: DInputs n
     , syncStateBuff :: Buffer (SizeSyncStateBuff n) Uint8
+    , info :: GetInfo
     }
 
 di ::
@@ -31,6 +36,8 @@ di ::
     , MonadState Context m
     , KnownNat n
     , KnownNat (SizeSyncStateBuff n)
+    , LazyTransport t
+    , MonadReader (D.Domain p i) m
     ) =>
     (Bool -> t -> m (DInputs n)) ->
     (t -> m DS18B20) ->
@@ -41,8 +48,9 @@ di dinputs' ds18b20 transport' = do
     ds18b20 transport
     dinputs <- dinputs' True transport
     syncStateBuff <- buffer "sync_channels"
+    info <- mkGetInfo transport
 
-    let di = DI{dinputs, syncStateBuff}
+    let di = DI{dinputs, syncStateBuff, info}
 
     addTask $ delay 5_000 "sync_channels" $ syncChannels di
 
@@ -52,9 +60,8 @@ instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (DI n) where
     handle DI{..} buff _ = do
         action <- deref $ buff ! 0
         cond_
-            [ action
-                ==? actionGetState
-                ==> forceSyncDInputs dinputs
+            [ action ==? actionGetState ==> forceSyncDInputs dinputs
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 syncChannels ::

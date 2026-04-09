@@ -2,15 +2,19 @@
 
 module Implementation.DimmerDIN where
 
+import Control.Monad.Reader
 import Control.Monad.State
 import Core.Actions
 import Core.Context
 import Core.Controller
+import Core.Domain qualified as D
 import Core.Task
+import Core.Transport
 import Data.Buffer
 import Data.Serialize
 import Endpoint.Dimmers qualified as D
 import Feature.Dimmers
+import Feature.GetInfo
 import Feature.Indicator (Indicator, onFindMe)
 import GHC.TypeNats
 import Ivory.Language
@@ -23,6 +27,7 @@ data Dimmer n = Dimmer
     { dimmers :: Dimmers n
     , indicator :: Indicator 20
     , syncStateBuff :: Buffer (SizeSyncStateBuff n) Uint8
+    , info :: GetInfo
     }
 
 dimmer ::
@@ -30,6 +35,8 @@ dimmer ::
     , MonadState Context m
     , KnownNat n
     , KnownNat (SizeSyncStateBuff n)
+    , LazyTransport t
+    , MonadReader (D.Domain p i) m
     ) =>
     (t -> m (Dimmers n)) ->
     (t -> m (Indicator 20)) ->
@@ -40,8 +47,9 @@ dimmer dimmers' indicator' transport' = do
     dimmers <- dimmers' transport
     indicator <- indicator' transport
     syncStateBuff <- buffer "sync_channels"
+    info <- mkGetInfo transport
 
-    let dimmer = Dimmer{dimmers, indicator, syncStateBuff}
+    let dimmer = Dimmer{dimmers, indicator, syncStateBuff, info}
 
     addTask $ delay 5_000 "sync_channels" $ syncChannels dimmer
 
@@ -56,6 +64,7 @@ instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (Dimmer n) w
             , action ==? actionInitialize ==> onInit dimmers buff size
             , action ==? actionGetState ==> onGetState dimmers
             , action ==? actionFindMe ==> onFindMe indicator buff size
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 syncChannels ::

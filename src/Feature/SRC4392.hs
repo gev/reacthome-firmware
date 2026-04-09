@@ -5,6 +5,7 @@ import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Domain qualified as D
 import Core.Handler
+import Core.Meta
 import Core.Task
 import Data.Matrix
 import Data.Value
@@ -12,6 +13,7 @@ import Interface.GPIO.Output
 import Interface.GPIO.Port
 import Interface.I2C qualified as I
 import Interface.MCU
+import Interface.MCU qualified as I
 import Ivory.Language
 
 data SRC4392 = forall i o. (I.I2C i 2, Output o) => SRC4392
@@ -33,10 +35,10 @@ mkSRC4392 ::
     (p -> u -> m o) ->
     m SRC4392
 mkSRC4392 i2c' mute' = do
-    mcu <- asks D.mcu
-    let peripherals' = peripherals mcu
-    i2c <- i2c' peripherals'
-    mute <- mute' peripherals' $ pullNone peripherals'
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    i2c <- i2c' platform.peripherals
+    mute <- mute' platform.peripherals $ pullNone platform.peripherals
     count <- value "src4392_count" 0
     config <-
         matrix

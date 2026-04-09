@@ -6,6 +6,7 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Domain qualified as D
+import Core.Meta
 import Core.Task
 import Core.Transport qualified as T
 import Data.Buffer
@@ -20,6 +21,7 @@ import GHC.TypeNats
 import Interface.GPIO.Output
 import Interface.GPIO.Port
 import Interface.MCU (peripherals, systemClock)
+import Interface.MCU qualified as I
 import Interface.SystemClock (SystemClock, getSystemTime)
 import Ivory.Language
 import Ivory.Stdlib
@@ -52,15 +54,14 @@ relays ::
     t ->
     m (Relays n)
 relays outs transport = do
-    mcu <- asks D.mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     shouldInit <- asks D.shouldInit
-    let peripherals' = peripherals mcu
-    os <- mapM (($ pullNone peripherals') . ($ peripherals')) outs
+    os <- mapM (flip ($ platform.peripherals) (pullNone platform.peripherals)) outs
     let n = length os
     getRelays <- R.mkRelays "relays"
     getGroups <- G.mkGroups "groups"
     current <- index "current_relay"
-    let clock = systemClock mcu
 
     let relays =
             Relays
@@ -69,7 +70,7 @@ relays outs transport = do
                 , getGroups
                 , getOutputs = os
                 , shouldInit
-                , clock
+                , clock = platform.systemClock
                 , current
                 , transmit = T.transmitBuffer transport
                 }

@@ -9,6 +9,7 @@ import Core.Context
 import Core.Controller
 import Core.Domain qualified as D
 import Core.Task
+import Core.Transport
 import Data.Buffer
 import Data.Fixed (List, fromList, zipWithM_)
 import Data.Serialize
@@ -19,15 +20,18 @@ import Endpoint.AOutputs qualified as A
 import Endpoint.DInputs qualified as D
 import Feature.AOutputs (
     AOutputs (getAOutputs),
+    forceSync,
     n,
-    onAo, forceSync,
+    onAo,
  )
 import Feature.DInputs (DInputs (getDInputs, transmit), forceSyncDInputs)
 import Feature.DS18B20
+import Feature.GetInfo
 import Feature.RS485.RSM (
     configureMode,
+    forceSyncRSM',
     setMode,
-    transmitRS485, forceSyncRSM',
+    transmitRS485,
  )
 import Feature.RS485.RSM.Data
 import GHC.TypeNats
@@ -45,6 +49,7 @@ data DIRSM ni no nr = DIRSM
     , aoutputs :: AOutputs no
     , shouldInit :: Value IBool
     , syncStateBuff :: Buffer (SizeSyncStateBuff ni no) Uint8
+    , info :: GetInfo
     }
 
 diRsm ::
@@ -54,6 +59,7 @@ diRsm ::
     , KnownNat ni
     , KnownNat no
     , KnownNat (ToSizeInBytes ni)
+    , LazyTransport t
     ) =>
     (Bool -> t -> m (DInputs ni)) ->
     (t -> m (List nr RSM)) ->
@@ -69,8 +75,17 @@ diRsm dinputs' rsm' aoutputs' ds18b20 transport' = do
     dinputs <- dinputs' True transport
     aoutputs <- aoutputs' transport
     syncStateBuff <- buffer "sync_channels"
+    info <- mkGetInfo transport
 
-    let dirsm = DIRSM{rsm, dinputs, aoutputs, shouldInit, syncStateBuff}
+    let dirsm =
+            DIRSM
+                { rsm
+                , dinputs
+                , aoutputs
+                , shouldInit
+                , syncStateBuff
+                , info
+                }
 
     addTask $ delay 5_000 "sync_channels" $ syncChannels dirsm
 
@@ -93,6 +108,7 @@ instance
             , action ==? actionRs485Mode ==> setMode rsm buff size
             , action ==? actionRs485Transmit ==> transmitRS485 rsm buff size
             , action ==? actionGetState ==> onGetState s
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 onInit ::

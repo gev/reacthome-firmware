@@ -3,8 +3,9 @@ module Implementation.LeakSensor where
 import Control.Monad.Reader
 import Control.Monad.State
 import Core.Context
-import Core.Domain
+import Core.Domain qualified as D
 import Core.Handler (Handler)
+import Core.Meta
 import Core.Task
 import Feature.LeakLEDs
 import Interface.ADC
@@ -12,6 +13,7 @@ import Interface.Display
 import Interface.GPIO.Output
 import Interface.GPIO.Port
 import Interface.MCU
+import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 
@@ -28,7 +30,7 @@ data Leak = forall o a. (Output o, ADC a) => Leak
 
 leakSensor ::
     ( MonadState Context m
-    , MonadReader (Domain p c) m
+    , MonadReader (D.Domain p c) m
     , Output o
     , ADC a
     , Pull p u
@@ -42,8 +44,9 @@ leakSensor ::
     m Leak
 leakSensor sensor' powerSensor' out' display' = do
     let name = "leak"
-    mcu <- asks mcu
-    let peripherals' = peripherals mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    let peripherals' = platform.peripherals
     sensor <- sensor' peripherals'
     powerSensor <- powerSensor' peripherals' $ pullNone peripherals'
     out <- out' peripherals' $ pullNone peripherals'

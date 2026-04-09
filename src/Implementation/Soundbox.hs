@@ -10,6 +10,7 @@ import Core.Context
 import Core.Controller
 import Core.Domain as D
 import Core.Handler
+import Core.Meta
 import Core.Task
 import Core.Transport qualified as T
 import Data.Buffer
@@ -17,6 +18,7 @@ import Data.Record
 import Data.Serialize
 import Data.Value
 import Endpoint.StereoAMP
+import Feature.GetInfo
 import Feature.I2SPlay
 import Feature.RTP
 import Feature.SPDIF
@@ -31,6 +33,7 @@ import Interface.I2SRX
 import Interface.I2STX
 import Interface.LwipPort
 import Interface.MCU
+import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 import Support.Lwip.Netif
@@ -47,6 +50,7 @@ data Soundbox = Soundbox
     , samples :: Records 9 SampleStruct
     , amps :: Records 2 StereoAMPStruct
     , shouldInit :: Value IBool
+    , info :: GetInfo
     , transmit :: forall n s t. (KnownNat n) => Buffer n Uint8 -> Ivory (ProcEffects s t) ()
     }
 
@@ -62,6 +66,7 @@ mkSoundbox ::
     , Handler HandleI2STX (j 256)
     , I.I2C ic 2
     , Pull p d
+    , T.LazyTransport t
     ) =>
     (p -> m e) ->
     (p -> m (i 256 256)) ->
@@ -78,13 +83,13 @@ mkSoundbox enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute transport' = do
     transport <- transport'
 
     let name = "soundbox"
-    mcu <- asks D.mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
     shouldInit <- asks D.shouldInit
-    let peripherals' = peripherals mcu
-    shutdownTrx <- shutdownTrx' peripherals' $ pullNone peripherals'
-    shutdownTx <- shutdownTx' peripherals' $ pullNone peripherals'
-    i2sTrx <- i2sTrx' peripherals'
-    i2sTx <- i2sTx' peripherals'
+    shutdownTrx <- shutdownTrx' platform.peripherals $ pullNone platform.peripherals
+    shutdownTx <- shutdownTx' platform.peripherals $ pullNone platform.peripherals
+    i2sTrx <- i2sTrx' platform.peripherals
+    i2sTx <- i2sTx' platform.peripherals
 
     txRtpBuff <- buffer (name <> "_tx_rtp_buff")
     lanampBuff <- buffer (name <> "_tx_lanamp_buff")
@@ -104,6 +109,8 @@ mkSoundbox enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute transport' = do
 
     amps <- records_ $ name <> "_amps"
 
+    info <- mkGetInfo transport
+
     let soundbox =
             Soundbox
                 { i2sTxCh1
@@ -117,6 +124,7 @@ mkSoundbox enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute transport' = do
                 , samples
                 , amps
                 , shouldInit
+                , info
                 , transmit = T.transmitBuffer transport
                 }
 
@@ -224,12 +232,13 @@ mix11 src amp dst = do
     store (dst ~> right) $ castDefault (dr' / 2)
 
 instance Controller Soundbox where
-    handle s buff size = do
+    handle s@Soundbox{..} buff size = do
         action <- unpack buff 0
         cond_
             [ action ==? actionRtp ==> onRtp s buff size
             , action ==? actionLanamp ==> onLanamp s buff size
             , action ==? actionInitialize ==> onInit s buff size
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 onInit Soundbox{..} buff size = do

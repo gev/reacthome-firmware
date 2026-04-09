@@ -9,6 +9,7 @@ import Core.Context
 import Core.Controller
 import Core.Domain qualified as D
 import Core.Handler
+import Core.Meta
 import Core.Task
 import Core.Transport
 import Data.Buffer
@@ -23,6 +24,7 @@ import Feature.DInputs as DI (
     DInputs (getDInputs, transmit),
     forceSyncDInputs,
  )
+import Feature.GetInfo
 import Feature.Sht21 (SHT21)
 import Feature.Smart.Top.Buttons
 import Feature.Smart.Top.LEDs (
@@ -42,6 +44,7 @@ import GHC.TypeNats
 import Interface.Display (Display, Render (Render))
 import Interface.Flash
 import Interface.MCU (peripherals)
+import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 
@@ -54,6 +57,7 @@ data Top n = Top
     , buttons :: Buttons n 4 n
     , sht21 :: SHT21
     , syncStateBuff :: Buffer (SizeSyncStateBuff n) Uint8
+    , info :: GetInfo
     }
 
 topA4P ::
@@ -75,12 +79,14 @@ topA4P ::
     m (Top n)
 topA4P dinputs' sht21' display' etc' transport' = do
     transport <- transport'
-    mcu <- asks D.mcu
-    display <- display' $ peripherals mcu
-    let etc = etc' $ peripherals mcu
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    display <- display' platform.peripherals
+    let etc = etc' platform.peripherals
     dinputs <- dinputs' False transport
     frameBuffer <- values' "top_frame_buffer" 0
     syncStateBuff <- buffer "sync_channels"
+    info <- mkGetInfo transport
 
     leds <-
         mkLeds
@@ -121,6 +127,7 @@ topA4P dinputs' sht21' display' etc' transport' = do
                 , buttons
                 , sht21
                 , syncStateBuff
+                , info
                 }
 
     addTask $ delay 5_000 "sync_channels" $ syncChannels top
@@ -154,6 +161,7 @@ instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (Top n) wher
             , action ==? actionPalette ==> onPalette leds buff size
             , action ==? actionFindMe ==> onFindMe buttons buff size
             , action ==? actionGetState ==> onGetState t
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 syncChannels ::

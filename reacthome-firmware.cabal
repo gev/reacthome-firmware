@@ -51,6 +51,7 @@ executable reacthome-firmware
     Data.Record
     Data.Semaphore
     Data.Serialize
+    Data.Util
     Data.Value
     Device.GD32F3x0
     Device.GD32F3x0.ADC
@@ -138,6 +139,7 @@ executable reacthome-firmware
     Feature.Dimmers.AC
     Feature.Dimmers.DC
     Feature.Dopplers
+    Feature.GetInfo
     Feature.I2SPlay
     Feature.Indicator
     Feature.LeakLEDs
@@ -265,6 +267,7 @@ executable reacthome-firmware
     Ivory.Support.Device.GD32F3x0
     Ivory.Support.Device.GD32F4xx
     Protocol.OneWire.Master
+    Protocol.RBUS
     Protocol.RS485.RBUS
     Protocol.RS485.RBUS.Master
     Protocol.RS485.RBUS.Master.MacTable

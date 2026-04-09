@@ -13,6 +13,7 @@ import Data.Text.IO qualified as T
 import Data.Text.Internal.Builder qualified as B
 import Data.Text.Lazy qualified as L
 import Data.Text.Lazy.Builder.Int qualified as B
+import Data.Util (unPack16BE)
 import Development.Shake.FilePath
 import Implementation.Dfu qualified as I
 import Interface.MCU
@@ -64,7 +65,7 @@ mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
     header =
         L.toStrict . B.toLazyText $
             B.singleton '#'
-                <> hexadecimal meta.model
+                <> mconcat (hexadecimal <$> unPack16BE meta.model)
                 <> hexadecimal meta.board
                 <> hexadecimal (fst meta.version)
                 <> hexadecimal (snd meta.version)
