@@ -8,9 +8,10 @@ import GHC.TypeNats
 import Prelude hiding (fromEnum, toEnum, zipWith)
 
 infixr 5 :>
+
 data List n t where
-  Nil :: List 0 t
-  (:>) :: t -> List (n - 1) t -> List n t
+    Nil :: List 0 t
+    (:>) :: t -> List (n - 1) t -> List n t
 
 deriving instance Functor (List n)
 deriving instance Foldable (List n)
@@ -55,4 +56,4 @@ nats :: (Integral i) => List n i
 nats = fromEnum 1
 
 class MakeFrom n f t | f -> n, f -> t where
-  from :: f -> List n t
+    from :: f -> List n t
