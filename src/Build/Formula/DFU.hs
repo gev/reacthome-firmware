@@ -6,7 +6,7 @@ import Build.Shake
 import Core.Context
 import Core.Formula
 import Core.Formula.DFU
-import Core.Meta (board, mcu, mkName, model, version)
+import Core.Meta (board, mcu, model, version, mkNameDfu)
 import Data.Char (toLower)
 import Data.Text qualified as T
 import Data.Text.IO qualified as T
@@ -38,7 +38,7 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
     removeDirectoryRecursive $ "dist" </> "main"
     removeDirectoryRecursive $ "dist" </> "dfu"
   where
-    name = mkName meta
+    name = mkNameDfu meta dfuVersion
     firmWarePath = "dist" </> "firmware" </> name <.> "hex"
     updatePath = "dist" </> "up" </> name <.> "up"
 
@@ -71,6 +71,8 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
                 <> hexadecimal meta.board
                 <> hexadecimal (fst meta.version)
                 <> hexadecimal (snd meta.version)
+                <> hexadecimal (fst dfuVersion)
+                <> hexadecimal (snd dfuVersion)
                 <> B.fromString mcu
 
     mcu = toLower <$> (meta.mcu.model <> meta.mcu.modification)
