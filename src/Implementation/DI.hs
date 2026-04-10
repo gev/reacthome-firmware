@@ -48,7 +48,7 @@ di dinputs' ds18b20 transport' = do
     ds18b20 transport
     dinputs <- dinputs' True transport
     syncStateBuff <- buffer "sync_channels"
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     let di = DI{dinputs, syncStateBuff, info}
 

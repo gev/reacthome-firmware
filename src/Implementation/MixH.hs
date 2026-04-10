@@ -108,7 +108,7 @@ mix dinputs' relays' dimmers' ds18b20 etc transport' = do
     saveCountdown <- value "mix_save_save_countdown" 0
     syncStateBuff <- buffer "mix_sync_channels"
     ds18b20 transport
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     let mix =
             Mix

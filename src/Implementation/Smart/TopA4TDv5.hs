@@ -106,7 +106,7 @@ topA4TDv5 touches' vibro' sht21' display' etc' transport' = do
     vibro <- vibro' (FT.getDInputs touches) transport etc
     frameBuffer <- values' "top_frame_buffer" 0
     syncStateBuff <- buffer "sync_channels"
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     leds <-
         mkLeds

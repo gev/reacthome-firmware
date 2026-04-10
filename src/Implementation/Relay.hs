@@ -50,7 +50,7 @@ relay relays' indicator' transport' = do
     relays <- relays' transport
     indicator <- indicator' transport
     syncStateBuff <- buffer "sync_channels"
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     let relay = Relay{relays, indicator, syncStateBuff, info}
 

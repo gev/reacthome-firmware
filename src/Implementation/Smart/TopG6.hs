@@ -96,7 +96,7 @@ topG6 dinputs' vibro' touch' sht21' display' etc' transport' = do
     touch'
     frameBuffer <- values' "top_frame_buffer" 0
     syncStateBuff <- buffer "sync_channels"
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     leds <-
         mkLeds

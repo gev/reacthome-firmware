@@ -84,7 +84,7 @@ mix dinputs' aoutputs' dimmers' relays' ds18b20 transport' = do
     shouldInit <- asks D.shouldInit
     syncStateBuff <- buffer "mix_sync_channels"
     ds18b20 transport
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     let mix =
             Mix

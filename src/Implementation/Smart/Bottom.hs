@@ -57,7 +57,7 @@ bottom top' dinputs' ds18b20 aled' transport' = do
     top <- top' transport
     aled <- aled' transport
     syncStateBuff <- buffer "sync_channels"
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     let bottom =
             Bottom

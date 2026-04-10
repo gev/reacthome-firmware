@@ -86,7 +86,7 @@ topA4P dinputs' sht21' display' etc' transport' = do
     dinputs <- dinputs' False transport
     frameBuffer <- values' "top_frame_buffer" 0
     syncStateBuff <- buffer "sync_channels"
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     leds <-
         mkLeds

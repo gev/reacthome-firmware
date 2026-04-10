@@ -114,7 +114,7 @@ mix dinputs' relays' indicator' etc transport' = do
     shouldSaveConfig <- value "mix_should_save_config" false
     saveCountdown <- value "mix_save_save_countdown" 0
     syncStateBuff <- buffer "mix_sync_channels"
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     let mix =
             Mix

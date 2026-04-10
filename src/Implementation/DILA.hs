@@ -52,7 +52,7 @@ dila dinputs' ds18b20 aled' transport' = do
     dinputs <- dinputs' True transport
     aled <- aled' transport
     syncStateBuff <- buffer "sync_channels"
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     let dila = DILA{dinputs, aled, syncStateBuff, info}
 

@@ -109,7 +109,7 @@ mkSoundbox enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute transport' = do
 
     amps <- records_ $ name <> "_amps"
 
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     let soundbox =
             Soundbox

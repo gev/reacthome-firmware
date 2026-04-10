@@ -43,7 +43,7 @@ dimmer dimmers' transport' = do
     transport <- transport'
     dimmers <- dimmers' transport
     syncStateBuff <- buffer "sync_channels"
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     let dimmer = Dimmer{dimmers, syncStateBuff, info}
 
