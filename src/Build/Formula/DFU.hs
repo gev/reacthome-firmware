@@ -20,15 +20,17 @@ import Interface.MCU
 import Ivory.Language
 import Support.CMSIS.CoreCMFunc
 import System.Directory
+import Data.Word
 
 mkDFU ::
     (Compiler c p, Shake c) =>
     Int ->
+    (Word8, Word8) ->
     (forall s. Int -> Ivory (ProcEffects s ()) ()) ->
     (Formula p -> Int -> Int -> c) ->
     DFU p ->
     IO ()
-mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
+mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
     main <- prepare (convert mainImpl) startMainFirmware maxMainLength "main"
     dfu <- prepare (convert dfuImpl) startDfuFirmware maxDfuLength "dfu"
     combine main dfu firmWarePath
@@ -41,7 +43,7 @@ mkDFU maxDfuLength setVectorTable mkCompiler DFU{..} = do
     updatePath = "dist" </> "up" </> name <.> "up"
 
     mainImpl = fixIRQ $ implementation transport
-    dfuImpl = I.dfu startMainFirmware transport
+    dfuImpl = I.dfu startMainFirmware dfuVersion transport
 
     startDfuFirmware = meta.mcu.startFlash
     startMainFirmware = startDfuFirmware + maxDfuLength
