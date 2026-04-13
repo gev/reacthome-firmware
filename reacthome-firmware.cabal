@@ -168,6 +168,7 @@ executable reacthome-firmware
     Formula.AO4
     Formula.Blink330
     Formula.Blink450
+    Formula.CardHolder
     Formula.DI4
     Formula.DI4LA
     Formula.DI4RSM
@@ -201,6 +202,7 @@ executable reacthome-firmware
     Formula.UdpEcho450
     Implementation.AO4
     Implementation.Blink
+    Implementation.CardHolder
     Implementation.DI
     Implementation.DILA
     Implementation.DIRSM
