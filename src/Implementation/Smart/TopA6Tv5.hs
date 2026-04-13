@@ -89,7 +89,7 @@ topA6Tv5 touches' vibro' sht21' display' etc' transport' = do
     touches <- touches' transport
     frameBuffer <- values' "top_frame_buffer" 0
     syncStateBuff <- buffer "sync_channels"
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     leds <-
         mkLeds

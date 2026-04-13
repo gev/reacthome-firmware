@@ -99,7 +99,7 @@ hub rbus' dimmers' dinputs' ds18b20' indicator' aled' transport' = do
     shouldInit <- asks D.shouldInit
     syncStateBuff <- buffer "hub_sync_channels"
     ds18b20' transport
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     let hub =
             Hub

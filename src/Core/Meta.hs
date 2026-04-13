@@ -28,3 +28,17 @@ mkName Meta{..} =
   where
     major = show . fst
     minor = show . snd
+
+mkNameDfu :: Meta p -> (Word8, Word8) -> String
+mkNameDfu Meta{..} dfuVersion =
+    intercalate
+        "-"
+        [ name
+        , show board
+        , major version <> "_" <> minor version
+        , major dfuVersion <> "_" <> minor dfuVersion
+        , mcu.model <> mcu.modification
+        ]
+  where
+    major = show . fst
+    minor = show . snd

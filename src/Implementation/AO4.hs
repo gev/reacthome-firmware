@@ -39,7 +39,7 @@ ao4 sbm53d04' transport' = do
     aoutput4 <- sbm53d04' transport
     syncStateBuff <- buffer "sync_channels"
 
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     let ao4 = AO4{aoutput4, syncStateBuff, info}
 

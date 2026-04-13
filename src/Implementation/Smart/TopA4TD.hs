@@ -109,7 +109,7 @@ topA4TD dinputs' vibro' touch' sht21' display' etc' transport' = do
     platform <- I.platform meta.mcu
     display <- display' platform.peripherals
     dinputs <- dinputs' True transport
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     frameBuffer <- values' "top_frame_buffer" 0
     syncStateBuff <- buffer "sync_channels"

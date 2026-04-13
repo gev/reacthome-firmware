@@ -75,7 +75,7 @@ diRsm dinputs' rsm' aoutputs' ds18b20 transport' = do
     dinputs <- dinputs' True transport
     aoutputs <- aoutputs' transport
     syncStateBuff <- buffer "sync_channels"
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     let dirsm =
             DIRSM

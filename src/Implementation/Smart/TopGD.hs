@@ -108,7 +108,7 @@ topGD dinputs' vibro' touch' sht21' display' etc' transport' = do
     vibro <- vibro' (DI.getDInputs dinputs) transport etc
     frameBuffer <- values' "top_frame_buffer" 0
     syncStateBuff <- buffer "sync_channels"
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     leds <-
         mkLeds

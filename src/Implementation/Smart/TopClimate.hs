@@ -29,7 +29,7 @@ topClimate ::
 topClimate sht21' transport' = do
     transport <- transport'
     sht21 <- sht21' transport
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     pure Top{sht21, info}
 

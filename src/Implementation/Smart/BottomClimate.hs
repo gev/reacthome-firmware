@@ -58,7 +58,7 @@ bottomClimate dinputs' ds18b20 sht21 aled' transport' = do
     dinputs <- dinputs' True transport
     aled <- aled' transport
     syncStateBuff <- buffer "sync_channels"
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     let bottom =
             BottomClimate

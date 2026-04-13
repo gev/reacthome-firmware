@@ -54,7 +54,7 @@ doppler dopplers' dinputs' aled' transport' = do
     dinputs <- dinputs' True transport
     aled <- aled' transport
     syncStateBuff <- buffer "sync_channels"
-    info <- mkGetInfo transport
+    info <- mkGetMainInfo transport
 
     let doppler = Doppler{dopplers, dinputs, aled, syncStateBuff, info}
 
