@@ -38,10 +38,10 @@ mkDinputs name = do
     payload <- buffer "dinput_message"
     pure DInputs{dinputs, payload}
 
-message :: (KnownNat n) => DInputs n -> Uint8 -> Ivory eff (Buffer 3 Uint8)
-message DInputs{..} i = do
+message :: (KnownNat n) => DInputs n -> Uint8 -> Uint8 -> Ivory eff (Buffer 3 Uint8)
+message DInputs{..} offset i = do
     let dinput = dinputs ! toIx i
     pack payload 0 actionDi
-    pack payload 1 $ i + 1
+    pack payload 1 $ i + 1 + offset
     pack payload 2 =<< deref (dinput ~> state)
     pure payload

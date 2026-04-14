@@ -27,6 +27,7 @@ data DInputs n = forall i. (Input i) => DInputs
     { zero :: IBool
     , getDInputs :: DI.DInputs n
     , getInputs :: List n i
+    , offset :: Uint8
     , current :: Index Uint8
     , clock :: SystemClock
     , transmit ::
@@ -50,7 +51,23 @@ dinputs ::
     Bool ->
     t ->
     m (DInputs n)
-dinputs inputs zero' transport = do
+dinputs inputs zero' = dinputsOffset inputs zero' 0
+
+dinputsOffset ::
+    forall m n p c i d t.
+    ( MonadState Context m
+    , MonadReader (D.Domain p c) m
+    , T.Transport t
+    , Input i
+    , Pull p d
+    , KnownNat n
+    ) =>
+    List n (p -> d -> m i) ->
+    Bool ->
+    Uint8 ->
+    t ->
+    m (DInputs n)
+dinputsOffset inputs zero' offset transport = do
     meta <- asks D.meta
     platform <- I.platform meta.mcu
     let clock = systemClock platform
@@ -64,6 +81,7 @@ dinputs inputs zero' transport = do
                 { zero = if zero' then true else false
                 , getDInputs
                 , getInputs = is
+                , offset
                 , current
                 , clock
                 , transmit = T.transmitBuffer transport
@@ -116,6 +134,6 @@ syncDInput DInputs{..} i = do
     let di = DI.dinputs getDInputs ! toIx i
     synced <- deref $ di ~> DI.synced
     when (iNot synced) do
-        msg <- DI.message getDInputs (i .% n)
+        msg <- DI.message getDInputs offset (i .% n)
         transmit msg
         store (di ~> DI.synced) true

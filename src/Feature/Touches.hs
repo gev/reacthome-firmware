@@ -160,6 +160,6 @@ syncTouch Touches{..} i = do
     let di = DI.dinputs getDInputs ! toIx i
     synced <- deref $ di ~> DI.synced
     when (iNot synced) do
-        msg <- DI.message getDInputs (i .% n)
+        msg <- DI.message getDInputs 0 (i .% n)
         transmit msg
         store (di ~> DI.synced) true
