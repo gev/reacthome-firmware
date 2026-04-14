@@ -1,4 +1,4 @@
-module Implementation.CardHolder where
+module Implementation.Smart.TopCardHolder where
 
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
@@ -34,7 +34,7 @@ import Data.Serialize
 import Data.Type.Bool
 import Data.Type.Equality
 import Endpoint.DInputs qualified as D
-import Feature.DInputs qualified as FDI 
+import Feature.DInputs qualified as FDI
 import Feature.GetInfo
 import Feature.Smart.Top.Vibro (
     Vibro,
@@ -51,7 +51,7 @@ import Ivory.Language
 import Ivory.Stdlib
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
-type SizeSyncStateBuff nt nd = 1 + ToSizeInBytes nt + ToSizeInBytes  nd
+type SizeSyncStateBuff nt nd = 1 + ToSizeInBytes nt + ToSizeInBytes nd
 
 data Top nt nd = Top
     { touches :: FT.Touches nt
@@ -63,7 +63,7 @@ data Top nt nd = Top
     , info :: GetInfo
     }
 
-cardHolder ::
+topCardHolder ::
     ( MonadState Context m
     , MonadReader (D.Domain p c) m
     , Display d
@@ -75,20 +75,20 @@ cardHolder ::
     , KnownNat (SizeSyncStateBuff nt nd)
     ) =>
     (t -> m (FT.Touches nt)) ->
-    (Bool -> t -> m (FDI.DInputs nd)) ->
+    (Bool -> Uint8 -> t -> m (FDI.DInputs nd)) ->
     (E.DInputs nt -> t -> f -> m (Vibro nt)) ->
     (p -> m d) ->
     (p -> f) ->
     m t ->
     m (Top nt nd)
-cardHolder touches' dinputs' vibro' display' etc' transport' = do
+topCardHolder touches' dinputs' vibro' display' etc' transport' = do
     transport <- transport'
     meta <- asks D.meta
     platform <- I.platform meta.mcu
     display <- display' platform.peripherals
     let etc = etc' platform.peripherals
     touches <- touches' transport
-    dinputs <- dinputs' True transport
+    dinputs <- dinputs' True 2 transport
     frameBuffer <- values' "top_frame_buffer" 0
     syncStateBuff <- buffer "sync_channels"
     info <- mkGetMainInfo transport

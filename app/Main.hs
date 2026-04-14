@@ -3,7 +3,6 @@ module Main where
 import Build.Compiler.GCC
 import Build.Make
 import Formula.AO4
-import Formula.CardHolder
 import Formula.DI4
 import Formula.DI4LA
 import Formula.DI4RSM
@@ -27,6 +26,7 @@ import Formula.Smart.Top.TopA4T
 import Formula.Smart.Top.TopA4TD
 import Formula.Smart.Top.TopA6P
 import Formula.Smart.Top.TopA6T
+import Formula.Smart.Top.TopCardHolder
 import Formula.Smart.Top.TopClimate
 import Formula.Smart.Top.TopG2
 import Formula.Smart.Top.TopG4
@@ -43,7 +43,6 @@ main = do
     mapM_
         (make gcc)
         [ ao4'v7
-        , cardHolder'test
         , di4'v3
         , di4la'v3
         , di4rsm'v7
@@ -66,6 +65,7 @@ main = do
         , smartTopA6P'v6
         , smartTopA6T'3
         , smartTopA6T'v5
+        , smartTopCardHolder'test
         , smartTopClimate'v0
         , smartTopG2'v2
         , smartTopG4'v2

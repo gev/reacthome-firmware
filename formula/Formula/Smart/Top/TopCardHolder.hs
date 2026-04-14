@@ -1,6 +1,6 @@
 {-# LANGUAGE NumericUnderscores #-}
 
-module Formula.CardHolder where
+module Formula.Smart.Top.TopCardHolder where
 
 import Core.Formula.DFU
 import Core.Meta
@@ -11,17 +11,17 @@ import Device.GD32F3x0.Touch (aluminum)
 import Feature.DInputs
 import Feature.Smart.Top.Vibro (vibro)
 import Feature.Touches (touches)
-import Implementation.CardHolder (cardHolder)
+import Implementation.Smart.TopCardHolder (topCardHolder)
 import Ivory.Language
 import Transport.UART.RBUS
 
-cardHolder'test :: DFU GD32F3x0
-cardHolder'test =
+smartTopCardHolder'test :: DFU GD32F3x0
+smartTopCardHolder'test =
     DFU
         { meta =
             Meta
                 { name = "card_holder"
-                , model = deviceTypeCardHolder
+                , model = deviceTypeSmartTopCardHolder
                 , board = 1
                 , version = (1, 0)
                 , shouldInit = true
@@ -31,13 +31,13 @@ cardHolder'test =
                 }
         , transport = rbusTop uart_1
         , implementation =
-            cardHolder
+            topCardHolder
                 ( touches aluminum $
                     touch_pb1
                         :> touch_pb0
                         :> Nil
                 )
-                ( dinputs $
+                ( dinputsOffset $
                     in_pa_6
                         :> Nil
                 )

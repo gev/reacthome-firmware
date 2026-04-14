@@ -51,7 +51,6 @@ deviceTypeDi4La = 0x40 :: Word16
 deviceTypeMixH = 0x41 :: Word16
 deviceTypeMixV = 0x42 :: Word16
 deviceTypeAo4 = 0x43 :: Word16
-deviceTypeCardHolder = 0x44 :: Word16
 
 {-
     Modern two component SMART devices
@@ -71,6 +70,7 @@ deviceTypeSmartBottom = 0x3a :: Word16
 deviceTypeSmartBottomCO2 = 0x3b :: Word16
 deviceTypeSmartTopClimate = 0x3c :: Word16
 deviceTypeSmartBottomClimate = 0x3d :: Word16
+deviceTypeSmartTopCardHolder = 0x3e :: Word16
 
 {-
     The DIN rail devices
