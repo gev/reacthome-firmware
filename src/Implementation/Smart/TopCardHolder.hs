@@ -51,7 +51,7 @@ import Ivory.Language
 import Ivory.Stdlib
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
-type SizeSyncStateBuff nt nd = 1 + ToSizeInBytes nt + ToSizeInBytes nd
+type SizeSyncStateBuff n = 1 + ToSizeInBytes n
 
 data Top nt nd = Top
     { touches :: FT.Touches nt
@@ -59,7 +59,7 @@ data Top nt nd = Top
     , leds :: LEDs 4 3
     , buttons :: Buttons nt 4 3
     , vibro :: Vibro nt
-    , syncStateBuff :: Buffer (SizeSyncStateBuff nt nd) Uint8
+    , syncStateBuff :: Buffer (SizeSyncStateBuff nt) Uint8
     , info :: GetInfo
     }
 
@@ -72,7 +72,7 @@ topCardHolder ::
     , Flash f
     , KnownNat nt
     , KnownNat nd
-    , KnownNat (SizeSyncStateBuff nt nd)
+    , KnownNat (SizeSyncStateBuff nt)
     ) =>
     (t -> m (FT.Touches nt)) ->
     (Bool -> Uint8 -> t -> m (FDI.DInputs nd)) ->
@@ -178,7 +178,7 @@ syncChannels ::
     forall nt nd s.
     ( KnownNat nt
     , KnownNat nd
-    , KnownNat (SizeSyncStateBuff nt nd)
+    , KnownNat (SizeSyncStateBuff nt)
     ) =>
     Top nt nd ->
     Ivory (ProcEffects s ()) ()
@@ -195,12 +195,13 @@ syncChannels Top{..} = do
             byteFromBuff <- deref $ syncStateBuff ! ixByte
             let newByte = byteFromBuff .| (1 `iShiftL` numBit)
             pack syncStateBuff ixByte newByte
+    let offsetBit = 2
     arrayMap \ix -> do
         let di' = D.dinputs (FDI.getDInputs dinputs) ! ix
         diState <- deref $ di' ~> D.state
         when diState do
-            let ixByte = toIx $ offset + 1 + (fromIx ix `iDiv` 8)
-            let numBit = castDefault $ fromIx ix .% 8
+            let ixByte = toIx $ offset + (fromIx ix `iDiv` 8)
+            let numBit = castDefault $ fromIx ix .% 8 + offsetBit
             byteFromBuff <- deref $ syncStateBuff ! ixByte
             let newByte = byteFromBuff .| (1 `iShiftL` numBit)
             pack syncStateBuff ixByte newByte
