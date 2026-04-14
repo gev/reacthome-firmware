@@ -38,7 +38,7 @@ cardHolder'test =
                         :> Nil
                 )
                 ( dinputs $
-                    in_pb_6
+                    in_pa_6
                         :> Nil
                 )
                 (vibro out_pb_5)
