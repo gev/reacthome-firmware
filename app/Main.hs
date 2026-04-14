@@ -3,6 +3,7 @@ module Main where
 import Build.Compiler.GCC
 import Build.Make
 import Formula.AO4
+import Formula.CardHolder
 import Formula.DI4
 import Formula.DI4LA
 import Formula.DI4RSM
@@ -32,14 +33,13 @@ import Formula.Smart.Top.TopG4
 import Formula.Smart.Top.TopG4D
 import Formula.Smart.Top.TopG6
 import Formula.Soundbox
-import Formula.CardHolder (cardHolder'test)
 
 main :: IO ()
 main = do
-    -- mapM_
-    --     (make gcc)
-    --     [ leakSensor'v3
-    --     ]
+    mapM_
+        (make gcc)
+        [ leakSensor'v3
+        ]
     mapM_
         (make gcc)
         [ ao4'v7
