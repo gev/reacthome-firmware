@@ -33,8 +33,8 @@ cardHolder'test =
         , implementation =
             cardHolder
                 ( touches aluminum $
-                    touch_pa6
-                        :> touch_pa7
+                    touch_pb1
+                        :> touch_pb0
                         :> Nil
                 )
                 ( dinputs $

@@ -32,16 +32,18 @@ import Formula.Smart.Top.TopG4
 import Formula.Smart.Top.TopG4D
 import Formula.Smart.Top.TopG6
 import Formula.Soundbox
+import Formula.CardHolder (cardHolder'test)
 
 main :: IO ()
 main = do
-    mapM_
-        (make gcc)
-        [ leakSensor'v3
-        ]
+    -- mapM_
+    --     (make gcc)
+    --     [ leakSensor'v3
+    --     ]
     mapM_
         (make gcc)
         [ ao4'v7
+        , cardHolder'test
         , di4'v3
         , di4la'v3
         , di4rsm'v7
