@@ -49,6 +49,7 @@ import Interface.MCU (peripherals)
 import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
+import Ivory.Language.Proxy
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff n = 1 + ToSizeInBytes n
@@ -195,7 +196,7 @@ syncChannels Top{..} = do
             byteFromBuff <- deref $ syncStateBuff ! ixByte
             let newByte = byteFromBuff .| (1 `iShiftL` numBit)
             pack syncStateBuff ixByte newByte
-    let offsetBit = 2
+    let offsetBit = fromIntegral $ natVal (aNat :: NatType nt)
     arrayMap \ix -> do
         let di' = D.dinputs (FDI.getDInputs dinputs) ! ix
         diState <- deref $ di' ~> D.state
