@@ -20,7 +20,7 @@ smartTopCardHolder'test =
     DFU
         { meta =
             Meta
-                { name = "card_holder"
+                { name = "smart_top_card_holder"
                 , model = deviceTypeSmartTopCardHolder
                 , board = 1
                 , version = (1, 0)
@@ -46,13 +46,13 @@ smartTopCardHolder'test =
                 etc
         }
 
--- cardHolder'v1 :: DFU GD32F3x0
--- cardHolder'v1 =
+-- smartTopCardHolder'v1 :: DFU GD32F3x0
+-- smartTopCardHolder'v1 =
 --     DFU
 --         { meta =
 --             Meta
---                 { name = "card_holder"
---                 , model = deviceTypeCardHolder
+--                 { name = "smart_top_card_holder"
+--                 , model = deviceTypeSmartTopCardHolder
 --                 , board = 1
 --                 , version = (1, 0)
 --                 , shouldInit = true
@@ -62,13 +62,13 @@ smartTopCardHolder'test =
 --                 }
 --         , transport = rbusTop uart_1
 --         , implementation =
---             cardHolder
+--             topCardHolder
 --                 ( touches aluminum $
 --                     touch_pa6
 --                         :> touch_pa7
 --                         :> Nil
 --                 )
---                 ( dinputs $
+--                 ( dinputsOffset $
 --                     in_pb_6
 --                         :> Nil
 --                 )
