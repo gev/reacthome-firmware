@@ -182,6 +182,7 @@ executable reacthome-firmware
     Formula.MixH
     Formula.MixV
     Formula.Relay12
+    Formula.RoomNumber
     Formula.RsHub4
     Formula.Server
     Formula.Smart.Bottom.Bottom
@@ -217,6 +218,7 @@ executable reacthome-firmware
     Implementation.MixH
     Implementation.MixV
     Implementation.Relay
+    Implementation.RoomNumber
     Implementation.Smart.Bottom
     Implementation.Smart.BottomClimate
     Implementation.Smart.TopA4P
