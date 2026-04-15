@@ -16,6 +16,7 @@ import Formula.Mix6x12
 import Formula.MixH
 import Formula.MixV
 import Formula.Relay12
+import Formula.RoomNumber (roomNumber'test)
 import Formula.RsHub4
 import Formula.Server
 import Formula.Smart.Bottom.Bottom
@@ -54,6 +55,7 @@ main = do
         , doppler5'v5
         , mix6x12'v6
         , mixH'v3
+        , roomNumber'test
         , smartBottom'v13
         , smartBottomCO2'v13
         , smartBottomClimate'v13
