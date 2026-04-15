@@ -153,9 +153,10 @@ topCardHolder touches' dinputs' vibro' display' etc' transport' = do
 
     pure top
 
-onGetState :: (KnownNat nt) => Top nt nd -> Ivory (ProcEffects s t) ()
+onGetState :: (KnownNat nt, KnownNat nd) => Top nt nd -> Ivory (ProcEffects s t) ()
 onGetState Top{..} = do
     FT.forceSyncTouches touches
+    FDI.forceSyncDInputs dinputs
     sendVibro vibro
     sendLEDs leds
 
