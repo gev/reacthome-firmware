@@ -160,7 +160,7 @@ onGetState Top{..} = do
     sendVibro vibro
     sendLEDs leds
 
-instance (KnownNat nt) => Controller (Top nt nd) where
+instance (KnownNat nt, KnownNat nd) => Controller (Top nt nd) where
     handle t@Top{..} buff size = do
         action <- deref $ buff ! 0
         cond_
