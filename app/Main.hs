@@ -16,7 +16,7 @@ import Formula.Mix6x12
 import Formula.MixH
 import Formula.MixV
 import Formula.Relay12
-import Formula.RoomNumber (roomNumber'test)
+import Formula.RoomNumber
 import Formula.RsHub4
 import Formula.Server
 import Formula.Smart.Bottom.Bottom
@@ -55,7 +55,7 @@ main = do
         , doppler5'v5
         , mix6x12'v6
         , mixH'v3
-        , roomNumber'test
+        , roomNumber'v1
         , smartBottom'v13
         , smartBottomCO2'v13
         , smartBottomClimate'v13
@@ -67,7 +67,7 @@ main = do
         , smartTopA6P'v6
         , smartTopA6T'3
         , smartTopA6T'v5
-        , smartTopCardHolder'test
+        , smartTopCardHolder'v1
         , smartTopClimate'v0
         , smartTopG2'v2
         , smartTopG4'v2
