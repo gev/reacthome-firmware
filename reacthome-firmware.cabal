@@ -216,6 +216,7 @@ executable reacthome-firmware
     Implementation.LeakSensor
     Implementation.Mix
     Implementation.MixH
+    Implementation.MixHv6
     Implementation.MixV
     Implementation.Relay
     Implementation.Smart.Bottom
