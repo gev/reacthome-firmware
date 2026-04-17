@@ -30,7 +30,7 @@ dfu ::
     Int -> (Word8, Word8) -> m t -> m DFU
 dfu address version transport' = do
     transport <- transport'
-    addTask $ delay 10_000 "jump_to_firmware" $ jumpToFirmware $ fromIntegral address
+    addInit "jump_to_firmware" $ jumpToFirmware $ fromIntegral address
     info <- mkGetDfuInfo version transport
     pure DFU{info, transport}
 
