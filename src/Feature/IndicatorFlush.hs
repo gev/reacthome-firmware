@@ -22,6 +22,7 @@ import Ivory.Stdlib
 
 data IndicatorFlush n = forall d. (Display d) => Indicator
     { display :: d
+    , hue :: IFloat
     , t :: Value Sint32
     , findMe :: Value IBool
     , findMeMsg :: Buffer 2 Uint8
@@ -47,9 +48,10 @@ indicator ::
     , T.Transport t
     ) =>
     (p -> m d) ->
+    IFloat ->
     t ->
     m (IndicatorFlush n)
-indicator mkDisplay transport = do
+indicator mkDisplay hue transport = do
     meta <- asks D.meta
     platform <- I.platform meta.mcu
     display <- mkDisplay platform.peripherals
@@ -67,6 +69,7 @@ indicator mkDisplay transport = do
     let indicator =
             Indicator
                 { display
+                , hue
                 , canvas
                 , t
                 , findMe
@@ -87,7 +90,10 @@ update ::
     IndicatorFlush n ->
     Ivory (ProcEffects s ()) ()
 update Indicator{..} = do
+    color <- local . istruct $ hsv hue 1 maxValue
     pixel <- local . istruct $ rgb 0 0 0
+    hsv'to'rgb color pixel
+
     findMe' <- deref findMe
     when
         findMe'
