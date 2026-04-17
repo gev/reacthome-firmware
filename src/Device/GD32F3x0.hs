@@ -155,6 +155,7 @@ data GD32F3x0 = GD32F3x0
     , exti_pb_7 :: EXTI'
     , ow_0 :: OneWire'
     , ow_1 :: OneWire'
+    , ow_2 :: OneWire'
     , etc :: PageAddr
     , i2c_0 :: I2C'
     , adc_pa_0 :: ADC'
@@ -373,6 +374,7 @@ gd32f3x0 =
                         exti_7
                 , ow_0 = mkOneWire cfg_timer_15
                 , ow_1 = mkOneWire cfg_timer_2
+                , ow_2 = mkOneWire cfg_timer_14
                 , etc = mkPage 0x800_bc00
                 , i2c_0 =
                     mkI2C

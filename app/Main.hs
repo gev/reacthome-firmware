@@ -54,6 +54,7 @@ main = do
         , doppler5'v5
         , mix6x12'v6
         , mixH'v3
+        , mixH'v6
         , smartBottom'v13
         , smartBottomCO2'v13
         , smartBottomClimate'v13

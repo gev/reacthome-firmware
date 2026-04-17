@@ -106,7 +106,7 @@ mixH'v6 =
                         :> pwm_4
                         :> Nil
                 )
-                (ds18b20 ow_0 od_pa_5)
+                (ds18b20 ow_2 od_pa_5)
                 (indicator npx_pwm_0)
                 etc
         }
