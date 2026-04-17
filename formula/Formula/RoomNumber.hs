@@ -1,6 +1,4 @@
-{-# LANGUAGE NumericUnderscores #-}
-
-module Formula.Smart.Top.TopCardHolder where
+module Formula.RoomNumber where
 
 import Core.Formula.DFU
 import Core.Meta
@@ -8,21 +6,21 @@ import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
 import Device.GD32F3x0.Touch (aluminum)
-import Feature.DInputs
 import Feature.Smart.Top.Vibro (vibro)
-import Feature.Touches (touches)
-import Implementation.Smart.TopCardHolder (topCardHolder)
+import Feature.Touches
+import Implementation.RoomNumber (roomNumber)
+import Interface.RS485
 import Ivory.Language
-import Transport.UART.RBUS
+import Transport.RS485.RBUS
 
 
-smartTopCardHolder'v1 :: DFU GD32F3x0
-smartTopCardHolder'v1 =
+roomNumber'v1 :: DFU GD32F3x0
+roomNumber'v1 =
     DFU
         { meta =
             Meta
-                { name = "smart_top_card_holder"
-                , model = deviceTypeSmartTopCardHolder
+                { name = "room_number"
+                , model = deviceTypeRoomNumber
                 , board = 1
                 , version = (1, 0)
                 , shouldInit = false
@@ -30,16 +28,11 @@ smartTopCardHolder'v1 =
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
                 }
-        , transport = rbusTop uart_1
+        , transport = rbus $ rs485 uart_1 out_pa_4
         , implementation =
-            topCardHolder
+            roomNumber
                 ( touches aluminum $
                     touch_pa6
-                        :> touch_pa7
-                        :> Nil
-                )
-                ( dinputsOffset $
-                    in_pb_6
                         :> Nil
                 )
                 (vibro out_pb_5)
