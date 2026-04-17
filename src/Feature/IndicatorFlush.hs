@@ -20,7 +20,7 @@ import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 
-data Indicator n = forall d. (Display d) => Indicator
+data IndicatorFlush n = forall d. (Display d) => Indicator
     { display :: d
     , t :: Value Sint32
     , findMe :: Value IBool
@@ -48,7 +48,7 @@ indicator ::
     ) =>
     (p -> m d) ->
     t ->
-    m (Indicator n)
+    m (IndicatorFlush n)
 indicator mkDisplay transport = do
     meta <- asks D.meta
     platform <- I.platform meta.mcu
@@ -84,7 +84,7 @@ indicator mkDisplay transport = do
 
 update ::
     (KnownNat n) =>
-    Indicator n ->
+    IndicatorFlush n ->
     Ivory (ProcEffects s ()) ()
 update Indicator{..} = do
     pixel <- local . istruct $ rgb 0 0 0
@@ -107,14 +107,14 @@ update Indicator{..} = do
 
 render ::
     (KnownNat n, KnownNat (Canvas1DSize n)) =>
-    Indicator n ->
+    IndicatorFlush n ->
     Ivory (ProcEffects s ()) IBool
 render Indicator{..} =
     writePixels canvas pixels
 
 onFindMe ::
     (KnownNat l) =>
-    Indicator n ->
+    IndicatorFlush n ->
     Buffer l Uint8 ->
     Uint8 ->
     Ivory (ProcEffects s t) ()

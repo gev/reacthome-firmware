@@ -68,7 +68,7 @@ data Mix ni no nd = forall f. (Flash f) => Mix
     , saveCountdown :: Value Uint8
     , syncStateBuff :: Buffer (SizeSyncStateBuff ni no nd) Uint8
     , info :: GetInfo
-    , indicator :: Indicator 2
+    , indicator :: IndicatorFlush 2
     , transmit ::
         forall n.
         (KnownNat n) =>
@@ -95,7 +95,7 @@ mix'v6 ::
     (t -> m (Relays no)) ->
     (t -> m (Dimmers nd)) ->
     (t -> m DS18B20) ->
-    (t -> m (Indicator 2)) ->
+    (t -> m (IndicatorFlush 2)) ->
     (p -> f) ->
     m t ->
     m (Mix ni no nd)
