@@ -14,7 +14,6 @@ import Ivory.Stdlib
 import Support.CMSIS.CoreCMFunc
 import Support.ReadAddr
 import Support.RunAppByAddr
-import Core.Task
 
 data DFU = forall t. DFU
     { info :: GetInfo
