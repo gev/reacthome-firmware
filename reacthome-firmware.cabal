@@ -180,6 +180,7 @@ executable reacthome-firmware
     Formula.Echo
     Formula.LeakSensor
     Formula.Mix6x12
+    Formula.MixF
     Formula.MixH
     Formula.MixV
     Formula.Relay12
@@ -216,6 +217,7 @@ executable reacthome-firmware
     Implementation.Hub
     Implementation.LeakSensor
     Implementation.Mix
+    Implementation.MixF
     Implementation.MixH
     Implementation.MixHv6
     Implementation.MixV
