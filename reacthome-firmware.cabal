@@ -142,6 +142,7 @@ executable reacthome-firmware
     Feature.GetInfo
     Feature.I2SPlay
     Feature.Indicator
+    Feature.IndicatorFlush
     Feature.LeakLEDs
     Feature.Mix.Indicator
     Feature.RS485.RBUS
@@ -216,6 +217,7 @@ executable reacthome-firmware
     Implementation.LeakSensor
     Implementation.Mix
     Implementation.MixH
+    Implementation.MixHv6
     Implementation.MixV
     Implementation.Relay
     Implementation.RoomNumber

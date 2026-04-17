@@ -1,0 +1,360 @@
+{-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-missing-fields #-}
+
+module Implementation.MixHv6 where
+
+import Control.Monad.Reader (MonadReader, asks)
+import Control.Monad.State (MonadState)
+import Core.Actions
+import Core.Context
+import Core.Controller
+import Core.Domain as D
+import Core.Meta
+import Core.Task
+import Core.Transport
+import Data.Buffer
+import Data.Serialize
+import Data.Type.Bool
+import Data.Type.Equality
+import Data.Value
+import Endpoint.DInputs qualified as DI
+import Endpoint.DInputsRelaysRules as Ru
+import Endpoint.Dimmers qualified as EDim
+import Endpoint.Relays qualified as R
+import Feature.DInputs (
+    DInputs,
+    forceSyncDInputs,
+    getDInputs,
+    manageDInputs,
+    syncDInputs,
+ )
+import Feature.DS18B20 (DS18B20)
+import Feature.Dimmers as FDim (Dimmers, forceSync, getDimmers, n, onDim)
+import Feature.GetInfo
+import Feature.IndicatorFlush
+import Feature.Relays as FR (
+    Relays,
+    forceSyncRelays,
+    getGroups,
+    getRelays,
+    initGroups,
+    initRelays,
+    manageRelays,
+    n,
+    onDo,
+    onGroup,
+    syncRelays,
+ )
+import GHC.TypeNats
+import Interface.Flash as F
+import Interface.MCU as I
+import Ivory.Language
+import Ivory.Language.Proxy
+import Ivory.Stdlib
+import Support.Cast
+import Util.CRC16
+
+type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
+type SizeSyncStateBuff ni no nd = 1 + ToSizeInBytes ni + ToSizeInBytes no + nd
+
+data Mix ni no nd = forall f. (Flash f) => Mix
+    { relays :: Relays no
+    , dinputs :: DInputs ni
+    , dimmers :: Dimmers nd
+    , rules :: Rules ni no
+    , etc :: f
+    , shouldSaveConfig :: Value IBool
+    , shouldInit :: Value IBool
+    , saveCountdown :: Value Uint8
+    , syncStateBuff :: Buffer (SizeSyncStateBuff ni no nd) Uint8
+    , info :: GetInfo
+    , indicator :: IndicatorFlush 2
+    , transmit ::
+        forall n.
+        (KnownNat n) =>
+        Buffer n Uint8 ->
+        forall s t.
+        Ivory (ProcEffects s t) ()
+    }
+
+mix'v6 ::
+    ( MonadState Context m
+    , MonadReader (Domain p c) m
+    , Flash f
+    , Transport t
+    , KnownNat ni
+    , KnownNat no
+    , KnownNat nd
+    , KnownNat (PayloadSize no)
+    , KnownNat (SizeSyncStateBuff ni no nd)
+    , KnownNat (ToSizeInBytes ni)
+    , KnownNat (ToSizeInBytes no)
+    , LazyTransport t
+    ) =>
+    (Bool -> t -> m (DInputs ni)) ->
+    (t -> m (Relays no)) ->
+    (t -> m (Dimmers nd)) ->
+    (t -> m DS18B20) ->
+    (t -> m (IndicatorFlush 2)) ->
+    (p -> f) ->
+    m t ->
+    m (Mix ni no nd)
+mix'v6 dinputs' relays' dimmers' ds18b20 indicator' etc transport' = do
+    transport <- transport'
+    relays <- relays' transport
+    dinputs <- dinputs' True transport
+    dimmers <- dimmers' transport
+    rules <- mkRules transport
+    meta <- asks D.meta
+    platform <- I.platform meta.mcu
+    shouldInit <- asks D.shouldInit
+    shouldSaveConfig <- value "mix_should_save_config" false
+    saveCountdown <- value "mix_save_save_countdown" 0
+    syncStateBuff <- buffer "mix_sync_channels"
+    indicator <- indicator' transport
+    ds18b20 transport
+    info <- mkGetMainInfo transport
+
+    let mix =
+            Mix
+                { relays
+                , dinputs
+                , dimmers
+                , rules
+                , etc = etc platform.peripherals
+                , shouldSaveConfig
+                , shouldInit
+                , saveCountdown
+                , syncStateBuff
+                , info
+                , indicator
+                , transmit = transmitBuffer transport
+                }
+
+    addInit "mix" $ load mix
+
+    addTask $ delay 10 "mix_manage" $ manage mix
+    addTask $ delay 1 "mix_sync" $ sync mix
+    addTask $ delay 1 "mix_save_config" $ saveTask mix
+    addTask $ delay 5_000 "sync_channels" $ syncChannels mix
+
+    addSync "dinputs" $ forceSyncDInputs dinputs
+    addSync "relays" $ forceSyncRelays relays
+    addSync "dimmers" $ forceSync dimmers
+    addSync "rules" $ forceSyncRules rules
+
+    pure mix
+
+manage ::
+    (KnownNat ni, KnownNat no) =>
+    Mix ni no nd ->
+    Ivory ('Effects (Returns ()) r (Scope s)) ()
+manage Mix{..} = do
+    manageDInputs dinputs
+    manageRules rules (getDInputs dinputs) (getRelays relays) (getGroups relays)
+    manageRelays relays
+
+sync ::
+    (KnownNat ni, KnownNat no, KnownNat nd, KnownNat (PayloadSize no)) =>
+    Mix ni no nd ->
+    Ivory (ProcEffects s ()) ()
+sync Mix{..} = do
+    syncDInputs dinputs
+    syncRelays relays
+    syncRules rules
+
+instance
+    ( KnownNat ni
+    , KnownNat no
+    , KnownNat nd
+    , KnownNat (PayloadSize no)
+    , KnownNat (SizeSyncStateBuff ni no nd)
+    , KnownNat (ToSizeInBytes ni)
+    , KnownNat (ToSizeInBytes no)
+    ) =>
+    Controller (Mix ni no nd)
+    where
+    handle mix@Mix{..} buff size = do
+        shouldInit' <- deref shouldInit
+        action <- deref $ buff ! 0
+        cond_
+            [ action ==? actionDo .&& iNot shouldInit' ==> onDo relays buff size
+            , action ==? actionGroup .&& iNot shouldInit' ==> onGroup relays buff size
+            , action ==? actionDim .&& iNot shouldInit' ==> onDim dimmers buff size
+            , action ==? actionDiRelaySync .&& iNot shouldInit' ==> onRule mix buff size
+            , action ==? actionInitialize ==> onInit mix buff size
+            , action ==? actionFindMe ==> onFindMe indicator buff size
+            , action ==? actionGetState ==> onGetState mix
+            , action ==? actionGetInfo ==> onGetInfo info
+            ]
+
+syncChannels ::
+    forall ni no nd s t.
+    ( KnownNat ni
+    , KnownNat no
+    , KnownNat nd
+    , KnownNat (SizeSyncStateBuff ni no nd)
+    , KnownNat (ToSizeInBytes ni)
+    , KnownNat (ToSizeInBytes no)
+    ) =>
+    Mix ni no nd ->
+    Ivory (ProcEffects s t) ()
+syncChannels Mix{..} = do
+    shouldInit' <- deref shouldInit
+    when (iNot shouldInit') do
+        arrayMap \ix -> store (syncStateBuff ! ix) 0
+        pack syncStateBuff 0 actionGetState
+
+        offsetByte <- local $ ival 1
+        offsetByte' <- deref offsetByte
+
+        arrayMap \ix -> do
+            let di' = DI.dinputs (getDInputs dinputs) ! ix
+            diState <- deref $ di' ~> DI.state
+            when diState do
+                let ixByte = toIx $ offsetByte' + (fromIx ix `iDiv` 8)
+                let numBit = castDefault $ fromIx ix .% 8
+                let bitMask = 1 `iShiftL` numBit
+                buffByte <- deref $ syncStateBuff ! ixByte
+                pack syncStateBuff ixByte (buffByte .| bitMask)
+
+        let numByteDI = fromIntegral $ natVal (aNat :: NatType (ToSizeInBytes ni))
+        store offsetByte $ offsetByte' + numByteDI
+
+        offsetByte'' <- deref offsetByte
+        arrayMap \ix -> do
+            let relay' = R.relays (getRelays relays) ! ix
+            relayState <- deref $ relay' ~> R.state
+            when relayState do
+                let ixByte = toIx $ offsetByte'' + (fromIx ix `iDiv` 8)
+                let numBit = castDefault $ fromIx ix .% 8
+                let bitMask = 1 `iShiftL` numBit
+                buffByte <- deref $ syncStateBuff ! ixByte
+                pack syncStateBuff ixByte (buffByte .| bitMask)
+
+        let numByteDO = fromIntegral $ natVal (aNat :: NatType (ToSizeInBytes no))
+        store offsetByte $ offsetByte'' + numByteDO
+
+        offsetByte''' <- deref offsetByte
+        arrayMap \ix -> do
+            let dimmer = EDim.dimmers (getDimmers dimmers) ! ix
+            dimmerBrightness <- castFloatToUint8 . (* 255) =<< deref (dimmer ~> EDim.brightness)
+            let ixBuff = toIx . (+ offsetByte''') $ fromIx ix
+            pack syncStateBuff ixBuff dimmerBrightness
+
+        transmit syncStateBuff
+
+onRule ::
+    forall l ni no nd s t.
+    (KnownNat l, KnownNat ni, KnownNat no, KnownNat nd, KnownNat (PayloadSize no)) =>
+    Mix ni no nd ->
+    Buffer l Uint8 ->
+    Uint8 ->
+    Ivory (ProcEffects s t) ()
+onRule Mix{..} buff size = do
+    let relaysN = fromIntegral $ natVal (aNat :: NatType no)
+    let dinputsN = fromIntegral $ natVal (aNat :: NatType ni)
+    i <- subtract 1 <$> deref (buff ! 1)
+    when (size ==? 2 + 2 * relaysN .&& i <? dinputsN) do
+        kx <- local $ ival 2
+        let run rules = arrayMap \jx -> do
+                kx' <- deref kx
+                store (rules ! toIx i ! jx) =<< unpack buff kx'
+                store kx $ kx' + 1
+        run $ rulesOff rules
+        run $ rulesOn rules
+        fillPayload rules i
+        transmit $ Ru.payload rules
+        store shouldSaveConfig true
+
+onGetState :: (KnownNat ni, KnownNat no, KnownNat nd) => Mix ni no nd -> Ivory eff ()
+onGetState Mix{..} = do
+    forceSyncDInputs dinputs
+    forceSyncRules rules
+    initialized <- iNot <$> deref shouldInit
+    when initialized do
+        forceSyncRelays relays
+        forceSync dimmers
+
+saveTask :: (KnownNat ni, KnownNat no) => Mix ni no nd -> Ivory (ProcEffects s t) ()
+saveTask mix@Mix{..} = do
+    shouldSaveConfig' <- deref shouldSaveConfig
+    when shouldSaveConfig' do
+        store saveCountdown 100
+        store shouldSaveConfig false
+    saveCountdown' <- deref saveCountdown
+    when (saveCountdown' >? 0) do
+        store saveCountdown (saveCountdown' - 1)
+    when (saveCountdown' ==? 1) do
+        save mix
+
+save :: (KnownNat ni, KnownNat no) => Mix ni no nd -> Ivory (ProcEffects s t) ()
+save Mix{..} = do
+    erasePage etc 0
+    crc <- local $ istruct initCRC16
+    kx <- local $ ival 4
+    let run rules = arrayMap \ix -> arrayMap \jx -> do
+            kx' <- deref kx
+            v <- deref (rules ! ix ! jx)
+            updateCRC16 crc v
+            F.write etc kx' $ safeCast v
+            store kx $ kx' + 4
+    run $ rulesOff rules
+    run $ rulesOn rules
+    kx' <- deref kx
+    F.write etc kx' . safeCast =<< deref (crc ~> msb)
+    F.write etc (kx' + 4) . safeCast =<< deref (crc ~> lsb)
+
+load :: (KnownNat ni, KnownNat no) => Mix ni no nd -> Ivory (ProcEffects s ()) ()
+load mix@Mix{..} = do
+    valid <- checkCRC mix
+    when valid do
+        kx <- local $ ival 4
+        let run rules = arrayMap \ix -> arrayMap \jx -> do
+                kx' <- deref kx
+                store (rules ! ix ! jx) . castDefault =<< F.read etc kx'
+                store kx $ kx' + 4
+        run $ rulesOff rules
+        run $ rulesOn rules
+
+checkCRC :: forall ni no nd s. (KnownNat ni, KnownNat no) => Mix ni no nd -> Ivory (ProcEffects s ()) IBool
+checkCRC Mix{..} = do
+    let relaysN = fromIntegral $ natVal (aNat :: NatType no)
+    let dinputsN = fromIntegral $ natVal (aNat :: NatType ni)
+    crc <- local $ istruct initCRC16
+    updateCRC16 crc . castDefault =<< F.read etc 0
+    kx <- local $ ival 4
+    times (2 * dinputsN * relaysN :: Ix 256) \_ -> do
+        kx' <- deref kx
+        updateCRC16 crc . castDefault =<< F.read etc kx'
+        store kx $ kx' + 4
+    kx' <- deref kx
+    msb' <- castDefault <$> F.read etc kx'
+    lsb' <- castDefault <$> F.read etc (kx' + 4)
+    lsb'' <- deref $ crc ~> lsb
+    msb'' <- deref $ crc ~> msb
+    pure $ lsb' ==? lsb'' .&& msb' ==? msb''
+
+onInit :: (KnownNat no, KnownNat nd, ANat l) => Mix ni no nd -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onInit Mix{..} buff size = do
+    let relsSizeBuff = 1 + 5 * fromIntegral (FR.n relays) + 6 * fromIntegral (FR.n relays)
+    let dimsSizeBuff = FDim.n dimmers * 3
+
+    when (size >=? relsSizeBuff + dimsSizeBuff) do
+        offset <- local $ ival 1
+
+        initGroups relays buff offset
+        initRelays relays buff offset
+
+        let ds = EDim.dimmers (FDim.getDimmers dimmers)
+        arrayMap \ix -> do
+            offset' <- deref offset
+            let d = ds ! ix
+            group <- unpack buff offset'
+            mode <- unpack buff (offset' + 1)
+            value <- unpack buff (offset' + 2) :: Ivory eff Uint8
+            EDim.initialize d group mode (safeCast value / 255) 0
+            EDim.syncDimmerGroup ds d ix
+            store offset $ offset' + 3
+
+        store shouldInit false
