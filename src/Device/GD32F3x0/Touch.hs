@@ -166,8 +166,8 @@ processingMeasurement touch@Touch{..} = do
                     store var $ average 0.01 var' $ diff * diff
                     var'' <- (/ avg') <$> deref var
 
-                    -- store debugVal $ var'' * 100
-                    store debugVal diff
+                    store debugVal $ var'' * 10
+                    -- store debugVal diff
 
                     ifte_
                         (var'' >? I.thresholdUp material .&& moment >? avg')
@@ -216,6 +216,13 @@ processingMeasurement touch@Touch{..} = do
 average :: IFloat -> IFloat -> IFloat -> IFloat
 average alpha a b =
     a * (1 - alpha) + b * alpha
+
+aluminumRoomNumber =
+    I.Material
+        { maxDiff = 1800
+        , thresholdUp = 8
+        , thresholdDown = 2
+        }
 
 aluminum =
     I.Material

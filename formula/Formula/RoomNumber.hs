@@ -5,7 +5,7 @@ import Core.Meta
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
-import Device.GD32F3x0.Touch (aluminum)
+import Device.GD32F3x0.Touch (aluminumRoomNumber)
 import Feature.Smart.Top.Vibro (vibro)
 import Feature.Touches
 import Implementation.RoomNumber (roomNumber)
@@ -31,7 +31,7 @@ roomNumber'v1 =
         , transport = rbus $ rs485 uart_1 out_pa_4
         , implementation =
             roomNumber
-                ( touches aluminum $
+                ( touches aluminumRoomNumber $
                     touch_pa6
                         :> Nil
                 )
