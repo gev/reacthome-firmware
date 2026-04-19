@@ -7,7 +7,7 @@ import Core.Meta
 import Core.Models
 import Data.Fixed
 import Device.GD32F3x0
-import Device.GD32F3x0.Touch (aluminum)
+import Device.GD32F3x0.Touch (aluminumCardHolder)
 import Feature.DInputs
 import Feature.Smart.Top.Vibro (vibro)
 import Feature.Touches (touches)
@@ -33,7 +33,7 @@ smartTopCardHolder'v1 =
         , transport = rbusTop uart_1
         , implementation =
             topCardHolder
-                ( touches aluminum $
+                ( touches aluminumCardHolder $
                     touch_pa6
                         :> touch_pa7
                         :> Nil
