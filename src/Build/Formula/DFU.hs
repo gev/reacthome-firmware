@@ -56,7 +56,10 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
             path = target </> name
         T.readFile =<< build compiler formula path name
 
-    combine main dfu path = T.writeFile path (truncateHex dfu <> main)
+    combine main dfu path = do
+        createDirectoryIfMissing True $
+            takeDirectory path
+        T.writeFile path (truncateHex dfu <> main)
 
     pack main path = do
         createDirectoryIfMissing True $
