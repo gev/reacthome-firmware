@@ -34,6 +34,7 @@ import Formula.Smart.Top.TopG4
 import Formula.Smart.Top.TopG4D
 import Formula.Smart.Top.TopG6
 import Formula.Soundbox
+import Formula.MixF
 
 main :: IO ()
 main = do
@@ -54,6 +55,7 @@ main = do
         , doppler1'v5
         , doppler5'v5
         , mix6x12'v6
+        , mixF'v2
         , mixH'v3
         , mixH'v6
         , roomNumber'v1
