@@ -14,6 +14,7 @@ import Ivory.Stdlib
 import Support.CMSIS.CoreCMFunc
 import Support.ReadAddr
 import Support.RunAppByAddr
+import Core.Task (delay)
 
 data DFU = forall t. DFU
     { info :: GetInfo
@@ -29,15 +30,17 @@ dfu ::
     Int -> (Word8, Word8) -> m t -> m DFU
 dfu address version transport' = do
     transport <- transport'
-    addInit "jump_to_firmware" $ jumpToFirmware $ fromIntegral address
+    addTask $ delay 10_000  "jump_to_firmware" $ jumpToFirmware $ fromIntegral address
     info <- mkGetDfuInfo version transport
     pure DFU{info, transport}
 
 jumpToFirmware :: Uint32 -> Ivory eff ()
 jumpToFirmware address = do
-    disableIRQ
-    setMSP =<< readAddr32u address
-    runAppByAddr $ address + 4
+    flag <- readAddr32u address
+    when (flag /=? 0xff_ff_ff_ff) do
+        disableIRQ
+        setMSP =<< readAddr32u address
+        runAppByAddr $ address + 4
 
 instance Controller DFU where
     handle DFU{..} buff _ = do
