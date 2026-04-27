@@ -21,6 +21,7 @@ import Feature.GetInfo
 import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
+import Support.CMSIS.CoreCM4 (nvicSystemReset)
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff n = 1 + ToSizeInBytes n
@@ -62,7 +63,10 @@ instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (DI n) where
         cond_
             [ action ==? actionGetState ==> forceSyncDInputs dinputs
             , action ==? actionGetInfo ==> onGetInfo info
+            , action ==? actionUpdateFirmware ==> updateFirmware
             ]
+
+updateFirmware = nvicSystemReset
 
 syncChannels ::
     forall n s.

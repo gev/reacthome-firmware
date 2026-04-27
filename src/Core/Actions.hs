@@ -62,7 +62,7 @@ actionInitialized = 0xF3 :: Uint8
 actionGetState = 0xF4 :: Uint8
 actionGetInfo = 0xF5 :: Uint8
 actionFindMe = 0xFA :: Uint8
-actionBootload = 0xFB :: Uint8
+actionUpdateFirmware = 0xFB :: Uint8
 actionMacAddress = 0xFC :: Uint8
 actionIpAddress = 0xFD :: Uint8
 -- 0xFE is used for PLC device

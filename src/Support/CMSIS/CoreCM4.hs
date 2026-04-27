@@ -5,6 +5,7 @@ module Support.CMSIS.CoreCM4 (
     isb,
     dsb,
     dmb,
+    nvicSystemReset,
     inclCoreCM4,
 ) where
 
@@ -46,6 +47,12 @@ dmb = call_ __DMB
 __DMB :: Def ('[] :-> ())
 __DMB = fun "__DMB"
 
+nvicSystemReset :: Ivory eff ()
+nvicSystemReset = call_ nvic_SystemReset
+
+nvic_SystemReset :: Def ('[] :-> ())
+nvic_SystemReset = fun "NVIC_SystemReset"
+
 inclCoreCM4 :: ModuleDef
 inclCoreCM4 = do
     incl sysTick_Config
@@ -53,3 +60,4 @@ inclCoreCM4 = do
     incl __ISB
     incl __DSB
     incl __DMB
+    incl nvic_SystemReset
