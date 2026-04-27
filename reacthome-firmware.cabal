@@ -389,7 +389,6 @@ executable reacthome-firmware
     NoStarIsType
     NumericUnderscores
     OverloadedRecordDot
-    OverloadedStrings
     QuasiQuotes
     RankNTypes
     RecordWildCards

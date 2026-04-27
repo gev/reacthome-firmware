@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Build.Formula.DFU where
 
 import Build.Compiler
@@ -6,7 +8,7 @@ import Build.Shake
 import Core.Context
 import Core.Formula
 import Core.Formula.DFU
-import Core.Meta (board, mcu, model, version, mkNameDfu)
+import Core.Meta (board, mcu, mkNameDfu, model, version)
 import Data.Char (toLower)
 import Data.Text qualified as T
 import Data.Text.IO qualified as T
@@ -14,13 +16,13 @@ import Data.Text.Internal.Builder qualified as B
 import Data.Text.Lazy qualified as L
 import Data.Text.Lazy.Builder.Int qualified as B
 import Data.Util (unPack16BE)
+import Data.Word
 import Development.Shake.FilePath
 import Implementation.Dfu qualified as I
 import Interface.MCU
 import Ivory.Language
 import Support.CMSIS.CoreCMFunc
 import System.Directory
-import Data.Word
 
 mkDFU ::
     (Compiler c p, Shake c) =>
