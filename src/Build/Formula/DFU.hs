@@ -90,7 +90,7 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
         let
             hex' = T.tail hex
             size = fromHex $ T.take 2 hex'
-            head = T.drop 2 hex'
+            head = T.take 8 $ T.drop 2 hex'
             offset = T.take 4 head
             opcode = T.drop 4 head
             payload = T.take (size * 2) $ T.drop 8 hex'
