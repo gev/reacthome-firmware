@@ -38,7 +38,7 @@ import Formula.Soundbox
 
 main :: IO ()
 main = do
-    make gcc di4la'v3
+    make gcc di4'v3
 
 -- mapM_
 --     (make gcc)
