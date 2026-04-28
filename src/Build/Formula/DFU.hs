@@ -90,7 +90,7 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
         let
             hex' = T.tail hex
             size = fromHex $ T.take 2 hex'
-            head = T.take 8 $ T.drop 2 hex'
+            head = T.take 6 $ T.drop 2 hex'
             offset = T.take 4 head
             opcode = T.drop 4 head
             payload = T.take (size * 2) $ T.drop 8 hex'
@@ -102,8 +102,8 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
     filterHex' acc _ [] = acc
     filterHex' acc base (h : hs) =
         case h of
-            (offset, "00", payload) -> filterHex' ((base <> " " <> offset <> " " <> payload) : acc) base hs
-            (_, "04", payload) -> filterHex' acc (T.take 4 payload) hs
+            (offset, "00", payload) -> filterHex' ((base <> offset <> payload) : acc) base hs
+            (_, "04", payload) -> filterHex' acc payload hs
             _ -> filterHex' acc base hs
 
     mcu = toLower <$> (meta.mcu.model <> meta.mcu.modification)
