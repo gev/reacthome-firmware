@@ -10,11 +10,13 @@ import Core.Formula
 import Core.Formula.DFU
 import Core.Meta (board, mcu, mkNameDfu, model, version)
 import Data.Char (toLower)
+import Data.Fixed (MakeFrom (from))
 import Data.Text qualified as T
 import Data.Text.IO qualified as T
 import Data.Text.Internal.Builder qualified as B
 import Data.Text.Lazy qualified as L
 import Data.Text.Lazy.Builder.Int qualified as B
+import Data.Text.Read qualified as T
 import Data.Util (unPack16BE, unPack32BE)
 import Data.Word
 import Development.Shake.FilePath
@@ -23,6 +25,7 @@ import Interface.MCU
 import Ivory.Language
 import Support.CMSIS.CoreCMFunc
 import System.Directory
+import Text.Read qualified as T
 
 mkDFU ::
     (Compiler c p, Shake c) =>
@@ -72,24 +75,25 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
 
     header main =
         L.toStrict . B.toLazyText $
-            mconcat (hexadecimal <$> unPack32BE (fromIntegral $ length main))
-                <> mconcat (hexadecimal <$> unPack16BE meta.model)
-                <> hexadecimal meta.board
-                <> hexadecimal (fst meta.version)
-                <> hexadecimal (snd meta.version)
-                <> hexadecimal (fst dfuVersion)
-                <> hexadecimal (snd dfuVersion)
+            mconcat (toHex <$> unPack32BE (fromIntegral $ length main))
+                <> mconcat (toHex <$> unPack16BE meta.model)
+                <> toHex meta.board
+                <> toHex (fst meta.version)
+                <> toHex (snd meta.version)
+                <> toHex (fst dfuVersion)
+                <> toHex (snd dfuVersion)
                 <> B.fromString mcu
 
     upHex hex = filterHex $ parseHex <$> T.lines hex
 
     parseHex hex =
         let
-            hex' = T.init $ T.drop 3 hex
-            head = T.take 6 hex'
-            payload = T.drop 6 hex'
+            hex' = T.tail hex
+            size = fromHex $ T.take 2 hex'
+            head = T.drop 2 hex'
             offset = T.take 4 head
             opcode = T.drop 4 head
+            payload = T.take (size * 2) $ T.drop 8 hex'
          in
             (offset, opcode, payload)
 
@@ -98,8 +102,8 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
     filterHex' acc _ [] = acc
     filterHex' acc base (h : hs) =
         case h of
-            (offset, "00", payload) -> filterHex' ((base <> offset <> payload) : acc) base hs
-            (_, "04", _) -> filterHex' acc base hs
+            (offset, "00", payload) -> filterHex' ((base <> " " <> offset <> " " <> payload) : acc) base hs
+            (_, "04", payload) -> filterHex' acc (T.take 4 payload) hs
             _ -> filterHex' acc base hs
 
     mcu = toLower <$> (meta.mcu.model <> meta.mcu.modification)
@@ -112,6 +116,10 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
 
     truncateHex = T.unlines . init . T.lines
 
-    hexadecimal n
+    toHex n
         | n < 16 = B.singleton '0' <> B.hexadecimal n
         | otherwise = B.hexadecimal n
+
+    fromHex t = case T.hexadecimal t of
+        Right (val, _) -> val -- Partially parsed (trailing chars ignored)
+        Left err -> error err
