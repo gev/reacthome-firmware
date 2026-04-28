@@ -93,7 +93,7 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
          in
             (offset, opcode, payload)
 
-    filterHex = filterHex' [] "0000"
+    filterHex = reverse . filterHex' [] "0000"
 
     filterHex' acc _ [] = acc
     filterHex' acc base (h : hs) =
