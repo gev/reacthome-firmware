@@ -15,7 +15,7 @@ import Data.Text.IO qualified as T
 import Data.Text.Internal.Builder qualified as B
 import Data.Text.Lazy qualified as L
 import Data.Text.Lazy.Builder.Int qualified as B
-import Data.Util (unPack16BE)
+import Data.Util (unPack16BE, unPack32BE)
 import Data.Word
 import Development.Shake.FilePath
 import Implementation.Dfu qualified as I
@@ -64,14 +64,15 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
         T.writeFile path (truncateHex dfu <> main)
 
     pack main path = do
+        let main' = upHex main
         createDirectoryIfMissing True $
             takeDirectory path
-        T.writeFile path $
-            T.intercalate "\n" [header, main]
+        T.writeFile path do
+            T.intercalate "\n" $ header main' : main'
 
-    header =
+    header main =
         L.toStrict . B.toLazyText $
-            B.singleton '#'
+            mconcat (hexadecimal <$> unPack32BE (fromIntegral $ length main))
                 <> mconcat (hexadecimal <$> unPack16BE meta.model)
                 <> hexadecimal meta.board
                 <> hexadecimal (fst meta.version)
@@ -79,6 +80,27 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
                 <> hexadecimal (fst dfuVersion)
                 <> hexadecimal (snd dfuVersion)
                 <> B.fromString mcu
+
+    upHex hex = filterHex $ parseHex <$> T.lines hex
+
+    parseHex hex =
+        let
+            hex' = T.init $ T.drop 3 hex
+            head = T.take 6 hex'
+            payload = T.drop 6 hex'
+            offset = T.take 4 head
+            opcode = T.drop 4 head
+         in
+            (offset, opcode, payload)
+
+    filterHex = filterHex' [] "000"
+
+    filterHex' acc _ [] = acc
+    filterHex' acc base (h : hs) =
+        case h of
+            (offset, "00", payload) -> filterHex' ((base <> offset <> payload) : acc) base hs
+            (_, "04", _) -> filterHex' acc base hs
+            _ -> filterHex' acc base hs
 
     mcu = toLower <$> (meta.mcu.model <> meta.mcu.modification)
 
