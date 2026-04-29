@@ -58,17 +58,17 @@ relay relays' indicator' transport' = do
 
     pure relay
 
-instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (Relay n) where
-    handle Relay{..} buff size = do
-        action <- unpack buff 0
-        cond_
-            [ action ==? actionDo ==> onDo relays buff size
-            , action ==? actionGroup ==> onGroup relays buff size
-            , action ==? actionGetState ==> onGetState relays
-            , action ==? actionInitialize ==> onInit relays buff size
-            , action ==? actionFindMe ==> onFindMe indicator buff size
-            , action ==? actionGetInfo ==> onGetInfo info
-            ]
+handle :: (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Relay n -> OnMessage l s t
+handle Relay{..} buff size = do
+    action <- unpack buff 0
+    cond_
+        [ action ==? actionDo ==> onDo relays buff size
+        , action ==? actionGroup ==> onGroup relays buff size
+        , action ==? actionGetState ==> onGetState relays
+        , action ==? actionInitialize ==> onInit relays buff size
+        , action ==? actionFindMe ==> onFindMe indicator buff size
+        , action ==? actionGetInfo ==> onGetInfo info
+        ]
 
 syncChannels ::
     forall n s t.

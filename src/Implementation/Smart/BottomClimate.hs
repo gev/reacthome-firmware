@@ -76,23 +76,27 @@ onGetState BottomClimate{..} _ _ = do
     forceSyncDInputs dinputs
     forceSyncAled aled
 
-instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (BottomClimate n) where
-    handle b@BottomClimate{..} buff size = do
-        action <- deref $ buff ! 0
-        cond_
-            [ action ==? actionGetState ==> onGetState b buff size
-            , action ==? actionInitialize ==> onInitialize aled buff size
-            , action ==? actionALedOn ==> onALedOn aled buff size
-            , action ==? actionALedOff ==> onALedOff aled buff size
-            , action ==? actionALedColorAnimationPlay ==> onALedColorAnimationPlay aled buff size
-            , action ==? actionALedColorAnimationStop ==> onALedColorAnimationStop aled buff size
-            , action ==? actionALedMaskAnimationPlay ==> onALedMaskAnimationPlay aled buff size
-            , action ==? actionALedMaskAnimationStop ==> onALedMaskAnimationStop aled buff size
-            , action ==? actionALedClip ==> onALedClip aled buff size
-            , action ==? actionALedBrightness ==> onALedBrightness aled buff size
-            , action ==? actionALedConfigGroup ==> onALedConfigGroup aled buff size
-            , action ==? actionGetInfo ==> onGetInfo info
-            ]
+handle ::
+    ( KnownNat n
+    , KnownNat (SizeSyncStateBuff n)
+    ) =>
+    BottomClimate n -> OnMessage l s t
+handle b@BottomClimate{..} buff size = do
+    action <- deref $ buff ! 0
+    cond_
+        [ action ==? actionGetState ==> onGetState b buff size
+        , action ==? actionInitialize ==> onInitialize aled buff size
+        , action ==? actionALedOn ==> onALedOn aled buff size
+        , action ==? actionALedOff ==> onALedOff aled buff size
+        , action ==? actionALedColorAnimationPlay ==> onALedColorAnimationPlay aled buff size
+        , action ==? actionALedColorAnimationStop ==> onALedColorAnimationStop aled buff size
+        , action ==? actionALedMaskAnimationPlay ==> onALedMaskAnimationPlay aled buff size
+        , action ==? actionALedMaskAnimationStop ==> onALedMaskAnimationStop aled buff size
+        , action ==? actionALedClip ==> onALedClip aled buff size
+        , action ==? actionALedBrightness ==> onALedBrightness aled buff size
+        , action ==? actionALedConfigGroup ==> onALedConfigGroup aled buff size
+        , action ==? actionGetInfo ==> onGetInfo info
+        ]
 
 syncChannels ::
     forall n s.

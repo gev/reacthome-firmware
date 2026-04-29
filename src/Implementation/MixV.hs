@@ -101,7 +101,7 @@ mix dinputs' aoutputs' dimmers' relays' ds18b20 transport' = do
 
     pure mix
 
-instance
+handle ::
     ( KnownNat ni
     , KnownNat nd
     , KnownNat no
@@ -110,18 +110,18 @@ instance
     , KnownNat (ToSizeInBytes no)
     , KnownNat (SizeSyncStateBuff ni no nd na)
     ) =>
-    Controller (Mix ni no nd na)
-    where
-    handle mix@Mix{..} buff size = do
-        action <- deref $ buff ! 0
-        cond_
-            [ action ==? actionDo ==> onDo mix buff size
-            , action ==? actionDim ==> onDim mix buff size
-            , action ==? actionAo ==> onAo mix buff size
-            , action ==? actionInitialize ==> onInit mix buff size
-            , action ==? actionGetState ==> onGetState mix
-            , action ==? actionGetInfo ==> onGetInfo info
-            ]
+    Mix ni no nd na ->
+    OnMessage l s t
+handle mix@Mix{..} buff size = do
+    action <- deref $ buff ! 0
+    cond_
+        [ action ==? actionDo ==> onDo mix buff size
+        , action ==? actionDim ==> onDim mix buff size
+        , action ==? actionAo ==> onAo mix buff size
+        , action ==? actionInitialize ==> onInit mix buff size
+        , action ==? actionGetState ==> onGetState mix
+        , action ==? actionGetInfo ==> onGetInfo info
+        ]
 
 onInit ::
     forall l ni no nd na s t.

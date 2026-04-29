@@ -157,7 +157,7 @@ sync Mix{..} = do
     syncRelays relays
     syncRules rules
 
-instance
+handle ::
     ( KnownNat ni
     , KnownNat no
     , KnownNat nd
@@ -166,20 +166,19 @@ instance
     , KnownNat (ToSizeInBytes ni)
     , KnownNat (ToSizeInBytes no)
     ) =>
-    Controller (Mix ni no nd)
-    where
-    handle mix@Mix{..} buff size = do
-        shouldInit' <- deref shouldInit
-        action <- deref $ buff ! 0
-        cond_
-            [ action ==? actionDo .&& iNot shouldInit' ==> onDo relays buff size
-            , action ==? actionGroup .&& iNot shouldInit' ==> onGroup relays buff size
-            , action ==? actionDim .&& iNot shouldInit' ==> onDim dimmers buff size
-            , action ==? actionDiRelaySync .&& iNot shouldInit' ==> onRule mix buff size
-            , action ==? actionInitialize ==> onInit mix buff size
-            , action ==? actionGetState ==> onGetState mix
-            , action ==? actionGetInfo ==> onGetInfo info
-            ]
+    Mix ni no nd -> OnMessage l s t
+handle mix@Mix{..} buff size = do
+    shouldInit' <- deref shouldInit
+    action <- deref $ buff ! 0
+    cond_
+        [ action ==? actionDo .&& iNot shouldInit' ==> onDo relays buff size
+        , action ==? actionGroup .&& iNot shouldInit' ==> onGroup relays buff size
+        , action ==? actionDim .&& iNot shouldInit' ==> onDim dimmers buff size
+        , action ==? actionDiRelaySync .&& iNot shouldInit' ==> onRule mix buff size
+        , action ==? actionInitialize ==> onInit mix buff size
+        , action ==? actionGetState ==> onGetState mix
+        , action ==? actionGetInfo ==> onGetInfo info
+        ]
 
 syncChannels ::
     forall ni no nd s t.

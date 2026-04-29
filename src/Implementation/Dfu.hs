@@ -6,6 +6,7 @@ import Core.Actions
 import Core.Context
 import Core.Controller
 import Core.Domain qualified as D
+import Core.Task (delay)
 import Core.Transport
 import Data.Word
 import Feature.GetInfo
@@ -14,7 +15,6 @@ import Ivory.Stdlib
 import Support.CMSIS.CoreCMFunc
 import Support.ReadAddr
 import Support.RunAppByAddr
-import Core.Task (delay)
 
 data DFU = forall t. DFU
     { info :: GetInfo
@@ -30,7 +30,7 @@ dfu ::
     Int -> (Word8, Word8) -> m t -> m DFU
 dfu address version transport' = do
     transport <- transport'
-    addTask $ delay 10_000  "jump_to_firmware" $ jumpToFirmware $ fromIntegral address
+    addTask $ delay 10_000 "jump_to_firmware" $ jumpToFirmware $ fromIntegral address
     info <- mkGetDfuInfo version transport
     pure DFU{info, transport}
 
@@ -42,9 +42,9 @@ jumpToFirmware address = do
         setMSP =<< readAddr32u address
         runAppByAddr $ address + 4
 
-instance Controller DFU where
-    handle DFU{..} buff _ = do
-        action <- deref $ buff ! 0
-        cond_
-            [ action ==? actionGetInfo ==> onGetInfo info
-            ]
+handle :: DFU -> OnMessage l s t
+handle DFU{..} buff _ = do
+    action <- deref $ buff ! 0
+    cond_
+        [ action ==? actionGetInfo ==> onGetInfo info
+        ]

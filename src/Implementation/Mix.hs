@@ -166,21 +166,28 @@ sync Mix{..} = do
     syncRules rules
     syncATS ats
 
-instance (KnownNat ni, KnownNat no, KnownNat (PayloadSize no), KnownNat (SizeSyncStateBuff ni no), KnownNat (ToSizeInBytes ni)) => Controller (Mix ni no) where
-    handle mix@Mix{..} buff size = do
-        shouldInit' <- deref shouldInit
-        action <- deref $ buff ! 0
-        cond_
-            [ action ==? actionDo .&& iNot shouldInit' ==> onDo relays buff size
-            , action ==? actionGroup .&& iNot shouldInit' ==> onGroup relays buff size
-            , action ==? actionDiRelaySync .&& iNot shouldInit' ==> onRule mix buff size
-            , action ==? actionMix .&& iNot shouldInit' ==> onMode mix buff size
-            , action ==? actionInitialize ==> onInit relays buff size
-            , action ==? actionGetState ==> onGetState mix
-            , action ==? actionFindMe ==> onFindMe indicator buff size
-            , action ==? actionError ==> resetError ats
-            , action ==? actionGetInfo ==> onGetInfo info
-            ]
+handle ::
+    ( KnownNat ni
+    , KnownNat no
+    , KnownNat (PayloadSize no)
+    , KnownNat (SizeSyncStateBuff ni no)
+    , KnownNat (ToSizeInBytes ni)
+    ) =>
+    Mix ni no -> OnMessage l s t
+handle mix@Mix{..} buff size = do
+    shouldInit' <- deref shouldInit
+    action <- deref $ buff ! 0
+    cond_
+        [ action ==? actionDo .&& iNot shouldInit' ==> onDo relays buff size
+        , action ==? actionGroup .&& iNot shouldInit' ==> onGroup relays buff size
+        , action ==? actionDiRelaySync .&& iNot shouldInit' ==> onRule mix buff size
+        , action ==? actionMix .&& iNot shouldInit' ==> onMode mix buff size
+        , action ==? actionInitialize ==> onInit relays buff size
+        , action ==? actionGetState ==> onGetState mix
+        , action ==? actionFindMe ==> onFindMe indicator buff size
+        , action ==? actionError ==> resetError ats
+        , action ==? actionGetInfo ==> onGetInfo info
+        ]
 
 syncChannels ::
     forall ni no s t.

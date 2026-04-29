@@ -91,25 +91,24 @@ diRsm dinputs' rsm' aoutputs' ds18b20 transport' = do
 
     pure dirsm
 
-instance
+handle ::
     ( KnownNat ni
     , KnownNat no
     , KnownNat nr
     , KnownNat (SizeSyncStateBuff ni no)
     , KnownNat (ToSizeInBytes ni)
     ) =>
-    Controller (DIRSM ni no nr)
-    where
-    handle s@DIRSM{..} buff size = do
-        action <- deref $ buff ! 0
-        cond_
-            [ action ==? actionAo ==> onAo aoutputs buff size
-            , action ==? actionInitialize ==> onInit s buff size
-            , action ==? actionRs485Mode ==> setMode rsm buff size
-            , action ==? actionRs485Transmit ==> transmitRS485 rsm buff size
-            , action ==? actionGetState ==> onGetState s
-            , action ==? actionGetInfo ==> onGetInfo info
-            ]
+    (DIRSM ni no nr) -> OnMessage l s t
+handle s@DIRSM{..} buff size = do
+    action <- deref $ buff ! 0
+    cond_
+        [ action ==? actionAo ==> onAo aoutputs buff size
+        , action ==? actionInitialize ==> onInit s buff size
+        , action ==? actionRs485Mode ==> setMode rsm buff size
+        , action ==? actionRs485Transmit ==> transmitRS485 rsm buff size
+        , action ==? actionGetState ==> onGetState s
+        , action ==? actionGetInfo ==> onGetInfo info
+        ]
 
 onInit ::
     (KnownNat l, KnownNat ni, KnownNat no, KnownNat nr) =>

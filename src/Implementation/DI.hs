@@ -57,14 +57,18 @@ di dinputs' ds18b20 transport' = do
 
     pure di
 
-instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (DI n) where
-    handle DI{..} buff _ = do
-        action <- deref $ buff ! 0
-        cond_
-            [ action ==? actionGetState ==> forceSyncDInputs dinputs
-            , action ==? actionGetInfo ==> onGetInfo info
-            , action ==? actionUpdateFirmware ==> updateFirmware
-            ]
+handle ::
+    ( KnownNat n
+    , KnownNat (SizeSyncStateBuff n)
+    ) =>
+    DI n -> OnMessage l s t
+handle DI{..} buff _ = do
+    action <- deref $ buff ! 0
+    cond_
+        [ action ==? actionGetState ==> forceSyncDInputs dinputs
+        , action ==? actionGetInfo ==> onGetInfo info
+        , action ==? actionUpdateFirmware ==> updateFirmware
+        ]
 
 updateFirmware = nvicSystemReset
 

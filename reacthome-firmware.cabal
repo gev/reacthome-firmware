@@ -21,7 +21,6 @@ executable reacthome-firmware
     Core.Actions
     Core.Context
     Core.Controller
-    Core.Dispatcher
     Core.Domain
     Core.FSM
     Core.Formula

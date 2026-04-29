@@ -48,8 +48,8 @@ import Interface.Flash
 import Interface.MCU (peripherals)
 import Interface.MCU qualified as I
 import Ivory.Language
-import Ivory.Stdlib
 import Ivory.Language.Proxy
+import Ivory.Stdlib
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff n = 1 + ToSizeInBytes n
@@ -160,21 +160,25 @@ onGetState Top{..} = do
     sendVibro vibro
     sendLEDs leds
 
-instance (KnownNat nt, KnownNat nd) => Controller (Top nt nd) where
-    handle t@Top{..} buff size = do
-        action <- deref $ buff ! 0
-        cond_
-            [ action ==? actionDo ==> onDo leds buff size
-            , action ==? actionDim ==> onDim leds buff size
-            , action ==? actionRGB ==> onSetColor leds buff size
-            , action ==? actionImage ==> onImage leds buff size
-            , action ==? actionBlink ==> onBlink leds buff size
-            , action ==? actionPalette ==> onPalette leds buff size
-            , action ==? actionVibro ==> onVibro vibro buff size
-            , action ==? actionFindMe ==> onFindMe buttons buff size
-            , action ==? actionGetState ==> onGetState t
-            , action ==? actionGetInfo ==> onGetInfo info
-            ]
+handle ::
+    ( KnownNat nt
+    , KnownNat nd
+    ) =>
+    Top nt nd -> OnMessage l s t
+handle t@Top{..} buff size = do
+    action <- deref $ buff ! 0
+    cond_
+        [ action ==? actionDo ==> onDo leds buff size
+        , action ==? actionDim ==> onDim leds buff size
+        , action ==? actionRGB ==> onSetColor leds buff size
+        , action ==? actionImage ==> onImage leds buff size
+        , action ==? actionBlink ==> onBlink leds buff size
+        , action ==? actionPalette ==> onPalette leds buff size
+        , action ==? actionVibro ==> onVibro vibro buff size
+        , action ==? actionFindMe ==> onFindMe buttons buff size
+        , action ==? actionGetState ==> onGetState t
+        , action ==? actionGetInfo ==> onGetInfo info
+        ]
 
 syncChannels ::
     forall nt nd s.

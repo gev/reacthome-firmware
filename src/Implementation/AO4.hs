@@ -47,15 +47,15 @@ ao4 sbm53d04' transport' = do
 
     pure ao4
 
-instance Controller AO4 where
-    handle AO4{..} buff size = do
-        action <- deref $ buff ! 0
-        cond_
-            [ action ==? actionAo ==> onAo aoutput4 buff size
-            , action ==? actionInitialize ==> onInit aoutput4 buff size
-            , action ==? actionGetState ==> forceSync aoutput4
-            , action ==? actionGetInfo ==> onGetInfo info
-            ]
+handle :: AO4 -> OnMessage l s t
+handle AO4{..} buff size = do
+    action <- deref $ buff ! 0
+    cond_
+        [ action ==? actionAo ==> onAo aoutput4 buff size
+        , action ==? actionInitialize ==> onInit aoutput4 buff size
+        , action ==? actionGetState ==> forceSync aoutput4
+        , action ==? actionGetInfo ==> onGetInfo info
+        ]
 
 syncChannels ::
     forall s t.

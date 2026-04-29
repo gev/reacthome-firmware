@@ -3,15 +3,12 @@ module Core.Controller where
 import Data.Buffer
 import GHC.TypeNats
 import Ivory.Language
-import Ivory.Stdlib
 
-class Controller c where
-    handle ::
-        (KnownNat l) =>
-        c ->
-        Buffer l Uint8 ->
-        Uint8 ->
-        Ivory (ProcEffects s t) ()
-    handle _ _ _ = cond_ []
+type OnMessage l s t =
+    (KnownNat l) =>
+    Buffer l Uint8 ->
+    Uint8 ->
+    Ivory (ProcEffects s t) ()
 
-instance Controller ()
+dontHandle :: OnMessage l s t
+dontHandle _ _ = pure ()

@@ -145,21 +145,21 @@ roomNumber touches' vibro' display' etc' transport' = do
 
     pure roomNumber
 
-instance (KnownNat n) => Controller (RoomNumber n) where
-    handle t@RoomNumber{..} buff size = do
-        action <- deref $ buff ! 0
-        cond_
-            [ action ==? actionDo ==> onDo leds buff size
-            , action ==? actionDim ==> onDim leds buff size
-            , action ==? actionRGB ==> onSetColor leds buff size
-            , action ==? actionImage ==> onImage leds buff size
-            , action ==? actionBlink ==> onBlink leds buff size
-            , action ==? actionPalette ==> onPalette leds buff size
-            , action ==? actionVibro ==> onVibro vibro buff size
-            , action ==? actionFindMe ==> onFindMe buttons buff size
-            , action ==? actionGetState ==> onGetState t
-            , action ==? actionGetInfo ==> onGetInfo info
-            ]
+handle :: (KnownNat n) => RoomNumber n -> OnMessage l s t
+handle t@RoomNumber{..} buff size = do
+    action <- deref $ buff ! 0
+    cond_
+        [ action ==? actionDo ==> onDo leds buff size
+        , action ==? actionDim ==> onDim leds buff size
+        , action ==? actionRGB ==> onSetColor leds buff size
+        , action ==? actionImage ==> onImage leds buff size
+        , action ==? actionBlink ==> onBlink leds buff size
+        , action ==? actionPalette ==> onPalette leds buff size
+        , action ==? actionVibro ==> onVibro vibro buff size
+        , action ==? actionFindMe ==> onFindMe buttons buff size
+        , action ==? actionGetState ==> onGetState t
+        , action ==? actionGetInfo ==> onGetInfo info
+        ]
 
 onGetState :: (KnownNat n) => RoomNumber n -> Ivory (ProcEffects s t) ()
 onGetState RoomNumber{..} = do

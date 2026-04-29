@@ -158,20 +158,20 @@ onGetState Top{..} = do
     sendVibro vibro
     sendLEDs leds
 
-instance (KnownNat n) => Controller (Top n) where
-    handle t@Top{..} buff size = do
-        action <- deref $ buff ! 0
-        cond_
-            [ action ==? actionDo ==> onDo leds buff size
-            , action ==? actionDim ==> onDim leds buff size
-            , action ==? actionRGB ==> onSetColor leds buff size
-            , action ==? actionImage ==> onImage leds buff size
-            , action ==? actionBlink ==> onBlink leds buff size
-            , action ==? actionPalette ==> onPalette leds buff size
-            , action ==? actionVibro ==> onVibro vibro buff size
-            , action ==? actionFindMe ==> onFindMe buttons buff size
-            , action ==? actionGetState ==> onGetState t
-            ]
+handle :: (KnownNat n) => Top n -> OnMessage l s t
+handle t@Top{..} buff size = do
+    action <- deref $ buff ! 0
+    cond_
+        [ action ==? actionDo ==> onDo leds buff size
+        , action ==? actionDim ==> onDim leds buff size
+        , action ==? actionRGB ==> onSetColor leds buff size
+        , action ==? actionImage ==> onImage leds buff size
+        , action ==? actionBlink ==> onBlink leds buff size
+        , action ==? actionPalette ==> onPalette leds buff size
+        , action ==? actionVibro ==> onVibro vibro buff size
+        , action ==? actionFindMe ==> onFindMe buttons buff size
+        , action ==? actionGetState ==> onGetState t
+        ]
 
 syncChannels ::
     forall n s.

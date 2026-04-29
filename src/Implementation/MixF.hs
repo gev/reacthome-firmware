@@ -98,25 +98,24 @@ mix dinputs' aoutputs' dimmers' ds18b20 indicator' transport' = do
 
     pure mix
 
-instance
+handle ::
     ( KnownNat ni
     , KnownNat nd
     , KnownNat na
     , KnownNat (ToSizeInBytes ni)
     , KnownNat (SizeSyncStateBuff ni nd na)
     ) =>
-    Controller (Mix ni nd na)
-    where
-    handle mix@Mix{..} buff size = do
-        action <- deref $ buff ! 0
-        cond_
-            [ action ==? actionDim ==> onDim mix buff size
-            , action ==? actionAo ==> onAo mix buff size
-            , action ==? actionInitialize ==> onInit mix buff size
-            , action ==? actionGetState ==> onGetState mix
-            , action ==? actionGetInfo ==> onGetInfo info
-            , action ==? actionFindMe ==> onFindMe indicator buff size
-            ]
+    Mix ni nd na -> OnMessage l s t
+handle mix@Mix{..} buff size = do
+    action <- deref $ buff ! 0
+    cond_
+        [ action ==? actionDim ==> onDim mix buff size
+        , action ==? actionAo ==> onAo mix buff size
+        , action ==? actionInitialize ==> onInit mix buff size
+        , action ==? actionGetState ==> onGetState mix
+        , action ==? actionGetInfo ==> onGetInfo info
+        , action ==? actionFindMe ==> onFindMe indicator buff size
+        ]
 
 onInit ::
     forall l ni nd na s t.

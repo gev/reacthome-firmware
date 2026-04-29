@@ -231,15 +231,15 @@ mix11 src amp dst = do
     store (dst ~> left) $ castDefault (dl' / 2)
     store (dst ~> right) $ castDefault (dr' / 2)
 
-instance Controller Soundbox where
-    handle s@Soundbox{..} buff size = do
-        action <- unpack buff 0
-        cond_
-            [ action ==? actionRtp ==> onRtp s buff size
-            , action ==? actionLanamp ==> onLanamp s buff size
-            , action ==? actionInitialize ==> onInit s buff size
-            , action ==? actionGetInfo ==> onGetInfo info
-            ]
+handle :: Soundbox -> OnMessage l s t
+handle s@Soundbox{..} buff size = do
+    action <- unpack buff 0
+    cond_
+        [ action ==? actionRtp ==> onRtp s buff size
+        , action ==? actionLanamp ==> onLanamp s buff size
+        , action ==? actionInitialize ==> onInit s buff size
+        , action ==? actionGetInfo ==> onGetInfo info
+        ]
 
 onInit Soundbox{..} buff size = do
     when (size >=? 135) do
