@@ -3,7 +3,6 @@ module Core.Controller where
 import Data.Buffer
 import GHC.TypeNats
 import Ivory.Language
-import Ivory.Stdlib
 
 class Controller c where
     handle ::
@@ -12,6 +11,6 @@ class Controller c where
         Buffer l Uint8 ->
         Uint8 ->
         Ivory (ProcEffects s t) ()
-    handle _ _ _ = cond_ []
+    handle _ _ _ = pure ()
 
 instance Controller ()
