@@ -31,7 +31,7 @@ ao4 ::
     , KnownNat (SizeSyncStateBuff AONumber)
     , MonadState Context m
     , LazyTransport t
-    , MonadReader (D.Domain p i) m
+    , MonadReader (D.Domain p) m
     ) =>
     (t -> m CBM53D04) -> m t -> m AO4
 ao4 sbm53d04' transport' = do

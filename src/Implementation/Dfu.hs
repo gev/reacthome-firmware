@@ -16,23 +16,24 @@ import Support.CMSIS.CoreCMFunc
 import Support.ReadAddr
 import Support.RunAppByAddr
 
-data DFU = forall t. DFU
-    { info :: GetInfo
-    , transport :: t
-    }
-
 dfu ::
     ( Monad m
     , MonadState Context m
     , LazyTransport t
-    , MonadReader (D.Domain p i) m
+    , MonadReader (D.Domain p) m
     ) =>
-    Int -> (Word8, Word8) -> m t -> m DFU
+    Int -> (Word8, Word8) -> (OnMessage l -> m t) -> m ()
 dfu address version transport' = do
-    transport <- transport'
-    addTask $ delay 10_000 "jump_to_firmware" $ jumpToFirmware $ fromIntegral address
+    transport <- transport' onMessage
     info <- mkGetDfuInfo version transport
-    pure DFU{info, transport}
+    addTask $ delay 10_000 "jump_to_firmware" $ jumpToFirmware $ fromIntegral address
+    let
+        onMessage buff _ = do
+            action <- deref $ buff ! 0
+            cond_
+                [ action ==? actionGetInfo ==> onGetInfo info
+                ]
+    pure ()
 
 jumpToFirmware :: Uint32 -> Ivory eff ()
 jumpToFirmware address = do
@@ -41,10 +42,3 @@ jumpToFirmware address = do
         disableIRQ
         setMSP =<< readAddr32u address
         runAppByAddr $ address + 4
-
-handle :: DFU -> OnMessage l
-handle DFU{..} buff _ = do
-    action <- deref $ buff ! 0
-    cond_
-        [ action ==? actionGetInfo ==> onGetInfo info
-        ]

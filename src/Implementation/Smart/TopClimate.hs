@@ -20,7 +20,7 @@ data Top = Top
 topClimate ::
     ( MonadState Context m
     , LazyTransport t
-    , MonadReader (D.Domain p i) m
+    , MonadReader (D.Domain p) m
     , LazyTransport t
     ) =>
     (t -> m SHT21) ->

@@ -34,7 +34,7 @@ dimmer ::
     , KnownNat n
     , KnownNat (SizeSyncStateBuff n)
     , LazyTransport t
-    , MonadReader (D.Domain p i) m
+    , MonadReader (D.Domain p) m
     ) =>
     (t -> m (Dimmers n)) ->
     m t ->

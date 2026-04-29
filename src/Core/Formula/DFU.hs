@@ -10,6 +10,6 @@ import Core.Transport (LazyTransport)
 
 data DFU p = forall l i t. (LazyTransport t) => DFU
     { meta :: Meta p
-    , transport :: forall i'. OnMessage l -> StateT Context (Reader (Domain p i')) t
-    , implementation :: (OnMessage l -> StateT Context (Reader (Domain p i)) t) -> StateT Context (Reader (Domain p i)) i
+    , transport :: OnMessage l -> StateT Context (Reader (Domain p)) t
+    , implementation :: (OnMessage l -> StateT Context (Reader (Domain p)) t) -> StateT Context (Reader (Domain p)) i
     }

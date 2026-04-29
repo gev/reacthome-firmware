@@ -43,7 +43,7 @@ data Relays n = Relays
 mkRelays ::
     forall n p i m.
     ( MonadState Context m
-    , MonadReader (D.Domain p i) m
+    , MonadReader (D.Domain p) m
     , KnownNat n
     ) =>
     String ->

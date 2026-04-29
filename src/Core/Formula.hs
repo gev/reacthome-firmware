@@ -8,5 +8,5 @@ import Core.Meta
 
 data Formula p = forall i. Formula
     { meta :: Meta p
-    , implementation :: StateT Context (Reader (Domain p i)) i
+    , implementation :: StateT Context (Reader (Domain p)) i
     }

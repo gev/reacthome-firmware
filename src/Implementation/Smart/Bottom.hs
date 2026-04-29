@@ -42,7 +42,7 @@ bottom ::
     , Monad m
     , KnownNat (SizeSyncStateBuff n)
     , LazyTransport t
-    , MonadReader (D.Domain p i) m
+    , MonadReader (D.Domain p) m
     ) =>
     (t -> m Top) ->
     (Bool -> t -> m (DInputs n)) ->
@@ -78,7 +78,7 @@ bottomCO2 ::
     , Monad m
     , KnownNat (SizeSyncStateBuff n)
     , LazyTransport t
-    , MonadReader (D.Domain p i) m
+    , MonadReader (D.Domain p) m
     ) =>
     (t -> m Top) ->
     ( Bool ->

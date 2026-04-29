@@ -24,9 +24,9 @@ cook Formula{..} = do
     incl loop
     incl main
   where
-    (domain', domainContext') = runState (domain meta implementation') mempty
+    (domain', domainContext') = runState (domain meta) mempty
     (mcu', mcuContext') = runState (platform meta.mcu) mempty
-    (implementation', implementationContext') = runReader (runStateT implementation mempty) domain'
+    (_, implementationContext') = runReader (runStateT implementation mempty) domain'
 
     (Context inclModule inits tasks _ bodies) =
         mcuContext'

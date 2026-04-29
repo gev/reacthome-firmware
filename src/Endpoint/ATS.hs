@@ -50,7 +50,7 @@ data ATS = ATS
         Ivory (ProcEffects s ()) ()
     }
 
-mkATS :: (MonadState Context m, MonadReader (Domain p i) m, T.Transport t) => t -> m ATS
+mkATS :: (MonadState Context m, MonadReader (Domain p) m, T.Transport t) => t -> m ATS
 mkATS transport = do
     meta <- asks D.meta
     platform <- I.platform meta.mcu

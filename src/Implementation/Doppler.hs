@@ -41,7 +41,7 @@ doppler ::
     , MonadState Context m
     , KnownNat (SizeSyncStateBuff ni)
     , LazyTransport t
-    , MonadReader (D.Domain p i) m
+    , MonadReader (D.Domain p) m
     ) =>
     (t -> m (Dopplers nd)) ->
     (Bool -> t -> m (DInputs ni)) ->

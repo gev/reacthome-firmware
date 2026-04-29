@@ -47,7 +47,7 @@ mkRules ::
     , KnownNat no
     , KnownNat (PayloadSize no)
     , MonadState Context m
-    , MonadReader (D.Domain p i) m
+    , MonadReader (D.Domain p) m
     , T.Transport t
     ) =>
     t ->

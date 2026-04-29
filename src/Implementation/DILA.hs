@@ -40,7 +40,7 @@ dila ::
     , MonadState Context m
     , KnownNat (SizeSyncStateBuff n)
     , LazyTransport t
-    , MonadReader (D.Domain p i) m
+    , MonadReader (D.Domain p) m
     ) =>
     (Bool -> t -> m (DInputs n)) ->
     (t -> m DS18B20) ->

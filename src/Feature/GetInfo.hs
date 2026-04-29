@@ -20,7 +20,7 @@ data GetInfo = forall t. (LazyTransport t) => GetInfo
 mkGetInfo ::
     ( LazyTransport t
     , Monad m
-    , MonadReader (D.Domain p i) m
+    , MonadReader (D.Domain p) m
     ) =>
     (forall eff. Ivory eff Uint8) -> (Word8, Word8) -> t -> m GetInfo
 mkGetInfo status version transport = do
@@ -34,7 +34,7 @@ mkGetInfo status version transport = do
 mkGetMainInfo ::
     ( LazyTransport t
     , Monad m
-    , MonadReader (D.Domain p i) m
+    , MonadReader (D.Domain p) m
     ) =>
     t -> m GetInfo
 mkGetMainInfo transport = do
@@ -44,7 +44,7 @@ mkGetMainInfo transport = do
 mkGetDfuInfo ::
     ( LazyTransport t
     , Monad m
-    , MonadReader (D.Domain p i) m
+    , MonadReader (D.Domain p) m
     ) =>
     (Word8, Word8) -> t -> m GetInfo
 mkGetDfuInfo = mkGetInfo (pure 1)
