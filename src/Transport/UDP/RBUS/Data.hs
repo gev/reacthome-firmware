@@ -1,5 +1,6 @@
 module Transport.UDP.RBUS.Data where
 
+import Core.Controller (OnMessage)
 import Data.Buffer
 import Data.Record
 import Data.Value
@@ -26,5 +27,5 @@ data RBUS = RBUS
     , requestInit :: Buffer 1 Uint8
     , shouldDiscovery :: Value IBool
     , shouldInit :: Value IBool
-    , onMessage :: Buffer 255 Uint8 -> Uint8 -> forall s t. Ivory (ProcEffects s t) ()
+    , onMessage :: OnMessage 255
     }

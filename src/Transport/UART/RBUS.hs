@@ -5,7 +5,6 @@ import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
 import Core.Controller
-import Core.Dispatcher
 import Core.Domain qualified as D
 import Core.Handler
 import Core.Meta
@@ -29,9 +28,9 @@ rbusTop ::
     ( MonadState Context m
     , MonadReader (D.Domain p c) m
     , UART (u 32 300)
-    , Controller c
     ) =>
     (p -> m (u 32 300)) ->
+    OnMessage 255 ->
     m (RBUS 32 300)
 rbusTop uart' = rbus uart' 115_200
 
@@ -39,9 +38,9 @@ rbusTopGD ::
     ( MonadState Context m
     , MonadReader (D.Domain p c) m
     , UART (u 32 300)
-    , Controller c
     ) =>
     (p -> m (u 32 300)) ->
+    OnMessage 255 ->
     m (RBUS 32 512)
 rbusTopGD uart' = rbus uart' 115_200
 
@@ -49,9 +48,9 @@ rbusHub ::
     ( MonadState Context m
     , MonadReader (D.Domain p c) m
     , UART (u 300 300)
-    , Controller c
     ) =>
     (p -> m (u 300 300)) ->
+    OnMessage 255 ->
     m (RBUS 32 1200)
 rbusHub uart' = rbus uart' 1_000_000
 
@@ -59,9 +58,9 @@ rbusEcho ::
     ( MonadState Context m
     , MonadReader (D.Domain p c) m
     , UART (u 32 300)
-    , Controller c
     ) =>
     (p -> m (u 32 300)) ->
+    OnMessage 255 ->
     m (RBUS 32 300)
 rbusEcho uart' = rbus uart' 1_000_000
 
@@ -69,7 +68,6 @@ rbus ::
     ( MonadState Context m
     , MonadReader (D.Domain p c) m
     , UART (u rn tn)
-    , Controller c
     , KnownNat q
     , KnownNat l
     , KnownNat rn
@@ -77,17 +75,15 @@ rbus ::
     ) =>
     (p -> m (u rn tn)) ->
     Uint32 ->
+    OnMessage 255 ->
     m (RBUS q l)
-rbus uart' speed = do
+rbus uart' speed onMessage = do
     meta <- asks D.meta
     platform <- I.platform meta.mcu
-    implementation <- asks D.implementation
     uart <- uart' platform.peripherals
     let name = "transport_uart_rbus"
-    {--
-        TODO: move dispatcher outside
-    --}
-    rbus <- mkRbus name uart speed $ makeDispatcher implementation
+
+    rbus <- mkRbus name uart speed onMessage
 
     addTask $ delay 10_000 (name <> "_discovery") $ discoveryTask rbus
 

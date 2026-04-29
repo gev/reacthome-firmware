@@ -61,7 +61,7 @@ handle ::
     ( KnownNat n
     , KnownNat (SizeSyncStateBuff n)
     ) =>
-    DI n -> OnMessage l s t
+    DI n -> OnMessage l
 handle DI{..} buff _ = do
     action <- deref $ buff ! 0
     cond_

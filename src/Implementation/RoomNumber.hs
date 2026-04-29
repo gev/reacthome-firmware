@@ -145,7 +145,7 @@ roomNumber touches' vibro' display' etc' transport' = do
 
     pure roomNumber
 
-handle :: (KnownNat n) => RoomNumber n -> OnMessage l s t
+handle :: (KnownNat n) => RoomNumber n -> OnMessage l
 handle t@RoomNumber{..} buff size = do
     action <- deref $ buff ! 0
     cond_

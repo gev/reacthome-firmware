@@ -75,12 +75,12 @@ mkSoundbox ::
     (p -> d -> m o) ->
     (p -> m (ic 2)) ->
     (p -> d -> m o) ->
-    m t ->
+    (OnMessage l -> m t) ->
     m Soundbox
 mkSoundbox enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute transport' = do
     S.mkSRC4392 i2c mute
 
-    transport <- transport'
+    transport <- transport' onMessage
 
     let name = "soundbox"
     meta <- asks D.meta
@@ -231,8 +231,8 @@ mix11 src amp dst = do
     store (dst ~> left) $ castDefault (dl' / 2)
     store (dst ~> right) $ castDefault (dr' / 2)
 
-handle :: Soundbox -> OnMessage l s t
-handle s@Soundbox{..} buff size = do
+onMessage :: Soundbox -> OnMessage l
+onMessage s@Soundbox{..} buff size = do
     action <- unpack buff 0
     cond_
         [ action ==? actionRtp ==> onRtp s buff size

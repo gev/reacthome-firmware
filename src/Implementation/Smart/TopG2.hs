@@ -158,7 +158,7 @@ onGetState Top{..} = do
     sendVibro vibro
     sendLEDs leds
 
-handle :: (KnownNat n) => Top n -> OnMessage l s t
+handle :: (KnownNat n) => Top n -> OnMessage l
 handle t@Top{..} buff size = do
     action <- deref $ buff ! 0
     cond_

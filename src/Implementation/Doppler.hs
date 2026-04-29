@@ -71,7 +71,7 @@ handle ::
     , KnownNat ni
     , KnownNat (SizeSyncStateBuff ni)
     ) =>
-    Doppler nd ni -> OnMessage l s t
+    Doppler nd ni -> OnMessage l
 handle d@Doppler{..} buff size = do
     action <- deref $ buff ! 0
     cond_

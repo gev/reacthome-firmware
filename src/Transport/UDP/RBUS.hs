@@ -4,9 +4,9 @@ module Transport.UDP.RBUS where
 
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
+import Core.Actions
 import Core.Context
 import Core.Controller
-import Core.Dispatcher
 import Core.Domain qualified as D
 import Core.Meta
 import Core.Task
@@ -25,22 +25,20 @@ import Support.Lwip.Udp
 import Transport.UDP.RBUS.Data
 import Transport.UDP.RBUS.Rx
 import Transport.UDP.RBUS.Tx
-import Core.Actions
 
 rbus ::
     ( MonadState Context m
     , MonadReader (D.Domain p c) m
     , Enet e
     , LwipPort e
-    , Controller c
     ) =>
     (p -> m e) ->
+    OnMessage 255 ->
     m RBUS
-rbus enet = do
+rbus enet onMessage = do
     meta <- asks D.meta
     platform <- platform meta.mcu
     shouldInit <- asks D.shouldInit
-    implementation <- asks D.implementation
     upcb <- value_ "udp_rbus_upcb"
     netif <- mkNetif enet
     serverIP <- record_ "udp_rbus_server_ip"
@@ -55,11 +53,6 @@ rbus enet = do
     requestIP <- buffer "udp_rbus_request_ip"
     requestInit <- buffer "udp_rbus_request_init"
     shouldDiscovery <- value "udp_rbus_should_discovery" false
-
-    {--
-        TODO: move dispatcher outside
-    --}
-    let onMessage = makeDispatcher implementation
 
     let rbus =
             RBUS

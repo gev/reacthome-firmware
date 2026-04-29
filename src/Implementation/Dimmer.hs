@@ -55,7 +55,7 @@ handle ::
     ( KnownNat n
     , KnownNat (SizeSyncStateBuff n)
     ) =>
-    Dimmer n -> OnMessage l s t
+    Dimmer n -> OnMessage l
 handle Dimmer{..} buff size = do
     action <- deref $ buff ! 0
     cond_

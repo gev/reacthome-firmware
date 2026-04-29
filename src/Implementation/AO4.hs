@@ -47,7 +47,7 @@ ao4 sbm53d04' transport' = do
 
     pure ao4
 
-handle :: AO4 -> OnMessage l s t
+handle :: AO4 -> OnMessage l
 handle AO4{..} buff size = do
     action <- deref $ buff ! 0
     cond_

@@ -105,7 +105,7 @@ handle ::
     , KnownNat (ToSizeInBytes ni)
     , KnownNat (SizeSyncStateBuff ni nd na)
     ) =>
-    Mix ni nd na -> OnMessage l s t
+    Mix ni nd na -> OnMessage l
 handle mix@Mix{..} buff size = do
     action <- deref $ buff ! 0
     cond_

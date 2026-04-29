@@ -69,7 +69,7 @@ handle ::
     ( KnownNat n
     , KnownNat (SizeSyncStateBuff n)
     ) =>
-    DILA n -> OnMessage l s t
+    DILA n -> OnMessage l
 handle d@DILA{..} buff size = do
     action <- deref $ buff ! 0
     cond_

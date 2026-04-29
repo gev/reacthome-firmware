@@ -164,7 +164,7 @@ handle ::
     ( KnownNat nt
     , KnownNat nd
     ) =>
-    Top nt nd -> OnMessage l s t
+    Top nt nd -> OnMessage l
 handle t@Top{..} buff size = do
     action <- deref $ buff ! 0
     cond_

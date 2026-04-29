@@ -42,7 +42,7 @@ jumpToFirmware address = do
         setMSP =<< readAddr32u address
         runAppByAddr $ address + 4
 
-handle :: DFU -> OnMessage l s t
+handle :: DFU -> OnMessage l
 handle DFU{..} buff _ = do
     action <- deref $ buff ! 0
     cond_

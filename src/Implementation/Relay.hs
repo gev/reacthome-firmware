@@ -58,7 +58,7 @@ relay relays' indicator' transport' = do
 
     pure relay
 
-handle :: (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Relay n -> OnMessage l s t
+handle :: (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Relay n -> OnMessage l
 handle Relay{..} buff size = do
     action <- unpack buff 0
     cond_

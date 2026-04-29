@@ -33,7 +33,7 @@ topClimate sht21' transport' = do
 
     pure Top{sht21, info}
 
-handle :: Top -> OnMessage l s t
+handle :: Top -> OnMessage l
 handle Top{..} buff _ = do
     action <- deref $ buff ! 0
     cond_

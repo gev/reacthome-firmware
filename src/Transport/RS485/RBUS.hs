@@ -2,9 +2,9 @@ module Transport.RS485.RBUS where
 
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState, gets)
+import Core.Actions
 import Core.Context
 import Core.Controller
-import Core.Dispatcher
 import Core.Domain qualified as D
 import Core.Handler
 import Core.Meta
@@ -22,17 +22,16 @@ import Protocol.RS485.RBUS.Slave (slave)
 import Transport.RS485.RBUS.Data
 import Transport.RS485.RBUS.Rx
 import Transport.RS485.RBUS.Tx
-import Core.Actions
 
 rbus ::
-    (MonadState Context m, MonadReader (D.Domain p c) m, Controller c) =>
+    (MonadState Context m, MonadReader (D.Domain p c) m) =>
     m (RS485 256 300) ->
+    OnMessage 255 ->
     m RBUS
-rbus rs485 = do
+rbus rs485 onMessage' = do
     meta <- asks D.meta
     platform <- platform meta.mcu
     shouldInit <- asks D.shouldInit
-    implementation <- asks D.implementation
 
     let name = "transport_rs485_rbus"
 
@@ -50,14 +49,9 @@ rbus rs485 = do
     msgConfirmed <- value (name <> "confirmed") false
     waitingConfirm <- value (name <> "_waiting_confirm") false
 
-    {--
-        TODO: move dispatcher outside
-    --}
-    let dispatch = makeDispatcher implementation
-
     let onMessage buff n shouldHandle = do
             when (n >? 0 .&& shouldHandle) do
-                dispatch buff n
+                onMessage' buff n
             store shouldConfirm true
 
     syncs <- gets getSyncs

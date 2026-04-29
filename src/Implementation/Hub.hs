@@ -125,7 +125,7 @@ handle ::
     , KnownNat (SizeSyncStateBuff ni nd)
     , KnownNat (ToSizeInBytes ni)
     ) =>
-    Hub ni nd nr -> OnMessage l s t
+    Hub ni nd nr -> OnMessage l
 handle s@Hub{..} buff size = do
     action <- deref $ buff ! 0
     cond_

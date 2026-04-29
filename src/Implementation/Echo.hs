@@ -38,5 +38,5 @@ echo transport' = do
 echoTask :: Echo -> Task
 echoTask Echo{..} = delay 100 "echo_tx" $ transmit buff
 
-handle :: Echo -> OnMessage l s t
+handle :: Echo -> OnMessage l
 handle Echo{..} request _ = transmit request

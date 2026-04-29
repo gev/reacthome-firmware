@@ -98,7 +98,7 @@ handle ::
     , KnownNat (SizeSyncStateBuff ni no)
     , KnownNat (ToSizeInBytes ni)
     ) =>
-    (DIRSM ni no nr) -> OnMessage l s t
+    (DIRSM ni no nr) -> OnMessage l
 handle s@DIRSM{..} buff size = do
     action <- deref $ buff ! 0
     cond_

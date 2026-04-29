@@ -166,7 +166,7 @@ handle ::
     , KnownNat (ToSizeInBytes ni)
     , KnownNat (ToSizeInBytes no)
     ) =>
-    Mix ni no nd -> OnMessage l s t
+    Mix ni no nd -> OnMessage l
 handle mix@Mix{..} buff size = do
     shouldInit' <- deref shouldInit
     action <- deref $ buff ! 0
