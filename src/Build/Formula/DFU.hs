@@ -10,7 +10,6 @@ import Core.Formula
 import Core.Formula.DFU
 import Core.Meta (board, mcu, mkNameDfu, model, version)
 import Data.Char (toLower)
-import Data.Fixed (MakeFrom (from))
 import Data.Text qualified as T
 import Data.Text.IO qualified as T
 import Data.Text.Internal.Builder qualified as B
@@ -25,7 +24,6 @@ import Interface.MCU
 import Ivory.Language
 import Support.CMSIS.CoreCMFunc
 import System.Directory
-import Text.Read qualified as T
 
 mkDFU ::
     (Compiler c p, Shake c) =>
