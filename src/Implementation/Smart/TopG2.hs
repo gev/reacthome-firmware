@@ -171,6 +171,7 @@ instance (KnownNat n) => Controller (Top n) where
             , action ==? actionVibro ==> onVibro vibro buff size
             , action ==? actionFindMe ==> onFindMe buttons buff size
             , action ==? actionGetState ==> onGetState t
+            , action ==? actionGetInfo ==> onGetInfo info
             ]
 
 syncChannels ::
