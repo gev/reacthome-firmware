@@ -80,7 +80,7 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
                 <> toHex (snd meta.version)
                 <> toHex (fst dfuVersion)
                 <> toHex (snd dfuVersion)
-                <> B.fromString mcu
+                <> mconcat (toHex <$> mcu)
 
     upHex hex = filterHex $ parseHex <$> T.lines hex
 
@@ -104,7 +104,7 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
             (_, "04", payload) -> filterHex' acc payload hs
             _ -> filterHex' acc base hs
 
-    mcu = toLower <$> (meta.mcu.model <> meta.mcu.modification)
+    mcu = fromEnum . toLower <$> (meta.mcu.model <> meta.mcu.modification)
 
     fixIRQ impl = do
         addInit "fix_IRQ" do
