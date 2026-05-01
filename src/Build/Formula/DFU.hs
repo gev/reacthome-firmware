@@ -16,7 +16,7 @@ import Data.Text.Internal.Builder qualified as B
 import Data.Text.Lazy qualified as L
 import Data.Text.Lazy.Builder.Int qualified as B
 import Data.Text.Read qualified as T
-import Data.Util (unPack16BE, unPack32BE)
+import Data.Util (unPack16BE)
 import Data.Word
 import Development.Shake.FilePath
 import Implementation.Dfu qualified as I
@@ -73,7 +73,7 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
 
     header main =
         L.toStrict . B.toLazyText $
-            mconcat (toHex <$> unPack32BE (fromIntegral $ length main))
+            mconcat (toHex <$> unPack16BE (fromIntegral $ length main))
                 <> mconcat (toHex <$> unPack16BE meta.model)
                 <> toHex meta.board
                 <> toHex (fst meta.version)
