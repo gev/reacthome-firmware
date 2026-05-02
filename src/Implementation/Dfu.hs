@@ -46,6 +46,7 @@ dfu ::
     Int -> (Word8, Word8) -> f -> m t -> m (DFU p)
 dfu address version mem transport' = do
     let firmwareAddress = fromIntegral address
+
     meta <- asks D.meta
     transport <- transport'
     info <- mkGetDfuInfo version transport
@@ -84,7 +85,7 @@ onUpdateFirmware dfu buff size =
     cond_
         [ size ==? 1 ==> nvicSystemReset
         , size >=? 8 ==> do
-            index <- unpackBE @Uint16 buff 1
+            index <- unpackBE buff 1
             ifte_
                 (index ==? 0)
                 do receiveHeader dfu buff size
