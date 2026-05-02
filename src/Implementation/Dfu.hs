@@ -104,27 +104,28 @@ receiveHeader ::
     Buffer l Uint8 ->
     Uint8 ->
     Ivory (ProcEffects s t) ()
-receiveHeader dfu@DFU{..} buff size = when (size ==? fromIntegral (12 + length name)) do
-    store shouldRepeatRequest false
-    deviceType <- unpackBE @Uint16 buff 5
-    boardVersion <- unpack @Uint8 buff 7
-    dfuMajorVersion <- unpack @Uint8 buff 10
-    when
-        ( deviceType
-            ==? fromIntegral meta.model
-            .&& boardVersion
-            ==? fromIntegral meta.board
-            .&& dfuMajorVersion
-            ==? fromIntegral (fst version)
-        )
-        do
-            sameMcu <- checkMcu name 12 true
-            when sameMcu do
-                cleanPage mem $ F.Addr firmwareAddress
-                store numberOfChunks =<< unpackBE buff 3
-                store currentChunk 2
-                requestChunk dfu 2
-                store shouldRepeatRequest true
+receiveHeader dfu@DFU{..} buff size =
+    when (size ==? fromIntegral (12 + length name)) do
+        store shouldRepeatRequest false
+        deviceType <- unpackBE @Uint16 buff 5
+        boardVersion <- unpack @Uint8 buff 7
+        dfuMajorVersion <- unpack @Uint8 buff 10
+        when
+            ( deviceType
+                ==? fromIntegral meta.model
+                .&& boardVersion
+                ==? fromIntegral meta.board
+                .&& dfuMajorVersion
+                ==? fromIntegral (fst version)
+            )
+            do
+                sameMcu <- checkMcu name 12 true
+                when sameMcu do
+                    cleanPage mem $ F.Addr firmwareAddress
+                    store numberOfChunks =<< unpackBE buff 3
+                    store currentChunk 2
+                    requestChunk dfu 2
+                    store shouldRepeatRequest true
   where
     checkMcu [] _ same = pure same
     checkMcu (n : ns) ix same = do
