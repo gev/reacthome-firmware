@@ -58,7 +58,7 @@ dfu address version mem transport' = do
     let dfu = DFU{..}
 
     addTask $ delay 10_000 "jump_to_firmware" do jumpToFirmware dfu
-    addTask $ delay 2_000 "repeat_chunk_request" do repeatChunkRequest dfu
+    addTask $ delay 3_000 "repeat_chunk_request" do repeatChunkRequest dfu
     pure dfu
 
 jumpToFirmware :: DFU p -> Ivory eff ()
