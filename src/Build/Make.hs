@@ -21,7 +21,7 @@ instance Make Formula p where
 
 instance Make DFU GD32F3x0 where
     make =
-        mkDFU 0x2_000 (0, 1) $
+        mkDFU 0x2_800 (0, 1) $
             GD32F3x0.setVectorTableNvic GD32F3x0.nvic_vecttab_flash
                 . fromIntegral
 

@@ -62,6 +62,7 @@ mixV'v2 =
                         :> Nil
                 )
                 (ds18b20 ow_0 od_pe_14)
+        , base = mem
         }
 
 {--

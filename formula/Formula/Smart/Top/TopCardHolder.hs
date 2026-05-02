@@ -15,7 +15,6 @@ import Implementation.Smart.TopCardHolder (topCardHolder)
 import Ivory.Language
 import Transport.UART.RBUS
 
-
 smartTopCardHolder'v1 :: DFU GD32F3x0
 smartTopCardHolder'v1 =
     DFU
@@ -45,4 +44,5 @@ smartTopCardHolder'v1 =
                 (vibro out_pb_5)
                 npx_pwm_0
                 etc
+        , base = mem
         }

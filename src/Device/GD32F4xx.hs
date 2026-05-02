@@ -639,15 +639,17 @@ gd32f4xx =
                         (pb_12 af_11)
                         (pb_13 af_11)
                         enet_irqn
-                , etc = mkPage 0x80e_0000 fmc_sector_11
+                , etc = mkPage 0x080e_0000 fmc_sector_11
                 }
+
+mem :: PageAddr
+mem = mkPage 0x0000_0000 fmc_sector_0
 
 gd32f450vgt6 :: MCU GD32F4xx
 gd32f450vgt6 = gd32f4xx "gd32f450" "vgt6" 0x8_000_000 (1024 * 1024) (192 * 1024)
 
 gd32f450vit6 :: MCU GD32F4xx
 gd32f450vit6 = gd32f4xx "gd32f450" "vit6" 0x8_000_000 (2048 * 1024) (448 * 1024)
-
 
 instance Pull GD32F4xx GPIO_PUPD where
     pullNone _ = gpio_pupd_none

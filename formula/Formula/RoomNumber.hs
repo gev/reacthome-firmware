@@ -13,7 +13,6 @@ import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
 
-
 roomNumber'v1 :: DFU GD32F3x0
 roomNumber'v1 =
     DFU
@@ -38,4 +37,5 @@ roomNumber'v1 =
                 (vibro out_pb_5)
                 npx_pwm_0
                 etc
+        , base = mem
         }

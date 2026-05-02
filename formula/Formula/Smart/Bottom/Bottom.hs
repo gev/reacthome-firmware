@@ -43,4 +43,5 @@ smartBottom'v13 =
                 )
                 (ds18b20 ow_0 od_pa_15)
                 (aled npx_pwm_3 etc)
+        , base = mem
         }

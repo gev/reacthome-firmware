@@ -36,4 +36,5 @@ dimmerAC1'v3 =
                     )
                     exti_pb_7
                 )
+        , base = mem
         }

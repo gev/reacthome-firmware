@@ -58,4 +58,5 @@ rsHub4'v1 =
                 (ds18b20 ow_0 od_pb_3)
                 (indicator npx_pwm_0 50)
                 (aled npx_pwm_1 etc)
+        , base = mem
         }

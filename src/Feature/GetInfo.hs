@@ -27,7 +27,7 @@ mkGetInfo status version transport = do
     meta <- asks D.meta
     let typeDevice = unPack16BE meta.model
         (major, minor) = version
-        nameMcu = toEnum . ord . toLower <$> (meta.mcu.model <> meta.mcu.modification)
+        nameMcu = toEnum . ord <$> mcuName meta.mcu
         info = fromIntegral <$> (typeDevice <> [meta.board, major, minor] <> nameMcu)
     pure GetInfo{transport, status, info}
 

@@ -30,4 +30,5 @@ ao4'v7 =
         , implementation =
             I.ao4
                 (cbm53d04 spi_0 [1, 0, 2, 3])
+        , base = mem
         }

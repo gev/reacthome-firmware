@@ -47,6 +47,7 @@ smartTopA4TD'v3 =
                 (sht21 i2c_0)
                 npx_pwm_1
                 etc
+        , base = mem
         }
 
 smartTopA4TD'v5 :: DFU GD32F3x0
@@ -77,4 +78,5 @@ smartTopA4TD'v5 =
                 (sht21 i2c_0)
                 npx_pwm_0
                 etc
+        , base = mem
         }

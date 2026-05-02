@@ -45,4 +45,5 @@ smartBottomCO2'v13 =
                 (ds18b20 ow_0 od_pa_15)
                 (scd40 i2c_0)
                 (aled npx_pwm_3 etc)
+        , base = mem
         }

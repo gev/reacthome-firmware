@@ -49,6 +49,7 @@ smartTopG6'v2 =
                 (sht21 i2c_0)
                 npx_pwm_1
                 etc
+        , base = mem
         }
 
 smartTopG6'v9 :: DFU GD32F3x0
@@ -81,4 +82,5 @@ smartTopG6'v9 =
                 (sht21 i2c_0)
                 npx_pwm_0
                 etc
+        , base = mem
         }

@@ -29,4 +29,5 @@ smartTopClimate'v0 =
         , implementation =
             topClimate
                 (sht21 i2c_0)
+        , base = mem
         }

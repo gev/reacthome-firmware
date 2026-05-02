@@ -58,4 +58,5 @@ mix6x12'v6 =
                 )
                 (indicator npx_pwm_0 150)
                 etc
+        , base = mem
         }

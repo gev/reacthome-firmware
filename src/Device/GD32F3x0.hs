@@ -156,7 +156,6 @@ data GD32F3x0 = GD32F3x0
     , ow_0 :: OneWire'
     , ow_1 :: OneWire'
     , ow_2 :: OneWire'
-    , etc :: PageAddr
     , i2c_0 :: I2C'
     , adc_pa_0 :: ADC'
     , adc_pa_1 :: ADC'
@@ -171,6 +170,7 @@ data GD32F3x0 = GD32F3x0
     , touch_pb0 :: Touch'
     , touch_pb1 :: Touch'
     , spi_0 :: SPI'
+    , etc :: PageAddr
     }
 
 gd32f3x0 :: String -> String -> Int -> Int -> Int -> MCU GD32F3x0
@@ -375,7 +375,6 @@ gd32f3x0 =
                 , ow_0 = mkOneWire cfg_timer_15
                 , ow_1 = mkOneWire cfg_timer_2
                 , ow_2 = mkOneWire cfg_timer_14
-                , etc = mkPage 0x800_bc00
                 , i2c_0 =
                     mkI2C
                         i2c0
@@ -390,59 +389,59 @@ gd32f3x0 =
                 , adc_pa_6 = mkADC (pa_6 analog) 6
                 , adc_pa_7 = mkADC (pa_7 analog) 7
                 , dac_pa_4 = mkDAC (pa_4 analog)
-                , touch_pa0 = 
-                    mkTouch 
-                        gpioa 
-                        gpio_pin_0 
-                        rcu_gpioa 
-                        gpio_af_2 
-                        cfg_timer_1 
-                        timer_ch_0 
+                , touch_pa0 =
+                    mkTouch
+                        gpioa
+                        gpio_pin_0
+                        rcu_gpioa
+                        gpio_af_2
+                        cfg_timer_1
+                        timer_ch_0
                         timer_flag_ch0
-                , touch_pa1 = 
-                    mkTouch 
-                        gpioa 
-                        gpio_pin_1 
-                        rcu_gpioa 
-                        gpio_af_2 
-                        cfg_timer_1 
-                        timer_ch_1 
+                , touch_pa1 =
+                    mkTouch
+                        gpioa
+                        gpio_pin_1
+                        rcu_gpioa
+                        gpio_af_2
+                        cfg_timer_1
+                        timer_ch_1
                         timer_flag_ch1
-                , touch_pa6 = 
-                    mkTouch 
-                        gpioa 
-                        gpio_pin_6 
-                        rcu_gpioa 
-                        gpio_af_1 
-                        cfg_timer_2 
-                        timer_ch_0 
+                , touch_pa6 =
+                    mkTouch
+                        gpioa
+                        gpio_pin_6
+                        rcu_gpioa
+                        gpio_af_1
+                        cfg_timer_2
+                        timer_ch_0
                         timer_flag_ch0
-                , touch_pa7 = 
-                    mkTouch 
-                        gpioa 
-                        gpio_pin_7 
-                        rcu_gpioa 
-                        gpio_af_1 
-                        cfg_timer_2 
-                        timer_ch_1 
+                , touch_pa7 =
+                    mkTouch
+                        gpioa
+                        gpio_pin_7
+                        rcu_gpioa
+                        gpio_af_1
+                        cfg_timer_2
+                        timer_ch_1
                         timer_flag_ch1
-                , touch_pb0 = 
-                    mkTouch 
-                        gpiob 
-                        gpio_pin_0 
-                        rcu_gpiob 
-                        gpio_af_1 
-                        cfg_timer_2 
-                        timer_ch_2 
+                , touch_pb0 =
+                    mkTouch
+                        gpiob
+                        gpio_pin_0
+                        rcu_gpiob
+                        gpio_af_1
+                        cfg_timer_2
+                        timer_ch_2
                         timer_flag_ch2
-                , touch_pb1 = 
-                    mkTouch 
-                        gpiob 
-                        gpio_pin_1 
-                        rcu_gpiob 
-                        gpio_af_1 
-                        cfg_timer_2 
-                        timer_ch_3 
+                , touch_pb1 =
+                    mkTouch
+                        gpiob
+                        gpio_pin_1
+                        rcu_gpiob
+                        gpio_af_1
+                        cfg_timer_2
+                        timer_ch_3
                         timer_flag_ch3
                 , spi_0 =
                     mkSPI
@@ -451,7 +450,11 @@ gd32f3x0 =
                         (pb_5 af_0)
                         (pb_3 af_0)
                         (pa_15 af_0)
+                , etc = mkPage 0x0800_bc00
                 }
+
+mem :: PageAddr
+mem = mkPage 0x0000_0000
 
 gd32f330k8u6 :: MCU GD32F3x0
 gd32f330k8u6 = gd32f3x0 "gd32f330" "k8u6" 0x8_000_000 (64 * 1024) (8 * 1024)

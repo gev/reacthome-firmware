@@ -3,6 +3,7 @@ module Interface.MCU where
 import Control.Monad.State
 import Core.Context
 import Data.Buffer
+import Data.Char (toLower)
 import Interface.Mac
 import Interface.SystemClock (SystemClock)
 import Ivory.Language
@@ -34,3 +35,6 @@ mkPlatform systemClock' initializeMac mcuModule peripherals = do
     systemClock <- systemClock'
     mac <- makeMac initializeMac "mac"
     pure Platform{systemClock, peripherals, mac}
+
+mcuName :: MCU p -> String
+mcuName MCU{..} = toLower <$> (model <> modification)

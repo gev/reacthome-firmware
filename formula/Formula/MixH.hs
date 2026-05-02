@@ -10,13 +10,13 @@ import Device.GD32F3x0
 import Feature.DInputs (dinputs)
 import Feature.DS18B20 (ds18b20)
 import Feature.Dimmers.DC (dimmersDC)
+import Feature.IndicatorFlush
 import Feature.Relays (relays)
 import Implementation.MixH (mix)
 import Implementation.MixHv6 (mix'v6)
 import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
-import Feature.IndicatorFlush
 
 mixH'v3 :: DFU GD32F3x0
 mixH'v3 =
@@ -62,6 +62,7 @@ mixH'v3 =
                 )
                 (ds18b20 ow_0 od_pa_5)
                 etc
+        , base = mem
         }
 
 mixH'v6 :: DFU GD32F3x0
@@ -109,6 +110,7 @@ mixH'v6 =
                 (ds18b20 ow_2 od_pa_5)
                 (indicator npx_pwm_0 140)
                 etc
+        , base = mem
         }
 
 {--

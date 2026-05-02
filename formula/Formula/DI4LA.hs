@@ -43,4 +43,5 @@ di4la'v3 =
                 )
                 (ds18b20 ow_1 od_pa_8)
                 (aled npx_pwm_0 etc)
+        , base = mem
         }

@@ -9,7 +9,6 @@ import Core.Context
 import Core.Formula
 import Core.Formula.DFU
 import Core.Meta (board, mcu, mkNameDfu, model, version)
-import Data.Char (toLower)
 import Data.Text qualified as T
 import Data.Text.IO qualified as T
 import Data.Text.Internal.Builder qualified as B
@@ -46,7 +45,7 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
     updatePath = "dist" </> "up" </> name <.> "up"
 
     mainImpl = fixIRQ $ implementation transport
-    dfuImpl = I.dfu startMainFirmware dfuVersion transport
+    dfuImpl = I.dfu startMainFirmware dfuVersion base transport
 
     startDfuFirmware = meta.mcu.startFlash
     startMainFirmware = startDfuFirmware + maxDfuLength
@@ -104,7 +103,7 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
             (_, "04", payload) -> filterHex' acc payload hs
             _ -> filterHex' acc base hs
 
-    mcu = fromEnum . toLower <$> (meta.mcu.model <> meta.mcu.modification)
+    mcu = fromEnum <$> mcuName meta.mcu
 
     fixIRQ impl = do
         addInit "fix_IRQ" do
