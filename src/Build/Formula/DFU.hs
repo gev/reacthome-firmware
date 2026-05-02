@@ -118,5 +118,5 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
         | otherwise = B.hexadecimal n
 
     fromHex t = case T.hexadecimal t of
-        Right (val, _) -> val -- Partially parsed (trailing chars ignored)
+        Right (val, _) -> val
         Left err -> error err
