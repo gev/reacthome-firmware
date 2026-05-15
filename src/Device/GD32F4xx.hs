@@ -253,7 +253,7 @@ data GD32F4xx = GD32F4xx
     , eth_0 :: Enet'
     }
 
-gd32f4xx :: String -> String -> Int -> Int -> Int -> Flash -> Flash -> MCU GD32F4xx
+gd32f4xx :: String -> String -> Int -> Int -> Int -> Flash GD32F4xx -> Flash GD32F4xx -> MCU GD32F4xx
 gd32f4xx =
     MCU $
         mkPlatform

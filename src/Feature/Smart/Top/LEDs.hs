@@ -26,7 +26,7 @@ import Ivory.Language.Proxy
 import Ivory.Stdlib
 import Util.CRC16
 
-data LEDs pn ln = forall t. (T.LazyTransport t) => LEDs
+data LEDs pn ln = forall p t. (T.LazyTransport t) => LEDs
     { colors :: Matrix pn ln Uint32
     , palette :: Value (Ix pn)
     , ix :: Value (Ix pn)
@@ -40,7 +40,7 @@ data LEDs pn ln = forall t. (T.LazyTransport t) => LEDs
     , blink :: Values ln IBool
     , blinkPhase :: Value IBool
     , transport :: t
-    , etc :: Flash
+    , etc :: Flash p
     , synced :: Values pn IBool
     , synced_ :: Value IBool
     }

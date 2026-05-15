@@ -23,7 +23,7 @@ import Ivory.Language
 import Ivory.Stdlib
 import Util.CRC16
 
-data Vibro n = forall o t. (Output o, LazyTransport t) => Vibro
+data Vibro n = forall o p t. (Output o, LazyTransport t) => Vibro
     { getDInputs :: DInputs n
     , output :: o
     , clock :: SystemClock
@@ -32,7 +32,7 @@ data Vibro n = forall o t. (Output o, LazyTransport t) => Vibro
     , prevState :: Values n IBool
     , t :: Value Uint32
     , transport :: t
-    , etc :: Flash
+    , etc :: Flash p
     , synced :: Value IBool
     }
 

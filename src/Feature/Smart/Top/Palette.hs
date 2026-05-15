@@ -12,10 +12,10 @@ import Interface.Flash
 import Interface.MCU (MCU (..))
 import Ivory.Language
 
-data Palette n l = Palette
+data Palette n l = forall p. Palette
     { palette :: Matrix n l Uint32
     , synced :: Values n IBool
-    , etc :: Flash
+    , etc :: Flash p
     }
 
 mkPalette ::

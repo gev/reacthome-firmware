@@ -173,7 +173,7 @@ data GD32F3x0 = GD32F3x0
     , spi_0 :: SPI'
     }
 
-gd32f3x0 :: String -> String -> Int -> Int -> Int -> Flash -> Flash -> MCU GD32F3x0
+gd32f3x0 :: String -> String -> Int -> Int -> Int -> Flash GD32F3x0 -> Flash GD32F3x0 -> MCU GD32F3x0
 gd32f3x0 =
     MCU $
         mkPlatform

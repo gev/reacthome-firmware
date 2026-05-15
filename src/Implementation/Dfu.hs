@@ -170,7 +170,7 @@ receiveChunk dfu@DFU{..} buff size index = do
 
 writeChunk ::
     (KnownNat l) =>
-    Flash ->
+    Flash p ->
     Uint32 ->
     Buffer l Uint8 ->
     Uint8 ->
@@ -182,7 +182,7 @@ writeChunk mem address buff size = do
         word <- unpackLE buff (ix * 4 + 7)
         F.write mem offset word
 
-cleanPage :: Flash -> Uint32 -> Ivory (ProcEffects s t) ()
+cleanPage :: Flash p -> Uint32 -> Ivory (ProcEffects s t) ()
 cleanPage mem address =
     when (address .% 0x400 ==? 0) do
         F.erase mem address

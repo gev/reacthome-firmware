@@ -58,7 +58,7 @@ import Prelude hiding (error)
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff ni no = 1 + ToSizeInBytes ni + ToSizeInBytes no
 
-data Mix ni no = Mix
+data Mix ni no = forall p. Mix
     { relays :: Relays no
     , dinputs :: DInputs ni
     , rules :: Rules ni no
@@ -69,7 +69,7 @@ data Mix ni no = Mix
     , saveCountdown :: Value Uint8
     , syncStateBuff :: Buffer (SizeSyncStateBuff ni no) Uint8
     , info :: GetInfo
-    , etc :: Flash
+    , etc :: Flash p
     , transmit ::
         forall n.
         (KnownNat n) =>

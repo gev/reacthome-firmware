@@ -55,7 +55,7 @@ import Util.CRC16
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff ni no nd = 1 + ToSizeInBytes ni + ToSizeInBytes no + nd
 
-data Mix ni no nd = Mix
+data Mix ni no nd = forall p. Mix
     { relays :: Relays no
     , dinputs :: DInputs ni
     , dimmers :: Dimmers nd
@@ -65,7 +65,7 @@ data Mix ni no nd = Mix
     , saveCountdown :: Value Uint8
     , syncStateBuff :: Buffer (SizeSyncStateBuff ni no nd) Uint8
     , info :: GetInfo
-    , etc :: Flash
+    , etc :: Flash p
     , transmit ::
         forall n.
         (KnownNat n) =>

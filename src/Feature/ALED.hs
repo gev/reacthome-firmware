@@ -32,12 +32,12 @@ dt = 1 / safeCast E.fps :: IFloat
 dt :: IFloat
 
 data ALED ng ns np
-    = forall d t.
+    = forall d p t.
       (Display d, LazyTransport t) =>
     ALED
     { display :: d
     , getALED :: E.ALED ng ns np
-    , etc :: Flash
+    , etc :: Flash p
     , transport :: t
     , shouldSaveConfig :: Value IBool
     , shouldSyncGroups :: Value IBool
