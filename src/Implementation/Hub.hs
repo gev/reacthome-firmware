@@ -50,6 +50,7 @@ import Ivory.Language
 import Ivory.Language.Proxy
 import Ivory.Stdlib
 import Support.Cast (castFloatToUint8)
+import Support.CMSIS.CoreCM4
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff ni nd = 1 + ToSizeInBytes ni + nd
@@ -140,7 +141,10 @@ instance (KnownNat ni, KnownNat nd, KnownNat nr, KnownNat (SizeSyncStateBuff ni 
             , action ==? actionALedBrightness ==> onALedBrightness aled buff size
             , action ==? actionALedConfigGroup ==> onALedConfigGroup aled buff size
             , action ==? actionGetInfo ==> onGetInfo info
+            , action ==? actionUpdateFirmware ==> updateFirmware
             ]
+
+updateFirmware = nvicSystemReset
 
 onInit ::
     (KnownNat l, KnownNat nd) =>

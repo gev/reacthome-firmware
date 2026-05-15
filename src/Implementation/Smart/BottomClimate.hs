@@ -23,6 +23,7 @@ import Feature.Sht21 (SHT21)
 import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
+import Support.CMSIS.CoreCM4
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff n = 1 + ToSizeInBytes n
@@ -92,7 +93,10 @@ instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (BottomClima
             , action ==? actionALedBrightness ==> onALedBrightness aled buff size
             , action ==? actionALedConfigGroup ==> onALedConfigGroup aled buff size
             , action ==? actionGetInfo ==> onGetInfo info
+            , action ==? actionUpdateFirmware ==> updateFirmware
             ]
+
+updateFirmware = nvicSystemReset
 
 syncChannels ::
     forall n s.

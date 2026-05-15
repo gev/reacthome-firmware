@@ -54,6 +54,7 @@ import Interface.MCU (peripherals)
 import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
+import Support.CMSIS.CoreCM4
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff n = 1 + ToSizeInBytes n
@@ -169,7 +170,10 @@ instance (KnownNat n) => Controller (Top n) where
             , action ==? actionFindMe ==> onFindMe buttons buff size
             , action ==? actionGetState ==> onGetState t
             , action ==? actionGetInfo ==> onGetInfo info
+            , action ==? actionUpdateFirmware ==> updateFirmware
             ]
+
+updateFirmware = nvicSystemReset
 
 syncChannels ::
     forall n s.

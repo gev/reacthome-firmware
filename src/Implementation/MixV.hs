@@ -34,6 +34,7 @@ import Ivory.Language
 import Ivory.Language.Proxy (NatType, aNat)
 import Ivory.Stdlib
 import Support.Cast
+import Support.CMSIS.CoreCM4
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff ni no nd na = 1 + ToSizeInBytes ni + ToSizeInBytes no + nd + na
@@ -121,7 +122,10 @@ instance
             , action ==? actionInitialize ==> onInit mix buff size
             , action ==? actionGetState ==> onGetState mix
             , action ==? actionGetInfo ==> onGetInfo info
+            , action ==? actionUpdateFirmware ==> updateFirmware
             ]
+
+updateFirmware = nvicSystemReset
 
 onInit ::
     forall l ni no nd na s t.

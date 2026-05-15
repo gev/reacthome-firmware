@@ -37,6 +37,7 @@ import Interface.MCU qualified as I
 import Ivory.Language
 import Ivory.Stdlib
 import Support.Lwip.Netif
+import Support.CMSIS.CoreCM4
 
 data Soundbox = Soundbox
     { i2sTxCh1 :: I2SPlay 512
@@ -239,7 +240,10 @@ instance Controller Soundbox where
             , action ==? actionLanamp ==> onLanamp s buff size
             , action ==? actionInitialize ==> onInit s buff size
             , action ==? actionGetInfo ==> onGetInfo info
+            , action ==? actionUpdateFirmware ==> updateFirmware
             ]
+
+updateFirmware = nvicSystemReset
 
 onInit Soundbox{..} buff size = do
     when (size >=? 135) do

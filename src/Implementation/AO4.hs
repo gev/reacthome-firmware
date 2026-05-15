@@ -17,6 +17,7 @@ import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
 import Support.Cast
+import Support.CMSIS.CoreCM4
 
 type SizeSyncStateBuff n = 1 + n
 
@@ -55,7 +56,10 @@ instance Controller AO4 where
             , action ==? actionInitialize ==> onInit aoutput4 buff size
             , action ==? actionGetState ==> forceSync aoutput4
             , action ==? actionGetInfo ==> onGetInfo info
+            , action ==? actionUpdateFirmware ==> updateFirmware
             ]
+
+updateFirmware = nvicSystemReset
 
 syncChannels ::
     forall s t.

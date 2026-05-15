@@ -19,6 +19,7 @@ import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
 import Support.Cast
+import Support.CMSIS.CoreCM4
 
 type SizeSyncStateBuff n = 1 + n
 
@@ -60,7 +61,10 @@ instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (Dimmer n) w
             , action ==? actionInitialize ==> onInit dimmers buff size
             , action ==? actionGetState ==> onGetState dimmers
             , action ==? actionGetInfo ==> onGetInfo info
+            , action ==? actionUpdateFirmware ==> updateFirmware
             ]
+
+updateFirmware = nvicSystemReset
 
 syncChannels ::
     forall n s t.
