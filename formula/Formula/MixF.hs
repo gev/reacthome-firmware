@@ -49,5 +49,4 @@ mixF'v2 =
                 )
                 (ds18b20 ow_2 od_pa_15)
                 (indicator npx_pwm_0 140)
-        , base = mem
         }

@@ -39,6 +39,4 @@ smartTopA4P'v6 =
                 )
                 (sht21 i2c_0)
                 npx_pwm_0
-                etc
-        , base = mem
         }

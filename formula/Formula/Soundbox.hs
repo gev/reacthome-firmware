@@ -34,5 +34,4 @@ soundbox'v5 =
                 out_pb_7
                 i2c_2
                 out_pc_2
-        , base = mem
         }

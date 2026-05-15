@@ -49,5 +49,4 @@ dimmerAC12'v6 =
                     exti_pa_5
                 )
                 (indicator npx_pwm_0 20)
-        , base = mem
         }

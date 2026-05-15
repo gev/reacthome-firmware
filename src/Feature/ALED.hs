@@ -32,12 +32,12 @@ dt = 1 / safeCast E.fps :: IFloat
 dt :: IFloat
 
 data ALED ng ns np
-    = forall d f t.
-      (Display d, Flash f, LazyTransport t) =>
+    = forall d t.
+      (Display d, LazyTransport t) =>
     ALED
     { display :: d
     , getALED :: E.ALED ng ns np
-    , etc :: f
+    , etc :: Flash
     , transport :: t
     , shouldSaveConfig :: Value IBool
     , shouldSyncGroups :: Value IBool
@@ -56,13 +56,11 @@ aled ::
     , KnownNat ns
     , KnownNat np
     , LazyTransport t
-    , Flash f
     ) =>
     (p -> m d) ->
-    (p -> f) ->
     t ->
     m (ALED ng ns np)
-aled mkDisplay etc transport = do
+aled mkDisplay transport = do
     meta <- asks D.meta
     platform <- I.platform meta.mcu
     display <- mkDisplay $ peripherals platform
@@ -78,7 +76,7 @@ aled mkDisplay etc transport = do
             ALED
                 { display
                 , getALED
-                , etc = etc platform.peripherals
+                , etc = meta.mcu.etc
                 , transport
                 , shouldSaveConfig
                 , shouldSyncGroups
@@ -729,7 +727,7 @@ saveConfig ALED{..} = do
     shouldSaveConfig' <- deref shouldSaveConfig
 
     when shouldSaveConfig' do
-        erasePage etc 0
+        F.erase etc 0
         offset <- local $ ival 8
         crc <- local $ istruct initCRC16
 

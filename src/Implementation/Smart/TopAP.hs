@@ -42,7 +42,6 @@ import Feature.Smart.Top.LEDs (
  )
 import GHC.TypeNats
 import Interface.Display (Display, Render (Render))
-import Interface.Flash
 import Interface.MCU (peripherals)
 import Interface.MCU qualified as I
 import Ivory.Language
@@ -66,7 +65,6 @@ topAP ::
     , Display d
     , Handler (Render (Canvas1DSize n)) d
     , LazyTransport t
-    , Flash f
     , KnownNat n
     , KnownNat (Canvas1DSize n)
     , KnownNat (SizeSyncStateBuff n)
@@ -74,15 +72,13 @@ topAP ::
     (Bool -> t -> m (DI.DInputs n)) ->
     (t -> m SHT21) ->
     (p -> m d) ->
-    (p -> f) ->
     m t ->
     m (Top n)
-topAP dinputs' sht21' display' etc' transport' = do
+topAP dinputs' sht21' display' transport' = do
     transport <- transport'
     meta <- asks D.meta
     platform <- I.platform meta.mcu
     display <- display' platform.peripherals
-    let etc = etc' platform.peripherals
     dinputs <- dinputs' False transport
     frameBuffer <- values' "top_frame_buffer" 0
     syncStateBuff <- buffer "sync_channels"
@@ -93,7 +89,6 @@ topAP dinputs' sht21' display' etc' transport' = do
             frameBuffer
             [0, 5, 1, 4, 2, 3]
             transport
-            etc
             (replicate 6 true)
 
     ledsPerButton <-

@@ -46,8 +46,6 @@ smartTopG4'v2 =
                 (powerTouch out_pa_8)
                 (sht21 i2c_0)
                 npx_pwm_1
-                etc
-        , base = mem
         }
 
 smartTopG4'v9 :: DFU GD32F3x0
@@ -77,6 +75,4 @@ smartTopG4'v9 =
                 (vibro out_pb_5)
                 (sht21 i2c_0)
                 npx_pwm_0
-                etc
-        , base = mem
         }

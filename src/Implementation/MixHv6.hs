@@ -57,18 +57,18 @@ import Util.CRC16
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff ni no nd = 1 + ToSizeInBytes ni + ToSizeInBytes no + nd
 
-data Mix ni no nd = forall f. (Flash f) => Mix
+data Mix ni no nd = Mix
     { relays :: Relays no
     , dinputs :: DInputs ni
     , dimmers :: Dimmers nd
     , rules :: Rules ni no
-    , etc :: f
     , shouldSaveConfig :: Value IBool
     , shouldInit :: Value IBool
     , saveCountdown :: Value Uint8
     , syncStateBuff :: Buffer (SizeSyncStateBuff ni no nd) Uint8
     , info :: GetInfo
     , indicator :: IndicatorFlush 2
+    , etc :: Flash
     , transmit ::
         forall n.
         (KnownNat n) =>
@@ -80,7 +80,6 @@ data Mix ni no nd = forall f. (Flash f) => Mix
 mix'v6 ::
     ( MonadState Context m
     , MonadReader (Domain p c) m
-    , Flash f
     , Transport t
     , KnownNat ni
     , KnownNat no
@@ -96,17 +95,15 @@ mix'v6 ::
     (t -> m (Dimmers nd)) ->
     (t -> m DS18B20) ->
     (t -> m (IndicatorFlush 2)) ->
-    (p -> f) ->
     m t ->
     m (Mix ni no nd)
-mix'v6 dinputs' relays' dimmers' ds18b20 indicator' etc transport' = do
+mix'v6 dinputs' relays' dimmers' ds18b20 indicator' transport' = do
     transport <- transport'
     relays <- relays' transport
     dinputs <- dinputs' True transport
     dimmers <- dimmers' transport
     rules <- mkRules transport
     meta <- asks D.meta
-    platform <- I.platform meta.mcu
     shouldInit <- asks D.shouldInit
     shouldSaveConfig <- value "mix_should_save_config" false
     saveCountdown <- value "mix_save_save_countdown" 0
@@ -121,12 +118,12 @@ mix'v6 dinputs' relays' dimmers' ds18b20 indicator' etc transport' = do
                 , dinputs
                 , dimmers
                 , rules
-                , etc = etc platform.peripherals
                 , shouldSaveConfig
                 , shouldInit
                 , saveCountdown
                 , syncStateBuff
                 , info
+                , etc = meta.mcu.etc
                 , indicator
                 , transmit = transmitBuffer transport
                 }
@@ -290,7 +287,7 @@ saveTask mix@Mix{..} = do
 
 save :: (KnownNat ni, KnownNat no) => Mix ni no nd -> Ivory (ProcEffects s t) ()
 save Mix{..} = do
-    erasePage etc 0
+    F.erase etc 0
     crc <- local $ istruct initCRC16
     kx <- local $ ival 4
     let run rules = arrayMap \ix -> arrayMap \jx -> do

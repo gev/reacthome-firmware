@@ -23,7 +23,7 @@ import Ivory.Language
 import Ivory.Stdlib
 import Util.CRC16
 
-data Vibro n = forall o t f. (Output o, LazyTransport t, Flash f) => Vibro
+data Vibro n = forall o t. (Output o, LazyTransport t) => Vibro
     { getDInputs :: DInputs n
     , output :: o
     , clock :: SystemClock
@@ -32,7 +32,7 @@ data Vibro n = forall o t f. (Output o, LazyTransport t, Flash f) => Vibro
     , prevState :: Values n IBool
     , t :: Value Uint32
     , transport :: t
-    , etc :: f
+    , etc :: Flash
     , synced :: Value IBool
     }
 
@@ -41,16 +41,14 @@ vibro ::
     , MonadReader (D.Domain p c) m
     , Output o
     , Pull p d
-    , Flash f
     , LazyTransport t
     , KnownNat n
     ) =>
     (p -> d -> m o) ->
     DInputs n ->
     t ->
-    f ->
     m (Vibro n)
-vibro output' getDInputs transport etc = do
+vibro output' getDInputs transport = do
     meta <- asks D.meta
     platform <- I.platform meta.mcu
     let clock = systemClock platform
@@ -71,8 +69,8 @@ vibro output' getDInputs transport etc = do
                 , isVibrating
                 , prevState
                 , transport
-                , etc
                 , synced
+                , etc = meta.mcu.etc
                 }
 
     addTask $ yeld "vibro" $ vibroTask vibro
@@ -86,7 +84,7 @@ syncVibro :: Vibro n -> Ivory (ProcEffects s t) ()
 syncVibro Vibro{..} = do
     synced' <- deref synced
     when (iNot synced') do
-        erasePage etc 0
+        F.erase etc 0
         crc <- local $ istruct initCRC16
         volume' <- deref volume
         updateCRC16 crc volume'

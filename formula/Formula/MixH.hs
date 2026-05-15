@@ -61,8 +61,6 @@ mixH'v3 =
                         :> Nil
                 )
                 (ds18b20 ow_0 od_pa_5)
-                etc
-        , base = mem
         }
 
 mixH'v6 :: DFU GD32F3x0
@@ -109,8 +107,6 @@ mixH'v6 =
                 )
                 (ds18b20 ow_2 od_pa_5)
                 (indicator npx_pwm_0 140)
-                etc
-        , base = mem
         }
 
 {--

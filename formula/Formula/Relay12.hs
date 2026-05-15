@@ -47,5 +47,4 @@ relay12'v6 =
                         :> Nil
                 )
                 (indicator npx_pwm_0 300)
-        , base = mem
         }

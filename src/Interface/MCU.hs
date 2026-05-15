@@ -4,6 +4,7 @@ import Control.Monad.State
 import Core.Context
 import Data.Buffer
 import Data.Char (toLower)
+import Interface.Flash
 import Interface.Mac
 import Interface.SystemClock (SystemClock)
 import Ivory.Language
@@ -21,6 +22,8 @@ data MCU p = MCU
     , startFlash :: Int
     , sizeFlash :: Int
     , sizeRam :: Int
+    , flash :: Flash
+    , etc :: Flash
     }
 
 mkPlatform ::

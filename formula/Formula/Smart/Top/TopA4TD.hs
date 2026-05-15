@@ -46,8 +46,6 @@ smartTopA4TD'v3 =
                 (powerTouch out_pa_8)
                 (sht21 i2c_0)
                 npx_pwm_1
-                etc
-        , base = mem
         }
 
 smartTopA4TD'v5 :: DFU GD32F3x0
@@ -77,6 +75,4 @@ smartTopA4TD'v5 =
                 (vibro out_pa_15)
                 (sht21 i2c_0)
                 npx_pwm_0
-                etc
-        , base = mem
         }

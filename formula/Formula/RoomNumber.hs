@@ -36,6 +36,4 @@ roomNumber'v1 =
                 )
                 (vibro out_pb_5)
                 npx_pwm_0
-                etc
-        , base = mem
         }

@@ -2,11 +2,12 @@
 
 module Feature.Smart.Top.LEDs where
 
-import Control.Monad.Reader (MonadReader)
+import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
 import Core.Domain as D
+import Core.Meta (Meta (..))
 import Core.Task (delay)
 import Core.Transport (LazyTransport (lazyTransmit))
 import Core.Transport qualified as T
@@ -19,12 +20,13 @@ import Data.Serialize
 import Data.Value
 import GHC.TypeNats
 import Interface.Flash as F
+import Interface.MCU (MCU (..))
 import Ivory.Language
 import Ivory.Language.Proxy
 import Ivory.Stdlib
 import Util.CRC16
 
-data LEDs pn ln = forall f t. (T.LazyTransport t, Flash f) => LEDs
+data LEDs pn ln = forall t. (T.LazyTransport t) => LEDs
     { colors :: Matrix pn ln Uint32
     , palette :: Value (Ix pn)
     , ix :: Value (Ix pn)
@@ -38,7 +40,7 @@ data LEDs pn ln = forall f t. (T.LazyTransport t, Flash f) => LEDs
     , blink :: Values ln IBool
     , blinkPhase :: Value IBool
     , transport :: t
-    , etc :: f
+    , etc :: Flash
     , synced :: Values pn IBool
     , synced_ :: Value IBool
     }
@@ -49,16 +51,15 @@ mkLeds ::
     , MonadState Context m
     , MonadReader (D.Domain p c) m
     , T.LazyTransport t
-    , Flash f
     ) =>
     Values (Canvas1DSize ln) Uint8 ->
     [Ix ln] ->
     t ->
-    f ->
     [IBool] ->
     m (LEDs pn ln)
-mkLeds frameBuffer order' transport etc image' = do
+mkLeds frameBuffer order' transport image' = do
     let canvas = mkCanvas1D frameBuffer
+    meta <- asks D.meta
     order <- values "leds_order" order'
     state <- value "leds_state" true
     brightness <- value "leds_brightness" 0.25
@@ -91,7 +92,7 @@ mkLeds frameBuffer order' transport etc image' = do
                 , blink
                 , blinkPhase
                 , transport
-                , etc
+                , etc = meta.mcu.etc
                 , synced
                 , synced_
                 }
@@ -114,7 +115,7 @@ syncLEDs LEDs{..} = do
         synced' <- deref $ synced ! px
         pageOffset' <- deref pageOffset
         when (iNot synced') do
-            erasePage etc pageOffset'
+            F.erase etc pageOffset'
             crc <- local $ istruct initCRC16
             colorOffset <- local $ ival 0
             arrayMap \cx -> do
@@ -138,7 +139,7 @@ syncLEDs LEDs{..} = do
     synced_' <- deref synced_
     when (iNot synced_') do
         pageOffset' <- deref pageOffset
-        erasePage etc pageOffset'
+        F.erase etc pageOffset'
         crc <- local $ istruct initCRC16
         brightness' <- castDefault . (* 255) <$> deref brightness
         state' <- safeCast <$> deref state

@@ -47,5 +47,4 @@ dimmerDC12'v6 =
                         :> Nil
                 )
                 (indicator npx_pwm_0 240)
-        , base = mem
         }

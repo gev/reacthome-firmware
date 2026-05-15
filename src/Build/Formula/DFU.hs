@@ -45,7 +45,7 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
     updatePath = "dist" </> "up" </> name <.> "up"
 
     mainImpl = fixIRQ $ implementation transport
-    dfuImpl = I.dfu startMainFirmware dfuVersion base transport
+    dfuImpl = I.dfu startMainFirmware dfuVersion transport
 
     startDfuFirmware = meta.mcu.startFlash
     startMainFirmware = startDfuFirmware + maxDfuLength

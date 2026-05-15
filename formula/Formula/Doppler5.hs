@@ -47,6 +47,5 @@ doppler5'v5 =
                         :> in_pa_9
                         :> Nil
                 )
-                (aled npx_pwm_0 etc)
-        , base = mem
+                (aled npx_pwm_0)
         }

@@ -58,18 +58,18 @@ import Prelude hiding (error)
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff ni no = 1 + ToSizeInBytes ni + ToSizeInBytes no
 
-data Mix ni no = forall f. (Flash f) => Mix
+data Mix ni no = Mix
     { relays :: Relays no
     , dinputs :: DInputs ni
     , rules :: Rules ni no
     , ats :: ATS
     , indicator :: Indicator ni no
-    , etc :: f
     , shouldInit :: Value IBool
     , shouldSaveConfig :: Value IBool
     , saveCountdown :: Value Uint8
     , syncStateBuff :: Buffer (SizeSyncStateBuff ni no) Uint8
     , info :: GetInfo
+    , etc :: Flash
     , transmit ::
         forall n.
         (KnownNat n) =>
@@ -81,7 +81,6 @@ data Mix ni no = forall f. (Flash f) => Mix
 mix ::
     ( MonadState Context m
     , MonadReader (Domain p c) m
-    , Flash f
     , Transport t
     , KnownNat ni
     , KnownNat no
@@ -98,10 +97,9 @@ mix ::
       t ->
       m (Indicator ni no)
     ) ->
-    (p -> f) ->
     m t ->
     m (Mix ni no)
-mix dinputs' relays' indicator' etc transport' = do
+mix dinputs' relays' indicator' transport' = do
     transport <- transport'
     relays <- relays' transport
     dinputs <- dinputs' True transport
@@ -109,7 +107,6 @@ mix dinputs' relays' indicator' etc transport' = do
     ats <- mkATS transport
     indicator <- indicator' ats (getDInputs dinputs) (getRelays relays) transport
     meta <- asks D.meta
-    platform <- I.platform meta.mcu
     shouldInit <- asks D.shouldInit
     shouldSaveConfig <- value "mix_should_save_config" false
     saveCountdown <- value "mix_save_save_countdown" 0
@@ -123,12 +120,12 @@ mix dinputs' relays' indicator' etc transport' = do
                 , rules
                 , ats
                 , indicator
-                , etc = etc platform.peripherals
                 , shouldInit
                 , shouldSaveConfig
                 , saveCountdown
                 , syncStateBuff
                 , info
+                , etc = meta.mcu.etc
                 , transmit = T.transmitBuffer transport
                 }
 
@@ -285,7 +282,7 @@ saveTask mix@Mix{..} = do
 
 save :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s t) ()
 save Mix{..} = do
-    erasePage etc 0
+    F.erase etc 0
     crc <- local $ istruct initCRC16
     mode' <- deref (mode ats)
     updateCRC16 crc mode'

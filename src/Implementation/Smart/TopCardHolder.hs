@@ -44,12 +44,11 @@ import Feature.Smart.Top.Vibro (
 import Feature.Touches qualified as FT
 import GHC.TypeNats
 import Interface.Display (Display, Render (Render))
-import Interface.Flash
 import Interface.MCU (peripherals)
 import Interface.MCU qualified as I
 import Ivory.Language
-import Ivory.Stdlib
 import Ivory.Language.Proxy
+import Ivory.Stdlib
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff n = 1 + ToSizeInBytes n
@@ -70,24 +69,21 @@ topCardHolder ::
     , Display d
     , Handler (Render (Canvas1DSize 3)) d
     , LazyTransport t
-    , Flash f
     , KnownNat nt
     , KnownNat nd
     , KnownNat (SizeSyncStateBuff nt)
     ) =>
     (t -> m (FT.Touches nt)) ->
     (Bool -> Uint8 -> t -> m (FDI.DInputs nd)) ->
-    (E.DInputs nt -> t -> f -> m (Vibro nt)) ->
+    (E.DInputs nt -> t -> m (Vibro nt)) ->
     (p -> m d) ->
-    (p -> f) ->
     m t ->
     m (Top nt nd)
-topCardHolder touches' dinputs' vibro' display' etc' transport' = do
+topCardHolder touches' dinputs' vibro' display' transport' = do
     transport <- transport'
     meta <- asks D.meta
     platform <- I.platform meta.mcu
     display <- display' platform.peripherals
-    let etc = etc' platform.peripherals
     touches <- touches' transport
     dinputs <- dinputs' True 2 transport
     frameBuffer <- values' "top_frame_buffer" 0
@@ -99,7 +95,6 @@ topCardHolder touches' dinputs' vibro' display' etc' transport' = do
             frameBuffer
             [0, 1, 2]
             transport
-            etc
             (replicate 3 true)
 
     ledsPerButton <-
@@ -126,7 +121,6 @@ topCardHolder touches' dinputs' vibro' display' etc' transport' = do
         vibro'
             (FT.getDInputs touches)
             transport
-            etc
 
     let top =
             Top

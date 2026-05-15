@@ -39,5 +39,4 @@ di4'v3 =
                         :> Nil
                 )
                 (ds18b20 ow_1 od_pa_8)
-        , base = mem
         }
