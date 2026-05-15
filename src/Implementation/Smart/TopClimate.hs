@@ -2,7 +2,7 @@ module Implementation.Smart.TopClimate where
 
 import Control.Monad.Reader
 import Control.Monad.State (MonadState)
-import Core.Actions (actionGetInfo)
+import Core.Actions (actionGetInfo, actionUpdateFirmware)
 import Core.Context
 import Core.Controller
 import Core.Domain qualified as D
@@ -11,6 +11,7 @@ import Feature.GetInfo
 import Feature.Sht21 (SHT21)
 import Ivory.Language
 import Ivory.Stdlib
+import Support.CMSIS.CoreCM4
 
 data Top = Top
     { sht21 :: SHT21
@@ -38,4 +39,7 @@ handle Top{..} buff _ = do
     action <- deref $ buff ! 0
     cond_
         [ action ==? actionGetInfo ==> onGetInfo info
+        , action ==? actionUpdateFirmware ==> updateFirmware
         ]
+
+updateFirmware = nvicSystemReset

@@ -22,6 +22,7 @@ import Feature.Relays (Relays, getRelays, onDo, onGetState, onGroup, onInit, sho
 import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
+import Support.CMSIS.CoreCM4
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff n = 1 + ToSizeInBytes n
@@ -68,7 +69,10 @@ instance (KnownNat n, KnownNat (SizeSyncStateBuff n)) => Controller (Relay n) wh
             , action ==? actionInitialize ==> onInit relays buff size
             , action ==? actionFindMe ==> onFindMe indicator buff size
             , action ==? actionGetInfo ==> onGetInfo info
+            , action ==? actionUpdateFirmware ==> updateFirmware
             ]
+
+updateFirmware = nvicSystemReset
 
 syncChannels ::
     forall n s t.

@@ -54,6 +54,7 @@ import Ivory.Language.Proxy
 import Ivory.Stdlib
 import Util.CRC16
 import Prelude hiding (error)
+import Support.CMSIS.CoreCM4
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff ni no = 1 + ToSizeInBytes ni + ToSizeInBytes no
@@ -180,7 +181,10 @@ instance (KnownNat ni, KnownNat no, KnownNat (PayloadSize no), KnownNat (SizeSyn
             , action ==? actionFindMe ==> onFindMe indicator buff size
             , action ==? actionError ==> resetError ats
             , action ==? actionGetInfo ==> onGetInfo info
+            , action ==? actionUpdateFirmware ==> updateFirmware
             ]
+
+updateFirmware = nvicSystemReset
 
 syncChannels ::
     forall ni no s t.

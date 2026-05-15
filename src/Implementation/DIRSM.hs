@@ -39,6 +39,7 @@ import Ivory.Language
 import Ivory.Language.Proxy
 import Ivory.Stdlib
 import Support.Cast
+import Support.CMSIS.CoreCM4
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff ni no = 1 + ToSizeInBytes ni + no
@@ -109,7 +110,10 @@ instance
             , action ==? actionRs485Transmit ==> transmitRS485 rsm buff size
             , action ==? actionGetState ==> onGetState s
             , action ==? actionGetInfo ==> onGetInfo info
+            , action ==? actionUpdateFirmware ==> updateFirmware
             ]
+
+updateFirmware = nvicSystemReset
 
 onInit ::
     (KnownNat l, KnownNat ni, KnownNat no, KnownNat nr) =>
