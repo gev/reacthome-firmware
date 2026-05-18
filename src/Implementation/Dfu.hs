@@ -183,9 +183,7 @@ writeChunk mem address buff size = do
         F.write mem offset word
 
 cleanPage :: Flash p -> Uint32 -> Ivory (ProcEffects s t) ()
-cleanPage mem address =
-    when (address .% 0x400 ==? 0) do
-        F.erase mem address
+cleanPage = F.erase
 
 requestChunk :: DFU p -> Uint16 -> Ivory (ProcEffects s t) ()
 requestChunk DFU{..} chunk =
