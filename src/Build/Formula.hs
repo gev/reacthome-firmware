@@ -12,6 +12,7 @@ import Core.Meta (Meta (..), mcu, mkName)
 import Core.Scheduler
 import Data.List (nub)
 import Development.Shake.FilePath
+import Interface.Etc (Etc (..))
 import Interface.MCU (MCU (..), Platform (..), platform)
 import Ivory.Compile.C.CmdlineFrontend
 import Ivory.Language
@@ -74,8 +75,8 @@ mkFormula mkCompiler f@Formula{..} =
     maxLength =
         maybe
             meta.mcu.sizeFlash
-            (\sartEtc -> sartEtc - startFirmware)
-            meta.startEtc
+            (\e -> e.etc - startFirmware)
+            meta.etc
     compiler = mkCompiler f startFirmware maxLength
     name = mkName meta
     path = "firmware" </> name

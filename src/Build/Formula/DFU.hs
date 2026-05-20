@@ -19,6 +19,7 @@ import Data.Util (unPack16BE)
 import Data.Word
 import Development.Shake.FilePath
 import Implementation.Dfu qualified as I
+import Interface.Etc (Etc (..))
 import Interface.MCU
 import Ivory.Language
 import Support.CMSIS.CoreCMFunc
@@ -52,8 +53,8 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
     maxMainLength =
         maybe
             (meta.mcu.sizeFlash - maxDfuLength)
-            (\startEtc -> startEtc - startMainFirmware)
-            meta.startEtc
+            (\e -> e.etc - startMainFirmware)
+            meta.etc
 
     convert = Formula meta
 

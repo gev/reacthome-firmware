@@ -4,17 +4,18 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Domain qualified as D
+import Core.Meta
 import Data.Matrix
 import Data.Value
 import GHC.TypeNats
+import Interface.Etc (Etc)
 import Interface.Flash
 import Ivory.Language
-import Core.Meta
 
 data Palette n l = forall p. Palette
     { palette :: Matrix n l Uint32
     , synced :: Values n IBool
-    , etc :: Flash p
+    , etc :: Etc (Flash p)
     }
 
 mkPalette ::

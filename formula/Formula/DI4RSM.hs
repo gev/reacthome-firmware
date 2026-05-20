@@ -29,7 +29,7 @@ di4rsm'v7 =
                 , mcu = gd32f350k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
-                , startEtc = Just 0x0800_bc00
+                , etc = Nothing
                 }
         , transport = rbus $ rs485 uart_1 out_pa_5
         , implementation =

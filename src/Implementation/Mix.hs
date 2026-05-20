@@ -47,6 +47,7 @@ import Feature.Relays (
     syncRelays,
  )
 import GHC.TypeNats
+import Interface.Etc (Etc (..))
 import Interface.Flash as F
 import Ivory.Language
 import Ivory.Language.Proxy
@@ -69,7 +70,7 @@ data Mix ni no = forall p. Mix
     , saveCountdown :: Value Uint8
     , syncStateBuff :: Buffer (SizeSyncStateBuff ni no) Uint8
     , info :: GetInfo
-    , etc :: Flash p
+    , etc :: Etc (Flash p)
     , transmit ::
         forall n.
         (KnownNat n) =>
@@ -285,34 +286,34 @@ saveTask mix@Mix{..} = do
 
 save :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s t) ()
 save Mix{..} = do
-    F.erase etc 0
+    F.erase etc.etc 0
     crc <- local $ istruct initCRC16
     mode' <- deref (mode ats)
     updateCRC16 crc mode'
-    F.write etc 0 $ safeCast mode'
+    F.write etc.etc 0 $ safeCast mode'
     kx <- local $ ival 4
     let run rules = arrayMap \ix -> arrayMap \jx -> do
             kx' <- deref kx
             v <- deref (rules ! ix ! jx)
             updateCRC16 crc v
-            F.write etc kx' $ safeCast v
+            F.write etc.etc kx' $ safeCast v
             store kx $ kx' + 4
     run $ rulesOff rules
     run $ rulesOn rules
     kx' <- deref kx
-    F.write etc kx' . safeCast =<< deref (crc ~> msb)
-    F.write etc (kx' + 4) . safeCast =<< deref (crc ~> lsb)
+    F.write etc.etc kx' . safeCast =<< deref (crc ~> msb)
+    F.write etc.etc (kx' + 4) . safeCast =<< deref (crc ~> lsb)
 
 load :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s ()) ()
 load mix@Mix{..} = do
     valid <- checkCRC mix
     when valid do
-        store (mode ats) . castDefault =<< F.read etc 0
+        store (mode ats) . castDefault =<< F.read etc.etc 0
         manageLock mix
         kx <- local $ ival 4
         let run rules = arrayMap \ix -> arrayMap \jx -> do
                 kx' <- deref kx
-                store (rules ! ix ! jx) . castDefault =<< F.read etc kx'
+                store (rules ! ix ! jx) . castDefault =<< F.read etc.etc kx'
                 store kx $ kx' + 4
         run $ rulesOff rules
         run $ rulesOn rules
@@ -322,15 +323,15 @@ checkCRC Mix{..} = do
     let relaysN = fromIntegral $ natVal (aNat :: NatType no)
     let dinputsN = fromIntegral $ natVal (aNat :: NatType ni)
     crc <- local $ istruct initCRC16
-    updateCRC16 crc . castDefault =<< F.read etc 0
+    updateCRC16 crc . castDefault =<< F.read etc.etc 0
     kx <- local $ ival 4
     times (2 * dinputsN * relaysN :: Ix 256) \_ -> do
         kx' <- deref kx
-        updateCRC16 crc . castDefault =<< F.read etc kx'
+        updateCRC16 crc . castDefault =<< F.read etc.etc kx'
         store kx $ kx' + 4
     kx' <- deref kx
-    msb' <- castDefault <$> F.read etc kx'
-    lsb' <- castDefault <$> F.read etc (kx' + 4)
+    msb' <- castDefault <$> F.read etc.etc kx'
+    lsb' <- castDefault <$> F.read etc.etc (kx' + 4)
     lsb'' <- deref $ crc ~> lsb
     msb'' <- deref $ crc ~> msb
     pure $ lsb' ==? lsb'' .&& msb' ==? msb''

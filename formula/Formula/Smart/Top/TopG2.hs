@@ -15,6 +15,7 @@ import Feature.Smart.Top.Vibro (vibro)
 import Feature.Touches (touches)
 import Implementation.Smart.TopG2 (topG2)
 import Implementation.Smart.TopG2v9 (topG2v9)
+import Interface.Etc (Etc (..))
 import Ivory.Language
 import Transport.UART.RBUS
 
@@ -31,7 +32,7 @@ smartTopG2'v2 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
-                , startEtc = Just 0x0800_bc00
+                , etc = Just Etc{version = 1, etc = 0x0800_bc00}
                 }
         , transport = rbusTop uart_1
         , implementation =
@@ -60,7 +61,7 @@ smartTopG2'v9 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
-                , startEtc = Just 0x0800_bc00
+                , etc = Just Etc{version = 1, etc = 0x0800_bc00}
                 }
         , transport = rbusTop uart_1
         , implementation =

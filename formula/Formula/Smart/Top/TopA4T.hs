@@ -15,6 +15,7 @@ import Feature.Smart.Top.Vibro (vibro)
 import Feature.Touches (touches)
 import Implementation.Smart.TopA4T (topA4T)
 import Implementation.Smart.TopA4Tv5 (topA4Tv5)
+import Interface.Etc (Etc (..))
 import Ivory.Language
 import Transport.UART.RBUS
 
@@ -31,7 +32,7 @@ smartTopA4T'v3 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
-                , startEtc = Just 0x0800_bc00
+                , etc = Just Etc{version = 1, etc = 0x0800_bc00}
                 }
         , transport = rbusTop uart_1
         , implementation =
@@ -62,7 +63,7 @@ smartTopA4T'v5 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
-                , startEtc = Just 0x0800_bc00
+                , etc = Just Etc{version = 1, etc = 0x0800_bc00}
                 }
         , transport = rbusTop uart_1
         , implementation =

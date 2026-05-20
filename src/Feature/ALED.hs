@@ -19,6 +19,7 @@ import Endpoint.ALED.Animation qualified as E
 import Endpoint.ALED.Animation.Data qualified as E
 import GHC.TypeNats
 import Interface.Display (Display, Render (Render))
+import Interface.Etc (Etc (..))
 import Interface.Flash as F
 import Interface.MCU
 import Interface.MCU qualified as I
@@ -37,7 +38,7 @@ data ALED ng ns np
     ALED
     { display :: d
     , getALED :: E.ALED ng ns np
-    , etc :: Flash p
+    , etc :: Etc (Flash p)
     , transport :: t
     , shouldSaveConfig :: Value IBool
     , shouldSyncGroups :: Value IBool
@@ -727,14 +728,14 @@ saveConfig ALED{..} = do
     shouldSaveConfig' <- deref shouldSaveConfig
 
     when shouldSaveConfig' do
-        F.erase etc 0
+        F.erase etc.etc 0
         offset <- local $ ival 8
         crc <- local $ istruct initCRC16
 
         let save v = do
                 offset' <- deref offset
                 updateCRC16 crc v
-                write etc offset' $ safeCast v
+                write etc.etc offset' $ safeCast v
                 store offset $ offset' + 4
 
         arrayMap \ix -> do
@@ -752,8 +753,8 @@ saveConfig ALED{..} = do
             save =<< deref (group ~> E.pixelSize)
             save =<< deref (group ~> E.segmentNumber)
 
-        write etc 0 . safeCast =<< deref (crc ~> msb)
-        write etc 4 . safeCast =<< deref (crc ~> lsb)
+        write etc.etc 0 . safeCast =<< deref (crc ~> msb)
+        write etc.etc 4 . safeCast =<< deref (crc ~> lsb)
 
         store shouldSaveConfig false
 
@@ -765,12 +766,12 @@ loadConfig ::
 loadConfig ALED{..} = do
     offset <- local $ ival 8
     crc <- local $ istruct initCRC16
-    msb'' <- F.read etc 0
-    lsb'' <- F.read etc 4
+    msb'' <- F.read etc.etc 0
+    lsb'' <- F.read etc.etc 4
 
     let calc = do
             offset' <- deref offset
-            updateCRC16 crc . castDefault =<< F.read etc offset'
+            updateCRC16 crc . castDefault =<< F.read etc.etc offset'
             store offset $ offset' + 4
 
     arrayMap \(_ :: Ix ng) -> calc >> calc >> calc
@@ -786,7 +787,7 @@ loadConfig ALED{..} = do
             load = do
                 offset' <- deref offset
                 store offset $ offset' + 4
-                castDefault <$> F.read etc offset'
+                castDefault <$> F.read etc.etc offset'
 
         arrayMap \ix -> do
             let segment = E.segments getALED ! ix

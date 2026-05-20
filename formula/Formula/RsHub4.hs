@@ -14,6 +14,7 @@ import Feature.Dimmers.DC
 import Feature.Indicator
 import Feature.RS485.RBUS as F
 import Implementation.Hub (hub)
+import Interface.Etc (Etc (..))
 import Interface.RS485
 import Ivory.Language
 import Transport.UDP.RBUS as U
@@ -31,7 +32,7 @@ rsHub4'v1 =
                 , mcu = gd32f450vgt6
                 , quartzFrequency = 25_000_000
                 , systemFrequency = 200_000_000
-                , startEtc = Just 0x080e_0000
+                , etc = Just Etc{version = 1, etc = 0x080e_0000}
                 }
         , transport = U.rbus eth_0
         , implementation =

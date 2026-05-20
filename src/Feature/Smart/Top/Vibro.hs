@@ -13,6 +13,7 @@ import Data.Serialize (unpack)
 import Data.Value
 import Endpoint.DInputs (DInputs (dinputs), state)
 import GHC.TypeNats
+import Interface.Etc (Etc (..))
 import Interface.Flash as F
 import Interface.GPIO.Output (Output, reset, set)
 import Interface.GPIO.Port (Pull, pullNone)
@@ -32,7 +33,7 @@ data Vibro n = forall o p t. (Output o, LazyTransport t) => Vibro
     , prevState :: Values n IBool
     , t :: Value Uint32
     , transport :: t
-    , etc :: Flash p
+    , etc :: Etc (Flash p)
     , synced :: Value IBool
     }
 
@@ -84,20 +85,20 @@ syncVibro :: Vibro n -> Ivory (ProcEffects s t) ()
 syncVibro Vibro{..} = do
     synced' <- deref synced
     when (iNot synced') do
-        F.erase etc 0
+        F.erase etc.etc 0
         crc <- local $ istruct initCRC16
         volume' <- deref volume
         updateCRC16 crc volume'
-        F.write etc 0 $ safeCast volume'
-        F.write etc 4 . safeCast =<< deref (crc ~> msb)
-        F.write etc 8 . safeCast =<< deref (crc ~> lsb)
+        F.write etc.etc 0 $ safeCast volume'
+        F.write etc.etc 4 . safeCast =<< deref (crc ~> msb)
+        F.write etc.etc 8 . safeCast =<< deref (crc ~> lsb)
         store synced true
 
 loadVibro :: Vibro n -> Ivory (ProcEffects s t) ()
 loadVibro Vibro{..} = do
-    volume' <- castDefault <$> F.read etc 0
-    msb' <- F.read etc 4
-    lsb' <- F.read etc 8
+    volume' <- castDefault <$> F.read etc.etc 0
+    msb' <- F.read etc.etc 4
+    lsb' <- F.read etc.etc 8
     crc <- local $ istruct initCRC16
     updateCRC16 crc volume'
     msb <- safeCast <$> deref (crc ~> msb)

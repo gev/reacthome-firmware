@@ -14,6 +14,7 @@ import Feature.IndicatorFlush
 import Feature.Relays (relays)
 import Implementation.MixH (mix)
 import Implementation.MixHv6 (mix'v6)
+import Interface.Etc (Etc (..))
 import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
@@ -31,7 +32,7 @@ mixH'v3 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
-                , startEtc = Just 0x0800_bc00
+                , etc = Just Etc{version = 1, etc = 0x0800_bc00}
                 }
         , transport = rbus $ rs485 uart_0 out_pb_2
         , implementation =
@@ -77,7 +78,7 @@ mixH'v6 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
-                , startEtc = Just 0x0800_bc00
+                , etc = Just Etc{version = 1, etc = 0x0800_bc00}
                 }
         , transport = rbus $ rs485 uart_0 out_pb_2
         , implementation =

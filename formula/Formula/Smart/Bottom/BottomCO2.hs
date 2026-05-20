@@ -13,6 +13,7 @@ import Feature.DS18B20
 import Feature.Scd40
 import Feature.Smart.Top
 import Implementation.Smart.Bottom (bottomCO2)
+import Interface.Etc (Etc (..))
 import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
@@ -30,7 +31,7 @@ smartBottomCO2'v13 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
-                , startEtc = Just 0x0800_d000
+                , etc = Just Etc{version = 1, etc = 0x0800_d000}
                 }
         , transport = rbus $ rs485 uart_1 out_pa_4
         , implementation =
