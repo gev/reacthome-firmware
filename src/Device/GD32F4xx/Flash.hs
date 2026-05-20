@@ -5,12 +5,14 @@ import Ivory.Stdlib
 import Support.Cast
 import Support.Device.GD32F4xx.FMC
 import Ivory.Language
+import Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
 
 mkFlash = Flash{read, write, erase}
   where
     read = derefUint32
 
     write offset value = do
+        disableIRQ
         unlockFMC
         clearFlagFMC fmc_flag_end
         clearFlagFMC fmc_flag_operr
@@ -18,12 +20,13 @@ mkFlash = Flash{read, write, erase}
         clearFlagFMC fmc_flag_pgmerr
         clearFlagFMC fmc_flag_pgserr
         programWordFMC offset value
-        -- clearFlagFMC fmc_flag_end
-        -- clearFlagFMC fmc_flag_operr
-        -- clearFlagFMC fmc_flag_wperr
-        -- clearFlagFMC fmc_flag_pgmerr
-        -- clearFlagFMC fmc_flag_pgserr
+        clearFlagFMC fmc_flag_end
+        clearFlagFMC fmc_flag_operr
+        clearFlagFMC fmc_flag_wperr
+        clearFlagFMC fmc_flag_pgmerr
+        clearFlagFMC fmc_flag_pgserr
         lockFMC
+        enableIRQ
 
     erase offset = do
         cond_
@@ -46,18 +49,19 @@ mkFlash = Flash{read, write, erase}
             ]
       where
         eraseSector sector = do
+            disableIRQ
             unlockFMC
             clearFlagFMC fmc_flag_end
             clearFlagFMC fmc_flag_operr
             clearFlagFMC fmc_flag_wperr
             clearFlagFMC fmc_flag_pgmerr
             clearFlagFMC fmc_flag_pgserr
-            {-ToDo convert offset into sector-}
             eraseSectorFMC sector
-            -- clearFlagFMC fmc_flag_end
-            -- clearFlagFMC fmc_flag_operr
-            -- clearFlagFMC fmc_flag_wperr
-            -- clearFlagFMC fmc_flag_pgmerr
-            -- clearFlagFMC fmc_flag_pgserr
+            clearFlagFMC fmc_flag_end
+            clearFlagFMC fmc_flag_operr
+            clearFlagFMC fmc_flag_wperr
+            clearFlagFMC fmc_flag_pgmerr
+            clearFlagFMC fmc_flag_pgserr
             lockFMC
+            enableIRQ
 
