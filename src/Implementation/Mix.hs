@@ -48,7 +48,6 @@ import Feature.Relays (
  )
 import GHC.TypeNats
 import Interface.Flash as F
-import Interface.MCU as I
 import Ivory.Language
 import Ivory.Language.Proxy
 import Ivory.Stdlib
