@@ -31,6 +31,7 @@ rsHub4'v1 =
                 , mcu = gd32f450vgt6
                 , quartzFrequency = 25_000_000
                 , systemFrequency = 200_000_000
+                , startEtc = Just 0x080e_0000
                 }
         , transport = U.rbus eth_0
         , implementation =

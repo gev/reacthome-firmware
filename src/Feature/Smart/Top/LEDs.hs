@@ -7,7 +7,6 @@ import Control.Monad.State (MonadState)
 import Core.Actions
 import Core.Context
 import Core.Domain as D
-import Core.Meta (Meta (..))
 import Core.Task (delay)
 import Core.Transport (LazyTransport (lazyTransmit))
 import Core.Transport qualified as T
@@ -20,11 +19,11 @@ import Data.Serialize
 import Data.Value
 import GHC.TypeNats
 import Interface.Flash as F
-import Interface.MCU (MCU (..))
 import Ivory.Language
 import Ivory.Language.Proxy
 import Ivory.Stdlib
 import Util.CRC16
+import Core.Meta
 
 data LEDs pn ln = forall p t. (T.LazyTransport t) => LEDs
     { colors :: Matrix pn ln Uint32
@@ -92,7 +91,7 @@ mkLeds frameBuffer order' transport image' = do
                 , blink
                 , blinkPhase
                 , transport
-                , etc = meta.mcu.etc
+                , etc = mkEtc meta
                 , synced
                 , synced_
                 }

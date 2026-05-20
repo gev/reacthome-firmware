@@ -70,7 +70,7 @@ vibro output' getDInputs transport = do
                 , prevState
                 , transport
                 , synced
-                , etc = meta.mcu.etc
+                , etc = mkEtc meta
                 }
 
     addTask $ yeld "vibro" $ vibroTask vibro

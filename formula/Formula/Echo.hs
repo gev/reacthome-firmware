@@ -22,6 +22,7 @@ echo =
                 , mcu = gd32f450vgt6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
+                , startEtc = Just 0x0800_bc00
                 }
         , implementation = E.echo $ rbusEcho uart_7
         }

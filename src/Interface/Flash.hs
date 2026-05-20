@@ -9,10 +9,12 @@ data Flash p = Flash
     , erase :: Uint32 -> forall eff. Ivory eff ()
     }
 
-mkOffset :: Flash p -> Uint32 -> Flash p
+mkOffset :: Flash p -> Int -> Flash p
 mkOffset flash base =
     Flash
-        { read = \offset -> read flash $ base + offset
-        , write = \offset -> write flash $ base + offset
-        , erase = \offset -> erase flash $ base + offset
+        { read = \offset -> read flash $ base' + offset
+        , write = \offset -> write flash $ base' + offset
+        , erase = \offset -> erase flash $ base' + offset
         }
+  where
+    base' = fromIntegral base

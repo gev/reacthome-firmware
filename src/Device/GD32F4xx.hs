@@ -28,7 +28,7 @@ import Device.GD32F4xx.Timer (
  )
 import Device.GD32F4xx.UART
 import GHC.TypeNats
-import Interface.Flash (Flash, mkOffset)
+import Interface.Flash (Flash)
 import Interface.GPIO.Port
 import Interface.MCU (MCU (MCU), mkPlatform)
 import Interface.OneWire
@@ -253,7 +253,7 @@ data GD32F4xx = GD32F4xx
     , eth_0 :: Enet'
     }
 
-gd32f4xx :: String -> String -> Int -> Int -> Int -> Flash GD32F4xx -> Flash GD32F4xx -> MCU GD32F4xx
+gd32f4xx :: String -> String -> Int -> Int -> Int -> Flash GD32F4xx -> MCU GD32F4xx
 gd32f4xx =
     MCU $
         mkPlatform
@@ -640,30 +640,27 @@ gd32f4xx =
                         enet_irqn
                 }
 
-flash = mkFlash
-etc = mkOffset flash 0x080e_0000
-
 gd32f450vgt6 :: MCU GD32F4xx
 gd32f450vgt6 =
     gd32f4xx
         "gd32f450"
         "vgt6"
-        0x8_000_000
+        0x0800_0000
         (1024 * 1024)
         (192 * 1024)
-        flash
-        etc
+        -- 0x080e_0000
+        mkFlash
 
 gd32f450vit6 :: MCU GD32F4xx
 gd32f450vit6 =
     gd32f4xx
         "gd32f450"
         "vit6"
-        0x8_000_000
+        0x0800_0000
         (2048 * 1024)
         (448 * 1024)
+        -- 0x080e_0000
         mkFlash
-        etc
 
 instance Pull GD32F4xx GPIO_PUPD where
     pullNone _ = gpio_pupd_none

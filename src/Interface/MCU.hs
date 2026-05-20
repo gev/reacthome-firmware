@@ -22,8 +22,8 @@ data MCU p = MCU
     , startFlash :: Int
     , sizeFlash :: Int
     , sizeRam :: Int
+    -- , startEtc :: Int
     , flash :: Flash p
-    , etc :: Flash p
     }
 
 mkPlatform ::

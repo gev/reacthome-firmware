@@ -28,7 +28,7 @@ import Device.GD32F3x0.Timer (
 import Device.GD32F3x0.Touch
 import Device.GD32F3x0.UART
 import GHC.TypeNats
-import Interface.Flash (Flash, mkOffset)
+import Interface.Flash (Flash)
 import Interface.GPIO.Port
 import Interface.MCU (MCU (MCU), mkPlatform)
 import Interface.OneWire
@@ -173,7 +173,7 @@ data GD32F3x0 = GD32F3x0
     , spi_0 :: SPI'
     }
 
-gd32f3x0 :: String -> String -> Int -> Int -> Int -> Flash GD32F3x0 -> Flash GD32F3x0 -> MCU GD32F3x0
+gd32f3x0 :: String -> String -> Int -> Int -> Int -> Flash GD32F3x0 -> MCU GD32F3x0
 gd32f3x0 =
     MCU $
         mkPlatform
@@ -452,19 +452,16 @@ gd32f3x0 =
                         (pa_15 af_0)
                 }
 
-flash = mkFlash
-etc = mkOffset flash 0x0800_bc00
-
 gd32f330k8u6 :: MCU GD32F3x0
 gd32f330k8u6 =
     gd32f3x0
         "gd32f330"
         "k8u6"
-        0x8_000_000
+        0x0800_0000
         (64 * 1024)
         (8 * 1024)
-        flash
-        etc
+        -- 0x0800_bc00
+        mkFlash
 
 {-
     ToDo : GD32F350 MCUs Should be defined via separate type, kind or data kind
@@ -474,11 +471,11 @@ gd32f350k8u6 =
     gd32f3x0
         "gd32f350"
         "k8u6"
-        0x8_000_000
+        0x0800_0000
         (64 * 1024)
         (8 * 1024)
-        flash
-        etc
+        -- 0x0800_bc00
+        mkFlash
 
 instance Pull GD32F3x0 GPIO_PUPD where
     pullNone _ = gpio_pupd_none

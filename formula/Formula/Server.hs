@@ -31,6 +31,7 @@ server'v11 =
                 , mcu = gd32f450vgt6
                 , quartzFrequency = 25_000_000
                 , systemFrequency = 200_000_000
+                , startEtc = Just 0x080e_0000
                 }
         , transport = rbusHub uart_1
         , implementation =

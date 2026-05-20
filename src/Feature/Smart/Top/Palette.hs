@@ -4,13 +4,12 @@ import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Domain qualified as D
-import Core.Meta (Meta (..))
 import Data.Matrix
 import Data.Value
 import GHC.TypeNats
 import Interface.Flash
-import Interface.MCU (MCU (..))
 import Ivory.Language
+import Core.Meta
 
 data Palette n l = forall p. Palette
     { palette :: Matrix n l Uint32
@@ -33,5 +32,5 @@ mkPalette = do
         Palette
             { palette
             , synced
-            , etc = meta.mcu.etc
+            , etc = mkEtc meta
             }

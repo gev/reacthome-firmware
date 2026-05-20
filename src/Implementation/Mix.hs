@@ -52,9 +52,9 @@ import Interface.MCU as I
 import Ivory.Language
 import Ivory.Language.Proxy
 import Ivory.Stdlib
+import Support.CMSIS.CoreCM4
 import Util.CRC16
 import Prelude hiding (error)
-import Support.CMSIS.CoreCM4
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff ni no = 1 + ToSizeInBytes ni + ToSizeInBytes no
@@ -126,7 +126,7 @@ mix dinputs' relays' indicator' transport' = do
                 , saveCountdown
                 , syncStateBuff
                 , info
-                , etc = meta.mcu.etc
+                , etc = mkEtc meta
                 , transmit = T.transmitBuffer transport
                 }
 

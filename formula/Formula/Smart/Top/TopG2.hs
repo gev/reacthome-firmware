@@ -31,6 +31,7 @@ smartTopG2'v2 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
+                , startEtc = Just 0x0800_bc00
                 }
         , transport = rbusTop uart_1
         , implementation =
@@ -59,6 +60,7 @@ smartTopG2'v9 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
+                , startEtc = Just 0x0800_bc00
                 }
         , transport = rbusTop uart_1
         , implementation =

@@ -76,7 +76,7 @@ aled mkDisplay transport = do
             ALED
                 { display
                 , getALED
-                , etc = meta.mcu.etc
+                , etc = mkEtc meta
                 , transport
                 , shouldSaveConfig
                 , shouldSyncGroups

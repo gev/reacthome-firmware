@@ -51,9 +51,9 @@ import Interface.MCU as I
 import Ivory.Language
 import Ivory.Language.Proxy
 import Ivory.Stdlib
+import Support.CMSIS.CoreCM4
 import Support.Cast
 import Util.CRC16
-import Support.CMSIS.CoreCM4
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff ni no nd = 1 + ToSizeInBytes ni + ToSizeInBytes no + nd
@@ -124,7 +124,7 @@ mix'v6 dinputs' relays' dimmers' ds18b20 indicator' transport' = do
                 , saveCountdown
                 , syncStateBuff
                 , info
-                , etc = meta.mcu.etc
+                , etc = mkEtc meta
                 , indicator
                 , transmit = transmitBuffer transport
                 }

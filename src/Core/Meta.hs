@@ -2,6 +2,7 @@ module Core.Meta where
 
 import Data.List
 import Data.Word
+import Interface.Flash
 import Interface.MCU
 import Ivory.Language
 
@@ -14,6 +15,7 @@ data Meta p = Meta
     , mcu :: MCU p
     , quartzFrequency :: Int
     , systemFrequency :: Int
+    , startEtc :: Maybe Int
     }
 
 mkName :: Meta p -> String
@@ -42,3 +44,10 @@ mkNameDfu Meta{..} dfuVersion =
   where
     major = show . fst
     minor = show . snd
+
+mkEtc :: Meta p -> Flash p
+mkEtc meta =
+    maybe
+        (error "Unknown etc start address")
+        (mkOffset meta.mcu.flash)
+        meta.startEtc

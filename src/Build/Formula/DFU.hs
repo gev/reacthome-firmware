@@ -8,7 +8,7 @@ import Build.Shake
 import Core.Context
 import Core.Formula
 import Core.Formula.DFU
-import Core.Meta (board, mcu, mkNameDfu, model, version)
+import Core.Meta (Meta (..), board, mcu, mkNameDfu, model, version)
 import Data.Text qualified as T
 import Data.Text.IO qualified as T
 import Data.Text.Internal.Builder qualified as B
@@ -49,7 +49,11 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
 
     startDfuFirmware = meta.mcu.startFlash
     startMainFirmware = startDfuFirmware + maxDfuLength
-    maxMainLength = meta.mcu.sizeFlash - maxDfuLength
+    maxMainLength =
+        maybe
+            (meta.mcu.sizeFlash - maxDfuLength)
+            (\startEtc -> startEtc - startMainFirmware)
+            meta.startEtc
 
     convert = Formula meta
 
