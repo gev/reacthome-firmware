@@ -7,7 +7,7 @@ import Support.Device.GD32F4xx.FMC
 import Ivory.Language
 import Support.CMSIS.CoreCMFunc (disableIRQ, enableIRQ)
 
-mkFlash base = Flash{base, read, write, erase}
+mkFlash = Flash{read, write, erase}
   where
     read = derefUint32
 

@@ -253,7 +253,7 @@ data GD32F4xx = GD32F4xx
     , eth_0 :: Enet'
     }
 
-gd32f4xx :: String -> String -> Int -> Int -> Flash GD32F4xx -> Flash GD32F4xx -> MCU GD32F4xx
+gd32f4xx :: String -> String -> Int -> Int -> Int -> Flash GD32F4xx -> Flash GD32F4xx -> MCU GD32F4xx
 gd32f4xx =
     MCU $
         mkPlatform
@@ -640,14 +640,15 @@ gd32f4xx =
                         enet_irqn
                 }
 
-flash = mkFlash 0x0800_0000
-etc = mkOffset flash 0x000e_0000
+flash = mkFlash
+etc = mkOffset flash 0x080e_0000
 
 gd32f450vgt6 :: MCU GD32F4xx
 gd32f450vgt6 =
     gd32f4xx
         "gd32f450"
         "vgt6"
+        0x8_000_000
         (1024 * 1024)
         (192 * 1024)
         flash
@@ -658,9 +659,10 @@ gd32f450vit6 =
     gd32f4xx
         "gd32f450"
         "vit6"
+        0x8_000_000
         (2048 * 1024)
         (448 * 1024)
-        flash
+        mkFlash
         etc
 
 instance Pull GD32F4xx GPIO_PUPD where

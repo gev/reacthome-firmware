@@ -19,6 +19,7 @@ data MCU p = MCU
     { platform :: forall m. (MonadState Context m) => m (Platform p)
     , model :: String
     , modification :: String
+    , startFlash :: Int
     , sizeFlash :: Int
     , sizeRam :: Int
     , flash :: Flash p

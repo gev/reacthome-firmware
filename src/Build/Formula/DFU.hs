@@ -19,7 +19,6 @@ import Data.Util (unPack16BE)
 import Data.Word
 import Development.Shake.FilePath
 import Implementation.Dfu qualified as I
-import Interface.Flash
 import Interface.MCU
 import Ivory.Language
 import Support.CMSIS.CoreCMFunc
@@ -48,9 +47,9 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
     mainImpl = fixIRQ $ implementation transport
     dfuImpl = I.dfu startMainFirmware dfuVersion transport
 
-    startDfuFirmware = meta.mcu.flash.base
+    startDfuFirmware = meta.mcu.startFlash
     startMainFirmware = startDfuFirmware + maxDfuLength
-    maxMainLength = meta.mcu.etc.base - startMainFirmware
+    maxMainLength = meta.mcu.sizeFlash - maxDfuLength
 
     convert = Formula meta
 
