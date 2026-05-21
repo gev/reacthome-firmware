@@ -116,8 +116,12 @@ syncLEDs LEDs{..} = do
         pageOffset' <- deref pageOffset
         when (iNot synced') do
             F.erase etc.etc pageOffset'
+            let etcVersion = fromIntegral etc.version
+            F.write etc.etc pageOffset' etcVersion
             crc <- local $ istruct initCRC16
-            colorOffset <- local $ ival 0
+            updateCRC16 crc (castDefault etcVersion)
+
+            colorOffset <- local $ ival 4
             arrayMap \cx -> do
                 value <- deref $ colors ! px ! cx
                 let r' = castDefault $ (value `iShiftR` 16) .& 0xff
@@ -140,15 +144,19 @@ syncLEDs LEDs{..} = do
     when (iNot synced_') do
         pageOffset' <- deref pageOffset
         F.erase etc.etc pageOffset'
+        let etcVersion = fromIntegral etc.version
+        F.write etc.etc pageOffset' etcVersion
         crc <- local $ istruct initCRC16
+        updateCRC16 crc (castDefault etcVersion)
+
         brightness' <- castDefault . (* 255) <$> deref brightness
         state' <- safeCast <$> deref state
         updateCRC16 crc brightness'
         updateCRC16 crc state'
         F.write etc.etc pageOffset' $ safeCast brightness'
-        F.write etc.etc (pageOffset' + 4) $ safeCast state'
-        F.write etc.etc (pageOffset' + 8) . safeCast =<< deref (crc ~> msb)
-        F.write etc.etc (pageOffset' + 12) . safeCast =<< deref (crc ~> lsb)
+        F.write etc.etc (pageOffset' + 8) $ safeCast state'
+        F.write etc.etc (pageOffset' + 12) . safeCast =<< deref (crc ~> msb)
+        F.write etc.etc (pageOffset' + 16) . safeCast =<< deref (crc ~> lsb)
         store synced_ true
 
 loadLeds ::
@@ -157,10 +165,14 @@ loadLeds ::
     Ivory (ProcEffects s t) ()
 loadLeds LEDs{..} = do
     pageOffset <- local $ ival 1024
+    let etcVersion = fromIntegral etc.version
     arrayMap \px -> do
-        crc <- local $ istruct initCRC16
         pageOffset' <- deref pageOffset
-        colorOffset <- local $ ival 0
+        etcVersionFromFlash <- F.read etc.etc pageOffset'
+        crc <- local $ istruct initCRC16
+        updateCRC16 crc $ castDefault etcVersionFromFlash
+
+        colorOffset <- local $ ival 4
         arrayMap \cx -> do
             colorOffset' <- deref colorOffset
             value <- F.read etc.etc $ pageOffset' + colorOffset'
@@ -178,12 +190,14 @@ loadLeds LEDs{..} = do
         lsb' <- F.read etc.etc (offset + 4)
         msb'' <- safeCast <$> deref (crc ~> msb)
         lsb'' <- safeCast <$> deref (crc ~> lsb)
-        when (msb' /=? msb'' .|| lsb' /=? lsb'') do
+        when (msb' /=? msb'' .|| lsb' /=? lsb'' .|| etcVersion /=? etcVersionFromFlash) do
             arrayMap \cx -> store (colors ! px ! cx) 0x77_77_77
         store pageOffset $ pageOffset' + 1024
 
     pageOffset' <- deref pageOffset
+    etcVersionFromFlash <- F.read etc.etc pageOffset'
     crc <- local $ istruct initCRC16
+    updateCRC16 crc $ castDefault etcVersionFromFlash
     brightness' <- castDefault <$> F.read etc.etc pageOffset'
     state' <- castDefault <$> F.read etc.etc (pageOffset' + 4)
     msb' <- F.read etc.etc (pageOffset' + 8)
@@ -192,7 +206,7 @@ loadLeds LEDs{..} = do
     updateCRC16 crc state'
     msb'' <- safeCast <$> deref (crc ~> msb)
     lsb'' <- safeCast <$> deref (crc ~> lsb)
-    when (msb' ==? msb'' .&& lsb' ==? lsb'') do
+    when (msb' ==? msb'' .&& lsb' ==? lsb'' .&&  etcVersion ==? etcVersionFromFlash ) do
         store brightness $ safeCast brightness' / 255
         store state $ state' ==? 1
 

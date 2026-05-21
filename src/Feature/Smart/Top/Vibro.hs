@@ -86,24 +86,31 @@ syncVibro Vibro{..} = do
     synced' <- deref synced
     when (iNot synced') do
         F.erase etc.etc 0
+        let etcVersion = fromIntegral etc.version
+        F.write etc.etc 0 etcVersion
         crc <- local $ istruct initCRC16
+        updateCRC16 crc $ castDefault etcVersion
+        
         volume' <- deref volume
         updateCRC16 crc volume'
-        F.write etc.etc 0 $ safeCast volume'
-        F.write etc.etc 4 . safeCast =<< deref (crc ~> msb)
-        F.write etc.etc 8 . safeCast =<< deref (crc ~> lsb)
+        F.write etc.etc 4 $ safeCast volume'
+        F.write etc.etc 8 . safeCast =<< deref (crc ~> msb)
+        F.write etc.etc 12 . safeCast =<< deref (crc ~> lsb)
         store synced true
 
 loadVibro :: Vibro n -> Ivory (ProcEffects s t) ()
 loadVibro Vibro{..} = do
-    volume' <- castDefault <$> F.read etc.etc 0
-    msb' <- F.read etc.etc 4
-    lsb' <- F.read etc.etc 8
+    let etcVersion = fromIntegral etc.version
+    etcVersionFromFlash <- F.read etc.etc 0
+    volume' <- castDefault <$> F.read etc.etc 4
+    msb' <- F.read etc.etc 8
+    lsb' <- F.read etc.etc 12
     crc <- local $ istruct initCRC16
+    updateCRC16 crc $ castDefault etcVersionFromFlash
     updateCRC16 crc volume'
     msb <- safeCast <$> deref (crc ~> msb)
     lsb <- safeCast <$> deref (crc ~> lsb)
-    when (msb ==? msb' .&& lsb ==? lsb') do
+    when (msb ==? msb' .&& lsb ==? lsb' .&& etcVersion ==? etcVersionFromFlash) do
         store volume volume'
 
 vibroTask :: (KnownNat n) => Vibro n -> Ivory (ProcEffects s t) ()

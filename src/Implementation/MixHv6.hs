@@ -292,7 +292,11 @@ saveTask mix@Mix{..} = do
 save :: (KnownNat ni, KnownNat no) => Mix ni no nd -> Ivory (ProcEffects s t) ()
 save Mix{..} = do
     F.erase etc.etc 0
+    let etcVersion = fromIntegral etc.version
+    F.write etc.etc 0 etcVersion
     crc <- local $ istruct initCRC16
+    updateCRC16 crc (castDefault etcVersion)
+
     kx <- local $ ival 4
     let run rules = arrayMap \ix -> arrayMap \jx -> do
             kx' <- deref kx
@@ -322,8 +326,12 @@ checkCRC :: forall ni no nd s. (KnownNat ni, KnownNat no) => Mix ni no nd -> Ivo
 checkCRC Mix{..} = do
     let relaysN = fromIntegral $ natVal (aNat :: NatType no)
     let dinputsN = fromIntegral $ natVal (aNat :: NatType ni)
+
+    let etcVersion = fromIntegral etc.version
+    etcVersionFromFlash <- F.read etc.etc 0
     crc <- local $ istruct initCRC16
-    updateCRC16 crc . castDefault =<< F.read etc.etc 0
+    updateCRC16 crc $ castDefault etcVersionFromFlash
+
     kx <- local $ ival 4
     times (2 * dinputsN * relaysN :: Ix 256) \_ -> do
         kx' <- deref kx
@@ -334,7 +342,7 @@ checkCRC Mix{..} = do
     lsb' <- castDefault <$> F.read etc.etc (kx' + 4)
     lsb'' <- deref $ crc ~> lsb
     msb'' <- deref $ crc ~> msb
-    pure $ lsb' ==? lsb'' .&& msb' ==? msb''
+    pure $ lsb' ==? lsb'' .&& msb' ==? msb'' .&& etcVersion ==? etcVersionFromFlash
 
 onInit :: (KnownNat no, KnownNat nd, ANat l) => Mix ni no nd -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onInit Mix{..} buff size = do

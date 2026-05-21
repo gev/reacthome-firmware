@@ -726,12 +726,14 @@ saveConfig ::
     Ivory (ProcEffects s t) ()
 saveConfig ALED{..} = do
     shouldSaveConfig' <- deref shouldSaveConfig
-
     when shouldSaveConfig' do
         F.erase etc.etc 0
-        offset <- local $ ival 8
+        let etcVersion = fromIntegral etc.version
+        F.write etc.etc 0 etcVersion
         crc <- local $ istruct initCRC16
+        updateCRC16 crc (castDefault etcVersion)
 
+        offset <- local $ ival 12
         let save v = do
                 offset' <- deref offset
                 updateCRC16 crc v
@@ -753,8 +755,8 @@ saveConfig ALED{..} = do
             save =<< deref (group ~> E.pixelSize)
             save =<< deref (group ~> E.segmentNumber)
 
-        write etc.etc 0 . safeCast =<< deref (crc ~> msb)
-        write etc.etc 4 . safeCast =<< deref (crc ~> lsb)
+        write etc.etc 4 . safeCast =<< deref (crc ~> msb)
+        write etc.etc 8 . safeCast =<< deref (crc ~> lsb)
 
         store shouldSaveConfig false
 
@@ -764,11 +766,14 @@ loadConfig ::
     ALED ng ns np ->
     Ivory (ProcEffects s t) ()
 loadConfig ALED{..} = do
-    offset <- local $ ival 8
+    let etcVersion = fromIntegral etc.version
+    etcVersionFromFlash <- F.read etc.etc 0
     crc <- local $ istruct initCRC16
-    msb'' <- F.read etc.etc 0
-    lsb'' <- F.read etc.etc 4
+    msb'' <- F.read etc.etc 4
+    lsb'' <- F.read etc.etc 8
+    updateCRC16 crc (castDefault etcVersionFromFlash)
 
+    offset <- local $ ival 12
     let calc = do
             offset' <- deref offset
             updateCRC16 crc . castDefault =<< F.read etc.etc offset'
@@ -780,8 +785,8 @@ loadConfig ALED{..} = do
     msb' <- deref $ crc ~> msb
     lsb' <- deref $ crc ~> lsb
 
-    when (msb'' ==? safeCast msb' .&& lsb'' ==? safeCast lsb') do
-        store offset 8
+    when (msb'' ==? safeCast msb' .&& lsb'' ==? safeCast lsb' .&& etcVersion ==? etcVersionFromFlash) do
+        store offset 12
 
         let load :: (SafeCast x Uint32, IvoryOrd x, Bounded x, Default x) => Ivory eff x
             load = do

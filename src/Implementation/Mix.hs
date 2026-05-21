@@ -287,11 +287,15 @@ saveTask mix@Mix{..} = do
 save :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s t) ()
 save Mix{..} = do
     F.erase etc.etc 0
+    let etcVersion = fromIntegral etc.version
+    F.write etc.etc 0 etcVersion
     crc <- local $ istruct initCRC16
+    updateCRC16 crc (castDefault etcVersion)
+
     mode' <- deref (mode ats)
     updateCRC16 crc mode'
-    F.write etc.etc 0 $ safeCast mode'
-    kx <- local $ ival 4
+    F.write etc.etc 4 $ safeCast mode'
+    kx <- local $ ival 8
     let run rules = arrayMap \ix -> arrayMap \jx -> do
             kx' <- deref kx
             v <- deref (rules ! ix ! jx)
@@ -308,7 +312,7 @@ load :: (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (ProcEffects s ()) ()
 load mix@Mix{..} = do
     valid <- checkCRC mix
     when valid do
-        store (mode ats) . castDefault =<< F.read etc.etc 0
+        store (mode ats) . castDefault =<< F.read etc.etc 4
         manageLock mix
         kx <- local $ ival 4
         let run rules = arrayMap \ix -> arrayMap \jx -> do
@@ -322,9 +326,14 @@ checkCRC :: forall ni no s. (KnownNat ni, KnownNat no) => Mix ni no -> Ivory (Pr
 checkCRC Mix{..} = do
     let relaysN = fromIntegral $ natVal (aNat :: NatType no)
     let dinputsN = fromIntegral $ natVal (aNat :: NatType ni)
+
+    let etcVersion = fromIntegral etc.version
+    etcVersionFromFlash <- F.read etc.etc 0
     crc <- local $ istruct initCRC16
-    updateCRC16 crc . castDefault =<< F.read etc.etc 0
-    kx <- local $ ival 4
+    updateCRC16 crc $ castDefault etcVersionFromFlash
+
+    updateCRC16 crc . castDefault =<< F.read etc.etc 4
+    kx <- local $ ival 8
     times (2 * dinputsN * relaysN :: Ix 256) \_ -> do
         kx' <- deref kx
         updateCRC16 crc . castDefault =<< F.read etc.etc kx'
@@ -334,7 +343,7 @@ checkCRC Mix{..} = do
     lsb' <- castDefault <$> F.read etc.etc (kx' + 4)
     lsb'' <- deref $ crc ~> lsb
     msb'' <- deref $ crc ~> msb
-    pure $ lsb' ==? lsb'' .&& msb' ==? msb''
+    pure $ lsb' ==? lsb'' .&& msb' ==? msb'' .&& etcVersion ==? etcVersionFromFlash
 
 manageLock Mix{..} = do
     let r' = R.relays $ getRelays relays
