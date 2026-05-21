@@ -31,7 +31,7 @@ mixV'v2 =
                 , mcu = gd32f450vgt6
                 , quartzFrequency = 25_000_000
                 , systemFrequency = 200_000_000
-                , etc = Just Etc{version = 1, etc = 0x080e_0000}
+                , etc = Nothing
                 }
         , transport = rbus $ rs485 uart_3 out_pc_12
         , implementation =
