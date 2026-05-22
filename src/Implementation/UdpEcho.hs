@@ -22,6 +22,7 @@ import Support.Lwip.Memp
 import Support.Lwip.Netif
 import Support.Lwip.Pbuf
 import Support.Lwip.Udp
+import Support.Lwip.Dhcp 
 
 udpEcho ::
     (MonadState Context m, MonadReader (Domain p ()) m, Enet e, LwipPort e) =>
@@ -44,6 +45,7 @@ udpEcho enet = do
     addModule inclIP_addr
     addModule inclPbuf
     addModule inclEtharp
+    addModule inclDhcp
 
     addProc netifStatusCallback
     addProc udpEchoReceiveCallback
@@ -57,9 +59,9 @@ udpEcho enet = do
     addInit "udp_echo" do
         initMem
         initMemp
-        createIpAddr4 ip4 192 168 88 9
-        createIpAddr4 netmask 255 255 255 0
-        createIpAddr4 gateway 192 168 88 1
+        createIpAddr4 ip4 0 0 0 0
+        createIpAddr4 netmask 0 0 0 0
+        createIpAddr4 gateway 0 0 0 0
         store (netif ~> hwaddr_len) 6
         arrayCopy (netif ~> hwaddr) platform.mac 0 6
 
@@ -67,6 +69,9 @@ udpEcho enet = do
         setNetifDefault netif
         setNetifStatusCallback netif (procPtr netifStatusCallback)
         setUpNetif netif
+        
+        void $ startDhcp netif
+        setLinkUpNetif netif
 
     -- addHandler $ HandleEnet enet' do
     --     reval <- rxFrameSize enet'
@@ -80,6 +85,8 @@ udpEcho enet = do
                 inputLwipPortIf enet' netif
 
     addTask $ delay 1000 "eth_arp" tmrEtharp
+    addTask $ delay 500 "dhcp_coarse" coarseTmrDhcp
+    addTask $ delay 60 "dhcp_fine" fineTmrDhcp
 
 netifStatusCallback :: Def (NetifStatusCallbackFn s)
 netifStatusCallback = proc "netif_callback" \netif -> body do

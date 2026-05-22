@@ -22,6 +22,7 @@ import Support.Lwip.Memp
 import Support.Lwip.Netif
 import Support.Lwip.Pbuf
 import Support.Lwip.Udp
+import Support.Lwip.Dhcp
 
 mkNetif ::
     ( MonadState Context m
@@ -48,6 +49,7 @@ mkNetif enet' = do
     addModule inclPbuf
     addModule inclEtharp
     addModule inclIgmp
+    addModule inclDhcp
 
     let netifStatusCallback = proc "netif_callback" \netif -> body do
             flags' <- deref $ netif ~> flags

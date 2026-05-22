@@ -19,8 +19,8 @@ udpEcho450 =
                 , version = (1, 0)
                 , shouldInit = false
                 , mcu = gd32f450vgt6
-                , quartzFrequency = 24_000_000
-                , systemFrequency = 192_000_000
+                , quartzFrequency = 25_000_000
+                , systemFrequency = 200_000_000
                 }
         , implementation = udpEcho eth_0
         }
