@@ -13,6 +13,7 @@ import Data.Serialize (unpack)
 import Data.Value
 import Endpoint.DInputs (DInputs (dinputs), state)
 import GHC.TypeNats
+import Interface.Etc (Etc (..))
 import Interface.Flash as F
 import Interface.GPIO.Output (Output, reset, set)
 import Interface.GPIO.Port (Pull, pullNone)
@@ -23,7 +24,7 @@ import Ivory.Language
 import Ivory.Stdlib
 import Util.CRC16
 
-data Vibro n = forall o t f. (Output o, LazyTransport t, Flash f) => Vibro
+data Vibro n = forall o p t. (Output o, LazyTransport t) => Vibro
     { getDInputs :: DInputs n
     , output :: o
     , clock :: SystemClock
@@ -32,7 +33,7 @@ data Vibro n = forall o t f. (Output o, LazyTransport t, Flash f) => Vibro
     , prevState :: Values n IBool
     , t :: Value Uint32
     , transport :: t
-    , etc :: f
+    , etc :: Etc (Flash p)
     , synced :: Value IBool
     }
 
@@ -41,16 +42,14 @@ vibro ::
     , MonadReader (D.Domain p c) m
     , Output o
     , Pull p d
-    , Flash f
     , LazyTransport t
     , KnownNat n
     ) =>
     (p -> d -> m o) ->
     DInputs n ->
     t ->
-    f ->
     m (Vibro n)
-vibro output' getDInputs transport etc = do
+vibro output' getDInputs transport = do
     meta <- asks D.meta
     platform <- I.platform meta.mcu
     let clock = systemClock platform
@@ -71,8 +70,8 @@ vibro output' getDInputs transport etc = do
                 , isVibrating
                 , prevState
                 , transport
-                , etc
                 , synced
+                , etc = mkEtc meta
                 }
 
     addTask $ yeld "vibro" $ vibroTask vibro
@@ -86,25 +85,32 @@ syncVibro :: Vibro n -> Ivory (ProcEffects s t) ()
 syncVibro Vibro{..} = do
     synced' <- deref synced
     when (iNot synced') do
-        erasePage etc 0
+        F.erase etc.etc 0
+        let etcVersion = fromIntegral etc.version
+        F.write etc.etc 0 etcVersion
         crc <- local $ istruct initCRC16
+        updateCRC16 crc $ castDefault etcVersion
+        
         volume' <- deref volume
         updateCRC16 crc volume'
-        F.write etc 0 $ safeCast volume'
-        F.write etc 4 . safeCast =<< deref (crc ~> msb)
-        F.write etc 8 . safeCast =<< deref (crc ~> lsb)
+        F.write etc.etc 4 $ safeCast volume'
+        F.write etc.etc 8 . safeCast =<< deref (crc ~> msb)
+        F.write etc.etc 12 . safeCast =<< deref (crc ~> lsb)
         store synced true
 
 loadVibro :: Vibro n -> Ivory (ProcEffects s t) ()
 loadVibro Vibro{..} = do
-    volume' <- castDefault <$> F.read etc 0
-    msb' <- F.read etc 4
-    lsb' <- F.read etc 8
+    let etcVersion = fromIntegral etc.version
+    etcVersionFromFlash <- F.read etc.etc 0
+    volume' <- castDefault <$> F.read etc.etc 4
+    msb' <- F.read etc.etc 8
+    lsb' <- F.read etc.etc 12
     crc <- local $ istruct initCRC16
+    updateCRC16 crc $ castDefault etcVersionFromFlash
     updateCRC16 crc volume'
     msb <- safeCast <$> deref (crc ~> msb)
     lsb <- safeCast <$> deref (crc ~> lsb)
-    when (msb ==? msb' .&& lsb ==? lsb') do
+    when (msb ==? msb' .&& lsb ==? lsb' .&& etcVersion ==? etcVersionFromFlash) do
         store volume volume'
 
 vibroTask :: (KnownNat n) => Vibro n -> Ivory (ProcEffects s t) ()

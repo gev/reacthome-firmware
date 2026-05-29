@@ -26,6 +26,7 @@ dimmerAC1'v3 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
+                , etc = Nothing
                 }
         , transport = rbus $ rs485 uart_1 out_pa_4
         , implementation =
@@ -36,5 +37,4 @@ dimmerAC1'v3 =
                     )
                     exti_pb_7
                 )
-        , base = mem
         }

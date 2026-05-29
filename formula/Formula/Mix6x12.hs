@@ -11,6 +11,7 @@ import Feature.DInputs (dinputs)
 import Feature.Mix.Indicator (indicator)
 import Feature.Relays (relays)
 import Implementation.Mix (mix)
+import Interface.Etc
 import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
@@ -28,6 +29,7 @@ mix6x12'v6 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
+                , etc = Just Etc{version = 1, etc = 0x0800_bc00}
                 }
         , transport = rbus $ rs485 uart_0 out_pb_2
         , implementation =
@@ -57,6 +59,4 @@ mix6x12'v6 =
                         :> Nil
                 )
                 (indicator npx_pwm_0 150)
-                etc
-        , base = mem
         }

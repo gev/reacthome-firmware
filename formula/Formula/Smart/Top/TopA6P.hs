@@ -10,6 +10,7 @@ import Device.GD32F3x0
 import Feature.DInputs (dinputs)
 import Feature.Sht21 (sht21)
 import Implementation.Smart.TopAP (topAP)
+import Interface.Etc (Etc (..))
 import Ivory.Language
 import Transport.UART.RBUS
 
@@ -26,6 +27,7 @@ smartTopA6P'v6 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
+                , etc = Just Etc{version = 1, etc = 0x0800_bc00}
                 }
         , transport = rbusTop uart_0
         , implementation =
@@ -41,6 +43,4 @@ smartTopA6P'v6 =
                 )
                 (sht21 i2c_0)
                 npx_pwm_0
-                etc
-        , base = mem
         }

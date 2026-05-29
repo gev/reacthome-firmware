@@ -28,15 +28,15 @@ import Device.GD32F4xx.Timer (
  )
 import Device.GD32F4xx.UART
 import GHC.TypeNats
+import Interface.Flash (Flash)
 import Interface.GPIO.Port
-import Interface.MCU
+import Interface.MCU (MCU (MCU), mkPlatform)
 import Interface.OneWire
 import Ivory.Language
 import Support.Device.GD32F4xx
 import Support.Device.GD32F4xx.DAC
 import Support.Device.GD32F4xx.DMA
 import Support.Device.GD32F4xx.EXTI
-import Support.Device.GD32F4xx.FMC
 import Support.Device.GD32F4xx.GPIO
 import Support.Device.GD32F4xx.I2C
 import Support.Device.GD32F4xx.IRQ
@@ -251,10 +251,9 @@ data GD32F4xx = GD32F4xx
     , i2s_trx_1 :: I2STRX'
     , i2s_trx_2 :: I2STRX'
     , eth_0 :: Enet'
-    , etc :: PageAddr
     }
 
-gd32f4xx :: String -> String -> Int -> Int -> Int -> MCU GD32F4xx
+gd32f4xx :: String -> String -> Int -> Int -> Int -> Flash GD32F4xx -> MCU GD32F4xx
 gd32f4xx =
     MCU $
         mkPlatform
@@ -639,17 +638,29 @@ gd32f4xx =
                         (pb_12 af_11)
                         (pb_13 af_11)
                         enet_irqn
-                , etc = mkPage 0x080e_0000 fmc_sector_11
                 }
 
-mem :: PageAddr
-mem = mkPage 0x0000_0000 fmc_sector_0
-
 gd32f450vgt6 :: MCU GD32F4xx
-gd32f450vgt6 = gd32f4xx "gd32f450" "vgt6" 0x8_000_000 (1024 * 1024) (192 * 1024)
+gd32f450vgt6 =
+    gd32f4xx
+        "gd32f450"
+        "vgt6"
+        0x0800_0000
+        (1024 * 1024)
+        (192 * 1024)
+        -- 0x080e_0000
+        mkFlash
 
 gd32f450vit6 :: MCU GD32F4xx
-gd32f450vit6 = gd32f4xx "gd32f450" "vit6" 0x8_000_000 (2048 * 1024) (448 * 1024)
+gd32f450vit6 =
+    gd32f4xx
+        "gd32f450"
+        "vit6"
+        0x0800_0000
+        (2048 * 1024)
+        (448 * 1024)
+        -- 0x080e_0000
+        mkFlash
 
 instance Pull GD32F4xx GPIO_PUPD where
     pullNone _ = gpio_pupd_none

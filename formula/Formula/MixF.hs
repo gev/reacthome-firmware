@@ -13,6 +13,7 @@ import Feature.DS18B20 (ds18b20)
 import Feature.Dimmers.DC (dimmersDC)
 import Feature.IndicatorFlush (indicator)
 import Implementation.MixF (mix)
+import Interface.Etc (Etc (..))
 import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
@@ -30,6 +31,7 @@ mixF'v2 =
                 , mcu = gd32f350k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
+                , etc = Nothing
                 }
         , transport = rbus $ rs485 uart_1 out_pa_5
         , implementation =
@@ -49,5 +51,4 @@ mixF'v2 =
                 )
                 (ds18b20 ow_2 od_pa_15)
                 (indicator npx_pwm_0 140)
-        , base = mem
         }

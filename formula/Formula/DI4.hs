@@ -27,6 +27,7 @@ di4'v3 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
+                , etc = Nothing
                 }
         , transport = rbus $ rs485 uart_1 out_pa_4
         , implementation =
@@ -39,5 +40,4 @@ di4'v3 =
                         :> Nil
                 )
                 (ds18b20 ow_1 od_pa_8)
-        , base = mem
         }

@@ -14,6 +14,7 @@ import Feature.Dimmers.DC
 import Feature.Indicator
 import Feature.RS485.RBUS as F
 import Implementation.Hub (hub)
+import Interface.Etc (Etc (..))
 import Interface.RS485
 import Ivory.Language
 import Transport.UART.RBUS
@@ -31,6 +32,7 @@ server'v11 =
                 , mcu = gd32f450vgt6
                 , quartzFrequency = 25_000_000
                 , systemFrequency = 200_000_000
+                , etc = Just Etc{version = 1, etc = 0x080e_0000}
                 }
         , transport = rbusHub uart_1
         , implementation =
@@ -57,6 +59,5 @@ server'v11 =
                 )
                 (ds18b20 ow_0 od_pb_3)
                 (indicator npx_pwm_0 120)
-                (aled npx_pwm_1 etc)
-        , base = mem
+                (aled npx_pwm_1)
         }

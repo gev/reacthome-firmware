@@ -12,6 +12,7 @@ import Feature.DInputs
 import Feature.Smart.Top.Vibro (vibro)
 import Feature.Touches (touches)
 import Implementation.Smart.TopCardHolder (topCardHolder)
+import Interface.Etc (Etc (..))
 import Ivory.Language
 import Transport.UART.RBUS
 
@@ -28,6 +29,7 @@ smartTopCardHolder'v1 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
+                , etc = Just Etc{version = 1, etc = 0x0800_bc00}
                 }
         , transport = rbusTop uart_1
         , implementation =
@@ -43,6 +45,4 @@ smartTopCardHolder'v1 =
                 )
                 (vibro out_pb_5)
                 npx_pwm_0
-                etc
-        , base = mem
         }

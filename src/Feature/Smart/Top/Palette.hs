@@ -1,31 +1,37 @@
 module Feature.Smart.Top.Palette where
 
-import Control.Monad.Reader (MonadReader)
+import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
 import Core.Context
 import Core.Domain qualified as D
+import Core.Meta
 import Data.Matrix
 import Data.Value
 import GHC.TypeNats
+import Interface.Etc (Etc)
 import Interface.Flash
 import Ivory.Language
 
-data Palette n l = forall f. (Flash f) => Palette
+data Palette n l = forall p. Palette
     { palette :: Matrix n l Uint32
     , synced :: Values n IBool
-    , etc :: f
+    , etc :: Etc (Flash p)
     }
 
 mkPalette ::
     ( MonadState Context m
     , MonadReader (D.Domain p c) m
-    , Flash f
     , KnownNat n
     , KnownNat l
     ) =>
-    f ->
     m (Palette n l)
-mkPalette etc = do
+mkPalette = do
+    meta <- asks D.meta
     palette <- matrix_ "palette"
     synced <- values' "palette_synced" false
-    pure $ Palette{palette, synced, etc}
+    pure $
+        Palette
+            { palette
+            , synced
+            , etc = mkEtc meta
+            }

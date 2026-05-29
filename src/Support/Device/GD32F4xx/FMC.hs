@@ -14,6 +14,10 @@ module Support.Device.GD32F4xx.FMC (
     fmc_sector_9,
     fmc_sector_10,
     fmc_sector_11,
+    fmc_sector_24,
+    fmc_sector_25,
+    fmc_sector_26,
+    fmc_sector_27,
     FMC_FLAG,
     fmc_flag_end,
     fmc_flag_operr,
@@ -52,6 +56,10 @@ fmc_sector_8 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_8"
 fmc_sector_9 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_9"
 fmc_sector_10 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_10"
 fmc_sector_11 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_11"
+fmc_sector_24 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_24"
+fmc_sector_25 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_25"
+fmc_sector_26 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_26"
+fmc_sector_27 = FMC_SECTOR $ ext "CTL_SECTOR_NUMBER_27"
 
 newtype FMC_FLAG = FMC_FLAG Uint32
     deriving (IvoryExpr, IvoryInit, IvoryStore, IvoryType, IvoryVar)
@@ -134,6 +142,10 @@ inclFMC = do
     inclSym fmc_sector_9
     inclSym fmc_sector_10
     inclSym fmc_sector_11
+    inclSym fmc_sector_24
+    inclSym fmc_sector_25
+    inclSym fmc_sector_26
+    inclSym fmc_sector_27
 
     inclSym fmc_flag_end
     inclSym fmc_flag_operr

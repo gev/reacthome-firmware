@@ -251,6 +251,7 @@ executable reacthome-firmware
     Interface.Display
     Interface.ENET
     Interface.EXTI
+    Interface.Etc
     Interface.Flash
     Interface.GPIO.Input
     Interface.GPIO.OpenDrain

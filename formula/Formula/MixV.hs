@@ -13,6 +13,7 @@ import Feature.DS18B20 (ds18b20)
 import Feature.Dimmers.AC (dimmersAC)
 import Feature.Relays
 import Implementation.MixV (mix)
+import Interface.Etc (Etc (..))
 import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
@@ -30,6 +31,7 @@ mixV'v2 =
                 , mcu = gd32f450vgt6
                 , quartzFrequency = 25_000_000
                 , systemFrequency = 200_000_000
+                , etc = Nothing
                 }
         , transport = rbus $ rs485 uart_3 out_pc_12
         , implementation =
@@ -62,7 +64,6 @@ mixV'v2 =
                         :> Nil
                 )
                 (ds18b20 ow_0 od_pe_14)
-        , base = mem
         }
 
 {--

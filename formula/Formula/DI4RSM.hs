@@ -29,6 +29,7 @@ di4rsm'v7 =
                 , mcu = gd32f350k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
+                , etc = Nothing
                 }
         , transport = rbus $ rs485 uart_1 out_pa_5
         , implementation =
@@ -49,5 +50,4 @@ di4rsm'v7 =
                         :> Nil
                 )
                 (ds18b20 ow_0 od_pa_15)
-        , base = mem
         }
