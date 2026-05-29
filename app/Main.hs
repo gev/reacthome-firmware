@@ -38,53 +38,55 @@ import Formula.Soundbox
 
 main :: IO ()
 main = do
-    mapM_
-        (make gcc)
-        [ leakSensor'v3
-        ]
-    mapM_
-        (make gcc)
-        [ ao4'v7
-        , di4'v3
-        , di4la'v3
-        , di4rsm'v7
-        , relay12'v6
-        , dimmerDC12'v6
-        , dimmerAC12'v6
-        , dimmerAC1'v3
-        , doppler1'v5
-        , doppler5'v5
-        , mix6x12'v6
-        , mixF'v2
-        , mixH'v3
-        , mixH'v6
-        , roomNumber'v1
-        , smartBottom'v13
-        , smartBottomCO2'v13
-        , smartBottomClimate'v13
-        , smartTopA4P'v6
-        , smartTopA4T'v3
-        , smartTopA4T'v5
-        , smartTopA4TD'v3
-        , smartTopA4TD'v5
-        , smartTopA6P'v6
-        , smartTopA6T'3
-        , smartTopA6T'v5
-        , smartTopCardHolder'v1
-        , smartTopClimate'v0
-        , smartTopG2'v2
-        , smartTopG4'v2
-        , smartTopG4D'v13
-        , smartTopG4D'v15
-        , smartTopG2'v9
-        , smartTopG4'v9
-        , smartTopG6'v2
-        , smartTopG6'v9
-        ]
-    mapM_
-        (make gcc)
-        [ mixV'v2
-        , rsHub4'v1
-        , server'v11
-        , soundbox'v5
-        ]
+    make gcc rsHub4'v1
+
+-- mapM_
+--     (make gcc)
+--     [ leakSensor'v3
+--     ]
+-- mapM_
+--     (make gcc)
+--     [ ao4'v7
+--     , di4'v3
+--     , di4la'v3
+--     , di4rsm'v7
+--     , relay12'v6
+--     , dimmerDC12'v6
+--     , dimmerAC12'v6
+--     , dimmerAC1'v3
+--     , doppler1'v5
+--     , doppler5'v5
+--     , mix6x12'v6
+--     , mixF'v2
+--     , mixH'v3
+--     , mixH'v6
+--     , roomNumber'v1
+--     , smartBottom'v13
+--     , smartBottomCO2'v13
+--     , smartBottomClimate'v13
+--     , smartTopA4P'v6
+--     , smartTopA4T'v3
+--     , smartTopA4T'v5
+--     , smartTopA4TD'v3
+--     , smartTopA4TD'v5
+--     , smartTopA6P'v6
+--     , smartTopA6T'3
+--     , smartTopA6T'v5
+--     , smartTopCardHolder'v1
+--     , smartTopClimate'v0
+--     , smartTopG2'v2
+--     , smartTopG4'v2
+--     , smartTopG4D'v13
+--     , smartTopG4D'v15
+--     , smartTopG2'v9
+--     , smartTopG4'v9
+--     , smartTopG6'v2
+--     , smartTopG6'v9
+--     ]
+-- mapM_
+--     (make gcc)
+--     [ mixV'v2
+--     , rsHub4'v1
+--     , server'v11
+--     , soundbox'v5
+--     ]

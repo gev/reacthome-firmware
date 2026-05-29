@@ -326,6 +326,7 @@ executable reacthome-firmware
     Support.Device.GD32F4xx.System
     Support.Device.GD32F4xx.Timer
     Support.Device.GD32F4xx.USART
+    Support.Lwip.Dhcp
     Support.Lwip.Err
     Support.Lwip.Etharp
     Support.Lwip.Ethernet

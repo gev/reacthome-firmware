@@ -55,6 +55,7 @@ import Ivory.Stdlib
 import Support.CMSIS.CoreCM4
 import Util.CRC16
 import Prelude hiding (error)
+import Support.CMSIS.CoreCM4
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff ni no = 1 + ToSizeInBytes ni + ToSizeInBytes no

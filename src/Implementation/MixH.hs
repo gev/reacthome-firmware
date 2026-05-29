@@ -52,6 +52,7 @@ import Ivory.Stdlib
 import Support.CMSIS.CoreCM4
 import Support.Cast
 import Util.CRC16
+import Support.CMSIS.CoreCM4
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff ni no nd = 1 + ToSizeInBytes ni + ToSizeInBytes no + nd

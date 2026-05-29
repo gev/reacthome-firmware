@@ -7,7 +7,6 @@ import Data.Serialize
 import Ivory.Language
 import Ivory.Stdlib
 import Support.Lwip.IP_addr
-import Support.Lwip.Netif
 import Support.Lwip.Pbuf
 import Support.Lwip.Udp
 import Transport.UDP.RBUS.Data
@@ -27,7 +26,6 @@ receive rbus@RBUS{..} len = do
     action <- deref $ rxBuff ! 0
     cond_
         [ action ==? actionDiscovery ==> handleDiscovery rbus len
-        , action ==? actionIpAddress ==> handleAddress rbus len
         , true ==> handleMessage rbus len
         ]
 
@@ -42,30 +40,6 @@ handleDiscovery RBUS{..} size =
         store serverPort =<< unpackBE rxBuff 5
         store shouldDiscovery true
 
-handleAddress :: RBUS -> Uint8 -> Ivory (ProcEffects s t) ()
-handleAddress RBUS{..} size =
-    when (size ==? 15) do
-        isValid <- local $ ival true
-        arrayMap \ix -> do
-            m <- deref $ mac ! ix
-            m' <- deref $ rxBuff ! toIx (1 + fromIx ix)
-            when (m /=? m') do
-                store isValid false
-                breakOut
-        isValid' <- deref isValid
-        when isValid' do
-            ip1 <- unpack rxBuff 7
-            ip2 <- unpack rxBuff 8
-            ip3 <- unpack rxBuff 9
-            ip4 <- unpack rxBuff 10
-            createIpAddr4 localIP ip1 ip2 ip3 ip4
-            nm1 <- unpack rxBuff 11
-            nm2 <- unpack rxBuff 12
-            nm3 <- unpack rxBuff 13
-            nm4 <- unpack rxBuff 14
-            createIpAddr4 netmask nm1 nm2 nm3 nm4
-            setNetifAddr netif localIP netmask ipAddrAny
-            store hasIP true
 
 handleMessage :: RBUS -> Uint8 -> Ivory (ProcEffects s t) ()
 handleMessage RBUS{..} = onMessage rxBuff

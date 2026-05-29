@@ -4,6 +4,7 @@ module Transport.UDP.RBUS where
 
 import Control.Monad.Reader (MonadReader, asks)
 import Control.Monad.State (MonadState)
+import Core.Actions
 import Core.Context
 import Core.Controller
 import Core.Dispatcher
@@ -25,7 +26,6 @@ import Support.Lwip.Udp
 import Transport.UDP.RBUS.Data
 import Transport.UDP.RBUS.Rx
 import Transport.UDP.RBUS.Tx
-import Core.Actions
 
 rbus ::
     ( MonadState Context m
@@ -48,7 +48,6 @@ rbus enet = do
     localIP <- record_ "udp_rbus_local_ip"
     netmask <- record_ "udp_rbus_netmask"
     broadcastIP <- record_ "udp_rbus_broadcast_ip"
-    hasIP <- value "udp_rbus_has_ip" false
     rxBuff <- buffer "udp_rbus_rx"
     txBuff <- buffer "udp_rbus_tx"
     discovery <- buffer "udp_rbus_discovery"
@@ -71,7 +70,6 @@ rbus enet = do
                 , localIP
                 , netmask
                 , broadcastIP
-                , hasIP
                 , rxBuff
                 , txBuff
                 , discovery
@@ -108,16 +106,15 @@ discoveryTask :: RBUS -> Ivory (ProcEffects s t) ()
 discoveryTask rbus@RBUS{..} = do
     shouldDiscovery' <- deref shouldDiscovery
     when shouldDiscovery' do
-        hasIP' <- deref hasIP
-        ifte_
+        hasIP' <- hasIpAddress netif
+        when
             hasIP'
             do transmit rbus discovery
-            do broadcast rbus requestIP
         store shouldDiscovery false
 
 requestInitTask :: RBUS -> Ivory (ProcEffects s t) ()
 requestInitTask rbus@RBUS{..} = do
-    hasIP' <- deref hasIP
+    hasIP' <- hasIpAddress netif
     shouldInit' <- deref shouldInit
     when (hasIP' .&& shouldInit') do
         transmit rbus requestInit

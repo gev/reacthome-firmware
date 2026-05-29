@@ -17,6 +17,7 @@ module Support.Lwip.Netif (
     addNetif,
     setNetifDefault,
     setUpNetif,
+    setLinkUpNetif,
     setNetifStatusCallback,
     setNetifAddr,
     inclNetif,
@@ -94,6 +95,12 @@ setUpNetif = call_ netif_set_up
 netif_set_up :: Def ('[NETIF s] :-> ())
 netif_set_up = fun "netif_set_up"
 
+setLinkUpNetif :: NETIF s -> Ivory eff ()
+setLinkUpNetif = call_ netif_set_link_up
+
+netif_set_link_up :: Def ('[NETIF s] :-> ())
+netif_set_link_up = fun "netif_set_link_up"
+
 setNetifStatusCallback :: NETIF s1 -> PtrNetifStatusCallbackFn s2 -> Ivory eff ()
 setNetifStatusCallback = call_ netif_set_status_callback
 
@@ -111,6 +118,7 @@ inclNetif = do
     incl netif_add
     incl netif_set_default
     incl netif_set_up
+    incl netif_set_link_up
     incl netif_set_status_callback
     incl netif_set_addr
 

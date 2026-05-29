@@ -2,6 +2,7 @@
 
 module Formula.UdpEcho450 where
 
+import Control.Monad (void)
 import Core.Formula
 import Core.Meta
 import Device.GD32F4xx
@@ -23,5 +24,5 @@ udpEcho450 =
                 , systemFrequency = 192_000_000
                 , etc = Nothing
                 }
-        , implementation = udpEcho eth_0
+        , implementation = void (udpEcho eth_0)
         }

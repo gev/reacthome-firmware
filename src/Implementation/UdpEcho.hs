@@ -1,3 +1,4 @@
+{- HLINT ignore "Use newtype instead of data" -}
 module Implementation.UdpEcho where
 
 import Control.Monad (void)
@@ -22,11 +23,17 @@ import Support.Lwip.Memp
 import Support.Lwip.Netif
 import Support.Lwip.Pbuf
 import Support.Lwip.Udp
+import Support.Lwip.Dhcp 
+import Support.Lwip.Igmp
+
+data Echo = Echo {
+    rtpIpGroup :: Record IP_ADDR_4_STRUCT
+}
 
 udpEcho ::
     (MonadState Context m, MonadReader (Domain p ()) m, Enet e, LwipPort e) =>
     (p -> m e) ->
-    m ()
+    m Echo
 udpEcho enet = do
     meta <- asks D.meta
     platform <- I.platform meta.mcu
@@ -35,6 +42,9 @@ udpEcho enet = do
     netmask <- record_ "netmask"
     gateway <- record_ "gateway"
     netif <- record_ "netif"
+    rtpIpGroup <- record_ "_rtp_group_ipaddr4"
+
+    let echo = Echo {rtpIpGroup}
 
     addModule inclEthernet
     addModule inclNetif
@@ -44,8 +54,10 @@ udpEcho enet = do
     addModule inclIP_addr
     addModule inclPbuf
     addModule inclEtharp
+    addModule inclDhcp
+    addModule inclIgmp
 
-    addProc netifStatusCallback
+    addProc $ netifStatusCallback echo
     addProc udpEchoReceiveCallback
 
     -- let sysNow :: Def ('[] :-> Uint32)
@@ -53,25 +65,31 @@ udpEcho enet = do
     --         ret =<< getSystemTime (systemClock mcu)
 
     -- addProc sysNow
-
     addInit "udp_echo" do
         initMem
         initMemp
-        createIpAddr4 ip4 192 168 88 9
-        createIpAddr4 netmask 255 255 255 0
-        createIpAddr4 gateway 192 168 88 1
+        createIpAddr4 ip4 0 0 0 0
+        createIpAddr4 netmask 0 0 0 0
+        createIpAddr4 gateway 0 0 0 0
         store (netif ~> hwaddr_len) 6
         arrayCopy (netif ~> hwaddr) platform.mac 0 6
 
         addNetif netif ip4 netmask gateway nullPtr (initLwipPortIf enet') inputEthernetPtr
         setNetifDefault netif
-        setNetifStatusCallback netif (procPtr netifStatusCallback)
+        setNetifStatusCallback netif (procPtr (netifStatusCallback echo))
+        initIgmp
+        startIgmp netif
         setUpNetif netif
+        
+        setLinkUpNetif netif
+        void $ startDhcp netif
+
 
     -- addHandler $ HandleEnet enet' do
     --     reval <- rxFrameSize enet'
     --     when (reval >? 1) do
     --         void $ inputLwipPortIf enet' netif
+
 
     addTask $ yeld "udp_rx" do
         reval <- rxFrameSize enet'
@@ -80,15 +98,29 @@ udpEcho enet = do
                 inputLwipPortIf enet' netif
 
     addTask $ delay 1000 "eth_arp" tmrEtharp
+    addTask $ delay 500 "dhcp_coarse" coarseTmrDhcp
+    addTask $ delay 60 "dhcp_fine" fineTmrDhcp
+    addTask $ delay 100 "tmr_igmp" tmrIgmp
 
-netifStatusCallback :: Def (NetifStatusCallbackFn s)
-netifStatusCallback = proc "netif_callback" \netif -> body do
+    addTask $ delay 2000 "join_group_igmp" $ joinGroupIgmp echo netif 
+
+    pure Echo {rtpIpGroup}
+
+joinGroupIgmp :: Echo -> NETIF s -> Ivory eff ()
+joinGroupIgmp Echo{..} netif = do
+    createIpAddr4 rtpIpGroup 235 1 1 1
+    void $ joinIgmpGroupNetif netif rtpIpGroup
+
+netifStatusCallback :: Echo -> Def (NetifStatusCallbackFn s)
+netifStatusCallback Echo{} = proc "netif_callback" \netif -> body do
     flags' <- deref $ netif ~> flags
     when (flags' .& netif_flag_up /=? 0) do
         upcb <- newUdp
         when (upcb /=? nullPtr) do
             err <- bindUdp upcb ipAddrAny 2000
             when (err ==? 0) do
+                -- createIpAddr4 rtpIpGroup 235 1 1 1
+                -- joinIgmpGroupNetif netif rtpIpGroup
                 recvUdp upcb (procPtr udpEchoReceiveCallback) nullPtr
 
 udpEchoReceiveCallback :: Def (UdpRecvFn s1 s2 s3 s4)

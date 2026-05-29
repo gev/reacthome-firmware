@@ -22,6 +22,7 @@ import Support.Lwip.Memp
 import Support.Lwip.Netif
 import Support.Lwip.Pbuf
 import Support.Lwip.Udp
+import Support.Lwip.Dhcp
 
 mkNetif ::
     ( MonadState Context m
@@ -48,6 +49,7 @@ mkNetif enet' = do
     addModule inclPbuf
     addModule inclEtharp
     addModule inclIgmp
+    addModule inclDhcp
 
     let netifStatusCallback = proc "netif_callback" \netif -> body do
             flags' <- deref $ netif ~> flags
@@ -86,9 +88,13 @@ mkNetif enet' = do
         startIgmp netif
         setUpNetif netif
 
+        void $ startDhcp netif
+
     addTask $ yeld "udp_rx" $ rxTask enet netif
     addTask $ delay 1_000 "tmr_arp" tmrEtharp
     addTask $ delay 100 "tmr_igmp" tmrIgmp
+    addTask $ delay 60_000 "dhcp_coarse" coarseTmrDhcp
+    addTask $ delay 500 "dhcp_fine" fineTmrDhcp
 
     pure netif
 
@@ -100,6 +106,9 @@ addNetifOnUpCallback ::
     (forall s. Ivory (ProcEffects s ()) ()) ->
     m ()
 addNetifOnUpCallback = addBody "netif_on_up_callback"
+
+hasIpAddress :: NETIF s -> Ivory eff IBool
+hasIpAddress = suppliedAddressDhcp
 
 rxTask ::
     (LwipPort e, Enet e) =>
