@@ -13,7 +13,6 @@ import Feature.DS18B20 (ds18b20)
 import Feature.Dimmers.DC (dimmersDC)
 import Feature.IndicatorFlush (indicator)
 import Implementation.MixF (mix)
-import Interface.Etc (Etc (..))
 import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS

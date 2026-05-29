@@ -8,7 +8,6 @@ import Core.Models
 import Device.GD32F3x0
 import Feature.CBM53D04
 import Implementation.AO4 qualified as I
-import Interface.Etc (Etc (..))
 import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
