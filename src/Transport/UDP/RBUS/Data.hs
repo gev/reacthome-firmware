@@ -13,7 +13,6 @@ data RBUS = RBUS
     { mac :: Mac
     , netif :: Record NETIF_STRUCT
     , upcb :: Value (UDP_PCB Global)
-    , hasIP :: Value IBool
     , serverIP :: Record IP_ADDR_4_STRUCT
     , serverPort :: Value Uint16
     , localIP :: Record IP_ADDR_4_STRUCT
