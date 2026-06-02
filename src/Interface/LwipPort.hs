@@ -23,6 +23,7 @@ import Support.Lwip.Netif
 import Support.Lwip.Pbuf
 import Support.Lwip.Udp
 import Support.Lwip.Dhcp
+import Data.String
 
 mkNetif ::
     ( MonadState Context m
@@ -80,9 +81,10 @@ mkNetif enet' = do
             (initLwipPortIf enet)
             inputEthernetPtr
 
+        setNetifHostname netif $ fromString meta.name
         setNetifDefault netif
         setNetifStatusCallback netif $ procPtr netifStatusCallback
-
+        
         initIgmp
 
         startIgmp netif

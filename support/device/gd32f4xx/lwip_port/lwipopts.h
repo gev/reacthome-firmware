@@ -41,6 +41,9 @@ OF SUCH DAMAGE.
 #define LWIP_IPV4               1             
 
 
+#define LWIP_NETIF_HOSTNAME     1
+
+
 #define SYS_LIGHTWEIGHT_PROT    0                        /* SYS_LIGHTWEIGHT_PROT==1: if you want inter-task protection 
                                                             for certain critical regions during buffer allocation,
                                                             deallocation and memory allocation and deallocation */                                                            
