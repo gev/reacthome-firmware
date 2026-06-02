@@ -50,7 +50,6 @@ import Feature.Smart.Top.Vibro (
  )
 import GHC.TypeNats
 import Interface.Display (Display, Render (Render))
-import Interface.Flash
 import Interface.MCU (peripherals)
 import Interface.MCU qualified as I
 import Ivory.Language
@@ -76,26 +75,23 @@ topA6T ::
     , Display d
     , Handler (Render (Canvas1DSize 7)) d
     , LazyTransport t
-    , Flash f
     , KnownNat n
     , KnownNat (SizeSyncStateBuff n)
     ) =>
     (Bool -> t -> m (DI.DInputs n)) ->
-    (E.DInputs n -> t -> f -> m (Vibro n)) ->
+    (E.DInputs n -> t -> m (Vibro n)) ->
     m PowerTouch ->
     (t -> m SHT21) ->
     (p -> m d) ->
-    (p -> f) ->
     m t ->
     m (Top n)
-topA6T dinputs' vibro' touch' sht21' display' etc' transport' = do
+topA6T dinputs' vibro' touch' sht21' display' transport' = do
     transport <- transport'
     meta <- asks D.meta
     platform <- I.platform meta.mcu
     display <- display' platform.peripherals
-    let etc = etc' platform.peripherals
     dinputs <- dinputs' True transport
-    vibro <- vibro' (DI.getDInputs dinputs) transport etc
+    vibro <- vibro' (DI.getDInputs dinputs) transport
     touch'
     frameBuffer <- values' "top_frame_buffer" 0
     syncStateBuff <- buffer "sync_channels"
@@ -106,7 +102,6 @@ topA6T dinputs' vibro' touch' sht21' display' etc' transport' = do
             frameBuffer
             [1, 6, 2, 0, 5, 3, 4]
             transport
-            etc
             (replicate 7 true)
 
     ledsPerButton <-

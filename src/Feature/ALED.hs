@@ -19,6 +19,7 @@ import Endpoint.ALED.Animation qualified as E
 import Endpoint.ALED.Animation.Data qualified as E
 import GHC.TypeNats
 import Interface.Display (Display, Render (Render))
+import Interface.Etc (Etc (..))
 import Interface.Flash as F
 import Interface.MCU
 import Interface.MCU qualified as I
@@ -32,12 +33,12 @@ dt = 1 / safeCast E.fps :: IFloat
 dt :: IFloat
 
 data ALED ng ns np
-    = forall d f t.
-      (Display d, Flash f, LazyTransport t) =>
+    = forall d p t.
+      (Display d, LazyTransport t) =>
     ALED
     { display :: d
     , getALED :: E.ALED ng ns np
-    , etc :: f
+    , etc :: Etc (Flash p)
     , transport :: t
     , shouldSaveConfig :: Value IBool
     , shouldSyncGroups :: Value IBool
@@ -56,13 +57,11 @@ aled ::
     , KnownNat ns
     , KnownNat np
     , LazyTransport t
-    , Flash f
     ) =>
     (p -> m d) ->
-    (p -> f) ->
     t ->
     m (ALED ng ns np)
-aled mkDisplay etc transport = do
+aled mkDisplay transport = do
     meta <- asks D.meta
     platform <- I.platform meta.mcu
     display <- mkDisplay $ peripherals platform
@@ -78,7 +77,7 @@ aled mkDisplay etc transport = do
             ALED
                 { display
                 , getALED
-                , etc = etc platform.peripherals
+                , etc = mkEtc meta
                 , transport
                 , shouldSaveConfig
                 , shouldSyncGroups
@@ -727,16 +726,18 @@ saveConfig ::
     Ivory (ProcEffects s t) ()
 saveConfig ALED{..} = do
     shouldSaveConfig' <- deref shouldSaveConfig
-
     when shouldSaveConfig' do
-        erasePage etc 0
-        offset <- local $ ival 8
+        F.erase etc.etc 0
+        let etcVersion = fromIntegral etc.version
+        F.write etc.etc 0 etcVersion
         crc <- local $ istruct initCRC16
+        updateCRC16 crc (castDefault etcVersion)
 
+        offset <- local $ ival 12
         let save v = do
                 offset' <- deref offset
                 updateCRC16 crc v
-                write etc offset' $ safeCast v
+                write etc.etc offset' $ safeCast v
                 store offset $ offset' + 4
 
         arrayMap \ix -> do
@@ -754,8 +755,8 @@ saveConfig ALED{..} = do
             save =<< deref (group ~> E.pixelSize)
             save =<< deref (group ~> E.segmentNumber)
 
-        write etc 0 . safeCast =<< deref (crc ~> msb)
-        write etc 4 . safeCast =<< deref (crc ~> lsb)
+        write etc.etc 4 . safeCast =<< deref (crc ~> msb)
+        write etc.etc 8 . safeCast =<< deref (crc ~> lsb)
 
         store shouldSaveConfig false
 
@@ -765,14 +766,17 @@ loadConfig ::
     ALED ng ns np ->
     Ivory (ProcEffects s t) ()
 loadConfig ALED{..} = do
-    offset <- local $ ival 8
+    let etcVersion = fromIntegral etc.version
+    etcVersionFromFlash <- F.read etc.etc 0
     crc <- local $ istruct initCRC16
-    msb'' <- F.read etc 0
-    lsb'' <- F.read etc 4
+    msb'' <- F.read etc.etc 4
+    lsb'' <- F.read etc.etc 8
+    updateCRC16 crc (castDefault etcVersionFromFlash)
 
+    offset <- local $ ival 12
     let calc = do
             offset' <- deref offset
-            updateCRC16 crc . castDefault =<< F.read etc offset'
+            updateCRC16 crc . castDefault =<< F.read etc.etc offset'
             store offset $ offset' + 4
 
     arrayMap \(_ :: Ix ng) -> calc >> calc >> calc
@@ -781,14 +785,14 @@ loadConfig ALED{..} = do
     msb' <- deref $ crc ~> msb
     lsb' <- deref $ crc ~> lsb
 
-    when (msb'' ==? safeCast msb' .&& lsb'' ==? safeCast lsb') do
-        store offset 8
+    when (msb'' ==? safeCast msb' .&& lsb'' ==? safeCast lsb' .&& etcVersion ==? etcVersionFromFlash) do
+        store offset 12
 
         let load :: (SafeCast x Uint32, IvoryOrd x, Bounded x, Default x) => Ivory eff x
             load = do
                 offset' <- deref offset
                 store offset $ offset' + 4
-                castDefault <$> F.read etc offset'
+                castDefault <$> F.read etc.etc offset'
 
         arrayMap \ix -> do
             let segment = E.segments getALED ! ix

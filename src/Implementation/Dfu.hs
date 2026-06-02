@@ -15,8 +15,9 @@ import Data.Value (Value, value)
 import Data.Word
 import Feature.GetInfo
 import GHC.TypeNats (KnownNat)
+import Interface.Flash (Flash)
 import Interface.Flash qualified as F
-import Interface.MCU (mcuName)
+import Interface.MCU
 import Ivory.Language
 import Ivory.Stdlib
 import Support.CMSIS.CoreCM4 (nvicSystemReset)
@@ -24,7 +25,7 @@ import Support.CMSIS.CoreCMFunc
 import Support.ReadAddr
 import Support.RunAppByAddr
 
-data DFU p = forall f t. (F.Flash f, LazyTransport t) => DFU
+data DFU p = forall t. (LazyTransport t) => DFU
     { meta :: Meta p
     , version :: (Word8, Word8)
     , info :: GetInfo
@@ -33,20 +34,17 @@ data DFU p = forall f t. (F.Flash f, LazyTransport t) => DFU
     , shouldRepeatRequest :: Value IBool
     , firmwareAddress :: Uint32
     , transport :: t
-    , mem :: f
     }
 
 dfu ::
     ( Monad m
     , MonadState Context m
-    , F.Flash f
     , LazyTransport t
     , MonadReader (D.Domain p i) m
     ) =>
-    Int -> (Word8, Word8) -> f -> m t -> m (DFU p)
-dfu address version mem transport' = do
+    Int -> (Word8, Word8) -> m t -> m (DFU p)
+dfu address version transport' = do
     let firmwareAddress = fromIntegral address
-
     meta <- asks D.meta
     transport <- transport'
     info <- mkGetDfuInfo version transport
@@ -57,8 +55,9 @@ dfu address version mem transport' = do
 
     let dfu = DFU{..}
 
-    addTask $ delay 10_000 "jump_to_firmware" do jumpToFirmware dfu
+    addTask $ delay 20_000 "jump_to_firmware" do jumpToFirmware dfu
     addTask $ delay 3_000 "repeat_chunk_request" do repeatChunkRequest dfu
+
     pure dfu
 
 jumpToFirmware :: DFU p -> Ivory eff ()
@@ -122,7 +121,7 @@ receiveHeader dfu@DFU{..} buff size =
             do
                 sameMcu <- checkMcu name 12 true
                 when sameMcu do
-                    cleanPage mem $ F.Addr firmwareAddress
+                    cleanPage meta.mcu.flash firmwareAddress
                     store numberOfChunks =<< unpackBE buff 3
                     store currentChunk 2
                     requestChunk dfu 2
@@ -152,14 +151,14 @@ receiveChunk dfu@DFU{..} buff size index = do
     currentChunk' <- deref currentChunk
     when (currentChunk' ==? index) do
         store shouldRepeatRequest false
-        address <- F.Addr <$> unpackBE @Uint32 buff 3
+        address <- unpackBE @Uint32 buff 3
         ifte_
             (index ==? 1)
             do
-                writeChunk mem address buff size
+                writeChunk meta.mcu.flash address buff size
             do
-                cleanPage mem address
-                writeChunk mem address buff size
+                cleanPage meta.mcu.flash address
+                writeChunk meta.mcu.flash address buff size
                 numberOfChunks' <- deref numberOfChunks
                 next <- ifte
                     (index ==? numberOfChunks')
@@ -170,23 +169,21 @@ receiveChunk dfu@DFU{..} buff size index = do
                 store shouldRepeatRequest true
 
 writeChunk ::
-    (KnownNat l, F.Flash f) =>
-    f ->
-    F.Addr ->
+    (KnownNat l) =>
+    Flash p ->
+    Uint32 ->
     Buffer l Uint8 ->
     Uint8 ->
     Ivory (ProcEffects s t) ()
 writeChunk mem address buff size = do
     let n = (size - 7) `iDiv` 4
     for (toIx n) \ix -> do
-        let offset = address + F.Addr (safeCast ix * 4)
+        let offset = safeCast ix * 4 + address
         word <- unpackLE buff (ix * 4 + 7)
         F.write mem offset word
 
-cleanPage :: (F.Flash f) => f -> F.Addr -> Ivory (ProcEffects s t) ()
-cleanPage mem address =
-    when (F.getAddr address .% 0x400 ==? 0) do
-        F.erasePage mem address
+cleanPage :: Flash p -> Uint32 -> Ivory (ProcEffects s t) ()
+cleanPage = F.erase
 
 requestChunk :: DFU p -> Uint16 -> Ivory (ProcEffects s t) ()
 requestChunk DFU{..} chunk =

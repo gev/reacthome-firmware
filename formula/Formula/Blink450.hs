@@ -21,6 +21,7 @@ blink450 =
                 , mcu = gd32f450vgt6
                 , quartzFrequency = 25_000_000
                 , systemFrequency = 200_000_000
+                , etc = Nothing
                 }
         , implementation = blink out_pa_8
         }

@@ -46,30 +46,30 @@ import Feature.Relays as FR (
     syncRelays,
  )
 import GHC.TypeNats
+import Interface.Etc (Etc (..))
 import Interface.Flash as F
-import Interface.MCU as I
 import Ivory.Language
 import Ivory.Language.Proxy
 import Ivory.Stdlib
+import Support.CMSIS.CoreCM4
 import Support.Cast
 import Util.CRC16
-import Support.CMSIS.CoreCM4
 
 type ToSizeInBytes n = Div n 8 + If (Mod n 8 == 0) 0 1
 type SizeSyncStateBuff ni no nd = 1 + ToSizeInBytes ni + ToSizeInBytes no + nd
 
-data Mix ni no nd = forall f. (Flash f) => Mix
+data Mix ni no nd = forall p. Mix
     { relays :: Relays no
     , dinputs :: DInputs ni
     , dimmers :: Dimmers nd
     , rules :: Rules ni no
-    , etc :: f
     , shouldSaveConfig :: Value IBool
     , shouldInit :: Value IBool
     , saveCountdown :: Value Uint8
     , syncStateBuff :: Buffer (SizeSyncStateBuff ni no nd) Uint8
     , info :: GetInfo
     , indicator :: IndicatorFlush 2
+    , etc :: Etc (Flash p)
     , transmit ::
         forall n.
         (KnownNat n) =>
@@ -81,7 +81,6 @@ data Mix ni no nd = forall f. (Flash f) => Mix
 mix'v6 ::
     ( MonadState Context m
     , MonadReader (Domain p c) m
-    , Flash f
     , Transport t
     , KnownNat ni
     , KnownNat no
@@ -97,17 +96,15 @@ mix'v6 ::
     (t -> m (Dimmers nd)) ->
     (t -> m DS18B20) ->
     (t -> m (IndicatorFlush 2)) ->
-    (p -> f) ->
     m t ->
     m (Mix ni no nd)
-mix'v6 dinputs' relays' dimmers' ds18b20 indicator' etc transport' = do
+mix'v6 dinputs' relays' dimmers' ds18b20 indicator' transport' = do
     transport <- transport'
     relays <- relays' transport
     dinputs <- dinputs' True transport
     dimmers <- dimmers' transport
     rules <- mkRules transport
     meta <- asks D.meta
-    platform <- I.platform meta.mcu
     shouldInit <- asks D.shouldInit
     shouldSaveConfig <- value "mix_should_save_config" false
     saveCountdown <- value "mix_save_save_countdown" 0
@@ -122,12 +119,12 @@ mix'v6 dinputs' relays' dimmers' ds18b20 indicator' etc transport' = do
                 , dinputs
                 , dimmers
                 , rules
-                , etc = etc platform.peripherals
                 , shouldSaveConfig
                 , shouldInit
                 , saveCountdown
                 , syncStateBuff
                 , info
+                , etc = mkEtc meta
                 , indicator
                 , transmit = transmitBuffer transport
                 }
@@ -294,20 +291,24 @@ saveTask mix@Mix{..} = do
 
 save :: (KnownNat ni, KnownNat no) => Mix ni no nd -> Ivory (ProcEffects s t) ()
 save Mix{..} = do
-    erasePage etc 0
+    F.erase etc.etc 0
+    let etcVersion = fromIntegral etc.version
+    F.write etc.etc 0 etcVersion
     crc <- local $ istruct initCRC16
+    updateCRC16 crc (castDefault etcVersion)
+
     kx <- local $ ival 4
     let run rules = arrayMap \ix -> arrayMap \jx -> do
             kx' <- deref kx
             v <- deref (rules ! ix ! jx)
             updateCRC16 crc v
-            F.write etc kx' $ safeCast v
+            F.write etc.etc kx' $ safeCast v
             store kx $ kx' + 4
     run $ rulesOff rules
     run $ rulesOn rules
     kx' <- deref kx
-    F.write etc kx' . safeCast =<< deref (crc ~> msb)
-    F.write etc (kx' + 4) . safeCast =<< deref (crc ~> lsb)
+    F.write etc.etc kx' . safeCast =<< deref (crc ~> msb)
+    F.write etc.etc (kx' + 4) . safeCast =<< deref (crc ~> lsb)
 
 load :: (KnownNat ni, KnownNat no) => Mix ni no nd -> Ivory (ProcEffects s ()) ()
 load mix@Mix{..} = do
@@ -316,7 +317,7 @@ load mix@Mix{..} = do
         kx <- local $ ival 4
         let run rules = arrayMap \ix -> arrayMap \jx -> do
                 kx' <- deref kx
-                store (rules ! ix ! jx) . castDefault =<< F.read etc kx'
+                store (rules ! ix ! jx) . castDefault =<< F.read etc.etc kx'
                 store kx $ kx' + 4
         run $ rulesOff rules
         run $ rulesOn rules
@@ -325,19 +326,23 @@ checkCRC :: forall ni no nd s. (KnownNat ni, KnownNat no) => Mix ni no nd -> Ivo
 checkCRC Mix{..} = do
     let relaysN = fromIntegral $ natVal (aNat :: NatType no)
     let dinputsN = fromIntegral $ natVal (aNat :: NatType ni)
+
+    let etcVersion = fromIntegral etc.version
+    etcVersionFromFlash <- F.read etc.etc 0
     crc <- local $ istruct initCRC16
-    updateCRC16 crc . castDefault =<< F.read etc 0
+    updateCRC16 crc $ castDefault etcVersionFromFlash
+
     kx <- local $ ival 4
     times (2 * dinputsN * relaysN :: Ix 256) \_ -> do
         kx' <- deref kx
-        updateCRC16 crc . castDefault =<< F.read etc kx'
+        updateCRC16 crc . castDefault =<< F.read etc.etc kx'
         store kx $ kx' + 4
     kx' <- deref kx
-    msb' <- castDefault <$> F.read etc kx'
-    lsb' <- castDefault <$> F.read etc (kx' + 4)
+    msb' <- castDefault <$> F.read etc.etc kx'
+    lsb' <- castDefault <$> F.read etc.etc (kx' + 4)
     lsb'' <- deref $ crc ~> lsb
     msb'' <- deref $ crc ~> msb
-    pure $ lsb' ==? lsb'' .&& msb' ==? msb''
+    pure $ lsb' ==? lsb'' .&& msb' ==? msb'' .&& etcVersion ==? etcVersionFromFlash
 
 onInit :: (KnownNat no, KnownNat nd, ANat l) => Mix ni no nd -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
 onInit Mix{..} buff size = do

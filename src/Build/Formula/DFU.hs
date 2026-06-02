@@ -8,7 +8,7 @@ import Build.Shake
 import Core.Context
 import Core.Formula
 import Core.Formula.DFU
-import Core.Meta (board, mcu, mkNameDfu, model, version)
+import Core.Meta (Meta (..), board, mcu, mkNameDfu, model, version)
 import Data.Text qualified as T
 import Data.Text.IO qualified as T
 import Data.Text.Internal.Builder qualified as B
@@ -19,6 +19,7 @@ import Data.Util (unPack16BE)
 import Data.Word
 import Development.Shake.FilePath
 import Implementation.Dfu qualified as I
+import Interface.Etc (Etc (..))
 import Interface.MCU
 import Ivory.Language
 import Support.CMSIS.CoreCMFunc
@@ -45,11 +46,15 @@ mkDFU maxDfuLength dfuVersion setVectorTable mkCompiler DFU{..} = do
     updatePath = "dist" </> "up" </> name <.> "up"
 
     mainImpl = fixIRQ $ implementation transport
-    dfuImpl = I.dfu startMainFirmware dfuVersion base transport
+    dfuImpl = I.dfu startMainFirmware dfuVersion transport
 
     startDfuFirmware = meta.mcu.startFlash
     startMainFirmware = startDfuFirmware + maxDfuLength
-    maxMainLength = meta.mcu.sizeFlash - maxDfuLength
+    maxMainLength =
+        maybe
+            (meta.mcu.sizeFlash - maxDfuLength)
+            (\e -> e.etc - startMainFirmware)
+            meta.etc
 
     convert = Formula meta
 

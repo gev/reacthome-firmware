@@ -43,7 +43,6 @@ import Feature.Smart.Top.Vibro (
 import Feature.Touches qualified as FT
 import GHC.TypeNats
 import Interface.Display (Display, Render (Render))
-import Interface.Flash
 import Interface.MCU (peripherals)
 import Interface.MCU qualified as I
 import Ivory.Language
@@ -68,22 +67,19 @@ roomNumber ::
     , Display d
     , Handler (Render (Canvas1DSize 5)) d
     , LazyTransport t
-    , Flash f
     , KnownNat n
     , KnownNat (SizeSyncStateBuff n)
     ) =>
     (t -> m (FT.Touches n)) ->
-    (E.DInputs n -> t -> f -> m (Vibro n)) ->
+    (E.DInputs n -> t -> m (Vibro n)) ->
     (p -> m d) ->
-    (p -> f) ->
     m t ->
     m (RoomNumber n)
-roomNumber touches' vibro' display' etc' transport' = do
+roomNumber touches' vibro' display' transport' = do
     transport <- transport'
     meta <- asks D.meta
     platform <- I.platform meta.mcu
     display <- display' platform.peripherals
-    let etc = etc' platform.peripherals
     touches <- touches' transport
     frameBuffer <- values' "top_frame_buffer" 0
     syncStateBuff <- buffer "sync_channels"
@@ -94,7 +90,6 @@ roomNumber touches' vibro' display' etc' transport' = do
             frameBuffer
             [0, 1, 2, 3, 4]
             transport
-            etc
             (replicate 5 true)
 
     ledsPerButton <-
@@ -120,7 +115,6 @@ roomNumber touches' vibro' display' etc' transport' = do
         vibro'
             (FT.getDInputs touches)
             transport
-            etc
 
     let roomNumber =
             RoomNumber

@@ -24,10 +24,10 @@ startDhcp = call dhcp_start
 dhcp_start :: Def ('[NETIF s] :-> ErrT)
 dhcp_start = fun "dhcp_start"
 
-suppliedAddressDhcp :: NETIF s -> Ivory eff Uint8
+suppliedAddressDhcp :: NETIF s -> Ivory eff IBool
 suppliedAddressDhcp = call dhcp_supplied_address
 
-dhcp_supplied_address :: Def ('[NETIF s] :-> Uint8)
+dhcp_supplied_address :: Def ('[NETIF s] :-> IBool)
 dhcp_supplied_address = fun "dhcp_supplied_address"
 
 coarseTmrDhcp :: Ivory eff ()

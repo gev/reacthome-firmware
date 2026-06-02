@@ -20,6 +20,7 @@ module Support.Lwip.Netif (
     setLinkUpNetif,
     setNetifStatusCallback,
     setNetifAddr,
+    setNetifHostname,
     inclNetif,
 ) where
 
@@ -113,6 +114,12 @@ setNetifAddr = call_ netif_set_addr
 netif_set_addr :: Def ('[NETIF s1, IP_ADDR_4 s2, NET_MASK s3, GW s4] :-> ())
 netif_set_addr = fun "netif_set_addr"
 
+setNetifHostname :: NETIF s1 -> IString -> Ivory eff ()
+setNetifHostname = call_ netif_set_hostname
+
+netif_set_hostname :: Def ('[NETIF s1, IString] :-> ())
+netif_set_hostname = fun "netif_set_hostname"
+
 inclNetif :: ModuleDef
 inclNetif = do
     incl netif_add
@@ -121,6 +128,7 @@ inclNetif = do
     incl netif_set_link_up
     incl netif_set_status_callback
     incl netif_set_addr
+    incl netif_set_hostname
 
     inclSym netif_flag_up
 

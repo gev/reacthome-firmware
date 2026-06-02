@@ -9,6 +9,7 @@ import Device.GD32F3x0.Touch (aluminumRoomNumber)
 import Feature.Smart.Top.Vibro (vibro)
 import Feature.Touches
 import Implementation.RoomNumber (roomNumber)
+import Interface.Etc (Etc (..))
 import Interface.RS485
 import Ivory.Language
 import Transport.RS485.RBUS
@@ -26,6 +27,7 @@ roomNumber'v1 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
+                , etc = Just Etc{version = 1, etc = 0x0800_bc00}
                 }
         , transport = rbus $ rs485 uart_1 out_pa_4
         , implementation =
@@ -36,6 +38,4 @@ roomNumber'v1 =
                 )
                 (vibro out_pb_5)
                 npx_pwm_0
-                etc
-        , base = mem
         }

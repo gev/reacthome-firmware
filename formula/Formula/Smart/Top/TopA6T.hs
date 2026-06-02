@@ -15,6 +15,7 @@ import Feature.Smart.Top.Vibro (vibro)
 import Feature.Touches (touches)
 import Implementation.Smart.TopA6T (topA6T)
 import Implementation.Smart.TopA6Tv5 (topA6Tv5)
+import Interface.Etc (Etc (..))
 import Ivory.Language
 import Transport.UART.RBUS
 
@@ -31,6 +32,7 @@ smartTopA6T'3 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
+                , etc = Just Etc{version = 1, etc = 0x0800_bc00}
                 }
         , transport = rbusTop uart_1
         , implementation =
@@ -48,8 +50,6 @@ smartTopA6T'3 =
                 (powerTouch out_pa_8)
                 (sht21 i2c_0)
                 npx_pwm_1
-                etc
-        , base = mem
         }
 
 smartTopA6T'v5 :: DFU GD32F3x0
@@ -65,6 +65,7 @@ smartTopA6T'v5 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
+                , etc = Just Etc{version = 1, etc = 0x0800_bc00}
                 }
         , transport = rbusTop uart_1
         , implementation =
@@ -81,6 +82,4 @@ smartTopA6T'v5 =
                 (vibro out_pb_5)
                 (sht21 i2c_0)
                 npx_pwm_0
-                etc
-        , base = mem
         }

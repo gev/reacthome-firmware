@@ -8,6 +8,7 @@ import Core.Models
 import Device.GD32F3x0
 import Feature.Sht21 (sht21)
 import Implementation.Smart.TopClimate (topClimate)
+import Interface.Etc (Etc (..))
 import Ivory.Language
 import Transport.UART.RBUS
 
@@ -24,10 +25,10 @@ smartTopClimate'v0 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
+                , etc = Nothing
                 }
         , transport = rbusTop uart_1
         , implementation =
             topClimate
                 (sht21 i2c_0)
-        , base = mem
         }

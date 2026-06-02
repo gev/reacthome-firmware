@@ -8,11 +8,12 @@ import Control.Monad.State
 import Core.Context
 import Core.Domain (domain)
 import Core.Formula (Formula (Formula, implementation, meta))
-import Core.Meta (mcu, mkName)
+import Core.Meta (Meta (..), mcu, mkName)
 import Core.Scheduler
 import Data.List (nub)
 import Development.Shake.FilePath
-import Interface.MCU (MCU (sizeFlash, startFlash), Platform (..), platform)
+import Interface.Etc (Etc (..))
+import Interface.MCU (MCU (..), Platform (..), platform)
 import Ivory.Compile.C.CmdlineFrontend
 import Ivory.Language
 
@@ -70,8 +71,12 @@ mkFormula :: (Compiler c p, Shake c) => (Formula p -> Int -> Int -> c) -> Formul
 mkFormula mkCompiler f@Formula{..} =
     void $ build compiler f path name
   where
-    startFirmware = startFlash meta.mcu
-    maxLength = sizeFlash meta.mcu
+    startFirmware = meta.mcu.startFlash
+    maxLength =
+        maybe
+            meta.mcu.sizeFlash
+            (\e -> e.etc - startFirmware)
+            meta.etc
     compiler = mkCompiler f startFirmware maxLength
     name = mkName meta
     path = "firmware" </> name

@@ -23,6 +23,7 @@ soundbox'v5 =
                 , mcu = gd32f450vit6
                 , quartzFrequency = 24_000_000
                 , systemFrequency = 192_000_000
+                , etc = Nothing
                 }
         , transport = U.rbus eth_0
         , implementation =
@@ -34,5 +35,4 @@ soundbox'v5 =
                 out_pb_7
                 i2c_2
                 out_pc_2
-        , base = mem
         }

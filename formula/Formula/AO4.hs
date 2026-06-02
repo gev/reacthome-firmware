@@ -25,10 +25,10 @@ ao4'v7 =
                 , mcu = gd32f330k8u6
                 , quartzFrequency = 8_000_000
                 , systemFrequency = 84_000_000
+                , etc = Nothing
                 }
         , transport = rbus $ rs485 uart_1 out_pa_4
         , implementation =
             I.ao4
                 (cbm53d04 spi_0 [1, 0, 2, 3])
-        , base = mem
         }
