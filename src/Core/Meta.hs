@@ -39,7 +39,7 @@ mkNameDfu Meta{..} dfuVersion =
         [ name
         , show board
         , major version <> "_" <> minor version
-        , major dfuVersion <> "_" <> minor dfuVersion
+        , major dfuVersion <> "_" <> "x"
         , mcu.model <> mcu.modification
         ]
   where
