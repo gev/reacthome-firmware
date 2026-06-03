@@ -55,7 +55,7 @@ dfu address version transport' = do
 
     let dfu = DFU{..}
 
-    addTask $ delay 20_000 "jump_to_firmware" do jumpToFirmware dfu
+    addTask $ delay 15_000 "jump_to_firmware" do jumpToFirmware dfu
     addTask $ delay 3_000 "repeat_chunk_request" do repeatChunkRequest dfu
 
     pure dfu
