@@ -12,7 +12,7 @@ import Interface.MCU
 import Ivory.Language
 
 data GetInfo = forall t. (LazyTransport t) => GetInfo
-    { status :: forall eff. Ivory eff Uint8
+    { packetVersion :: Uint8
     , info :: [Uint8]
     , transport :: t
     }
@@ -22,14 +22,14 @@ mkGetInfo ::
     , Monad m
     , MonadReader (D.Domain p i) m
     ) =>
-    (forall eff. Ivory eff Uint8) -> (Word8, Word8) -> t -> m GetInfo
-mkGetInfo status version transport = do
+    Uint8 -> (Word8, Word8) -> t -> m GetInfo
+mkGetInfo packetVersion firmwareVersion transport = do
     meta <- asks D.meta
     let typeDevice = unPack16BE meta.model
-        (major, minor) = version
+        (major, minor) = firmwareVersion
         nameMcu = toEnum . ord <$> mcuName meta.mcu
         info = fromIntegral <$> (typeDevice <> [meta.board, major, minor] <> nameMcu)
-    pure GetInfo{transport, status, info}
+    pure GetInfo{transport, packetVersion, info}
 
 mkGetMainInfo ::
     ( LazyTransport t
@@ -39,7 +39,7 @@ mkGetMainInfo ::
     t -> m GetInfo
 mkGetMainInfo transport = do
     meta <- asks D.meta
-    mkGetInfo (pure 0) meta.version transport
+    mkGetInfo 0 meta.version transport
 
 mkGetDfuInfo ::
     ( LazyTransport t
@@ -47,12 +47,12 @@ mkGetDfuInfo ::
     , MonadReader (D.Domain p i) m
     ) =>
     (Word8, Word8) -> t -> m GetInfo
-mkGetDfuInfo = mkGetInfo (pure 1)
+mkGetDfuInfo = mkGetInfo 1
 
 onGetInfo :: GetInfo -> Ivory (ProcEffects s t) ()
 onGetInfo GetInfo{..} = do
     let length' = 2 + fromIntegral (length info)
     lazyTransmit transport length' \transmit -> do
         transmit actionGetInfo
-        transmit =<< status
+        transmit packetVersion
         mapM_ transmit info
