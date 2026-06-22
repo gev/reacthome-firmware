@@ -162,7 +162,7 @@ instance (KnownNat n) => Controller (Top n) where
         cond_
             [ action ==? actionDo ==> onDo leds buff size
             , action ==? actionDim ==> onDim leds buff size
-            , action ==? actionRGB ==> onSetColor leds buff size
+            , action ==? actionRGB ==> onRGB t buff size
             , action ==? actionImage ==> onImage leds buff size
             , action ==? actionBlink ==> onBlink leds buff size
             , action ==? actionPalette ==> onPalette leds buff size
@@ -173,6 +173,12 @@ instance (KnownNat n) => Controller (Top n) where
             , action ==? actionUpdateFirmware ==> updateFirmware
             ]
 
+onRGB :: (KnownNat n, KnownNat l) => Top n -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onRGB Top{..} buff size = do
+    i <- deref $ buff ! 2
+    ifte_ (i ==? 0) 
+        (onSetColorButtons buttons buff size)
+        (onSetColor leds buff size)
 updateFirmware = nvicSystemReset
 
 syncChannels ::

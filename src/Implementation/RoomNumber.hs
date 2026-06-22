@@ -146,7 +146,7 @@ instance (KnownNat n) => Controller (RoomNumber n) where
         cond_
             [ action ==? actionDo ==> onDo leds buff size
             , action ==? actionDim ==> onDim leds buff size
-            , action ==? actionRGB ==> onSetColor leds buff size
+            , action ==? actionRGB ==> onRGB t buff size
             , action ==? actionImage ==> onImage leds buff size
             , action ==? actionBlink ==> onBlink leds buff size
             , action ==? actionPalette ==> onPalette leds buff size
@@ -156,6 +156,14 @@ instance (KnownNat n) => Controller (RoomNumber n) where
             , action ==? actionGetInfo ==> onGetInfo info
             , action ==? actionUpdateFirmware ==> updateFirmware
             ]
+
+onRGB :: (KnownNat n, KnownNat l) => RoomNumber n -> Buffer l Uint8 -> Uint8 -> Ivory (ProcEffects s t) ()
+onRGB RoomNumber{..} buff size = do
+    i <- deref $ buff ! 2
+    ifte_
+        (i ==? 0)
+        (onSetColorButtons buttons buff size)
+        (onSetColor leds buff size)
 
 updateFirmware = nvicSystemReset
 
