@@ -8,7 +8,6 @@ import Core.Models
 import Device.GD32F3x0
 import Feature.Sht21 (sht21)
 import Implementation.Smart.TopClimate (topClimate)
-import Interface.Etc (Etc (..))
 import Ivory.Language
 import Transport.UART.RBUS
 

@@ -10,10 +10,12 @@ import Data.Matrix
 import Data.Serialize
 import Data.Value
 import Endpoint.DInputs (DInputs (dinputs), state)
-import Feature.Smart.Top.LEDs (LEDs (order, pixels))
+import Feature.Smart.Top.LEDs (LEDs (order, pixels, colors))
 import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
+import Ivory.Language.Proxy
+import qualified Core.Transport as T
 
 type LEDsOnButtonStruct = "led_on_buttons_struct"
 
@@ -119,3 +121,43 @@ sinT :: ConstMemArea (Array 120 (Stored IFloat))
 sinT = constArea "button_sin_table" $ iarray $ ival . ifloat . f . fromIntegral <$> [0 .. 119]
   where
     f i = sin (pi * i / 120)
+
+onSetColorButtons ::
+    forall n pn b ln s t.
+    (KnownNat n, KnownNat pn, KnownNat ln, KnownNat b) =>
+    Buttons b pn ln ->
+    Buffer n Uint8 ->
+    Uint8 ->
+    Ivory (ProcEffects s t) ()
+onSetColorButtons Buttons{..} buff size = do
+    let pn' = fromIntegral $ fromTypeNat (aNat :: NatType pn)
+    when (size >=? 6 .&& (size - 3) .% 3 ==? 0) do
+        p <- deref $ buff ! 1
+        i <- deref $ buff ! 2
+        when (p >=? 1 .&& p <=? pn' .&& i ==? 0) do
+            let p' = toIx $ p - 1
+            sizeLEDs <- local izero
+            arrayMap \i -> do
+                arrayMap \j -> do
+                    sizeLEDs' <- deref sizeLEDs
+                    ledOfButton <- deref $ leds'of'button ! i ! j
+                    let ledOfButton' = castDefault $ fromIx ledOfButton :: Uint8
+                    when (ledOfButton' >? sizeLEDs') do
+                        store sizeLEDs ledOfButton'
+            sizeLEDs' <- deref sizeLEDs
+            let n' = sizeLEDs' + 1
+            T.lazyTransmit transport (3 * n' + 3) \transmit -> do
+                transmit actionRGB
+                transmit p
+                transmit 1
+                r' <- deref $ buff ! 3
+                g' <- deref $ buff ! 4
+                b' <- deref $ buff ! 5
+                let value = (safeCast r' `iShiftL` 16) .| (safeCast g' `iShiftL` 8) .| safeCast b'
+                arrayMap \ix -> do
+                    let currentIdx = castDefault (fromIx ix) :: Uint8
+                    when (currentIdx <? n') do
+                        store (leds.colors ! p' ! ix) value
+                        transmit r'
+                        transmit g'
+                        transmit b'

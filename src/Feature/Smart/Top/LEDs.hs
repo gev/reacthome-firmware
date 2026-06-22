@@ -297,7 +297,7 @@ onSetColor LEDs{..} buff size = do
     let pn' = fromIntegral $ fromTypeNat (aNat :: NatType pn)
     when (size >=? 6 .&& (size - 3) .% 3 ==? 0) do
         p <- deref $ buff ! 1
-        i <- deref $ buff ! 2
+        i    <- deref $ buff ! 2
         when (p >=? 1 .&& p <=? pn' .&& i >=? 1 .&& i <=? ln') do
             let p' = toIx $ p - 1
             let i' = i - 1
