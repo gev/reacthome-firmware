@@ -10,7 +10,7 @@ import Data.Matrix
 import Data.Serialize
 import Data.Value
 import Endpoint.DInputs (DInputs (dinputs), state)
-import Feature.Smart.Top.LEDs (LEDs (order, pixels, colors))
+import Feature.Smart.Top.LEDs (LEDs (order, pixels, colors, synced))
 import GHC.TypeNats
 import Ivory.Language
 import Ivory.Stdlib
@@ -161,3 +161,4 @@ onSetColorButtons Buttons{..} buff size = do
                         transmit r'
                         transmit g'
                         transmit b'
+            store (leds.synced ! p') false
