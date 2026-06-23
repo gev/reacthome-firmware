@@ -136,16 +136,16 @@ onSetColorButtons Buttons{..} buff size = do
         i <- deref $ buff ! 2
         when (p >=? 1 .&& p <=? pn' .&& i ==? 0) do
             let p' = toIx $ p - 1
-            sizeLEDs <- local izero
+            maxIndexLED <- local izero
             arrayMap \i -> do
                 arrayMap \j -> do
-                    sizeLEDs' <- deref sizeLEDs
-                    ledOfButton <- deref $ leds'of'button ! i ! j
-                    let ledOfButton' = castDefault $ fromIx ledOfButton :: Uint8
-                    when (ledOfButton' >? sizeLEDs') do
-                        store sizeLEDs ledOfButton'
-            sizeLEDs' <- deref sizeLEDs
-            let n' = sizeLEDs' + 1
+                    maxIndexLED' <- deref maxIndexLED
+                    indexLED <- deref $ leds'of'button ! i ! j
+                    let indexLED' = castDefault $ fromIx indexLED :: Uint8
+                    when (indexLED' >? maxIndexLED') do
+                        store maxIndexLED indexLED'
+            maxIndexLED' <- deref maxIndexLED
+            let n' = maxIndexLED' + 1
             T.lazyTransmit transport (3 * n' + 3) \transmit -> do
                 transmit actionRGB
                 transmit p
