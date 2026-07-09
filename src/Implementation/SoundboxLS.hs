@@ -1,6 +1,6 @@
 {-# HLINT ignore "Use for_" #-}
 
-module Implementation.Soundbox where
+module Implementation.SoundboxLS where
 
 import Control.Monad (zipWithM_)
 import Control.Monad.Reader (MonadReader, asks)
@@ -17,7 +17,7 @@ import Data.Buffer
 import Data.Record
 import Data.Serialize
 import Data.Value
-import Endpoint.StereoAMP
+import Endpoint.StereoAMP10
 import Feature.GetInfo
 import Feature.I2SPlay
 import Feature.RTP
@@ -43,19 +43,20 @@ data Soundbox = Soundbox
     { i2sTxCh1 :: I2SPlay 512
     , i2sTxCh2 :: I2SPlay 512
     , i2sSpdif :: I2SReceive 512
+    , i2sAUX :: I2SReceive 512
     , rtps :: [RTP 4480]
     , netif :: Record NETIF_STRUCT
     , txRtpBuff :: Buffer 9 Uint8
-    , lanampBuff :: Buffer 41 Uint8
+    , lanampBuff :: Buffer 49 Uint8
     , i2sSampleMix :: Sample
-    , samples :: Records 9 SampleStruct
+    , samples :: Records 10 SampleStruct
     , amps :: Records 2 StereoAMPStruct
     , shouldInit :: Value IBool
     , info :: GetInfo
     , transmit :: forall n s t. (KnownNat n) => Buffer n Uint8 -> Ivory (ProcEffects s t) ()
     }
 
-mkSoundbox ::
+mkSoundboxLS ::
     ( MonadState Context m
     , T.Transport t
     , MonadReader (Domain p c) m
@@ -64,7 +65,8 @@ mkSoundbox ::
     , Output o
     , Handler HandleI2STX (i 256 256)
     , Handler HandleI2SRX (i 256 256)
-    , Handler HandleI2STX (j 256)
+    , Handler HandleI2STX (j 256 256)
+    , Handler HandleI2SRX (j 256 256)
     , I.I2C ic 2
     , Pull p d
     , T.LazyTransport t
@@ -72,13 +74,13 @@ mkSoundbox ::
     (p -> m e) ->
     (p -> m (i 256 256)) ->
     (p -> d -> m o) ->
-    (p -> m (j 256)) ->
+    (p -> m (j 256 256)) ->
     (p -> d -> m o) ->
     (p -> m (ic 2)) ->
     (p -> d -> m o) ->
     m t ->
     m Soundbox
-mkSoundbox enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute transport' = do
+mkSoundboxLS enet i2sTrx0' shutdownTrx' i2sTrx1' shutdownTx' i2c mute transport' = do
     S.mkSRC4392 i2c mute
 
     transport <- transport'
@@ -89,16 +91,17 @@ mkSoundbox enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute transport' = do
     shouldInit <- asks D.shouldInit
     shutdownTrx <- shutdownTrx' platform.peripherals $ pullNone platform.peripherals
     shutdownTx <- shutdownTx' platform.peripherals $ pullNone platform.peripherals
-    i2sTrx <- i2sTrx' platform.peripherals
-    i2sTx <- i2sTx' platform.peripherals
+    i2sTrx0 <- i2sTrx0' platform.peripherals
+    i2sTrx1 <- i2sTrx1' platform.peripherals
 
     txRtpBuff <- buffer (name <> "_tx_rtp_buff")
     lanampBuff <- buffer (name <> "_tx_lanamp_buff")
 
-    i2sTxCh1 <- mkI2SPlay (name <> "_transmit_ch1") i2sTx
-    i2sTxCh2 <- mkI2SPlay (name <> "_transmit_ch2") i2sTrx
+    i2sTxCh1 <- mkI2SPlay (name <> "_transmit_ch1") i2sTrx1 
+    i2sTxCh2 <- mkI2SPlay (name <> "_transmit_ch2") i2sTrx0
 
-    i2sSpdif <- mkI2SReseive i2sTrx (name <> "spdif")
+    i2sSpdif <- mkI2SReseive i2sTrx0 (name <> "spdif")
+    i2sAUX <- mkI2SReseive i2sTrx1 (name <> "aux")
 
     samples <- records_ $ name <> "_samples"
 
@@ -117,6 +120,7 @@ mkSoundbox enet i2sTrx' shutdownTrx' i2sTx' shutdownTx' i2c mute transport' = do
                 { i2sTxCh1
                 , i2sTxCh2
                 , i2sSpdif
+                , i2sAUX
                 , rtps
                 , netif
                 , txRtpBuff
@@ -144,8 +148,10 @@ refillBuffI2S :: Soundbox -> Ivory (ProcEffects s ()) ()
 refillBuffI2S Soundbox{..} = do
     playI2S i2sTxCh1 \amp0 -> do
         playI2S i2sTxCh2 \amp1 -> do
-            sample <- getI2SReseiveSample i2sSpdif
-            samples ! 0 <== sample
+            sample0 <- getI2SReseiveSample i2sSpdif
+            sample9 <- getI2SReseiveSample i2sAUX
+            samples ! 0 <== sample0
+            samples ! 9 <== sample9
             zipWithM_ run rtps [1 ..]
             mix samples (amps ! 0) amp0
             mix samples (amps ! 1) amp1
@@ -155,7 +161,7 @@ refillBuffI2S Soundbox{..} = do
         sample <- getRtpSample rtp
         samples ! ix <== sample
 
-mix :: Records 9 SampleStruct -> Record StereoAMPStruct -> Sample -> Ivory (ProcEffects s ()) ()
+mix :: Records 10 SampleStruct -> Record StereoAMPStruct -> Sample -> Ivory (ProcEffects s ()) ()
 mix samples amp res = do
     mode' <- deref $ amp ~> mode
 
@@ -165,7 +171,7 @@ mix samples amp res = do
         , mode' ==? 3 ==> mix11 samples amp res
         ]
 
-mixLR :: Records 9 SampleStruct -> Record StereoAMPStruct -> Sample -> Ivory (ProcEffects s ()) ()
+mixLR :: Records 10 SampleStruct -> Record StereoAMPStruct -> Sample -> Ivory (ProcEffects s ()) ()
 mixLR src amp dst = do
     dl <- local $ ival 0
     dr <- local $ ival 0
@@ -185,7 +191,7 @@ mixLR src amp dst = do
     store (dst ~> left) $ castDefault dl'
     store (dst ~> right) $ castDefault dr'
 
-mixRL :: Records 9 SampleStruct -> Record StereoAMPStruct -> Sample -> Ivory (ProcEffects s ()) ()
+mixRL :: Records 10 SampleStruct -> Record StereoAMPStruct -> Sample -> Ivory (ProcEffects s ()) ()
 mixRL src amp dst = do
     dl <- local $ ival 0
     dr <- local $ ival 0
@@ -205,7 +211,7 @@ mixRL src amp dst = do
     store (dst ~> right) $ castDefault dl'
     store (dst ~> left) $ castDefault dr'
 
-mix11 :: Records 9 SampleStruct -> Record StereoAMPStruct -> Sample -> Ivory (ProcEffects s ()) ()
+mix11 :: Records 10 SampleStruct -> Record StereoAMPStruct -> Sample -> Ivory (ProcEffects s ()) ()
 mix11 src amp dst = do
     dl <- local $ ival (0 :: IFloat)
     dr <- local $ ival (0 :: IFloat)
@@ -246,16 +252,16 @@ instance Controller Soundbox where
 updateFirmware = nvicSystemReset
 
 onInit Soundbox{..} buff size = do
-    when (size >=? 135) do
+    when (size >=? 143) do
         arrayMap \kx -> do
-            let base = 1 + 39 * fromIx kx
+            let base = 1 + 43 * fromIx kx
             mode' <- deref $ buff ! toIx base
             let amp = amps ! kx
             arrayMap \ix -> do
                 countUsed <- local izeroval
                 let rules' = amp ~> rules ! ix
                 arrayMap \jx -> do
-                    let ux = 3 + base + 9 * fromIx ix + fromIx jx
+                    let ux = 3 + base + 10 * fromIx ix + fromIx jx
                     isUsed' <- unpack buff $ toIx ux
                     store (rules' ~> isUsed ! jx) isUsed'
                     when isUsed' do
@@ -263,7 +269,7 @@ onInit Soundbox{..} buff size = do
                         store countUsed $ n + 1
                     pack lanampBuff (toIx ux) isUsed'
                 arrayMap \jx -> do
-                    let vx = 22 + 9 * fromIx ix + fromIx jx
+                    let vx = 26 + 10 * fromIx ix + fromIx jx
                     volume' <- deref $ buff ! toIx vx
                     nu <- deref countUsed
                     when (nu /=? 0) do
@@ -271,7 +277,7 @@ onInit Soundbox{..} buff size = do
                 store (amp ~> mode) mode'
 
         let run rtp i = do
-                let base = fromIntegral $ 79 + 7 * i :: Sint32
+                let base = fromIntegral $ 87 + 7 * i :: Sint32
                 active <- unpack buff $ toIx base
                 ip1 <- unpack buff $ toIx (base + 1)
                 ip2 <- unpack buff $ toIx (base + 2)
@@ -313,9 +319,9 @@ onRtp Soundbox{..} buff size = do
             zipWithM_ run rtps [1 ..]
 
 -- size 41
--- lanamp:  ACTION_LANAMP index mode (2 byte volume??)  (active x 18) (volume x 18)
+-- lanamp:  ACTION_LANAMP index mode (2 byte volume??)  (active x 20) (volume x 20)
 onLanamp Soundbox{..} buff size = do
-    when (size >=? 41) do
+    when (size >=? 45) do
         index <- deref $ buff ! 1
         when (index >=? 1 .&& index <=? 2) do
             mode' <- deref $ buff ! 2
@@ -324,7 +330,7 @@ onLanamp Soundbox{..} buff size = do
                 countUsed <- local izeroval
                 let rules' = amp ~> rules ! ix
                 arrayMap \jx -> do
-                    let ux = 5 + 9 * fromIx ix + fromIx jx
+                    let ux = 5 + 10 * fromIx ix + fromIx jx
                     isUsed' <- unpack buff $ toIx ux
                     store (rules' ~> isUsed ! jx) isUsed'
                     when isUsed' do
@@ -332,7 +338,7 @@ onLanamp Soundbox{..} buff size = do
                         store countUsed $ n + 1
                     pack lanampBuff (toIx ux) isUsed'
                 arrayMap \jx -> do
-                    let vx = 23 + 9 * fromIx ix + fromIx jx
+                    let vx = 25 + 10 * fromIx ix + fromIx jx
                     volume' <- unpack buff $ toIx vx
                     nu <- deref countUsed
                     when (nu /=? 0) do

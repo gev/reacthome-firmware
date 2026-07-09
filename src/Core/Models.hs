@@ -109,6 +109,7 @@ deviceTypeDim1AcRs = 0xB6 :: Word16
 deviceTypeServer = 0xC0 :: Word16
 deviceTypeRsHub4 = 0xC1 :: Word16
 deviceTypeSoundbox = 0xC2 :: Word16
+deviceTypeSoundboxLS = 0xC3 :: Word16
 
 {-
     Legacy device types based on the PLC Owen family

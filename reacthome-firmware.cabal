@@ -130,6 +130,7 @@ executable reacthome-firmware
     Endpoint.Groups
     Endpoint.Relays
     Endpoint.StereoAMP
+    Endpoint.StereoAMP10
     Feature.ALED
     Feature.AOutputs
     Feature.CBM53D04
@@ -155,7 +156,7 @@ executable reacthome-firmware
     Feature.RS485.RSM.Tx
     Feature.RTP
     Feature.Relays
-    Feature.SPDIF
+    Feature.I2SReceive
     Feature.SRC4392
     Feature.Scd40
     Feature.Sht21
@@ -202,6 +203,7 @@ executable reacthome-firmware
     Formula.Smart.Top.TopG4D
     Formula.Smart.Top.TopG6
     Formula.Soundbox
+    Formula.SoundboxLS
     Formula.UdpEcho450
     Implementation.AO4
     Implementation.Blink
@@ -244,6 +246,7 @@ executable reacthome-firmware
     Implementation.Smart.TopG6v9
     Implementation.Smart.TopGD
     Implementation.Soundbox
+    Implementation.SoundboxLS
     Implementation.UdpEcho
     Interface.ADC
     Interface.Counter

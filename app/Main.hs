@@ -35,6 +35,7 @@ import Formula.Smart.Top.TopG4
 import Formula.Smart.Top.TopG4D
 import Formula.Smart.Top.TopG6
 import Formula.Soundbox
+import Formula.SoundboxLS
 
 main :: IO ()
 main = do
@@ -87,4 +88,5 @@ main = do
         , rsHub4'v1
         , server'v11
         , soundbox'v5
+        , soundboxLS'v7
         ]

@@ -159,7 +159,7 @@ instance
             makeIRQHandler
                 (dmaIRQnTx i2s)
                 (handleDMATx i2s)
-        addTask $ yeld "i2s_prepare_tx_buffer" do
+        addTask $ yeld (symbol i2s.spi <> "_prepare_tx_buffer") do
             selectHandlerBuff
                 (txBuff i2s)
                 (prepareBuff handle)
@@ -208,7 +208,7 @@ instance (KnownNat rn) => Handler I.HandleI2SRX (I2STRX tn rn) where
             makeIRQHandler
                 (dmaIRQnRx i2s)
                 (handleDMARx i2s)
-        addTask $ yeld "i2s_process_rx_buffer" do
+        addTask $ yeld (symbol i2s.i2s_add <>"_process_rx_buffer") do
             selectHandlerBuff
                 (rxBuff i2s)
                 (processBuff i2s handle)
