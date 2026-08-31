@@ -139,6 +139,7 @@ executable reacthome-firmware
     Feature.Dimmers
     Feature.Dimmers.AC
     Feature.Dimmers.DC
+    Feature.Dimmers.MosfetAC
     Feature.Dopplers
     Feature.GetInfo
     Feature.I2SPlay
@@ -176,6 +177,7 @@ executable reacthome-firmware
     Formula.DimmerAC1
     Formula.DimmerAC12
     Formula.DimmerDC12
+    Formula.DimmerMosfetAC12
     Formula.Doppler1
     Formula.Doppler5
     Formula.Echo

@@ -105,6 +105,7 @@ deviceTypeDim12AcRs = 0xB3 :: Word16
 deviceTypeDim12DcRs = 0xB4 :: Word16
 deviceTypeMix6x12Rs = 0xB5 :: Word16
 deviceTypeDim1AcRs = 0xB6 :: Word16
+deviceTypeDimMofet12AcRs = 0xB7 :: Word16
 
 deviceTypeServer = 0xC0 :: Word16
 deviceTypeRsHub4 = 0xC1 :: Word16

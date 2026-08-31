@@ -9,6 +9,7 @@ import Formula.DI4RSM
 import Formula.DimmerAC1
 import Formula.DimmerAC12
 import Formula.DimmerDC12
+import Formula.DimmerMosfetAC12
 import Formula.Doppler1
 import Formula.Doppler5
 import Formula.LeakSensor
@@ -52,6 +53,7 @@ main = do
         , relay12'v6
         , dimmerDC12'v6
         , dimmerAC12'v6
+        , dimmerMosfetAC12'v6
         , dimmerAC1'v3
         , doppler1'v5
         , doppler5'v5
