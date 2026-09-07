@@ -17,6 +17,7 @@ import Formula.Mix6x12
 import Formula.MixF
 import Formula.MixH
 import Formula.MixV
+import Formula.MixW
 import Formula.Relay12
 import Formula.RoomNumber
 import Formula.RsHub4
@@ -61,6 +62,7 @@ main = do
         , mixF'v2
         , mixH'v3
         , mixH'v6
+        , mixW'v1
         , roomNumber'v1
         , smartBottom'v13
         , smartBottomCO2'v13
