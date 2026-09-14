@@ -53,6 +53,7 @@ deviceTypeMixV = 0x42 :: Word16
 deviceTypeAo4 = 0x43 :: Word16
 deviceTypeRoomNumber = 0x44 :: Word16
 deviceTypeMixF = 0x45 :: Word16
+deviceTypeMixW = 0x46 :: Word16
 
 {-
     Modern two component SMART devices

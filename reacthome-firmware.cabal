@@ -143,6 +143,7 @@ executable reacthome-firmware
     Feature.Dopplers
     Feature.GetInfo
     Feature.I2SPlay
+    Feature.I2SReceive
     Feature.Indicator
     Feature.IndicatorFlush
     Feature.LeakLEDs
@@ -157,7 +158,6 @@ executable reacthome-firmware
     Feature.RS485.RSM.Tx
     Feature.RTP
     Feature.Relays
-    Feature.I2SReceive
     Feature.SRC4392
     Feature.Scd40
     Feature.Sht21
@@ -186,6 +186,7 @@ executable reacthome-firmware
     Formula.MixF
     Formula.MixH
     Formula.MixV
+    Formula.MixW
     Formula.Relay12
     Formula.RoomNumber
     Formula.RsHub4
@@ -223,6 +224,7 @@ executable reacthome-firmware
     Implementation.Mix
     Implementation.MixF
     Implementation.MixH
+    Implementation.MixW
     Implementation.MixHv6
     Implementation.MixV
     Implementation.Relay
