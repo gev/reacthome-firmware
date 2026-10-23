@@ -74,6 +74,7 @@ deviceTypeSmartBottomCO2 = 0x3b :: Word16
 deviceTypeSmartTopClimate = 0x3c :: Word16
 deviceTypeSmartBottomClimate = 0x3d :: Word16
 deviceTypeSmartTopCardHolder = 0x3e :: Word16
+deviceTypeSmartTopA2T = 0x3f :: Word16
 
 {-
     The DIN rail devices

@@ -25,6 +25,7 @@ import Formula.Server
 import Formula.Smart.Bottom.Bottom
 import Formula.Smart.Bottom.BottomCO2
 import Formula.Smart.Bottom.BottomClimate
+import Formula.Smart.Top.TopA2T
 import Formula.Smart.Top.TopA4P
 import Formula.Smart.Top.TopA4T
 import Formula.Smart.Top.TopA4TD
@@ -67,6 +68,7 @@ main = do
         , smartBottom'v13
         , smartBottomCO2'v13
         , smartBottomClimate'v13
+        , smartTopA2T'v5
         , smartTopA4P'v6
         , smartTopA4T'v3
         , smartTopA4T'v5
