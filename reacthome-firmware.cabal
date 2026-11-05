@@ -194,6 +194,7 @@ executable reacthome-firmware
     Formula.Smart.Bottom.Bottom
     Formula.Smart.Bottom.BottomCO2
     Formula.Smart.Bottom.BottomClimate
+    Formula.Smart.Top.TopA2T
     Formula.Smart.Top.TopA4P
     Formula.Smart.Top.TopA4T
     Formula.Smart.Top.TopA4TD
@@ -231,6 +232,7 @@ executable reacthome-firmware
     Implementation.RoomNumber
     Implementation.Smart.Bottom
     Implementation.Smart.BottomClimate
+    Implementation.Smart.TopA2Tv5
     Implementation.Smart.TopA4P
     Implementation.Smart.TopA4T
     Implementation.Smart.TopA4TD
