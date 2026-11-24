@@ -23,6 +23,7 @@ type DimmerStruct = "dimmer_struct"
     ; value :: IFloat
     ; delta :: IFloat
     ; synced :: IBool
+    ; pdm :: Uint16
     }
 |]
 
@@ -55,6 +56,7 @@ mkDimmers name = do
         , value .= ival 0
         , delta .= ival 0
         , synced .= ival false
+        , pdm .= ival 0
         ]
 
 message ::
@@ -214,6 +216,7 @@ syncDimmerGroup ds dimmer' ix' = do
                 sync mode
                 sync value
                 sync delta
+                sync pdm
                 store (dimmer'' ~> synced) false
 
 calculateValue :: Record DimmerStruct -> Ivory eff ()

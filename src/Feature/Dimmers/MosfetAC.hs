@@ -34,6 +34,7 @@ data CrossZero = CrossZero
     , countCrossZero :: Value Uint32
     , period0 :: Value Uint32
     , period1 :: Value Uint32
+    , pdmPhase :: Value IBool
     }
 
 dimmersMosfetAC ::
@@ -62,6 +63,7 @@ dimmersMosfetAC pwms exti transport = do
     countCrossZero <- value "dimmer_count_zero" 0
     period0 <- value "dimmer_period_0" 0
     period1 <- value "dimmer_period_1" 0
+    pdmPhase <- value "dimmer_pdm_phase" false
 
     let crossZero =
             CrossZero
@@ -70,6 +72,7 @@ dimmersMosfetAC pwms exti transport = do
                 , countCrossZero
                 , period0
                 , period1
+                , pdmPhase
                 }
 
     addHandler $ HandleEXTI e $ detectCrossZero dimmers crossZero
@@ -115,28 +118,47 @@ manage Dimmers{..} CrossZero{..} = do
     isCrossZero' <- deref isCrossZero
     isNoCrossZero' <- deref isNoCrossZero
     when (iNot isNoCrossZero' .&& isCrossZero') do
-        zipWithM_ zip getPWMs ints
+        phase <- deref pdmPhase
+        zipWithM_ (zip phase) getPWMs ints
+        -- PDM works on full periods: step on every second cross zero
+        store pdmPhase $ iNot phase
         store isCrossZero false
   where
-    zip :: (I.PWM p) => p -> Int -> Ivory eff ()
-    zip pwm i = do
+    zip :: (I.PWM p) => IBool -> p -> Int -> Ivory eff ()
+    zip phase pwm i = do
         let ix = fromIntegral i
         let d = Dim.dimmers getDimmers ! ix
-        manageDimmer pwm d =<< deref period0
+        manageDimmer pwm d (iNot phase) =<< deref period0
 
-manageDimmer :: (I.PWM p) => p -> Record Dim.DimmerStruct -> Uint32 -> Ivory eff ()
-manageDimmer pwm dimmer period = do
-    val <- deref $ dimmer ~> Dim.value
-    mode <- deref $ dimmer ~> Dim.mode
-    when (mode ==? pwmMode .&& val /=? 0) do
-        store (dimmer ~> Dim.value) 1
+manageDimmer :: (I.PWM p) => p -> Record Dim.DimmerStruct -> IBool -> Uint32 -> Ivory eff ()
+manageDimmer pwm dimmer step period = do
     v <- deref $ dimmer ~> Dim.value
+    mode <- deref $ dimmer ~> Dim.mode
     cond_
-        [ v ==? 0 ==> I.setMode pwm I.FORCE_LOW
-        , v ==? 1 ==> I.setMode pwm I.FORCE_HIGH
+        [ v ==? 0 ==> do
+            store (dimmer ~> Dim.pdm) 0
+            I.setMode pwm I.FORCE_LOW
+        , v ==? 1 ==> do
+            store (dimmer ~> Dim.pdm) 0
+            I.setMode pwm I.FORCE_HIGH
         , true ==> do
             cond_
-                [ mode ==? risingEdgeMode ==> do
+                [ mode ==? pwmMode ==> when step do
+                    -- PDM: sigma-delta accumulator, one step per period (every second half-period)
+                    level <- castFloatToUint16 (v * 255 + 0.5)
+                    acc <- deref $ dimmer ~> Dim.pdm
+                    let acc' = acc + level
+                    ifte_
+                        (acc' >=? 255)
+                        ( do
+                            store (dimmer ~> Dim.pdm) (acc' - 255)
+                            I.setMode pwm I.FORCE_HIGH
+                        )
+                        ( do
+                            store (dimmer ~> Dim.pdm) acc'
+                            I.setMode pwm I.FORCE_LOW
+                        )
+                , mode ==? risingEdgeMode ==> do
                     I.setMode pwm I.LOW
                     I.setDuty pwm =<< castFloatToUint16 ((1 - v) * (safeCast period - 400) + 100)
                 , mode ==? fallingEdgeMode ==> do
@@ -160,7 +182,8 @@ manageNoCrossZero Dimmers{..} CrossZero{..} = do
 manageDimmerNoCrossZero :: (I.PWM p) => p -> Record Dim.DimmerStruct -> Ivory eff ()
 manageDimmerNoCrossZero pwm dimmer = do
     v <- deref $ dimmer ~> Dim.value
+    mode <- deref $ dimmer ~> Dim.mode
     cond_
-        [ v >? 0 ==> I.setMode pwm I.FORCE_HIGH
+        [ v >? 0 .&& mode /=? pwmMode ==> I.setMode pwm I.FORCE_HIGH
         , true ==> I.setMode pwm I.FORCE_LOW
         ]
